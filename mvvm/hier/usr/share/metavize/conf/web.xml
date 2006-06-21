@@ -954,4 +954,8 @@
       <location>/errorpage.html</location>
     </error-page>
 
+    <error-page>
+      <error-code>403</error-code>
+      <location>/errorpage.jsp</location>
+    </error-page>
 </web-app>

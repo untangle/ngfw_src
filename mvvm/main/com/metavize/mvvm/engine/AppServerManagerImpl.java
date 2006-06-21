@@ -13,6 +13,7 @@ package com.metavize.mvvm.engine;
 
 import java.io.File;
 import java.io.FileInputStream;
+
 import java.util.Properties;
 
 import com.metavize.mvvm.AppServerManager;
@@ -22,6 +23,7 @@ import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
 import com.metavize.mvvm.security.CertInfo;
 import com.metavize.mvvm.security.RFC2253Name;
 import com.metavize.mvvm.security.RegistrationInfo;
+import com.metavize.mvvm.util.QuarantineOutsideAccessValve;
 import com.metavize.tran.util.MVKeyStore;
 import com.metavize.tran.util.OpenSSLWrapper;
 import org.apache.log4j.Logger;
@@ -183,6 +185,10 @@ class AppServerManagerImpl implements AppServerManager
         return tomcatManager.loadInsecureApp(urlBase, rootDir);
     }
 
+    public boolean loadQuarantineApp(String urlBase, String rootDir)
+    {
+        return tomcatManager.loadInsecureApp(urlBase, rootDir, new QuarantineOutsideAccessValve());
+    }
 
     public boolean unloadWebApp(String contextRoot)
     {

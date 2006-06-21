@@ -23,6 +23,7 @@ import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Pipeline;
 import org.apache.catalina.Realm;
+import org.apache.catalina.Valve;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.connector.Connector;
@@ -32,6 +33,9 @@ import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
 import org.apache.coyote.http11.Http11BaseProtocol;
 import org.apache.log4j.Logger;
+
+import com.metavize.mvvm.util.AdministrationOutsideAccessValve;
+import com.metavize.mvvm.util.ReportingOutsideAccessValve;
 
 /**
  * Wrapper around the Tomcat server embedded within the MVVM.
@@ -82,10 +86,12 @@ class TomcatManager
         this.webAppRoot = webAppRoot;
         this.logDir = logDir;
 
-        loadSystemApp("/session-dumper", "session-dumper");
-        loadSystemApp("/webstart", "webstart");
-        loadSystemApp("/store", "store");
-        loadSystemApp("/reports", "reports", new WebAppOptions(true));
+        /* rbs: according to the javadoc, each valve object can only be assigned to one container,
+         * otherwise it is supposed to throw an IllegalStateException */
+        loadSystemApp("/session-dumper", "session-dumper", new WebAppOptions(new AdministrationOutsideAccessValve()));
+        loadSystemApp("/webstart", "webstart", new WebAppOptions(new AdministrationOutsideAccessValve()));
+        loadSystemApp("/store", "store", new WebAppOptions(new AdministrationOutsideAccessValve()));
+        loadSystemApp("/reports", "reports", new WebAppOptions(true,new ReportingOutsideAccessValve()));
     }
 
     // package protected methods ----------------------------------------------
@@ -165,6 +171,12 @@ class TomcatManager
     {
         return loadWebApp(urlBase, rootDir, null, null);
     }
+
+    boolean loadInsecureApp(String urlBase, String rootDir, Valve valve)
+    {
+        return loadWebApp(urlBase, rootDir, null, null, valve);
+    }
+
 
     boolean unloadWebApp(String contextRoot)
     {
@@ -411,18 +423,33 @@ class TomcatManager
 
         final boolean allowLinking;
         final int sessionTimeout; // Minutes
+        final Valve valve;
 
         WebAppOptions() {
             this(false, DEFAULT_SESSION_TIMEOUT);
+        }
+
+        WebAppOptions(Valve valve) {
+            this(false, valve);
         }
 
         WebAppOptions(boolean allowLinking) {
             this(allowLinking, DEFAULT_SESSION_TIMEOUT);
         }
 
+        WebAppOptions(boolean allowLinking, Valve valve) {
+            this(allowLinking, DEFAULT_SESSION_TIMEOUT, valve);
+        }
+
         WebAppOptions(boolean allowLinking, int sessionTimeout) {
+            this(allowLinking, sessionTimeout, null);
+        }
+        
+        WebAppOptions(boolean allowLinking, int sessionTimeout, Valve valve) {
             this.allowLinking = allowLinking;
             this.sessionTimeout = sessionTimeout;
+            this.valve  = valve;
+
         }
     }
 
@@ -463,6 +490,14 @@ class TomcatManager
         return loadWebApp(urlBase, rootDir, realm, auth, new WebAppOptions());
     }
 
+    private boolean loadWebApp(String urlBase,
+                               String rootDir,
+                               Realm realm,
+                               AuthenticatorBase auth,
+                               Valve valve) {
+        return loadWebApp(urlBase, rootDir, realm, auth, new WebAppOptions(valve));
+    }
+
     private boolean loadWebAppImpl(String urlBase, String rootDir,
                                    Realm realm, AuthenticatorBase auth, WebAppOptions options)
     {
@@ -477,15 +512,21 @@ class TomcatManager
            if (null != realm) {
                 ctx.setRealm(realm);
             }
+           
             StandardManager mgr = new StandardManager();
             mgr.setPathname(null); /* disable session persistence */
             ctx.setManager(mgr);
+            
+            /* This should be the first valve */
+            if (null != options.valve) ctx.addValve(options.valve);
+
             if (null != auth) {
                 Pipeline pipe = ctx.getPipeline();
                 auth.setDisableProxyCaching(false);
                 pipe.addValve(auth);
             }
             baseHost.addChild(ctx);
+
             return true;
         } catch(Exception ex) {
             logger.error("Unable to deploy webapp \"" + urlBase

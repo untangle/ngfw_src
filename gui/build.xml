@@ -49,6 +49,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
       <arg value="index.jsp"/>
       <arg value="gui.jnlp"/>
       <arg value="gui-local.jnlp"/>
+      <arg value="errorpage.jsp"/>
       <classpath refid="tomcat.thirdparty.classpath"/>
     </java>
     <echo message="Adding JSP servlet mappings to web.xml"/>

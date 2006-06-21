@@ -101,6 +101,8 @@ class EventHandler extends AbstractEventHandler
         if ( this.isEdgeGuardClient ) {
             transform.incrementCount( Constants.PASS_COUNTER );
             request.release();
+            
+            return;
         }
 
         for ( IPMatcher matcher : this.clientAddressList ) {

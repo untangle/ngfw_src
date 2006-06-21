@@ -254,6 +254,11 @@ public class NetworkManagerImpl implements NetworkManager
         return this.remote.toSettings();
     }
 
+    public RemoteInternalSettings getRemoteInternalSettings()
+    {
+        return this.remote;
+    }
+
     public synchronized void setRemoteSettings( RemoteSettings newSettings )
         throws NetworkException
     {

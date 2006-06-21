@@ -124,6 +124,10 @@ public class NetworkingConfigurationImpl
     /* This is a script that gets executed after the bridge configuration runs */
     private String postConfigurationScript = DEF_POST_CONFIGURATION;
 
+    private boolean isOutsideAdministrationEnabled;
+    private boolean isOutsideQuarantineEnabled;
+    private boolean isOutsideReportingEnabled;
+
     public NetworkingConfigurationImpl()
     {
     }
@@ -461,7 +465,39 @@ public class NetworkingConfigurationImpl
         if ( httpsPort == 0 || httpsPort > 0xFFFF || httpsPort == 80 ) httpsPort = DEF_HTTPS_PORT;
         
         this.httpsPort = httpsPort;
-    }    
+    }
+
+    /* Configuration for the web services */
+    public boolean getIsOutsideAdministrationEnabled()
+    {
+        return this.isOutsideAdministrationEnabled;
+    }
+
+    public void setIsOutsideAdministrationEnabled( boolean newValue )
+    {
+        this.isOutsideAdministrationEnabled = newValue;
+    }
+
+    public boolean getIsOutsideQuarantineEnabled()
+    {
+        return this.isOutsideQuarantineEnabled;
+    }
+    
+    public void setIsOutsideQuarantineEnabled( boolean newValue )
+    {
+        this.isOutsideQuarantineEnabled = newValue;
+    }
+
+    public boolean getIsOutsideReportingEnabled()
+    {
+        return this.isOutsideReportingEnabled;
+    }
+    
+    public void setIsOutsideReportingEnabled( boolean newValue )
+    {
+        this.isOutsideReportingEnabled = newValue;
+    }
+
     
     public void validate() throws ValidateException
     {
@@ -600,6 +636,18 @@ public class NetworkingConfigurationImpl
             return false;
         }
 
+        if (curNC.getIsOutsideAdministrationEnabled() != newNC.getIsOutsideAdministrationEnabled()) {
+            return false;
+        }
+        
+        if (curNC.getIsOutsideQuarantineEnabled() != newNC.getIsOutsideQuarantineEnabled()) {
+            return false;
+        }
+
+        if (curNC.getIsOutsideReportingEnabled() != newNC.getIsOutsideReportingEnabled()) {
+            return false;
+        }
+
         return true;
     }
 
@@ -608,25 +656,30 @@ public class NetworkingConfigurationImpl
         /* The networking configuration could be rewritten as the composition of 
          * a BasicNetworkSettingsImpl(doesn't exist yet) and a RemoteSettingsImpl.
          * this would make this function a lot shorter */
-        return 
-            "dhcp:        "   + isDhcpEnabled() +
-            "\nhostname:    " + hostname() +
-            "\nhost:        " + host() +
-            "\nnetmask:     " + netmask() +
-            "\ngateway:     " + gateway() +
-            "\ndns 1:       " + dns1() +
-            "\ndns 2:       " + dns2() +
-            "\n aliases:    " + getAliasList() +
-            "\nscript:      " + getPostConfigurationScript() +
-            "\nssh:         " + isSshEnabled() +
-            "\nexceptions:  " + isExceptionReportingEnabled() +
-            "\ntcp window:  " + isTcpWindowScalingEnabled() +
-            "\ninside in:   " + isInsideInsecureEnabled() +
-            "\noutside:     " + isOutsideAccessEnabled() + 
-            "\nrestriced:   " + isOutsideAccessRestricted() +
-            "\nrestriction: " + outsideNetwork() + "/" + outsideNetmask() +
-            "\nHTTPS:       " + httpsPort();
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append( "dhcp:        "   + isDhcpEnabled());
+        sb.append( "\nhostname:    " + hostname());
+        sb.append( "\nhost:        " + host());
+        sb.append( "\nnetmask:     " + netmask());
+        sb.append( "\ngateway:     " + gateway());
+        sb.append( "\ndns 1:       " + dns1());
+        sb.append( "\ndns 2:       " + dns2());
+        sb.append( "\n aliases:    " + getAliasList());
+        sb.append( "\nscript:      " + getPostConfigurationScript());
+        sb.append( "\nssh:         " + isSshEnabled());
+        sb.append( "\nexceptions:  " + isExceptionReportingEnabled());
+        sb.append( "\ntcp window:  " + isTcpWindowScalingEnabled());
+        sb.append( "\ninside in:   " + isInsideInsecureEnabled());
+        sb.append( "\noutside:     " + isOutsideAccessEnabled()); 
+        sb.append( "\nrestriced:   " + isOutsideAccessRestricted());
+        sb.append( "\nrestriction: " + outsideNetwork() + "/" + outsideNetmask());
+        sb.append( "\nHTTPS:       " + httpsPort());
+        sb.append( "\nadmin:       " + getIsOutsideAdministrationEnabled());
+        sb.append( "\nquarantine:  " + getIsOutsideQuarantineEnabled());
+        sb.append( "\nreporting:   " + getIsOutsideReportingEnabled());
 
+        return sb.toString();
     }
 
 }

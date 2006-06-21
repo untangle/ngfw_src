@@ -68,6 +68,11 @@ public class RemoteInternalSettings
     private final IPaddr currentPublicIPaddr;
     private final int    currentPublicPort;
     private final String currentPublicAddress;
+
+    private final boolean isOutsideAdministrationEnabled;
+    private final boolean isOutsideQuarantineEnabled;
+    private final boolean isOutsideReportingEnabled;
+
         
     public RemoteInternalSettings( RemoteSettings remote, IPaddr currentPublicIPaddr,
                                    int currentPublicPort, String realPublicAddress )
@@ -90,6 +95,9 @@ public class RemoteInternalSettings
         this.currentPublicIPaddr = currentPublicIPaddr;
         this.currentPublicPort   = currentPublicPort;
         this.currentPublicAddress = realPublicAddress;
+        this.isOutsideAdministrationEnabled = remote.getIsOutsideAdministrationEnabled();
+        this.isOutsideQuarantineEnabled = remote.getIsOutsideQuarantineEnabled();
+        this.isOutsideReportingEnabled = remote.getIsOutsideReportingEnabled();
     }
 
     /* Set the post configuration script */
@@ -197,6 +205,21 @@ public class RemoteInternalSettings
     {
         return this.currentPublicPort;
     }
+
+    public boolean getIsOutsideAdministrationEnabled()
+    {
+        return this.isOutsideAdministrationEnabled;
+    }
+
+    public boolean getIsOutsideQuarantineEnabled()
+    {
+        return this.isOutsideQuarantineEnabled;
+    }
+
+    public boolean getIsOutsideReportingEnabled()
+    {
+        return this.isOutsideReportingEnabled;
+    }
     
     public RemoteSettingsImpl toSettings()
     {
@@ -218,6 +241,10 @@ public class RemoteInternalSettings
         rs.setPublicPort( getPublicPort());
         rs.httpsPort( getPublicHttpsPort());
 
+        rs.setIsOutsideAdministrationEnabled( getIsOutsideAdministrationEnabled());
+        rs.setIsOutsideQuarantineEnabled( getIsOutsideQuarantineEnabled());
+        rs.setIsOutsideReportingEnabled( getIsOutsideReportingEnabled());
+
         return rs;
     }
 
@@ -233,6 +260,9 @@ public class RemoteInternalSettings
         sb.append( "\nrestriced:   " + isOutsideAccessRestricted());
         sb.append( "\nrestriction: " + outsideNetwork() + "/" + outsideNetmask());
         sb.append( "\nHTTPS:       " + getPublicHttpsPort());
+        sb.append( "\nadmin:       " + getIsOutsideAdministrationEnabled());
+        sb.append( "\nquarantine:  " + getIsOutsideQuarantineEnabled());
+        sb.append( "\nreporting:   " + getIsOutsideReportingEnabled());
         sb.append( "\npublic:      " + getIsPublicAddressEnabled() + " " + getCurrentPublicAddress() + 
                    " / " + getPublicAddress());
         sb.append( "\npublic:      " + getCurrentPublicIPaddr() + ":" + getCurrentPublicPort());

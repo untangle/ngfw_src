@@ -57,6 +57,10 @@ public class NetworkUtil
     public static final String DEFAULT_SPACE_NAME_NAT     = "private";
 
     public static final int    DEF_HTTPS_PORT = 443;
+
+    public static final boolean DEF_OUTSIDE_ADMINISTRATION = false;
+    public static final boolean DEF_OUTSIDE_QUARANTINE = true;
+    public static final boolean DEF_OUTSIDE_REPORTING = false;
     
     private static final String PRIVATE_NETWORK_STRINGS[] = 
     {

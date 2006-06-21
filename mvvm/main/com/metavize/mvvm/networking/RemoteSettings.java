@@ -112,4 +112,19 @@ public interface RemoteSettings
 
     /* Return true if the current settings have a public address */
     public boolean hasPublicAddress();
+
+
+    /** --- HTTPs access configuration.  This shouldn't be here, --- **/
+    /** --- rearchitect, networking is already far too large.    --- **/
+    public boolean getIsOutsideAdministrationEnabled();
+
+    public void setIsOutsideAdministrationEnabled( boolean newValue );
+
+    public boolean getIsOutsideQuarantineEnabled();
+    
+    public void setIsOutsideQuarantineEnabled( boolean newValue );
+
+    public boolean getIsOutsideReportingEnabled();
+    
+    public void setIsOutsideReportingEnabled( boolean newValue );
 }

@@ -231,7 +231,7 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
             }
             else{
                 if( status.isTcpWorking() ){
-                    result = "Warning!  DNS cannot be contacted.";
+                    result = "Warning!  Internet connectivity is working, DNS cannot be contacted.";
                 }
                 else{
                     result = "Warning!  DNS and internet cannot be contacted.";

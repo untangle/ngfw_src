@@ -74,6 +74,11 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     /* This is a script that gets executed after the bridge configuration runs */
     private String postConfigurationScript = DEF_POST_CONFIGURATION;
 
+    /** Parameters for how to handle certain web services outside of the local network. */
+    private boolean isOutsideAdministrationEnabled;
+    private boolean isOutsideQuarantineEnabled;
+    private boolean isOutsideReportingEnabled;
+
     public RemoteSettingsImpl()
     {
     }
@@ -297,6 +302,36 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
         return (( this.publicIPaddr != null ) &&  !this.publicIPaddr.isEmpty());
     }
 
+    public boolean getIsOutsideAdministrationEnabled()
+    {
+        return this.isOutsideAdministrationEnabled;
+    }
+
+    public void setIsOutsideAdministrationEnabled( boolean newValue )
+    {
+        this.isOutsideAdministrationEnabled = newValue;
+    }
+
+    public boolean getIsOutsideQuarantineEnabled()
+    {
+        return this.isOutsideQuarantineEnabled;
+    }
+    
+    public void setIsOutsideQuarantineEnabled( boolean newValue )
+    {
+        this.isOutsideQuarantineEnabled = newValue;
+    }
+
+    public boolean getIsOutsideReportingEnabled()
+    {
+        return this.isOutsideReportingEnabled;
+    }
+    
+    public void setIsOutsideReportingEnabled( boolean newValue )
+    {
+        this.isOutsideReportingEnabled = newValue;
+    }
+
     @Override
     public boolean equals(Object newObject)
     {
@@ -347,6 +382,18 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
         if (false == curNC.outsideNetmask().equals(newNC.outsideNetmask())) {
             return false;
         }
+        
+        if (curNC.getIsOutsideAdministrationEnabled() != newNC.getIsOutsideAdministrationEnabled()) {
+            return false;
+        }
+        
+        if (curNC.getIsOutsideQuarantineEnabled() != newNC.getIsOutsideQuarantineEnabled()) {
+            return false;
+        }
+
+        if (curNC.getIsOutsideReportingEnabled() != newNC.getIsOutsideReportingEnabled()) {
+            return false;
+        }
 
         return true;
     }
@@ -365,6 +412,9 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
         sb.append( "\nHTTPS:       " + httpsPort());
         sb.append( "\npublic:      " + getPublicAddress());
         sb.append( "\nhostname:    " + getHostname() + " [" + getIsHostnamePublic() + "]" );
+        sb.append( "\nadmin:       " + getIsOutsideAdministrationEnabled());
+        sb.append( "\nquarantine:  " + getIsOutsideQuarantineEnabled());
+        sb.append( "\nreporting:   " + getIsOutsideReportingEnabled());
         
         return sb.toString();
     }

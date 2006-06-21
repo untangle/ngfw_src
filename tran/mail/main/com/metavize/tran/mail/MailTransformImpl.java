@@ -107,7 +107,7 @@ public class MailTransformImpl extends AbstractTransform
 
     private static synchronized void deployWebAppIfRequired(Logger logger) {
         if(!s_deployedWebApp) {
-            if(MvvmContextFactory.context().appServerManager().loadInsecureApp("/quarantine", "quarantine")) {
+            if(MvvmContextFactory.context().appServerManager().loadQuarantineApp("/quarantine", "quarantine")) {
                 logger.debug("Deployed Quarantine web app");
             }
             else {

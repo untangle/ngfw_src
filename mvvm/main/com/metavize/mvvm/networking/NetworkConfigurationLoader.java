@@ -39,6 +39,7 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.script.ScriptRunner;
 import com.metavize.mvvm.tran.script.ScriptWriter;
+import com.metavize.mvvm.util.StringUtil;
 import org.apache.log4j.Logger;
 
 import static com.metavize.mvvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
@@ -88,6 +89,10 @@ class NetworkConfigurationLoader
 
     /* Property to determine the secondary https port */
     private static final String PROPERTY_HTTPS_PORT = "mvvm.https.port";
+    private static final String PROPERTY_OUTSIDE_ADMINISTRATION = "mvvm.https.administration";
+    private static final String PROPERTY_OUTSIDE_QUARANTINE     = "mvvm.https.quarantine";
+    private static final String PROPERTY_OUTSIDE_REPORTING      = "mvvm.https.reporting";
+
     private static final String PROPERTY_COMMENT    = "Properties for the networking configuration";
 
     private final Logger logger = Logger.getLogger( this.getClass());
@@ -124,7 +129,7 @@ class NetworkConfigurationLoader
     {
         loadFlags( remote );
         loadHostname( remote );
-        loadHttpsPort( remote );
+        loadHttpsProperties( remote );
         loadSshFlag( remote );
     }
 
@@ -345,8 +350,7 @@ class NetworkConfigurationLoader
         }
     }
 
-
-    private void loadHttpsPort( RemoteSettings remote )
+    private void loadHttpsProperties( RemoteSettings remote )
     {
         /* Try to read in the properties for the HTTPS port */
         remote.httpsPort( NetworkUtil.DEF_HTTPS_PORT );
@@ -354,19 +358,32 @@ class NetworkConfigurationLoader
         try {
             Properties properties = new Properties();
             File f = new File( PROPERTY_FILE );
+            StringUtil su = StringUtil.getInstance();
             if ( f.exists()) {
                 logger.debug( "Loading " + f );
                 properties.load( new FileInputStream( f ));
+                
+                remote.httpsPort( su.parseInt( properties.getProperty( PROPERTY_HTTPS_PORT ), 
+                                               NetworkUtil.DEF_HTTPS_PORT ));
 
-                String temp = properties.getProperty( PROPERTY_HTTPS_PORT );
-                if ( temp != null ) {
-                    remote.httpsPort( Integer.parseInt( temp ));
-                    logger.debug( "Found HTTPS port " + remote.httpsPort());
-                }
+                boolean value = su.parseBoolean( properties.getProperty( PROPERTY_OUTSIDE_ADMINISTRATION ), 
+                                                 NetworkUtil.DEF_OUTSIDE_ADMINISTRATION );
+                remote.setIsOutsideAdministrationEnabled( value );
+                
+                value = su.parseBoolean( properties.getProperty( PROPERTY_OUTSIDE_QUARANTINE ), 
+                                         NetworkUtil.DEF_OUTSIDE_QUARANTINE );
+                remote.setIsOutsideQuarantineEnabled( value );
+                
+                value = su.parseBoolean( properties.getProperty( PROPERTY_OUTSIDE_REPORTING ), 
+                                         NetworkUtil.DEF_OUTSIDE_REPORTING );
+                remote.setIsOutsideReportingEnabled( value );                
             }
         } catch ( Exception e ) {
             logger.warn( "Unable to load properties file: " + PROPERTY_FILE, e );
             remote.httpsPort( NetworkUtil.DEF_HTTPS_PORT );
+            remote.setIsOutsideQuarantineEnabled( NetworkUtil.DEF_OUTSIDE_ADMINISTRATION );
+            remote.setIsOutsideQuarantineEnabled( NetworkUtil.DEF_OUTSIDE_QUARANTINE );
+            remote.setIsOutsideQuarantineEnabled( NetworkUtil.DEF_OUTSIDE_REPORTING );
         }
     }
 
@@ -397,9 +414,9 @@ class NetworkConfigurationLoader
     void saveRemoteSettings( RemoteInternalSettings remote )
     {
         try {
-            saveHttpsPort( remote );
+            saveProperties( remote );
         } catch ( Exception e ) {
-            logger.error( "Exception saving https port", e );
+            logger.error( "Exception saving properties.", e );
         }
 
         try {
@@ -475,7 +492,7 @@ class NetworkConfigurationLoader
         sw.writeFile( FLAGS_CFG_FILE );
     }
 
-    private void saveHttpsPort( RemoteInternalSettings remote ) throws Exception
+    private void saveProperties( RemoteInternalSettings remote ) throws Exception
     {
 
         /* rebind the https port */
@@ -500,6 +517,14 @@ class NetworkConfigurationLoader
 
         /* Maybe only store this value if it has been changed */
         properties.setProperty( PROPERTY_HTTPS_PORT, String.valueOf( httpsPort ));
+        properties.setProperty( PROPERTY_OUTSIDE_ADMINISTRATION, 
+                                String.valueOf( remote.getIsOutsideAdministrationEnabled()));
+
+        properties.setProperty( PROPERTY_OUTSIDE_QUARANTINE, 
+                                String.valueOf( remote.getIsOutsideQuarantineEnabled()));
+
+        properties.setProperty( PROPERTY_OUTSIDE_REPORTING, 
+                                String.valueOf( remote.getIsOutsideReportingEnabled()));
 
         try {
             logger.debug( "Storing properties into: " + PROPERTY_FILE + "[" + httpsPort + "]" );
