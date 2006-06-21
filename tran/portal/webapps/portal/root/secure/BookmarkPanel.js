@@ -2,129 +2,67 @@
 // All rights reserved.
 
 function BookmarkPanel(parent, className, posStyle) {
+
    if (0 == arguments.length) {
       return;
    }
 
-   var header = [];
-   var hi = new DwtListHeaderItem("name", "Name", null, 200, true, true, true);
-   hi.memberName = "name";
-   header.push(hi);
-   hi = new DwtListHeaderItem("application", "Application Name", null, 100, true, true, true);
-   hi.memberName = "app";
-   header.push(hi);
-   hi = new DwtListHeaderItem("target", "Target", null, 200, true, true, true);
-   hi.memberName = "target";
-   header.push(hi);
+   DwtComposite.call(this, parent, className, posStyle);
 
-   DwtListView.call(this, parent, className, posStyle, header, true);
+   this._toolbar = this._makeToolbar();
+   this._bookmarkList = new BookmarkList(this, null, DwtControl.ABSOLUTE_STYLE);
+
+   this.addControlListener(new AjxListener(this, this._controlListener));
+
+   this._layout();
 }
 
-BookmarkPanel.prototype = new DwtListView();
+BookmarkPanel.prototype = new DwtComposite();
 BookmarkPanel.prototype.constructor = BookmarkPanel;
 
 // public methods -------------------------------------------------------------
 
 BookmarkPanel.prototype.refresh = function()
 {
-   var cb = new AjxCallback(this, this._bookmarkListCallback, { })
-
-   AjxRpc.invoke(null, "secure/bookmark?command=ls", null, cb , true);
+   this._bookmarkList.refresh();
 }
 
-// internal methods -----------------------------------------------------------
+// private methods ------------------------------------------------------------
 
-BookmarkPanel.prototype._setListingXml = function(dom)
+BookmarkPanel.prototype._makeToolbar = function() {
+   var toolbar = new DwtToolBar(this, "VerticalToolBar", DwtControl.ABSOLUTE_STYLE, 2, 2, DwtToolBar.VERT_STYLE);
+
+   var b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
+   b.setText("Refresh");
+   b.setToolTipContent("Display latest contents");
+   b.addSelectionListener(new AjxListener(this, this._refreshButtonListener));
+
+   b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
+   b.setText("New Bookmark");
+   b.setToolTipContent("Add a new bookmark");
+   this.addBookmarkButton = b;
+
+   b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
+   b.setText("Delete");
+   b.setToolTipContent("Delete selected files");
+   this.deleteBookmarkButton = b;
+
+   return toolbar;
+}
+
+BookmarkPanel.prototype._layout = function()
 {
-   var root = dom.getElementsByTagName("bookmarks")[0];
+   var size = this.getSize();
 
-   var children = root.childNodes;
-
-   var listing = new AjxVector();
-
-   for (var i = 0; i < children.length; i++) {
-      var child = children[i];
-
-      if ("bookmark" == child.tagName) {
-         listing.add(new Bookmark(child.getAttribute("id"),
-                                  child.getAttribute("name"),
-                                  child.getAttribute("app"),
-                                  child.getAttribute("target")));
-      }
-   }
-
-   this.set(listing);
+   var x = 0;
+   DBG.println("TOOLBAR AT: (0, 0)");;
+   this._toolbar.setLocation(0, 0);
+   x += this._toolbar.getSize().x;
+   DBG.println("TOOLBAR AT: (" + x + ", 0, ", + size.x - x + ", " + size.y + ")");
+   this._bookmarkList.setBounds(x, 0, size.x - x, size.y);
 }
 
-// DwtListView methods --------------------------------------------------------
-
-BookmarkPanel.prototype._createItemHtml = function(item) {
-   var div = document.createElement("div");
-   var base = "Row";
-   div._styleClass = base;
-   div._selectedStyleClass = [base, DwtCssStyle.SELECTED].join("-");
-
-   this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
-   div.className = div._styleClass;
-
-   var htmlArr = new Array();
-   var idx = 0;
-
-    // Table
-   htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0";
-   htmlArr[idx++] = this._noMaximize ? ">" : " width=100%>";
-
-    // Row
-   htmlArr[idx++] = "<tr>";
-
-    // Data
-   for (var j = 0; j < this._headerList.length; j++) {
-      var col = this._headerList[j];
-
-      if (!col._visible) {
-         continue;
-      }
-
-      htmlArr[idx++] = "<td";
-      var width = AjxEnv.isIE ? (col._width + 4) : col._width;
-      htmlArr[idx++] = width ? (" width=" + width + ">") : ">";
-        // add a div to force clipping (TD's dont obey it)
-      htmlArr[idx++] = "<div";
-      htmlArr[idx++] = width ? " style='width: " + width + "'>" : ">";
-
-      var value = item[col.memberName];
-      htmlArr[idx++] = (value || "") + "</div></td>";
-   }
-
-   htmlArr[idx++] = "</tr></table>";
-
-   div.innerHTML = htmlArr.join("");
-   return div;
-}
-
-BookmarkPanel.prototype._sortColumn = function(col, asc)
+BookmarkPanel.prototype._controlListener = function()
 {
-   this._lastSortCol = col;
-   this._lastSortAsc = asc;
-
-   var fn = function(a, b) {
-      av = a[col.memberName];
-      bv = b[col.memberName];
-
-      return (asc ? 1 : -1) * (a < b ? -1 : (a > b ? 1 : 0));
-   }
-
-   this.getList().sort(fn);
-   delete fn;
-
-   this.setUI(0);
-}
-
-// callbacks ------------------------------------------------------------------
-
-BookmarkPanel.prototype._bookmarkListCallback = function(obj, results)
-{
-      // XXX if error, show login dialog
-   this._setListingXml(results.xml);
-   this.setUI(1);
+   this._layout();
 }

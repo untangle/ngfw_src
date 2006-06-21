@@ -7,7 +7,7 @@ function NavigationBar(parent)
       return;
    }
 
-   DwtToolBar.call(this, parent, "ToolBar", DwtControl.ABSOLUTE_STYLE, 2);
+   DwtToolBar.call(this, parent, "HorizontalToolBar", DwtControl.ABSOLUTE_STYLE, 2);
 
    this._home = new DwtButton(this);
    this._home.setImage("Home"); // XXX change to "Home"

@@ -19,6 +19,7 @@
 <link rel="stylesheet" type="text/css" href="/AjaxTk/common.css"/>
 <link rel="stylesheet" type="text/css" href="/AjaxTk/dwt.css"/>
 <link rel="stylesheet" type="text/css" href="<%=sp%>/portal.css"/>
+<link rel="stylesheet" type="text/css" href="/metavize.css"/>
 
 <script type="text/javascript" src="/AjaxTk/I18nMsg.js"></script>
 <script type="text/javascript" src="/AjaxTk/AjxMsg.js"></script>
@@ -30,6 +31,7 @@
 <script type="text/javascript" src="<%=sp%>/Application.js"></script>
 <script type="text/javascript" src="<%=sp%>/ApplicationIframe.js"></script>
 <script type="text/javascript" src="<%=sp%>/Bookmark.js"></script>
+<script type="text/javascript" src="<%=sp%>/BookmarkList.js"></script>
 <script type="text/javascript" src="<%=sp%>/BookmarkManagerDialog.js"></script>
 <script type="text/javascript" src="<%=sp%>/BookmarkManagerPanel.js"></script>
 <script type="text/javascript" src="<%=sp%>/BookmarkPanel.js"></script>

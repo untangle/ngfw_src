@@ -25,10 +25,10 @@ function Portal(shell) {
    var l = new AjxListener(this, this._bookmarkSelectionListener);
    this._portalPanel.addSelectionListener(l);
    this._portalPanel.zShow(true);
-   var l = new AjxListener(this, this._addBookmarkButtonListener);
-   this._portalPanel.addBookmarkButton.addSelectionListener(l);
-   var l = new AjxListener(this, this._deleteButtonListener)
-   this._portalPanel.deleteBookmarkButton.addSelectionListener(l);
+   //var l = new AjxListener(this, this._addBookmarkButtonListener);
+   //this._portalPanel.addBookmarkButton.addSelectionListener(l);
+   //var l = new AjxListener(this, this._deleteButtonListener)
+   //this._portalPanel.deleteBookmarkButton.addSelectionListener(l);
 
    this.showPortal();
 
