@@ -248,6 +248,13 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    editedComponent.setOpaque(true);
 	    ((JTextField)editedComponent).setText("UNSUPPORTED EDITOR for: " + value.getClass());
 	}
+	if( editedComponent == jTextField ){
+	    final JTextField selectedJTextField = jTextField;
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		selectedJTextField.requestFocusInWindow();
+		selectedJTextField.selectAll();
+	    }});
+	}
 	return editedComponent;
     }
     
