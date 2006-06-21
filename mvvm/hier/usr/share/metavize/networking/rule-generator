@@ -411,7 +411,11 @@ function antisubscribeRules() {
     ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p udp -m mark --mark 0/${MARK_ANTISUB} \
         --source-port ${DHCP_PORT_RANGE} --destination-port ${DHCP_PORT_RANGE} \
         -j MARK --set-mark ${MARK_ANTISUB}
-        
+
+    ## Antisubscribe to port 137 on the inside, this is for samba broadcasts
+    ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p udp --source-port 137 \
+        -m mark --mark ${MARK_INSIDE_INTF}/$(( ${MARK_ANTISUB} | ${MARK_INSIDE_INTF} ))  \
+        -j MARK --set-mark ${MARK_ANTISUB}
 }
 
 function antisubscribeLocal() {
