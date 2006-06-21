@@ -86,7 +86,7 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
         
         if( !validateOnly ){
 	    try{
-		InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Final Configuration...");
+		InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Password and Timezone...");
 		
 		// SEND FINAL SETTINGS
 		AdminSettings adminSettings = Util.getAdminManager().getAdminSettings();
@@ -97,23 +97,6 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
 		Util.getAdminManager().setAdminSettings(adminSettings);
 		Util.getAdminManager().setTimeZone( TimeZone.getTimeZone(timezone) );
 
-		// UPDATE NAT CONFIG
-		try{
-		    if( InitialSetupRoutingJPanel.getNatEnabled() ){
-			if( InitialSetupRoutingJPanel.getNatChanged() )
-			    MvvmRemoteContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
-			Util.getNetworkManager().setWizardNatEnabled(InitialSetupRoutingJPanel.getAddress(),
-								     InitialSetupRoutingJPanel.getNetmask());
-		    }
-		    else{
-			MvvmRemoteContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
-			Util.getNetworkManager().setWizardNatDisabled();
-		    }
-		}
-		catch(Exception f){
-		    Util.handleExceptionNoRestart("Normal termination:",f);
-		}
-		
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
 	    }
 	    catch(Exception e){

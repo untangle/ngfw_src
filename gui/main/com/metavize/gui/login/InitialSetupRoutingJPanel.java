@@ -35,8 +35,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 	natEnabledJRadioButton.requestFocus();
 	addressJTextField.setText(INIT_ADDRESS);
 	netmaskJTextField.setText(INIT_NETMASK);
-	new AutoDetectThread();
-	
+	new AutoDetectThread();	
     }
     
     private class AutoDetectThread extends Thread {
@@ -48,7 +47,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 	    InitialSetupWizard.getInfiniteProgressJComponent().startLater("Auto-Detecting Usage...");
             try{
                 NetworkingConfiguration nc = Util.getNetworkingManager().get();
-
+		publicAddress = nc.host();
 		final boolean isPrivateNetwork = NetworkUtil.getInstance().isPrivateNetwork(nc.host(),nc.netmask());
 		SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		    if(isPrivateNetwork){
@@ -78,6 +77,8 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
     private static IPaddr natAddress;
     public static IPaddr getNetmask(){ return natNetmask; }
     private static IPaddr natNetmask;
+    public static IPaddr getPublicAddress(){ return publicAddress; }
+    private static IPaddr publicAddress;
 
     private Exception exception;
     public void doSave(Object settings, boolean validateOnly) throws Exception {

@@ -56,6 +56,7 @@ public class RemoteRebootJPanel extends JPanel implements ActionListener {
 				  "You are about to manually reboot EdgeGuard.  This will interrupt normal network operations" +
 				  " until EdgeGuard is finished automatically restarting.  This may take up to several minutes to complete.",
 				  "Manual Reboot Warning", "Warning");
+	warningJDialog.setVisible(true);
 	if( warningJDialog.isProceeding() ){
 	    try{
 		Util.getMvvmContext().rebootBox();

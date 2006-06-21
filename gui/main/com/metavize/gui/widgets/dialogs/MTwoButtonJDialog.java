@@ -36,11 +36,8 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
         setTitle(title);
         labelJLabel.setText(subtitle);
         messageJLabel.setText("<html><center>" + warning + "</center></html>");
-        cancelJButton.setIcon(null);
-        cancelJButton.setText("<html><b>Cancel</b></html>");
-        proceedJButton.setIcon(null);
-        proceedJButton.setText("<html><b>Continue</b></html>");
-        setVisible(true);
+	setCancelText("<html><b>Cancel</b></html>");
+	setProceedText("<html><b>Continue</b></html>");
     }
 
     public MTwoButtonJDialog(Frame topLevelFrame, String applianceName, String warning, String title, String subtitle){
@@ -49,11 +46,8 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
         setTitle(title);
         labelJLabel.setText(subtitle);
         messageJLabel.setText("<html><center>" + warning + "</center></html>");
-        cancelJButton.setIcon(null);
-        cancelJButton.setText("<html><b>Cancel</b></html>");
-        proceedJButton.setIcon(null);
-        proceedJButton.setText("<html><b>Continue</b></html>");
-        setVisible(true);
+	setCancelText("<html><b>Cancel</b></html>");
+	setProceedText("<html><b>Continue</b></html>");
     }
 
     public MTwoButtonJDialog(Dialog topLevelDialog) {
@@ -70,6 +64,16 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
         initComponents();
         addWindowListener(this);
 	setBounds( Util.generateCenteredBounds(window, this.getWidth(), this.getHeight()) );
+    }
+
+    public void setProceedText(String text){
+	proceedJButton.setText(text);
+	proceedJButton.setIcon(null);
+    }
+
+    public void setCancelText(String text){
+	cancelJButton.setText(text);
+	cancelJButton.setIcon(null);
     }
 
     private void initComponents() {//GEN-BEGIN:initComponents

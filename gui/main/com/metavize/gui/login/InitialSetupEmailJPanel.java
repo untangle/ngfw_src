@@ -19,6 +19,7 @@ import com.metavize.mvvm.*;
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
+import com.metavize.mvvm.client.MvvmRemoteContextFactory;
 import com.metavize.gui.configuration.EmailConnectivityTestJDialog;
 
 import java.util.Arrays;
@@ -114,6 +115,34 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 		Util.getAdminManager().setMailSettings( mailSettings );
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);		
             }
+	    catch(Exception e){
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
+		Util.handleExceptionNoRestart("Error sending data", e);
+		throw new Exception("A network communication error occurred.  Please retry.");
+	    }
+
+	    try{
+		InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Final Configuration...");
+		
+		// UPDATE NAT CONFIG
+		try{
+		    if( InitialSetupRoutingJPanel.getNatEnabled() ){
+			if( InitialSetupRoutingJPanel.getNatChanged() )
+			    MvvmRemoteContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
+			Util.getNetworkManager().setWizardNatEnabled(InitialSetupRoutingJPanel.getAddress(),
+								     InitialSetupRoutingJPanel.getNetmask());
+		    }
+		    else{
+			MvvmRemoteContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
+			Util.getNetworkManager().setWizardNatDisabled();
+		    }
+		}
+		catch(Exception f){
+		    Util.handleExceptionNoRestart("Normal termination:",f);
+		}
+		
+		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
+	    }
 	    catch(Exception e){
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
 		Util.handleExceptionNoRestart("Error sending data", e);
