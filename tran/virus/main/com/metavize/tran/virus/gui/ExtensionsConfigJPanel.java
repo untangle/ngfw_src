@@ -80,7 +80,7 @@ class ExtensionTableModel extends MSortedTableModel<Object>{
             newElem = (StringRule) rowVector.elementAt(5);
             newElem.setString( (String) rowVector.elementAt(2) );
             newElem.setLive( (Boolean) rowVector.elementAt(3) );
-            newElem.setCategory( (String) rowVector.elementAt(4) );
+            newElem.setName( (String) rowVector.elementAt(4) );
             elemList.add(newElem);	    
         }
 
@@ -105,7 +105,7 @@ class ExtensionTableModel extends MSortedTableModel<Object>{
             tempRow.add( rowIndex );
             tempRow.add( newElem.getString() );
             tempRow.add( newElem.isLive() );
-            tempRow.add( newElem.getCategory() );
+            tempRow.add( newElem.getName() );
 	    tempRow.add( newElem );
             allRows.add( tempRow );
         }
