@@ -741,7 +741,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
     </copy>
 
     <exec executable="sh">
-      <arg line='-c "if ! [ -a ${dist.mvvm.log} ] ; then ln -fs ${build.prefix}/${suffix.log}/ ${dist.mvvm.log} ; fi "'/>
+      <arg line='-c "if ! [ -h ${dist.mvvm.log} ] ; then ln -fs ${build.prefix}/${suffix.log}/ ${dist.mvvm.log} ; fi "'/>
     </exec>
 
     <chmod perm="ugo+rx">
