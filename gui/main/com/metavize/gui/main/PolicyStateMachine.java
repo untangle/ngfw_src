@@ -735,7 +735,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 List<MackageDesc> purchasedMackageDescs = computeNewMackageDescs(currentUninstalledMackages,
 										 originalUninstalledMackages);
                 for( MackageDesc purchasedMackageDesc : purchasedMackageDescs ){
-                    if( isMackageStoreItem(purchasedMackageDesc) ){
+		    if( isMackageTrial(purchasedMackageDesc) ){
+			SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+			    mTransformJButton.setProgress("", -1);
+			}});
+		    }
+                    else if( isMackageStoreItem(purchasedMackageDesc) ){
                         removeFromStore(purchasedMackageDesc);
                     }
                 }
@@ -786,6 +791,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 		    }
 		}
             }
+	    finally{
+		mTransformJButton.setIsTrial(false);
+	    }
         }
     }
     private List<MackageDesc> computeNewMackageDescs(MackageDesc[] originalInstalledMackages, MackageDesc[] currentInstalledMackages){
@@ -1461,6 +1469,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     }
     private boolean isMackageStoreItem(MackageDesc mackageDesc){
         if( mackageDesc.getName().endsWith("-storeitem") )
+            return true;
+        else
+            return false;
+    }
+    private boolean isMackageTrial(MackageDesc mackageDesc){
+        if( mackageDesc.getName().endsWith("-trial30-storeitem") )
             return true;
         else
             return false;
