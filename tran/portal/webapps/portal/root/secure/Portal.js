@@ -130,6 +130,8 @@ Portal.prototype.refresh = function()
 
 Portal.prototype.layout = function()
 {
+   DBG.println("Portal.layout");
+
    var size = this._shell.getSize();
    var width = size.x;
    var height = size.y;
@@ -141,6 +143,7 @@ Portal.prototype.layout = function()
    var size = this._navBar.getSize();
    y += size.y;
 
+   DBG.println("SET BOUNDS(" + x + ", " + y + ", " + width + ", " + (height - y) + ")");
    this._mainPanel.setBounds(x, y, width, height - y);
 }
 

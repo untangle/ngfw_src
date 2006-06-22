@@ -9,7 +9,7 @@ function ApplicationIframe(parent, url)
 
    DwtComposite.call(this, parent, "ApplicationIframe", DwtControl.ABSOLUTE_STYLE);
 
-   this.setContent("<iframe class='kaka' src='" + url + "'></iframe>");
+   this.setContent("<iframe src='" + url + "'></iframe>");
 }
 
 ApplicationIframe.prototype = new DwtComposite();
