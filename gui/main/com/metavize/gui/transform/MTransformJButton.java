@@ -87,7 +87,12 @@ public class MTransformJButton extends JButton {
 
         //DISPLAY NAME
         nameJLabel = new JLabel();
-        nameJLabel.setText( "<html><b><center>" + Util.wrapString(mackageDesc.getDisplayName(), 20) + "</center></b></html>");
+	String tempName;
+	if(isTrial)
+	    tempName = mackageDesc.getDisplayName() + "<br>(30 Day Trial)";
+	else
+	    tempName = mackageDesc.getDisplayName();
+        nameJLabel.setText( "<html><b><center>" + Util.wrapString(tempName, 20) + "</center></b></html>");
         nameJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         nameJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         nameJLabel.setFocusable(false);
@@ -159,7 +164,7 @@ public class MTransformJButton extends JButton {
     public String getDisplayName(){
 	String displayName = mackageDesc.getDisplayName();
 	if(isTrial)
-	    displayName += "<br>(30 Day Trial)";
+	    displayName += " (30 Day Trial)";
 	return displayName;
     }
     public int    getViewPosition(){ return mackageDesc.getViewPosition(); }
