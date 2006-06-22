@@ -58,7 +58,7 @@ public class MvvmTransformHandler extends DefaultHandler
     {
         return new TransformDesc(tid, name, className, guiClassName,
                                  transformBase, exports, parents,
-                                 singleInstance, displayName, mackageDesc);
+                                 singleInstance, displayName);
     }
 
     // DefaultHandler methods -------------------------------------------------

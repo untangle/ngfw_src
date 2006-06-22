@@ -54,13 +54,13 @@ class TransformContextImpl implements TransformContext
     private final Tid tid;
     private final TransformPreferences transformPreferences;
     private final TransformPersistentState persistentState;
-    private final MackageDesc mackageDesc;
     private final URLClassLoader classLoader;
     private final boolean isNew;
 
     private TransformBase transform;
     private SessionFactory sessionFactory;
     private TransactionRunner transactionRunner;
+    private String mackageName;
 
     private final TransformManagerImpl transformManager = TransformManagerImpl
         .manager();
@@ -68,7 +68,7 @@ class TransformContextImpl implements TransformContext
         .toolboxManager();
 
     TransformContextImpl(URLClassLoader classLoader, TransformDesc tDesc,
-                         MackageDesc mackageDesc, boolean isNew)
+                         String mackageName, boolean isNew)
         throws DeployException
     {
         if (null != tDesc.getTransformBase()) {
@@ -80,7 +80,7 @@ class TransformContextImpl implements TransformContext
 
         this.transformDesc = tDesc;
         this.tid = transformDesc.getTid();
-        this.mackageDesc = mackageDesc;
+	this.mackageName = mackageName;
         this.isNew = isNew;
 
         checkInstanceCount(transformDesc);
@@ -93,7 +93,7 @@ class TransformContextImpl implements TransformContext
 
 
             persistentState = new TransformPersistentState
-                (tid, mackageDesc.getName(), pKey);
+                (tid, mackageName, pKey);
 
             transformPreferences = new TransformPreferences(tid);
 
@@ -153,7 +153,7 @@ class TransformContextImpl implements TransformContext
             if (isNew) {
                 transform.initializeSettings();
                 transform.init(args);
-                boolean enabled = toolboxManager.isEnabled(mackageDesc.getName());
+                boolean enabled = toolboxManager.isEnabled(mackageName);
                 if (!enabled) {
                     transform.disable();
                 }
@@ -209,7 +209,7 @@ class TransformContextImpl implements TransformContext
 
     public MackageDesc getMackageDesc()
     {
-        return mackageDesc;
+        return toolboxManager.mackageDesc(mackageName);
     }
 
     public boolean runTransaction(TransactionWork tw)
@@ -321,7 +321,7 @@ class TransformContextImpl implements TransformContext
 
             persistentState = (TransformPersistentState)q.uniqueResult();
 
-            if (!toolboxManager.isEnabled(mackageDesc.getName())) {
+            if (!toolboxManager.isEnabled(mackageName)) {
                 persistentState.setTargetState(TransformState.DISABLED);
                 s.saveOrUpdate(persistentState);
             } else if (TransformState.DISABLED == persistentState.getTargetState()) {

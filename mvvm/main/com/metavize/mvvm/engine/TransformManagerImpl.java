@@ -355,7 +355,7 @@ class TransformManagerImpl implements TransformManager
                     // exported resources, must restart everything
                     for (Tid tid : tids.keySet()) {
                         TransformDesc td = tids.get(tid).getTransformDesc();
-                        MackageDesc md = td.getMackageDesc();
+                        MackageDesc md = tids.get(tid).getMackageDesc();
                         if (!md.getInstalledVersion().equals(availVer)) {
                             logger.info("new version available: " + name);
                             unload(tid);
@@ -366,7 +366,7 @@ class TransformManagerImpl implements TransformManager
                 } else {
                     for (Tid tid : mkgTids) {
                         TransformDesc td = tids.get(tid).getTransformDesc();
-                        MackageDesc md = td.getMackageDesc();
+                        MackageDesc md = tids.get(tid).getMackageDesc();
                         if (!md.getInstalledVersion().equals(availVer)) {
                             logger.info("new version available: " + name);
                             unload(tid);
@@ -453,7 +453,7 @@ class TransformManagerImpl implements TransformManager
                         TransformContextImpl tc = null;
                         try {
                             tc = new TransformContextImpl(cl, tDesc,
-                                                          mackageDesc, false);
+                                                          mackageDesc.getName(), false);
                             tids.put(tid, tc);
                             tc.init(args);
                             logger.info("Restarted: " + tid);
@@ -596,7 +596,7 @@ class TransformManagerImpl implements TransformManager
             URLClassLoader cl = getClassLoader(tDesc, resUrls);
 
             TransformContextImpl tc = new TransformContextImpl
-                (cl, tDesc, mackageDesc, true);
+                (cl, tDesc, mackageDesc.getName(), true);
             tids.put(tid, tc);
             try {
                 tc.init(args);
