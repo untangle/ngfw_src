@@ -178,7 +178,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 	viewSelector.addActionListener(this);
         lastRackScrollPosition = new HashMap<Policy,Integer>();
         // THREAD QUEUES & THREADS /////////
-        purchaseBlockingQueue = new ArrayBlockingQueue<MTransformJButton>(1000);
+        purchaseBlockingQueue = new ArrayBlockingQueue<MTransformJButton>(100);
         moveFromStoreToToolboxThread = new MoveFromStoreToToolboxThread();
 	actionJTabbedPane.setSelectedIndex(0);
         storeModelThread = new StoreModelThread();
@@ -609,11 +609,15 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 
     private class StoreMessageVisitor implements ToolboxMessageVisitor {
         public void visitMackageInstallRequest(MackageInstallRequest req) {
-            String mackageName = req.getMackageName();
+            String purchasedMackageName = req.getMackageName();
             MTransformJButton mTransformJButton = null;
-            for( MTransformJButton purchasedButton : storeMap.values() ){
-                if(purchasedButton.getName().equals(mackageName)){
-                    mTransformJButton = purchasedButton;
+            for( MTransformJButton storeButton : storeMap.values() ){
+		String storeButtonName = storeButton.getName();
+		storeButtonName = storeButtonName.substring(0, storeButtonName.indexOf('-'));
+                if( purchasedMackageName.startsWith(storeButtonName) ){
+                    mTransformJButton = storeButton;
+		    if( purchasedMackageName.endsWith(TRIAL_EXTENSION) )
+			mTransformJButton.setIsTrial(true);
                     break;
                 }
             }
@@ -667,21 +671,20 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         }
         private void purchase(final MTransformJButton mTransformJButton) throws InterruptedException {
             try{
-                // DO THE DOWNLOAD
+                //// MAKE SURE NOT PREVIOUSLY INSTALLED AS PART OF A BUNDLE
                 MackageDesc[] originalUninstalledMackages = Util.getToolboxManager().uninstalled();
-                MackageDesc[] currentUninstalledMackages = null;
-                //// MAKE SURE WE HAVENT ALREADY IMPLICITLY DOWNLOADED THIS PACKAGE AS PART OF A PREVIOUS BUNDLE
-                boolean found = false;
+                boolean installed = true;
                 for( MackageDesc mackageDesc : originalUninstalledMackages ){
                     if(mTransformJButton.getName().equals(mackageDesc.getName())){
-                        found = true;
+                        installed = false;
                         break;
                     }
                 }
-                if( !found )
-                    return; // BECAUSE THE PACKAGE WAS ALREADY PURCHASED
-                MackageDesc[] originalInstalledMackages = Util.getToolboxManager().installed();
-                MackageDesc[] currentInstalledMackages = null;
+                if( installed )
+                    return;
+
+		//// DO THE DOWNLOAD
+                MackageDesc[] originalInstalledMackages = Util.getToolboxManager().installed(); // for use later
                 long key = Util.getToolboxManager().install(mTransformJButton.getName());
                 com.metavize.gui.util.Visitor visitor = new com.metavize.gui.util.Visitor(mTransformJButton);
                 while (true) {
@@ -707,7 +710,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     mTransformJButton.setProgress("Installing...", 101);
                 }});
                 boolean mackageInstalled = false;
-                while( !mackageInstalled && ((System.currentTimeMillis() - installStartTime) < INSTALL_CHECK_TIMEOUT_MILLIS) ){
+                MackageDesc[] currentInstalledMackages = null;
+                while( !mackageInstalled &&
+		       ((System.currentTimeMillis() - installStartTime) < INSTALL_CHECK_TIMEOUT_MILLIS) ){
                     currentInstalledMackages = Util.getToolboxManager().installed();
                     for( MackageDesc mackageDesc : currentInstalledMackages ){
                         if(mackageDesc.getName().equals(mTransformJButton.getName())){
@@ -726,8 +731,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 Thread.currentThread().sleep(INSTALL_FINAL_PAUSE_MILLIS);
 
                 // REMOVE FROM STORE
-                currentUninstalledMackages = Util.getToolboxManager().uninstalled();
-                List<MackageDesc> purchasedMackageDescs = computeNewMackageDescs(currentUninstalledMackages, originalUninstalledMackages);
+		MackageDesc[] currentUninstalledMackages = Util.getToolboxManager().uninstalled();
+                List<MackageDesc> purchasedMackageDescs = computeNewMackageDescs(currentUninstalledMackages,
+										 originalUninstalledMackages);
                 for( MackageDesc purchasedMackageDesc : purchasedMackageDescs ){
                     if( isMackageStoreItem(purchasedMackageDesc) ){
                         removeFromStore(purchasedMackageDesc);
@@ -739,11 +745,13 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 		    Util.getMMainJFrame().toFront();
 		}});
                 // ADD TO TOOLBOX
-                List<MackageDesc> newMackageDescs = computeNewMackageDescs(originalInstalledMackages, currentInstalledMackages);
+                List<MackageDesc> newMackageDescs = computeNewMackageDescs(originalInstalledMackages,
+									   currentInstalledMackages);
                 for( MackageDesc newMackageDesc : newMackageDescs ){
                     if( !isMackageStoreItem(newMackageDesc) && isMackageVisible(newMackageDesc) ){
                         MTransformJButton newMTransformJButton = new MTransformJButton(newMackageDesc);
-                        if( newMTransformJButton.getMackageDesc().isUtil() || newMTransformJButton.getMackageDesc().isService()){
+                        if( newMTransformJButton.getMackageDesc().isUtil() 
+			    || newMTransformJButton.getMackageDesc().isService()){
                             addToToolbox(null,newMTransformJButton.getMackageDesc(),false,false);
                         }
                         else if(newMTransformJButton.getMackageDesc().isSecurity()){
@@ -755,8 +763,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         }
 
                         revalidateToolboxes();
-                        // FOCUS AND HIGHLIGHT IN CURRENT TOOLBOX
-                        focusInToolbox(newMTransformJButton, true);
+                        focusInToolbox(newMTransformJButton, true); // focus and highlight in current toolbox
                     }
                 }
             }

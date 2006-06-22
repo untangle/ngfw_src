@@ -74,7 +74,7 @@ public class Visitor implements ProgressVisitor{
                 ((JProgressBar)visualizer).setValue( progressIndex );
             }
             else{
-                progressString = "Dload "  + dp.getSpeed();
+                progressString = "Get @ "  + dp.getSpeed();
                 ((MTransformJButton)visualizer).setProgress(progressString, progressIndex);
             }
         }});

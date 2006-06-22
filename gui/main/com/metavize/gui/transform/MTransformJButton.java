@@ -35,6 +35,7 @@ public class MTransformJButton extends JButton {
     private JLabel organizationIconJLabel;
     private JLabel descriptionIconJLabel;
     private String toolTipString;
+    private boolean isTrial = false;
 
     private static Color COLOR_NAME_DISABLED = new Color(140,140,140);
 
@@ -142,13 +143,25 @@ public class MTransformJButton extends JButton {
         return newMTransformJButton;
     }
 
+    public boolean getIsTrial(){ return isTrial; }
+    public void setIsTrial(boolean isTrial){ this.isTrial = isTrial; }
 
     // CONVENIENCE WRAPPERS FOR MACKAGE /////////
     public MackageDesc getMackageDesc(){ return mackageDesc; }
     public String getFullDescription(){ return new String( mackageDesc.getLongDescription() ); }
     public String getShortDescription(){ return new String( mackageDesc.getShortDescription() ); }
-    public String getName(){ return mackageDesc.getName(); }
-    public String getDisplayName(){ return mackageDesc.getDisplayName(); }
+    public String getName(){
+	String name = mackageDesc.getName();
+	if(isTrial)
+	    name = name.substring(0,name.indexOf('-')) + "-trial30-storeitem";
+	return name;
+    }
+    public String getDisplayName(){
+	String displayName = mackageDesc.getDisplayName();
+	if(isTrial)
+	    displayName += "<br>(30 Day Trial)";
+	return displayName;
+    }
     public int    getViewPosition(){ return mackageDesc.getViewPosition(); }
     public String getPrice(){ return mackageDesc.getPrice(); }
     public String getWebpage(){ return mackageDesc.getWebsite(); }
