@@ -79,7 +79,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         this.transformContext = transformContext;
 	this.transformDesc = transformDesc;
 	transform = transformContext.transform();
-	mackageDesc = transformDesc.getMackageDesc();
+	mackageDesc = transformContext.getMackageDesc();
 	tid = transformDesc.getTid();
         controlsLoaded = false;
         showControlsThread = new ShowControlsThread();
