@@ -318,8 +318,8 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 jProgressBar.setStringPainted(true);
                 add(jProgressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 39, -1, -1));
 
-                messageTextJLabel.setFont(new java.awt.Font("Arial", 0, 12));
-                messageTextJLabel.setForeground(new java.awt.Color(124, 123, 123));
+                messageTextJLabel.setFont(new java.awt.Font("Arial", 1, 12));
+                messageTextJLabel.setForeground(new java.awt.Color(68, 91, 255));
                 messageTextJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 messageTextJLabel.setText("SuperTransform");
                 messageTextJLabel.setDoubleBuffered(true);
@@ -463,7 +463,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         protected javax.swing.JLabel descriptionTextJLabel;
         private javax.swing.JPanel effectsJPanel;
         private javax.swing.JProgressBar jProgressBar;
-        private javax.swing.JLabel messageTextJLabel;
+        protected javax.swing.JLabel messageTextJLabel;
         protected javax.swing.JLabel nbPowerOnHintJLabel;
         private javax.swing.ButtonGroup onOffbuttonGroup;
         protected javax.swing.JLabel organizationIconJLabel;
