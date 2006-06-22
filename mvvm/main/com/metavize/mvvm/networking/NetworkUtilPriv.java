@@ -467,6 +467,7 @@ class NetworkUtilPriv extends NetworkUtil
                 case 2:
                     settings.setDns2( dnsServers.get( 1 ));
                     
+                    /* fallthrough */
                 case 1:
                     settings.setDns1( dnsServers.get( 0 ));
                     break;

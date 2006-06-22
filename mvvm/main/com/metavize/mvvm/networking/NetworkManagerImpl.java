@@ -215,11 +215,6 @@ public class NetworkManagerImpl implements NetworkManager
         throws NetworkException, ValidateException
     {
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-        try {
-            newSettings = nup.updateDhcpAddresses( newSettings );
-        } catch ( Exception e ) {
-            logger.error( "Unable to update dhcp addresses", e );
-        }
 
         logger.debug( "Loading the new network settings: " + newSettings );
 
