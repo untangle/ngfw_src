@@ -1,6 +1,64 @@
 /* Copyright (c) 2006 Metavize Inc. */
 /* All rights reserved.             */
 
+.GreedyDiv {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+}
+
+.PortalBorder_TL {
+    height: 150px;
+    width: 150px;
+    background-image: url('/images/Background1600x100.jpg');
+}
+
+.PortalBorder_TR {
+    height: 150px;
+    width: 150px;
+    background-image: url('/images/Background1600x100.jpg');
+}
+
+.PortalBorder_BL {
+    height: 150px;
+    width: 150px;
+    background-image: url('/images/Background1600x100.jpg');
+}
+
+.PortalBorder_BR {
+    height: 150px;
+    width: 150px;
+    background-image: url('/images/Background1600x100.jpg');
+}
+
+.PortalBorder_T__H {
+    height: 150px;
+    background-image: url('/images/Background1600x100.jpg');
+}
+
+.PortalBorder_B__H {
+    height: 150px;
+    background-image: url('/images/Background1600x100.jpg');
+}
+
+.PortalBorder_L__V {
+    width: 150px;
+    background-image: url('/images/Background1600x100.jpg');
+}
+
+.PortalBorder_R__V {
+    width: 150px;
+    background-image: url('/images/Background1600x100.jpg');
+}
+
+.PortalBorder__M {
+    height: 25px;
+    background-image: url('/images/Background1600x100.jpg');
+}
+
 .NavBarTitle .Text {
     font-weight: bold;
 }

@@ -20,7 +20,7 @@ function BookmarkList(parent, className, posStyle) {
 
    DwtListView.call(this, parent, className, posStyle, header);
 
-   this.setUI();
+   this.setUI(0);
 }
 
 BookmarkList.prototype = new DwtListView();
@@ -32,7 +32,7 @@ BookmarkList.prototype.refresh = function()
 {
    var cb = new AjxCallback(this, this._bookmarkListCallback, { })
 
-   AjxRpc.invoke(null, "secure/bookmark?command=ls", null, cb , true);
+   AjxRpc.invoke(null, "secure/bookmark?command=ls", null, cb, true);
 }
 
 // internal methods -----------------------------------------------------------
@@ -102,6 +102,7 @@ BookmarkList.prototype._createItemHtml = function(item) {
    htmlArr[idx++] = "</tr></table>";
 
    div.innerHTML = htmlArr.join("");
+
    return div;
 }
 

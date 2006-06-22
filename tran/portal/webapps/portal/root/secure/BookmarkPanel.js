@@ -11,6 +11,7 @@ function BookmarkPanel(parent, className, posStyle) {
 
    this._toolbar = this._makeToolbar();
    this._bookmarkList = new BookmarkList(this, null, DwtControl.ABSOLUTE_STYLE);
+   this._bookmarkList.zShow(true);
 
    this.addControlListener(new AjxListener(this, this._controlListener));
 
@@ -27,6 +28,16 @@ BookmarkPanel.prototype.refresh = function()
    this._bookmarkList.refresh();
 }
 
+BookmarkPanel.prototype.addSelectionListener = function(l)
+{
+   this._bookmarkList.addSelectionListener(l);
+}
+
+BookmarkPanel.prototype.addActionListener = function(l)
+{
+   this._bookmarkList.addActionListener(l);
+}
+
 // private methods ------------------------------------------------------------
 
 BookmarkPanel.prototype._makeToolbar = function() {
@@ -35,7 +46,7 @@ BookmarkPanel.prototype._makeToolbar = function() {
    var b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
    b.setText("Refresh");
    b.setToolTipContent("Display latest contents");
-   b.addSelectionListener(new AjxListener(this, this._refreshButtonListener));
+   b.addSelectionListener(new AjxListener(this, this.refresh));
 
    b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
    b.setText("New Bookmark");
@@ -53,12 +64,13 @@ BookmarkPanel.prototype._makeToolbar = function() {
 BookmarkPanel.prototype._layout = function()
 {
    var size = this.getSize();
+   DBG.println("SIZE: (" + size.x + ", " + size.y + ")");
 
    var x = 0;
    DBG.println("TOOLBAR AT: (0, 0)");;
    this._toolbar.setLocation(0, 0);
    x += this._toolbar.getSize().x;
-   DBG.println("TOOLBAR AT: (" + x + ", 0, ", + size.x - x + ", " + size.y + ")");
+   DBG.println("BOOKMARK LIST AT: (" + x + ", 0, ", + size.x - x + ", " + size.y + ")");
    this._bookmarkList.setBounds(x, 0, size.x - x, size.y);
 }
 

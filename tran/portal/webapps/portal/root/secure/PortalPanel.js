@@ -9,19 +9,17 @@ function PortalPanel(parent)
 
    DwtComposite.call(this, parent, "PortalPanel", DwtControl.ABSOLUTE_STYLE);
 
-   this._welcomePanel = new WelcomePanel(this);
-   this._welcomePanel.setText("Hello World");
-
-   this.bookmarkPanel = new BookmarkPanel(this, null, DwtControl.ABSOLUTE_STYLE);
-   this.bookmarkPanel.zShow(true);
-
-   //this._actionMenu = this._makeActionMenu()
+   this._init();
 
    // XXX
-   //l = new AjxListener(this, this._listActionListener);
-   //this.bookmarkPanel.addActionListener(l);
+   l = new AjxListener(this, this._listActionListener);
+   this.bookmarkPanel.addActionListener(l);
 
    this.addControlListener(new AjxListener(this, this._controlListener));
+
+   this.refresh()
+
+   this._layout();
 }
 
 PortalPanel.prototype = new DwtComposite();
@@ -34,28 +32,28 @@ PortalPanel.prototype.refresh = function()
    this.bookmarkPanel.refresh();
 }
 
-PortalPanel.prototype.layout = function()
-{
-   var size = this.getSize();
-   var width = size.x;
-   var height = size.y;
-
-   var x = 0;
-   var y = 0;
-
-   this._welcomePanel.setLocation(x, y);
-   size = this._welcomePanel.getSize();
-   y += size.y;
-
-   this.bookmarkPanel.setBounds(0, y, width, height - y);
-}
-
 PortalPanel.prototype.addSelectionListener = function(l)
 {
-   //this.bookmarkPanel.addSelectionListener(l);
+   this.bookmarkPanel.addSelectionListener(l);
 }
 
 // private methods ------------------------------------------------------------
+
+PortalPanel.prototype._init = function()
+{
+   this.welcomePanel = new DwtComposite(this, "WelcomePanel", DwtControl.ABSOLUTE_STYLE);
+   this.welcomePanel.getHtmlElement().innerHTML = "<blink>hello world</blink>"
+
+   this.bookmarkPanel = new BookmarkPanel(this, "BookmarkPanel", DwtControl.ABSOLUTE_STYLE);
+}
+
+PortalPanel.prototype._layout = function()
+{
+   var size = this.getSize();
+
+   this.welcomePanel.setBounds(0, 0, size.x, 100);
+   this.bookmarkPanel.setBounds(0, 150, size.x, size.y - 100);
+}
 
 // callbacks ------------------------------------------------------------------
 
@@ -70,5 +68,6 @@ PortalPanel.prototype._listActionListener = function(ev) {
 
 PortalPanel.prototype._controlListener = function()
 {
-   this.layout();
+   this._layout();
 }
+
