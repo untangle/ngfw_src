@@ -105,15 +105,18 @@ class DhcpManager
     {
         NetworkManagerImpl nm = (NetworkManagerImpl)MvvmContextFactory.context().networkManager();
         
+        NetworkSpacesInternalSettings networkSettings = nm.getNetworkInternalSettings();
+        
         if ( !settings.getIsEnabled()) {
             logger.debug( "Services are currently disabled, deconfiguring dns masq" );
+            writeHosts( settings, networkSettings );
             deconfigure();
             return;
         }
 
         try {
             writeConfiguration( settings );
-            writeHosts( settings, nm.getNetworkInternalSettings());
+            writeHosts( settings, networkSettings );
         } catch ( Exception e ) {
             throw new NetworkException( "Unable to reload DNS masq configuration", e );
         }
