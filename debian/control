@@ -37,7 +37,7 @@ Description: The Metavize Email Decoder
 
 Package: airgap-transform
 Architecture: any
-Depends: mvvm, airgap-storeitem
+Depends: mvvm
 XB-Display-Name: Attack Shield
 XB-Website: http://www.metavize.com/attackshield.html
 XB-View-Position: 1010
@@ -148,7 +148,7 @@ Description: The Metavize Attack Shield Software Appliance
 
 Package: spyware-transform
 Architecture: any
-Depends: mvvm, http-casing, spyware-storeitem
+Depends: mvvm, http-casing
 XB-Display-Name: Spyware Blocker
 XB-Website: http://www.metavize.com/spyware.html
 XB-View-Position: 20
@@ -235,7 +235,7 @@ Description: The Metavize Spyware Blocker Software Appliance
 
 Package: httpblocker-transform
 Architecture: any
-Depends: mvvm, http-casing, urlblacklist.com-mv, httpblocker-storeitem
+Depends: mvvm, http-casing, urlblacklist.com-mv
 XB-Display-Name: Web Content Control
 XB-Website: http://www.metavize.com/webcontrol.html
 XB-View-Position: 30
@@ -333,7 +333,7 @@ Description: The Metavize Web Content Control Software Appliance
 
 Package: hauri-transform
 Architecture: any
-Depends: mvvm, virus-base, hauri-mv, http-casing, ftp-casing, mail-casing, hauri-storeitem
+Depends: mvvm, virus-base, hauri-mv, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Hauri AntiVirus Scanner
 XB-Website: http://www.metavize.com/hauri_antivirus.html
 XB-View-Position: 60
@@ -447,7 +447,7 @@ Description: The Hauri AntiVirus Scanner Software Appliance
 
 Package: kav-transform
 Architecture: any
-Depends: mvvm, virus-base, kav-mv, http-casing, ftp-casing, mail-casing, kav-storeitem
+Depends: mvvm, virus-base, kav-mv, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Kaspersky AntiVirus Scanner
 XB-Website: http://www.metavize.com/kaspersky_antivirus.html
 XB-View-Position: 50
@@ -528,7 +528,7 @@ Description: The Kaspersky AntiVirus Scanner Software Appliance
 
 Package: clam-transform
 Architecture: any
-Depends: mvvm, virus-base, clamav-mv, http-casing, ftp-casing, mail-casing, clam-storeitem
+Depends: mvvm, virus-base, clamav-mv, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Clam AntiVirus Scanner
 XB-Website: http://www.metavize.com/clam_antivirus.html
 XB-View-Position: 70
@@ -634,7 +634,7 @@ Description: The Clam AntiVirus Scanner Software Appliance
 
 Package: protofilter-transform
 Architecture: any
-Depends: mvvm, protofilter-storeitem
+Depends: mvvm
 Conflicts: protoanalyzer-transform
 XB-Display-Name: Rogue Protocol Control
 XB-Website: http://www.metavize.com/protocolcontrol.html
@@ -756,7 +756,7 @@ Description: The Metavize Rogue Protocol Control Software Appliance
 
 Package: nat-transform
 Architecture: any
-Depends: mvvm, dnsmasq, ftp-casing, nat-storeitem
+Depends: mvvm, dnsmasq, ftp-casing
 XB-Display-Name: Router
 XB-Website: http://www.metavize.com/networksharing.html
 XB-View-Position: 1000
@@ -850,7 +850,7 @@ Description: The Metavize Router Software Appliance
 
 Package: firewall-transform
 Architecture: any
-Depends: mvvm, firewall-storeitem
+Depends: mvvm
 XB-Display-Name: Firewall
 XB-Website: http://www.metavize.com/firewall.html
 XB-View-Position: 90
@@ -937,7 +937,7 @@ Description: The Metavize Firewall Software Appliance
 
 Package: spamassassin-transform
 Architecture: any
-Depends: mvvm, spam-base, spamc-mv, mail-casing, spamassassin-storeitem
+Depends: mvvm, spam-base, spamc-mv, mail-casing
 XB-Display-Name: SpamGuard
 XB-Website: http://www.metavize.com/spam.html
 XB-View-Position: 15
@@ -1052,7 +1052,7 @@ Description: The Metavize SpamGuard Software Appliance
 
 Package: clamphish-transform
 Architecture: any
-Depends: mvvm, spam-base, clamav-mv, mail-casing, clamphish-storeitem
+Depends: mvvm, spam-base, clamav-mv, mail-casing
 XB-Display-Name: PhishNet
 XB-Website: http://www.metavize.com/phishnet.html
 XB-View-Position: 17
@@ -1181,7 +1181,7 @@ Description: The Metavize PhishNet Software Appliance
 
 Package: test-transform
 Architecture: any
-Depends: mvvm, test-storeitem
+Depends: mvvm
 XB-Display-Name: Test
 XB-Website: http://www.metavize.com
 XB-View-Position: 2002
@@ -1323,7 +1323,7 @@ Description: The Metavize Test Software Appliance
 
 Package: openvpn-transform
 Architecture: any
-Depends: mvvm, openvpn, nsis, nsis-mv, sysutils, zip, openssl, openvpn-storeitem
+Depends: mvvm, openvpn, nsis, nsis-mv, sysutils, zip, openssl
 XB-Display-Name: OpenVPN
 XB-Website: http://www.metavize.com/openvpn.html
 XB-View-Position: 1003
@@ -1472,7 +1472,7 @@ XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgA
 
 Package: ids-transform
 Architecture: any
-Depends: mvvm, http-casing, snort-rules-current, ids-storeitem
+Depends: mvvm, http-casing, snort-rules-current
 XB-Display-Name: Intrusion Prevention
 XB-Website: http://www.metavize.com/ips.html
 XB-View-Position: 75
@@ -1578,7 +1578,7 @@ Description: The Metavize Intrusion Prevention Software Appliance
 
 Package: reporting-transform
 Architecture: any
-Depends: mvvm, reporting-storeitem
+Depends: mvvm
 XB-Display-Name: EdgeReport
 XB-Website: http://www.metavize.com/reports.html
 XB-View-Position: 1020
@@ -1664,7 +1664,7 @@ Description: The Metavize Report Generator
 
 Package: boxbackup-transform
 Architecture: any
-Depends: mvvm, curl, boxbackup-storeitem
+Depends: mvvm, curl
 XB-Display-Name: 24-Hour Replacement
 XB-Website: http://www.metavize.com/boxbackup.html
 XB-View-Position: 1015
