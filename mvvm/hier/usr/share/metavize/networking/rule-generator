@@ -24,6 +24,7 @@ echo "Reconstructing all of the tables"
 MARK_ANTISUB="0x01000000"
 MARK_NOTRACK="0x02000000"
 MARK_INTERNAL_REDIRECT="0x04000000"
+MARK_DHCP_SERVER_ANTISUB="0x08000000"
 MARK_LOCAL="0x00001000"
 
 ## This is not the interface index (1,2,3, etc), this is the special bit that
@@ -120,14 +121,18 @@ function blockForwarding() {
             ${IPTABLES} ${l_modules} -t filter -A FORWARD -p udp --source-port ${DHCP_PORT_RANGE} \
                 --destination-port ${DHCP_PORT_RANGE} ${l_inFlag} ${l_interface} -j DROP
             
-            ## antisub anything to the DHCP server that is not from one of these interfaces.
-            ${IPTABLES} ${l_modules} -t mangle -A INPUT ${l_inFlag} ${l_interface} -p udp  \
-                --destination-port ${DHCP_SERVER_PORT} -j MARK --set-mark ${MARK_ANTISUB}
+            ## antisub anything to the DHCP server that is from one of these interfaces.
+            ## The logic is, apply the DHCP antisub to the traffic that the DHCP server should see
+            ## At the end, use the another rule to DROP any traffic (on the INPUT chain) 
+            ## that the DHCP server should not see.
+            ${IPTABLES} ${l_modules} -t mangle -A INPUT ${l_inFlag} ${l_interface} -p udp \
+                --destination-port ${DHCP_SERVER_PORT} \
+                -j MARK --set-mark $(( ${MARK_ANTISUB} | ${MARK_DHCP_SERVER_ANTISUB} ))
         done
         
         ## Drop any DHCP traffic that didn't get antisubscribed.
-        ${IPTABLES} ${l_modules} -t mangle -A INPUT ${l_inFlag} ${l_interface} -p udp  \
-            --destination-port ${DHCP_SERVER_PORT} -m mark --mark 0/${MARK_ANTISUB} -j DROP
+        ${IPTABLES} ${l_modules} -t mangle -A INPUT -p udp  \
+            --destination-port ${DHCP_SERVER_PORT} -m mark --mark 0/${MARK_DHCP_SERVER_ANTISUB} -j DROP
     fi
 }
 

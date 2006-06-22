@@ -34,7 +34,10 @@ class BridgeConfigurationWriter extends ScriptWriter
     void addBridgeConfiguration()
     {
         /* Iterate all of the network spaces, and dump out the configurations */
-        for ( NetworkSpaceInternal space : this.settings.getNetworkSpaceList()) addNetworkSpace( space );
+        for ( NetworkSpaceInternal space : this.settings.getNetworkSpaceList()) {
+            addNetworkSpace( space );
+            if ( !this.settings.getIsEnabled()) break;
+        }
     }
 
     private void addNetworkSpace( NetworkSpaceInternal space )
