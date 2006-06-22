@@ -1,7 +1,8 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function BookmarkList(parent, className, posStyle) {
+function BookmarkList(parent)
+{
 
    if (0 == arguments.length) {
       return;
@@ -18,7 +19,7 @@ function BookmarkList(parent, className, posStyle) {
    hi.memberName = "target";
    header.push(hi);
 
-   DwtListView.call(this, parent, className, posStyle, header);
+   DwtListView.call(this, parent, "BookmarkList", DwtControl.ABSOLUTE_STYLE, header);
 
    this.setUI(0);
 }

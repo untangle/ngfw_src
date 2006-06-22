@@ -37,6 +37,11 @@ PortalPanel.prototype.addSelectionListener = function(l)
    this.bookmarkPanel.addSelectionListener(l);
 }
 
+PortalPanel.prototype.getSelection = function()
+{
+   this.bookmarkPanel.getSelection();
+}
+
 // private methods ------------------------------------------------------------
 
 PortalPanel.prototype._init = function()
@@ -44,15 +49,25 @@ PortalPanel.prototype._init = function()
    this.welcomePanel = new DwtComposite(this, "WelcomePanel", DwtControl.ABSOLUTE_STYLE);
    this.welcomePanel.getHtmlElement().innerHTML = "<blink>hello world</blink>"
 
-   this.bookmarkPanel = new BookmarkPanel(this, "BookmarkPanel", DwtControl.ABSOLUTE_STYLE);
+   this.bookmarkPanel = new BookmarkPanel(this);
 }
 
 PortalPanel.prototype._layout = function()
 {
    var size = this.getSize();
 
-   this.welcomePanel.setBounds(0, 0, size.x, 100);
-   this.bookmarkPanel.setBounds(0, 150, size.x, size.y - 100);
+   var margin = 50;
+
+   var left = margin;
+   var width = size.x - (margin + margin);
+
+   var y = margin;
+
+   this.welcomePanel.setBounds(left, y, width, 100);
+
+   y += this.welcomePanel.getSize().y + 25;
+
+   this.bookmarkPanel.setBounds(left, y, width, size.y - (margin + y));
 }
 
 // callbacks ------------------------------------------------------------------

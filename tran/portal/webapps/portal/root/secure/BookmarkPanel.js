@@ -1,16 +1,17 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function BookmarkPanel(parent, className, posStyle) {
+function BookmarkPanel(parent)
+{
 
    if (0 == arguments.length) {
       return;
    }
 
-   DwtComposite.call(this, parent, className, posStyle);
+   DwtComposite.call(this, parent, "BookmarkPanel", DwtControl.ABSOLUTE_STYLE);
 
    this._toolbar = this._makeToolbar();
-   this._bookmarkList = new BookmarkList(this, null, DwtControl.ABSOLUTE_STYLE);
+   this._bookmarkList = new BookmarkList(this);
    this._bookmarkList.zShow(true);
 
    this.addControlListener(new AjxListener(this, this._controlListener));
