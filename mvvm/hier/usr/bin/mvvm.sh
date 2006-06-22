@@ -97,14 +97,14 @@ needToRestart() {
 # less than 384Meg native heap
                 ;;
             2)
-# 384Meg < native heap < 640Meg 
+# 384Meg < native heap < 640Meg
                 if [ `date +%H` -eq 1 ]; then
                     echo "*** bunnicula heap soft limit on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
                     return 0;
                 fi
                 ;;
             3 | 4 | 5 | 6 | 7 | 8 | 9)
-# native heap > 640Meg 
+# native heap > 640Meg
                 echo "*** bunnicula heap hard limit ($bignibble) on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
                 return 0;
                 ;;
@@ -115,13 +115,13 @@ needToRestart() {
     fi
 
 # just return the status of this one.
-    if [ tail -50 $MVVM_GC_LOG | grep -i "concurrent mode failure" ] ; then
+    if tail -50 $MVVM_GC_LOG | grep -i "concurrent mode failure"; then
         return 0;
     fi
 
 # extra nightime checks
     if [ `date +%H` -eq 1 ]; then
-        # VSZ greater than 1.1 gigs reboot 
+        # VSZ greater than 1.1 gigs reboot
         VIRT="`ps ax -o vsz,command $pid | awk '{print $1}'`"
         if [ $VIRT -gt 1100000 ] ; then
             echo "*** Virt Size too high ($VIRT) on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
@@ -132,7 +132,7 @@ needToRestart() {
     return 1;
 }
 
-                
+
 trap reapChildHardest 6
 trap reapChildHarder 15
 trap reapChild 2
@@ -170,10 +170,10 @@ while true; do
         fi
     done
 
-# Clean up the zombie.  Risky? XXX    
+# Clean up the zombie.  Risky? XXX
 #    wait $pid
 
-# Crash/Kill        
+# Crash/Kill
     flushIptables
     echo "*** bunnicula exited on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
     echo "*** copied $MVVM_CONSOLE_LOG to $MVVM_CONSOLE_LOG.crash ***" >> $MVVM_WRAPPER_LOG
