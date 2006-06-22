@@ -254,8 +254,7 @@ public abstract class TransformBase implements Transform
         throws TransformException, IllegalStateException
     {
         if (TransformState.LOADED == runState
-            || TransformState.DESTROYED == runState
-            || TransformState.DISABLED == runState) {
+            || TransformState.DESTROYED == runState) {
             throw new IllegalStateException("disabling in: " + runState);
         } else if (TransformState.RUNNING == runState) {
             stop(false);
@@ -266,9 +265,14 @@ public abstract class TransformBase implements Transform
     void enable()
         throws TransformException, IllegalStateException
     {
-        if (TransformState.DISABLED != runState) {
-            throw new IllegalStateException("enabling in: " + runState);
-        } else {
+        if (TransformState.LOADED == runState
+            || TransformState.DESTROYED == runState) {
+            	throw new IllegalStateException("enabling in: " + runState);
+        } else if (TransformState.RUNNING == runState
+		   || TransformState.INITIALIZED == runState) {
+		// We're already fine.
+	} else {
+	    // DISABLED
             changeState(TransformState.INITIALIZED, true);
         }
     }
