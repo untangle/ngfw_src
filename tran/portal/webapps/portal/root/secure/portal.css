@@ -18,6 +18,12 @@
     background-image: url('/images/Background1600x100.jpg');
 }
 
+.MetavizePanel {
+    background-color: yellow;
+    border-width: 2px
+}
+
 .WelcomePanel {
     background-color: white;
+    border-width: 2px
 }

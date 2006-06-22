@@ -41,6 +41,14 @@ PortalPanel.prototype.addSelectionListener = function(l)
 
 PortalPanel.prototype._init = function()
 {
+   this.metavizePanel = new DwtComposite(this, "MetavizePanel", DwtControl.ABSOLUTE_STYLE);
+   var html = [];
+   html.push("<img src='/images/LogoNoText96x96.gif'>");
+   html.push("<blink><bold>Hippiesoft Dot Com Exploder</bold></blink>");
+   html.push("</br>");
+   html.push("Portal Potty(tm)");
+   this.metavizePanel.getHtmlElement().innerHTML = html.join("");
+
    this.welcomePanel = new DwtComposite(this, "WelcomePanel", DwtControl.ABSOLUTE_STYLE);
    this.welcomePanel.getHtmlElement().innerHTML = "<blink>hello world</blink>"
 
@@ -60,12 +68,13 @@ PortalPanel.prototype._layout = function()
 
    var y = margin;
 
-   this.welcomePanel.setBounds(left, y, width, 100);
+   this.metavizePanel.setBounds(left, y, width, 150);
+   y += this.metavizePanel.getSize().y + 25;
 
+   this.welcomePanel.setBounds(left, y, width, 100);
    y += this.welcomePanel.getSize().y + 25;
 
    this.applicationPanel.setBounds(left, y, width, 300);
-
    y += this.applicationPanel.getSize().y + 25;
 
    this.bookmarkPanel.setBounds(left, y, width, size.y - (margin + y));
