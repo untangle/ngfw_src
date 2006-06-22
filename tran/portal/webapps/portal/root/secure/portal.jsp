@@ -30,6 +30,8 @@
 <script type="text/javascript" src="<%=sp%>/AddBookmarkPanel.js"></script>
 <script type="text/javascript" src="<%=sp%>/Application.js"></script>
 <script type="text/javascript" src="<%=sp%>/ApplicationIframe.js"></script>
+<script type="text/javascript" src="<%=sp%>/ApplicationList.js"></script>
+<script type="text/javascript" src="<%=sp%>/ApplicationPanel.js"></script>
 <script type="text/javascript" src="<%=sp%>/Bookmark.js"></script>
 <script type="text/javascript" src="<%=sp%>/BookmarkList.js"></script>
 <script type="text/javascript" src="<%=sp%>/BookmarkManagerDialog.js"></script>
@@ -40,6 +42,7 @@
 <script type="text/javascript" src="<%=sp%>/NavigationBar.js"></script>
 <script type="text/javascript" src="<%=sp%>/Portal.js"></script>
 <script type="text/javascript" src="<%=sp%>/PortalPanel.js"></script>
+
 </head>
 
 <body>

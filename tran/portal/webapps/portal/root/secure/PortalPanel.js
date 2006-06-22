@@ -44,6 +44,8 @@ PortalPanel.prototype._init = function()
    this.welcomePanel = new DwtComposite(this, "WelcomePanel", DwtControl.ABSOLUTE_STYLE);
    this.welcomePanel.getHtmlElement().innerHTML = "<blink>hello world</blink>"
 
+   this.applicationPanel = new ApplicationPanel(this);
+
    this.bookmarkPanel = new BookmarkPanel(this);
 }
 
@@ -61,6 +63,10 @@ PortalPanel.prototype._layout = function()
    this.welcomePanel.setBounds(left, y, width, 100);
 
    y += this.welcomePanel.getSize().y + 25;
+
+   this.applicationPanel.setBounds(left, y, width, 300);
+
+   y += this.applicationPanel.getSize().y + 25;
 
    this.bookmarkPanel.setBounds(left, y, width, size.y - (margin + y));
 }
