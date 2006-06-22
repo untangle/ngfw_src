@@ -248,6 +248,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    editedComponent.setOpaque(true);
 	    ((JTextField)editedComponent).setText("UNSUPPORTED EDITOR for: " + value.getClass());
 	}
+	/*  this shit dont work right now
 	if( editedComponent == jTextField ){
 	    final JTextField selectedJTextField = jTextField;
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
@@ -255,6 +256,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 		selectedJTextField.selectAll();
 	    }});
 	}
+	*/
 	return editedComponent;
     }
     
