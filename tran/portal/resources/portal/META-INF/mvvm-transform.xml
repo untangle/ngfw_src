@@ -13,7 +13,7 @@ $Id: mvvm-transform.xml,v 1.3 2005/02/07 22:15:39 amread Exp $
 
 <mvvm-transform>
   <transform-desc name="portal-transform"
-                  display-name="Portal"
+                  display-name="Secure Portal"
                   classname="com.metavize.tran.portal.PortalImpl"
                   gui-classname="com.metavize.tran.portal.gui.MTransformJPanel"
                   single-instance="true"/>
