@@ -1428,11 +1428,11 @@ Description: The Metavize OpenVPN Software Appliance
 Package: portal-transform
 Architecture: any
 Depends: mvvm
-XB-Display-Name: Metavize Portal
+XB-Display-Name: Secure Portal
 XB-Website: http://www.metavize.com/openvpn.html
 XB-View-Position: 990
-Description: Metavize Portal
- The HippieSoft portal.
+Description: Secure Portal
+ The Secure Portal.
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
