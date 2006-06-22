@@ -86,7 +86,7 @@ raiseFdLimit() {
 
 # Return true (0) when we need to reap and restart the mvvm.
 needToRestart() {
-    cheaphigh=`head -3 /tmp/m | tail -1 | awk '{ high=split($1, arr, "-"); print arr[2]; }'`
+    cheaphigh=`head -3 /proc/$pid/maps | tail -1 | awk '{ high=split($1, arr, "-"); print arr[2]; }'`
     if [ -z $cheaphigh ]; then
 # not fatal, process has probably just died, which we'll catch soon.
         echo "*** no heap size ($cheaphigh) on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
