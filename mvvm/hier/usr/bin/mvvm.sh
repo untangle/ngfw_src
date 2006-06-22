@@ -8,7 +8,7 @@ MVVM_WRAPPER_LOG=${MVVM_WRAPPER_LOG:-"@PREFIX@/var/log/mvvm/wrapper.log"}
 MVVM_LAUNCH=${MVVM_LAUNCH:-"@PREFIX@/usr/bin/bunnicula"}
 
 # Short enough to restart mvvm promptly
-SLEEP_TIME=2
+SLEEP_TIME=5
 
 # Used to kill a child with extreme prejudice
 nukeIt() {
@@ -115,7 +115,21 @@ needToRestart() {
     fi
 
 # just return the status of this one.
-    tail -50 $MVVM_GC_LOG | grep -i "concurrent mode failure"
+    if [ tail -50 $MVVM_GC_LOG | grep -i "concurrent mode failure" ] ; then
+        return 0;
+    fi
+
+# extra nightime checks
+    if [ `date +%H` -eq 1 ]; then
+        # VSZ greater than 1.1 gigs reboot 
+        VIRT="`ps ax -o vsz,command $pid | awk '{print $1}'`"
+        if [ $VIRT -gt 1100000 ] ; then
+            echo "*** Virt Size too high ($VIRT) on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
+            return 0;
+        fi
+    fi
+
+    return 1;
 }
 
                 
