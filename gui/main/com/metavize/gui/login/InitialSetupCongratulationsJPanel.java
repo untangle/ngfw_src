@@ -25,7 +25,10 @@ public class InitialSetupCongratulationsJPanel extends MWizardPageJPanel {
     public void initialFocus(){
 	String message;
 	if( InitialSetupRoutingJPanel.getNatEnabled() && !InitialSetupRoutingJPanel.getNatChanged() ){
-	    message = "<html><font color=\"#FF0000\">Press \"Finish\" to open a Login window.</font></html>";
+	    String publicAddress = InitialSetupRoutingJPanel.getPublicAddress().toString();
+	    String privateAddress = InitialSetupRoutingJPanel.getAddress().toString();
+	    message = "<html><font color=\"#FF0000\">Press \"Finish\" to open a Login window to EdgeGuard.<br>Outside Address: "
+		+ publicAddress + "<br>" + "Inside Address: " + privateAddress + "</font></html>";
 	}
 	else{
 	    String finalAddress;
@@ -38,7 +41,7 @@ public class InitialSetupCongratulationsJPanel extends MWizardPageJPanel {
 		finalAddress = InitialSetupRoutingJPanel.getAddress().toString();
 	    }
 	    message = "<html><font color=\"#FF0000\">Go to: " + finalAddress
-		+ " in your web browser to open a login window.</font></html>";
+		+ " in your web browser to open a login window to EdgeGuard.</font></html>";
 	}
 	messageJLabel.setText(message);
     }
