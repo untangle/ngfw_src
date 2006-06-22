@@ -29,6 +29,11 @@ BookmarkPanel.prototype.refresh = function()
    this._bookmarkList.refresh();
 }
 
+BookmarkPanel.prototype.getSelection = function()
+{
+   return this._bookmarkList.getSelection();
+}
+
 BookmarkPanel.prototype.addSelectionListener = function(l)
 {
    this._bookmarkList.addSelectionListener(l);
