@@ -13,6 +13,7 @@ package com.metavize.gui.upgrade;
 
 import com.metavize.gui.transform.CompoundSettings;
 import com.metavize.gui.util.Util;
+import com.metavize.gui.widgets.dialogs.MOneButtonJDialog;
 import com.metavize.mvvm.toolbox.MackageDesc;
 import com.metavize.mvvm.toolbox.UpgradeSettings;
 
@@ -33,8 +34,22 @@ public class UpgradeCompoundSettings implements CompoundSettings {
     public void refresh() throws Exception {
 	upgradeSettings = Util.getToolboxManager().getUpgradeSettings();
 
-	Util.getToolboxManager().update();
-	upgradableMackageDescs = Util.getToolboxManager().upgradable();
+	// HANDLE THE CASE WHERE THE STORE IS UNREACHABLE
+	try{
+	    Util.getToolboxManager().update();
+	    upgradableMackageDescs = Util.getToolboxManager().upgradable();
+	}
+	catch(Exception e){
+	    Util.getMMainJFrame().updateJButton(Util.UPGRADE_UNAVAILABLE);
+	    Util.setUpgradeCount(Util.UPGRADE_UNAVAILABLE);
+
+	    MOneButtonJDialog.factory(UpgradeJDialog.getInstance(), "",
+				      "The upgrade server could not be contacted.  " +
+				      "Please contact Metavize technical support.",
+				      "Upgrade Failure Warning", "");
+	    return;
+	}
+
 	if( Util.isArrayEmpty(upgradableMackageDescs) ){
 	    Util.getMMainJFrame().updateJButton(0);
 	    Util.setUpgradeCount(0);

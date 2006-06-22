@@ -87,6 +87,10 @@ public class UpgradeProcessJPanel extends JPanel
 	    Vector<Vector> allRows = new Vector<Vector>(mackageDescs.length);
 	    Vector tempRow = null;
 	    int rowIndex = 0;
+
+	    // DEAL WITH THE CASE OF UNREACHABLE STORE
+	    if( mackageDescs == null )
+		return allRows;
 	    
 	    for( MackageDesc mackageDesc : mackageDescs ){
 		if( mackageDesc.getType() == MackageDesc.CASING_TYPE ||
