@@ -44,8 +44,7 @@ public class UpgradeCompoundSettings implements CompoundSettings {
 	    Util.setUpgradeCount(Util.UPGRADE_UNAVAILABLE);
 
 	    MOneButtonJDialog.factory(UpgradeJDialog.getInstance(), "",
-				      "The upgrade server could not be contacted.  " +
-				      "Please contact Metavize technical support.",
+				      "The upgrade server could not be contacted.",
 				      "Upgrade Failure Warning", "");
 	    return;
 	}
