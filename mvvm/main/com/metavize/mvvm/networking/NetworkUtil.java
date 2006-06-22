@@ -186,16 +186,18 @@ public class NetworkUtil
                 throw new ValidateException( "A network space should either have at least one address,"+
                                              " or use DHCP." );
             }
-
-            List<AddressRange> addressRangeList = new LinkedList<AddressRange>();
             
+            AddressValidator av = AddressValidator.getInstance();
+            int index = 0;
             for ( IPNetworkRule network : networkList ) {
-                addressRangeList.add( makeAddressRange( network ));
+                index++;
+                InetAddress address = network.getNetwork().getAddr();
+                if ( av.isIllegalAddress( address )) {
+                    throw new ValidateException( "The network address: " + address.getHostAddress() + 
+                                                 " in network space: " + space.getName() + " is not valid." );
+                }
             }
-            
-            /* Check for overlap in the network addresses */
-            // !!!! waiting till able to test. AddressValidator.getInstance().validate( addressRangeList );
-            
+                        
             if ( space.getIsNatEnabled()) {
                 if ( isDhcpEnabled ) {
                     throw new ValidateException( "A network space running NAT should not get its address" +

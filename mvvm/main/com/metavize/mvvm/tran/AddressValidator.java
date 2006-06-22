@@ -61,6 +61,20 @@ public class AddressValidator
         return false;
     }
 
+    public boolean isIllegalAddress( InetAddress address )
+    {
+        List<AddressRange> checkList = new LinkedList<AddressRange>();
+        
+        /* Add an entry to the checklist for the single IP */
+        checkList.add( AddressRange.makeAddress( address ));
+
+        checkList.addAll( ILLEGAL_ADDRESS_LIST );
+        
+        if ( null != checkOverlap( checkList )) return true;
+
+        return false;
+    }
+
     private ValidateException checkOverlap( List<AddressRange> addressRangeList )
     {
         List<AddressRange> checkList = new LinkedList<AddressRange>( addressRangeList );

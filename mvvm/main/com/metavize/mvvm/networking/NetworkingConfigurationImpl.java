@@ -25,6 +25,7 @@ import java.net.InetAddress;
 import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.NetworkingConfiguration;
 
+import com.metavize.mvvm.tran.AddressValidator;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Equivalence;
 import com.metavize.mvvm.tran.HostName;
@@ -504,28 +505,56 @@ public class NetworkingConfigurationImpl
         /* Check for collisions in the alias list */
         Set<InetAddress> addressSet = new HashSet<InetAddress>();
 
-        InetAddress defaultRoute = gateway().getAddr();
-        InetAddress host = host().getAddr();
+        AddressValidator av = AddressValidator.getInstance();
 
-        if ( host.equals( defaultRoute )) {
-            throw new ValidateException( "The \"Default Route\" and \"IP Address\" are the same." );
+        if ( !isDhcpEnabled ) {
+            InetAddress defaultRoute = gateway().getAddr();
+            InetAddress host = host().getAddr();
+                        
+            if ( host.equals( defaultRoute )) {
+                throw new ValidateException( "The \"Default Route\" and \"IP Address\" are the same." );
+            }
+            
+            addressSet.add( host );
+            
+            if ( av.isIllegalAddress( host )) {
+                throw new ValidateException( "\"IP Address\" is invalid." );
+            }
+            
+            if ( av.isIllegalAddress( defaultRoute )) {
+                throw new ValidateException( "\"Default Route\" is invalid." );
+            }
+            
+            if ( av.isIllegalAddress( dns1.getAddr())) {
+                throw new ValidateException( "\"Primary DNS\" is invalid." );
+            }
+            
+            if (( this.dns2 != null ) && ( !this.dns2.isEmpty()) && 
+                av.isIllegalAddress( this.dns2.getAddr())) {
+                throw new ValidateException( "\"Secondary DNS\" is invalid." );
+            }
         }
 
-        addressSet.add( host );
-        
+        int index = 0;
         for ( InterfaceAlias alias : getAliasList()) {
+            index++;
+            
             InetAddress address = alias.getAddress().getAddr();
+
+            if ( av.isIllegalAddress( address )) {
+                throw new ValidateException( "\"External Address Alias\" at index " + index + " is invalid." );
+            }
             
             /* Check if the address is already used */
             if ( !addressSet.add( address )) {
-                throw new ValidateException( "The address " + address.getHostAddress() + 
+                throw new ValidateException( "\"External Address Alias\" " + address.getHostAddress() + 
                                              " is duplicated.\n" );
             }
 
-            /* Check if the address is the default route */
-            if ( address.equals( defaultRoute )) {
-                throw new ValidateException( "The address " + address.getHostAddress() +
-                                             " is the \"Default Route\" and an alias." );
+            /* Check if the address is the default route (only if DHCP is disabled) */
+            if ( !this.isDhcpEnabled && address.equals( this.gateway().getAddr())) {
+                throw new ValidateException( "\"External Address Alias\" " + address.getHostAddress() +
+                                             " is both the \"Default Route\" and an alias." );
             }
         }
     }

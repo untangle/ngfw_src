@@ -11,6 +11,8 @@
 
 package com.metavize.tran.nat;
 
+import java.net.InetAddress;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.Map;
 
 import com.metavize.mvvm.InterfaceAlias;
 
+import com.metavize.mvvm.tran.AddressValidator;
 import com.metavize.mvvm.tran.ValidateException;
 
 import com.metavize.mvvm.tran.firewall.MACAddress;
@@ -52,11 +55,20 @@ class SettingsValidator
         IPaddr  natInternalAddress = natSettings.getNatInternalAddress();
         IPaddr  natInternalSubnet = natSettings.getNatInternalSubnet();
 
-        if ( natEnabled &&
-             ( natInternalAddress == null || natInternalSubnet == null  ||
-               natInternalAddress.isEmpty() || natInternalSubnet.isEmpty())) {
-            throw new ValidateException( "Enablng NAT requires an \"Internal IP address\" and " +
-                                         "an \"Internal Subnet\"" );
+        AddressValidator av = AddressValidator.getInstance();
+
+        if ( natEnabled ) {
+            if ( natInternalAddress == null || natInternalSubnet == null  ||
+                 natInternalAddress.isEmpty() || natInternalSubnet.isEmpty()) {
+                throw new ValidateException( "Enablng NAT requires an \"Internal IP address\" and " +
+                                             "an \"Internal Subnet\"" );
+            }
+            
+            InetAddress address = natInternalAddress.getAddr();
+            
+            if ( av.isIllegalAddress( address )) {
+                throw new ValidateException( "The \"Internal IP address\" is invalid" );
+            }
         }
         
         if ( natSettings.getDmzEnabled()) {
