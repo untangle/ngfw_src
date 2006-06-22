@@ -26,6 +26,8 @@ import com.metavize.jvector.ResetCrumb;
 import com.metavize.jvector.Sink;
 import com.metavize.jvector.Source;
 import com.metavize.jvector.Vector;
+
+import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.policy.PolicyRule;
@@ -127,7 +129,9 @@ abstract class ArgonHook implements Runnable
              * This is valid if the session is redirected (serverInterface changed),
              * and the client was NATd.
              */
-            if (( serverIntf == clientIntf ) && !checkIsMirrored( originalServerIntf, serverIntf )) {
+            if (( serverIntf == clientIntf ) && 
+                !isVpnToVpn( serverIntf, clientIntf ) &&
+                !checkIsMirrored( originalServerIntf, serverIntf )) {
                 if ( logger.isInfoEnabled()) {
                     logger.info( "" + netcapSession + " has matching client and server interface, raze." );
                 }
@@ -575,6 +579,13 @@ abstract class ArgonHook implements Runnable
         logger.debug( "vectorReset: isEndpointed - " + isEndpointed );
 
         return !isEndpointed;
+    }
+
+
+    /** Helper function determine if a session is going to and from a VPN interface */
+    private boolean isVpnToVpn( byte clientIntf, byte serverIntf )
+    {
+        return (( clientIntf == IntfConstants.VPN_INTF ) && ( serverIntf == IntfConstants.VPN_INTF ));
     }
 
     /* Helper function to determine if a session is going to be NATd and going in and out
