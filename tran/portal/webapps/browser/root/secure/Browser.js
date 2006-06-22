@@ -6,6 +6,10 @@ function Browser(shell, url) {
       return;
    }
 
+   if ('/' != url.charAt(url.length - 1)) {
+      url += '/';
+   }
+
    var cifsNode = new CifsNode(null, url, null, CifsNode.SHARE); // XXX TYPE?
 
    this._shell = shell;

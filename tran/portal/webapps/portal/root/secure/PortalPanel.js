@@ -37,11 +37,6 @@ PortalPanel.prototype.addSelectionListener = function(l)
    this.bookmarkPanel.addSelectionListener(l);
 }
 
-PortalPanel.prototype.getSelection = function()
-{
-   return this.bookmarkPanel.getSelection();
-}
-
 // private methods ------------------------------------------------------------
 
 PortalPanel.prototype._init = function()
