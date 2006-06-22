@@ -61,7 +61,7 @@ String host=request.getHeader("host");
             <br/>
             <br/>
             <div style="font-style: italic; font-size: 80%;">
-            <a href="http://<%=host%>/webstart">Administrator Login</a>
+            <a href="<%=scheme%>://<%=host%>/webstart">Administrator Login</a>
             </div>
                   </center>
               </div>
