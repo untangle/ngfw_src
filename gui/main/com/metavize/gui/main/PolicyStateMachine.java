@@ -755,6 +755,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 for( MackageDesc newMackageDesc : newMackageDescs ){
                     if( !isMackageStoreItem(newMackageDesc) && isMackageVisible(newMackageDesc) ){
                         MTransformJButton newMTransformJButton = new MTransformJButton(newMackageDesc);
+			if( isMackageTrial(newMackageDesc) )
+			    newMTransformJButton.setIsTrial(true);
                         if( newMTransformJButton.getMackageDesc().isUtil() 
 			    || newMTransformJButton.getMackageDesc().isService()){
                             addToToolbox(null,newMTransformJButton.getMackageDesc(),false,false);
