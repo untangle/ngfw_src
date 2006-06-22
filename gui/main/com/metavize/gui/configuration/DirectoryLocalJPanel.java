@@ -76,18 +76,38 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
 
         // go through all the rows and perform some tests
         for( Vector tempUser : tableVector ){
-	    if( ((String)tempUser.elementAt(0)).equals(ROW_REMOVE) )
+	    String state = (String) tempUser.elementAt(2);
+	    if( ROW_REMOVE.equals(state) )
 		continue;
 	    String uid = (String) tempUser.elementAt(2);
+	    String firstName = (String) tempUser.elementAt(3);
+	    String lastName = (String) tempUser.elementAt(4);
 	    String password = new String(((MPasswordField) tempUser.elementAt(6)).getPassword());
+
 	    // all uid's are unique
 	    if( uidHashtable.contains( uid ) )
 		throw new Exception("The user/login ID at row: " + rowIndex + " has already been taken.");
 	    else
 		uidHashtable.put(uid,uid);
-	    // the password meets certain criteria
-	    if( password.length() == 0 )
-		throw new Exception("The password at row: " + rowIndex + " must be at least 1 character long.");
+
+	    // first name contains no spaces
+	    if( firstName.contains(" ") )
+		throw new Exception("The first name at row: " + rowIndex + " must not contain any space characters.");
+
+	    // last name contains no spaces
+	    if( lastName.contains(" ") )
+		throw new Exception("The last name at row: " + rowIndex + " must not contain any space characters.");
+	    
+	    // CHECK PASSWORDS FOR ONLY NEW ROWS
+	    if( ROW_ADD.equals(state) ) {
+		// the password is at least one character
+		if( password.length() == 0 )
+		    throw new Exception("The password at row: " + rowIndex + " must be at least 1 character long.");
+
+		// the password contains no spaces
+		if( password.contains(" ") )
+		    throw new Exception("The password at row: " + rowIndex + " must not contain any space characters.");
+	    }
 
 	    rowIndex++;
 	}
