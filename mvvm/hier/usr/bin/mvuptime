@@ -1,0 +1,18 @@
+#!/bin/sh
+
+PID="`ps awwx | grep java | grep mvvm | awk '{print $1}' | grep -v $$`"
+
+if [ -z "$PID" ] ; then
+	echo "MVVM not running";
+	exit 0;
+fi
+
+AGE_SEC="$((`date +%s`-`stat -c %Z /proc/$PID/cmdline`))"
+
+AGE_DAY="$(($AGE_SEC/60/60/24))"
+AGE_HOUR="$(($AGE_SEC/60/60 % 24))"
+AGE_MIN="$(($AGE_SEC/60 % 60))"
+AGE_SEC="$(($AGE_SEC % 60))"
+
+echo "$AGE_DAY Days, $AGE_HOUR Hours, $AGE_MIN Minutes, $AGE_SEC Seconds"
+exit 0
