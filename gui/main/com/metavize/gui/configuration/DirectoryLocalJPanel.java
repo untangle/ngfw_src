@@ -82,22 +82,25 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
 	    String uid = (String) tempUser.elementAt(2);
 	    String firstName = (String) tempUser.elementAt(3);
 	    String lastName = (String) tempUser.elementAt(4);
+
 	    String password = new String(((MPasswordField) tempUser.elementAt(6)).getPassword());
 
-	    // all uid's are unique
-	    if( uidHashtable.contains( uid ) )
-		throw new Exception("The user/login ID at row: " + rowIndex + " has already been taken.");
-	    else
-		uidHashtable.put(uid,uid);
+	    if( !ROW_REMOVE.equals(state) ){
+		// all uid's are unique
+		if( uidHashtable.contains( uid ) )
+		    throw new Exception("The user/login ID at row: " + rowIndex + " has already been taken.");
+		else
+		    uidHashtable.put(uid,uid);
+		
+		// first name contains no spaces
+		if( firstName.contains(" ") )
+		    throw new Exception("The first name at row: " + rowIndex + " must not contain any space characters.");
+		
+		// last name contains no spaces
+		if( lastName.contains(" ") )
+		    throw new Exception("The last name at row: " + rowIndex + " must not contain any space characters.");
+	    }
 
-	    // first name contains no spaces
-	    if( firstName.contains(" ") )
-		throw new Exception("The first name at row: " + rowIndex + " must not contain any space characters.");
-
-	    // last name contains no spaces
-	    if( lastName.contains(" ") )
-		throw new Exception("The last name at row: " + rowIndex + " must not contain any space characters.");
-	    
 	    // CHECK PASSWORDS FOR ONLY NEW ROWS
 	    if( ROW_ADD.equals(state) ) {
 		// the password is at least one character
@@ -125,7 +128,8 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
 	    newElem.setLastName( (String) rowVector.elementAt(4) );
 	    newElem.setEmail( (String) rowVector.elementAt(5) );
 	    newElem.setPassword( new String(((MPasswordField)rowVector.elementAt(6)).getPassword()) );
-	    newElem.setComment( (String) rowVector.elementAt(7) );
+	    newElem.setComment( (String) rowVector.elementAt(7) );	    
+	    String asdf = new String(((MPasswordField)rowVector.elementAt(6)).getPassword()) ;
             allRows.add(newElem);
         }
         
