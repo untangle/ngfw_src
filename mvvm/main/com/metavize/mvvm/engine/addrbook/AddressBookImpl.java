@@ -352,7 +352,8 @@ public class AddressBookImpl implements AddressBook {
         // perform the add/removes
         for( UserEntry userEntry : keepList ){
             updateLocalEntry(userEntry);
-            updateLocalPassword(userEntry.getUID(), userEntry.getPassword());
+            if (!UserEntry.UNCHANGED_PASSWORD.equals(userEntry.getPassword()))
+                updateLocalPassword(userEntry.getUID(), userEntry.getPassword());
         }
         for( UserEntry userEntry : currentEntries.keySet() )
             deleteLocalEntry(userEntry.getUID());

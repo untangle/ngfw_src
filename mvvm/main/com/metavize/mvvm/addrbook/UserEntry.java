@@ -21,6 +21,8 @@ import java.util.List;
 public final class UserEntry
   implements java.io.Serializable {
 
+    public static final String UNCHANGED_PASSWORD = "***UNCHANGED***";
+
   private String m_firstName;
   private String m_lastName;
   private String m_uid;
