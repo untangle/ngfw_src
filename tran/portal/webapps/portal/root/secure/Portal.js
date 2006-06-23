@@ -22,6 +22,7 @@ function Portal(shell) {
    this._navBar.addLogoutButtonListener(l);
 
    this._portalPanel = new PortalPanel(this._shell);
+   this._portalPanel.zShow(true);
 
    l = new AjxListener(this, this._bookmarkSelectionListener);
    this._portalPanel.bookmarkPanel.addSelectionListener(l);

@@ -14,12 +14,17 @@ Application.prototype.toString = function()
    return "Application: " + this.name;
 };
 
+Application.prototype.bookmarkProperties = function()
+{
+   return this._appCode.bookmarkProperties;
+}
+
 Application.prototype.openBookmark = function()
 {
-   this._appCode.openBookmark.apply(this, arguments);
+   return this._appCode.openBookmark.apply(this, arguments);
 }
 
 Application.prototype.openApplication = function()
 {
-   this._appCode.openApplication.apply(this, arguments);
+   return this._appCode.openApplication.apply(this, arguments);
 }

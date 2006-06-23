@@ -11,6 +11,7 @@ function BookmarkPanel(parent)
    DwtComposite.call(this, parent, "BookmarkPanel", DwtControl.ABSOLUTE_STYLE);
 
    this._toolbar = this._makeToolbar();
+   this._toolbar.zShow(true);
    this._bookmarkList = new BookmarkList(this);
    this._bookmarkList.zShow(true);
 

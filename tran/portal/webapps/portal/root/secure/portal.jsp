@@ -37,6 +37,7 @@
 <script type="text/javascript" src="<%=sp%>/BookmarkManagerDialog.js"></script>
 <script type="text/javascript" src="<%=sp%>/BookmarkManagerPanel.js"></script>
 <script type="text/javascript" src="<%=sp%>/BookmarkPanel.js"></script>
+<script type="text/javascript" src="<%=sp%>/BookmarkProperty.js"></script>
 <script type="text/javascript" src="<%=sp%>/Desktop.js"></script>
 <script type="text/javascript" src="<%=sp%>/MvTabView.js"></script>
 <script type="text/javascript" src="<%=sp%>/NavigationBar.js"></script>

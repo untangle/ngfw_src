@@ -11,6 +11,7 @@ function ApplicationPanel(parent)
    DwtComposite.call(this, parent, "ApplicationPanel", DwtControl.ABSOLUTE_STYLE);
 
    this._toolbar = this._makeToolbar();
+   this._toolbar.zShow(true);
    this._applicationList = new ApplicationList(this);
    this._applicationList.zShow(true);
 

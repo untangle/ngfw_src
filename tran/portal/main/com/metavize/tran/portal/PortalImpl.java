@@ -20,7 +20,6 @@ import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.SimpleEventFilter;
-import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.portal.Application;
 import com.metavize.mvvm.portal.Bookmark;
 import com.metavize.mvvm.portal.LocalApplicationManager;
@@ -60,7 +59,14 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         = "{\n"
         + "  openBookmark: function(portal, bookmark) {\n"
         + "    portal.showApplicationUrl('/rdp/rdp.jsp?t=' + bookmark.id, this, bookmark);\n"
-        + "  }\n"
+        + "  },\n"
+        + "  bookmarkProperties: {\n"
+        + "    size: new BookmarkProperty(['640x480', '800x600', '1024x768', '1280x1024'], '800x600'),\n"
+        + "    host: null,\n"
+        + "    host: null,\n"
+        + "    command: null,\n"
+        + "    console: new BookmarkProperty(['true', 'false'], 'false')\n"
+        + "  }"
         + "};\n";
 
     private static final String VNC_JS
