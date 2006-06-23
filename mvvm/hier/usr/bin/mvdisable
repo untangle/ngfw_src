@@ -6,7 +6,7 @@ if [ $# -lt 1 ] ; then
 fi	
 
 FAILED=0
-mcli extraname $1 "Trial Expired" &> /dev/null
+mcli extraname $1 "Trial (Expired)" &> /dev/null
 if [ $? -ne 0 ] ; then FAILED=1 ; fi
 mcli disable $1 &> /dev/null
 if [ $? -ne 0 ] ; then FAILED=1 ; fi
