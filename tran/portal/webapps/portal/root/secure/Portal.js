@@ -230,12 +230,12 @@ Portal.prototype._refreshAppsCallback = function(obj, results) {
       if ("application" == child.tagName) {
          var name = child.getAttribute("name");
          var description = child.getAttribute("description");
-         var isHostService = child.getAttribute("isHostService");
+         var isHostService = "true" == child.getAttribute("isHostService");
          var appJs = child.getElementsByTagName("appJs")[0].firstChild.data;
          var app = new Application(name, description, isHostService, appJs);
          this._apps.push(app);
          this._appMap[name] = app;
-         if (isHostService) {
+         if (!isHostService) {
             launchableApps.add(app);
          }
          DBG.println("this._appMap[" + name + "] = " + app);
