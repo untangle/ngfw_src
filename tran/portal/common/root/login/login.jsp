@@ -39,7 +39,7 @@ String host=request.getHeader("host");
                 <br/>
                 <br/>
                 <span style="font-weight: bold;">
-                  Metavize EdgeGuard Portal
+                  Metavize Secure Portal
                 </span>
                 <br/>
                 <br/>
@@ -61,7 +61,7 @@ String host=request.getHeader("host");
             <br/>
             <br/>
             <div style="font-style: italic; font-size: 80%;">
-            <a href="<%=scheme%>://<%=host%>/webstart">Administrator Login</a>
+            <a href="<%=scheme%>://<%=host%>/webstart">EdgeGuard Administration</a>
             </div>
                   </center>
               </div>
