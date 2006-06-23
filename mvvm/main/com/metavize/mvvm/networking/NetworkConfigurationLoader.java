@@ -129,7 +129,7 @@ class NetworkConfigurationLoader
     {
         loadFlags( remote );
         loadHostname( remote );
-        loadHttpsProperties( remote );
+        loadHttpsProperties( remote, remote.isOutsideAccessEnabled());
         loadSshFlag( remote );
     }
 
@@ -350,33 +350,52 @@ class NetworkConfigurationLoader
         }
     }
 
-    private void loadHttpsProperties( RemoteSettings remote )
+    private void loadHttpsProperties( RemoteSettings remote, boolean isOutsideAccessEnabled )
     {
         /* Try to read in the properties for the HTTPS port */
         remote.httpsPort( NetworkUtil.DEF_HTTPS_PORT );
 
         try {
+            StringUtil su = StringUtil.getInstance();
+
             Properties properties = new Properties();
             File f = new File( PROPERTY_FILE );
-            StringUtil su = StringUtil.getInstance();
             if ( f.exists()) {
                 logger.debug( "Loading " + f );
                 properties.load( new FileInputStream( f ));
                 
                 remote.httpsPort( su.parseInt( properties.getProperty( PROPERTY_HTTPS_PORT ), 
                                                NetworkUtil.DEF_HTTPS_PORT ));
+                
+                
+                if ( properties.getProperty( PROPERTY_OUTSIDE_ADMINISTRATION ) == null ) {
+                    logger.debug( "Outside administration is not set, using defaults." );
+                    if ( isOutsideAccessEnabled ) {
+                        remote.setIsOutsideAdministrationEnabled( true );
+                        remote.setIsOutsideQuarantineEnabled( true );
+                        remote.setIsOutsideReportingEnabled( true );
+                    } else {
+                        remote.setIsOutsideAdministrationEnabled( NetworkUtil.DEF_OUTSIDE_ADMINISTRATION );
+                        remote.setIsOutsideQuarantineEnabled( NetworkUtil.DEF_OUTSIDE_QUARANTINE );
+                        remote.setIsOutsideReportingEnabled( NetworkUtil.DEF_OUTSIDE_REPORTING );
+                    }
+                } else {
+                    logger.debug( "Loading HTTP access settings." );
+                    
+                    boolean value = 
+                        su.parseBoolean( properties.getProperty( PROPERTY_OUTSIDE_ADMINISTRATION ),
+                                         NetworkUtil.DEF_OUTSIDE_ADMINISTRATION );
+                    remote.setIsOutsideAdministrationEnabled( value );
+                    
+                    value = su.parseBoolean( properties.getProperty( PROPERTY_OUTSIDE_QUARANTINE ), 
+                                             NetworkUtil.DEF_OUTSIDE_QUARANTINE );
+                    remote.setIsOutsideQuarantineEnabled( value );
+                    
+                    value = su.parseBoolean( properties.getProperty( PROPERTY_OUTSIDE_REPORTING ), 
+                                             NetworkUtil.DEF_OUTSIDE_REPORTING );
+                    remote.setIsOutsideReportingEnabled( value );
+                }
 
-                boolean value = su.parseBoolean( properties.getProperty( PROPERTY_OUTSIDE_ADMINISTRATION ), 
-                                                 NetworkUtil.DEF_OUTSIDE_ADMINISTRATION );
-                remote.setIsOutsideAdministrationEnabled( value );
-                
-                value = su.parseBoolean( properties.getProperty( PROPERTY_OUTSIDE_QUARANTINE ), 
-                                         NetworkUtil.DEF_OUTSIDE_QUARANTINE );
-                remote.setIsOutsideQuarantineEnabled( value );
-                
-                value = su.parseBoolean( properties.getProperty( PROPERTY_OUTSIDE_REPORTING ), 
-                                         NetworkUtil.DEF_OUTSIDE_REPORTING );
-                remote.setIsOutsideReportingEnabled( value );                
             }
         } catch ( Exception e ) {
             logger.warn( "Unable to load properties file: " + PROPERTY_FILE, e );

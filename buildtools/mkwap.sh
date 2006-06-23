@@ -51,6 +51,10 @@ if [ -r $src/dllib ]; then
     cat $src/dllib | copyfiles $root/downloads/output $weblib
 fi
 
+## Copy in the error pages.
+echo "errorpage.jsp
+errorpage.html" | copyfiles $root/alpine/mvvm/webapps/ROOT/root $dest
+
 libdirs="$weblib $destroot/usr/share/metavize/lib $destroot/usr/share/java/mvvm $root/downloads/output/apache-tomcat-5.5.17-embed/lib"
 
 classpath="$classpath:$JAVA_HOME/lib/tools.jar:$(find $libdirs -name '*.jar' -printf '%p:')"
@@ -74,7 +78,7 @@ webfrag=$(mktemp)
 
 $JAVA_HOME/bin/java -cp "$classpath" org.apache.jasper.JspC \
     -s -l -v -compile -d $classroot -p $name -webinc $webfrag \
-    -uriroot "$dest"
+    -source 1.5 -target 1.5 -uriroot "$dest"
 
 find $classroot -name '*.java' -exec rm '{}' ';'
 

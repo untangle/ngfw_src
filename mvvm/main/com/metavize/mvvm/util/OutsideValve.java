@@ -50,15 +50,19 @@ public abstract class OutsideValve extends ValveBase
     {
         if ( !isAccessAllowed( isOutsideAccessAllowed(), request )) {
             /* Block the session here */
-            logger.debug( "The request: " + request + " caught by OutsideValve." );
+            if ( logger.isDebugEnabled()) {
+                logger.debug( "The request: " + request + " caught by OutsideValve." );
+            }
             
             request.setAttribute( "com.metavize.mvvm.util.errorpage.error-message", errorMessage());
 
             response.sendError( response.SC_FORBIDDEN );
             return;
         }
-        logger.debug( "The request: " + request + " passed through the valve." );
 
+        if ( logger.isDebugEnabled()) {
+            logger.debug( "The request: " + request + " passed through the valve." );
+        }
         
         /* If necessary call the next valve */
         Valve nextValve = getNext();

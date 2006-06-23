@@ -583,6 +583,11 @@ class NetworkUtilPriv extends NetworkUtil
         configuration.outsideNetwork( remoteSettings.outsideNetwork());
         configuration.outsideNetmask( remoteSettings.outsideNetmask());
         configuration.httpsPort( remoteSettings.httpsPort());
+
+        configuration.setIsOutsideAdministrationEnabled( remoteSettings.getIsOutsideAdministrationEnabled());
+        configuration.setIsOutsideQuarantineEnabled( remoteSettings.getIsOutsideQuarantineEnabled());
+        configuration.setIsOutsideReportingEnabled( remoteSettings.getIsOutsideReportingEnabled());
+
         return configuration;
     }
 

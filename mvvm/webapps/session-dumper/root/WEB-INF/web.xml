@@ -6,12 +6,12 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
 
 <web-app>
 
-  @JSP_PRE_COMPILED_SERVLETS@
-
   <display-name>Session Dumper</display-name>
 
+ @JSP_PRE_COMPILED_SERVLETS@
+
   <servlet-mapping>
-    <servlet-name>com.metavize.jsp.SessionDumper_jsp</servlet-name>
+    <servlet-name>com.metavize.mvvm.sessiondumper.jsp.SessionDumper_jsp</servlet-name>
     <url-pattern>/*</url-pattern>
   </servlet-mapping>
 

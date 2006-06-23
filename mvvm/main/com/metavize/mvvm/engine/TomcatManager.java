@@ -293,13 +293,18 @@ class TomcatManager
             baseHost.addChild(rootContext);
 
             // create application Context
-            Context ctx = emb.createContext("/http-invoker", "http-invoker");
+            StandardContext ctx = (StandardContext)emb.createContext("/http-invoker", "http-invoker");
             ctx.setPrivileged(true);
-            baseHost.addChild(ctx);
-            ctx.getServletContext().setAttribute("invoker", invokerBase);
             mgr = new StandardManager();
             mgr.setPathname(null); /* disable session persistence */
             ctx.setManager(mgr);
+
+            /* Add a valve to block outside access */
+            ctx.addValve(new AdministrationOutsideAccessValve());
+            
+            /* Moved after adding the valve */
+            baseHost.addChild(ctx);
+            ctx.getServletContext().setAttribute("invoker", invokerBase);
 
             // Load the webapps which were requested before the
             // system started-up.

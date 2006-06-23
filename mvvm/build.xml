@@ -20,7 +20,7 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
   <property name="mnp.xsd" value="../../xenon/xml/mnp.xsd"/>
 
   <!-- main targets -->
-  <target name="pkg.gensrc"  depends="gensrc.servlets, gensrc.version"/>
+  <target name="pkg.gensrc"  depends="gensrc.version"/>
   <target name="pkg.compile"
           depends="compile.bootstrap, compile.mvvm-client, compile.mvvm-reports,
                    compile.mvvm, compile.servlets"/>
@@ -29,46 +29,9 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
                    jar.servlets"/>
   <target name="pkg.install"
           depends="install.hier, install.bootstrap,
-                   install.mvvm-client, install.mvvm-reports, install.mvvm, install.servlets,
+                   install.mvvm-client, install.mvvm-reports, install.mvvm,
                    install.thirdparty, install.reports, install.webapps"/>
   <target name="pkg.clean" depends="clean.nuke"/>
-
-  <target name="gensrc.servlets">
-    <!-- We need fork to avoid class duplication bug in ant -->
-    <java classname="org.apache.jasper.JspC"
-          fork="true"
-          failonerror="true">
-      <arg line="-d ${build.gensrc}"/>
-      <arg line="-p com.metavize.jsp"/>
-      <arg line="-webinc ${build.gensrc}/web-fragment.xml"/>
-      <arg line="-uriroot ${src.hier}/${suffix.mvvm.web}/session-dumper/"/>
-      <classpath refid="tomcat.thirdparty.classpath"/>
-    </java>
-    <echo message="Adding JSP servlet mappings to web.xml"/>
-    <loadfile property="sd-generated-web.xml" srcFile="${build.gensrc}/web-fragment.xml"/>
-    <copy file="${src.hier}/${suffix.mvvm.web}/session-dumper/WEB-INF/web.xml" toFile="${dist.mvvm.web}/session-dumper/WEB-INF/web.xml" overwrite="true">
-      <filterset>
-        <filter token="JSP_PRE_COMPILED_SERVLETS" value="${sd-generated-web.xml}"/>
-      </filterset>
-    </copy>
-    <!-- We need fork to avoid class duplication bug in ant -->
-    <java classname="org.apache.jasper.JspC"
-          fork="true"
-          failonerror="true">
-      <arg line="-d ${build.gensrc}"/>
-      <arg line="-p com.metavize.jsp"/>
-      <arg line="-webinc ${build.gensrc}/web-fragment.xml"/>
-      <arg line="-uriroot ${src.hier}/${suffix.mvvm.web}/reports/"/>
-      <classpath refid="tomcat.thirdparty.classpath"/>
-    </java>
-    <echo message="Adding JSP servlet mappings to web.xml"/>
-    <loadfile property="rp-generated-web.xml" srcFile="${build.gensrc}/web-fragment.xml"/>
-    <copy file="${src.hier}/${suffix.mvvm.web}/reports/WEB-INF/web.xml" toFile="${dist.mvvm.web}/reports/WEB-INF/web.xml" overwrite="true">
-      <filterset>
-        <filter token="JSP_PRE_COMPILED_SERVLETS" value="${rp-generated-web.xml}"/>
-      </filterset>
-    </copy>
-  </target>
 
   <target name="gensrc.version">
     <mkdir dir="${build.gensrc}/com/metavize/mvvm/engine"/>
@@ -585,24 +548,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
     </jar>
   </target>
 
-  <target name="install.servlets" depends="jar.servlets">
-    <copy todir="${dist.mvvm.web}/http-invoker/WEB-INF/lib">
-      <fileset dir="${build.jar}">
-        <include name="servlets.jar"/>
-      </fileset>
-    </copy>
-    <copy todir="${dist.mvvm.web}/session-dumper/WEB-INF/lib">
-      <fileset dir="${build.jar}">
-        <include name="servlets.jar"/>
-      </fileset>
-    </copy>
-    <copy todir="${dist.mvvm.web}/reports/WEB-INF/lib">
-      <fileset dir="${build.jar}">
-        <include name="servlets.jar"/>
-      </fileset>
-    </copy>
-  </target>
-
   <!-- thirdparty -->
 
   <target name="install.thirdparty" depends="install.hier">
@@ -672,6 +617,30 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
       <arg value="webapps/store"/>
       <arg value="${build.dist}"/>
       <arg value="${dist.mvvm.web}/store"/>
+    </exec>
+
+    <exec executable="${buildtool.base}/mkwap.sh" failonerror="true">
+      <arg value="../.."/>
+      <arg value="com.metavize.mvvm.invoker.jsp"/>
+      <arg value="webapps/http-invoker"/>
+      <arg value="${build.dist}"/>
+      <arg value="${dist.mvvm.web}/http-invoker"/>
+    </exec>
+
+    <exec executable="${buildtool.base}/mkwap.sh" failonerror="true">
+      <arg value="../.."/>
+      <arg value="com.metavize.mvvm.sessiondumper.jsp"/>
+      <arg value="webapps/session-dumper"/>
+      <arg value="${build.dist}"/>
+      <arg value="${dist.mvvm.web}/session-dumper"/>
+    </exec>
+
+    <exec executable="${buildtool.base}/mkwap.sh" failonerror="true">
+      <arg value="../.."/>
+      <arg value="com.metavize.mvvm.reports.jsp"/>
+      <arg value="webapps/reports"/>
+      <arg value="${build.dist}"/>
+      <arg value="${dist.mvvm.web}/reports"/>
     </exec>
   </target>
 

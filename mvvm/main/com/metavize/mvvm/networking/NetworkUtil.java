@@ -60,7 +60,7 @@ public class NetworkUtil
 
     public static final boolean DEF_OUTSIDE_ADMINISTRATION = false;
     public static final boolean DEF_OUTSIDE_QUARANTINE = true;
-    public static final boolean DEF_OUTSIDE_REPORTING = false;
+    public static final boolean DEF_OUTSIDE_REPORTING = true;
     
     private static final String PRIVATE_NETWORK_STRINGS[] = 
     {
