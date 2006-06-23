@@ -22,12 +22,16 @@ function Portal(shell) {
    this._navBar.addLogoutButtonListener(l);
 
    this._portalPanel = new PortalPanel(this._shell);
-   var l = new AjxListener(this, this._bookmarkSelectionListener);
-   this._portalPanel.addSelectionListener(l);
-   this._portalPanel.zShow(true);
-   var l = new AjxListener(this, this._addBookmarkButtonListener);
+
+   l = new AjxListener(this, this._bookmarkSelectionListener);
+   this._portalPanel.bookmarkPanel.addSelectionListener(l);
+
+   l = new AjxListener(this, this._applicationSelectionListner);
+   this._portalPanel.applicationPanel.addSelectionListener(l);
+
+   l = new AjxListener(this, this._addBookmarkButtonListener);
    this._portalPanel.bookmarkPanel.addBookmarkButton.addSelectionListener(l);
-   var l = new AjxListener(this, this._deleteButtonListener)
+   l = new AjxListener(this, this._deleteButtonListener)
    this._portalPanel.bookmarkPanel.deleteBookmarkButton.addSelectionListener(l);
 
    this.showPortal();
@@ -44,7 +48,7 @@ Portal.prototype.constructor = Portal;
 
 // portal api -----------------------------------------------------------------
 
-Portal.prototype.showApplicationUrl = function(url, bookmark)
+Portal.prototype.showApplicationUrl = function(url, application, bookmark)
 {
    if (this._mainPanel) {
       Dwt.setVisible(this._mainPanel.getHtmlElement(), false);
@@ -53,11 +57,12 @@ Portal.prototype.showApplicationUrl = function(url, bookmark)
       }
    }
 
-   this._mainPanel = new ApplicationIframe(this._shell, url);
+   this._mainPanel = new ApplicationIframe(this._shell);
+   this._mainPanel.loadUrl(url);
    Dwt.setVisible(this._mainPanel.getHtmlElement(), true);
    this._mainPanel.zShow(true);
 
-   this._navBar.applicationMode(bookmark);
+   this._navBar.applicationMode(application, bookmark);
 
    this.layout();
 }
@@ -194,6 +199,17 @@ Portal.prototype._bookmarkSelectionListener = function(ev) {
       var app = this._appMap[item.app];
       // XXX if null?
       app.openBookmark(this, item);
+      break;
+   }
+}
+
+Portal.prototype._applicationSelectionListner = function(ev) {
+   switch (ev.detail) {
+      case DwtListView.ITEM_DBL_CLICKED:
+      var item = ev.item;
+      var app = this._appMap[item.name];
+      // XXX if null?
+      app.openApplication(this);
       break;
    }
 }

@@ -38,8 +38,11 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
 {
     private static final String CIFS_JS
         = "{\n"
+        + "  openApplication: function(portal) {\n"
+        + "    portal.showApplicationUrl('/browser', this);\n"
+        + "  },\n"
         + "  openBookmark: function(portal, bookmark) {\n"
-        + "    portal.showApplicationUrl('/browser?target=' + bookmark.target, bookmark);\n"
+        + "    portal.showApplicationUrl('/browser?target=' + bookmark.target, this, bookmark);\n"
         + "  }\n"
         + "};\n";
 
@@ -47,21 +50,21 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         = "{\n"
         + "  openBookmark: function(portal, bookmark) {\n"
         + "    var o = portal.splitUrl(bookmark.target);"
-        + "    portal.showApplicationUrl('/proxy/' + o.proto + '/' + o.host + o.path, bookmark);\n"
+        + "    portal.showApplicationUrl('/proxy/' + o.proto + '/' + o.host + o.path, this, bookmark);\n"
         + "  }\n"
         + "};\n";
 
     private static final String RDP_JS
         = "{\n"
         + "  openBookmark: function(portal, bookmark) {\n"
-        + "    portal.showApplicationUrl('/rdp/rdp.jsp?t=' + bookmark.id, bookmark);\n"
+        + "    portal.showApplicationUrl('/rdp/rdp.jsp?t=' + bookmark.id, this, bookmark);\n"
         + "  }\n"
         + "};\n";
 
     private static final String VNC_JS
         = "{\n"
         + "  openBookmark: function(portal, bookmark) {\n"
-        + "    portal.showApplicationUrl('/vnc/vnc.jsp?t=' + bookmark.id, bookmark);\n"
+        + "    portal.showApplicationUrl('/vnc/vnc.jsp?t=' + bookmark.id, this, bookmark);\n"
         + "  }\n"
         + "};\n";
 
@@ -94,17 +97,17 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
 
         Application.Destinator httpDestinator = new Application.Destinator() {
                 public String getDestinationHost(Bookmark bm) {
-		    // This isn't yet used, so we fake it for now. XXX
-		    return "localhost";
+            // This isn't yet used, so we fake it for now. XXX
+            return "localhost";
                 }
                 public int getDestinationPort(Bookmark bm) {
-		    // This isn't yet used, so we fake it for now. XXX
+            // This isn't yet used, so we fake it for now. XXX
                     return 80;
                 }
             };
 
         proxyApp = lam.registerApplication("HTTP", "Web Proxy", httpDestinator,
-					   null, 0, WEB_JS);
+                       null, 0, WEB_JS);
 
         Application.Destinator rdpDestinator = new Application.Destinator() {
                 public String getDestinationHost(Bookmark bm) {
@@ -234,7 +237,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         logger.debug("preStop()");
         unDeployWebAppIfRequired(logger);
     }
-    
+
     @Override
     protected void postStart() throws TransformStartException
     {
@@ -244,14 +247,14 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     }
 
     @Override
-	    protected void postInit(final String[] args) {
-		    registerApps();
-	    }
+        protected void postInit(final String[] args) {
+            registerApps();
+        }
 
     @Override
-	    protected void preDestroy() {
-		    deregisterApps();
-	    }
+        protected void preDestroy() {
+            deregisterApps();
+        }
 
     // Portal methods ----------------------------------------------
 

@@ -6,11 +6,14 @@ function Browser(shell, url) {
       return;
    }
 
-   if ('/' != url.charAt(url.length - 1)) {
+   if (url && '/' != url.charAt(url.length - 1)) {
       url += '/';
    }
 
-   var cifsNode = new CifsNode(null, url, null, CifsNode.SHARE); // XXX TYPE?
+   var cifsNode;
+   if (url) {
+      cifsNode = new CifsNode(null, url, null, CifsNode.SHARE); // XXX TYPE?
+   }
 
    this._shell = shell;
 
@@ -33,10 +36,13 @@ function Browser(shell, url) {
    dropTarget.addDropListener(new AjxListener(this, this._treeDropListener));
    this._dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE,
                                dragSource, dropTarget);
-   this._dirTree.addRoot(cifsNode);
-   this._dirTree.setScrollStyle(DwtControl.SCROLL);
-   this._dirTree.addSelectionListener(new AjxListener(this, this._dirSelectionListener));
-   this._dirTree.zShow(true);
+
+   if (cifsNode) {
+      this._dirTree.addRoot(cifsNode);
+      this._dirTree.setScrollStyle(DwtControl.SCROLL);
+      this._dirTree.addSelectionListener(new AjxListener(this, this._dirSelectionListener));
+      this._dirTree.zShow(true);
+   }
 
    this._sash = new DwtSash(this, DwtSash.HORIZONTAL_STYLE, null, 3);
    this._sashPos = 200;
@@ -61,7 +67,9 @@ function Browser(shell, url) {
 
    this.layout();
 
-   this.chdir(cifsNode, false);
+   if (cifsNode) {
+      this.chdir(cifsNode, false);
+   }
 
    this.zShow(true);
 }

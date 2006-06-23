@@ -37,11 +37,13 @@ NavigationBar.prototype.portalMode = function()
    this.bm.setText("");
 }
 
-NavigationBar.prototype.applicationMode = function(bookmark)
+NavigationBar.prototype.applicationMode = function(application, bookmark)
 {
-   this.title.setText(bookmark.app);
-   this.bm.setText(bookmark.name);
-   this.bm.setToolTipContent(bookmark.target);
+   this.title.setText(application.description);
+   if (bookmark) {
+      this.bm.setText(bookmark.name);
+      this.bm.setToolTipContent(bookmark.target);
+   }
 }
 
 NavigationBar.prototype.addHomeButtonListener = function(l)
