@@ -74,7 +74,7 @@ public class InitialSetupConnectivityJPanel extends MWizardPageJPanel {
                 contentJPanel.add(connectivityTestJButton, gridBagConstraints);
 
                 jLabel11.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel11.setText("<html>If the connectivity test does not pass, you should try different network settings.  You may go back to the \"Network Settings\" page by pressing the \"Previous page\" button.</html>");
+                jLabel11.setText("<html>If the connectivity test does not pass, you should try different network settings.  You may go back to the \"Routing\" page by pressing the \"Previous page\" button.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 2;
