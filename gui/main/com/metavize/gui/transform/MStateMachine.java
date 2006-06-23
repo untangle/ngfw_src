@@ -248,7 +248,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                     MOneButtonJDialog.factory((Window)mTransformJPanel.getTopLevelAncestor(), displayName,
                                               "You must configure OpenVPN as either a VPN Routing Server" +
                                               " or a VPN Client before you can turn it on.  You may do this" +
-                                              " through its Setup Wizard (in its settings).", displayName + " Confirmation", "Confirmation");
+                                              " through its Setup Wizard (in its settings).", displayName + " Warning", "Warning");
                 }
                 setOffView(true);
             }
