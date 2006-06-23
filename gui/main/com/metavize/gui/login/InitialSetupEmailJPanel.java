@@ -34,6 +34,8 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
     private static final String EXCEPTION_LOGIN_MISSING = "A \"Login\" must be specified if a \"Password\" is specified.";
     private static final String EXCEPTION_HOSTNAME_MISSING = "A \"Hostname\" must be specified if \"Login\" or \"Password\" are specified.";
     //private static final String EXCEPTION_ADDRESS_MISSING = "A \"From Address\" must be specified.";
+
+    private volatile boolean shouldSaveNetworkSettings = true;
     
     public InitialSetupEmailJPanel() {
         initComponents();
@@ -121,32 +123,34 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 		throw new Exception("A network communication error occurred.  Please retry.");
 	    }
 
-	    try{
-		InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Final Configuration...");
-		
-		// UPDATE NAT CONFIG
+	    if(shouldSaveNetworkSettings){
 		try{
-		    if( InitialSetupRoutingJPanel.getNatEnabled() ){
-			if( InitialSetupRoutingJPanel.getNatChanged() )
+		    InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Final Configuration...");
+		    
+		    // UPDATE NAT CONFIG
+		    try{
+			if( InitialSetupRoutingJPanel.getNatEnabled() ){
+			    if( InitialSetupRoutingJPanel.getNatChanged() )
+				MvvmRemoteContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
+			    Util.getNetworkManager().setWizardNatEnabled(InitialSetupRoutingJPanel.getAddress(),
+									 InitialSetupRoutingJPanel.getNetmask());
+			}
+			else{
 			    MvvmRemoteContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
-			Util.getNetworkManager().setWizardNatEnabled(InitialSetupRoutingJPanel.getAddress(),
-								     InitialSetupRoutingJPanel.getNetmask());
+			    Util.getNetworkManager().setWizardNatDisabled();
+			}
 		    }
-		    else{
-			MvvmRemoteContextFactory.factory().setTimeout(Util.DISCONNECT_NETWORK_TIMEOUT_MILLIS);
-			Util.getNetworkManager().setWizardNatDisabled();
+		    catch(Exception f){
+			Util.handleExceptionNoRestart("Normal termination:",f);
 		    }
+		    
+		    InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
 		}
-		catch(Exception f){
-		    Util.handleExceptionNoRestart("Normal termination:",f);
+		catch(Exception e){
+		    InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
+		    Util.handleExceptionNoRestart("Error sending data", e);
+		    throw new Exception("A network communication error occurred.  Please retry.");
 		}
-		
-		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
-	    }
-	    catch(Exception e){
-		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
-		Util.handleExceptionNoRestart("Error sending data", e);
-		throw new Exception("A network communication error occurred.  Please retry.");
 	    }
         }
 
@@ -465,6 +469,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 	}
 	public void run(){
 	    try{
+		shouldSaveNetworkSettings = false;
 		doSave(null, false);
 		EmailConnectivityTestJDialog connectivityJDialog = new EmailConnectivityTestJDialog((Dialog)InitialSetupEmailJPanel.this.getTopLevelAncestor());
 		connectivityJDialog.setVisible(true);
@@ -473,6 +478,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 		Util.handleExceptionNoRestart("Error testing connectivity", e);
 	    }
 	    finally{
+		shouldSaveNetworkSettings = true;
 		SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		    InitialSetupEmailJPanel.this.connectivityTestJButton.setEnabled(true);
 		}});
