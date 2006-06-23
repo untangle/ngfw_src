@@ -16,7 +16,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.sql.Timestamp;
 
-import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.security.LoginFailureReason;
@@ -31,7 +30,7 @@ import com.metavize.mvvm.tran.IPaddr;
  * table="PORTAL_LOGIN_EVT"
  * mutable="false"
  */
-public class PortalLoginEvent extends LogEvent implements Serializable
+public class PortalLoginEvent extends PortalEvent implements Serializable
 {
     private static final long serialVersionUID = 5003003603098874917L;
     

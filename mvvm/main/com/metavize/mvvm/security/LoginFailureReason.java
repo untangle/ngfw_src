@@ -54,7 +54,7 @@ public class LoginFailureReason implements Serializable
 
     private Object readResolve()
     {
-        return INSTANCES.get(reason);
+        return INSTANCES.get(key);
     }
 
     public static LoginFailureReason getInstance(char key)

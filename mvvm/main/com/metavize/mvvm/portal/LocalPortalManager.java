@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.portal;
 
+import com.metavize.mvvm.logging.EventLogger;
 import java.util.List;
 import java.util.Set;
 
@@ -71,4 +72,8 @@ public interface LocalPortalManager
     List<PortalLogin> getActiveLogins();
 
     void forceLogout(PortalLogin login);
+
+    // Need this because the events have to be logged by the transform's logger
+    void setEventLogger(EventLogger elogger);
+    EventLogger getEventLogger();
  }

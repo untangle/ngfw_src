@@ -74,7 +74,6 @@ class PortalManagerImpl implements LocalPortalManager
     private final RemotePortalApplicationManagerImpl remoteAppManager;
     private final PortalRealm portalRealm;
     private final AddressBook addressBook;
-    private final EventLogger eventLogger;
     private final LoginReaper reaper;
     private final ThreadLocal<String> localAddr = new ThreadLocal<String>();
 
@@ -83,6 +82,7 @@ class PortalManagerImpl implements LocalPortalManager
     private final Logger logger = Logger.getLogger(PortalManagerImpl.class);
 
     private PortalSettings portalSettings;
+    private EventLogger tranLogger;
 
     PortalManagerImpl(MvvmContextImpl mvvmContext)
     {
@@ -115,8 +115,6 @@ class PortalManagerImpl implements LocalPortalManager
         portalRealm = new PortalRealm();
 
         addressBook = mvvmContext.appAddressBook();
-
-        eventLogger = mvvmContext.eventLogger();
 
         reaper = new LoginReaper();
         mvvmContext.newThread(reaper).start();
@@ -276,6 +274,18 @@ class PortalManagerImpl implements LocalPortalManager
         return l;
     }
 
+    public EventLogger getEventLogger()
+    {
+        if (tranLogger != null)
+            return tranLogger;
+        return mvvmContext.eventLogger();
+    }
+
+    public void setEventLogger(EventLogger elogger)
+    {
+        tranLogger = elogger;
+    }
+
     // package protected methods ----------------------------------------------
 
     AuthenticatorBase newPortalAuthenticator()
@@ -333,11 +343,11 @@ class PortalManagerImpl implements LocalPortalManager
                 if (null == ue) {
                     logger.debug("no user found with login: " + uid);
                     PortalLoginEvent event = new PortalLoginEvent(addr, uid, false, LoginFailureReason.UNKNOWN_USER);
-                    eventLogger.log(event);
+                    getEventLogger().log(event);
                 } else {
                     logger.debug("password check failed");
                     PortalLoginEvent event = new PortalLoginEvent(addr, uid, false, LoginFailureReason.BAD_PASSWORD);
-                    eventLogger.log(event);
+                    getEventLogger().log(event);
                 }
 
                 try {
@@ -363,7 +373,7 @@ class PortalManagerImpl implements LocalPortalManager
         if (!user.isLive()) {
             logger.debug("user is disabled");
             PortalLoginEvent event = new PortalLoginEvent(addr, uid, false, LoginFailureReason.DISABLED);
-            eventLogger.log(event);
+            getEventLogger().log(event);
             return null;
         }
 
@@ -383,7 +393,7 @@ class PortalManagerImpl implements LocalPortalManager
         activeLogins.put(uid, pld);
 
         PortalLoginEvent event = new PortalLoginEvent(addr, uid, true);
-        eventLogger.log(event);
+        getEventLogger().log(event);
 
         return pl;
     }
@@ -400,7 +410,7 @@ class PortalManagerImpl implements LocalPortalManager
 
         PortalLogoutEvent evt = new PortalLogoutEvent(login.getClientAddr(),
                                                       login.getUser(), reason);
-        eventLogger.log(evt);
+        getEventLogger().log(evt);
     }
 
     private boolean isSessionLive(PortalLogin pl)
@@ -560,6 +570,7 @@ class PortalManagerImpl implements LocalPortalManager
             while (currentThread == thread) {
                 for (PortalLoginDesc pld : activeLogins.values()) {
                     if (!pld.isLive()) {
+                        logger.info("Reaping login of " + pld.getPortalLogin);
                         activeLogins.remove(pld.getUser());
                     }
                 }
