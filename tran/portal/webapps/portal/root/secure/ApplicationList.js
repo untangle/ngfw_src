@@ -9,14 +9,8 @@ function ApplicationList(parent)
    }
 
    var header = [];
-   var hi = new DwtListHeaderItem("name", "Name", null, 200, true, true, true);
-   hi.memberName = "name";
-   header.push(hi);
-   hi = new DwtListHeaderItem("application", "Application Name", null, 100, true, true, true);
-   hi.memberName = "app";
-   header.push(hi);
-   hi = new DwtListHeaderItem("target", "Target", null, 200, true, true, true);
-   hi.memberName = "target";
+   var hi = new DwtListHeaderItem("description", "Application", null, 200, true, true, true);
+   hi.memberName = "description";
    header.push(hi);
 
    DwtListView.call(this, parent, "ApplicationList", DwtControl.ABSOLUTE_STYLE, header);

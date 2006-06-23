@@ -12,7 +12,7 @@ function BookmarkList(parent)
    var hi = new DwtListHeaderItem("name", "Name", null, 200, true, true, true);
    hi.memberName = "name";
    header.push(hi);
-   hi = new DwtListHeaderItem("application", "Application Name", null, 100, true, true, true);
+   hi = new DwtListHeaderItem("application", "Application", null, 100, true, true, true);
    hi.memberName = "app";
    header.push(hi);
    hi = new DwtListHeaderItem("target", "Target", null, 200, true, true, true);
