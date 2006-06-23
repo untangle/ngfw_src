@@ -224,7 +224,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 
                 externalAdminButtonGroup.add(externalAccessEnabledRadioButton);
                 externalAccessEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                externalAccessEnabledRadioButton.setText("<html><b>Enable</b> access to EdgeGuard outside the local network, via secure http (https).(This is the default settings)</html>");
+                externalAccessEnabledRadioButton.setText("<html><b>Enable</b> access to EdgeGuard outside the local network, via secure http (https).(This is the default setting)</html>");
                 externalAccessEnabledRadioButton.setFocusPainted(false);
                 externalAccessEnabledRadioButton.setFocusable(false);
                 externalAccessEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
