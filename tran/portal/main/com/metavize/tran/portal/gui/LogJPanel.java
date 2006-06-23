@@ -19,9 +19,9 @@ import javax.swing.table.*;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 import com.metavize.gui.widgets.editTable.*;
-import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.logging.EventRepository;
+import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.mvvm.tran.Transform;
@@ -39,14 +39,14 @@ public class LogJPanel extends MLogTableJPanel {
         depthJSlider.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent ce) {
                     int v = depthJSlider.getValue();
-                    EventManager<LogEvent> em = portalTransform.getEventManager();
+                    EventManager<PortalEvent> em = portalTransform.getEventManager();
                     em.setLimit(v);
                 }
             });
 
         setTableModel(new LogTableModel());
 
-        EventManager<LogEvent> eventManager = portalTransform.getEventManager();
+        EventManager<PortalEvent> eventManager = portalTransform.getEventManager();
         for (RepositoryDesc fd : eventManager.getRepositoryDescs()) {
             queryJComboBox.addItem(fd.getName());
         }
@@ -54,8 +54,8 @@ public class LogJPanel extends MLogTableJPanel {
 
     protected void refreshSettings(){
         PortalTransform portalTransform = (PortalTransform)logTransform;
-        EventManager<LogEvent> em = portalTransform.getEventManager();
-        EventRepository<LogEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
+        EventManager<PortalEvent> em = portalTransform.getEventManager();
+        EventRepository<PortalEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
         settings = ef.getEvents();
     }
 
@@ -91,7 +91,10 @@ public class LogJPanel extends MLogTableJPanel {
 		    event.add( newEvent.getUid() );
 		    event.add( new IPaddrString(newEvent.getClientAddr()) );
 		    event.add( "Success" );
-		    event.add( "" );
+                    String reason = "";
+                    if (newEvent.getReason() != null)
+                        reason = newEvent.getReason().toString();
+		    event.add( reason );
 		    allEvents.add( event );
 		}
 		else if( requestLog instanceof PortalLoginEvent ){
@@ -100,7 +103,11 @@ public class LogJPanel extends MLogTableJPanel {
 		    event.add( newEvent.getUid() );
 		    event.add( new IPaddrString(newEvent.getClientAddr()) );
 		    event.add( newEvent.isSucceeded()==true?"Success":"Failure" );
-		    event.add( newEvent.getReason().toString() );
+                    String reason = "";
+                    if (!newEvent.isSucceeded())
+                        if (newEvent.getReason() != null)
+                            reason = newEvent.getReason().toString();
+		    event.add( reason );
 		    allEvents.add( event );
 		}
             }

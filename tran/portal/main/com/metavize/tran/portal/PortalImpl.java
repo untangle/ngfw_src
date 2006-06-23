@@ -19,11 +19,13 @@ import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
+import com.metavize.mvvm.logging.SimpleEventFilter;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.portal.Application;
 import com.metavize.mvvm.portal.Bookmark;
 import com.metavize.mvvm.portal.LocalApplicationManager;
 import com.metavize.mvvm.portal.LocalPortalManager;
+import com.metavize.mvvm.portal.PortalEvent;
 import com.metavize.mvvm.portal.PortalSettings;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
@@ -72,25 +74,30 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[0];
 
-    private final EventLogger<LogEvent> eventLogger;
+    private final EventLogger<PortalEvent> eventLogger;
 
     private Application browserApp;
     private Application proxyApp;
     private Application rdpApp;
     private Application vncApp;
 
+    private LocalPortalManager lpm;
+
     // constructors -----------------------------------------------------------
 
     public PortalImpl()
     {
+        MvvmLocalContext mctx = MvvmContextFactory.context();
+        lpm = mctx.portalManager();
         logger.debug("<init>");
         TransformContext tctx = getTransformContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
+
+        SimpleEventFilter ef = new PortalLoginoutFilter();
+        eventLogger.addSimpleEventFilter(ef);
      }
 
     private void registerApps() {
-        MvvmLocalContext mctx = MvvmContextFactory.context();
-        LocalPortalManager lpm = mctx.portalManager();
         LocalApplicationManager lam = lpm.applicationManager();
         browserApp = lam.registerApplication("CIFS", "Network File Browser",
                                              null, null, 0, CIFS_JS);
@@ -174,8 +181,6 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     }
 
     private void deregisterApps() {
-        MvvmLocalContext mctx = MvvmContextFactory.context();
-        LocalPortalManager lpm = mctx.portalManager();
         LocalApplicationManager lam = lpm.applicationManager();
         lam.deregisterApplication(browserApp);
         lam.deregisterApplication(proxyApp);
@@ -224,7 +229,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
 
     // Transform methods ------------------------------------------------------
 
-    public EventManager<LogEvent> getEventManager()
+    public EventManager<PortalEvent> getEventManager()
     {
         return eventLogger;
     }
@@ -247,14 +252,16 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     }
 
     @Override
-        protected void postInit(final String[] args) {
-            registerApps();
-        }
+    protected void postInit(final String[] args) {
+        lpm.setEventLogger(eventLogger);
+        registerApps();
+    }
 
     @Override
-        protected void preDestroy() {
-            deregisterApps();
-        }
+    protected void preDestroy() {
+        deregisterApps();
+        lpm.setEventLogger(null);
+    }
 
     // Portal methods ----------------------------------------------
 
