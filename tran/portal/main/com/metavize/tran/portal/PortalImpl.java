@@ -106,8 +106,19 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
             logger.error("Unable to deploy Proxy web app");
         }
 
-        proxyApp = lam.registerApplication("HTTP", "Web Proxy", null, null, 0,
-                                           WEB_JS);
+        Application.Destinator httpDestinator = new Application.Destinator() {
+                public String getDestinationHost(Bookmark bm) {
+		    // This isn't yet used, so we fake it for now. XXX
+		    return "localhost";
+                }
+                public int getDestinationPort(Bookmark bm) {
+		    // This isn't yet used, so we fake it for now. XXX
+                    return 80;
+                }
+            };
+
+        proxyApp = lam.registerApplication("HTTP", "Web Proxy", httpDestinator,
+					   null, 0, WEB_JS);
 
         Application.Destinator rdpDestinator = new Application.Destinator() {
                 public String getDestinationHost(Bookmark bm) {
