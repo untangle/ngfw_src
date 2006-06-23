@@ -507,6 +507,8 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
 
   <property name="build.servlets" value="${build.root}/servlets"/>
 
+  <!-- This whole target is no longer valid, due to the fact that -->
+  <!-- everything is now in webapps using the mkwap.sh script -->
   <target name="compile.servlets" depends="jar.mvvm">
     <mkdir dir="${build.servlets}"/>
 
@@ -520,26 +522,6 @@ $Id: build.xml,v 1.94 2005/03/25 20:02:46 rbscott Exp $
             cache="${build.depcache}/servlets" closure="yes">
       <patternset includesfile="${build.depcache}/servlets.patternset"/>
     </depend>
-
-    <javac destdir="${build.servlets}"
-           debug="on"
-           optimize="false"
-           deprecation="on"
-           source="1.5"
-           target="1.5"
-           includeAntRuntime="false">
-
-      <classpath refid="tomcat.thirdparty.classpath"/>
-      <classpath refid="log4j.classpath"/>
-      <classpath path="${build.jar}/bootstrap.jar"/>
-      <classpath refid="mvvm.classpath"/>
-
-      <src path="${src.main}"/>
-      <src path="${build.gensrc}"/>
-
-      <include name="com/metavize/mvvm/servlet/invoker/HttpInvokerServlet.java"/>
-      <include name="com/metavize/jsp/**/*.java"/>
-    </javac>
   </target>
 
   <target name="jar.servlets" depends="compile.servlets">
