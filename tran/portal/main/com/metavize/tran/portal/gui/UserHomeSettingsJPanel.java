@@ -30,7 +30,7 @@ public class UserHomeSettingsJPanel extends javax.swing.JPanel implements Savabl
     public UserHomeSettingsJPanel(PortalUser portalUser) {
 	this.portalUser = portalUser;
         initComponents();
-	timeoutJSpinner.setModel(new SpinnerNumberModel((int)(PortalHomeSettings.IDLE_TIMEOUT_MIN/60000l),
+	timeoutJSpinner.setModel(new SpinnerNumberModel((int)(PortalHomeSettings.IDLE_TIMEOUT_DEFAULT/60000l),
 							(int)(PortalHomeSettings.IDLE_TIMEOUT_MIN/60000l),
 							(int)(PortalHomeSettings.IDLE_TIMEOUT_MAX/60000l), 1));
     }

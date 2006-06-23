@@ -31,7 +31,7 @@ public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savab
     public GroupHomeSettingsJPanel(PortalGroup portalGroup) {
 	this.portalGroup = portalGroup;
         initComponents();
-	timeoutJSpinner.setModel(new SpinnerNumberModel((int)(PortalHomeSettings.IDLE_TIMEOUT_MIN/60000l),
+	timeoutJSpinner.setModel(new SpinnerNumberModel((int)(PortalHomeSettings.IDLE_TIMEOUT_DEFAULT/60000l),
 							(int)(PortalHomeSettings.IDLE_TIMEOUT_MIN/60000l),
 							(int)(PortalHomeSettings.IDLE_TIMEOUT_MAX/60000l), 1));
     }

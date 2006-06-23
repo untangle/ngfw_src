@@ -34,10 +34,10 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
     private static final String NAME_TITLE     = "Group Settings";
     private static final String NAME_HOME               = "Page Setup";
     private static final String NAME_BOOKMARKS          = "Bookmarks";
-    private static final String NAME_RDP_BOOKMARKS      = "RDP";
-    private static final String NAME_OTHER_BOOKMARKS    = "HTTP, CIFS, VNC";
+    private static final String NAME_RDP_BOOKMARKS      = "Remote Desktop";
+    private static final String NAME_OTHER_BOOKMARKS    = "Web, File Browser, VNC";
 
-    private List<String> applicationNames;
+    private List<Application> applications;
     private PortalGroup portalGroup;
     private MTransformControlsJPanel mTransformControlsJPanel;
         
@@ -77,7 +77,7 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
     }
 
     protected void refreshAll() throws Exception {
-	applicationNames = Util.getMvvmContext().portalManager().applicationManager().getApplicationNames();
+	applications = Util.getMvvmContext().portalManager().applicationManager().getApplications();
 	super.refreshAll();
 	settingsChanged = false;
     }
@@ -92,19 +92,19 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
 	// GLOBAL BOOKMARKS //
 	JTabbedPane bookmarksJTabbedPane = addTabbedPane(NAME_BOOKMARKS, null);
 
-	// RDP BOOKMARKS //
-	BookmarksJPanel rdpBookmarksJPanel = new BookmarksJPanel(portalGroup, applicationNames, "RDP");
-	bookmarksJTabbedPane.addTab(NAME_RDP_BOOKMARKS, null, rdpBookmarksJPanel);
-	addSavable(NAME_RDP_BOOKMARKS, rdpBookmarksJPanel);
-	addRefreshable(NAME_RDP_BOOKMARKS, rdpBookmarksJPanel);
-	rdpBookmarksJPanel.setSettingsChangedListener(this);
-
 	// OTHER BOOKMARKS //
-	BookmarksJPanel otherBookmarksJPanel = new BookmarksJPanel(portalGroup, applicationNames, "OTHER");
+	BookmarksJPanel otherBookmarksJPanel = new BookmarksJPanel(portalGroup, applications, "OTHER");
 	bookmarksJTabbedPane.addTab(NAME_OTHER_BOOKMARKS, null, otherBookmarksJPanel);
 	addSavable(NAME_OTHER_BOOKMARKS, otherBookmarksJPanel);
 	addRefreshable(NAME_OTHER_BOOKMARKS, otherBookmarksJPanel);
 	otherBookmarksJPanel.setSettingsChangedListener(this);
+
+	// RDP BOOKMARKS //
+	BookmarksJPanel rdpBookmarksJPanel = new BookmarksJPanel(portalGroup, applications, "RDP");
+	bookmarksJTabbedPane.addTab(NAME_RDP_BOOKMARKS, null, rdpBookmarksJPanel);
+	addSavable(NAME_RDP_BOOKMARKS, rdpBookmarksJPanel);
+	addRefreshable(NAME_RDP_BOOKMARKS, rdpBookmarksJPanel);
+	rdpBookmarksJPanel.setSettingsChangedListener(this);
 
 	// HOME //
 	GroupHomeSettingsJPanel groupHomeSettingsJPanel = new GroupHomeSettingsJPanel(portalGroup);

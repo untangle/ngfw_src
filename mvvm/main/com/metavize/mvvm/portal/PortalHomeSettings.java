@@ -36,6 +36,7 @@ public class PortalHomeSettings implements Serializable
     // private boolean showImportCert;
     private long idleTimeout = 20 * 60 * 1000; // 20 minutes
     public static final long IDLE_TIMEOUT_MIN = 1 * 60 * 1000; // 1 minute
+    public static final long IDLE_TIMEOUT_DEFAULT = 20 * 60 * 1000; // 20 minutes
     public static final long IDLE_TIMEOUT_MAX = 24 * 60 * 60 * 1000; // 1 day
 
     // constructors -----------------------------------------------------------

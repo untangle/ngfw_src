@@ -28,7 +28,7 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
     
     public GlobalHomeSettingsJPanel() {
         initComponents();
-	timeoutJSpinner.setModel(new SpinnerNumberModel((int)(PortalHomeSettings.IDLE_TIMEOUT_MIN/60000l),
+	timeoutJSpinner.setModel(new SpinnerNumberModel((int)(PortalHomeSettings.IDLE_TIMEOUT_DEFAULT/60000l),
 							(int)(PortalHomeSettings.IDLE_TIMEOUT_MIN/60000l),
 							(int)(PortalHomeSettings.IDLE_TIMEOUT_MAX/60000l), 1));
     }
