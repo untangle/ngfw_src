@@ -19,11 +19,11 @@
 }
 
 .MetavizePanel {
-    background-color: yellow;
+    background-color: transparent;
     border-width: 2px
 }
 
 .WelcomePanel {
-    background-color: white;
+    background-color: transparent;
     border-width: 2px
 }

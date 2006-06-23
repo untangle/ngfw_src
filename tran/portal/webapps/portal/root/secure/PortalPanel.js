@@ -44,9 +44,7 @@ PortalPanel.prototype._init = function()
    this.metavizePanel = new DwtComposite(this, "MetavizePanel", DwtControl.ABSOLUTE_STYLE);
    var html = [];
    html.push("<img src='/images/LogoNoText96x96.gif'>");
-   html.push("<blink><bold>Hippiesoft Dot Com Exploder</bold></blink>");
-   html.push("</br>");
-   html.push("Portal Potty(tm)");
+   html.push("<bold>Metavize Secure Portal</bold>");
    this.metavizePanel.getHtmlElement().innerHTML = html.join("");
 
    this.welcomePanel = new DwtComposite(this, "WelcomePanel", DwtControl.ABSOLUTE_STYLE);
