@@ -130,7 +130,7 @@ abstract class ArgonHook implements Runnable
              * and the client was NATd.
              */
             if (( serverIntf == clientIntf ) && 
-                !isVpnToVpn( serverIntf, clientIntf ) &&
+                !isVpnToVpn( clientIntf, serverIntf ) &&
                 !checkIsMirrored( originalServerIntf, serverIntf )) {
                 if ( logger.isInfoEnabled()) {
                     logger.info( "" + netcapSession + " has matching client and server interface, raze." );
@@ -583,9 +583,10 @@ abstract class ArgonHook implements Runnable
 
 
     /** Helper function determine if a session is going to and from a VPN interface */
-    private boolean isVpnToVpn( byte clientIntf, byte serverIntf )
+    private boolean isVpnToVpn( byte netcapClientIntf, byte netcapServerIntf )
     {
-        return (( clientIntf == IntfConstants.VPN_INTF ) && ( serverIntf == IntfConstants.VPN_INTF ));
+        return (( netcapClientIntf == IntfConverter.NETCAP_VPN ) && 
+                ( netcapServerIntf == IntfConverter.NETCAP_VPN ));
     }
 
     /* Helper function to determine if a session is going to be NATd and going in and out
