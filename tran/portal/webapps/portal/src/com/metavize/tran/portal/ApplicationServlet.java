@@ -97,6 +97,10 @@ public class ApplicationServlet extends HttpServlet
         for (Application app : apps) {
             w.print("  <application name='");
             w.print(XmlUtil.escapeXml(app.getName()));
+            w.print("' description='");
+            w.print(app.getDescription());
+            w.print("' isHostService='");
+            w.print(app.isHostService());
             w.println("'>");
             w.println("    <appJs>");
             w.println(XmlUtil.escapeXml(app.getAppJs()));

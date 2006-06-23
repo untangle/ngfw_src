@@ -27,39 +27,6 @@ function ApplicationList(parent)
 ApplicationList.prototype = new DwtListView();
 ApplicationList.prototype.constructor = ApplicationList;
 
-// public methods -------------------------------------------------------------
-
-ApplicationList.prototype.refresh = function()
-{
-   var cb = new AjxCallback(this, this._applicationListCallback, { })
-
-   AjxRpc.invoke(null, "secure/application?command=ls", null, cb, true);
-}
-
-// internal methods -----------------------------------------------------------
-
-ApplicationList.prototype._setListingXml = function(dom)
-{
-   var root = dom.getElementsByTagName("applications")[0];
-
-   var children = root.childNodes;
-
-   var listing = new AjxVector();
-
-   for (var i = 0; i < children.length; i++) {
-      var child = children[i];
-
-      if ("application" == child.tagName) {
-         listing.add(new Application(child.getAttribute("id"),
-                                  child.getAttribute("name"),
-                                  child.getAttribute("app"),
-                                  child.getAttribute("target")));
-      }
-   }
-
-   this.set(listing);
-}
-
 // DwtListView methods --------------------------------------------------------
 
 ApplicationList.prototype._createItemHtml = function(item) {
@@ -123,13 +90,4 @@ ApplicationList.prototype._sortColumn = function(col, asc)
    delete fn;
 
    this.setUI(0);
-}
-
-// callbacks ------------------------------------------------------------------
-
-ApplicationList.prototype._applicationListCallback = function(obj, results)
-{
-      // XXX if error, show login dialog
-   this._setListingXml(results.xml);
-   this.setUI(1);
 }

@@ -203,21 +203,30 @@ Portal.prototype._refreshAppsCallback = function(obj, results) {
 
    var children = root.childNodes;
 
-   this._apps = new Array();
-   this._appMap = new Object();
+   var launchableApps = new AjxVector();
+
+   this._apps = [ ];
+   this._appMap = { };
 
    for (var i = 0; i < children.length; i++) {
       var child = children[i];
 
       if ("application" == child.tagName) {
          var name = child.getAttribute("name");
+         var description = child.getAttribute("description");
+         var isHostService = child.getAttribute("isHostService");
          var appJs = child.getElementsByTagName("appJs")[0].firstChild.data;
-         var app = new Application(name, appJs);
+         var app = new Application(name, description, isHostService, appJs);
          this._apps.push(app);
          this._appMap[name] = app;
+         if (isHostService) {
+            launchableApps.add(app);
+         }
          DBG.println("this._appMap[" + name + "] = " + app);
       }
    }
+
+   this._portalPanel.applicationPanel.set(launchableApps);
 }
 
 Portal.prototype._homeButtonListener = function()

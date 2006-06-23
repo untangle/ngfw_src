@@ -1,9 +1,11 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function Application(name, appJs)
+function Application(name, description, isHostService, appJs)
 {
    this.name = name;
+   this.description = description;
+   this.isHostService = isHostService;
    eval("this._appCode = " + appJs);
 }
 

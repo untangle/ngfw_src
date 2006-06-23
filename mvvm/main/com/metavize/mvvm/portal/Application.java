@@ -28,11 +28,11 @@ public final class Application
 
 
     /**
-     * For host services, the destinator is used to determine the destination given
-     * the bookmark
+     * For host services, the destinator is used to determine the
+     * destination given the bookmark
      */
     public interface Destinator
-    {  
+    {
         String getDestinationHost(Bookmark bm);
 
         int getDestinationPort(Bookmark bm);

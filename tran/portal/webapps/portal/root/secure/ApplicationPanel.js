@@ -24,9 +24,9 @@ ApplicationPanel.prototype.constructor = ApplicationPanel;
 
 // public methods -------------------------------------------------------------
 
-ApplicationPanel.prototype.refresh = function()
+ApplicationPanel.prototype.set = function(list)
 {
-   this._applicationList.refresh();
+   this._applicationList.set(list);
 }
 
 ApplicationPanel.prototype.getSelection = function()
