@@ -43,6 +43,7 @@ public class PortalSettings implements Serializable
 
 
     // business methods ------------------------------------------------------
+
     public PortalUser addUser(String uid)
     {
         PortalUser newUser = new PortalUser(uid, null);

@@ -18,6 +18,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.naming.ServiceUnavailableException;
 
@@ -54,7 +55,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import java.util.Set;
 
 /**
  * Implementation of the PortalManager.
@@ -570,7 +570,7 @@ class PortalManagerImpl implements LocalPortalManager
             while (currentThread == thread) {
                 for (PortalLoginDesc pld : activeLogins.values()) {
                     if (!pld.isLive()) {
-                        logger.info("Reaping login of " + pld.getPortalLogin);
+                        logger.info("Reaping login of " + pld.getPortalLogin());
                         activeLogins.remove(pld.getUser());
                     }
                 }

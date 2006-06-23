@@ -27,6 +27,11 @@ PortalPanel.prototype.constructor = PortalPanel;
 
 // public methods -------------------------------------------------------------
 
+PortalPanel.prototype.setMotd = function(motd)
+{
+   this._welcomePanel.getHtmlElement().innerHTML = motd;
+}
+
 PortalPanel.prototype.refresh = function()
 {
    this.bookmarkPanel.refresh();
@@ -47,8 +52,7 @@ PortalPanel.prototype._init = function()
    html.push("<bold>Metavize Secure Portal</bold>");
    this.metavizePanel.getHtmlElement().innerHTML = html.join("");
 
-   this.welcomePanel = new DwtComposite(this, "WelcomePanel", DwtControl.ABSOLUTE_STYLE);
-   this.welcomePanel.getHtmlElement().innerHTML = "<blink>hello world</blink>"
+   this._welcomePanel = new DwtComposite(this, "WelcomePanel", DwtControl.ABSOLUTE_STYLE);
 
    this.applicationPanel = new ApplicationPanel(this);
 
@@ -69,8 +73,8 @@ PortalPanel.prototype._layout = function()
    this.metavizePanel.setBounds(left, y, width, 150);
    y += this.metavizePanel.getSize().y + 25;
 
-   this.welcomePanel.setBounds(left, y, width, 100);
-   y += this.welcomePanel.getSize().y + 25;
+   this._welcomePanel.setBounds(left, y, width, 100);
+   y += this._welcomePanel.getSize().y + 25;
 
    this.applicationPanel.setBounds(left, y, width, 300);
    y += this.applicationPanel.getSize().y + 25;

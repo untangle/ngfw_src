@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.metavize.mvvm.portal.PortalLogin;
+import com.metavize.mvvm.util.XmlUtil;
 import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
@@ -147,7 +148,7 @@ public class FileLister extends HttpServlet
         try {
             for (SmbFile f : files) {
                 String tag = f.isDirectory() ? "dir" : "file";
-                String name = Util.escapeXml(f.getName());
+                String name = XmlUtil.escapeXml(f.getName());
                 long ctime = f.createTime();
                 long mtime = f.lastModified();
                 long length = f.length();

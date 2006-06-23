@@ -129,6 +129,7 @@ Portal.prototype.showPortal = function()
 
 Portal.prototype.refresh = function()
 {
+   this._refreshPageInfo()
    this._loadApps();
    this._portalPanel.refresh();
 }
@@ -150,6 +151,15 @@ Portal.prototype.layout = function()
 
    DBG.println("SET BOUNDS(" + x + ", " + y + ", " + width + ", " + (height - y) + ")");
    this._mainPanel.setBounds(x, y, width, height - y);
+}
+
+// private methods ------------------------------------------------------------
+
+Portal.prototype._refreshPageInfo = function()
+{
+   AjxRpc.invoke(null, "secure/portal?command=info", null,
+                 new AjxCallback(this, this._refreshPageInfoCallback,
+                                 new Object()), true);
 }
 
 // init -----------------------------------------------------------------------
@@ -244,6 +254,14 @@ Portal.prototype._refreshAppsCallback = function(obj, results) {
 
    this._portalPanel.applicationPanel.set(launchableApps);
 }
+
+Portal.prototype._refreshPageInfoCallback = function(obj, results) {
+   var root = results.xml.getElementsByTagName("page-info")[0];
+   document.title = root.getAttribute("title");
+   var motd = root.getAttribute("motd");
+   this._portalPanel.setMotd(motd);
+}
+
 
 Portal.prototype._homeButtonListener = function()
 {

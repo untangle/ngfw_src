@@ -106,6 +106,18 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   </servlet-mapping>
 
   <servlet>
+    <servlet-name>PortalServlet</servlet-name>
+    <servlet-class>
+      com.metavize.tran.portal.PortalServlet
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>PortalServlet</servlet-name>
+    <url-pattern>/secure/portal</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
     <servlet-name>LogoutServlet</servlet-name>
     <servlet-class>
       com.metavize.tran.portal.LogoutServlet
