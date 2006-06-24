@@ -206,8 +206,8 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 
                 smtpButtonGroup.add(smtpDisabledJRadioButton);
                 smtpDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                smtpDisabledJRadioButton.setText("<html><b>Automatically Set</b>  using the network's DNS server.</html>");
-                smtpDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
+                smtpDisabledJRadioButton.setText("<html>Send Email Directly (default)</html>");
+                smtpDisabledJRadioButton.setActionCommand("<html>Send Email Directly (default)</html>");
                 smtpDisabledJRadioButton.setFocusPainted(false);
                 smtpDisabledJRadioButton.setFocusable(false);
                 smtpDisabledJRadioButton.setOpaque(false);
@@ -226,7 +226,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 
                 smtpButtonGroup.add(smtpEnabledJRadioButton);
                 smtpEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                smtpEnabledJRadioButton.setText("<html><b>Manually Set</b> using  the fields below.</html>");
+                smtpEnabledJRadioButton.setText("<html>Send Email using the specified SMTP Server</html>");
                 smtpEnabledJRadioButton.setFocusPainted(false);
                 smtpEnabledJRadioButton.setFocusable(false);
                 smtpEnabledJRadioButton.setOpaque(false);

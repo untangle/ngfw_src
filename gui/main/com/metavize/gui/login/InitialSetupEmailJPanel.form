@@ -47,8 +47,8 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Automatically Set&lt;/b&gt;  using the network&apos;s DNS server.&lt;/html&gt;"/>
-            <Property name="actionCommand" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Use DHCP&lt;/b&gt; to automatically set EdgeGuard&apos;s IP address from the network&apos;s DHCP server.&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;Send Email Directly (default)&lt;/html&gt;"/>
+            <Property name="actionCommand" type="java.lang.String" value="&lt;html&gt;Send Email Directly&lt;/html&gt;"/>
             <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="opaque" type="boolean" value="false"/>
@@ -73,7 +73,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Manually Set&lt;/b&gt; using  the fields below.&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;Send Email using the specified SMTP Server&lt;/html&gt;"/>
             <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="opaque" type="boolean" value="false"/>
