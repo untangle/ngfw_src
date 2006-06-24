@@ -1,3 +1,9 @@
+metavize-java (0.2.0-926) stable; urgency=low
+
+  * auto build
+
+ -- Dirk Morris <dmorris@metavize.com>  Fri, 23 Jun 2006 19:30:15 -0700
+
 metavize-java (0.2.0-925) stable; urgency=low
 
   * auto build
