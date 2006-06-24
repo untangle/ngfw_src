@@ -156,6 +156,9 @@ public class AddressBookImpl implements AddressBook {
     //====================================================
     public boolean authenticate(String uid, String pwd)
         throws ServiceUnavailableException {
+        if (uid == null || uid.equals("") || pwd == null || pwd.equals(""))
+            // No blank uids or passwords.
+            return false;
 
         //Stash reference method-local, in case config
         //changes and this "goes null".
