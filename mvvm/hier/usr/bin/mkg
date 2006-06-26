@@ -143,6 +143,7 @@ if [ -z $prefix ] ; then
     elif [ "$1" = "remove" ] ; then
         aptlog "start $stamp" "apt-get remove $REMO_OPTS \"$2\""
         apt-get remove $REMO_OPTS "$2" >>$APT_LOG 2>&1
+        apt-get clean >>/dev/null 2>&1
         RET=$?
         aptlog "done $stamp"
     fi
