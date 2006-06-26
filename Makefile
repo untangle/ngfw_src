@@ -92,6 +92,7 @@ pkgs: chk
 	@echo "==> pkgs"
 	@rm -f ./*stamp
 	@fakeroot debian/rules binary
+	@sudo buildtools/rebuildmvvm.sh
 
 release: clean pkgs
 	@buildtools/incVersion.sh "$(packages)"

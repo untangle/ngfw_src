@@ -5,5 +5,3 @@ if [ "$1" = "purge" ] ; then
     update-rc.d mvvm remove > /dev/null
 fi
 
-## Remove the cached nat-transform package
-rm -f /var/lib/mvvm/nat-transform.deb
