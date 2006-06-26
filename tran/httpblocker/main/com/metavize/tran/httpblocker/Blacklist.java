@@ -277,12 +277,14 @@ class Blacklist
             }
 
             if (null != category) {
-                HttpBlockerEvent hbe = new HttpBlockerEvent
-                    (requestLine.getRequestLine(), Action.BLOCK, reason, category);
-                transform.log(hbe);
+                if (null == stringRule || stringRule.getLog()) {
+                    HttpBlockerEvent hbe = new HttpBlockerEvent
+                        (requestLine.getRequestLine(), Action.BLOCK, reason, category);
+                    transform.log(hbe);
+                }
 
                 BlacklistCategory bc = settings.getBlacklistCategory(category);
-                if (null == bc && null != stringRule && stringRule.getLog()) {
+                if (null == bc && null != stringRule && !stringRule.isLive()) {
                     return null;
                 } else if (null != bc && bc.getLogOnly()) {
                     return null;
@@ -296,7 +298,7 @@ class Blacklist
     }
 
     private StringRule findCategory(CharSequence[] strs, String val,
-                                List<StringRule> rules)
+                                    List<StringRule> rules)
     {
         int i = findMatch(strs, val);
         return 0 > i ? null : lookupCategory(strs[i], rules);
@@ -335,14 +337,16 @@ class Blacklist
         return -1;
     }
 
-    private StringRule lookupCategory(CharSequence match, List<StringRule> rules)
+    private StringRule lookupCategory(CharSequence match,
+                                      List<StringRule> rules)
+
     {
         for (StringRule rule : rules) {
             String url = rule.getString().toLowerCase();
             String uri = url.startsWith("http://")
                 ? url.substring("http://".length()) : url;
 
-            if (rule.isLive() && match.equals(uri)) {
+            if ((rule.isLive() || rule.getLog()) && match.equals(uri)) {
                 return rule;
             }
         }
