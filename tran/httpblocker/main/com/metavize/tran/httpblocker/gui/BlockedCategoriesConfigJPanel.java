@@ -105,7 +105,7 @@ class CategoryTableModel extends MSortedTableModel<Object> {
 		    newElem.setBlockDomains( true );
 		    newElem.setBlockUrls( true );
 		    newElem.setBlockExpressions( true );
-		    newElem.setLogOnly(true); // this setting wont/shouldnt actually be used since block implies log
+		    newElem.setLogOnly(false); // this setting wont/shouldnt actually be used since block implies log
 		}
 		else if( selectedItem.equals(ACTION_PASS)  ){
 		    newElem.setBlockDomains( false );
@@ -114,9 +114,9 @@ class CategoryTableModel extends MSortedTableModel<Object> {
 		    newElem.setLogOnly(false);
 		}
 		else{ // ACTION_PASS_AND_LOG
-		    newElem.setBlockDomains( false );
-		    newElem.setBlockUrls( false );
-		    newElem.setBlockExpressions( false );
+		    newElem.setBlockDomains( true );
+		    newElem.setBlockUrls( true );
+		    newElem.setBlockExpressions( true );
 		    newElem.setLogOnly(true);
 		}
 		newElem.setDescription( (String) rowVector.elementAt(4) );
