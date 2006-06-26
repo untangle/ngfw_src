@@ -244,7 +244,7 @@ class Blacklist
         URI uri = requestLine.getRequestUri().normalize();
 
         if (settings.getFascistMode()) {
-            return settings.getBlockTemplate().render(host, uri, "not whitelisted");
+            return settings.getBlockTemplate().render(host, uri, "not allowed");
         } else {
             StringBuilder sb = new StringBuilder(host);
             sb.reverse();
