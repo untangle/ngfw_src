@@ -1,0 +1,3 @@
+reports/BoxBackupDetail.jasper:BoxBackup--Backups:Backup Incidents
+com.metavize.tran.boxbackup.reports.BoxBackupSummarizer:summarizer:Summarizer
+reportTitlePrefix:parameter:none
