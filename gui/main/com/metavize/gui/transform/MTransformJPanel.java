@@ -219,16 +219,11 @@ public class MTransformJPanel extends javax.swing.JPanel {
 	for( Map.Entry<String,Shutdownable> shutdownableEntry : shutdownableMap.entrySet()){
 	    shutdownableEntry.getValue().doShutdown();
 	}
-        try{
-            SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                mTransformControlsJPanel.doShutdown();
-                mTransformDisplayJPanel.doShutdown();
-                setControlsShowing(false);
-            }});
-        }
-        catch(Exception e){
-            Util.handleExceptionNoRestart("Error doing shutdown", e);
-        }
+	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+	    mTransformControlsJPanel.doShutdown();
+	    mTransformDisplayJPanel.doShutdown();
+	    setControlsShowing(false);
+	}});
     }
 
     JToggleButton powerJToggleButton(){ return powerJToggleButton; }
