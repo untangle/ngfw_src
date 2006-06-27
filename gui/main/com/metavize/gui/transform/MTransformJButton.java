@@ -158,7 +158,7 @@ public class MTransformJButton extends JButton {
     public String getName(){
 	String name = mackageDesc.getName();
 	if(isTrial)
-	    name = name.substring(0,name.indexOf('-')) + "-trial30-storeitem";
+	    name = name.replace("-storeitem", "-trial30-storeitem");
 	return name;
     }
     public String getDisplayName(){
