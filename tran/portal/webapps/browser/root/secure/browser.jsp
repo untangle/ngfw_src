@@ -50,7 +50,7 @@ String principal = pl.getNtlmAuth().toString();
 
 <script language="JavaScript">
 function launch() {
-DBG = new AjxDebug(AjxDebug.DBG1, null, false);
+//DBG = new AjxDebug(AjxDebug.DBG1, null, false);
 
 var shell = new DwtShell("MainShell", false);
 new Browser(shell<%=null == target ? "" : (", '" + target + "'")%>);
