@@ -344,7 +344,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Connectivity Test&lt;/b&gt; will try to send an email to a specified recipient, using your currently saved SMTP Email Server settings.  If the email is not received, your settings may be incorrect.  If you have made changes to the above settings, you must save them before this button will be enabled.&lt;/html&gt;"/>
+                <Property name="text" type="java.lang.String" value="&lt;html&gt;The &lt;b&gt;Email Test&lt;/b&gt; will try to send an email to a specified recipient, using your currently saved SMTP Email Server settings.  If the email is not received, your settings may be incorrect.  If you have made changes to the above settings, you must save them before this button will be enabled.&lt;/html&gt;"/>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -357,7 +357,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Run Connectivity Test"/>
+                <Property name="text" type="java.lang.String" value="Run Email Test"/>
                 <Property name="focusPainted" type="boolean" value="false"/>
                 <Property name="focusable" type="boolean" value="false"/>
               </Properties>

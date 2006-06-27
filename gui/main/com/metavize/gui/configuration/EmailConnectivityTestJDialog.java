@@ -56,12 +56,12 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
                 getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-                setTitle("Connectivity Check");
+                setTitle("Email Test");
                 setModal(true);
                 setResizable(false);
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                labelJLabel.setText("Checking Connectivity:");
+                labelJLabel.setText("Email Test:");
                 labelJLabel.setDoubleBuffered(true);
                 getContentPane().add(labelJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 369, -1));
 

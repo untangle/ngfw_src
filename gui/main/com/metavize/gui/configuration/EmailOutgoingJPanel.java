@@ -198,7 +198,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 smtpButtonGroup.add(smtpDisabledJRadioButton);
                 smtpDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 smtpDisabledJRadioButton.setText("<html>Send Email Directly</html>");
-                smtpDisabledJRadioButton.setActionCommand("<html>Send Email Directly</html>");
+                smtpDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
                 smtpDisabledJRadioButton.setFocusPainted(false);
                 smtpDisabledJRadioButton.setFocusable(false);
                 smtpDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
@@ -216,7 +216,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 
                 smtpButtonGroup.add(smtpEnabledJRadioButton);
                 smtpEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                smtpEnabledJRadioButton.setText("<html>Send Email using the specified SMTP Server</html>");
+                smtpEnabledJRadioButton.setText("<html><Send Email using the specified SMTP Server</html>");
                 smtpEnabledJRadioButton.setFocusPainted(false);
                 smtpEnabledJRadioButton.setFocusable(false);
                 smtpEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
@@ -384,7 +384,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 enableRemoteJPanel.add(jSeparator3, gridBagConstraints);
 
                 jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel10.setText("<html><b>Connectivity Test</b> will try to send an email to a specified recipient, using your currently saved SMTP Email Server settings.  If the email is not received, your settings may be incorrect.  If you have made changes to the above settings, you must save them before this button will be enabled.</html>");
+                jLabel10.setText("<html>The <b>Email Test</b> will try to send an email to a specified recipient, using your currently saved SMTP Email Server settings.  If the email is not received, your settings may be incorrect.  If you have made changes to the above settings, you must save them before this button will be enabled.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -393,7 +393,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 enableRemoteJPanel.add(jLabel10, gridBagConstraints);
 
                 connectivityTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                connectivityTestJButton.setText("Run Connectivity Test");
+                connectivityTestJButton.setText("Run Email Test");
                 connectivityTestJButton.setFocusPainted(false);
                 connectivityTestJButton.setFocusable(false);
                 connectivityTestJButton.addActionListener(new java.awt.event.ActionListener() {
