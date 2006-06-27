@@ -170,11 +170,12 @@ class CategoryTableModel extends MSortedTableModel<Object> {
             tempRow.add( newElem.getDisplayName() );
 
 	    ComboBoxModel comboBoxModel = copyComboBoxModel(categoryComboBoxModel);
-	    if( newElem.getBlockDomains() ){
-		comboBoxModel.setSelectedItem( ACTION_BLOCK );
-	    }
-	    else if( newElem.getLogOnly() ){
+
+	    if( newElem.getLogOnly() ) {
 		comboBoxModel.setSelectedItem( ACTION_PASS_AND_LOG );
+	    }
+	    else if( newElem.getBlockDomains() ) {
+		comboBoxModel.setSelectedItem( ACTION_BLOCK );
 	    }
 	    else{
 		comboBoxModel.setSelectedItem( ACTION_PASS );
