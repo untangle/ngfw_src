@@ -52,7 +52,12 @@ public class InitialSetupWizard extends MWizardJDialog {
         addWizardPageJPanel(new InitialSetupCongratulationsJPanel(), "10. Finished!", true, true);
     }
     
-    protected void wizardFinishedAbnormal(int currentPage){	
+    protected void wizardFinishedAbnormal(int currentPage){
+	if( currentPage == 9 ){
+	    wizardFinishedNormal();
+	    return;
+	}
+
 	MTwoButtonJDialog dialog = MTwoButtonJDialog.factory(this, "Setup Wizard", "If you exit now, " +
 								 "some of your settings may not be saved properly.  " +
 								 "You should continue, if possible.  ", "Setup Wizard Warning", "Warning");
@@ -68,8 +73,8 @@ public class InitialSetupWizard extends MWizardJDialog {
 	    else if( currentPage == 4 ){ // PASSWORD NOT SET
 		MOneButtonJDialog.factory(this, "", MESSAGE_NO_PASSWORD, MESSAGE_DIALOG_TITLE, "");
 	    }
-	    if(InitialSetupRoutingJPanel.getNatEnabled() && !InitialSetupRoutingJPanel.getNatChanged())
-		cleanupConnection();
+
+	    cleanupConnection();
 	    super.wizardFinishedAbnormal(currentPage);
 	}
 	else{
@@ -78,18 +83,19 @@ public class InitialSetupWizard extends MWizardJDialog {
     }
 
     protected void wizardFinishedNormal(){
-	isRegistered = true;
-	
-	if(InitialSetupRoutingJPanel.getNatEnabled() && !InitialSetupRoutingJPanel.getNatChanged())
-	    cleanupConnection();
-	
+	isRegistered = true;	
+	if( (InitialSetupRoutingJPanel.getNatEnabled() && !InitialSetupRoutingJPanel.getNatChanged()) 
+	    || Util.isLocal() )
+	    cleanupConnection();	
 	super.wizardFinishedNormal();
     }
+
     private void cleanupConnection(){
-	boolean wasLoggedIn = (Util.getMvvmContext() != null);
-        Util.setMvvmContext(null);
-	if( wasLoggedIn )
-	    MvvmRemoteContextFactory.factory().logout();
+	if( Util.getMvvmContext() != null ){
+	    Util.setMvvmContext(null);	    
+	    try{ MvvmRemoteContextFactory.factory().logout(); }
+	    catch(Exception e){ Util.handleExceptionNoRestart("Error logging off", e); };
+	}
     }
     
     public boolean isRegistered(){ return isRegistered; }    

@@ -77,6 +77,12 @@ public class MLauncher {
 			 }
 			 );
 
+	// ARGS
+        for( String arg : args )
+            if( arg.equals("local") ){
+                Util.setLocal(true);
+            }
+
         // HANDLE FIRST TIME LOGINS
         try{
             URL url = Util.getServerCodeBase();

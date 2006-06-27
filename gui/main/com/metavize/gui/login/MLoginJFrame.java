@@ -33,14 +33,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
 	getRootPane().setDoubleBuffered(true);
 	RepaintManager.currentManager(this).setDoubleBufferingEnabled(true);
 
-        // PARSE ARGS
-        boolean isEgdemo=false;
-        for( String arg : args ) // isLocal
-            if( arg.equals("local") ){
-                Util.setLocal(true);
-                break;
-            }
-
         // CREATE AND SHOW THE LOGIN
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             initComponents();
