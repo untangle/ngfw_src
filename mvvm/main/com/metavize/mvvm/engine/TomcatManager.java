@@ -236,7 +236,7 @@ class TomcatManager
         // Change for 4.0: Put the Tomcat class loader insdie the MVVM
         // class loader.
         ClassLoader mvvmCl = Thread.currentThread().getContextClassLoader();
-        ClassLoader tomcatParent = new StupidClassLoader(mvvmCl);
+        ClassLoader tomcatParent = new TomClassLoader(mvvmCl);
         try {
             // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(tomcatParent);
@@ -657,8 +657,8 @@ class TomcatManager
         return false;
     }
 
-    private static class StupidClassLoader extends ClassLoader {
-        StupidClassLoader(ClassLoader parent) {
+    private static class TomClassLoader extends ClassLoader {
+        TomClassLoader(ClassLoader parent) {
             super(parent);
         }
     }
