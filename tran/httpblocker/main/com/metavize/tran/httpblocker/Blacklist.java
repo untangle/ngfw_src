@@ -244,6 +244,12 @@ class Blacklist
         URI uri = requestLine.getRequestUri().normalize();
 
         if (settings.getFascistMode()) {
+            String c = "All Web Content";
+            Reason r = Reason.BLOCK_ALL;
+            HttpBlockerEvent hbe = new HttpBlockerEvent
+                (requestLine.getRequestLine(), Action.BLOCK, r, c);
+            transform.log(hbe);
+
             return settings.getBlockTemplate().render(host, uri, "not allowed");
         } else {
             StringBuilder sb = new StringBuilder(host);

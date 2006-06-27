@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -25,12 +25,13 @@ public class Reason implements Serializable
     public static final Reason BLOCK_URL = new Reason('U', "in URLs Block list");
     public static final Reason BLOCK_EXTENSION = new Reason('E', "in File Extensions Block list");
     public static final Reason BLOCK_MIME = new Reason('M', "in MIME Types Block list");
+    public static final Reason BLOCK_ALL = new Reason('A', "blocking all traffic");
     public static final Reason PASS_URL = new Reason('I', "in URLs Pass list");
     public static final Reason PASS_CLIENT = new Reason('C', "in Clients Pass list");
 
     /**
-     * None is to help the GUI deal with the concept of none, if you
-     * try to log this to the database, I will kill you.
+     * None is to help the GUI deal with the concept of none. Don't
+     * log this to the database, I know where you live.
      */
     public static final Reason DEFAULT = new Reason('N', "no rule applied");
 
@@ -41,6 +42,7 @@ public class Reason implements Serializable
         INSTANCES.put('U', BLOCK_URL);
         INSTANCES.put('E', BLOCK_EXTENSION);
         INSTANCES.put('M', BLOCK_MIME);
+        INSTANCES.put('A', BLOCK_ALL);
         INSTANCES.put('I', PASS_URL);
         INSTANCES.put('C', PASS_CLIENT);
         INSTANCES.put('N', DEFAULT);
