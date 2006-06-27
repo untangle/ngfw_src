@@ -10,6 +10,7 @@
  */
 package com.metavize.tran.mail.web.euv;
 
+import org.apache.log4j.Logger;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,7 +25,6 @@ import com.metavize.tran.mail.papi.MailTransform;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
 import com.metavize.tran.mail.papi.safelist.SafelistEndUserView;
 
-
 /**
  * Not really a "servlet" so much as a container used
  * to hold the singleton connection to the back-end.
@@ -33,6 +33,8 @@ import com.metavize.tran.mail.papi.safelist.SafelistEndUserView;
  */
 public class QuarantineEnduserServlet
     extends HttpServlet {
+
+    private final Logger m_logger = Logger.getLogger(QuarantineEnduserServlet.class);
 
     private static QuarantineEnduserServlet s_instance;
     private QuarantineUserView m_quarantine;
@@ -76,7 +78,7 @@ public class QuarantineEnduserServlet
                 m_safelist.test();
             }
             catch(Exception ex) {
-                log("SafelistEndUserView reference stale.  Recreate (once)", ex);
+                m_logger.warn("SafelistEndUserView reference is stale.  Recreating (once)", ex);
                 initRemoteRefs();
             }
         }
@@ -102,7 +104,7 @@ public class QuarantineEnduserServlet
                 m_quarantine.test();
             }
             catch(Exception ex) {
-                log("QuarantineUserView reference stale.  Recreate (once)", ex);
+                m_logger.warn("QuarantineUserView reference is stale.  Recreating (once)", ex);
                 initRemoteRefs();
             }
         }
@@ -122,7 +124,7 @@ public class QuarantineEnduserServlet
             m_safelist = mt.getSafelistEndUserView();
         }
         catch(Exception ex) {
-            log("Unable to create reference to Quarantine/safelist", ex);
+            m_logger.error("Unable to create reference to Quarantine/Safelist", ex);
         }
     }
 
