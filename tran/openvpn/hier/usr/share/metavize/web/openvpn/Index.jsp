@@ -1,6 +1,6 @@
 <%@page language="java"%>
 
-<% 
+<%
 boolean isValid;
 String debuggingMessages;
 String commonName;
@@ -42,7 +42,7 @@ response.setStatus( HttpServletResponse.SC_FORBIDDEN );
     <tr>
       <td id="table_main_top_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
       </td>
-      
+
       <td id="table_main_top" width="100%"><img src="images/spacer.gif" alt=" " height="1" width="1"/><br/>
       </td>
 
@@ -65,7 +65,7 @@ response.setStatus( HttpServletResponse.SC_FORBIDDEN );
                   <img src="images/logo_no_text_shiny_96x96.gif" border="0" alt="Metavize logo"/>
                 </a>
               </td>
-              
+
               <td style="padding: 0px 0px 0px 10px;" class="page_header_title" align="left" valign="middle">
                 OpenVPN<br/>
                 Client Download Utility
@@ -80,10 +80,10 @@ response.setStatus( HttpServletResponse.SC_FORBIDDEN );
 
     <!-- END MIDDLE THIRD --><!-- CONTENT AREA -->
     <tr>
-      
+
       <td id="table_main_left"></td>
 
-      <!-- CENTER CELL --> 
+      <!-- CENTER CELL -->
       <td id="table_main_center" style="padding: 8px 0px 0px;">
         <hr size="1" width="100%"/>
         <table style="padding: 1px; text-align: left; margin-left: auto; margin-right: auto; width: 400px; border: 1px;" border="1"><tbody><tr><td>
@@ -101,13 +101,13 @@ response.setStatus( HttpServletResponse.SC_FORBIDDEN );
                   Please select one of the following files.
                 </td>
               </tr>
-              
+
               <tr>
                 <td valign="top">
                   <a href="<%= response.encodeURL( "setup.exe" ) %>">Windows Installer</a>
                 </td>
               </tr>
-              
+
               <tr>
                 <td valign="top">
                   <a href="<%= response.encodeURL( "config.zip" ) %>">Configuration Files</a>
@@ -135,7 +135,7 @@ response.setStatus( HttpServletResponse.SC_FORBIDDEN );
       <td id="table_main_right"></td>
     </tr>
     <!-- END CONTENT AREA -->
-    
+
     <!-- BOTTOM THIRD -->
     <tr>
       <td id="table_main_bottom_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
