@@ -16,9 +16,9 @@ prefix=@PREFIX@
 pkglist=@FAKE_PKG_LIST@
 APT_LOG=@PREFIX@/var/log/mvvm/apt.log
 
-INST_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
-UPGD_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken "
-UPDT_OPTS=" --yes --force-yes "
+INST_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
+UPGD_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
+UPDT_OPTS=" --yes --force-yes --purge "
 REMO_OPTS=" --yes --force-yes --fix-broken --purge "
 DEBUG_OPTS=" -o Debug::pkgDPkgPM=true "
 RET=0
