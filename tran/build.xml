@@ -471,7 +471,7 @@ $Id: build.xml,v 1.37 2005/03/18 02:34:49 amread Exp $
 
   <target name="install.openvpn">
     <mkdir  dir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib"/>
-    <copy toDir="${build.webapps}/${tran.name}/WEB-INF/lib">
+    <copy toDir="${build.webapps}/openvpn/WEB-INF/lib">
       <fileset refid="mvvm-client.jarset"/>
     </copy>
     <copy file="${build.jar}/openvpn-web.jar" todir="${dist.mvvm.web}/${tran.name}/WEB-INF/lib"/>
