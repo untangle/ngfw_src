@@ -12,74 +12,43 @@
 package com.metavize.mvvm.servlet.store;
 
 import java.io.BufferedReader;
-
 import java.io.BufferedWriter;
-
 import java.io.FileOutputStream;
-
 import java.io.IOException;
-
 import java.io.InputStream;
-
 import java.io.InputStreamReader;
-
 import java.io.OutputStream;
-
 import java.io.OutputStreamWriter;
-
 import java.io.PipedInputStream;
-
 import java.io.PipedOutputStream;
-
 import java.net.Socket;
-
 import java.net.UnknownHostException;
-
 import java.util.Collections;
-
+import java.util.Enumeration;
 import java.util.HashMap;
-
 import java.util.Map;
-
 import java.util.Random;
-
 import javax.servlet.ServletException;
-
 import javax.servlet.http.HttpServlet;
-
 import javax.servlet.http.HttpServletRequest;
-
 import javax.servlet.http.HttpServletResponse;
-
 import javax.servlet.http.HttpSession;
 
-
 import com.metavize.mvvm.MvvmContextFactory;
-
 import com.metavize.mvvm.MvvmLocalContext;
-
 import com.metavize.mvvm.toolbox.MackageDesc;
-
 import com.metavize.mvvm.toolbox.ToolboxManager;
-
 import org.apache.commons.httpclient.Cookie;
-
 import org.apache.commons.httpclient.Header;
-
 import org.apache.commons.httpclient.HttpClient;
-
 import org.apache.commons.httpclient.HttpMethod;
-
 import org.apache.commons.httpclient.HttpState;
-
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-
 import org.apache.commons.httpclient.StatusLine;
-
 import org.apache.commons.httpclient.methods.GetMethod;
-
 import org.apache.log4j.Logger;
 
+// XXX we should reuse WebProxy from the Portal
 public class ProxyServlet extends HttpServlet
 {
     private static final String STORE_HOST;
@@ -87,7 +56,6 @@ public class ProxyServlet extends HttpServlet
     private static final String URI_BASE;
     private static final String BASE_URL;
     private static final Map<Character, Integer> OCCURANCE;
-    private static final int[] SHIFTS;
 
     private static final String HTTP_CLIENT = "httpClient";
     private static final String INST_COOKIE = "instCookie";
@@ -107,10 +75,6 @@ public class ProxyServlet extends HttpServlet
         }
 
         OCCURANCE = Collections.unmodifiableMap(m);
-
-        SHIFTS = new int[BASE_URL.length()];
-
-
     }
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -169,10 +133,13 @@ public class ProxyServlet extends HttpServlet
             String url = BASE_URL + (null == pi ? "" : pi)
                 + (null == qs ? "" : ("?" + qs));
             HttpMethod get = new GetMethod(url);
+            get.setFollowRedirects(true);
+            copyHeaders(req, get);
             int rc = httpClient.executeMethod(get);
             is = get.getResponseBodyAsStream();
             StatusLine sl = get.getStatusLine();
             resp.setStatus(sl.getStatusCode());
+            copyHeaders(get, resp, req);
 
             boolean rewriteStream = false;
             for (Header h : get.getResponseHeaders()) {
@@ -203,7 +170,7 @@ public class ProxyServlet extends HttpServlet
             }
 
         } catch (UnknownHostException exn) {
-            // XXX show page about txhis instead
+            // XXX show page about this instead
             throw new ServletException("unknown host", exn);
         } catch (IOException exn) {
             // XXX show page about this instead
@@ -224,16 +191,6 @@ public class ProxyServlet extends HttpServlet
                     logger.warn("could not close Socket OutputStream");
                 }
             }
-        }
-    }
-
-    protected void doHead(HttpServletRequest req, HttpServletResponse resp)
-    {
-        try {
-            logger.warn("XXX we don't support head");
-            resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
-        } catch (IOException exn) {
-            logger.warn("could not do head", exn);
         }
     }
 
@@ -307,6 +264,49 @@ public class ProxyServlet extends HttpServlet
                     offset = (offset + l) % buf.length;
                     i = buf.length - l;
                 }
+            }
+        }
+    }
+
+    private void copyHeaders(HttpServletRequest req, HttpMethod method)
+    {
+        for (Enumeration e = req.getHeaderNames(); e.hasMoreElements(); ) {
+            String k = (String)e.nextElement();
+            if (k.equalsIgnoreCase("transfer-encoding")
+                || k.equalsIgnoreCase("content-length")
+                || k.equalsIgnoreCase("cookie")) {
+                // skip
+            } else if (k.equalsIgnoreCase("host")) {
+                method.addRequestHeader("Host", STORE_HOST);
+            } else if (k.equalsIgnoreCase("referer")) {
+                // XXX we don't use this
+            } else {
+                for (Enumeration f = req.getHeaders(k); f.hasMoreElements(); ) {
+                    String v = (String)f.nextElement();
+                    method.addRequestHeader(k, v);
+                }
+            }
+        }
+    }
+
+    private void copyHeaders(HttpMethod method, HttpServletResponse resp,
+                             HttpServletRequest req)
+    {
+        for (Header h : method.getResponseHeaders()) {
+            String name = h.getName();
+            String value = h.getValue();
+
+            if (name.equalsIgnoreCase("content-type")) {
+                resp.setContentType(value);
+            } else if (name.equalsIgnoreCase("transfer-encoding")
+                       || name.equalsIgnoreCase("content-length")) {
+                // don't forward
+            } else if (name.equalsIgnoreCase("location")
+                       || name.equalsIgnoreCase("content-location")) {
+                // XXX follow redirects is true, so we dont need this?
+                logger.warn("Location header not implemented");
+            } else {
+                resp.setHeader(name, value);
             }
         }
     }
