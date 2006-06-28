@@ -114,8 +114,10 @@ needToRestart() {
         esac
     fi
 
-# just return the status of this one.
-    if tail -50 $MVVM_GC_LOG | grep -i "concurrent mode failure"; then
+# gc failure (persistent heap full)
+    cmfcount=`tail -50 $MVVM_GC_LOG | grep -ci "concurrent mode failure"`
+    if [ $cmfcount -gt 2 ]; then
+        echo "*** java heap cmf on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
         return 0;
     fi
 
