@@ -389,7 +389,7 @@ function antisubscribeRules() {
             -j MARK --set-mark $(( ${MARK_ANTISUB} | ${MARK_INTERNAL_REDIRECT} ))
 
         ## If outside is enabled, catch everything else
-        if [ "${MVVM_ALLOW_OUT_HTTPS}x" != "truex" ]; then
+        if [ "${MVVM_ALLOW_OUT_HTTPS}x" = "truex" ]; then
             ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p tcp -m mark --mark "0/${MARK_ANTISUB}" \
                 --destination ${HTTPS_PUBLIC_ADDR} \
                 --destination-port ${HTTPS_PUBLIC_PORT} \
@@ -540,6 +540,14 @@ function interceptRules() {
 ## Redirect all traffic to the public address to the mvvm
     if [ -n "${HTTPS_PUBLIC_ADDR}" ] && [ -n "${HTTPS_PUBLIC_PORT}" ] &&
         [ "${HTTPS_PUBLIC_REDIRECT_EN}x" = "truex" ]; then
+        t_mark="$(( ${MARK_ANTISUB} | ${MARK_INTERNAL_REDIRECT} ))"
+        ## Redirect stuff to the internal interface public address to the internal port.
+        ${IPTABLES} -t nat -A PREROUTING -p tcp \
+            --destination ${HTTPS_PUBLIC_ADDR} \
+            --destination-port ${HTTPS_PUBLIC_PORT} \
+            -m mark --mark "${t_mark}/${t_mark}" \
+            -j REDIRECT --to-ports ${HTTPS_INTERNAL_REDIRECT_PORT}
+
         ${IPTABLES} -t nat -A PREROUTING -p tcp \
             --destination ${HTTPS_PUBLIC_ADDR} \
             --destination-port ${HTTPS_PUBLIC_PORT} \
