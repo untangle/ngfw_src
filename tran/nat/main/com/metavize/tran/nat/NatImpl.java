@@ -190,6 +190,9 @@ public class NatImpl extends AbstractTransform implements Nat
              * services settings */
             networkManager.setNetworkSettings( newNetworkSettings, isEnabled );
             networkManager.setServicesSettings( settings );
+
+            /* Trigger an update address to regenerate the iptables rules */
+            networkManager.updateAddress();
         } catch ( Exception e ) {
             logger.error( "Could not reconfigure the network", e );
             throw e;
@@ -520,6 +523,9 @@ public class NatImpl extends AbstractTransform implements Nat
             
             networkManager.setNetworkSettings( newNetworkSettings, false );
             networkManager.setServicesSettings( defaultSettings );
+
+            /* Trigger an update address to regenerate the iptables rules */
+            networkManager.updateAddress();
         } catch ( Exception e ) {
             logger.error( "Unable to set wizard nat settings", e );
         }
