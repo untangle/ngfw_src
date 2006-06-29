@@ -8,6 +8,7 @@ DEFAULT_DELAY=20
 
 ## State of the bridge interface once it is ready to transmit
 FORWARD_STATE=3
+DISABLED_STATE=0
 
 if [ -z "${MAX_DELAY}" ]; then
     MAX_DELAY=${DEFAULT_DELAY}
@@ -18,7 +19,7 @@ function isBridgeReady()
 {
     ## This is a test to determine if there are any interfaces that are in the forwarding state
     ## Search for any bridge ports that are not in the forward state
-    local t_status=`find /sys/class/net -path '/sys/class/net/eth*/brport/state' | xargs grep -r -v ${FORWARD_STATE}`
+    local t_status=`find /sys/class/net -path '/sys/class/net/eth*/brport/state' | xargs grep -v '\(0\|3\)'`
 
     if [ -z "${t_status}" ]; then
         echo "true"
