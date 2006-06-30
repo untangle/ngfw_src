@@ -58,6 +58,10 @@ if [ -d /usr/sbin/mv ]; then
     grep -sq panic= /boot/grub/menu.lst || sed -i -e "s|nodhcp|nodhcp panic=5|" /boot/grub/menu.lst
 fi
 
+# Fix up boxes so they don't fsck after 6 months.  Now only limit is 32 reboots.
+rootdev=`cat /etc/mtab | grep " / " | awk '{print $1}'`
+tune2fs -i 0 $rootdev
+
 # Be very careful with this one.
 CHECKROOTSH=/etc/init.d/checkroot.sh
 SYSVINITVER=
