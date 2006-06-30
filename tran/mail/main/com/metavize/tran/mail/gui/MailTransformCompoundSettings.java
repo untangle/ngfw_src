@@ -24,6 +24,7 @@ import com.metavize.tran.mail.papi.safelist.SafelistAdminView;
 import java.awt.Component;
 import java.util.List;
 import java.util.Vector;
+import java.util.Arrays;
 
 public class MailTransformCompoundSettings implements CompoundSettings {
 
@@ -128,9 +129,7 @@ public class MailTransformCompoundSettings implements CompoundSettings {
 	    safelistAdminView = mailTransform.getSafelistAdminView();
 
 	// GLOBAL STUFF //
-	Vector<String> tempVector = new Vector<String>();
-	tempVector.copyInto( safelistAdminView.getSafelistContents(GLOBAL_BUSINESS_PAPERS) );
-	globalSafelist = tempVector;
+	globalSafelist = Arrays.asList(	safelistAdminView.getSafelistContents(GLOBAL_BUSINESS_PAPERS) );
 
 	if(generalSettingsComponent == null)
 	    generalSettingsComponent = Util.getSettingsComponent("com.metavize.tran.mail.gui.MCasingJPanel", "mail-casing");

@@ -278,6 +278,8 @@ class WhitelistAllUsersTableModel extends MSortedTableModel<MailTransformCompoun
         int rowIndex = 0;
 
 	for( String safelist : safelists ){
+	    if( safelist.equalsIgnoreCase("GLOBAL") )
+		continue;
 	    rowIndex++;
             tempRow = new Vector(4);
             tempRow.add( super.ROW_SAVED );
