@@ -535,10 +535,10 @@ public class Util {
                 return;
             }
             else if( throwableRef instanceof LoginStolenException ){
-                String loginName = ((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName();
-                String loginAddress = ((LoginStolenException)throwableRef).getThief().getClientAddr().getHostAddress();
-                new LoginStolenJDialog(loginName, loginAddress);
 		if( !Util.getShutdownInitiated() ){
+		    String loginName = ((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName();
+		    String loginAddress = ((LoginStolenException)throwableRef).getThief().getClientAddr().getHostAddress();
+		    new LoginStolenJDialog(loginName, loginAddress);
 		    Util.setShutdownInitiated(true);	       
 		    doShutdown();
 		    mLoginJFrame.resetLogin("Login ended by: " + loginName + " at " + loginAddress);
