@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm;
 
+import com.metavize.mvvm.engine.MvvmContextImpl;
 
 /**
  * Factory to get the MvvmContext for an MVVM instance.
