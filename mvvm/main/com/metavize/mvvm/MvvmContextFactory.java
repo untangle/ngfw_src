@@ -54,6 +54,6 @@ public class MvvmContextFactory
             }
         }
 
-        return MVVM_CONTEXT
+        return MVVM_CONTEXT;
     }
 }
