@@ -11,7 +11,6 @@
 
 package com.metavize.mvvm;
 
-import com.metavize.mvvm.engine.MvvmContextImpl;
 
 /**
  * Factory to get the MvvmContext for an MVVM instance.
@@ -21,8 +20,7 @@ import com.metavize.mvvm.engine.MvvmContextImpl;
  */
 public class MvvmContextFactory
 {
-    private static final MvvmLocalContext MVVM_CONTEXT
-        = MvvmContextImpl.context();
+    private static MvvmLocalContext MVVM_CONTEXT;
 
     /**
      * Gets the current state of the MVVM.  This provides a way to get
@@ -48,6 +46,14 @@ public class MvvmContextFactory
      */
     public static MvvmLocalContext context()
     {
-        return MVVM_CONTEXT;
+        if (null == MVVM_CONTEXT) {
+            synchronized (MvvmContextFactory.class) {
+                if (null == MVVM_CONTEXT) {
+                    MVVM_CONTEXT = MvvmContextImpl.context();
+                }
+            }
+        }
+
+        return MVVM_CONTEXT
     }
 }
