@@ -286,7 +286,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
 
     private void setView(final boolean doLater, final boolean allControlsEnabled, final boolean saveEnabled,
                          final boolean refreshEnabled, final boolean removeEnabled, final boolean powerEnabled,
-                         final Boolean powerOn, final boolean updateGraph, final int ledState){
+                         final Boolean powerOn, final boolean doVizUpdates, final int ledState){
 
         Runnable runnable = new Runnable(){
                 public void run(){
@@ -294,7 +294,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                         powerJToggleButton.setSelected( powerOn );
                         powerJToggleButton.setEnabled(true);
                     }
-                    mTransformDisplayJPanel.setUpdateGraph( updateGraph );
+                    mTransformDisplayJPanel.setDoVizUpdates( doVizUpdates );
                     stateJLabel.setViewState( ledState );
                 }
             };

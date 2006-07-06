@@ -1549,12 +1549,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     // PRIVATE CLASSES AND UTILS /////////
     public void stopAllGraphs(){
 	for( ButtonKey key : utilRackMap.keySet() )
-	    utilRackMap.get(key).mTransformDisplayJPanel().setUpdateGraph(false);
+	    utilRackMap.get(key).mTransformDisplayJPanel().setDoVizUpdates(false);
 	for( Policy policy : policyRackMap.keySet() )
 	    for( MTransformJPanel appliance : policyRackMap.get(policy).values() )
-		appliance.mTransformDisplayJPanel().setUpdateGraph(false);
+		appliance.mTransformDisplayJPanel().setDoVizUpdates(false);
 	for( ButtonKey key : coreRackMap.keySet() )
-	    coreRackMap.get(key).mTransformDisplayJPanel().setUpdateGraph(false);
+	    coreRackMap.get(key).mTransformDisplayJPanel().setDoVizUpdates(false);
     }
     private void focusInRack(final MTransformJPanel mTransformJPanel){
         SwingUtilities.invokeLater( new Runnable() { public void run() {
