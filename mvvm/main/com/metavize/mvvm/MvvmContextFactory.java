@@ -21,7 +21,8 @@ import com.metavize.mvvm.engine.MvvmContextImpl;
  */
 public class MvvmContextFactory
 {
-    private static MvvmLocalContext MVVM_CONTEXT;
+    private static final MvvmLocalContext MVVM_CONTEXT
+        = MvvmContextImpl.context();
 
     /**
      * Gets the current state of the MVVM.  This provides a way to get
@@ -47,14 +48,6 @@ public class MvvmContextFactory
      */
     public static MvvmLocalContext context()
     {
-        if (null == MVVM_CONTEXT) {
-            synchronized (MvvmContextFactory.class) {
-                if (null == MVVM_CONTEXT) {
-                    MVVM_CONTEXT = MvvmContextImpl.context();
-                }
-            }
-        }
-
         return MVVM_CONTEXT;
     }
 }

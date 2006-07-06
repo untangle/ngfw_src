@@ -41,7 +41,7 @@ import org.hibernate.SessionFactory;
 public class MvvmContextImpl extends MvvmContextBase
     implements MvvmLocalContext
 {
-    private static MvvmContextImpl CONTEXT;
+    private static final MvvmContextImpl CONTEXT = new MvvmContextImpl();
 
     private static final String REBOOT_SCRIPT = "/sbin/reboot";
 
@@ -96,13 +96,6 @@ public class MvvmContextImpl extends MvvmContextBase
 
     public static MvvmLocalContext context()
     {
-        if (null == CONTEXT) {
-            synchronized (MvvmLocalContext.class) {
-                if (null == CONTEXT) {
-                    CONTEXT = new MvvmContextImpl();
-                }
-            }
-        }
         return CONTEXT;
     }
 
