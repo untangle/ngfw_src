@@ -220,7 +220,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	else if(value instanceof Date){
 	    selectedValue = ((Date)value).toString().trim();
 	    editedComponent = jTextField;
-	    ((JTextField)editedComponent).setText(((Date) value).toString() );
+	    ((JTextField)editedComponent).setText( Util.getLogDateFormat().format((Date)value) );
 	}	
 	else if(value instanceof MPasswordField){
 	    editedComponent = mPasswordField;
