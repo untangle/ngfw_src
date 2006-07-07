@@ -60,13 +60,12 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         + "  openBookmark: function(portal, bookmark) {\n"
         + "    portal.showApplicationUrl('/rdp/rdp.jsp?t=' + bookmark.id, this, bookmark);\n"
         + "  },\n"
-        + "  bookmarkProperties: {\n"
-        + "    size: new BookmarkProperty(['640x480', '800x600', '1024x768', '1280x1024'], '800x600'),\n"
-        + "    host: null,\n"
-        + "    host: null,\n"
-        + "    command: null,\n"
-        + "    console: new BookmarkProperty(['true', 'false'], 'false')\n"
-        + "  }"
+        + "  bookmarkProperties: [\n"
+        + "    new BookmarkProperty('size', ['640x480', '800x600', '1024x768', '1280x1024'], '800x600'),\n"
+        + "    new BookmarkProperty('host'),\n"
+        + "    new BookmarkProperty('command'),\n"
+        + "    new BookmarkProperty('console', ['true', 'false'], 'false')\n"
+        + "  ]\n"
         + "};\n";
 
     private static final String VNC_JS

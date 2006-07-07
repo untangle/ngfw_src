@@ -11,10 +11,9 @@ function AddBookmarkPanel(parent, apps)
 
    this._bookmarkWidgets = [ ];
 
-   this._apps = new Array();
+   this._apps = [];
    for (var i = 0; i < apps.length; i++) {
-      DBG.println("ADDED: " + apps[i].name);
-      this._apps.push(apps[i].name);
+      this._apps.push(new DwtSelectOption(apps[i], false, apps[i].name));
    }
 
    this._init();
@@ -28,8 +27,8 @@ AddBookmarkPanel.prototype.constructor = AddBookmarkPanel;
 AddBookmarkPanel.prototype.getBookmark = function()
 {
    return new Bookmark(null, this._nameField.getValue(),
-                         this._appField.getValue(),
-                         this._targetField.getValue());
+                       this._appField.getValue(),
+                       this._targetField.getValue());
 }
 
 AddBookmarkPanel.prototype.focus = function()
@@ -46,7 +45,7 @@ AddBookmarkPanel.prototype._init = function()
    var label = new DwtLabel(this);
    label.setText("Application:");
    this._appField = new DwtSelect(this, this._apps);
-   var l = new AjxListener(this, this._appChangeListenerFn);
+   var l = new AjxListener(this, this._showFields);
    this._appField.addChangeListener(l);
    this._fields.push(this._appField);
 
@@ -55,9 +54,13 @@ AddBookmarkPanel.prototype._init = function()
 
 AddBookmarkPanel.prototype._showFields = function()
 {
-   // XXX choose between default and specific fields:
-
-   this._showDefaultFields();
+   var app = this._appField.getValue();
+   var props = app.bookmarkProperties();
+   if (props) {
+      this._showPropFields(props);
+   } else {
+      this._showDefaultFields();
+   }
 }
 
 AddBookmarkPanel.prototype._showDefaultFields = function()
@@ -84,7 +87,20 @@ AddBookmarkPanel.prototype._showDefaultFields = function()
    this._fields.push(this._targetField);
 }
 
-AddBookmarkPanel.prototype._appChangeListenerFn = function(obj, evt)
+AddBookmarkPanel.prototype._showPropFields = function(props)
 {
-   this._showDefaultFields();
+   this._fields = this._fields.splice(0, 1);
+
+   for (var i = 0; i < this._bookmarkWidgets.length; i++) {
+      this.removeChild(this._bookmarkWidgets[i]);
+   }
+
+   for (var f in props) {
+      var prop = props[f];
+      var label = prop.getLabel(this);
+      this._bookmarkWidgets.push(label);
+      var field = prop.getField(this);
+      this._fields.push(field);
+      this._bookmarkWidgets.push(field);
+   }
 }
