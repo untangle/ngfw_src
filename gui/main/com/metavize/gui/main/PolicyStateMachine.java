@@ -21,6 +21,7 @@ import java.awt.Rectangle;
 import java.awt.event.*;
 import java.lang.reflect.*;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -53,8 +54,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 
     // FOR REMOVING TRIALS FROM STORE WHEN ITEM IS PURCHASED
     private final String STOREITEM_EXTENSION = "storeitem";
-    private final String TRIAL_EXTENSION = "trial30-storeitem";
-
+    private final String TRIAL_EXTENSION     = "trial30-storeitem";
     // MVVM DATA MODELS (USED ONLY DURING INIT) //////
     private List<Tid>                       utilTidList;
     private Map<String,Object>              utilNameMap;
@@ -116,7 +116,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private static final int CONCURRENT_LOAD_MAX = 2;
     private static Semaphore loadSemaphore;
     // STORE DELAYS //////////////////
-    private static final long STORE_UPDATE_CHECK_SLEEP = 24l*60l*60l*1000l;
+    private static final long STORE_UPDATE_CHECK_SLEEP = 2l*60l*60l*1000l;
     // DOWNLOAD DELAYS ///////////////
     private static final int DOWNLOAD_CHECK_SLEEP_MILLIS = 500;
     private static final int DOWNLOAD_FINAL_PAUSE_MILLIS = 1000;
@@ -682,7 +682,6 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 }
                 if( installed )
                     return;
-
 		//// DO THE DOWNLOAD
                 MackageDesc[] originalInstalledMackages = Util.getToolboxManager().installed(); // for use later
                 long key = Util.getToolboxManager().install(mTransformJButton.getName());
@@ -703,7 +702,6 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 if( !visitor.isSuccessful() )
                     throw new Exception();
                 Thread.currentThread().sleep(DOWNLOAD_FINAL_PAUSE_MILLIS);
-
                 // DO THE INSTALL
                 long installStartTime = System.currentTimeMillis();
                 SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
@@ -729,7 +727,6 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 if( !mackageInstalled )
                     throw new Exception();
                 Thread.currentThread().sleep(INSTALL_FINAL_PAUSE_MILLIS);
-
                 // REMOVE FROM STORE
 		MackageDesc[] currentUninstalledMackages = Util.getToolboxManager().uninstalled();
                 List<MackageDesc> purchasedMackageDescs = computeNewMackageDescs(currentUninstalledMackages,
@@ -773,6 +770,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         focusInToolbox(newMTransformJButton, true); // focus and highlight in current toolbox
                     }
                 }
+		// REFRESH STATE OF ALL EXISTING APPLIANCES
+		for(Policy policy : policyRackMap.keySet()){
+		    for(MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values()){
+			mTransformJPanel.doRefreshState();
+		    }
+		}
             }
 	    catch(InterruptedException e){ throw e; }
             catch(Exception e){
@@ -885,6 +888,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 	    Util.printMessage("StoreModelThread Stopped");
         }
         private void initStoreModel(){
+	    // REFRESH STATE OF ALL EXISTING APPLIANCES
+	    for(Policy policy : policyRackMap.keySet()){
+		for(MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values()){
+		    mTransformJPanel.doRefreshState();
+		}
+	    }
             // SHOW THE USER WHATS GOING ON
             SwingUtilities.invokeLater( new Runnable(){ public void run(){
                 // CLEAR OUT THE STORE

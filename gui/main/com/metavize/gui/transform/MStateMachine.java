@@ -27,6 +27,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
     private JButton removeJButton;
     private JToggleButton powerJToggleButton;
     private BlinkJLabel stateJLabel;
+    private JLabel messageJLabel;
     private MTransformJPanel mTransformJPanel;
     private MTransformControlsJPanel mTransformControlsJPanel;
     private MTransformDisplayJPanel mTransformDisplayJPanel;
@@ -43,6 +44,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
         this.powerJToggleButton = mTransformJPanel.powerJToggleButton();
         this.transform = mTransformJPanel.getTransform();
         this.stateJLabel = mTransformJPanel.stateJLabel();
+	this.messageJLabel = mTransformJPanel.messageTextJLabel();
         this.saveJButton = mTransformControlsJPanel.saveJButton();
         this.reloadJButton = mTransformControlsJPanel.reloadJButton();
         this.removeJButton = mTransformControlsJPanel.removeJButton();
@@ -50,7 +52,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
         transformName = mTransformJPanel.getTransformDesc().getName();
         displayName = mTransformJPanel.getTransformDesc().getDisplayName();
 
-        new RefreshStateThread();
+	doRefreshState();
     }
 
 
@@ -227,7 +229,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 setStartingView(false);
             else
                 setStoppingView(false);
-            this.start();
+            start();
         }
 
         public void run(){
@@ -307,6 +309,10 @@ public class MStateMachine implements java.awt.event.ActionListener {
 
 
     // STATE REFRESHING //////////////////////////
+    public void doRefreshState(){
+        new RefreshStateThread();	
+    }
+
     private void refreshState(boolean doLater) throws Exception {
         TransformState transformState = transform.getRunState();
         if( TransformState.RUNNING.equals( transformState ) )
@@ -315,13 +321,18 @@ public class MStateMachine implements java.awt.event.ActionListener {
             setOffView(doLater);
         else
             setProblemView(doLater);
+	String extraText = mTransformJPanel.getMackageDesc().getExtraName();
+	if( (extraText!=null) && (extraText.length()>0) )
+	    messageJLabel.setText(extraText);
+	else
+	    messageJLabel.setText("");
     }
 
     class RefreshStateThread extends Thread{
         public RefreshStateThread(){
             super("MVCLIENT-StateMachineRefreshStateThread: " + displayName );
 	    setDaemon(true);
-            this.start();
+            start();
         }
         public void run(){
             try{ refreshState(true); }

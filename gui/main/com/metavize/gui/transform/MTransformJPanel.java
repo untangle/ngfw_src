@@ -226,9 +226,14 @@ public class MTransformJPanel extends javax.swing.JPanel {
 	}});
     }
 
+    public void doRefreshState(){
+	mStateMachine.doRefreshState();
+    }
+
+
     JToggleButton powerJToggleButton(){ return powerJToggleButton; }
     BlinkJLabel stateJLabel(){ return (BlinkJLabel) stateJLabel; }
-
+    JLabel messageTextJLabel(){ return messageTextJLabel; }
         private void initComponents() {//GEN-BEGIN:initComponents
                 onOffbuttonGroup = new javax.swing.ButtonGroup();
                 descriptionTextJLabel = new javax.swing.JLabel();
