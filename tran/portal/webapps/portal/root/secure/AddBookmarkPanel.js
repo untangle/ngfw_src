@@ -27,27 +27,22 @@ AddBookmarkPanel.prototype.constructor = AddBookmarkPanel;
 AddBookmarkPanel.prototype.getBookmark = function()
 {
    var app = this._appField.getValue();
-   var fn = app.bookmarkFunction;
+   var fn = app.getBookmarkFunction();
 
    var target;
    if (fn) {
-      target = fn(this._fields);
+      target = fn(this._properties);
    } else {
       target = this._targetField.getValue();
    }
 
-   return new Bookmark(null, this._nameField.getValue(),
-                       this._appField.getValue(), target);
+   return new Bookmark(null, this._nameField.getValue(), app.name, target);
 }
 
 AddBookmarkPanel.prototype.focus = function()
 {
    this._fields[0].focus();
 }
-
-// private fields -------------------------------------------------------------
-
-AddBookmarkPanel._PROPS_KEY = "props";
 
 // private methods ------------------------------------------------------------
 
@@ -67,8 +62,10 @@ AddBookmarkPanel.prototype._init = function()
 
 AddBookmarkPanel.prototype._showFields = function()
 {
+   this._properties = { };
+
    var app = this._appField.getValue();
-   var props = app.bookmarkProperties();
+   var props = app.getBookmarkProperties();
    if (props) {
       this._showPropFields(props);
    } else {
@@ -112,8 +109,9 @@ AddBookmarkPanel.prototype._showPropFields = function(props)
       var label = prop.getLabel(this);
       this._bookmarkWidgets.push(label);
       var field = prop.getField(this);
-      field.setData(AddBookmarkPanel._PROPS_KEY, prop);
       this._fields.push(field);
       this._bookmarkWidgets.push(field);
+      this._properties[prop.id] = field;
+      DBG.println("ADDED PROP: " + prop.id);
    }
 }
