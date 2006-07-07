@@ -287,8 +287,8 @@ Portal.prototype._addBookmarkButtonListener = function(ev)
    var cb = function() {
       var bm = dialog.getBookmark();
       DBG.println("SENDING BOOKMARK: " + bm);
-      var url = "secure/bookmark?command=add&name=" + bm.name
-         + "&app=" + bm.app + "&target=" + bm.target;
+      var url = "secure/bookmark?command=add&name=" + escape(bm.name)
+         + "&app=" + escape(bm.app) + "&target=" + escape(bm.target);
 
       var cb = function(obj, results) {
          this.refresh();
