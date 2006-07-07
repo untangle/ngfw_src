@@ -26,15 +26,28 @@ AddBookmarkPanel.prototype.constructor = AddBookmarkPanel;
 
 AddBookmarkPanel.prototype.getBookmark = function()
 {
+   var app = this._appField.getValue();
+   var fn = app.bookmarkFunction;
+
+   var target;
+   if (fn) {
+      target = fn(this._fields);
+   } else {
+      target = this._targetField.getValue();
+   }
+
    return new Bookmark(null, this._nameField.getValue(),
-                       this._appField.getValue(),
-                       this._targetField.getValue());
+                       this._appField.getValue(), target);
 }
 
 AddBookmarkPanel.prototype.focus = function()
 {
    this._fields[0].focus();
 }
+
+// private fields -------------------------------------------------------------
+
+AddBookmarkPanel._PROPS_KEY = "props";
 
 // private methods ------------------------------------------------------------
 
@@ -78,7 +91,6 @@ AddBookmarkPanel.prototype._showDefaultFields = function()
    this._bookmarkWidgets.push(this._nameField);
    this._fields.push(this._nameField);
 
-
    label = new DwtLabel(this);
    this._bookmarkWidgets.push(label);
    label.setText("Target:");
@@ -100,6 +112,7 @@ AddBookmarkPanel.prototype._showPropFields = function(props)
       var label = prop.getLabel(this);
       this._bookmarkWidgets.push(label);
       var field = prop.getField(this);
+      field.setData(AddBookmarkPanel._PROPS_KEY, prop);
       this._fields.push(field);
       this._bookmarkWidgets.push(field);
    }

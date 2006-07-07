@@ -1,8 +1,9 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function BookmarkProperty(name, values, def, valFn)
+function BookmarkProperty(id, name, values, def, valFn)
 {
+   this.id = id;
    this.name = name;
    this.values = values;
    this.def = def;
