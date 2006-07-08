@@ -176,8 +176,7 @@
             </table>
           </form>
 
-
-	 <!-- INPUT FORM 2 -->
+	  <!-- INPUT FORM 2 -->
           <br><br>
           <form name="form2" action="safelist">
             <input type="hidden"
