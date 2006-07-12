@@ -19,13 +19,9 @@
 }
 
 .MetavizePanel {
-    background-color: transparent;
-    border-width: 2px;
+    background-color: white;
 }
 
 .WelcomePanel {
-    background-color: transparent;
-    border-style: dashed;
-    border-color: black;
-    border-width: 2px;
+    background-color: white;
 }
