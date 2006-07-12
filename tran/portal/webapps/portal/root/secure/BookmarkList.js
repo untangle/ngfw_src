@@ -9,14 +9,11 @@ function BookmarkList(parent)
   }
 
   var header = [];
-  var hi = new DwtListHeaderItem("name", "Name", null, 200, true, true, true);
-  hi.memberName = "name";
-  header.push(hi);
-  hi = new DwtListHeaderItem("application", "Application", null, 100, true, true, true);
+  var hi = new DwtListHeaderItem("application", "Application", null, 100, true, true, true);
   hi.memberName = "app";
   header.push(hi);
-  hi = new DwtListHeaderItem("target", "Target", null, 200, true, true, true);
-  hi.memberName = "target";
+  hi = new DwtListHeaderItem("name", "Name", null, 200, true, true, true);
+  hi.memberName = "name";
   header.push(hi);
 
   DwtListView.call(this, parent, "BookmarkList", DwtControl.ABSOLUTE_STYLE, header);
