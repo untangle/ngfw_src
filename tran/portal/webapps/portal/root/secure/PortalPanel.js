@@ -3,23 +3,23 @@
 
 function PortalPanel(parent)
 {
-   if (0 == arguments.length) {
-      return;
-   }
+  if (0 == arguments.length) {
+    return;
+  }
 
-   DwtComposite.call(this, parent, "PortalPanel", DwtControl.ABSOLUTE_STYLE);
+  DwtComposite.call(this, parent, "PortalPanel", DwtControl.ABSOLUTE_STYLE);
 
-   this._init();
+  this._init();
 
-   // XXX
-   l = new AjxListener(this, this._listActionListener);
-   this.bookmarkPanel.addActionListener(l);
+  // XXX
+  l = new AjxListener(this, this._listActionListener);
+  this.bookmarkPanel.addActionListener(l);
 
-   this.addControlListener(new AjxListener(this, this._controlListener));
+  this.addControlListener(new AjxListener(this, this._layout));
 
-   this.refresh()
+  this.refresh();
 
-   this._layout();
+  this._layout();
 }
 
 PortalPanel.prototype = new DwtComposite();
@@ -29,72 +29,72 @@ PortalPanel.prototype.constructor = PortalPanel;
 
 PortalPanel.prototype.setMotd = function(motd)
 {
-   this._welcomePanel.getHtmlElement().innerHTML = motd;
+  this._welcomePanel.getHtmlElement().innerHTML = motd
+  || "Welcome to Metavize Secure Portal";
 }
 
 PortalPanel.prototype.refresh = function()
 {
-   this.bookmarkPanel.refresh();
+  this.bookmarkPanel.refresh();
 }
 
 PortalPanel.prototype.addSelectionListener = function(l)
 {
-   this.bookmarkPanel.addSelectionListener(l);
+  this.bookmarkPanel.addSelectionListener(l);
 }
 
 // private methods ------------------------------------------------------------
 
 PortalPanel.prototype._init = function()
 {
-   this.metavizePanel = new DwtComposite(this, "MetavizePanel", DwtControl.ABSOLUTE_STYLE);
-   var html = [];
-   html.push("<img src='/images/LogoNoText96x96.gif'>");
-   html.push("<bold>Metavize Secure Portal</bold>");
-   this.metavizePanel.getHtmlElement().innerHTML = html.join("");
+  this.metavizePanel = new DwtComposite(this, "MetavizePanel", DwtControl.ABSOLUTE_STYLE);
+  var html = [];
+  html.push("<img src='/images/LogoNoText96x96.gif'>");
+  html.push("<bold>Metavize Secure Portal</bold>");
+  this.metavizePanel.getHtmlElement().innerHTML = html.join("");
 
-   this._welcomePanel = new DwtComposite(this, "WelcomePanel", DwtControl.ABSOLUTE_STYLE);
+  this._welcomePanel = new DwtComposite(this, "WelcomePanel", DwtControl.ABSOLUTE_STYLE);
 
-   this.applicationPanel = new ApplicationPanel(this);
+  this.applicationPanel = new ApplicationPanel(this);
 
-   this.bookmarkPanel = new BookmarkPanel(this);
+  this.bookmarkPanel = new BookmarkPanel(this);
 }
 
 PortalPanel.prototype._layout = function()
 {
-   var size = this.getSize();
+  var vmargin = 25;
+  var hmargin = 50;
 
-   var margin = 50;
+  var size = this.getSize();
 
-   var left = margin;
-   var width = size.x - (margin + margin);
+  var left = hmargin;
+  var width = size.x - (hmargin + hmargin);
 
-   var y = margin;
+  var y = vmargin;
 
-   this.metavizePanel.setBounds(left, y, width, 150);
-   y += this.metavizePanel.getSize().y + 25;
+  var vspace = size.y - (vmargin * 5);
 
-   this._welcomePanel.setBounds(left, y, width, 100);
-   y += this._welcomePanel.getSize().y + 25;
+  this.metavizePanel.setBounds(left, y, width, Math.floor(vspace / 4));
+  y += this.metavizePanel.getSize().y + vmargin;
+  var s = this.metavizePanel.getSize();
 
-   this.applicationPanel.setBounds(left, y, width, 300);
-   y += this.applicationPanel.getSize().y + 25;
+  this._welcomePanel.setBounds(left, y, width, Math.floor(vspace / 4));
+  y += this._welcomePanel.getSize().y + vmargin;
 
-   this.bookmarkPanel.setBounds(left, y, width, size.y - (margin + y));
+  this.applicationPanel.setBounds(left, y, width, Math.floor(vspace / 4));
+  y += this.applicationPanel.getSize().y + vmargin;
+
+  this.bookmarkPanel.setBounds(left, y, width, Math.floor(vspace / 4));
 }
 
 // callbacks ------------------------------------------------------------------
 
 PortalPanel.prototype._refreshButtonListener = function()
 {
-   this.refresh();
+  this.refresh();
 }
 
-PortalPanel.prototype._listActionListener = function(ev) {
-    this._actionMenu.popup(0, ev.docX, ev.docY);
-}
-
-PortalPanel.prototype._controlListener = function()
+PortalPanel.prototype._listActionListener = function(ev)
 {
-   this._layout();
+  this._actionMenu.popup(0, ev.docX, ev.docY);
 }
-
