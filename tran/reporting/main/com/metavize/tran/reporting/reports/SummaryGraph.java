@@ -235,11 +235,11 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             averageIncomingCount = 0;
             averageOutgoingCount = 0;
             newIndex = 0;
-            denom = 1; // prevent divide-by-zero error
+            denom = 0;
 
             for(int j=0; j<MOVING_AVERAGE_MINUTES; j++){
                 newIndex = i-j;
-                if( newIndex >= 1 )
+                if( newIndex >= 0 )
                     denom++;
                 else
                     continue;
