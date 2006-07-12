@@ -3,6 +3,283 @@
   <title>Change History</title>
 
 
+  <sect1 id="appendix_changes_32_40">
+    <title>Changes Between 3.2 and 4.0</title>
+
+    <bridgehead renderas="sect2">Enhancements</bridgehead>
+
+    <itemizedlist>
+      <title>Store</title>
+      <listitem>
+        <para>
+          <emphasis>Trial Versions</emphasis>
+        </para>
+        <para>
+  Trial versions of EdgeGuard Appliances are now available from the Metavize Store.
+  These are completely free for 30 days.  After 30 days the appliance will
+  automatically turn off. 
+        </para>
+      <para>
+  While the trial is going on, the appliance may be purchased
+  from the store at any time, including after expiration.  Once purchased, the
+  running appliance will automatically convert into the full version, preserving
+  any configuration and event information.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <emphasis>Web Site</emphasis>
+        </para>
+        <para>
+  The store web site is new.  XXX
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>EdgeReport</title>
+      <listitem>
+        <para>
+          <emphasis>Web Content Control EdgeReport</emphasis>
+        </para>
+        <para>
+  The incident section for the Web Content Control EdgeReport now contains details for up to 5000 policy violation events.
+        </para>
+        <para>
+          <emphasis>SpamGuard EdgeReport</emphasis>
+        </para>
+        <para>
+  The incident section for the SpamGuard EdgeReport now lists only spam events, and includes their email's subject.
+        </para>
+        <para>
+          <emphasis>EdgeReport Email</emphasis>
+        </para>
+        <para>
+  To simplify and reduce the size of EdgeReport emails, each EdgeReport is now emailed as a single PDF file attachment.
+  Depending on your email client, the EdgeReport PDF file may be viewed inline, opened in a PDF reader, or downloaded for later viewing.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <emphasis>Configuration</emphasis>
+        </para>
+        <para>
+  The administrator may now control daily, weekly, and monthly EdgeReports using simple schedules.
+  This allows the administrator to enable or disable daily EdgeReports;
+  to enable weekly EdgeReports by selecting a specific day or days of every week or to disable weekly EdgeReports; and
+  to enable monthly EdgeReports by selecting the first of every month, a specific day of every week, or every day of every month, or to disable monthly EdgeReports.
+        </para>
+        <para>
+  In addition, the administrator may now configure EdgeReport emails that contain EdgeReport PDF files with or without incident sections.
+  The EdgeReport PDF files with and without incident sections are also now available through the EdgeReport web interface and identified as detailed and briefing, respectively.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Web Control</title>
+      <listitem>
+        <para>
+  Three new categories have been added: Online Shopping, Social Networking, and
+  Anonymous Web Surfing.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  The ability to pass while logging has been added to the Block Lists.  This allows
+  monitoring questionable web usage without blocking it.  Policy violations are
+  viewable in the Event Log and in EdgeReport.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          For those who need the strictest web control, it is now possible to block ALL web traffic except for those sites that are explictly allowed via the pass list.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>User Directory</title>
+      <listitem>
+        <para>
+          <emphasis>Active Directory integration</emphasis>
+        </para>
+        <para>
+  For customers who have an existing Active Directory server, this may be
+  used to provide user authentification for other appliances
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <emphasis>Configuration</emphasis>
+        </para>
+        <para>
+  There is now a user directory provided by EdgeGuard.  This can be used to define
+  local users if the customer does not already have an Active Directory
+  server providing the user directory.  Users can be added, their passwords
+  reset, etc.
+        </para>
+      <para>
+  The user directory is included in the EdgeGuard backup/restore process, so
+  restoring a backup will restore the user directory as well.
+        </para>
+    </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Setup Wizard</title>
+      <listitem>
+        <para>
+  The setup wizard has been streamlined in this release.  In particular
+  it now recommends the correct setting for the formerly difficult router/bridge
+  step.  The wizard should now correctly establish DHCP connectivity in all situations.
+  Also the Router appliance no longer appears in the Toolbox if it is not used.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Remote access to EdgeGuard</title>
+      <listitem>
+        <para>
+  Control over secure remote access to EdgeGuard (https port 443) has been enhanced.
+  A Separate control is now provided for whether quarantine can be accessed remotely.
+  If an appliance needing secure remote access (such as OpenVPN) is installed, access
+  is automatically enabled.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Quarantine</title>
+      <listitem>
+        <para>
+  The quarantine safe-list is now accessible from the administration UI.
+  This allows the administrator to add new entries to the global
+  'From address' safe list (which is applied to POP/IMAP emails also)
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>OpenVPN</title>
+      <listitem>
+        <para>
+  The administrator may now change the network port which is used for communication (default 1194).
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  Site to site VPN configurations are now fully supported, including emailing between
+  two EdgeGuards.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Router</title>
+      <listitem>
+        <para>
+The Redirect panel inside of the Router Application has been streamlined for
+ease of use. There are now two types of redirects, "Port Forwards" and
+Redirects. "Port Forwards" are simplified redirects that are designed to make a
+server on the internal network available to the outside
+world.  Redirects implement the full power of traffic redirection that was
+available in previous releases. 
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+Certain redirects are now able to return back into the local network.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Virus Scanners</title>
+      <listitem>
+        <para>
+  The Mime Type List has been simplified.  For fresh installations, only 'message/*'
+  will appear in the list.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+  EdgeGuard is now compatible with Extended Passive and Extended Active mode FTP.
+  This should support a wider range of FTP clients.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Rogue Protocol Control</title>
+      <listitem>
+        <para>
+  The tencent rule, which was giving false positives, has been removed.  A new rule
+  has been added for the iMesh peer to peer application.
+        </para>
+      </listitem>
+    </itemizedlist>        
+
+    <itemizedlist>
+      <title>Attack Shield</title>
+      <listitem>
+        <para>
+  The Attack Shield has been tuned to better separate legitimate network traffic
+  from unwanted traffic.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Syslog</title>
+      <listitem>
+        <para>
+  Syslog event reporting has been improved.  Event data are more complete
+  and provided at correct levels (info/notice/warn), permitting finer grain event control.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+    <itemizedlist>
+      <title>Configuration</title>
+      <listitem>
+        <para>
+          <emphasis>Reconfiguration</emphasis>
+        </para>
+        <para>
+  Network reconfiguration is now significantly faster.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <emphasis>DHCP</emphasis>
+        </para>
+        <para>
+  Edgeguard could not obtain a network address via DHCP from certain cable modem ISPs.
+  All known providers are now correctly supported.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <emphasis>Ping control</emphasis>
+        </para>
+        <para>
+Inside the "Support" panel there is now the ability to allow or deny pinging the EdgeGuard. 
+        </para>
+      </listitem>
+    <listitem>
+        <para>
+          <emphasis>Timezone</emphasis>
+        </para>
+        <para>
+  The current time as seen by EdgeGuard is now provided in the Timezone setting panel.
+        </para>
+      </listitem>
+    </itemizedlist>
+
+  </sect1>
+    
   <sect1 id="appendix_changes_31_32">
     <title>Changes Between 3.1 and 3.2</title>
 
