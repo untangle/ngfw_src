@@ -42,7 +42,7 @@ function Portal(shell) {
 
   this.layout();
   this.zShow(true);
-}
+};
 
 Portal.prototype = new DwtComposite();
 Portal.prototype.constructor = Portal;
@@ -66,9 +66,9 @@ Portal.prototype.showApplicationUrl = function(url, application, bookmark)
   this._navBar.applicationMode(application, bookmark);
 
   this.layout();
-}
+};
 
-  Portal.prototype.splitUrl = function(url)
+Portal.prototype.splitUrl = function(url)
 {
   var o = new Object();
 
@@ -113,7 +113,7 @@ Portal.prototype.showApplicationUrl = function(url, application, bookmark)
   }
 
   return o;
-}
+};
 
 // public methods -------------------------------------------------------------
 
@@ -126,14 +126,14 @@ Portal.prototype.showPortal = function()
   this._mainPanel = this._portalPanel;
   Dwt.setVisible(this._portalPanel.getHtmlElement(), true);
   this._navBar.portalMode();
-}
+};
 
 Portal.prototype.refresh = function()
 {
   this._refreshPageInfo()
   this._loadApps();
   this._portalPanel.refresh();
-}
+};
 
 Portal.prototype.layout = function()
 {
@@ -152,7 +152,7 @@ Portal.prototype.layout = function()
 
   DBG.println("SET BOUNDS(" + x + ", " + y + ", " + width + ", " + (height - y) + ")");
   this._mainPanel.setBounds(x, y, width, height - y);
-}
+};
 
 // private methods ------------------------------------------------------------
 
@@ -161,7 +161,7 @@ Portal.prototype._refreshPageInfo = function()
   AjxRpc.invoke(null, "secure/portal?command=info", null,
                 new AjxCallback(this, this._refreshPageInfoCallback,
                                 new Object()), true);
-}
+};
 
 // init -----------------------------------------------------------------------
 
@@ -170,7 +170,7 @@ Portal.prototype._loadApps = function()
   AjxRpc.invoke(null, "secure/application?command=ls", null,
                 new AjxCallback(this, this._refreshAppsCallback,
                                 new Object()), true);
-}
+};
 
 // shell ----------------------------------------------------------------------
 
@@ -179,7 +179,7 @@ Portal.prototype._shellListener = function(ev)
   if (ev.oldWidth != ev.newWidth || ev.oldHeight != ev.newHeight) {
     this.layout();
   }
-}
+};
 
 // util -----------------------------------------------------------------------
 
@@ -194,14 +194,14 @@ Portal._mkSrcDestCommand = function(command, src, dest)
   url += "&dest=" + dest.url; // XXX does this get escaped ?
 
   return url;
-}
+};
 
 // callbacks ------------------------------------------------------------------
 
 Portal.prototype._controlListener = function()
 {
   this.layout();
-}
+};
 
 Portal.prototype._bookmarkSelectionListener = function(ev)
 {
@@ -213,7 +213,7 @@ Portal.prototype._bookmarkSelectionListener = function(ev)
   app.openBookmark(this, item);
   break;
   }
-}
+};
 
 Portal.prototype._applicationSelectionListner = function(ev)
 {
@@ -225,7 +225,7 @@ Portal.prototype._applicationSelectionListner = function(ev)
   app.openApplication(this);
   break;
   }
-}
+};
 
 Portal.prototype._refreshAppsCallback = function(obj, results)
 {
@@ -245,8 +245,8 @@ Portal.prototype._refreshAppsCallback = function(obj, results)
       var name = child.getAttribute("name");
       var description = child.getAttribute("description");
       var isHostService = "true" == child.getAttribute("isHostService");
-      var appJs = child.getElementsByTagName("appJs")[0].firstChild.data;
-      var app = new Application(name, description, isHostService, appJs);
+      var appJsUrl = child.getAttribute("appJsUrl");
+      var app = new Application(name, description, isHostService, appJsUrl)
       this._apps.push(app);
       this._appMap[name] = app;
       if (!isHostService) {
@@ -257,7 +257,7 @@ Portal.prototype._refreshAppsCallback = function(obj, results)
   }
 
   this._portalPanel.applicationPanel.set(launchableApps);
-}
+};
 
 Portal.prototype._refreshPageInfoCallback = function(obj, results)
 {
@@ -265,23 +265,23 @@ Portal.prototype._refreshPageInfoCallback = function(obj, results)
   document.title = root.getAttribute("title");
   var motd = root.getAttribute("motd");
   this._portalPanel.setMotd(motd);
-}
+};
 
 Portal.prototype._homeButtonListener = function()
 {
   this.showPortal();
-}
+};
 
 Portal.prototype._logoutButtonListener = function()
 {
   var cb = new AjxCallback(this, this._logoutCallback);
   AjxRpc.invoke(null, "logout", null, cb, { }, true);
-}
+};
 
 Portal.prototype._logoutCallback = function()
 {
   window.location.reload();
-}
+};
 
 Portal.prototype._addBookmarkButtonListener = function(ev)
 {
@@ -306,7 +306,7 @@ Portal.prototype._addBookmarkButtonListener = function(ev)
   dialog.addListener(DwtEvent.ENTER, l);
 
   dialog.popup();
-}
+};
 
 Portal.prototype._deleteButtonListener = function(ev)
 {
@@ -323,4 +323,4 @@ Portal.prototype._deleteButtonListener = function(ev)
 
   AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }),
                 true);
-}
+};

@@ -55,10 +55,10 @@ class PortalApplicationManagerImpl implements LocalApplicationManager
     public Application registerApplication(String name, String desc,
                                            Application.Destinator destinator,
                                            Application.Validator validator,
-                                           int sortPosition, String appJs)
+                                           int sortPosition, String appJsUrl)
     {
         Application newApp = new Application(name, desc, destinator,
-                                             validator, sortPosition, appJs);
+                                             validator, sortPosition, appJsUrl);
 
         synchronized (apps) {
             if (!apps.add(newApp)) {

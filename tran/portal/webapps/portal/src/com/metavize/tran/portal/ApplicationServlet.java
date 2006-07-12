@@ -101,10 +101,9 @@ public class ApplicationServlet extends HttpServlet
             w.print(app.getDescription());
             w.print("' isHostService='");
             w.print(app.isHostService());
+            w.print("' appJsUrl='");
+            w.print(app.getAppJsUrl());
             w.println("'>");
-            w.println("    <appJs>");
-            w.println(XmlUtil.escapeXml(app.getAppJs()));
-            w.println("    </appJs>");
             w.println("  </application>");
         }
         w.println("</applications>");

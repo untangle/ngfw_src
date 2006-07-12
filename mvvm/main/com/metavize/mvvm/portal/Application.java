@@ -43,17 +43,17 @@ public final class Application
     private final Destinator destinator;
     private final Validator validator;
     private final int sortPosition;
-    private final String appJs;
+    private final String appJsUrl;
 
     public Application(String name, String description, Destinator destinator,
-                       Validator validator, int sortPosition, String appJs)
+                       Validator validator, int sortPosition, String appJsUrl)
     {
         this.name = name;
         this.description = description;
         this.destinator = destinator;
         this.validator = validator;
         this.sortPosition = sortPosition;
-        this.appJs = appJs;
+        this.appJsUrl = appJsUrl;
     }
 
     /**
@@ -95,9 +95,9 @@ public final class Application
     }
 
 
-    public String getAppJs()
+    public String getAppJsUrl()
     {
-        return appJs;
+        return appJsUrl;
     }
 
     /**

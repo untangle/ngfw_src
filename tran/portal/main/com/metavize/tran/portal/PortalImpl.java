@@ -37,54 +37,10 @@ import org.apache.log4j.Logger;
 
 public class PortalImpl extends AbstractTransform implements PortalTransform
 {
-    private static final String CIFS_JS
-        = "{\n"
-        + "  openApplication: function(portal) {\n"
-        + "    portal.showApplicationUrl('/browser', this);\n"
-        + "  },\n"
-        + "  openBookmark: function(portal, bookmark) {\n"
-        + "    portal.showApplicationUrl('/browser?target=' + bookmark.target, this, bookmark);\n"
-        + "  }\n"
-        + "};\n";
-
-    private static final String WEB_JS
-        = "{\n"
-        + "  openBookmark: function(portal, bookmark) {\n"
-        + "    var o = portal.splitUrl(bookmark.target);"
-        + "    portal.showApplicationUrl('/proxy/' + o.proto + '/' + o.host + o.path, this, bookmark);\n"
-        + "  }\n"
-        + "};\n";
-
-    private static final String RDP_JS
-        = "{\n"
-        + "  openBookmark: function(portal, bookmark) {\n"
-        + "    portal.showApplicationUrl('/rdp/rdp.jsp?t=' + bookmark.id, this, bookmark);\n"
-        + "  },\n"
-        + "  bookmarkProperties: [\n"
-        + "    new BookmarkProperty('size', 'size', ['640x480', '800x600', '1024x768', '1280x1024'], '800x600'),\n"
-        + "    new BookmarkProperty('host', 'host'),\n"
-        + "    new BookmarkProperty('command', 'command'),\n"
-        + "    new BookmarkProperty('console', 'console', ['true', 'false'], 'false')\n"
-        + "  ],\n"
-        + "  bookmarkFunction: function(obj) {\n"
-        + "    var s = '';\n"
-        + "    for (var f in obj) {\n"
-        + "      var v = obj[f].getValue();\n"
-        + "      if (null != v && '' != v) {\n"
-        + "        s += '' == s ? '' : '&';\n"
-        + "        s += escape(f) + '=' + escape(v);\n"
-        + "      }\n"
-        + "    }\n"
-        + "    return s;\n"
-        + "  }\n"
-        + "};\n";
-
-    private static final String VNC_JS
-        = "{\n"
-        + "  openBookmark: function(portal, bookmark) {\n"
-        + "    portal.showApplicationUrl('/vnc/vnc.jsp?t=' + bookmark.id, this, bookmark);\n"
-        + "  }\n"
-        + "};\n";
+    private static final String CIFS_JS_URL = "/browser/secure/app.js";
+    private static final String WEB_JS_URL = "/proxy/app.js";
+    private static final String RDP_JS_URL = "/rdp/app.js";
+    private static final String VNC_JS_URL = "/vnc/app.js";
 
     private final Logger logger = Logger.getLogger(PortalImpl.class);
 
@@ -116,7 +72,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     private void registerApps() {
         LocalApplicationManager lam = lpm.applicationManager();
         browserApp = lam.registerApplication("CIFS", "Network File Browser",
-                                             null, null, 0, CIFS_JS);
+                                             null, null, 0, CIFS_JS_URL);
 
         Application.Destinator httpDestinator = new Application.Destinator() {
                 public String getDestinationHost(Bookmark bm) {
@@ -130,7 +86,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
             };
 
         proxyApp = lam.registerApplication("HTTP", "Web Proxy", httpDestinator,
-                       null, 0, WEB_JS);
+                       null, 0, WEB_JS_URL);
 
         Application.Destinator rdpDestinator = new Application.Destinator() {
                 public String getDestinationHost(Bookmark bm) {
@@ -143,7 +99,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
             };
 
         rdpApp = lam.registerApplication("RDP", "Remote Desktop",
-                                         rdpDestinator, null, 0, RDP_JS);
+                                         rdpDestinator, null, 0, RDP_JS_URL);
 
         Application.Destinator vncDestinator = new Application.Destinator() {
                 public String getDestinationHost(Bookmark bm) {
@@ -157,7 +113,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
             };
 
         vncApp = lam.registerApplication("VNC", "Virtual Network Computing",
-                                         vncDestinator, null, 0, VNC_JS);
+                                         vncDestinator, null, 0, VNC_JS_URL);
     }
 
     private void deployWebAppIfRequired(Logger logger) {
