@@ -43,8 +43,18 @@ public class InitialSetupInterfaceJPanel extends MWizardPageJPanel {
 	interfaceJPanel = new InterfaceJPanel();
 	interfaceListCompoundSettings = new InterfaceListCompoundSettings();
 	setLayout(new GridBagLayout());
-	GridBagConstraints interfaceGridBagConstraints = new GridBagConstraints(0,0,1,1,1d,1d,GridBagConstraints.CENTER,GridBagConstraints.BOTH,new Insets(15,15,150,15),0,0);
-	add(interfaceJPanel, interfaceGridBagConstraints);
+	GridBagConstraints gridBagConstraints = new GridBagConstraints(0,0,1,1,1d,1d,GridBagConstraints.NORTH,GridBagConstraints.BOTH,new Insets(15,15,100,15),0,0);
+	add(interfaceJPanel, gridBagConstraints);
+
+	JLabel backgroundJLabel = new JLabel();
+	backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.gridx = 0;
+	gridBagConstraints.gridy = 1;
+	gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+	gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+	gridBagConstraints.weightx = 1.0;
+	add(backgroundJLabel, gridBagConstraints);
     }
 
     public boolean enteringForwards(){
