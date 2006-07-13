@@ -40,6 +40,13 @@ PortalPanel.prototype.showApplicationPanel = function(show)
   this._layout();
 };
 
+PortalPanel.prototype.showBookmarkPanel = function(show)
+{
+  this.showBookmarkPanel = show;
+  Dwt.setVisible(this.bookmarkPanel.getHtmlElement(), show);
+  this._layout();
+};
+
 PortalPanel.prototype.refresh = function()
 {
   this.bookmarkPanel.refresh();
@@ -85,7 +92,14 @@ PortalPanel.prototype._layout = function()
 
   var y = vmargin;
 
-  var numPanels = this.showApplicationPanel ? 4 : 3;
+  var numPanels = 2;
+  if (this.showApplicationPanel) {
+    numPanels++;
+  }
+
+  if (this.showBookmarkPanel) {
+    numPanels++;
+  }
 
   var vspace = size.y - (vmargin * (numPanels + 1));
 
@@ -103,7 +117,9 @@ PortalPanel.prototype._layout = function()
     y += this.applicationPanel.getSize().y + vmargin;
   }
 
-  this.bookmarkPanel.setBounds(left, y, width, Math.floor(vspace / numPanels));
+  if (this.showBookmarkPanel) {
+    this.bookmarkPanel.setBounds(left, y, width, Math.floor(vspace / numPanels));
+  }
 };
 
 // callbacks ------------------------------------------------------------------

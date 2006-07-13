@@ -272,19 +272,21 @@ Portal.prototype._appLoadCallback = function(obj, app)
 
 Portal.prototype._refreshPageInfoCallback = function(obj, results)
 {
+  var pp = this._portalPanel;
+
   var root = results.xml.getElementsByTagName("page-info")[0];
   document.title = root.getAttribute("title");
   var motd = root.getAttribute("motd");
-  this._portalPanel.setMotd(motd);
+  pp.setMotd(motd);
 
   var showApps = "true" == root.getAttribute("showApps");
   DBG.println("SHOW APPS: " + root.getAttribute("showApps") + ": " + showApps);
-  this._portalPanel.showApplicationPanel(showApps);
-
-  var bmp = this._portalPanel.bookmarkPanel;
+  pp.showApplicationPanel(showApps);
 
   var showBookmarks = "true" == root.getAttribute("showBookmarks");
-  bmp.setEnabled(showBookmarks);
+  pp.showBookmarkPanel(showBookmarks);
+
+  var bmp = pp.bookmarkPanel;
 
   var showAddBookmarks = "true" == root.getAttribute("showAddBookmarks");
   bmp.enableAddBookmarks(showBookmarks);

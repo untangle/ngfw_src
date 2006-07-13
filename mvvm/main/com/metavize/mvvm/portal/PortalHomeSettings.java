@@ -46,8 +46,6 @@ public class PortalHomeSettings implements Serializable
      */
     public PortalHomeSettings() { }
 
-
-
     // accessors --------------------------------------------------------------
 
     /**
