@@ -14,6 +14,7 @@ package com.metavize.mvvm.client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.StringBuilder;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
@@ -189,6 +190,14 @@ public class RemoteClient
             areReportsAvailable();
         } else if (args[0].equalsIgnoreCase("resetLogs")) {
             resetLogs();
+        } else if (args[0].equalsIgnoreCase("logError")) {
+            if (1 == args.length) {
+                logError(null);
+            } else {
+                String[] pwArgs = new String[args.length - 1];
+                System.arraycopy(args, 1, pwArgs, 0, pwArgs.length);
+                logError(pwArgs);
+            }
         } else if (args[0].equalsIgnoreCase("shieldStatus")) {
             shieldStatus(args);
         } else if (args[0].equalsIgnoreCase("shieldReconfigure")) {
@@ -755,6 +764,28 @@ public class RemoteClient
         mc.loggingManager().resetAllLogs();
     }
 
+    /**
+     * <code>logError</code> logs <code>errText</code> or
+     * if not specified, logs default error text to the log file.
+     */
+    private static void logError(String[] errTexts)
+    {
+        if (null == errTexts) {
+            mc.loggingManager().logError(null);
+            return;
+        }
+
+        StringBuilder errText = new StringBuilder();
+        for (String errFrag : errTexts) {
+            if (0 != errText.length()) {
+                errText.append(" ");
+            }
+            errText.append(errFrag);
+        }
+        mc.loggingManager().logError(errText.toString());
+        return;
+    }
+
     private static void doFullGC()
     {
         mc.doFullGC();
@@ -938,6 +969,7 @@ public class RemoteClient
         System.out.println("  logging manager: ");
         System.out.println("    mcli userLogs tid");
         System.out.println("    mcli resetLogs");
+        System.out.println("    mcli logError [text]");
         System.out.println("  combo commands:");
         System.out.println("    mcli loadt short-name [ args ]");
         System.out.println("    mcli reloadt short-name");

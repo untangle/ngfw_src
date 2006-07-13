@@ -91,4 +91,15 @@ class LoggingManagerImpl implements LoggingManager
     {
         MvvmRepositorySelector.get().reconfigureAll();
     }
+
+    public void logError(String errorText)
+    {
+        if (null == errorText) {
+           logger.error("This is the default error text.");
+        } else {
+           logger.error(errorText);
+        }
+
+        return;
+    }
 }

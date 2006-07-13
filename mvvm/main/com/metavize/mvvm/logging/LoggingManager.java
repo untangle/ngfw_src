@@ -29,4 +29,6 @@ public interface LoggingManager
      * etc. The old output files will be erased and new files begun.
      */
     void resetAllLogs();
+
+    void logError(String errorText);
 }
