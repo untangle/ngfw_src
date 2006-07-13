@@ -55,7 +55,7 @@ class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{
     private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int  C1_MW = Util.LINENO_MIN_WIDTH; /* # */
     private static final int  C2_MW = 120;  /* network interface */
-    private static final int  C3_MW = 120;  /* status */
+    private static final int  C3_MW = 120;  /* connection */
     private static final int  C4_MW = 175;  /* mode */
     private static final int  C5_MW = 140;  /* speed */
     private static final int  C6_MW = 65;   /* block ping */
@@ -69,7 +69,7 @@ class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{
         addTableColumn( tableColumnModel,  0,  C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  C2_MW, false, false, false, false, String.class, null, sc.html("network<br>interface") );
-        addTableColumn( tableColumnModel,  3,  C3_MW, false, false, false, false, String.class, null, sc.html("status") );
+        addTableColumn( tableColumnModel,  3,  C3_MW, false, false, false, false, String.class, null, sc.html("connection") );
         addTableColumn( tableColumnModel,  4,  C4_MW, false, true,  false, false, ComboBoxModel.class, null, sc.html("mode") );
 	addTableColumn( tableColumnModel,  5,  C5_MW, true,  false, false, true,  String.class,  null, sc.html("speed") );
         addTableColumn( tableColumnModel,  6,  C6_MW, false, true,  false, false, Boolean.class, null, sc.html("block<br>ping") );

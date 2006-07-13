@@ -153,7 +153,7 @@ public class InitialSetupInterfaceJPanel extends MWizardPageJPanel {
 	private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
 	private static final int  C1_MW = Util.LINENO_MIN_WIDTH; /* # */
 	private static final int  C2_MW = 120;  /* network interface */
-	private static final int  C3_MW = 120;  /* status */
+	private static final int  C3_MW = 120;  /* connection */
 	private static final int  C4_MW = 140;  /* speed */
 	
     
@@ -165,7 +165,7 @@ public class InitialSetupInterfaceJPanel extends MWizardPageJPanel {
 	    addTableColumn( tableColumnModel,  0,  C0_MW, false, false, true,  false, String.class,  null, sc.TITLE_STATUS );
 	    addTableColumn( tableColumnModel,  1,  C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX );
 	    addTableColumn( tableColumnModel,  2,  C2_MW, false, false, false, false, String.class, null, sc.html("network<br>interface") );
-	    addTableColumn( tableColumnModel,  3,  C3_MW, false, false, false, false, String.class, null, sc.html("status") );
+	    addTableColumn( tableColumnModel,  3,  C3_MW, false, false, false, false, String.class, null, sc.html("connection") );
 	    addTableColumn( tableColumnModel,  4,  C4_MW, true,  false, false, true,  String.class,  null, sc.html("speed") );
 	    return tableColumnModel;
 	}
