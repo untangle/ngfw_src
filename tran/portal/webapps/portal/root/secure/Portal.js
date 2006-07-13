@@ -278,7 +278,8 @@ Portal.prototype._refreshPageInfoCallback = function(obj, results)
   this._portalPanel.setMotd(motd);
 
   var showApps = "true" == root.getAttribute("showApps");
-  this._portalPanel.applicationPanel.setEnabled(showApps);
+  DBG.println("SHOW APPS: " + root.getAttribute("showApps") + ": " + showApps);
+  this._portalPanel.showApplicationPanel(showApps);
 
   var bmp = this._portalPanel.bookmarkPanel;
 

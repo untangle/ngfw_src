@@ -30,7 +30,14 @@ PortalPanel.prototype.constructor = PortalPanel;
 PortalPanel.prototype.setMotd = function(motd)
 {
   this._welcomePanel.getHtmlElement().innerHTML = motd
-  || "Welcome to Metavize Secure Portal";
+    || "Welcome to Metavize Secure Portal";
+};
+
+PortalPanel.prototype.showApplicationPanel = function(show)
+{
+  this.showApplicationPanel = show;
+  Dwt.setVisible(this.applicationPanel.getHtmlElement(), show);
+  this._layout();
 };
 
 PortalPanel.prototype.refresh = function()
@@ -78,19 +85,25 @@ PortalPanel.prototype._layout = function()
 
   var y = vmargin;
 
-  var vspace = size.y - (vmargin * 5);
+  var numPanels = this.showApplicationPanel ? 4 : 3;
 
-  this.metavizePanel.setBounds(left, y, width, Math.floor(vspace / 4));
+  var vspace = size.y - (vmargin * (numPanels + 1));
+
+  // XXX more appropiate sizes:
+
+  this.metavizePanel.setBounds(left, y, width, Math.floor(vspace / numPanels));
   y += this.metavizePanel.getSize().y + vmargin;
   var s = this.metavizePanel.getSize();
 
-  this._welcomePanel.setBounds(left, y, width, Math.floor(vspace / 4));
+  this._welcomePanel.setBounds(left, y, width, Math.floor(vspace / numPanels));
   y += this._welcomePanel.getSize().y + vmargin;
 
-  this.applicationPanel.setBounds(left, y, width, Math.floor(vspace / 4));
-  y += this.applicationPanel.getSize().y + vmargin;
+  if (this.showApplicationPanel) {
+    this.applicationPanel.setBounds(left, y, width, Math.floor(vspace / numPanels));
+    y += this.applicationPanel.getSize().y + vmargin;
+  }
 
-  this.bookmarkPanel.setBounds(left, y, width, Math.floor(vspace / 4));
+  this.bookmarkPanel.setBounds(left, y, width, Math.floor(vspace / numPanels));
 };
 
 // callbacks ------------------------------------------------------------------
