@@ -81,11 +81,16 @@ ApplicationList.prototype._createItemHtml = function(item)
     htmlArr[idx++] = "<td";
     var width = AjxEnv.isIE ? (col._width + 4) : col._width;
     htmlArr[idx++] = width ? (" width=" + width + ">") : ">";
-    // add a div to force clipping (TD's dont obey it)
     htmlArr[idx++] = "<div";
     htmlArr[idx++] = width ? " style='width: " + width + "'>" : ">";
 
-    var value = item[col.memberName];
+    var value;
+    if ("description" == col.memberName) {
+      value = "<img src='" + item.getIconUrl() + "'/> " + item[col.memberName];
+    } else {
+      value = item[col.memberName];
+    }
+
     htmlArr[idx++] = (value || "") + "</div></td>";
   }
 

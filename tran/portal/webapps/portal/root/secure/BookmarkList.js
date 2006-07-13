@@ -97,8 +97,7 @@ BookmarkList.prototype._createItemHtml = function(item)
       var app = portal.getApplication(item.app);
       if (app) {
         var iconUrl = app.getIconUrl();
-        DBG.println("ICON URL: " + iconUrl);
-        value = "<img src='" + iconUrl + "'/>: ";
+        value = "<img src='" + iconUrl + "'/>";
       } else {
         // XXX put generic icon instead
       }
