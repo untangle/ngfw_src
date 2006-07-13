@@ -73,10 +73,22 @@ public class PortalServlet extends HttpServlet
                 PortalHomeSettings phs = portalManager.getPortalHomeSettings(pu);
                 String title = phs.getHomePageTitle();
                 String motd = phs.getHomePageText();
+                String bookmarkTitle = phs.getBookmarkTableTitle();
+                boolean showApps = phs.isShowExploder();
+                boolean showBookmarks = phs.isShowBookmarks();
+                boolean showAddBookmarks = phs.isShowAddBookmark();
                 writer.print("<page-info title='");
                 writer.print(XmlUtil.escapeXml(title));
                 writer.print("' motd='");
                 writer.print(XmlUtil.escapeXml(motd));
+                writer.print("' bookmarkTitle='");
+                writer.print(XmlUtil.escapeXml(bookmarkTitle));
+                writer.print("' showApps='");
+                writer.print(showApps);
+                writer.print("' showBookmarks='");
+                writer.print(showBookmarks);
+                writer.print("' showAddBookmark='");
+                writer.print(showAddBookmarks);
                 writer.println("'/>");
             } else {
                 logger.warn("bad command: " + command);

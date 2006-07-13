@@ -10,6 +10,9 @@ function BookmarkPanel(parent)
 
   DwtComposite.call(this, parent, "BookmarkPanel", DwtControl.ABSOLUTE_STYLE);
 
+  this._title = new DwtLabel(this, DwtLabel.ALIGN_CENTER, "BookmarkTitle",
+                             DwtControl.ABSOLUTE_STYLE);
+  this._title.setText(BookmarkPanel.DEFAULT_TITLE);
   this._toolbar = this._makeToolbar();
   this._toolbar.zShow(true);
   this._bookmarkList = new BookmarkList(this);
@@ -23,11 +26,25 @@ function BookmarkPanel(parent)
 BookmarkPanel.prototype = new DwtComposite();
 BookmarkPanel.prototype.constructor = BookmarkPanel;
 
+// constants ------------------------------------------------------------------
+
+BookmarkPanel.DEFAULT_TITLE = "Bookmarks";
+
 // public methods -------------------------------------------------------------
 
 BookmarkPanel.prototype.redraw = function()
 {
   this._bookmarkList.setUI();
+};
+
+BookmarkPanel.prototype.setTitle = function(title)
+{
+  this._title.setText(title || BookmarkPanel.DEFAULT_TITLE);
+};
+
+BookmarkPanel.prototype.enableAddBookmarks = function(enabled)
+{
+  this.addBookmarkButton.setEnabled(enabled);
 };
 
 BookmarkPanel.prototype.refresh = function()
@@ -76,14 +93,18 @@ BookmarkPanel.prototype._makeToolbar = function() {
 BookmarkPanel.prototype._layout = function()
 {
   var size = this.getSize();
-  DBG.println("SIZE: (" + size.x + ", " + size.y + ")");
+
+  var y = 0;
+  this._title.setLocation(0, 0);
+  var s = this._title.getSize();
+  y += this._title.getSize().y
 
   var x = 0;
-  DBG.println("TOOLBAR AT: (0, 0)");;
-  this._toolbar.setLocation(0, 0);
-  x += this._toolbar.getSize().x;
-  DBG.println("BOOKMARK LIST AT: (" + x + ", 0, ", + size.x - x + ", " + size.y + ")");
-  this._bookmarkList.setBounds(x, 0, size.x - x, size.y);
+  this._toolbar.setBounds(0, y);
+  s = this._toolbar.getSize();
+  this._toolbar.setSize(s.x, size.y - y);
+  x += s.x;
+  this._bookmarkList.setBounds(x, y, size.x - x, size.y - y);
 };
 
 BookmarkPanel.prototype._controlListener = function()

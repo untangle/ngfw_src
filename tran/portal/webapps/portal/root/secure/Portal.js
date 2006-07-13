@@ -276,6 +276,20 @@ Portal.prototype._refreshPageInfoCallback = function(obj, results)
   document.title = root.getAttribute("title");
   var motd = root.getAttribute("motd");
   this._portalPanel.setMotd(motd);
+
+  var showApps = "true" == root.getAttribute("showApps");
+  this._portalPanel.applicationPanel.setEnabled(showApps);
+
+  var bmp = this._portalPanel.bookmarkPanel;
+
+  var showBookmarks = "true" == root.getAttribute("showBookmarks");
+  bmp.setEnabled(showBookmarks);
+
+  var showAddBookmarks = "true" == root.getAttribute("showAddBookmarks");
+  bmp.enableAddBookmarks(showBookmarks);
+
+  var bookmarkTitle = root.getAttribute("bookmarkTitle");
+  bmp.setTitle(bookmarkTitle);
 };
 
 Portal.prototype._homeButtonListener = function()
