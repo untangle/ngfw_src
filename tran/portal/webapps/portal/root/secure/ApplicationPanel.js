@@ -25,14 +25,19 @@ ApplicationPanel.prototype.constructor = ApplicationPanel;
 
 // public methods -------------------------------------------------------------
 
-ApplicationPanel.prototype.set = function(list)
+ApplicationPanel.prototype.redraw = function()
 {
-  this._applicationList.set(list);
+  this._applicationList.setUI();
+}
+
+ApplicationPanel.prototype.addApplication = function(app)
+{
+  return this._applicationList.addApplication(app);
 };
 
-ApplicationPanel.prototype.getSelection = function()
+ApplicationPanel.prototype.clearApplications = function()
 {
-  return this._applicationList.getSelection();
+  return this._applicationList.clearApplications();
 };
 
 ApplicationPanel.prototype.addSelectionListener = function(l)

@@ -12,6 +12,8 @@ function Portal(shell) {
 
   DwtComposite.call(this, this._shell, "Portal");
 
+  window.portal = this;
+
   this._loadApps();
 
   this._navBar = new NavigationBar(this);
@@ -66,6 +68,13 @@ Portal.prototype.showApplicationUrl = function(url, application, bookmark)
   this._navBar.applicationMode(application, bookmark);
 
   this.layout();
+};
+
+Portal.prototype.getApplication = function(appName)
+{
+  var app = this._appMap[appName];
+  DBG.println("GETTING this._appMap[" + appName + "] = " + app);
+  return app;
 };
 
 Portal.prototype.splitUrl = function(url)
@@ -137,8 +146,6 @@ Portal.prototype.refresh = function()
 
 Portal.prototype.layout = function()
 {
-  DBG.println("Portal.layout");
-
   var size = this._shell.getSize();
   var width = size.x;
   var height = size.y;
@@ -150,7 +157,6 @@ Portal.prototype.layout = function()
   var size = this._navBar.getSize();
   y += size.y;
 
-  DBG.println("SET BOUNDS(" + x + ", " + y + ", " + width + ", " + (height - y) + ")");
   this._mainPanel.setBounds(x, y, width, height - y);
 };
 
@@ -233,10 +239,10 @@ Portal.prototype._refreshAppsCallback = function(obj, results)
 
   var children = root.childNodes;
 
-  var launchableApps = new AjxVector();
-
-  this._apps = [ ];
   this._appMap = { };
+  this._portalPanel.applicationPanel.clearApplications();
+
+  var appLoadCb = new AjxCallback(this, this._appLoadCallback, { });
 
   for (var i = 0; i < children.length; i++) {
     var child = children[i];
@@ -246,17 +252,22 @@ Portal.prototype._refreshAppsCallback = function(obj, results)
       var description = child.getAttribute("description");
       var isHostService = "true" == child.getAttribute("isHostService");
       var appJsUrl = child.getAttribute("appJsUrl");
-      var app = new Application(name, description, isHostService, appJsUrl)
-      this._apps.push(app);
-      this._appMap[name] = app;
-      if (!isHostService) {
-        launchableApps.add(app);
-      }
-      DBG.println("this._appMap[" + name + "] = " + app);
+      var app = new Application(name, description, isHostService, appJsUrl,
+                                appLoadCb);
     }
   }
+};
 
-  this._portalPanel.applicationPanel.set(launchableApps);
+Portal.prototype._appLoadCallback = function(obj, app)
+{
+  this._appMap[app.name] = app;
+  DBG.println("SETTING this._appMap[" + app.name + "] = " + app);
+
+  if (!app.isHostService) {
+    this._portalPanel.applicationPanel.addApplication(app);
+  }
+
+  this._portalPanel.redraw();
 };
 
 Portal.prototype._refreshPageInfoCallback = function(obj, results)
@@ -285,11 +296,14 @@ Portal.prototype._logoutCallback = function()
 
 Portal.prototype._addBookmarkButtonListener = function(ev)
 {
-  var dialog = new AddBookmarkDialog(DwtShell.getShell(window), this._apps);
+  var apps = [ ];
+  for (var n in this._appMap) {
+    apps.push(this._appMap[n]);
+  }
+  var dialog = new AddBookmarkDialog(DwtShell.getShell(window), apps);
 
   var cb = function() {
     var bm = dialog.getBookmark();
-    DBG.println("SENDING BOOKMARK: " + bm);
     var url = "secure/bookmark?command=add&name=" + escape(bm.name)
     + "&app=" + escape(bm.app) + "&target=" + escape(bm.target);
 

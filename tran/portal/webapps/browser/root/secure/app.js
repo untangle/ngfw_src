@@ -5,5 +5,7 @@
 
  openBookmark: function(portal, bookmark) {
     portal.showApplicationUrl('/browser?target=' + bookmark.target, this, bookmark);
-  }
+  },
+
+  iconUrl: "/browser/secure/icon.png"
 };

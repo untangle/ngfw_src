@@ -20,7 +20,7 @@ function PortalPanel(parent)
   this.refresh();
 
   this._layout();
-}
+};
 
 PortalPanel.prototype = new DwtComposite();
 PortalPanel.prototype.constructor = PortalPanel;
@@ -31,17 +31,23 @@ PortalPanel.prototype.setMotd = function(motd)
 {
   this._welcomePanel.getHtmlElement().innerHTML = motd
   || "Welcome to Metavize Secure Portal";
-}
+};
 
 PortalPanel.prototype.refresh = function()
 {
   this.bookmarkPanel.refresh();
-}
+};
+
+PortalPanel.prototype.redraw = function()
+{
+  this.applicationPanel.redraw();
+  this.bookmarkPanel.redraw();
+};
 
 PortalPanel.prototype.addSelectionListener = function(l)
 {
   this.bookmarkPanel.addSelectionListener(l);
-}
+};
 
 // private methods ------------------------------------------------------------
 
@@ -58,7 +64,7 @@ PortalPanel.prototype._init = function()
   this.applicationPanel = new ApplicationPanel(this);
 
   this.bookmarkPanel = new BookmarkPanel(this);
-}
+};
 
 PortalPanel.prototype._layout = function()
 {
@@ -85,16 +91,16 @@ PortalPanel.prototype._layout = function()
   y += this.applicationPanel.getSize().y + vmargin;
 
   this.bookmarkPanel.setBounds(left, y, width, Math.floor(vspace / 4));
-}
+};
 
 // callbacks ------------------------------------------------------------------
 
 PortalPanel.prototype._refreshButtonListener = function()
 {
   this.refresh();
-}
+};
 
 PortalPanel.prototype._listActionListener = function(ev)
 {
   this._actionMenu.popup(0, ev.docX, ev.docY);
-}
+};

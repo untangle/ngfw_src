@@ -1,11 +1,12 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function Application(name, description, isHostService, appJsUrl)
+function Application(name, description, isHostService, appJsUrl, loadedCb)
 {
   this.name = name;
   this.description = description;
   this.isHostService = isHostService;
+  this.loadedCb = loadedCb;
   this.loaded = false;
 
   var cb = new AjxCallback(this, this._loadAppJs, { });
@@ -14,7 +15,7 @@ function Application(name, description, isHostService, appJsUrl)
 
 Application.prototype.toString = function()
 {
-  return "Application: " + this.name;
+  return "Application: " + this.name + "[code: " + this._appCode + "]";
 };
 
 Application.prototype.getBookmarkProperties = function()
@@ -37,16 +38,23 @@ Application.prototype.openApplication = function()
   return this._appCode ? this._appCode.openApplication.apply(this, arguments) : null;
 };
 
+Application.prototype.getIconUrl = function()
+{
+  return this._appCode ? this._appCode.iconUrl : null;
+}
+
 // private functions ----------------------------------------------------------
 
 Application.prototype._loadAppJs = function(obj, results)
 {
   if (results.text) {
-    DBG.println("APP CODE TEXT: " + results.text);
     eval("this._appCode = " + results.text);
-    DBG.println("SET _appCode: " + this._appCode);
   } else {
     DBG.println("COULD NOT SET _appCode: " + results);
   }
   this.loaded = true;
+
+  if (this.loadedCb) {
+    this.loadedCb.run(this);
+  }
 };

@@ -18,5 +18,7 @@
       }
     }
     return s;
-  }
+  },
+
+  iconUrl: "/rdp/icon.png"
 };

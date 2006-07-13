@@ -3,7 +3,6 @@
 
 function BookmarkList(parent)
 {
-
   if (0 == arguments.length) {
     return;
   }
@@ -90,11 +89,22 @@ BookmarkList.prototype._createItemHtml = function(item)
     htmlArr[idx++] = "<td";
     var width = AjxEnv.isIE ? (col._width + 4) : col._width;
     htmlArr[idx++] = width ? (" width=" + width + ">") : ">";
-    // add a div to force clipping (TD's dont obey it)
     htmlArr[idx++] = "<div";
     htmlArr[idx++] = width ? " style='width: " + width + "'>" : ">";
 
-    var value = item[col.memberName];
+    var value;
+    if ("app" == col.memberName) {
+      var app = portal.getApplication(item.app);
+      if (app) {
+        var iconUrl = app.getIconUrl();
+        DBG.println("ICON URL: " + iconUrl);
+        value = "<img src='" + iconUrl + "'/>: ";
+      } else {
+        // XXX put generic icon instead
+      }
+    } else {
+      value = item[col.memberName];
+    }
     htmlArr[idx++] = (value || "") + "</div></td>";
   }
 
