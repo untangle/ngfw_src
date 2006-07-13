@@ -30,7 +30,10 @@ public class Interface extends Rule
     /* This is the current status of the ethernet port */
     private String currentMedia = "Link ok";
     private boolean isPingable = true;
-    private boolean isConnected = false;
+    private String connectionState = CONNECTION_STATE_UNKNOWN;
+    public static final String CONNECTION_STATE_UP      = "Connected";
+    public static final String CONNECTION_STATE_DOWN    = "Disconnected";
+    public static final String CONNECTION_STATE_UNKNOWN = "Detection Failed";
 
     public Interface()
     {
@@ -118,14 +121,14 @@ public class Interface extends Rule
      * @hibernate.property
      * column="connected"
      */
-    public boolean getIsConnected()
+    public String getConnectionState()
     {
-        return this.isConnected;
+        return this.connectionState;
     }
 
-    public void setIsConnected( boolean isConnected )
+    public void setConnectionState( String connectionState )
     {
-        this.isConnected = isConnected;
+        this.connectionState = connectionState;
     }
 
     /** The following are not stored in the database ***/
