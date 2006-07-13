@@ -129,7 +129,7 @@ UPDATE settings.mvvm_network_settings SET completed_setup = true;
 -- add use_mx_records to MailSettings
 
 ALTER TABLE settings.mail_settings ADD COLUMN use_mx_records bool;
-UPDATE settings.mail_settings SET use_mx_records = true;
+UPDATE settings.mail_settings SET use_mx_records = false;
 UPDATE settings.mail_settings SET use_mx_records = true WHERE smtp_host IS NULL;
 UPDATE settings.mail_settings SET use_mx_records = true WHERE smtp_host = '';
 ALTER TABLE settings.mail_settings ALTER COLUMN use_mx_records SET NOT NULL;
