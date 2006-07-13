@@ -63,6 +63,13 @@ PortalPanel.prototype.addSelectionListener = function(l)
   this.bookmarkPanel.addSelectionListener(l);
 };
 
+// private constants ----------------------------------------------------------
+
+PortalPanel._VMARGIN = 25;
+PortalPanel._HMARGIN = 50;
+PortalPanel._METAVIZE_PANEL_HEIGHT = 100;
+PortalPanel._WELCOME_PANEL_HEIGHT = 50;
+
 // private methods ------------------------------------------------------------
 
 PortalPanel.prototype._init = function()
@@ -80,45 +87,42 @@ PortalPanel.prototype._init = function()
   this.bookmarkPanel = new BookmarkPanel(this);
 };
 
+
 PortalPanel.prototype._layout = function()
 {
-  var vmargin = 25;
-  var hmargin = 50;
-
   var size = this.getSize();
 
-  var left = hmargin;
-  var width = size.x - (hmargin + hmargin);
+  var left = PortalPanel._HMARGIN;
+  var width = size.x - (PortalPanel._HMARGIN + PortalPanel._HMARGIN);
 
-  var y = vmargin;
+  var y = PortalPanel._VMARGIN;
 
-  var numPanels = 2;
-  if (this.showApplicationPanel) {
-    numPanels++;
-  }
-
-  if (this.showBookmarkPanel) {
-    numPanels++;
-  }
-
-  var vspace = size.y - (vmargin * (numPanels + 1));
-
-  // XXX more appropiate sizes:
-
-  this.metavizePanel.setBounds(left, y, width, Math.floor(vspace / numPanels));
-  y += this.metavizePanel.getSize().y + vmargin;
+  this.metavizePanel.setBounds(left, y, width, PortalPanel._METAVIZE_PANEL_HEIGHT);
+  y += this.metavizePanel.getSize().y + PortalPanel._VMARGIN;
   var s = this.metavizePanel.getSize();
 
-  this._welcomePanel.setBounds(left, y, width, Math.floor(vspace / numPanels));
-  y += this._welcomePanel.getSize().y + vmargin;
+  this._welcomePanel.setBounds(left, y, width, PortalPanel._WELCOME_PANEL_HEIGHT);
+  y += this._welcomePanel.getSize().y + PortalPanel._VMARGIN;
+
+  var numPanels = 0;
+  if (this.showApplicationPanel) {
+    numPanels++
+  }
+  if (this.showBookmarkPanel) {
+    numPanels++;
+  }
+
+  var vSpace = size.y - y;
+  var mSize = PortalPanel._VMARGIN * numPanels;
+  var pSize = Math.floor((vSpace - mSize) / numPanels);
 
   if (this.showApplicationPanel) {
-    this.applicationPanel.setBounds(left, y, width, Math.floor(vspace / numPanels));
-    y += this.applicationPanel.getSize().y + vmargin;
+    this.applicationPanel.setBounds(left, y, width, pSize);
+    y += this.applicationPanel.getSize().y + PortalPanel._VMARGIN;
   }
 
   if (this.showBookmarkPanel) {
-    this.bookmarkPanel.setBounds(left, y, width, Math.floor(vspace / numPanels));
+    this.bookmarkPanel.setBounds(left, y, width, pSize);
   }
 };
 
