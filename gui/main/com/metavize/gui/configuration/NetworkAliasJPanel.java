@@ -42,7 +42,7 @@ public class NetworkAliasJPanel extends MEditTableJPanel{
 	JLabel descriptionJLabel = new JLabel("<html>Aliases give more IP addresses to your EdgeGuard. This is useful"
 					  + " if you wish to bridge more than one subnet as a <b>Transparent Bridge</b>."
                                           + " This is also useful if you wish to assign more external IP addresses to"
-                                          + " redirect to machines on the internal network (<b>NAT</b>).");
+                                          + " redirect to machines on the internal network (<b>NAT</b>).</html>");
 	descriptionJLabel.setFont(new Font("Default", 0, 12));
 	auxJPanel.setLayout(new BorderLayout());
 	auxJPanel.add(descriptionJLabel);

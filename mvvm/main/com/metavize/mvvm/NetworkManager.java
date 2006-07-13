@@ -95,4 +95,7 @@ public interface NetworkManager
 
     /* Returns true if address is local to the edgeguard */
     public boolean isAddressLocal( IPaddr address );
+
+    /* Forces the link status to be re-examined, since it is likely to have changed */
+    public void updateLinkStatus();
 }

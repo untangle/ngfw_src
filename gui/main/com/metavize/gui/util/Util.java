@@ -246,9 +246,14 @@ public class Util {
 
     // LOCAL //////////////////////
     private static boolean isLocal = false;
-
     public static void setLocal(boolean isLocalX){ isLocal = isLocalX; }
     public static boolean isLocal(){ return isLocal; }
+    //////////////////////////////
+
+
+    // CD //////////////////////
+    private static boolean IS_CD = true;
+    public static boolean getIsCD(){ return IS_CD; }
     //////////////////////////////
 
 

@@ -27,6 +27,7 @@ import com.metavize.mvvm.networking.*;
 
 public class MaintenanceInterfaceJPanel extends MEditTableJPanel{
 
+
     public MaintenanceInterfaceJPanel() {
         super(true, true);
         super.setFillJButtonEnabled( true );
@@ -34,25 +35,31 @@ public class MaintenanceInterfaceJPanel extends MEditTableJPanel{
         super.setTableTitle("");
         super.setDetailsTitle("");
         super.setAddRemoveEnabled(false);
+	super.setAuxJPanelEnabled(true);
+
+	// add a basic description
+	JLabel descriptionJLabel = new JLabel("<html>Please press the Refresh Settings Button to get an updated network interface state (ok/DOWN)</html>");
+	descriptionJLabel.setFont(new Font("Default", 0, 12));
+	auxJPanel.setLayout(new BorderLayout());
+	auxJPanel.add(descriptionJLabel);
 
         // create actual table model
-        InterfaceModel interfaceModel = new InterfaceModel();
-        this.setTableModel( interfaceModel );
+	InterfaceModel interfaceModel = new InterfaceModel();
+	this.setTableModel( interfaceModel );
 
     }
     
-
-
-
 class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{ 
     
     private static final int  T_TW  = Util.TABLE_TOTAL_WIDTH;
     private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int  C1_MW = Util.LINENO_MIN_WIDTH; /* # */
     private static final int  C2_MW = 120;  /* network interface */
-    private static final int  C3_MW = 175;  /* mode */
-    private static final int  C4_MW = 65;   /* block ping */
-    //    private static final int  C5_MW = 150;  /* status */
+    private static final int  C3_MW = 70;   /* status */
+    private static final int  C4_MW = 175;  /* mode */
+    private static final int  C5_MW = 120;  /* speed */
+    private static final int  C6_MW = 65;   /* block ping */
+
     
     
     public TableColumnModel getTableColumnModel(){
@@ -62,10 +69,11 @@ class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{
         addTableColumn( tableColumnModel,  0,  C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  C2_MW, false, false, false, false, String.class, null, sc.html("network<br>interface") );
-        addTableColumn( tableColumnModel,  3,  C3_MW, false, true,  false, false, ComboBoxModel.class, null, sc.html("mode") );
-        addTableColumn( tableColumnModel,  4,  C4_MW, false, true,  false, false, Boolean.class, null, sc.html("block<br>ping") );
-	//        addTableColumn( tableColumnModel,  5,  C5_MW, true,  false, false, true,  String.class,  null, sc.html("status") );
-        addTableColumn( tableColumnModel,  5, 10,     false, false, true,  false, Interface.class, null, "");
+        addTableColumn( tableColumnModel,  3,  C3_MW, false, false, false, false, String.class, null, sc.html("state") );
+        addTableColumn( tableColumnModel,  4,  C4_MW, false, true,  false, false, ComboBoxModel.class, null, sc.html("mode") );
+	addTableColumn( tableColumnModel,  5,  C5_MW, true,  false, false, true,  String.class,  null, sc.html("speed") );
+        addTableColumn( tableColumnModel,  6,  C6_MW, false, true,  false, false, Boolean.class, null, sc.html("block<br>ping") );
+        addTableColumn( tableColumnModel,  7,  10,    false, false, true,  false, Interface.class, null, "");
         return tableColumnModel;
     }
     
@@ -78,9 +86,9 @@ class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{
 
         for( Vector rowVector : tableVector ){
 	    rowIndex++;
-            newElem = (Interface) rowVector.elementAt(5);
-	    newElem.setEthernetMedia( (EthernetMedia) ((ComboBoxModel)rowVector.elementAt(3)).getSelectedItem() );
-	    newElem.setIsPingable( !(Boolean) rowVector.elementAt(4) );
+            newElem = (Interface) rowVector.elementAt(7);
+	    newElem.setEthernetMedia( (EthernetMedia) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
+	    newElem.setIsPingable( !(Boolean) rowVector.elementAt(6) );
             elemList.add(newElem);
         }
         
@@ -101,15 +109,16 @@ class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{
 
         for( Interface intf : interfaceList ){
 	    rowIndex++;
-	    tempRow = new Vector(6);
+	    tempRow = new Vector(8);
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
             tempRow.add( intf.getName() );
+	    tempRow.add( intf.getIsConnected()==true?"ok":"DOWN" );
 	    tempRow.add( super.generateComboBoxModel( EthernetMedia.getEnumeration(), intf.getEthernetMedia()) );
+	    tempRow.add( intf.getCurrentMedia() );
             /* The column is named block Ping, so must use the inverse, the variable is for
-             * allow ping. */
+            allow ping. */
             tempRow.add( !intf.getIsPingable() );
-	    //tempRow.add( intf.getCurrentMedia() );
 	    tempRow.add( intf );
 	    allRows.add( tempRow );
         }
@@ -118,5 +127,6 @@ class InterfaceModel extends MSortedTableModel<MaintenanceCompoundSettings>{
     
     
 }
+
 
 }

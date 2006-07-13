@@ -150,6 +150,10 @@ public class NetworkManagerImpl implements NetworkManager
         this.isInitialized = true;
     }
 
+    public void updateLinkStatus(){
+	// XXX do some business papers here ;)
+    }
+
     public NetworkingConfiguration getNetworkingConfiguration()
     {
         return NetworkUtilPriv.getPrivInstance().
@@ -1206,5 +1210,6 @@ class DynamicDnsSettingsDataSaver extends DataSaver<DynamicDNSSettings>
             s.delete( settings );
         }
     }
+
 }
 

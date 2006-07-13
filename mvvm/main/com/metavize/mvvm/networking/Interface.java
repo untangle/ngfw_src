@@ -30,6 +30,7 @@ public class Interface extends Rule
     /* This is the current status of the ethernet port */
     private String currentMedia = "Link ok";
     private boolean isPingable = true;
+    private boolean isConnected = false;
 
     public Interface()
     {
@@ -109,6 +110,22 @@ public class Interface extends Rule
     public void setIsPingable( boolean isPingable )
     {
         this.isPingable = isPingable;
+    }
+
+    /**
+     * @return Whether or not this interface is connected to a working link.
+     *         
+     * @hibernate.property
+     * column="connected"
+     */
+    public boolean getIsConnected()
+    {
+        return this.isConnected;
+    }
+
+    public void setIsConnected( boolean isConnected )
+    {
+        this.isConnected = isConnected;
     }
 
     /** The following are not stored in the database ***/
