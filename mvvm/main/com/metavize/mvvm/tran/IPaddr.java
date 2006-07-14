@@ -126,10 +126,7 @@ public class IPaddr implements Comparable, Serializable
 
     public boolean isGreaterThan( IPaddr addr2 ) 
     {
-        long oper1 = toLong();
-        long oper2 = addr2.toLong();
-
-        return ( oper1 > oper2 );
+        return ( this.compareTo( addr2 ) > 0);
     }
     
     public boolean isInNetwork( IPaddr addr2, IPaddr netmaskAddress )
@@ -173,11 +170,14 @@ public class IPaddr implements Comparable, Serializable
     private long toLong( )
     {
         long val = 0;
+                        
+        /* XXX A little questionable, but this is only used for comparisons anyway */
+        if ( addr == null ) return 0;
         
         byte valArray[] = addr.getAddress();
-        
+
         for ( int c = 0 ; c < INADDRSZ ; c++ ) {
-            val += ((long)byteToInt(valArray[c])) << ( 8 * c );
+            val += ((long)byteToInt(valArray[c])) << ( 8 * ( INADDRSZ - c - 1 ));
         }
 
         return val;
@@ -225,7 +225,7 @@ public class IPaddr implements Comparable, Serializable
         InetAddress address = null;
                 
         for ( int c = 0 ; c < INADDRSZ ; c++ ) {
-            valArray[c] = (byte)((addr >> ( 8 * c)) & 0xFF);
+            valArray[INADDRSZ - c - 1] = (byte)((addr >> (8 * c)) & 0xFF);
         }
         
         try {
@@ -235,7 +235,7 @@ public class IPaddr implements Comparable, Serializable
             return null;
         }
 
-        return new IPaddr(address );
+        return new IPaddr(address);
     }
 
     static int byteToInt ( byte val ) 
