@@ -50,9 +50,8 @@ AddBookmarkPanel.prototype._init = function()
 
   var appPanel = new DwtComposite(this);
 
-  var html = new Array();
+  var html = [];
   html.push("<table border=0>");
-
   html.push("<tr>");
   html.push("<td>Application:</td>");
   html.push("<td><div id='");
