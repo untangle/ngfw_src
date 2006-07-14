@@ -3,19 +3,19 @@
 
 function MkdirDialog(parent, cifsNode)
 {
-   if (arguments.length == 0) {
-      return;
-   }
+  if (arguments.length == 0) {
+    return;
+  }
 
-   var className = null; // XXX
+  var className = null; // XXX
 
-   DwtDialog.call(this, parent, className, "Make Folder");
+  DwtDialog.call(this, parent, className, "Make Folder");
 
-   this._panel = new MkdirPanel(this, cifsNode);
-   this.addListener(DwtEvent.ONFOCUS, new AjxListener(this, this._focusListener));
+  this._panel = new MkdirPanel(this, cifsNode);
+  this.addListener(DwtEvent.ONFOCUS, new AjxListener(this, this._focusListener));
 
-   this.setView(this._panel);
-}
+  this.setView(this._panel);
+};
 
 MkdirDialog.prototype = new DwtDialog();
 MkdirDialog.prototype.constructor = MkdirDialog;
@@ -24,33 +24,45 @@ MkdirDialog.prototype.constructor = MkdirDialog;
 
 MkdirDialog.prototype.getDir = function()
 {
-   return this._panel.getDir();
-}
-
+  return this._panel.getDir();
+};
 
 // internal methods -----------------------------------------------------------
 
 MkdirDialog.prototype._focusListener = function(ev)
 {
-   this._panel.focus();
-}
+  this._panel.focus();
+};
 
 // MkdirPanel -----------------------------------------------------------------
 
 function MkdirPanel(parent, cifsNode)
 {
-   if (0 == arguments.length) {
-      return;
-   }
+  if (0 == arguments.length) {
+    return;
+  }
 
-   this._cifsNode = cifsNode;
+  this._cifsNode = cifsNode;
 
-   DwtComposite.call(this, parent, "MkdirPanel");
+  DwtComposite.call(this, parent, "MkdirPanel");
 
-   var label = new DwtLabel(this);
-   label.setText("Make new folder in " + this._cifsNode.url);
-   this._field = new DwtInputField({ parent: this });
-}
+  var folderFieldId = Dwt.getNextId();
+
+  var html = [];
+  html.push("<table border=0>");
+
+  html.push("<tr>");
+  html.push("<td>Folder Name:</td>");
+  html.push("<td><div id='");
+  html.push(folderFieldId);
+  html.push("'/></td>");
+  html.push("</tr>");
+  html.push("</table>");
+  this.getHtmlElement().innerHTML = html.join("");
+
+  this._field = new DwtInputField({ parent: this });
+  this._field.reparentHtmlElement(folderFieldId);
+};
 
 MkdirPanel.prototype = new DwtComposite();
 MkdirPanel.prototype.constructor = FileUploadPanel;
@@ -59,11 +71,11 @@ MkdirPanel.prototype.constructor = FileUploadPanel;
 
 MkdirPanel.prototype.getDir = function()
 {
-   // XXX resolve absolute vs relative paths
-   return this._cifsNode.getReqUrl() + this._field.getValue();
-}
+  // XXX resolve absolute vs relative paths
+  return this._cifsNode.getReqUrl() + this._field.getValue();
+};
 
 MkdirPanel.prototype.focus = function()
 {
-   this._field.focus();
-}
+  this._field.focus();
+};
