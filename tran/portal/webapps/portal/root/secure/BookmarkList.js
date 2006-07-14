@@ -102,7 +102,7 @@ BookmarkList.prototype._createItemHtml = function(item)
         // XXX put generic icon instead
       }
     } else if ("name" == col.memberName) {
-      value = "<div class='BookmarkListName'>" + item[col.memberName] + "</div>";
+      value = "<div class='BookmarkListName' onclick='alert(\"CLICK\");'>" + item[col.memberName] + "</div>";
     } else {
       value = item[col.memberName];
     }
