@@ -39,7 +39,7 @@ public class MailSettings implements Serializable
     // private String  alertFromAddress;
 
     // Common settings follow
-    private boolean useMxRecords;
+    private boolean useMxRecords = true;
     private String  smtpHost;
     private int     smtpPort = 25;
     private boolean useTls = false;
