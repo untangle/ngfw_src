@@ -102,7 +102,7 @@ BookmarkList.prototype._createItemHtml = function(item)
         // XXX put generic icon instead
       }
     } else if ("name" == col.memberName) {
-      value = "<div class='BookmarkListName' onclick='alert(\"CLICK\");'>" + item[col.memberName] + "</div>";
+      value = "<a class='BookmarkListName'>" + item[col.memberName] + "</a>";
     } else {
       value = item[col.memberName];
     }
@@ -112,6 +112,20 @@ BookmarkList.prototype._createItemHtml = function(item)
   htmlArr[idx++] = "</tr></table>";
 
   div.innerHTML = htmlArr.join("");
+
+  var evtMgr = this._evtMgr;
+
+  var a = div.getElementsByTagName("a")[0];
+  a.onclick = function() {
+    if (evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
+      var selEv = new DwtSelectionEvent(true);
+      selEv.button = DwtMouseEvent.LEFT;
+      selEv.target = div;
+      selEv.item = item;
+      selEv.detail = DwtListView.ITEM_DBL_CLICKED;
+      evtMgr.notifyListeners(DwtEvent.SELECTION, selEv);
+    }
+  }
 
   return div;
 };
