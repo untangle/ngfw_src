@@ -63,7 +63,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         lpm = mctx.portalManager();
         logger.debug("<init>");
         TransformContext tctx = getTransformContext();
-        eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
+        eventLogger = lpm.getEventLogger(tctx);
 
         SimpleEventFilter ef = new PortalLoginoutFilter();
         eventLogger.addSimpleEventFilter(ef);
@@ -226,7 +226,6 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     @Override
     protected void postInit(final String[] args) {
         eventLogger.start();
-        lpm.setEventLogger(eventLogger);
         registerApps();
     }
 
@@ -234,7 +233,6 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     protected void preDestroy() {
         deregisterApps();
         eventLogger.stop();
-        lpm.setEventLogger(null);
     }
 
     // Portal methods ----------------------------------------------
