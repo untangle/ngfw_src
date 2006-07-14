@@ -491,7 +491,6 @@ Browser.prototype._treeDropListener = function(evt)
       break;
 
       case DwtDropEvent.DRAG_OP_CHANGED:
-      window.status = "OP CHANGED!";
       break;
 
       case DwtDropEvent.DRAG_DROP:
@@ -504,7 +503,6 @@ Browser.prototype._treeDropListener = function(evt)
          break;
 
          case Dwt.DND_DROP_MOVE:
-         DBG.println("MV SRC: " + src + " DEST: " + dest);
          this.mv(src, dest);
          break;
       }
@@ -539,7 +537,6 @@ Browser.prototype._detailDropListener = function(evt)
       break;
 
       case DwtDropEvent.DRAG_OP_CHANGED:
-      window.status = "OP CHANGED!";
       break;
 
       case DwtDropEvent.DRAG_DROP:

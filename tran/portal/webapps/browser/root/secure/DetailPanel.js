@@ -154,15 +154,13 @@ DetailPanel.prototype._getDnDIcon = function(dragOp)
   var icon = document.createElement("div");
   Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE);
 
-  icon.innerHTML += "<B>DRAG OPERATION:</B> "
-
   switch (dragOp) {
   case Dwt.DND_DROP_COPY:
-    icon.innerHTML += "copy";
+    icon.innerHTML = "<img src='./secure/copy.png'/>";
     break;
 
   case Dwt.DND_DROP_MOVE:
-    icon.innerHTML += "move";
+    icon.innerHTML = "<img src='./secure/move.png'/>";
     break;
   }
 
