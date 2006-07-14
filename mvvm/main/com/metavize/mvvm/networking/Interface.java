@@ -115,12 +115,6 @@ public class Interface extends Rule
         this.isPingable = isPingable;
     }
 
-    /**
-     * @return Whether or not this interface is connected to a working link.
-     *         
-     * @hibernate.property
-     * column="connected"
-     */
     public String getConnectionState()
     {
         return this.connectionState;
