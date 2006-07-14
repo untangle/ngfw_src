@@ -41,7 +41,8 @@ public class KeyButtonRunnable implements ButtonRunnable {
     public void setTopLevelWindow(Window topLevelWindow){ this.topLevelWindow = topLevelWindow; }
     public void actionPerformed(ActionEvent evt){ run(); }
     public void run(){
-	new DistributeKeyThread(vpnClient, vpnTransform);
+	if(!Util.getIsDemo())
+	    new DistributeKeyThread(vpnClient, vpnTransform);
     }
 
     class DistributeKeyThread extends Thread {
