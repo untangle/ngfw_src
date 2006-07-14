@@ -12,6 +12,8 @@
 
 package com.metavize.mvvm.engine;
 
+import java.io.IOException;
+
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -23,10 +25,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-import com.metavize.mvvm.security.MvvmPrincipal;
+import org.apache.catalina.Context;
 import org.apache.catalina.realm.RealmBase;
+import org.apache.catalina.connector.Request;
+import org.apache.catalina.connector.Response;
+import org.apache.catalina.deploy.SecurityConstraint;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Encoder;
+
+import com.metavize.mvvm.security.MvvmPrincipal;
 
 class MvvmRealm extends RealmBase
 {
@@ -164,5 +171,56 @@ class MvvmRealm extends RealmBase
             if (testRawPW[i] != rawPW[i])
                 return false;
         return true;
+    }
+
+    /**
+     * Perform access control based on the specified authorization constraint.
+     * Return <code>true</code> if this constraint is satisfied and processing
+     * should continue, or <code>false</code> otherwise.
+     *
+     * @param request Request we are processing
+     * @param response Response we are creating
+     * @param constraints Security constraint we are enforcing
+     * @param context The Context to which client of this class is attached.
+     *
+     * @exception IOException if an input/output error occurs
+     */
+    public boolean hasResourcePermission(Request request,
+                                         Response response,
+                                         SecurityConstraint []constraints,
+                                         Context context)
+        throws IOException
+    {
+        // Have we already authenticated someone?
+        Principal principal = request.getUserPrincipal();
+
+        if ( logger.isDebugEnabled()) logger.debug( "Authenticating against [" + principal + "]" );
+
+        if ( !isValidPrincipal( principal )) {
+            if ( logger.isDebugEnabled()) {
+                logger.debug("No MvvmPrincipal, trying to find a principal from the session" );
+            }
+
+            org.apache.catalina.Session session = request.getSessionInternal(false);
+            if (null != session) {
+                principal = session.getPrincipal();
+                if ( logger.isDebugEnabled()) {
+                    logger.debug("Found principal[" + principal + "] from session: " +session );
+                }
+            }
+        }
+
+        /* Check once again */
+        if ( isValidPrincipal( principal )) return true;
+
+        /* Revert to the standard verification methods */
+        return super.hasResourcePermission(request,response,constraints,context);
+    }
+
+
+    /* Should be moved to a util, used also by MvvmAuthenticator */
+    private boolean isValidPrincipal( Principal principal )
+    {
+        return ( null != principal && ( principal instanceof MvvmPrincipal ));
     }
 }

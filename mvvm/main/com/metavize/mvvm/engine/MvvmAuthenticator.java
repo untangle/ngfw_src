@@ -25,6 +25,9 @@ import org.apache.catalina.deploy.LoginConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.metavize.mvvm.portal.PortalLogin;
+import com.metavize.mvvm.security.MvvmPrincipal;
+
 
 class MvvmAuthenticator extends BasicAuthenticator
 {
@@ -37,6 +40,11 @@ class MvvmAuthenticator extends BasicAuthenticator
      */
     protected static final String info =
         "com.metavize.mvvm.engine.MvvmAuthenticator/3.2";
+
+    MvvmAuthenticator()
+    {
+        setCache(true);
+    }
 
     // ------------------------------------------------------------- Properties
 
@@ -68,27 +76,75 @@ class MvvmAuthenticator extends BasicAuthenticator
         throws IOException {
         // Have we already authenticated someone?
         Principal principal = request.getUserPrincipal();
+        
+        debug("Authenticating against [", principal,"]");
 
-        if (principal == null) {
+        if (!isValidPrincipal(principal)) {
+            debug("No MvvmPrincipal, trying to find a principal from the session");
+            org.apache.catalina.Session session = request.getSessionInternal(false);
+            if (null != session) {
+                principal = session.getPrincipal();
+                debug("Found principal[", principal, "] from session: ", session);
+            }
+        }
+
+        if (isValidPrincipal(principal)) {
+            debug("Found principal[", principal, "] accepting session.");
+                
+            return true;
+        } else  {
             // No -- check for the magic cookie
             String authStr = request.getParameter(AUTH_NONCE_FIELD_NAME);
             if (authStr != null) {
                 Realm realm = context.getRealm();
                 if (realm instanceof MvvmRealm) {
-                    log.debug("Attempting magic authentication with " + authStr);
+                    debug("Attempting magic authentication with ", authStr);
                     principal = ((MvvmRealm)realm).authenticateWithNonce(authStr);
                     if (principal != null) {
-                        log.debug("Succeeded for  " + principal);
+                        debug("Succeeded for ", principal);
                         register(request, response, principal, Constants.BASIC_METHOD,
                                  principal.getName(), null);
+                        /* Cache inside of the session as well, register doesn't appear to */
+                        org.apache.catalina.Session session = request.getSessionInternal(true);
+                        if (null!=session) {
+                            session.setPrincipal(principal);
+                            debug("Registered principal[", principal, "] with session [", session, "]");
+                        }
+
                         return true;
                     } else {
                         log.warn("Magic authentication failed");
                         return false;
                     }
                 }
-            }
+            } /* No magic cookie, fall back to the default methods */
         }
+
         return super.authenticate(request, response, config);
+
+//         if (isAuthenticated) {
+//             org.apache.catalina.Session session = request.getSessionInternal(false);
+//             if (null != session) {
+//                 principal = session.getPrincipal();
+//                 debug("Found principal[", request.getUserPrincipal(), "] from getUserPrincipal ");
+//                 debug("Found principal[", principal, "] from session: ", session);
+//             }
+//         }
+        
+//         return isAuthenticated;
+    }
+
+    private boolean isValidPrincipal(Principal principal)
+    {
+        return (null != principal && (principal instanceof MvvmPrincipal));
+    }
+
+    private void debug(Object ... msgArray)
+    {
+        if (log.isDebugEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            for (Object msg : msgArray) sb.append(null == msg ? "null" : msg.toString());
+            log.debug(sb.toString());
+        }
     }
 }

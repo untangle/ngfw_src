@@ -273,7 +273,9 @@ class TomcatManager
             baseHost.setDeployOnStartup(true);
             baseHost.setAutoDeploy(true);
             OurSingleSignOn ourSsoWorkaroundValve = new OurSingleSignOn();
-            SingleSignOn ssoValve = new org.apache.catalina.authenticator.SingleSignOn();
+            /* XXXXX Hackstered to get single sign on to ignore certain contexts */
+            SingleSignOn ssoValve = new SpecialSingleSignOn( "/session-dumper", "/webstart", "", "/reports",
+                                                             "/store" );
             // ssoValve.setRequireReauthentication(true);
             baseHost.getPipeline().addValve(ourSsoWorkaroundValve);
             baseHost.getPipeline().addValve(ssoValve);
@@ -429,7 +431,7 @@ class TomcatManager
         final boolean allowLinking;
         final int sessionTimeout; // Minutes
         final Valve valve;
-
+        
         WebAppOptions() {
             this(false, DEFAULT_SESSION_TIMEOUT);
         }

@@ -11,6 +11,8 @@
 
 package com.metavize.tran.portal;
 
+import java.security.Principal;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +43,11 @@ public class LogoutServlet extends HttpServlet
         resp.setContentType("text/xml");
         resp.addHeader("Cache-Control", "no-cache");
 
-        PortalLogin pl = (PortalLogin)req.getUserPrincipal();
+        Principal p = req.getUserPrincipal();
+        if (!(p instanceof PortalLogin)) {
+            p = null;
+        }
+        PortalLogin pl = (PortalLogin)p;
 
         if (null == pl) {
             System.out.println("NO PRINCIPAL! " + this);
