@@ -26,6 +26,7 @@ import com.metavize.mvvm.addrbook.AddressBook;
 import com.metavize.mvvm.addrbook.AddressBookConfiguration;
 import com.metavize.mvvm.addrbook.AddressBookSettings;
 import com.metavize.mvvm.addrbook.UserEntry;
+import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.portal.Application;
 import com.metavize.mvvm.portal.Bookmark;
@@ -41,6 +42,7 @@ import com.metavize.mvvm.portal.PortalUser;
 import com.metavize.mvvm.portal.RemoteApplicationManager;
 import com.metavize.mvvm.security.LoginFailureReason;
 import com.metavize.mvvm.security.LogoutReason;
+import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.util.TransactionWork;
 import jcifs.smb.NtlmPasswordAuthentication;
 import org.apache.catalina.Realm;
@@ -82,7 +84,7 @@ class PortalManagerImpl implements LocalPortalManager
     private final Logger logger = Logger.getLogger(PortalManagerImpl.class);
 
     private PortalSettings portalSettings;
-    private EventLogger tranLogger;
+    private EventLogger portalLogger;
 
     PortalManagerImpl(MvvmContextImpl mvvmContext)
     {
@@ -113,6 +115,9 @@ class PortalManagerImpl implements LocalPortalManager
         remoteAppManager = new RemotePortalApplicationManagerImpl(appManager);
 
         portalRealm = new PortalRealm();
+
+        portalLogger = EventLoggerFactory.factory().getEventLogger();
+        portalLogger.start();
 
         addressBook = mvvmContext.appAddressBook();
 
@@ -274,16 +279,9 @@ class PortalManagerImpl implements LocalPortalManager
         return l;
     }
 
-    public EventLogger getEventLogger()
+    public EventLogger getEventLogger(TransformContext tctx)
     {
-        if (tranLogger != null)
-            return tranLogger;
-        return mvvmContext.eventLogger();
-    }
-
-    public void setEventLogger(EventLogger elogger)
-    {
-        tranLogger = elogger;
+        return portalLogger;
     }
 
     // package protected methods ----------------------------------------------
@@ -300,6 +298,8 @@ class PortalManagerImpl implements LocalPortalManager
 
     void destroy() {
         reaper.destroy();
+        if (portalLogger != null)
+            portalLogger.stop();
     }
 
     // private methods --------------------------------------------------------
@@ -343,11 +343,11 @@ class PortalManagerImpl implements LocalPortalManager
                 if (null == ue) {
                     logger.debug("no user found with login: " + uid);
                     PortalLoginEvent event = new PortalLoginEvent(addr, uid, false, LoginFailureReason.UNKNOWN_USER);
-                    getEventLogger().log(event);
+                    portalLogger.log(event);
                 } else {
                     logger.debug("password check failed");
                     PortalLoginEvent event = new PortalLoginEvent(addr, uid, false, LoginFailureReason.BAD_PASSWORD);
-                    getEventLogger().log(event);
+                    portalLogger.log(event);
                 }
 
                 try {
@@ -373,7 +373,7 @@ class PortalManagerImpl implements LocalPortalManager
         if (!user.isLive()) {
             logger.debug("user is disabled");
             PortalLoginEvent event = new PortalLoginEvent(addr, uid, false, LoginFailureReason.DISABLED);
-            getEventLogger().log(event);
+            portalLogger.log(event);
             return null;
         }
 
@@ -393,7 +393,7 @@ class PortalManagerImpl implements LocalPortalManager
         activeLogins.put(uid, pld);
 
         PortalLoginEvent event = new PortalLoginEvent(addr, uid, true);
-        getEventLogger().log(event);
+        portalLogger.log(event);
 
         return pl;
     }
@@ -410,7 +410,7 @@ class PortalManagerImpl implements LocalPortalManager
 
         PortalLogoutEvent evt = new PortalLogoutEvent(login.getClientAddr(),
                                                       login.getUser(), reason);
-        getEventLogger().log(evt);
+        portalLogger.log(evt);
     }
 
     private boolean isSessionLive(PortalLogin pl)
