@@ -34,3 +34,9 @@
 .BookmarkTitle .Text {
     font-weight: bold;
 }
+
+.BookmarkListName {
+    color:blue;
+    text-decoration:underline;
+    cursor:hand;
+}

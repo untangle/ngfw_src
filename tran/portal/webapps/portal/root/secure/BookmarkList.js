@@ -15,7 +15,7 @@ function BookmarkList(parent)
   hi.memberName = "name";
   header.push(hi);
 
-  DwtListView.call(this, parent, "BookmarkList", DwtControl.ABSOLUTE_STYLE, header);
+  DwtListView.call(this, parent, null, DwtControl.ABSOLUTE_STYLE, header);
 
   this.setUI(0);
 };
@@ -101,6 +101,8 @@ BookmarkList.prototype._createItemHtml = function(item)
       } else {
         // XXX put generic icon instead
       }
+    } else if ("name" == col.memberName) {
+      value = "<div class='BookmarkListName'>" + item[col.memberName] + "</div>";
     } else {
       value = item[col.memberName];
     }

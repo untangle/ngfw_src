@@ -3,32 +3,25 @@
 
 function BookmarkProperty(id, name, values, def, valFn)
 {
-   this.id = id;
-   this.name = name;
-   this.values = values;
-   this.def = def;
-   this.valFn = valFn;
-}
-
-BookmarkProperty.prototype.getLabel = function(parent)
-{
-   var label = new DwtLabel(parent);
-   label.setText(this.name + ":");
-   return label;
-}
+  this.id = id;
+  this.name = name;
+  this.values = values;
+  this.def = def;
+  this.valFn = valFn;
+};
 
 BookmarkProperty.prototype.getField = function(parent)
 {
-   var f;
+  var f;
 
-   if (null == this.values) {
-      f = new DwtInputField({ parent: parent});
-   } else if (this.values instanceof Array) {
-      f = new DwtSelect(parent, this.values);
-   } else {
-      f = new DwtInputField({ parent: parent});
-      f.setValue(this.values);
-   }
+  if (null == this.values) {
+    f = new DwtInputField({ parent: parent});
+  } else if (this.values instanceof Array) {
+    f = new DwtSelect(parent, this.values);
+  } else {
+    f = new DwtInputField({ parent: parent});
+    f.setValue(this.values);
+  }
 
-   return f;
-}
+  return f;
+};
