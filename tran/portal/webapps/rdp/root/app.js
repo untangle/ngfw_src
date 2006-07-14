@@ -3,10 +3,11 @@
     portal.showApplicationUrl('/rdp/rdp.jsp?t=' + bookmark.id, this, bookmark);
   },
 
- bookmarkProperties: [ new BookmarkProperty('size', 'size', ['640x480', '800x600', '1024x768', '1280x1024'], '800x600'),
-                       new BookmarkProperty('host', 'host'),
-                       new BookmarkProperty('command', 'command'),
-                       new BookmarkProperty('console', 'console', ['true', 'false'], 'false') ],
+ bookmarkProperties: [ new BookmarkProperty('name', 'Name'),
+                       new BookmarkProperty('size', 'Size', ['640x480', '800x600', '1024x768', '1280x1024'], '800x600'),
+                       new BookmarkProperty('host', 'Host'),
+                       new BookmarkProperty('command', 'Command'),
+                       new BookmarkProperty('console', 'Console', ['true', 'false'], 'false') ],
 
  bookmarkFunction: function(obj) {
     var s = '';

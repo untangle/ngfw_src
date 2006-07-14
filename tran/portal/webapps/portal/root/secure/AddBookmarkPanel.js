@@ -9,15 +9,13 @@ function AddBookmarkPanel(parent, apps)
 
   DwtComposite.call(this, parent);
 
-  this._bookmarkWidgets = [ ];
-
   this._apps = [];
   for (var i = 0; i < apps.length; i++) {
     this._apps.push(new DwtSelectOption(apps[i], false, apps[i].name));
   }
 
   this._init();
-}
+};
 
 AddBookmarkPanel.prototype = new DwtComposite();
 AddBookmarkPanel.prototype.constructor = AddBookmarkPanel;
@@ -31,38 +29,52 @@ AddBookmarkPanel.prototype.getBookmark = function()
 
   var target;
   if (fn) {
-    DBG.println("using bookmark fn");
     target = fn(this._properties);
   } else {
-    DBG.println("NOT using bookmark fn");
     target = this._targetField.getValue();
   }
 
   return new Bookmark(null, this._nameField.getValue(), app.name, target);
-}
+};
 
-  AddBookmarkPanel.prototype.focus = function()
+AddBookmarkPanel.prototype.focus = function()
 {
-  this._fields[0].focus();
-}
+  // XXX
+};
 
-  // private methods ------------------------------------------------------------
+// private methods ------------------------------------------------------------
 
-    AddBookmarkPanel.prototype._init = function()
+AddBookmarkPanel.prototype._init = function()
 {
-  this._fields = new Array();
+  var appFieldId = Dwt.getNextId();
 
-  var label = new DwtLabel(this);
-  label.setText("Application:");
+  var appPanel = new DwtComposite(this);
+
+  var html = new Array();
+  html.push("<table border=0>");
+
+  html.push("<tr>");
+  html.push("<td>Application:</td>");
+  html.push("<td><div id='");
+  html.push(appFieldId);
+  html.push("'/></td>");
+  html.push("</tr>");
+  html.push("</table>");
+  html.push("<hr/>");
+
+  appPanel.getHtmlElement().innerHTML = html.join("");
+
   this._appField = new DwtSelect(this, this._apps);
   var l = new AjxListener(this, this._showFields);
   this._appField.addChangeListener(l);
-  this._fields.push(this._appField);
+  this._appField.reparentHtmlElement(appFieldId);
+
+  this.valuePanel = new DwtComposite(this);
 
   this._showFields();
-}
+};
 
-      AddBookmarkPanel.prototype._showFields = function()
+AddBookmarkPanel.prototype._showFields = function()
 {
   this._properties = { };
 
@@ -73,47 +85,75 @@ AddBookmarkPanel.prototype.getBookmark = function()
   } else {
     this._showDefaultFields();
   }
-}
+};
 
-        AddBookmarkPanel.prototype._showDefaultFields = function()
+AddBookmarkPanel.prototype._showDefaultFields = function()
 {
-  this._fields = this._fields.splice(0, 1);
+  var nameFieldId = Dwt.getNextId();
+  var targetFieldId = Dwt.getNextId();
 
-  for (var i = 0; i < this._bookmarkWidgets.length; i++) {
-    this.removeChild(this._bookmarkWidgets[i]);
-  }
+  var html = new Array();
+  html.push("<table border=0>");
 
-  var label = new DwtLabel(this);
-  this._bookmarkWidgets.push(label);
-  label.setText("Name:");
+  html.push("<tr>");
+  html.push("<td>Name:</td>");
+  html.push("<td>");
+  html.push("</td><div id='");
+  html.push(nameFieldId);
+  html.push("'/></td>");
+  html.push("</tr>");
+
+  html.push("<tr>");
+  html.push("<td>Target:</td>");
+  html.push("<td>");
+  html.push("</td><div id='");
+  html.push(targetFieldId);
+  html.push("'/></td>");
+  html.push("</tr>");
+
+  html.push("</table>");
+  this.valuePanel.getHtmlElement().innerHTML = html.join("");
+
   this._nameField = new DwtInputField({ parent: this });
-  this._bookmarkWidgets.push(this._nameField);
-  this._fields.push(this._nameField);
+  this._nameField.reparentHtmlElement(nameFieldId);
 
-  label = new DwtLabel(this);
-  this._bookmarkWidgets.push(label);
-  label.setText("Target:");
   this._targetField = new DwtInputField({ parent: this });
-  this._bookmarkWidgets.push(this._targetField);
-  this._fields.push(this._targetField);
-}
+  this._targetField.reparentHtmlElement(targetFieldId);
+};
 
-          AddBookmarkPanel.prototype._showPropFields = function(props)
+AddBookmarkPanel.prototype._showPropFields = function(props)
 {
-  this._fields = this._fields.splice(0, 1);
+  var fields = { };
 
-  for (var i = 0; i < this._bookmarkWidgets.length; i++) {
-    this.removeChild(this._bookmarkWidgets[i]);
-  }
+  var html = new Array();
+  html.push("<table border=0>");
+
 
   for (var f in props) {
     var prop = props[f];
-    var label = prop.getLabel(this);
-    this._bookmarkWidgets.push(label);
+    var label = prop.name;
     var field = prop.getField(this);
-    this._fields.push(field);
-    this._bookmarkWidgets.push(field);
     this._properties[prop.id] = field;
-    DBG.println("ADDED PROP: " + prop.id);
+
+    var fieldId = Dwt.getNextId();
+    fields[fieldId] = field;
+
+    html.push("<tr>");
+    html.push("<td>");
+    html.push(label);
+    html.push(":</td>");
+    html.push("<td><div id='");
+    html.push(fieldId);
+    html.push("'/></td>");
+    html.push("</tr>");
   }
-}
+
+  html.push("</table>");
+  this.valuePanel.getHtmlElement().innerHTML = html.join("");
+
+  for (var label in fields) {
+    var field = fields[label];
+    field.reparentHtmlElement(label);
+  }
+};
+
