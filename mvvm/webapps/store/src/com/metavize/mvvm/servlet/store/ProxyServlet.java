@@ -112,7 +112,9 @@ public class ProxyServlet extends HttpServlet
             sb.append(md.getInstalledVersion());
             sb.append(",");
         }
-        sb.deleteCharAt(sb.length() - 1);
+        if (sb.length() > 0) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
 
         Cookie instCookie = (Cookie)s.getAttribute(INST_COOKIE);
         if (null == instCookie) {
