@@ -3,6 +3,7 @@
 
 .MetavizePanel {
     background-image: url('/images/Background1600x100.jpg');
+    width: 100%;
 }
 
 .ApplicationIframe IFRAME {
