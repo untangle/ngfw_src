@@ -65,8 +65,6 @@ Portal.prototype.showApplicationUrl = function(url, application, bookmark)
   Dwt.setVisible(this._mainPanel.getHtmlElement(), true);
   this._mainPanel.zShow(true);
 
-  this._navBar.applicationMode(application, bookmark);
-
   this.layout();
 };
 
@@ -134,7 +132,6 @@ Portal.prototype.showPortal = function()
   }
   this._mainPanel = this._portalPanel;
   Dwt.setVisible(this._portalPanel.getHtmlElement(), true);
-  this._navBar.portalMode();
 };
 
 Portal.prototype.refresh = function()
