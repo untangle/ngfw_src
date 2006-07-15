@@ -1,12 +1,8 @@
 /* Copyright (c) 2006 Metavize Inc. */
 /* All rights reserved.             */
 
-.NavBarTitle .Text {
-    font-weight: bold;
-}
-
-.NavBarBookmark .Text {
-    font-style: italic;
+.MetavizePanel {
+    background-image: url('/images/Background1600x100.jpg');
 }
 
 .ApplicationIframe IFRAME {
@@ -16,10 +12,6 @@
 
 .PortalPanel {
     background-image: url('/images/Background1600x100.jpg');
-}
-
-.MetavizePanel {
-    background-color: white;
 }
 
 .WelcomePanel {
