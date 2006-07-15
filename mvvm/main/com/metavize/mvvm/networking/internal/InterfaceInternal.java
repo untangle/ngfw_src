@@ -26,6 +26,9 @@ public class InterfaceInternal
     private final EthernetMedia ethernetMedia;
     private final boolean isPingable;
 
+    private String connectionState ="";
+    private String currentMedia = "";
+
     /* Done this way so validation can occur */
     private InterfaceInternal( Interface intf, String intfName, NetworkSpaceInternal networkSpace )
     {
@@ -37,6 +40,9 @@ public class InterfaceInternal
         this.intfName  = intfName;
         this.ethernetMedia = intf.getEthernetMedia();
         this.isPingable = intf.getIsPingable();
+
+        this.connectionState = intf.getConnectionState();
+        this.currentMedia = intf.getCurrentMedia();
 
         this.name = intf.getName();
     }
@@ -71,6 +77,29 @@ public class InterfaceInternal
         return this.isPingable;
     }
 
+    /** The following are read/write attributes, they reflect the state of the interfacse
+     * that shouldn't be saved to the database */
+    public String getConnectionState()
+    {
+        return this.connectionState;
+    }
+
+    public void setConnectionState( String newValue )
+    {
+        this.connectionState = newValue;
+    }
+
+    public String getCurrentMedia()
+    {
+        return this.currentMedia;
+    }
+
+    public void setCurrentMedia( String newValue )
+    {
+        this.currentMedia = newValue;
+    }
+
+
     /* Returns a new interface object pre-filled with all of the data from this object,
      * careful using this method, this should only be used by NetworkUtilPriv since the space
      * must be set seperately.
@@ -79,18 +108,23 @@ public class InterfaceInternal
     {
         Interface i = new Interface( this.argonIntf, this.ethernetMedia, this.isPingable );
         i.setName( getName());
+        i.setConnectionState( getConnectionState());
+        i.setCurrentMedia( getCurrentMedia());
+
         return i;
     }
 
     public String toString()
     {
-        return 
-            "argon intf:  "   + getArgonIntf() +
-            "\nname:        " + getName() +
-            "\nphy-name:    " + getIntfName() +
-            "\nspace-index: " + getNetworkSpace().getIndex() +
-            "\neth-media:   " + getEthernetMedia() +
-            "\npingable:    " + isPingable();
+        StringBuilder sb = new StringBuilder();
+        sb.append( "argon intf:  " ).append( getArgonIntf());
+        sb.append( "\nname:        " ).append( getName());
+        sb.append( "\nphy-name:    " ).append( getIntfName());
+        sb.append( "\nspace-index: " ).append( getNetworkSpace().getIndex());
+        sb.append( "\neth-media:   " ).append( getEthernetMedia());
+        sb.append( "\nstatus:      " ).append( getConnectionState() + "/" + getCurrentMedia());
+        sb.append( "\npingable:    " ).append( isPingable());
+        return sb.toString();
     }
     
     public static InterfaceInternal 

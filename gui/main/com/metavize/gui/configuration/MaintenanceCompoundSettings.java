@@ -66,6 +66,7 @@ public class MaintenanceCompoundSettings implements CompoundSettings {
     }
 
     public void refresh() throws Exception {
+        Util.getNetworkManager().updateLinkStatus();
 	remoteSettings  = Util.getNetworkManager().getRemoteSettings();
 	networkSettings = Util.getNetworkManager().getNetworkSettings();
 

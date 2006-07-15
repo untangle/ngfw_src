@@ -76,4 +76,6 @@ function getInterfaceStatus()
 
 ## Iterate through each interface and retrieve the requested information
 for t_intf in ${interfaceList} ; do getInterfaceStatus ${t_intf};  done
-    
+
+## ignore any errors
+true

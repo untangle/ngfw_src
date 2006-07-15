@@ -150,8 +150,9 @@ public class NetworkManagerImpl implements NetworkManager
         this.isInitialized = true;
     }
 
-    public void updateLinkStatus(){
-	// XXX do some business papers here ;)
+    public void updateLinkStatus()
+    {
+        InterfaceTester.getInstance().updateLinkStatus( this.networkSettings );
     }
 
     public NetworkingConfiguration getNetworkingConfiguration()
@@ -197,7 +198,7 @@ public class NetworkManagerImpl implements NetworkManager
     public synchronized void setNetworkSettings( NetworkSpacesSettings settings, boolean configure )
         throws NetworkException, ValidateException
     {
-        logger.debug( "Loading the new network settings: " + settings );
+        if ( logger.isDebugEnabled()) logger.debug( "Loading the new network settings: " + settings );
 
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
         NetworkSpacesInternalSettings internal = nup.toInternal( settings );;
@@ -220,7 +221,7 @@ public class NetworkManagerImpl implements NetworkManager
     {
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
 
-        logger.debug( "Loading the new network settings: " + newSettings );
+        if ( logger.isDebugEnabled()) logger.debug( "Loading the new network settings: " + newSettings );
 
         /* Write the settings */
         writeConfiguration( newSettings );
@@ -302,8 +303,10 @@ public class NetworkManagerImpl implements NetworkManager
     public synchronized void setServicesSettings( DhcpServerSettings dhcp, DnsServerSettings dns )
         throws NetworkException
     {
-        logger.debug( "Loading the new dhcp settings: " + dhcp );
-        logger.debug( "Loading the new dns settings: " + dns );
+        if ( logger.isDebugEnabled()) {
+            logger.debug( "Loading the new dhcp settings: " + dhcp );
+            logger.debug( "Loading the new dns settings: " + dns );
+        }
 
         saveServicesSettings( new ServicesSettingsImpl( dhcp, dns ));
 
@@ -354,14 +357,16 @@ public class NetworkManagerImpl implements NetworkManager
             this.ddnsSettings.setEnabled( false );
         }
 
-        logger.debug( "getting ddns settings: " + this.ddnsSettings );
+        if ( logger.isDebugEnabled()) logger.debug( "getting ddns settings: " + this.ddnsSettings );
 
         return this.ddnsSettings;
     }
 
     public synchronized void setDynamicDnsSettings( DynamicDNSSettings newSettings )
     {
-        logger.debug( "Saving new ddns settings: " + newSettings );
+        if ( logger.isDebugEnabled()) {
+            logger.debug( "Saving new ddns settings: " + newSettings );
+        }
         saveDynamicDnsSettings( newSettings );
 
         doDDNSUpdate();
@@ -703,7 +708,8 @@ public class NetworkManagerImpl implements NetworkManager
     {
         logger.debug( "Calling network listeners." );
         for ( NetworkSettingsListener listener : this.networkListeners ) {
-            logger.debug( "Calling listener: " + listener );
+            if ( logger.isDebugEnabled()) logger.debug( "Calling listener: " + listener );
+
             try {
                 listener.event( this.networkSettings );
             } catch ( Exception e ) {
@@ -851,6 +857,9 @@ public class NetworkManagerImpl implements NetworkManager
         registerListener(new IPMatcherListener());
 
         updateAddress();
+
+        /* Update the link status for all of the interfaces */
+        updateLinkStatus();
 
         // Register the built-in listeners
         registerListener(new DynamicDNSListener());

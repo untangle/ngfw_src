@@ -641,7 +641,6 @@ class NetworkUtilPriv extends NetworkUtil
         List<Interface> intfList = new LinkedList<Interface>();
         for ( InterfaceInternal intfInternal : internalSettings.getEnabledList()) {
             Interface i = intfInternal.toInterface();
-
             NetworkSpace space = networkSpaceMap.get( intfInternal.getNetworkSpace());
             i.setNetworkSpace(( space == null ) ? primary : space );
             intfList.add( i );

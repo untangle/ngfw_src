@@ -28,12 +28,9 @@ public class Interface extends Rule
     private NetworkSpace networkSpace;
     private EthernetMedia ethernetMedia = EthernetMedia.AUTO_NEGOTIATE;
     /* This is the current status of the ethernet port */
-    private String currentMedia = "Link ok";
+    private String currentMedia = "";
     private boolean isPingable = true;
-    private String connectionState = CONNECTION_STATE_UNKNOWN;
-    public static final String CONNECTION_STATE_UP      = "Connected";
-    public static final String CONNECTION_STATE_DOWN    = "Disconnected";
-    public static final String CONNECTION_STATE_UNKNOWN = "Detection Failed";
+    private String connectionState = "";
 
     public Interface()
     {
@@ -131,7 +128,7 @@ public class Interface extends Rule
         return this.currentMedia;
     }
 
-    void setCurrentMedia( String newValue )
+    public void setCurrentMedia( String newValue )
     {
         this.currentMedia = newValue;
     }
