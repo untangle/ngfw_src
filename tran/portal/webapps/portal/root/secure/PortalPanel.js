@@ -67,19 +67,12 @@ PortalPanel.prototype.addSelectionListener = function(l)
 
 PortalPanel._VMARGIN = 25;
 PortalPanel._HMARGIN = 50;
-PortalPanel._METAVIZE_PANEL_HEIGHT = 100;
 PortalPanel._WELCOME_PANEL_HEIGHT = 50;
 
 // private methods ------------------------------------------------------------
 
 PortalPanel.prototype._init = function()
 {
-  this.metavizePanel = new DwtComposite(this, "MetavizePanel", DwtControl.ABSOLUTE_STYLE);
-  var html = [];
-  html.push("<img src='/images/LogoNoText96x96.gif'>");
-  html.push("<bold>Metavize Secure Portal</bold>");
-  this.metavizePanel.getHtmlElement().innerHTML = html.join("");
-
   this._welcomePanel = new DwtComposite(this, "WelcomePanel", DwtControl.ABSOLUTE_STYLE);
 
   this.applicationPanel = new ApplicationPanel(this);
@@ -96,10 +89,6 @@ PortalPanel.prototype._layout = function()
   var width = size.x - (PortalPanel._HMARGIN + PortalPanel._HMARGIN);
 
   var y = PortalPanel._VMARGIN;
-
-  this.metavizePanel.setBounds(left, y, width, PortalPanel._METAVIZE_PANEL_HEIGHT);
-  y += this.metavizePanel.getSize().y + PortalPanel._VMARGIN;
-  var s = this.metavizePanel.getSize();
 
   this._welcomePanel.setBounds(left, y, width, PortalPanel._WELCOME_PANEL_HEIGHT);
   y += this._welcomePanel.getSize().y + PortalPanel._VMARGIN;
