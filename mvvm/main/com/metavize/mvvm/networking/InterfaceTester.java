@@ -67,7 +67,7 @@ class InterfaceTester
     void updateLinkStatus( NetworkSpacesInternalSettings settings )
     {
         logger.debug( "Updating link status" );
-
+        
         String[] args = getArgs( settings );
         
         Map<String,String> statusMap;

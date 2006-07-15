@@ -26,6 +26,7 @@ MARK_NOTRACK="0x02000000"
 MARK_INTERNAL_REDIRECT="0x04000000"
 MARK_DHCP_SERVER_ANTISUB="0x08000000"
 MARK_LOCAL="0x00001000"
+MARK_INTF_MASK="0xF" ## Mask to use when testing the interface
 
 ## This is not the interface index (1,2,3, etc), this is the special bit that
 ## is set to indicate that the traffic entered on the inside interface.
@@ -484,7 +485,7 @@ function antisubscribeLocalTraffic() {
         t_markMask=$(( ${MARK_ANTISUB} | ${MARK_LOCAL} | ${t_mask} ))
 
         ## Antisubscribe to all traffic but ICMP.
-        ## Ping is regulated uses antisubscribeLocalPing.
+        ## Ping is regulated using antisubscribeLocalPing.
         ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} ! -p icmp -m mark \
             --mark ${t_mark}/${t_markMask} -j MARK --set-mark ${MARK_ANTISUB}
     fi
@@ -508,7 +509,7 @@ function antisubscribeLocalPing() {
         
         ## Search for packets coming in on the interface, headed locally.
         t_mark=$(( ${t_intf} | ${MARK_LOCAL} ))
-        t_markMask=$(( ${t_intf} | ${MARK_ANTISUB} | ${MARK_LOCAL} ))
+        t_markMask=$(( ${MARK_INTF_MASK} | ${MARK_ANTISUB} | ${MARK_LOCAL} ))
         
         ## Antisubscribe to all echo-requests coming in on the right interface.
         ## replies are outgoing and handled by conntrack.
