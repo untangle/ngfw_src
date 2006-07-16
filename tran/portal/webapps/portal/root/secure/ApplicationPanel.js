@@ -10,6 +10,9 @@ function ApplicationPanel(parent)
 
   DwtComposite.call(this, parent, "ApplicationPanel", DwtControl.ABSOLUTE_STYLE);
 
+  this._title = new DwtLabel(this, DwtLabel.ALIGN_CENTER, "BookmarkTitle",
+                             DwtControl.ABSOLUTE_STYLE);
+  this._title.setText(ApplicationPanel.DEFAULT_TITLE);
   this._toolbar = this._makeToolbar();
   this._toolbar.zShow(true);
   this._applicationList = new ApplicationList(this);
@@ -23,12 +26,21 @@ function ApplicationPanel(parent)
 ApplicationPanel.prototype = new DwtComposite();
 ApplicationPanel.prototype.constructor = ApplicationPanel;
 
+// constants ------------------------------------------------------------------
+
+ApplicationPanel.DEFAULT_TITLE = "Applications";
+
 // public methods -------------------------------------------------------------
 
 ApplicationPanel.prototype.redraw = function()
 {
   this._applicationList.setUI();
 }
+
+ApplicationPanel.prototype.setTitle = function(title)
+{
+  this._title.setText(title || ApplicationPanel.DEFAULT_TITLE);
+};
 
 ApplicationPanel.prototype.addApplication = function(app)
 {
@@ -55,11 +67,6 @@ ApplicationPanel.prototype.addActionListener = function(l)
 ApplicationPanel.prototype._makeToolbar = function() {
   var toolbar = new DwtToolBar(this, "VerticalToolBar", DwtControl.ABSOLUTE_STYLE, 2, 2, DwtToolBar.VERT_STYLE);
 
-  var b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
-  b.setText("Refresh");
-  b.setToolTipContent("Display latest contents");
-  b.addSelectionListener(new AjxListener(this, this.refresh));
-
   return toolbar;
 };
 
@@ -67,10 +74,17 @@ ApplicationPanel.prototype._layout = function()
 {
   var size = this.getSize();
 
+  var y = 0;
+  this._title.setLocation(0, 0);
+  var s = this._title.getSize();
+  y += this._title.getSize().y
+
   var x = 0;
-  this._toolbar.setLocation(0, 0);
-  x += this._toolbar.getSize().x;
-  this._applicationList.setBounds(x, 0, size.x - x, size.y);
+  this._toolbar.setLocation(0, y);
+  s = this._toolbar.getSize();
+  this._toolbar.setSize(s.x, size.y - y);
+  x += s.x;
+  this._applicationList.setBounds(x, y, size.x - x, size.y - y);
 };
 
 ApplicationPanel.prototype._controlListener = function()

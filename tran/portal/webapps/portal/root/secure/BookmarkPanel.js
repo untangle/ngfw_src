@@ -77,7 +77,7 @@ BookmarkPanel.prototype._makeToolbar = function() {
   b.setToolTipContent("Display latest contents");
   b.addSelectionListener(new AjxListener(this, this.refresh));
 
-  b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
+  var b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
   b.setText("New Bookmark");
   b.setToolTipContent("Add a new bookmark");
   this.addBookmarkButton = b;
