@@ -96,16 +96,14 @@ AddBookmarkPanel.prototype._showDefaultFields = function()
 
   html.push("<tr>");
   html.push("<td>Name:</td>");
-  html.push("<td>");
-  html.push("</td><div id='");
+  html.push("<td><div id='");
   html.push(nameFieldId);
   html.push("'/></td>");
   html.push("</tr>");
 
   html.push("<tr>");
   html.push("<td>Target:</td>");
-  html.push("<td>");
-  html.push("</td><div id='");
+  html.push("<td><div id='");
   html.push(targetFieldId);
   html.push("'/></td>");
   html.push("</tr>");
@@ -122,10 +120,20 @@ AddBookmarkPanel.prototype._showDefaultFields = function()
 
 AddBookmarkPanel.prototype._showPropFields = function(props)
 {
+  var nameFieldId = Dwt.getNextId();
+
   var fields = { };
 
   var html = new Array();
+
   html.push("<table border=0>");
+
+  html.push("<tr>");
+  html.push("<td>Name:</td>");
+  html.push("<td><div id='");
+  html.push(nameFieldId);
+  html.push("'/></td>");
+  html.push("</tr>");
 
 
   for (var f in props) {
@@ -149,6 +157,9 @@ AddBookmarkPanel.prototype._showPropFields = function(props)
 
   html.push("</table>");
   this.valuePanel.getHtmlElement().innerHTML = html.join("");
+
+  this._nameField = new DwtInputField({ parent: this });
+  this._nameField.reparentHtmlElement(nameFieldId);
 
   for (var label in fields) {
     var field = fields[label];
