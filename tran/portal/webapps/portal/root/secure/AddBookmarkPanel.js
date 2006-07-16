@@ -11,7 +11,7 @@ function AddBookmarkPanel(parent, apps)
 
   this._apps = [];
   for (var i = 0; i < apps.length; i++) {
-    this._apps.push(new DwtSelectOption(apps[i], false, apps[i].name));
+    this._apps.push(new DwtSelectOption(apps[i], false, apps[i].description));
   }
 
   this._init();

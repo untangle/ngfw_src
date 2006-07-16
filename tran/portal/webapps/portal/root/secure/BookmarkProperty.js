@@ -18,6 +18,9 @@ BookmarkProperty.prototype.getField = function(parent)
     f = new DwtInputField({ parent: parent});
   } else if (this.values instanceof Array) {
     f = new DwtSelect(parent, this.values);
+    if (this.def) {
+        f.setSelectedValue(this.def);
+    }
   } else {
     f = new DwtInputField({ parent: parent});
     f.setValue(this.values);
