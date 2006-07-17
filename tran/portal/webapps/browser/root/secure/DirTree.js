@@ -5,7 +5,7 @@ function DirTree(parent, className, posStyle, dragSource, dropTarget) {
    if (0 == arguments.length) {
       return;
    }
-   DwtTree.call(this, parent, DwtTree.SINGLE_STYLE, className, posStyle);
+   DwtTree.call(this, parent, DwtTree.SINGLE_STYLE, "DirTree", posStyle);
 
    this.addTreeListener(new AjxListener(this, this._treeListener));
 

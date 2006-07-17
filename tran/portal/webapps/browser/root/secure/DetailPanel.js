@@ -21,7 +21,7 @@ function DetailPanel(parent, authCallback)
   hi.memberName = "lastModified";
   header[i++] = hi;
 
-  DwtListView.call(this, parent, null, DwtControl.ABSOLUTE_STYLE, header, true);
+  DwtListView.call(this, parent, "DetailPanel", DwtControl.ABSOLUTE_STYLE, header, true);
 };
 
 DetailPanel.prototype = new DwtListView();
