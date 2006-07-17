@@ -242,6 +242,9 @@ class Blacklist
     private String checkBlacklist(String host, RequestLineToken requestLine)
     {
         URI uri = requestLine.getRequestUri().normalize();
+        String category = null;
+        StringRule stringRule = null;
+        Reason reason = null;
 
         if (settings.getFascistMode()) {
             String c = "All Web Content";
@@ -251,56 +254,76 @@ class Blacklist
             transform.log(hbe);
 
             return settings.getBlockTemplate().render(host, uri, "not allowed");
-        } else {
+        }
+
+	String dom = host;
+	while (null == category && null != dom) {
+	    String url = dom + uri.toString();
+
+	    stringRule = findCategory(blockedUrls, url,
+				      settings.getBlockedUrls());
+	    category = null == stringRule ? null : stringRule.getCategory();
+	    if (null != category) {
+		reason = Reason.BLOCK_URL;
+	    } else {
+                String[] categories = findCategories(urls, url);
+		category = mostSpecificCategory(categories);
+
+		if (null != category) {
+		    reason = Reason.BLOCK_CATEGORY;
+		}
+	    }
+
+	    if (null == category) {
+		dom = nextHost(dom);
+	    }
+	}
+
+        if (null == category) {
             StringBuilder sb = new StringBuilder(host);
             sb.reverse();
             sb.append(".");
             String revHost = sb.toString();
-
-            String category = findCategory(domains, revHost);
-            Reason reason = null == category ? null : Reason.BLOCK_CATEGORY;
-            StringRule stringRule = null;
-
-            String dom = host;
-            while (null == category && null != dom) {
-                String url = dom + uri.toString();
-                category = findCategory(urls, url);
-
-                if (null != category) {
-                    reason = Reason.BLOCK_URL;
-                } else {
-                    stringRule = findCategory(blockedUrls, url,
-                                              settings.getBlockedUrls());
-                    category = null == stringRule ? null : stringRule.getCategory();
-                    if (null != category) {
-                        reason = Reason.BLOCK_URL;
-                    }
-                }
-
-                if (null == category) {
-                    dom = nextHost(dom);
-                }
-            }
-
-            if (null != category) {
-                if (null == stringRule || stringRule.getLog()) {
-                    HttpBlockerEvent hbe = new HttpBlockerEvent
-                        (requestLine.getRequestLine(), Action.BLOCK, reason, category);
-                    transform.log(hbe);
-                }
-
-                BlacklistCategory bc = settings.getBlacklistCategory(category);
-                if (null == bc && null != stringRule && !stringRule.isLive()) {
-                    return null;
-                } else if (null != bc && bc.getLogOnly()) {
-                    return null;
-                } else {
-                    return settings.getBlockTemplate().render(host, uri, category);
-                }
-            }
-
-            return null;
+            String[] categories = findCategories(domains, revHost);
+            category = mostSpecificCategory(categories);
+            reason = null == category ? null : Reason.BLOCK_CATEGORY;
         }
+
+	if (null != category) {
+	    if (null == stringRule || stringRule.getLog()) {
+		HttpBlockerEvent hbe = new HttpBlockerEvent
+		    (requestLine.getRequestLine(), Action.BLOCK, reason, category);
+		transform.log(hbe);
+	    }
+
+	    BlacklistCategory bc = settings.getBlacklistCategory(category);
+	    if (null == bc && null != stringRule && !stringRule.isLive()) {
+		return null;
+	    } else if (null != bc && bc.getLogOnly()) {
+		return null;
+	    } else {
+		return settings.getBlockTemplate().render(host, uri, category);
+	    }
+	}
+
+	return null;
+    }
+
+    private String mostSpecificCategory(String[] categories) {
+	String category = null;
+        logger.warn("Choosing from " + (categories == null ? null : categories.length) + " categories");
+	if (categories != null)
+	    for (int i = 0; i < categories.length; i++) {
+		if (category == null) {
+		    category = categories[i];
+		} else {
+		    BlacklistCategory bc = settings.getBlacklistCategory(categories[i]);
+		    if (bc.getLogOnly())
+			continue;
+		    category = categories[i];
+		}
+	    }
+	return category;
     }
 
     private StringRule findCategory(CharSequence[] strs, String val,
@@ -310,17 +333,19 @@ class Blacklist
         return 0 > i ? null : lookupCategory(strs[i], rules);
     }
 
-    private String findCategory(Map<String, CharSequence[]> cats, String val)
+    private String[] findCategories(Map<String, CharSequence[]> cats, String val)
     {
+        List<String> result = new ArrayList<String>();
         for (String cat : cats.keySet()) {
             CharSequence[] strs = cats.get(cat);
             int i = findMatch(strs, val);
-            if (0 <= i) {
-                return cat;
-            }
+            if (0 <= i)
+                result.add(cat);
         }
-
-        return null;
+        if (result.size() == 0)
+            return null;
+        else
+            return (String[]) result.toArray(new String[result.size()]);
     }
 
     private int findMatch(CharSequence[] strs, String val)
