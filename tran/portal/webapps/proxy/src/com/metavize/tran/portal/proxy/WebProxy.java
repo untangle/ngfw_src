@@ -35,6 +35,7 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.NetworkManager;
 import com.metavize.mvvm.tran.IPaddr;
+import java.net.UnknownHostException;
 import org.apache.commons.fileupload.MultipartStream;
 import org.apache.commons.fileupload.ParameterParser;
 import org.apache.commons.httpclient.Header;
@@ -42,14 +43,15 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.log4j.Logger;
 import org.htmlparser.Node;
 import org.htmlparser.lexer.Lexer;
 import org.htmlparser.lexer.Page;
 import org.htmlparser.util.ParserException;
 import org.xml.sax.XMLReader;
-import java.net.UnknownHostException;
 
 public class WebProxy extends HttpServlet
 {
@@ -122,6 +124,8 @@ public class WebProxy extends HttpServlet
         HttpSession s = req.getSession();
 
         method.setFollowRedirects(false);
+        HttpMethodParams params = method.getParams();
+        params.setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
 
         HttpClient httpClient = (HttpClient)s.getAttribute(HTTP_CLIENT);
         if (null == httpClient) {
@@ -322,10 +326,12 @@ public class WebProxy extends HttpServlet
     private void copyStream(InputStream is, OutputStream os)
         throws IOException
     {
-        byte[] buf = new byte[4096];
-        int i = 0;
-        while (0 <= (i = is.read(buf))) {
-            os.write(buf, 0, i);
+        if (null != is) {
+            byte[] buf = new byte[4096];
+            int i = 0;
+            while (0 <= (i = is.read(buf))) {
+                os.write(buf, 0, i);
+            }
         }
 
         os.flush();

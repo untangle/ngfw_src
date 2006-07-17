@@ -139,6 +139,7 @@ public class ProxyServlet extends HttpServlet
             copyHeaders(req, get);
             int rc = httpClient.executeMethod(get);
             is = get.getResponseBodyAsStream();
+
             StatusLine sl = get.getStatusLine();
             resp.setStatus(sl.getStatusCode());
             copyHeaders(get, resp, req);
@@ -199,10 +200,12 @@ public class ProxyServlet extends HttpServlet
     private void copyStream(InputStream is, OutputStream os)
         throws IOException
     {
-        byte[] buf = new byte[4096];
-        int i = 0;
-        while (0 <= (i = is.read(buf))) {
-            os.write(buf, 0, i);
+        if (null != is) {
+            byte[] buf = new byte[4096];
+            int i = 0;
+            while (0 <= (i = is.read(buf))) {
+                os.write(buf, 0, i);
+            }
         }
 
         os.flush();
@@ -257,7 +260,7 @@ public class ProxyServlet extends HttpServlet
                     offset = (offset + (j + 1)) % buf.length;
                     i = buf.length - (j + 1);
                 } else {
-                    // XXX do good suffix heuristics
+                    // extra-credit: do good suffix heuristics
                     int l = Math.max(j - k, 1);
 
                     for (int m = 0; m < l; m++) {
