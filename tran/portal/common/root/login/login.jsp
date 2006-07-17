@@ -14,7 +14,7 @@ String host=request.getHeader("host");
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-<title>Metavize Portal Login</title>
+<title>Metavize Secure Portal Login</title>
 </head>
 
 <body LINK="#0000EE" VLINK="#0000EE" style="background-image: url(<%=scheme%>://<%=host%>/images/DarkBackground1600x100.jpg);">
