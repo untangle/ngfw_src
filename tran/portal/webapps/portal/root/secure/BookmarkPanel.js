@@ -10,7 +10,7 @@ function BookmarkPanel(parent)
 
   DwtComposite.call(this, parent, "BookmarkPanel", DwtControl.ABSOLUTE_STYLE);
 
-  this._title = new DwtLabel(this, DwtLabel.ALIGN_CENTER, "BookmarkTitle",
+  this._title = new DwtLabel(this, DwtLabel.ALIGN_LEFT, "BookmarkTitle",
                              DwtControl.ABSOLUTE_STYLE);
   this._title.setText(BookmarkPanel.DEFAULT_TITLE);
   this._toolbar = this._makeToolbar();

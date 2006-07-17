@@ -10,7 +10,7 @@ function ApplicationPanel(parent)
 
   DwtComposite.call(this, parent, "ApplicationPanel", DwtControl.ABSOLUTE_STYLE);
 
-  this._title = new DwtLabel(this, DwtLabel.ALIGN_CENTER, "BookmarkTitle",
+  this._title = new DwtLabel(this, DwtLabel.ALIGN_LEFT, "ApplicationTitle",
                              DwtControl.ABSOLUTE_STYLE);
   this._title.setText(ApplicationPanel.DEFAULT_TITLE);
   this._toolbar = this._makeToolbar();
