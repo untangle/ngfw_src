@@ -19,12 +19,11 @@
     background-color: white;
 }
 
-.BookmarkTitle {
-    background-color: white;
+.ListTitle {
     width: 100%;
 }
 
-.BookmarkTitle .Text {
+.ListTitle .Text {
     font-weight: bold;
 }
 
