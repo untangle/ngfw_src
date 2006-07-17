@@ -12,7 +12,7 @@ String principal = pl.getNtlmAuth().toString();
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-<title>Metavize Portal</title>
+<title>Metavize Secure Portal</title>
 <style type="text/css">
 <!--
 @import url(/AjaxTk/img/dwtimgs.css);
