@@ -7,6 +7,8 @@ MVVM_GC_LOG=${MVVM_GC_LOG:-"@PREFIX@/var/log/mvvm/gc.log"}
 MVVM_WRAPPER_LOG=${MVVM_WRAPPER_LOG:-"@PREFIX@/var/log/mvvm/wrapper.log"}
 MVVM_LAUNCH=${MVVM_LAUNCH:-"@PREFIX@/usr/bin/bunnicula"}
 
+PGDATA=${POSTGRES_DATA:-/var/lib/postgres/data}
+
 # Short enough to restart mvvm promptly
 SLEEP_TIME=5
 
@@ -84,6 +86,23 @@ raiseFdLimit() {
     ulimit -n 1024000
 }
 
+# Run every 5 seconds to make sure Postgres is up.
+checkPostgresUp() {
+    if [ -d "$PGDATA" -a ! -f "$PGDATA/postmaster.pid" ]; then
+        restartPostgres
+    else
+        pgid=`head -n 1 "$PGDATA/postmaster.pid"`
+        if [ ! -d /proc/$pgid ]; then
+            restartPostgres
+        fi
+    fi
+}
+
+restartPostgres() {
+    echo "*** restarting missing postgres on `date` ***" >> $MVVM_WRAPPER_LOG
+    /etc/init.d/postgresql restart
+}
+    
 # Return true (0) when we need to reap and restart the mvvm.
 needToRestart() {
     cheaphigh=`head -3 /proc/$pid/maps | tail -1 | awk '{ high=split($1, arr, "-"); print arr[2]; }'`
@@ -152,6 +171,7 @@ while true; do
 
     raiseFdLimit
     flushIptables
+    checkPostgresUp
 
     $MVVM_LAUNCH $* >>$MVVM_CONSOLE_LOG 2>&1 &
 
@@ -170,6 +190,7 @@ while true; do
             nukeIt
             break
         fi
+        checkPostgresUp
     done
 
 # Clean up the zombie.  Risky? XXX
