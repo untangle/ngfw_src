@@ -190,7 +190,6 @@ while true; do
             nukeIt
             break
         fi
-        checkPostgresUp
     done
 
 # Clean up the zombie.  Risky? XXX
