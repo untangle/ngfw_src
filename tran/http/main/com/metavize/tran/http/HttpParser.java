@@ -437,7 +437,10 @@ public class HttpParser extends AbstractParser
         scheduleTimer(TIMEOUT);
 
         if (null != b && !b.hasRemaining()) {
-            String msg = "b does not have remaining: " + b + " in state: " + state;
+            String msg = "b does not have remaining: " + b
+                + " in state: " + state;
+            b.flip();
+            msg += " buffer contents: '" + AsciiCharBuffer.wrap(b) + "'";
             logger.error(msg);
             throw new ParseException(msg);
         }
