@@ -418,7 +418,7 @@ public class CasingAdaptor extends AbstractEventHandler
             } else {
                 pr = p.parse(buf);
             }
-        } catch (Exception exn) {
+        } catch (Throwable exn) {
             if (releaseParseExceptions) {
                 String sessionEndpoints = "Endpoints ["
                     + " protocol: " + s.protocol()

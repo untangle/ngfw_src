@@ -158,9 +158,10 @@ public class HttpParser extends AbstractParser
                     if (logger.isDebugEnabled()) {
                         logger.debug(sessStr + "in FIRST_LINE_STATE");
                     }
+
                     if (completeLine(b)) {
                         l.add(firstLine(b));
-
+                        
                         state = ACCUMULATE_HEADER_STATE;
                     } else {
                         b.compact();
@@ -430,7 +431,7 @@ public class HttpParser extends AbstractParser
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug(sessStr + "returing readBuffer: " + b);
+            logger.debug(sessStr + "returning readBuffer: " + b);
         }
 
         scheduleTimer(TIMEOUT);
@@ -791,16 +792,12 @@ public class HttpParser extends AbstractParser
         StringBuilder uri = new StringBuilder(b.remaining());
 
         for (int i = 0; b.hasRemaining(); i++) {
-            if (maxUri <= i) {
+            if (maxUri <= i && blockLongUris) {
                 String msg = "(buf limit exceeded) " + buf.length
                     + ": " + new String(buf);
-                if (blockLongUris) {
-                    session.shutdownClient();
-                    session.shutdownServer();
-                    throw new ParseException("blocking " + msg);
-                } else {
-                    throw new ParseException("non-http " + msg);
-                }
+                session.shutdownClient();
+                session.shutdownServer();
+                throw new ParseException("blocking " + msg);
             }
 
             char c = (char)b.get();
