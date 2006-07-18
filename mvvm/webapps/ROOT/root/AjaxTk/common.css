@@ -29,7 +29,7 @@
 
 P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON {
     font-family: Tahoma, Arial, Helvetica, sans-serif;
-    font-size:11px;
+    font-size:12px;
 }
 
 BODY {
@@ -58,13 +58,13 @@ HTML>BODY INPUT {       /* clean border that works in FF */
 }
 
 .ZmSubHead {
-    font-size:13px;
+    font-size:12px;
     font-weight:bold;
     height:18px;
 }
 
 .ZmBigger {
-    font-size:13px;
+    font-size:12px;
     height:18px;
 }
 
