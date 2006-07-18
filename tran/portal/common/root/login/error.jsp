@@ -14,7 +14,7 @@ String host=request.getHeader("host");
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-<title>Metavize Portal Login</title>
+<title>Metavize Secure Portal Login</title>
 </head>
 
 <body LINK="#0000EE" VLINK="#0000EE" style="background-image: url(<%=scheme%>://<%=host%>/images/DarkBackground1600x100.jpg);">
@@ -43,13 +43,17 @@ String host=request.getHeader("host");
       <br/>
       <br/>
       <center>
+
+        <font color="FF0000">Incorrect Login</font>
+	<br/>
+	<br/>
+
+
       <table border="0">
         <tr>
           <td align="right">Server:</td>
           <td><i>&nbsp;<%=host %></i></td>
         </tr>
-
-        <blink>Incorrect Login</blink>
 
         <form method="POST" action='<%= response.encodeURL("j_security_check") %>'>
         <tr><td align="right">Login:</td><td><input type="text" name="j_username"></td></tr>
