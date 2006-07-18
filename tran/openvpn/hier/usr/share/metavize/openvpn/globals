@@ -176,3 +176,19 @@ function usbCleanup()
     if [ -n "${t_exitCode}" ]; then exit -${t_exitCode} ; fi
 }
 
+function disableOpenVPNStartup()
+{
+    echo "Disabling the openvpn server from starting at system startup"
+
+    local t_openvpnInit=`basename ${OPENVPN_SCRIPT}`    
+    
+    # Backup the initialization script
+    mv ${OPENVPN_SCRIPT} ${OPENVPN_SCRIPT}.tmp
+    
+    # Disable openvpn at bootup
+    update-rc.d ${t_openvpnInit} remove > /dev/null
+    
+    # Restore the ssh initialization script
+    mv ${OPENVPN_SCRIPT}.tmp ${OPENVPN_SCRIPT}
+}
+

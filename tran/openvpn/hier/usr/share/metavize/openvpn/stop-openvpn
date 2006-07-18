@@ -24,4 +24,7 @@ sleep .5
 
 killall -KILL openvpn > /dev/null 2>&1
 
+## This is always disabled so the server never starts at system startup.
+disableOpenVPNStartup
+
 true 
