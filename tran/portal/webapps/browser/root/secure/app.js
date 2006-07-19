@@ -7,5 +7,5 @@
     portal.showApplicationUrl('/browser?target=' + bookmark.target, this, bookmark);
   },
 
-  iconUrl: "/browser/secure/icon.png"
+  iconUrl: "/browser/secure/icon.gif"
 };

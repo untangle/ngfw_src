@@ -70,7 +70,7 @@ BookmarkPanel.prototype.addActionListener = function(l)
 // private methods ------------------------------------------------------------
 
 BookmarkPanel.prototype._makeToolbar = function() {
-  var toolbar = new DwtToolBar(this, "VerticalToolBar", DwtControl.ABSOLUTE_STYLE, 2, 2, DwtToolBar.VERT_STYLE);
+  var toolbar = new DwtToolBar(this, "PortalToolBar", DwtControl.ABSOLUTE_STYLE, 2, 2, DwtToolBar.VERT_STYLE);
 
   var b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
   b.setText("Refresh");

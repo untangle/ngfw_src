@@ -4,5 +4,5 @@
     portal.showApplicationUrl('/proxy/' + o.proto + '/' + o.host + o.path, this, bookmark);
   },
 
-  iconUrl: "/proxy/icon.png"
+  iconUrl: "/proxy/icon.gif"
 };

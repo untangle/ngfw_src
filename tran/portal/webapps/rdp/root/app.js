@@ -20,5 +20,5 @@
     return s;
   },
 
-  iconUrl: "/rdp/icon.png"
+  iconUrl: "/rdp/icon.gif"
 };

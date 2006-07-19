@@ -3,5 +3,5 @@
     portal.showApplicationUrl('/vnc/vnc.jsp?t=' + bookmark.id, this, bookmark);
   },
 
-  iconUrl: "/vnc/icon.png"
+  iconUrl: "/vnc/icon.gif"
 };

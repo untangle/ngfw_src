@@ -389,7 +389,7 @@ DIV.vSpace {
 }
 
 .selected, .Row-selected, .Row-selected-drag {
-    background-color: #ADD6D6;
+    background-color: #C1C1E2;
     color:black;
 }
 .Row-selected-disabled {

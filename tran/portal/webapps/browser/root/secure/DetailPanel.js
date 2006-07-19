@@ -156,11 +156,11 @@ DetailPanel.prototype._getDnDIcon = function(dragOp)
 
   switch (dragOp) {
   case Dwt.DND_DROP_COPY:
-    icon.innerHTML = "<img src='./secure/copy.png'/>";
+    icon.innerHTML = "<img src='./secure/copy.gif'/>";
     break;
 
   case Dwt.DND_DROP_MOVE:
-    icon.innerHTML = "<img src='./secure/move.png'/>";
+    icon.innerHTML = "<img src='./secure/move.gif'/>";
     break;
   }
 
