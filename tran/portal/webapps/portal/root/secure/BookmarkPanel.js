@@ -72,10 +72,7 @@ BookmarkPanel.prototype.addActionListener = function(l)
 BookmarkPanel.prototype._makeToolbar = function() {
   var toolbar = new DwtToolBar(this, "PortalToolBar", DwtControl.ABSOLUTE_STYLE, 2, 2, DwtToolBar.VERT_STYLE);
 
-  var b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
-  b.setText("Refresh");
-  b.setToolTipContent("Display latest contents");
-  b.addSelectionListener(new AjxListener(this, this.refresh));
+  toolbar.addFiller(null, 0);
 
   var b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
   b.setText("New Bookmark");
@@ -86,6 +83,8 @@ BookmarkPanel.prototype._makeToolbar = function() {
   b.setText("Delete");
   b.setToolTipContent("Delete selected files");
   this.deleteBookmarkButton = b;
+
+  toolbar.addFiller(null, 4);
 
   return toolbar;
 };

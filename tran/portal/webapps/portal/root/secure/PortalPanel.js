@@ -80,7 +80,6 @@ PortalPanel.prototype._init = function()
   this.bookmarkPanel = new BookmarkPanel(this);
 };
 
-
 PortalPanel.prototype._layout = function()
 {
   var size = this.getSize();
