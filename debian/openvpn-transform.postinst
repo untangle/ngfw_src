@@ -8,7 +8,7 @@ if [ ! -c /dev/net/tun ]; then
     mknod /dev/net/tun c 10 200 > /dev/null 2>&1
 fi
 
-OPENVPN_INIT=openvpn
+OPENVPN_INIT=/etc/init.d/openvpn
 OPENVPN_CLIENT=/etc/openvpn/client.conf
 
 # Disable openvpn, this will prevent it from starting at boot time.
