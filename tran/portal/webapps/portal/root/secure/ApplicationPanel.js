@@ -13,8 +13,6 @@ function ApplicationPanel(parent)
   this._title = new DwtLabel(this, DwtLabel.ALIGN_LEFT, "ListTitle",
                              DwtControl.ABSOLUTE_STYLE);
   this._title.setText(ApplicationPanel.DEFAULT_TITLE);
-  this._toolbar = this._makeToolbar();
-  this._toolbar.zShow(true);
   this._applicationList = new ApplicationList(this);
   this._applicationList.zShow(true);
 
@@ -64,12 +62,6 @@ ApplicationPanel.prototype.addActionListener = function(l)
 
 // private methods ------------------------------------------------------------
 
-ApplicationPanel.prototype._makeToolbar = function() {
-  var toolbar = new DwtToolBar(this, "VerticalToolBar", DwtControl.ABSOLUTE_STYLE, 2, 2, DwtToolBar.VERT_STYLE);
-
-  return toolbar;
-};
-
 ApplicationPanel.prototype._layout = function()
 {
   var size = this.getSize();
@@ -80,10 +72,7 @@ ApplicationPanel.prototype._layout = function()
   y += this._title.getSize().y
 
   var x = 0;
-  this._toolbar.setLocation(0, y);
-  s = this._toolbar.getSize();
-  this._toolbar.setSize(s.x, size.y - y);
-  x += s.x;
+
   this._applicationList.setBounds(x, y, size.x - x, size.y - y);
 };
 
