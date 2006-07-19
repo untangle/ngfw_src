@@ -8,10 +8,7 @@ function BookmarkList(parent)
   }
 
   var header = [];
-  var hi = new DwtListHeaderItem("application", "Application", null, 100, true, true, true);
-  hi.memberName = "app";
-  header.push(hi);
-  hi = new DwtListHeaderItem("name", "Name", null, 200, true, true, true);
+  var hi = new DwtListHeaderItem("name", "Name", null, 200, true, true, true);
   hi.memberName = "name";
   header.push(hi);
 
@@ -93,16 +90,16 @@ BookmarkList.prototype._createItemHtml = function(item)
     htmlArr[idx++] = width ? " style='width: " + width + "'>" : ">";
 
     var value;
-    if ("app" == col.memberName) {
+    if ("name" == col.memberName) {
       var app = portal.getApplication(item.app);
       if (app) {
         var iconUrl = app.getIconUrl();
-        value = "<img src='" + iconUrl + "'/>";
+        value = "<img src='" + iconUrl + "'/> ";
       } else {
         // XXX put generic icon instead
       }
-    } else if ("name" == col.memberName) {
-      value = "<a class='BookmarkListName'>" + item[col.memberName] + "</a>";
+
+      value += "<a class='BookmarkListName'>" + item[col.memberName] + "</a>";
     } else {
       value = item[col.memberName];
     }
