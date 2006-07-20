@@ -81,7 +81,7 @@ BookmarkPanel.prototype._makeToolbar = function() {
   b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
   //b.setText("Delete");
   b.setImage("Remove");
-  b.setToolTipContent("Delete selected files");
+  b.setToolTipContent("Remove selected bookmarks");
   this.deleteBookmarkButton = b;
 
   return toolbar;
