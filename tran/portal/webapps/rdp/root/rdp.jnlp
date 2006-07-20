@@ -6,7 +6,8 @@ Logger logger = Logger.getLogger(getClass());
 response.addHeader("content-type", "application/x-java-jnlp-file");
 
 String host=request.getHeader("host");
-int port=request.getLocalPort();
+// Can't use getLocalPort since we now receive on magic port 64157
+int port=request.getServerPort();
 
 /* This should be either http or https */
 String scheme=request.getScheme();

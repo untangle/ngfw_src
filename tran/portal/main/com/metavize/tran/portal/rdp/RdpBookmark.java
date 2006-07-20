@@ -36,7 +36,8 @@ public class RdpBookmark extends Bookmark
     transient Hashtable values = null;
 
     public RdpBookmark(){  // temporarily for GUI compatibility
-	this(new Bookmark());
+        super();
+        setTarget("");
     }
 
     public RdpBookmark(Bookmark parent)

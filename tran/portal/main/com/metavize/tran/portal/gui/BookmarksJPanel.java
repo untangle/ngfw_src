@@ -242,7 +242,7 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
 	else{ /// RDP
 	    for( Bookmark newBookmark : newBookmarks ){
 		rowIndex++;
-		RdpBookmark newElem = (RdpBookmark) newBookmark;
+		RdpBookmark newElem = new RdpBookmark(newBookmark);
 		tempRow = new Vector(8);
 		tempRow.add( super.ROW_SAVED );
 		tempRow.add( rowIndex );
