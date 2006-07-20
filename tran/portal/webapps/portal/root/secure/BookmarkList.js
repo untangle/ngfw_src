@@ -7,12 +7,14 @@ function BookmarkList(parent)
     return;
   }
 
-  var header = [];
-  var hi = new DwtListHeaderItem("name", "Name", null, 200, true, true, true);
-  hi.memberName = "name";
-  header.push(hi);
+    var header = [];
+//   var hi = new DwtListHeaderItem("name", "Name", null, 200, true, true, true);
+//   hi.memberName = "name";
+//   header.push(hi);
 
   DwtListView.call(this, parent, null, DwtControl.ABSOLUTE_STYLE, header);
+
+  this.getHtmlElement().removeChild(this._listColDiv);
 
   this.setUI(0);
 };
@@ -57,74 +59,64 @@ BookmarkList.prototype._setListingXml = function(dom)
 
 BookmarkList.prototype._createItemHtml = function(item)
 {
-  var div = document.createElement("div");
-  var base = "Row";
-  div._styleClass = base;
-  div._selectedStyleClass = [base, DwtCssStyle.SELECTED].join("-");
+    var div = document.createElement("div");
+    var base = "Row";
+    div._styleClass = base;
+    div._selectedStyleClass = [base, DwtCssStyle.SELECTED].join("-");
 
-  this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
-  div.className = div._styleClass;
+    this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
+    div.className = div._styleClass;
 
-  var htmlArr = new Array();
-  var idx = 0;
+    var htmlArr = new Array();
+    var idx = 0;
 
-  // Table
-  htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0";
-  htmlArr[idx++] = this._noMaximize ? ">" : " width=100%>";
+    // Table
+    htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0";
+    htmlArr[idx++] = this._noMaximize ? ">" : " width=100%>";
 
-  // Row
-  htmlArr[idx++] = "<tr>";
+    // Row
+    htmlArr[idx++] = "<tr>";
 
-  // Data
-  for (var j = 0; j < this._headerList.length; j++) {
-    var col = this._headerList[j];
-
-    if (!col._visible) {
-      continue;
-    }
-
+    // Data
     htmlArr[idx++] = "<td";
-    var width = AjxEnv.isIE ? (col._width + 4) : col._width;
+    var width = null;
+    //var width = "100%";
     htmlArr[idx++] = width ? (" width=" + width + ">") : ">";
     htmlArr[idx++] = "<div";
     htmlArr[idx++] = width ? " style='width: " + width + "'>" : ">";
 
     var value;
-    if ("name" == col.memberName) {
-      var app = portal.getApplication(item.app);
-      if (app) {
+    var app = portal.getApplication(item.app);
+    if (app) {
         var iconUrl = app.getIconUrl();
         value = "<img src='" + iconUrl + "'/> ";
-      } else {
-        // XXX put generic icon instead
-      }
-
-      value += "<a class='BookmarkListName'>" + item[col.memberName] + "</a>";
     } else {
-      value = item[col.memberName];
+        // XXX put generic icon instead
     }
+
+    value += "<a class='BookmarkListName'>" + item.name + "</a> ";
+
     htmlArr[idx++] = (value || "") + "</div></td>";
-  }
 
-  htmlArr[idx++] = "</tr></table>";
+    htmlArr[idx++] = "</tr></table>";
 
-  div.innerHTML = htmlArr.join("");
+    div.innerHTML = htmlArr.join("");
 
-  var evtMgr = this._evtMgr;
+    var evtMgr = this._evtMgr;
 
-  var a = div.getElementsByTagName("a")[0];
-  a.onclick = function() {
-    if (evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
-      var selEv = new DwtSelectionEvent(true);
-      selEv.button = DwtMouseEvent.LEFT;
-      selEv.target = div;
-      selEv.item = item;
-      selEv.detail = DwtListView.ITEM_DBL_CLICKED;
-      evtMgr.notifyListeners(DwtEvent.SELECTION, selEv);
+    var a = div.getElementsByTagName("a")[0];
+    a.onclick = function() {
+        if (evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
+            var selEv = new DwtSelectionEvent(true);
+            selEv.button = DwtMouseEvent.LEFT;
+            selEv.target = div;
+            selEv.item = item;
+            selEv.detail = DwtListView.ITEM_DBL_CLICKED;
+            evtMgr.notifyListeners(DwtEvent.SELECTION, selEv);
+        }
     }
-  }
 
-  return div;
+    return div;
 };
 
 BookmarkList.prototype._sortColumn = function(col, asc)
