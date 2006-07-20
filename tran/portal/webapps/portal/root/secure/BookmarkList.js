@@ -3,17 +3,17 @@
 
 function BookmarkList(parent)
 {
-  if (0 == arguments.length) {
-    return;
-  }
+    if (0 == arguments.length) {
+        return;
+    }
 
     var header = [];
 
-  DwtListView.call(this, parent, null, DwtControl.ABSOLUTE_STYLE, header);
+    DwtListView.call(this, parent, null, DwtControl.ABSOLUTE_STYLE, header);
 
-  this.getHtmlElement().removeChild(this._listColDiv);
+    this.getHtmlElement().removeChild(this._listColDiv);
 
-  this.setUI(0);
+    this.setUI(0);
 };
 
 BookmarkList.prototype = new DwtListView();
@@ -23,33 +23,33 @@ BookmarkList.prototype.constructor = BookmarkList;
 
 BookmarkList.prototype.refresh = function()
 {
-  var cb = new AjxCallback(this, this._bookmarkListCallback, { })
+    var cb = new AjxCallback(this, this._bookmarkListCallback, { })
 
-  AjxRpc.invoke(null, "secure/bookmark?command=ls", null, cb, true);
+    AjxRpc.invoke(null, "secure/bookmark?command=ls", null, cb, true);
 };
 
 // internal methods -----------------------------------------------------------
 
 BookmarkList.prototype._setListingXml = function(dom)
 {
-  var root = dom.getElementsByTagName("bookmarks")[0];
+    var root = dom.getElementsByTagName("bookmarks")[0];
 
-  var children = root.childNodes;
+    var children = root.childNodes;
 
-  var listing = new AjxVector();
+    var listing = new AjxVector();
 
-  for (var i = 0; i < children.length; i++) {
-    var child = children[i];
+    for (var i = 0; i < children.length; i++) {
+        var child = children[i];
 
-    if ("bookmark" == child.tagName) {
-      listing.add(new Bookmark(child.getAttribute("id"),
-                               child.getAttribute("name"),
-                               child.getAttribute("app"),
-                               child.getAttribute("target")));
+        if ("bookmark" == child.tagName) {
+            listing.add(new Bookmark(child.getAttribute("id"),
+                                     child.getAttribute("name"),
+                                     child.getAttribute("app"),
+                                     child.getAttribute("target")));
+        }
     }
-  }
 
-  this.set(listing);
+    this.set(listing);
 };
 
 // DwtListView methods --------------------------------------------------------
@@ -78,7 +78,7 @@ BookmarkList.prototype._createItemHtml = function(item)
     htmlArr[idx++] = "<td";
     var width = null;
     htmlArr[idx++] = width ? (" width=" + width + ">") : ">";
-    htmlArr[idx++] = "<div";
+    htmlArr[idx++] = "<div class='foo'";
     htmlArr[idx++] = width ? " style='width: " + width + "'>" : ">";
 
     var value;
@@ -92,7 +92,8 @@ BookmarkList.prototype._createItemHtml = function(item)
 
     value += "<a class='BookmarkListName'>" + item.name + "</a>";
 
-    htmlArr[idx++] = (value || "") + "</div></td>";
+    htmlArr[idx++] = (value || "") + "</div>"
+    htmlArr[idx++] = "</td>";
 
     htmlArr[idx++] = "</tr></table>";
 
@@ -117,42 +118,42 @@ BookmarkList.prototype._createItemHtml = function(item)
 
 BookmarkList.prototype._sortColumn = function(col, asc)
 {
-  this._lastSortCol = col;
-  this._lastSortAsc = asc;
+    this._lastSortCol = col;
+    this._lastSortAsc = asc;
 
-  var fn = function(a, b) {
-    av = a[col.memberName];
-    bv = b[col.memberName];
+    var fn = function(a, b) {
+        av = a[col.memberName];
+        bv = b[col.memberName];
 
-    return (asc ? 1 : -1) * (a < b ? -1 : (a > b ? 1 : 0));
-  }
+        return (asc ? 1 : -1) * (a < b ? -1 : (a > b ? 1 : 0));
+    }
 
-  this.getList().sort(fn);
-  delete fn;
+    this.getList().sort(fn);
+    delete fn;
 
-  this.setUI(0);
+    this.setUI(0);
 };
 
 // callbacks ------------------------------------------------------------------
 
 BookmarkList.prototype._bookmarkListCallback = function(obj, results)
 {
-  // XXX if error, show login dialog
-  this._setListingXml(results.xml);
-  this.setUI(1);
+    // XXX if error, show login dialog
+    this._setListingXml(results.xml);
+    this.setUI(1);
 };
 
 BookmarkList.prototype._mouseOverAction = function(ev, div)
 {
-  var item = this.getItemFromElement(div);
-  this._mouseOverItem = item;
+    var item = this.getItemFromElement(div);
+    this._mouseOverItem = item;
 
-  if (div._type == DwtListView.TYPE_LIST_ITEM) {
-    this.setToolTipContent(item.target);
-  }
+    if (div._type == DwtListView.TYPE_LIST_ITEM) {
+        this.setToolTipContent(item.target);
+    }
 };
 
 BookmarkList.prototype._mouseOutAction = function(mouseEv, div)
 {
-  this._mouseOverItem = null;
+    this._mouseOverItem = null;
 }
