@@ -9,11 +9,10 @@ function ApplicationList(parent)
   }
 
   var header = [];
-  var hi = new DwtListHeaderItem("description", "Application", null, 200, true, true, true);
-  hi.memberName = "description";
-  header.push(hi);
 
   DwtListView.call(this, parent, "ApplicationList", DwtControl.ABSOLUTE_STYLE, header);
+
+  this.getHtmlElement().removeChild(this._listColDiv);
 
   this.setUI(0);
 };
@@ -71,28 +70,15 @@ ApplicationList.prototype._createItemHtml = function(item)
   htmlArr[idx++] = "<tr>";
 
   // Data
-  for (var j = 0; j < this._headerList.length; j++) {
-    var col = this._headerList[j];
+  htmlArr[idx++] = "<td";
+  var width = null;
+  htmlArr[idx++] = width ? (" width=" + width + ">") : ">";
+  htmlArr[idx++] = "<div";
+  htmlArr[idx++] = width ? " style='width: " + width + "'>" : ">";
 
-    if (!col._visible) {
-      continue;
-    }
+  var value = "<img src='" + item.getIconUrl() + "'/> " + item.description;
 
-    htmlArr[idx++] = "<td";
-    var width = AjxEnv.isIE ? (col._width + 4) : col._width;
-    htmlArr[idx++] = width ? (" width=" + width + ">") : ">";
-    htmlArr[idx++] = "<div";
-    htmlArr[idx++] = width ? " style='width: " + width + "'>" : ">";
-
-    var value;
-    if ("description" == col.memberName) {
-      value = "<img src='" + item.getIconUrl() + "'/> " + item[col.memberName];
-    } else {
-      value = item[col.memberName];
-    }
-
-    htmlArr[idx++] = (value || "") + "</div></td>";
-  }
+  htmlArr[idx++] = (value || "") + "</div></td>";
 
   htmlArr[idx++] = "</tr></table>";
 

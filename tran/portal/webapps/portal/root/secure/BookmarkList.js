@@ -8,9 +8,6 @@ function BookmarkList(parent)
   }
 
     var header = [];
-//   var hi = new DwtListHeaderItem("name", "Name", null, 200, true, true, true);
-//   hi.memberName = "name";
-//   header.push(hi);
 
   DwtListView.call(this, parent, null, DwtControl.ABSOLUTE_STYLE, header);
 
@@ -80,7 +77,6 @@ BookmarkList.prototype._createItemHtml = function(item)
     // Data
     htmlArr[idx++] = "<td";
     var width = null;
-    //var width = "100%";
     htmlArr[idx++] = width ? (" width=" + width + ">") : ">";
     htmlArr[idx++] = "<div";
     htmlArr[idx++] = width ? " style='width: " + width + "'>" : ">";
