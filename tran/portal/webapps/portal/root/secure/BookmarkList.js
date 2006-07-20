@@ -90,7 +90,7 @@ BookmarkList.prototype._createItemHtml = function(item)
         // XXX put generic icon instead
     }
 
-    value += "<a class='BookmarkListName'>" + item.name + "</a> ";
+    value += "<a class='BookmarkListName'>" + item.name + "</a>";
 
     htmlArr[idx++] = (value || "") + "</div></td>";
 
