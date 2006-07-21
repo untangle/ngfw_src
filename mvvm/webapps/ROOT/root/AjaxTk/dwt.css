@@ -258,21 +258,42 @@
     border: 1px solid;
     border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 }
+.DwtButton32 {
+    background-image:url(/AjaxTk/img/dwt/ButtonUp__H32.gif);
+    border: 1px solid;
+    border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+}
 
 .DwtButton-activated, .ColorButton-activated {
     background-image:url(/AjaxTk/img/dwt/ButtonDown__H.gif);
     border: 1px solid;
     border-color: #E0E0E0 #555555 #555555 #E0E0E0;
 }
+.DwtButton32-activated {
+    background-image:url(/AjaxTk/img/dwt/ButtonDown__H32.gif);
+    border: 1px solid;
+    border-color: #E0E0E0 #555555 #555555 #E0E0E0;
+}
+
 
 .DwtButton-triggered, .ColorButton-triggered, .TBButton-triggered, .TBButtonWhite-triggered {
     background-image:url(/AjaxTk/img/dwt/ButtonDown__H.gif);
     border:1px solid;
     border-color: #555555 #E0E0E0 #E0E0E0 #555555;
 }
+.DwtButton32-triggered {
+    background-image:url(/AjaxTk/img/dwt/ButtonDown__H32.gif);
+    border:1px solid;
+    border-color: #555555 #E0E0E0 #E0E0E0 #555555;
+}
 
 .DwtButton-toggled, .ColorButton-toggled, .TBButton-toggled, .TBButtonWhite-toggled {
     background-image:url(/AjaxTk/img/dwt/ButtonDown__H.gif);
+    border:1px solid;
+    border-color: #555555 #E0E0E0 #E0E0E0 #555555;
+}
+.DwtButton32-toggled {
+    background-image:url(/AjaxTk/img/dwt/ButtonDown__H32.gif);
     border:1px solid;
     border-color: #555555 #E0E0E0 #E0E0E0 #555555;
 }

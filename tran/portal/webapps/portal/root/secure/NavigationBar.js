@@ -40,12 +40,12 @@ function NavigationBar(parent)
 
   this.getHtmlElement().innerHTML = html.join("");
 
-  this._home = new DwtButton(this);
+  this._home = new DwtButton(this,DwtLabel.ALIGN_CENTER,"DwtButton32");
   this._home.setImage("Home"); // XXX change to "Home"
   this._home.setToolTipContent("Return to Portal Homepage");
   this._home.reparentHtmlElement(homeButtonId);
 
-  this._logout = new DwtButton(this);
+  this._logout = new DwtButton(this,DwtLabel.ALIGN_CENTER,"DwtButton32");
   this._logout.setImage("Logout");
   this._logout.setToolTipContent("Logout");
   this._logout.reparentHtmlElement(logoutButtonId);
