@@ -15,16 +15,13 @@ function NavigationBar(parent)
   var html = [];
   html.push("<table style='padding: 50px 50px 0px 50px' width='100%' height='96px' border=0>");
   html.push("<tr>");
-  html.push("<td width='105px' rowspan='2'><img src='/images/LogoNoText96x96.gif'></td>");
-  html.push("<td style='font: bold normal normal 25pt Arial,Sans-Serif; color: #777777;' rowspan='2'>Metavize<br>Secure Portal</td>");
+  html.push("<td width='57px'><img src='/images/LogoNoText48x48.gif'></td>");
+  html.push("<td style='font: bold normal normal 25pt Arial,Sans-Serif; color: #777777;'>Metavize Secure Portal</td>");
   html.push("<td width='50px' height='48px'>");
   html.push("<div id='");
   html.push(homeButtonId);
   html.push("'/>");
   html.push("</td>");
-  html.push("</tr>");
-
-  html.push("<tr>");
   html.push("<td width='50px' height='48px'>");
   html.push("<div id='");
   html.push(logoutButtonId);
@@ -32,7 +29,7 @@ function NavigationBar(parent)
   html.push("</td>");
   html.push("</tr>");
   html.push("<tr>");
-  html.push("<td colspan='3' style='padding: 20px 0px 0px 0px'>");
+  html.push("<td colspan='4' style='padding: 0px 0px 0px 0px'>");
   html.push("<hr width='100%' size='1' color='#969696'/>");
   html.push("</td>");
   html.push("</tr>");

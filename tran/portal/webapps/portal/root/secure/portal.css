@@ -32,7 +32,13 @@
 }
 
 .BookmarkListName {
-    color: blue;
+    color: #1997FE;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.ApplicationListName {
+    color: #1997FE;
     text-decoration: underline;
     cursor: pointer;
 }
