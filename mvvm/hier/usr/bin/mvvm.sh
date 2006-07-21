@@ -143,7 +143,7 @@ needToRestart() {
 # extra nightime checks
     if [ `date +%H` -eq 1 ]; then
         # VSZ greater than 1.1 gigs reboot
-        VIRT="`ps -o vsz,command -p $pid | awk '{print $1}'`"
+        VIRT="`cat /proc/$pid/status | grep VmSize | awk '{print $2}'`"
         if [ $VIRT -gt 1050000 ] ; then
             echo "*** Virt Size too high ($VIRT) on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
             return 0;
