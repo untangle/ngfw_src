@@ -385,7 +385,7 @@ DIV.vSpace {
  */
 .Row, .Row-selected, .Row-matched, .Row-matched-drag,
 .Row-drag, .Row-selected-drag, .Row-selected-right, .Row-selected-disabled {
-    border-bottom: 1px solid #DDDDDD;
+    border-bottom: 1px solid #D5D5E2
 }
 
 .selected, .Row-selected, .Row-selected-drag {
