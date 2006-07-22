@@ -53,8 +53,10 @@ ApplicationList.prototype._createItemHtml = function(item)
 {
     var div = document.createElement("div");
     var base = "Row";
-    div._styleClass = base;
     div._selectedStyleClass = [base, DwtCssStyle.SELECTED].join("-");
+    var stripeName = "Row " + "Row-" + (this._getItemIndex(item) % 2 == 0 ? "Even" : "Odd");
+    div._selectedDisabledStyleClass = stripeName;
+    div._styleClass = stripeName;
 
     this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
     div.className = div._styleClass;
