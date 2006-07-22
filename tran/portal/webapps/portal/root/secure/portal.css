@@ -1,6 +1,14 @@
 /* Copyright (c) 2006 Metavize Inc. */
 /* All rights reserved.             */
 
+.Row-Odd {
+    background-color: #B7B7C4;
+}
+
+.Row-Even {
+    background-color: #C1C1CE;
+}
+
 .PortalToolBar {
     background-color: transparent;
 }

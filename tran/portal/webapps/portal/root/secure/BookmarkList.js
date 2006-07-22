@@ -58,11 +58,14 @@ BookmarkList.prototype._createItemHtml = function(item)
 {
     var div = document.createElement("div");
     var base = "Row";
-    div._styleClass = base;
     div._selectedStyleClass = [base, DwtCssStyle.SELECTED].join("-");
+    var stripeName = "Row " + "Row-" + (this._getItemIndex(item) % 2 == 0 ? "Even" : "Odd");
+    div._selectedDisabledStyleClass = stripeName;
+    div._styleClass = stripeName;
+    DBG.println("ROW CLASS: " + div._selectedDisabledStyleClass);
 
     this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
-    div.className = div._styleClass;
+    div.className = div._selectedDisabledStyleClass;
 
     var htmlArr = new Array();
     var idx = 0;
@@ -78,7 +81,7 @@ BookmarkList.prototype._createItemHtml = function(item)
     htmlArr[idx++] = "<td";
     var width = null;
     htmlArr[idx++] = width ? (" width=" + width + ">") : ">";
-    htmlArr[idx++] = "<div class='foo'";
+    htmlArr[idx++] = "<div";
     htmlArr[idx++] = width ? " style='width: " + width + "'>" : ">";
 
     var value;
