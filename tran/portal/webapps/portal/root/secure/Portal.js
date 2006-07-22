@@ -29,7 +29,7 @@ function Portal(shell) {
     l = new AjxListener(this, this._bookmarkSelectionListener);
     this._portalPanel.bookmarkPanel.addSelectionListener(l);
 
-    l = new AjxListener(this, this._applicationSelectionListner);
+    l = new AjxListener(this, this._applicationSelectionListener);
     this._portalPanel.applicationPanel.addSelectionListener(l);
 
     l = new AjxListener(this, this._addBookmarkButtonListener);
@@ -209,6 +209,9 @@ Portal.prototype._controlListener = function()
 Portal.prototype._bookmarkSelectionListener = function(ev)
 {
     switch (ev.detail) {
+    case DwtListView.ITEM_SELECTED:
+    this._portalPanel.applicationPanel._applicationList.deselectAll();
+    break;
     case DwtListView.ITEM_DBL_CLICKED:
     var item = ev.item;
     var app = this._appMap[item.app];
@@ -218,9 +221,12 @@ Portal.prototype._bookmarkSelectionListener = function(ev)
     }
 };
 
-Portal.prototype._applicationSelectionListner = function(ev)
+Portal.prototype._applicationSelectionListener = function(ev)
 {
     switch (ev.detail) {
+    case DwtListView.ITEM_SELECTED:
+    this._portalPanel.bookmarkPanel._bookmarkList.deselectAll();
+    break;
     case DwtListView.ITEM_DBL_CLICKED:
     var item = ev.item;
     var app = this._appMap[item.name];
