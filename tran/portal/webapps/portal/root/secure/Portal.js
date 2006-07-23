@@ -71,7 +71,6 @@ Portal.prototype.showApplicationUrl = function(url, application, bookmark)
 Portal.prototype.getApplication = function(appName)
 {
     var app = this._appMap[appName];
-    DBG.println("GETTING this._appMap[" + appName + "] = " + app);
     return app;
 };
 

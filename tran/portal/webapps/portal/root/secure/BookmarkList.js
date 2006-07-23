@@ -152,7 +152,13 @@ BookmarkList.prototype._mouseOverAction = function(ev, div)
     this._mouseOverItem = item;
 
     if (div._type == DwtListView.TYPE_LIST_ITEM) {
-        this.setToolTipContent(item.target);
+        var app = portal.getApplication(item.app);
+        var tooltipFn = null == app ? null : app.getTooltipFunction();
+        if (tooltipFn) {
+            this.setToolTipContent(tooltipFn(item));
+        } else {
+            this.setToolTipContent(item.target);
+        }
     }
 };
 
