@@ -1,11 +1,17 @@
 {
- openApplication: function(portal) {
-    portal.showApplicationUrl('/browser', this);
-  },
+    openApplication: function(portal) {
+        portal.showApplicationUrl('/browser', this);
+    },
 
- openBookmark: function(portal, bookmark) {
-    portal.showApplicationUrl('/browser?target=' + bookmark.target, this, bookmark);
-  },
+    openBookmark: function(portal, bookmark) {
+        portal.showApplicationUrl('/browser?target=' + bookmark.target, this, bookmark);
+    },
 
-  iconUrl: "/browser/secure/icon.gif"
+    tooltipFunction: function(bookmark) {
+        var obj = bookmark.splitTarget();
+
+        return "target: " + obj.target;
+    },
+
+    iconUrl: "/browser/secure/icon.gif"
 };
