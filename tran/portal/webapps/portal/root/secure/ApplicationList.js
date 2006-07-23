@@ -121,3 +121,18 @@ ApplicationList.prototype._sortColumn = function(col, asc)
 
     this.setUI(0);
 };
+
+ApplicationList.prototype._mouseOverAction = function(ev, div)
+{
+    var item = this.getItemFromElement(div);
+    this._mouseOverItem = item;
+
+    if (div._type == DwtListView.TYPE_LIST_ITEM) {
+        this.setToolTipContent(item.longDescription);
+    }
+};
+
+ApplicationList.prototype._mouseOutAction = function(mouseEv, div)
+{
+    this._mouseOverItem = null;
+}

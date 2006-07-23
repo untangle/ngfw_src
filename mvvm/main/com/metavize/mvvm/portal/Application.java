@@ -40,16 +40,19 @@ public final class Application
 
     private final String name;
     private final String description;
+    private final String longDescription;
     private final Destinator destinator;
     private final Validator validator;
     private final int sortPosition;
     private final String appJsUrl;
 
-    public Application(String name, String description, Destinator destinator,
-                       Validator validator, int sortPosition, String appJsUrl)
+    public Application(String name, String description, String longDescription,
+                       Destinator destinator, Validator validator,
+                       int sortPosition, String appJsUrl)
     {
         this.name = name;
         this.description = description;
+        this.longDescription = longDescription;
         this.destinator = destinator;
         this.validator = validator;
         this.sortPosition = sortPosition;
@@ -75,6 +78,18 @@ public final class Application
     public String getDescription()
     {
         return description;
+    }
+
+
+    /**
+     * Long description of the application.  Example "Secure Shell".
+     *
+     * @return a <code>String</code> giving a long description of the
+     * application.
+     */
+    public String getLongDescription()
+    {
+        return longDescription;
     }
 
     /**

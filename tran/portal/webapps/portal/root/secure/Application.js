@@ -1,10 +1,12 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function Application(name, description, isHostService, appJsUrl, loadedCb)
+function Application(name, description, longDescription, isHostService,
+                     appJsUrl, loadedCb)
 {
   this.name = name;
   this.description = description;
+  this.longDescription = longDescription;
   this.isHostService = isHostService;
   this.loadedCb = loadedCb;
   this.loaded = false;

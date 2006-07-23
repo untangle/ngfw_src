@@ -72,6 +72,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     private void registerApps() {
         LocalApplicationManager lam = lpm.applicationManager();
         browserApp = lam.registerApplication("CIFS", "Network File Browser",
+                                             "kaka",
                                              null, null, 0, CIFS_JS_URL);
 
         Application.Destinator httpDestinator = new Application.Destinator() {
@@ -85,8 +86,9 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
                 }
             };
 
-        proxyApp = lam.registerApplication("HTTP", "Web Proxy", httpDestinator,
-                       null, 0, WEB_JS_URL);
+        proxyApp = lam.registerApplication("HTTP", "Web Proxy", "poo poo",
+                                           httpDestinator,
+                                           null, 0, WEB_JS_URL);
 
         Application.Destinator rdpDestinator = new Application.Destinator() {
                 public String getDestinationHost(Bookmark bm) {
@@ -98,7 +100,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
                 }
             };
 
-        rdpApp = lam.registerApplication("RDP", "Remote Desktop",
+        rdpApp = lam.registerApplication("RDP", "Remote Desktop", "potty",
                                          rdpDestinator, null, 0, RDP_JS_URL);
 
         Application.Destinator vncDestinator = new Application.Destinator() {
@@ -113,6 +115,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
             };
 
         vncApp = lam.registerApplication("VNC", "Virtual Network Computing",
+                                         "horse sense",
                                          vncDestinator, null, 0, VNC_JS_URL);
     }
 

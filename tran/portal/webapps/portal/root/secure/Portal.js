@@ -253,10 +253,11 @@ Portal.prototype._refreshAppsCallback = function(obj, results)
         if ("application" == child.tagName) {
             var name = child.getAttribute("name");
             var description = child.getAttribute("description");
+            var longDescription = child.getAttribute("longDescription");
             var isHostService = "true" == child.getAttribute("isHostService");
             var appJsUrl = child.getAttribute("appJsUrl");
-            var app = new Application(name, description, isHostService, appJsUrl,
-                                      appLoadCb);
+            var app = new Application(name, description, longDescription,
+                                      isHostService, appJsUrl, appLoadCb);
         }
     }
 };
