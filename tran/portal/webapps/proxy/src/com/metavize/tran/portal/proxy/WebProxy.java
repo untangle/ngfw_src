@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -35,7 +36,6 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.NetworkManager;
 import com.metavize.mvvm.tran.IPaddr;
-import java.net.UnknownHostException;
 import org.apache.commons.fileupload.MultipartStream;
 import org.apache.commons.fileupload.ParameterParser;
 import org.apache.commons.httpclient.Header;
@@ -125,13 +125,13 @@ public class WebProxy extends HttpServlet
 
         method.setFollowRedirects(false);
         HttpMethodParams params = method.getParams();
-        params.setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
 
         HttpClient httpClient = (HttpClient)s.getAttribute(HTTP_CLIENT);
         if (null == httpClient) {
             httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
             s.setAttribute(HTTP_CLIENT, httpClient);
         }
+        System.out.println("USING HTTPCLIENT: " + httpClient);
 
         copyHeaders(req, method, rewriter);
 
