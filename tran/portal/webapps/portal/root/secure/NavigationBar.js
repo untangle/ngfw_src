@@ -19,6 +19,12 @@ function NavigationBar(parent)
   html.push("<td width='57px'><img src='/images/LogoNoText48x48.gif'></td>");
   html.push("<td style='font: bold normal normal 25pt Arial,Sans-Serif; color: #777777;'>Metavize Secure Portal</td>");
 
+  html.push("<td style='padding: 0px 15px 0px 0px' width='50px' height='48px'>");
+  html.push("<div id='");
+  html.push(maximizeButtonId);
+  html.push("'/>");
+  html.push("</td>");
+
   html.push("<td width='50px' height='48px'>");
   html.push("<div id='");
   html.push(homeButtonId);
@@ -31,15 +37,9 @@ function NavigationBar(parent)
   html.push("'/>");
   html.push("</td>");
 
-  html.push("<td width='50px' height='48px'>");
-  html.push("<div id='");
-  html.push(maximizeButtonId);
-  html.push("'/>");
-  html.push("</td>");
-
   html.push("</tr>");
   html.push("<tr>");
-  html.push("<td colspan='4' style='padding: 0px 0px 0px 0px'>");
+  html.push("<td colspan='5' style='padding: 0px 0px 0px 0px'>");
   html.push("<hr width='100%' size='1' color='#969696'/>");
   html.push("</td>");
   html.push("</tr>");
@@ -58,8 +58,8 @@ function NavigationBar(parent)
   this._logout.reparentHtmlElement(logoutButtonId);
 
   this._maximize = new DwtButton(this,DwtLabel.ALIGN_CENTER,"DwtButton32");
-  this._maximize.setImage("Logout");
-  this._maximize.setToolTipContent("Maximize");
+  this._maximize.setImage("Maximize");
+  this._maximize.setToolTipContent("Maximize content into a new window");
   this._maximize.reparentHtmlElement(maximizeButtonId);
 };
 

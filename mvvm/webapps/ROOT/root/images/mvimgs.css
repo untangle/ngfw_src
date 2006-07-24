@@ -19,6 +19,7 @@
 .ImgFolderNoAuth{background-image:url("icons/FolderNoAuth.gif");background-position:0px 0px;background-repeat:no-repeat;width:32px;height:32px;overflow:hidden;}
 .ImgLogout{background-image:url("icons/Logout.gif");background-position:0px 0px;background-repeat:no-repeat;width:32px;height:32px;overflow:hidden;}
 .ImgLogoutNoAuth{background-image:url("icons/LogoutNoAuth.gif");background-position:0px 0px;background-repeat:no-repeat;width:32px;height:32px;overflow:hidden;}
+.ImgMaximize{background-image:url("icons/Maximize.gif");background-position:0px 0px;background-repeat:no-repeat;width:32px;height:32px;overflow:hidden;}
 
 .ImgAdd{background-image:url("icons/Add.gif");background-position:0px 0px;background-repeat:no-repeat;width:32px;height:32px;overflow:hidden;}
 .ImgRemove{background-image:url("icons/Remove.gif");background-position:0px 0px;background-repeat:no-repeat;width:32px;height:32px;overflow:hidden;}
