@@ -67,7 +67,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
 
         SimpleEventFilter ef = new PortalLoginoutFilter();
         eventLogger.addSimpleEventFilter(ef);
-     }
+    }
 
     private void registerApps() {
         LocalApplicationManager lam = lpm.applicationManager();
@@ -77,11 +77,11 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
 
         Application.Destinator httpDestinator = new Application.Destinator() {
                 public String getDestinationHost(Bookmark bm) {
-            // This isn't yet used, so we fake it for now. XXX
-            return "localhost";
+                    // This isn't yet used, so we fake it for now. XXX
+                    return "localhost";
                 }
                 public int getDestinationPort(Bookmark bm) {
-            // This isn't yet used, so we fake it for now. XXX
+                    // This isn't yet used, so we fake it for now. XXX
                     return 80;
                 }
             };
@@ -211,7 +211,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     protected void initializeSettings() { }
 
     @Override
-        protected void preStop() throws TransformStopException {
+    protected void preStop() throws TransformStopException {
         super.preStop();
         logger.debug("preStop()");
         unDeployWebAppIfRequired(logger);
@@ -267,7 +267,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     // AbstractTransform methods ----------------------------------------------
 
     @Override
-        protected PipeSpec[] getPipeSpecs()
+    protected PipeSpec[] getPipeSpecs()
     {
         return pipeSpecs;
     }
