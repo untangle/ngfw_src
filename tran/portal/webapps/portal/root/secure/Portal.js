@@ -113,8 +113,13 @@ Portal.prototype.splitUrl = function(url)
             o.proto = url.substring(0, i);
             i = i + 3;
             var j = url.indexOf('/', i);
-            o.host = url.substring(i, j);
-            o.path = url.substring(j);
+            if (-1 == j) {
+                o.host = url.substring(i);
+                o.path = '/';
+            } else {
+                o.host = url.substring(i, j);
+                o.path = url.substring(j);
+            }
         }
     }
 
@@ -264,7 +269,6 @@ Portal.prototype._refreshAppsCallback = function(obj, results)
 Portal.prototype._appLoadCallback = function(obj, app)
 {
     this._appMap[app.name] = app;
-    DBG.println("SETTING this._appMap[" + app.name + "] = " + app);
 
     if (!app.isHostService) {
         this._portalPanel.applicationPanel.addApplication(app);
@@ -283,7 +287,6 @@ Portal.prototype._refreshPageInfoCallback = function(obj, results)
     pp.setMotd(motd);
 
     var showApps = "true" == root.getAttribute("showApps");
-    DBG.println("SHOW APPS: " + root.getAttribute("showApps") + ": " + showApps);
     pp.showApplicationPanel(showApps);
 
     var showBookmarks = "true" == root.getAttribute("showBookmarks");

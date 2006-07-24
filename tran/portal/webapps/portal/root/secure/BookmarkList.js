@@ -62,7 +62,6 @@ BookmarkList.prototype._createItemHtml = function(item)
     var stripeName = "Row " + "Row-" + (this._getItemIndex(item) % 2 == 0 ? "Even" : "Odd");
     div._selectedDisabledStyleClass = stripeName;
     div._styleClass = stripeName;
-    DBG.println("ROW CLASS: " + div._selectedDisabledStyleClass);
 
     this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
     div.className = div._selectedDisabledStyleClass;
