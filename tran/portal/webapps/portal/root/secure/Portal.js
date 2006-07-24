@@ -147,7 +147,8 @@ Portal.prototype.showPortal = function()
 Portal.prototype.maximizeApplication = function()
 {
     if (this._currentTarget) {
-        location.href = this._currentTarget;
+        window.open(this._currentTarget);
+        this.showPortal();
     }
 }
 
