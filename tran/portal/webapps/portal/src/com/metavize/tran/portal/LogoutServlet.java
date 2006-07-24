@@ -12,7 +12,6 @@
 package com.metavize.tran.portal;
 
 import java.security.Principal;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -50,7 +49,7 @@ public class LogoutServlet extends HttpServlet
         PortalLogin pl = (PortalLogin)p;
 
         if (null == pl) {
-            System.out.println("NO PRINCIPAL! " + this);
+            logger.warn("no principal: " + this);
         } else {
             portalManager.logout(pl);
         }

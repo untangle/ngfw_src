@@ -74,7 +74,6 @@ public class BookmarkServlet extends HttpServlet
                 String name = req.getParameter("name");
                 String appName = req.getParameter("app");
                 Application app = appManager.getApplication(appName);
-                System.out.println(appName + ":  " + app);
                 String target = req.getParameter("target");
                 portalManager.addUserBookmark(pu, name, app, target);
             } else if (command.equals("rm")) {
@@ -83,9 +82,7 @@ public class BookmarkServlet extends HttpServlet
                     Long id = Long.parseLong(idStr);
                     ids.add(id);
                 }
-                System.out.println("REMOVING BOOKMARKS: " + ids);
                 portalManager.removeUserBookmarks(pu, ids);
-                System.out.println("REMOVED BOOKMARKS");
             } else {
                 logger.warn("bad command: " + command);
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST);

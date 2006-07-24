@@ -1,10 +1,10 @@
 
 import java.io.*;
-import java.net.Socket;
 import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.security.cert.X509Certificate;
 import java.util.StringTokenizer;
 import javax.net.ssl.*;
-import java.security.cert.X509Certificate;
 
 public class VncInvoker implements SocketFactory {
 
@@ -106,14 +106,13 @@ public class VncInvoker implements SocketFactory {
             System.err.println("Unable to connect" + x.getMessage());
             throw x;
         }
-        System.out.println("connected!");
         return vncsock;
     }
 
     // This is an ugly fucking hack.  We only override the functions that VNC will
     // actually use.  XXXX
     class PortaledSocket extends Socket {
-        // The socked we're wrapping. 
+        // The socked we're wrapping.
         Socket sock;
 
         PortaledSocket(Socket sock) {
@@ -141,7 +140,7 @@ public class VncInvoker implements SocketFactory {
         private InputStream in;
 
         private char lineBuffer[];
-    
+
         /** The chunk size */
         private int chunkSize;
 
@@ -156,7 +155,7 @@ public class VncInvoker implements SocketFactory {
 
         /** True if this stream is closed */
         private boolean closed = false;
-    
+
         public ChunkedInputStream(final InputStream in) {
             super();
             if (in == null) {
@@ -172,10 +171,10 @@ public class VncInvoker implements SocketFactory {
             }
             if (this.eof) {
                 return -1;
-            } 
+            }
             if (this.pos >= this.chunkSize) {
                 nextChunk();
-                if (this.eof) { 
+                if (this.eof) {
                     return -1;
                 }
             }
@@ -189,18 +188,17 @@ public class VncInvoker implements SocketFactory {
                 throw new IOException("Attempted read from closed stream.");
             }
 
-            if (eof) { 
+            if (eof) {
                 return -1;
             }
             if (pos >= chunkSize) {
                 nextChunk();
-                if (eof) { 
+                if (eof) {
                     return -1;
                 }
             }
             len = Math.min(len, chunkSize - pos);
             int count = in.read(b, off, len);
-            // System.out.println("cis read " + count + " bytes: '" + new String(b, off, len) + "'");
             pos += count;
             return count;
         }
@@ -226,7 +224,7 @@ public class VncInvoker implements SocketFactory {
             if (!bof) {
                 int cr = in.read();
                 int lf = in.read();
-                if ((cr != '\r') || (lf != '\n')) { 
+                if ((cr != '\r') || (lf != '\n')) {
                     throw new IOException(
                                           "CRLF expected at end of chunk");
                 }
@@ -259,7 +257,7 @@ public class VncInvoker implements SocketFactory {
             int offset = 0;
             int c;
 
-            loop:	while (true) {
+            loop:   while (true) {
                 switch (c = in.read()) {
                 case -1:
                 case '\n':
@@ -333,7 +331,7 @@ public class VncInvoker implements SocketFactory {
             this.out = out;
         }
 
-        public ChunkedOutputStream(final OutputStream datatransmitter) 
+        public ChunkedOutputStream(final OutputStream datatransmitter)
             throws IOException {
             this(datatransmitter, 2048);
         }
@@ -369,7 +367,7 @@ public class VncInvoker implements SocketFactory {
                 this.out.write((byte)s.charAt(i));
             }
         }
-    
+
         public void finish() throws IOException {
             if (!this.wroteLastChunk) {
                 flushCache();
@@ -417,5 +415,5 @@ public class VncInvoker implements SocketFactory {
                 this.out.flush();
             }
         }
-    }             
+    }
 }

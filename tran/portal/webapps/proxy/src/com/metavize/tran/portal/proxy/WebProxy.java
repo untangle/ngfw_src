@@ -131,7 +131,6 @@ public class WebProxy extends HttpServlet
             httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
             s.setAttribute(HTTP_CLIENT, httpClient);
         }
-        System.out.println("USING HTTPCLIENT: " + httpClient);
 
         copyHeaders(req, method, rewriter);
 

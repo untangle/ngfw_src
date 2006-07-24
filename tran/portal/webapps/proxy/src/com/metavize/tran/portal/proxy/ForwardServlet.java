@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.log4j.Logger;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
@@ -38,6 +37,7 @@ import com.metavize.mvvm.portal.PortalHomeSettings;
 import com.metavize.mvvm.portal.PortalLogin;
 import com.metavize.mvvm.portal.PortalUser;
 import com.metavize.mvvm.tran.IPaddr;
+import org.apache.log4j.Logger;
 
 public class ForwardServlet extends HttpServlet
 {
@@ -75,7 +75,7 @@ public class ForwardServlet extends HttpServlet
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
 
         if (null == pl) {
-            System.out.println("NO PRINCIPAL! " + this);
+            logger.warn("no principal");
         }
 
         PortalUser pu = portalManager.getUser(pl.getUser());
@@ -106,7 +106,7 @@ public class ForwardServlet extends HttpServlet
             } catch (NumberFormatException x) {
                 throw new ServletException("Malformed target " + targetStr);
             }
-                    
+
             List<Bookmark> allBookmarks = portalManager.getAllBookmarks(pu);
             for (Iterator<Bookmark> iter = allBookmarks.iterator(); iter.hasNext();) {
                 Bookmark bm = iter.next();

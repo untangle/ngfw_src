@@ -188,8 +188,6 @@ class UrlRewriter
     void filterJavaScript(Reader r, Writer w)
         throws IOException
     {
-        System.out.println("FILTER JS");
-
         BufferedReader br = new BufferedReader(r);
 
         CharSequence l;

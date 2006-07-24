@@ -50,7 +50,7 @@ public class ApplicationServlet extends HttpServlet
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
 
         if (null == pl) {
-            System.out.println("NO PRINCIPAL! " + this);
+            logger.warn("no principal: " + this);
         }
 
         PortalUser pu = portalManager.getUser(pl.getUser());
