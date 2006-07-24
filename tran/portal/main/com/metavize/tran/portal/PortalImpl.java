@@ -87,8 +87,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
             };
 
         proxyApp = lam.registerApplication("HTTP", "Web Proxy", "poo poo",
-                                           httpDestinator,
-                                           null, 0, WEB_JS_URL);
+                                           httpDestinator, null, 0, WEB_JS_URL);
 
         Application.Destinator rdpDestinator = new Application.Destinator() {
                 public String getDestinationHost(Bookmark bm) {
