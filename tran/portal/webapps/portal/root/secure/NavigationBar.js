@@ -11,22 +11,32 @@ function NavigationBar(parent)
 
   var homeButtonId = Dwt.getNextId();
   var logoutButtonId = Dwt.getNextId();
+  var maximizeButtonId = Dwt.getNextId();
 
   var html = [];
   html.push("<table style='padding: 50px 50px 0px 50px' width='100%' height='96px' border=0>");
   html.push("<tr>");
   html.push("<td width='57px'><img src='/images/LogoNoText48x48.gif'></td>");
   html.push("<td style='font: bold normal normal 25pt Arial,Sans-Serif; color: #777777;'>Metavize Secure Portal</td>");
+
   html.push("<td width='50px' height='48px'>");
   html.push("<div id='");
   html.push(homeButtonId);
   html.push("'/>");
   html.push("</td>");
+
   html.push("<td width='50px' height='48px'>");
   html.push("<div id='");
   html.push(logoutButtonId);
   html.push("'/>");
   html.push("</td>");
+
+  html.push("<td width='50px' height='48px'>");
+  html.push("<div id='");
+  html.push(maximizeButtonId);
+  html.push("'/>");
+  html.push("</td>");
+
   html.push("</tr>");
   html.push("<tr>");
   html.push("<td colspan='4' style='padding: 0px 0px 0px 0px'>");
@@ -46,6 +56,11 @@ function NavigationBar(parent)
   this._logout.setImage("Logout");
   this._logout.setToolTipContent("Logout");
   this._logout.reparentHtmlElement(logoutButtonId);
+
+  this._maximize = new DwtButton(this,DwtLabel.ALIGN_CENTER,"DwtButton32");
+  this._maximize.setImage("Logout");
+  this._maximize.setToolTipContent("Maximize");
+  this._maximize.reparentHtmlElement(maximizeButtonId);
 };
 
 NavigationBar.prototype = new DwtComposite();
@@ -61,4 +76,9 @@ NavigationBar.prototype.addHomeButtonListener = function(l)
 NavigationBar.prototype.addLogoutButtonListener = function(l)
 {
   this._logout.addSelectionListener(l);
+};
+
+NavigationBar.prototype.addMaximizeButtonListener = function(l)
+{
+  this._maximize.addSelectionListener(l);
 };

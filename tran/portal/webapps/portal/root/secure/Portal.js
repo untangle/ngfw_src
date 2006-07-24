@@ -22,6 +22,8 @@ function Portal(shell) {
     this._navBar.addHomeButtonListener(l);
     l = new AjxListener(this, this._logoutButtonListener);
     this._navBar.addLogoutButtonListener(l);
+    l = new AjxListener(this, this.maximizeApplication);
+    this._navBar.addMaximizeButtonListener(l);
 
     this._portalPanel = new PortalPanel(this._shell);
     this._portalPanel.zShow(true);
@@ -53,6 +55,8 @@ Portal.prototype.constructor = Portal;
 
 Portal.prototype.showApplicationUrl = function(url, application, bookmark)
 {
+    this._currentTarget = url;
+
     if (this._mainPanel) {
         Dwt.setVisible(this._mainPanel.getHtmlElement(), false);
         if (this._mainPanel != this._portalPanel) {
@@ -130,6 +134,8 @@ Portal.prototype.splitUrl = function(url)
 
 Portal.prototype.showPortal = function()
 {
+    this._currentTarget = null;
+
     if (this._mainPanel && this._mainPanel != this._portalPanel) {
         Dwt.setVisible(this._mainPanel.getHtmlElement(), false);
         this._mainPanel.dispose();
@@ -137,6 +143,13 @@ Portal.prototype.showPortal = function()
     this._mainPanel = this._portalPanel;
     Dwt.setVisible(this._portalPanel.getHtmlElement(), true);
 };
+
+Portal.prototype.maximizeApplication = function()
+{
+    if (this._currentTarget) {
+        location.href = this._currentTarget;
+    }
+}
 
 Portal.prototype.refresh = function()
 {
