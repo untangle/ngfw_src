@@ -9,7 +9,7 @@ function BookmarkList(parent)
 
     var header = [];
 
-    DwtListView.call(this, parent, null, DwtControl.ABSOLUTE_STYLE, header);
+    DwtListView.call(this, parent, "PortalList", DwtControl.RELATIVE_STYLE, header);
 
     this.getHtmlElement().removeChild(this._listColDiv);
 
@@ -92,7 +92,7 @@ BookmarkList.prototype._createItemHtml = function(item)
         // XXX put generic icon instead
     }
 
-    value += "<a class='BookmarkListName'>" + item.name + "</a>";
+    value += "<a class='PortalListName'>" + item.name + "</a>";
 
     htmlArr[idx++] = (value || "") + "</div>"
     htmlArr[idx++] = "</td>";

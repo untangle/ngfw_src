@@ -10,17 +10,7 @@ function BookmarkPanel(parent)
 
   DwtComposite.call(this, parent, "BookmarkPanel", DwtControl.ABSOLUTE_STYLE);
 
-  this._title = new DwtLabel(this, DwtLabel.ALIGN_LEFT, "ListTitle",
-                             DwtControl.ABSOLUTE_STYLE);
-  this._title.setText(BookmarkPanel.DEFAULT_TITLE);
-  this._toolbar = this._makeToolbar();
-  this._toolbar.zShow(true);
-  this._bookmarkList = new BookmarkList(this);
-  this._bookmarkList.zShow(true);
-
-  this.addControlListener(new AjxListener(this, this._controlListener));
-
-  this._layout();
+  this._init();
 };
 
 BookmarkPanel.prototype = new DwtComposite();
@@ -70,7 +60,7 @@ BookmarkPanel.prototype.addActionListener = function(l)
 // private methods ------------------------------------------------------------
 
 BookmarkPanel.prototype._makeToolbar = function() {
-  var toolbar = new DwtToolBar(this, "PortalToolBar", DwtControl.ABSOLUTE_STYLE, 2, 2, DwtToolBar.VERT_STYLE);
+  var toolbar = new DwtToolBar(this, "PortalToolBar", DwtControl.RELATIVE_STYLE, 2, 2, DwtToolBar.VERT_STYLE);
 
   var b = new DwtButton(toolbar,DwtLabel.ALIGN_CENTER,"DwtButton32");
   //b.setText("New Bookmark");
@@ -87,24 +77,51 @@ BookmarkPanel.prototype._makeToolbar = function() {
   return toolbar;
 };
 
-BookmarkPanel.prototype._layout = function()
+BookmarkPanel.prototype._init = function()
 {
-  var size = this.getSize();
+    var titleId = Dwt.getNextId();
+    var toolbarId = Dwt.getNextId();
+    var listId = Dwt.getNextId();
 
-  var y = 0;
-  this._title.setLocation(0, 0);
-  var s = this._title.getSize();
-  y += this._title.getSize().y
+    var html = [];
+    html.push("<table width='100%' height='100%'>");
 
-  var x = 0;
-  this._toolbar.setBounds(0, y);
-  s = this._toolbar.getSize();
-  this._toolbar.setSize(s.x, size.y - y);
-  x += s.x;
-  this._bookmarkList.setBounds(x, y, size.x - x, size.y - y);
-};
+    html.push("<tr>");
+    html.push("<td colspan='2'>");
+    html.push("<div id='");
+    html.push(titleId);
+    html.push("'/>");
+    html.push("</td>");
+    html.push("</tr>");
 
-BookmarkPanel.prototype._controlListener = function()
-{
-  this._layout();
-};
+    html.push("<tr>");
+
+    html.push("<td>");
+    html.push("<div id='");
+    html.push(toolbarId);
+    html.push("'/>");
+    html.push("</td>");
+
+    html.push("<td style='width: 100%; height: 100%'>");
+    html.push("<div style='width: 100%; height: 100%' id='");
+    html.push(listId);
+    html.push("'/>");
+    html.push("</td>");
+
+    html.push("</tr>");
+
+    html.push("</table>");
+
+    this.setContent(html.join(""));
+
+    this._title = new DwtLabel(this, DwtLabel.ALIGN_LEFT, "ListTitle",
+                               DwtControl.RELATIVE_STYLE);
+    this._title.setText(BookmarkPanel.DEFAULT_TITLE);
+    this._title.reparentHtmlElement(titleId);
+
+    this._toolbar = this._makeToolbar();
+    this._toolbar.reparentHtmlElement(toolbarId);
+
+    this._bookmarkList = new BookmarkList(this);
+    this._bookmarkList.reparentHtmlElement(listId);
+}

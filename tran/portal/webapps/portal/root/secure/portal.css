@@ -39,13 +39,7 @@
     font-weight: bold;
 }
 
-.BookmarkListName {
-    color: #1997FE;
-    text-decoration: underline;
-    cursor: pointer;
-}
-
-.ApplicationListName {
+.PortalListName {
     color: #1997FE;
     text-decoration: underline;
     cursor: pointer;

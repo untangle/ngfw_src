@@ -79,7 +79,7 @@ ApplicationList.prototype._createItemHtml = function(item)
     htmlArr[idx++] = width ? " style='width: " + width + "'>" : ">";
 
     var value = "<img style='vertical-align: middle' src='" + item.getIconUrl() + "'/> ";
-    value += "<a class='ApplicationListName'>" + item.description + "</a>";
+    value += "<a class='PortalListName'>" + item.description + "</a>";
 
     htmlArr[idx++] = (value || "") + "</div></td>";
 
