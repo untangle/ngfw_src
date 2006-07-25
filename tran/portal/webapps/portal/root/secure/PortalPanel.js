@@ -116,18 +116,18 @@ PortalPanel.prototype._init = function()
     if (0 < colspan) {
         html.push("<tr style='height: 100%;'>");
 
-        if (this.showApplicationPanel) {
-            html.push("<td>");
-            html.push("<div style='height: 100%;' id='");
-            html.push(this._applicationPanelId);
-            html.push("'/>");
-            html.push("</td>");
-        }
-
         if (this.showBookmarkPanel) {
             html.push("<td>");
             html.push("<div style='height: 100%;' id='");
             html.push(this._bookmarkPanelId);
+            html.push("'/>");
+            html.push("</td>");
+        }
+
+        if (this.showApplicationPanel) {
+            html.push("<td>");
+            html.push("<div style='height: 100%;' id='");
+            html.push(this._applicationPanelId);
             html.push("'/>");
             html.push("</td>");
         }
@@ -143,16 +143,16 @@ PortalPanel.prototype._init = function()
     this._welcomePanel.reparentHtmlElement(this._welcomePanelId);
     this._welcomePanel.setVisible(true);
 
-    if (this.showApplicationPanel) {
-        this.applicationPanel = this.applicationPanel || new ApplicationPanel(this);
-        this.applicationPanel.reparentHtmlElement(this._applicationPanelId);
-        this.applicationPanel.setVisible(true);
-    }
-
     if (this.showBookmarkPanel) {
         this.bookmarkPanel = this.bookmarkPanel || new BookmarkPanel(this);
         this.bookmarkPanel.reparentHtmlElement(this._bookmarkPanelId);
         this.bookmarkPanel.setVisible(true);
+    }
+
+    if (this.showApplicationPanel) {
+        this.applicationPanel = this.applicationPanel || new ApplicationPanel(this);
+        this.applicationPanel.reparentHtmlElement(this._applicationPanelId);
+        this.applicationPanel.setVisible(true);
     }
 };
 
