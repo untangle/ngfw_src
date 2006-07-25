@@ -9,7 +9,8 @@ function BookmarkList(parent)
 
     var header = [];
 
-    DwtListView.call(this, parent, "PortalList", DwtControl.RELATIVE_STYLE, header);
+    DwtListView.call(this, parent, "PortalList",
+                     DwtControl.RELATIVE_STYLE, header);
 
     this.getHtmlElement().removeChild(this._listColDiv);
 

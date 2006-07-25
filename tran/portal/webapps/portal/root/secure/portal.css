@@ -39,6 +39,11 @@
     font-weight: bold;
 }
 
+.PortalList {
+    height: 100%;
+    width: 100%;
+}
+
 .PortalListName {
     color: #1997FE;
     text-decoration: underline;
