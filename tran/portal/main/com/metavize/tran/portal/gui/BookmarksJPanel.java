@@ -129,28 +129,38 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
 
         if( mode.equals("OTHER") ){ // VNC, HTTP, CIFS
 	    Bookmark newElem = null;
+	    int i = 1;
 	    for( Vector rowVector : tableVector ){
 		newElem = (Bookmark) rowVector.elementAt(5);
-		newElem.setName( (String) rowVector.elementAt(2) );
+		newElem.setName( ((String) rowVector.elementAt(2)).trim() );
+		if( newElem.getName().length() == 0 )
+		    throw new Exception("You must specify a name for the bookmark in row " + i + ".");
 		newElem.setApplicationName( ((ApplicationWrapper) ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem()).getName() );
-		String targetString = ((String) rowVector.elementAt(4)).trim();
-		newElem.setTarget( targetString.length()>0?targetString:null );
+		newElem.setTarget( ((String) rowVector.elementAt(4)).trim() );
+		if( newElem.getTarget().length() == 0 )
+		    throw new Exception("You must specify a target for the bookmark in row " + i + ".");
 		elemList.add(newElem);
+		i++;
 	    }
 	}
 	else{ // RDP
 	    RdpBookmark newElem = null;
+	    int i = 1;
 	    for( Vector rowVector : tableVector ){
 		newElem = (RdpBookmark) rowVector.elementAt(7);
 		newElem.setName( (String) rowVector.elementAt(2) );
+		if( newElem.getName().length() == 0 )
+		    throw new Exception("You must specify a name for the bookmark in row " + i + ".");
 		newElem.setApplicationName( "RDP" );
-		String hostString = ((String) rowVector.elementAt(3)).trim();
-		newElem.setHost( hostString.length()>0?hostString:null );
+		newElem.setHost( ((String) rowVector.elementAt(3)).trim() );
+		if( newElem.getHost().length() == 0 )
+		    throw new Exception("You must specify a hostname for the bookmark in row " + i + ".");
 		newElem.setSize( (String) ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem() );
 		newElem.setConsole( (Boolean) rowVector.elementAt(5) );
-		String commandString = ((String) rowVector.elementAt(6)).trim();
+		String commandString = (String) rowVector.elementAt(6);;
 		newElem.setCommand( commandString.length()>0?commandString:null );
 		elemList.add(newElem);
+		i++;
 	    }
 	}
 
