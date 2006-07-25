@@ -1,6 +1,9 @@
 /* Copyright (c) 2006 Metavize Inc. */
 /* All rights reserved.             */
 
+.Portal {
+}
+
 .PortalShell {
     background-image: url('/images/Background1600x100.jpg');
 }
@@ -57,4 +60,40 @@
     color: #1997FE;
     text-decoration: underline;
     cursor: pointer;
+}
+
+#table_main_top {
+    height: 23px;
+    background: url('/images/background/background_table_main_top.gif') repeat-x;
+}
+
+#table_main_top_left {
+    background: url('/images/background/rounded_corner_main_top_left.gif') no-repeat;
+}
+
+#table_main_top_right {
+    background: url('/images/background/rounded_corner_main_top_right.gif') no-repeat;
+}
+
+#table_main_right {
+    width: 23px;
+    background: url('/images/background/background_table_main_right.gif') repeat-y;
+}
+
+#table_main_bottom {
+    height: 23px;
+    background: url('/images/background/background_table_main_bottom.gif') repeat-x;
+}
+
+#table_main_bottom_left {
+    background: url('/images/background/rounded_corner_main_bottom_left.gif') no-repeat;
+}
+
+#table_main_bottom_right {
+    background: url('/images/background/rounded_corner_main_bottom_right.gif') no-repeat;
+}
+
+#table_main_left {
+    width: 23px;
+    background: url('/images/background/background_table_main_left.gif') repeat-y;
 }
