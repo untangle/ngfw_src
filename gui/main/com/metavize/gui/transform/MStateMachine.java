@@ -296,7 +296,6 @@ public class MStateMachine implements java.awt.event.ActionListener {
                         powerJToggleButton.setSelected( powerOn );
                         powerJToggleButton.setEnabled(true);
                     }
-                    mTransformDisplayJPanel.setDoVizUpdates( doVizUpdates );
                     stateJLabel.setViewState( ledState );
                 }
             };
@@ -304,6 +303,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
             SwingUtilities.invokeLater( runnable );
         else
             runnable.run();
+	mTransformDisplayJPanel.setDoVizUpdates( doVizUpdates );
     }
     ///////////////////////////////////////////////
 
