@@ -4,13 +4,13 @@
 function BookmarkPanel(parent)
 {
 
-  if (0 == arguments.length) {
-    return;
-  }
+    if (0 == arguments.length) {
+        return;
+    }
 
-  DwtComposite.call(this, parent, "BookmarkPanel", DwtControl.ABSOLUTE_STYLE);
+    DwtComposite.call(this, parent, "BookmarkPanel", DwtControl.ABSOLUTE_STYLE);
 
-  this._init();
+    this._init();
 };
 
 BookmarkPanel.prototype = new DwtComposite();
@@ -24,57 +24,57 @@ BookmarkPanel.DEFAULT_TITLE = "Bookmarks";
 
 BookmarkPanel.prototype.redraw = function()
 {
-  this._bookmarkList.setUI();
+    this._bookmarkList.setUI();
 };
 
 BookmarkPanel.prototype.setTitle = function(title)
 {
-  this._title.setText(title || BookmarkPanel.DEFAULT_TITLE);
+    this._title.setText(title || BookmarkPanel.DEFAULT_TITLE);
 };
 
 BookmarkPanel.prototype.enableAddBookmarks = function(enabled)
 {
-  this.addBookmarkButton.setEnabled(enabled);
+    this.addBookmarkButton.setEnabled(enabled);
 };
 
 BookmarkPanel.prototype.refresh = function()
 {
-  this._bookmarkList.refresh();
+    this._bookmarkList.refresh();
 };
 
 BookmarkPanel.prototype.getSelection = function()
 {
-  return this._bookmarkList.getSelection();
+    return this._bookmarkList.getSelection();
 };
 
 BookmarkPanel.prototype.addSelectionListener = function(l)
 {
-  this._bookmarkList.addSelectionListener(l);
+    this._bookmarkList.addSelectionListener(l);
 };
 
 BookmarkPanel.prototype.addActionListener = function(l)
 {
-  this._bookmarkList.addActionListener(l);
+    this._bookmarkList.addActionListener(l);
 };
 
 // private methods ------------------------------------------------------------
 
 BookmarkPanel.prototype._makeToolbar = function() {
-  var toolbar = new DwtToolBar(this, "PortalToolBar", DwtControl.RELATIVE_STYLE, 2, 2, DwtToolBar.VERT_STYLE);
+    var toolbar = new DwtToolBar(this, "PortalToolBar", DwtControl.RELATIVE_STYLE, 2, 2, DwtToolBar.VERT_STYLE);
 
-  var b = new DwtButton(toolbar,DwtLabel.ALIGN_CENTER,"DwtButton32");
-  //b.setText("New Bookmark");
-  b.setImage("Add");
-  b.setToolTipContent("Add a new bookmark");
-  this.addBookmarkButton = b;
+    var b = new DwtButton(toolbar,DwtLabel.ALIGN_CENTER,"DwtButton32");
+    //b.setText("New Bookmark");
+    b.setImage("Add");
+    b.setToolTipContent("Add a new bookmark");
+    this.addBookmarkButton = b;
 
-  b = new DwtButton(toolbar,DwtButton.ALIGN_CENTER,"DwtButton32");
-  //b.setText("Delete");
-  b.setImage("Remove");
-  b.setToolTipContent("Remove selected bookmarks");
-  this.deleteBookmarkButton = b;
+    b = new DwtButton(toolbar,DwtButton.ALIGN_CENTER,"DwtButton32");
+    //b.setText("Delete");
+    b.setImage("Remove");
+    b.setToolTipContent("Remove selected bookmarks");
+    this.deleteBookmarkButton = b;
 
-  return toolbar;
+    return toolbar;
 };
 
 BookmarkPanel.prototype._init = function()
