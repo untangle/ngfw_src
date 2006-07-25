@@ -13,11 +13,11 @@ function NavigationBar(parent)
     var logoutButtonId = Dwt.getNextId();
     var maximizeButtonId = Dwt.getNextId();
 
-    var html = [];
-    html.push("<table style='padding: 50px 50px 0px 50px' width='100%' height='96px' border=0>");
-    html.push("<tr>");
-    html.push("<td width='57px'><img src='/images/LogoNoText48x48.gif'></td>");
-    html.push("<td style='font: bold normal normal 25pt Arial,Sans-Serif; color: #777777;'>Metavize Secure Portal</td>");
+  var html = [];
+  html.push("<table style='padding: 0px 0px 0px 0px' width='100%' height='96px' border=0>");
+  html.push("<tr>");
+  html.push("<td width='57px'><img src='/images/LogoNoText48x48.gif'></td>");
+  html.push("<td style='font: bold normal normal 25pt Arial,Sans-Serif; color: #777777;'>Metavize Secure Portal</td>");
 
     html.push("<td style='padding: 0px 15px 0px 0px' width='50px' height='48px'>");
     html.push("<div id='");
