@@ -57,12 +57,6 @@ PortalPanel.prototype.addSelectionListener = function(l)
     this.bookmarkPanel.addSelectionListener(l);
 };
 
-// private constants ----------------------------------------------------------
-
-PortalPanel._VMARGIN = 5;
-PortalPanel._HMARGIN = 100;
-PortalPanel._WELCOME_PANEL_HEIGHT = 50;
-
 // private methods ------------------------------------------------------------
 
 PortalPanel.prototype._init = function()

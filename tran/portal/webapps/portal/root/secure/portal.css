@@ -42,10 +42,10 @@
 
 .ListTitle {
     width: 100%;
+    font-weight: bold;
 }
 
 .ListTitle .Text {
-    font-weight: bold;
 }
 
 .PortalList {

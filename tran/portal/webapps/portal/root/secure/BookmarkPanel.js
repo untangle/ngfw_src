@@ -29,7 +29,7 @@ BookmarkPanel.prototype.redraw = function()
 
 BookmarkPanel.prototype.setTitle = function(title)
 {
-    this._title.setText(title || BookmarkPanel.DEFAULT_TITLE);
+    this._titleDiv.innerHTML = title || BookmarkPanel.DEFAULT_TITLE;
 };
 
 BookmarkPanel.prototype.enableAddBookmarks = function(enabled)
@@ -88,7 +88,7 @@ BookmarkPanel.prototype._init = function()
 
     html.push("<tr>");
     html.push("<td colspan='2'>");
-    html.push("<div id='");
+    html.push("<div class='ListTitle' id='");
     html.push(titleId);
     html.push("'/>");
     html.push("</td>");
@@ -114,10 +114,8 @@ BookmarkPanel.prototype._init = function()
 
     this.setContent(html.join(""));
 
-    this._title = new DwtLabel(this, DwtLabel.ALIGN_LEFT, "ListTitle",
-                               DwtControl.RELATIVE_STYLE);
-    this._title.setText(BookmarkPanel.DEFAULT_TITLE);
-    this._title.reparentHtmlElement(titleId);
+    this._titleDiv = document.getElementById(titleId);
+    this._titleDiv.innerHTML = BookmarkPanel.DEFAULT_TITLE;
 
     this._toolbar = this._makeToolbar();
     this._toolbar.reparentHtmlElement(toolbarId);

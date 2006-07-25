@@ -29,7 +29,7 @@ ApplicationPanel.prototype.redraw = function()
 
 ApplicationPanel.prototype.setTitle = function(title)
 {
-    this._title.setText(title || ApplicationPanel.DEFAULT_TITLE);
+    this._titleDiv.innerHTML = title || ApplicationPanel.DEFAULT_TITLE;
 };
 
 ApplicationPanel.prototype.addApplication = function(app)
@@ -64,7 +64,7 @@ ApplicationPanel.prototype._init = function()
 
     html.push("<tr>");
     html.push("<td>");
-    html.push("<div id='");
+    html.push("<div class='ListTitle' id='");
     html.push(titleId);
     html.push("'/>");
     html.push("</td>");
@@ -84,10 +84,8 @@ ApplicationPanel.prototype._init = function()
 
     this.setContent(html.join(""));
 
-    this._title = new DwtLabel(this, DwtLabel.ALIGN_LEFT, "ListTitle",
-                               DwtControl.RELATIVE_STYLE);
-    this._title.setText(ApplicationPanel.DEFAULT_TITLE);
-    this._title.reparentHtmlElement(titleId);
+    this._titleDiv = document.getElementById(titleId);
+    this._titleDiv.innerHTML = ApplicationPanel.DEFAULT_TITLE;
 
     this._applicationList = new ApplicationList(this);
     this._applicationList.reparentHtmlElement(listId);
