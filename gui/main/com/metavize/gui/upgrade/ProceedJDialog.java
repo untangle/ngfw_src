@@ -87,7 +87,7 @@ final public class ProceedJDialog extends javax.swing.JDialog implements java.aw
 
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                messageJLabel.setText("<html><center>\nThis upgrade will close the EdgeGuard Client and may restart EdgeGuard.  <font color=\"FF0000\"><b>DO NOT MANUALLY SHUTDOWN OR RESTART EDGEGUARD WHILE IT IS UPGRADING!</b></font>  You may login again after EdgeGuard has restarted.<br>\nWould you like to continue with this upgrade?\n</center></html>");
+                messageJLabel.setText("<html><center>\nThis upgrade will close the EdgeGuard Client and may restart EdgeGuard.<br>You may login again after EdgeGuard has restarted.<br>\nWould you like to continue with this upgrade?\n</center></html>");
                 messageJLabel.setDoubleBuffered(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -125,7 +125,7 @@ final public class ProceedJDialog extends javax.swing.JDialog implements java.aw
                 getContentPane().add(backgroundJLabel, gridBagConstraints);
 
                 java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-                setBounds((screenSize.width-466)/2, (screenSize.height-200)/2, 466, 200);
+                setBounds((screenSize.width-500)/2, (screenSize.height-200)/2, 500, 200);
         }//GEN-END:initComponents
 
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
