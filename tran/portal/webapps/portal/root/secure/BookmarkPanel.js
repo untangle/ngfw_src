@@ -8,7 +8,7 @@ function BookmarkPanel(parent)
         return;
     }
 
-    DwtComposite.call(this, parent, "BookmarkPanel", DwtControl.ABSOLUTE_STYLE);
+    DwtComposite.call(this, parent, "BookmarkPanel", DwtControl.RELATIVE_STYLE);
 
     this._init();
 };

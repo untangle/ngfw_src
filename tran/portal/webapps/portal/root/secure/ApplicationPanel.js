@@ -8,7 +8,7 @@ function ApplicationPanel(parent)
         return;
     }
 
-    DwtComposite.call(this, parent, "ApplicationPanel", DwtControl.ABSOLUTE_STYLE);
+    DwtComposite.call(this, parent, "ApplicationPanel", DwtControl.RELATIVE_STYLE);
 
     this._init();
 };

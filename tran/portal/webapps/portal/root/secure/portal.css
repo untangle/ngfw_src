@@ -1,6 +1,10 @@
 /* Copyright (c) 2006 Metavize Inc. */
 /* All rights reserved.             */
 
+.PortalShell {
+    background-image: url('/images/Background1600x100.jpg');
+}
+
 .Row-Odd {
     background-color: #B7B7C4;
 }
@@ -14,7 +18,7 @@
 }
 
 .MetavizePanel {
-    background-image: url('/images/Background1600x100.jpg');
+    background-color: transparent;
     width: 100%;
 }
 
@@ -24,7 +28,7 @@
 }
 
 .PortalPanel {
-    background-image: url('/images/Background1600x100.jpg');
+    background-color: transparent;
 }
 
 .WelcomePanel {
