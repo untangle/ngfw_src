@@ -7,7 +7,7 @@ function PortalPanel(parent)
         return;
     }
 
-    DwtComposite.call(this, parent, "PortalPanel", DwtControl.ABSOLUTE_STYLE);
+    DwtComposite.call(this, parent, "PortalPanel", DwtControl.RELATIVE_STYLE);
 
     this._init();
 
@@ -79,18 +79,20 @@ PortalPanel.prototype._init = function()
         colspan++;
     }
 
+    var shell = DwtShell.getShell(window);
+
     if (this._welcomePanel) {
-        this._welcomePanel.reparent(DwtShell.getShell(window));
+        this._welcomePanel.reparent(shell);
         this._welcomePanel.setVisible(false);
     }
 
     if (this.applicationPanel) {
-        this.applicationPanel.reparent(DwtShell.getShell(window));
+        this.applicationPanel.reparent(shell);
         this.applicationPanel.setVisible(false);
     }
 
     if (this.bookmarkPanel) {
-        this.bookmarkPanel.reparent(DwtShell.getShell(window));
+        this.bookmarkPanel.reparent(shell);
         this.bookmarkPanel.setVisible(false);
     }
 

@@ -8,25 +8,20 @@ function Portal(shell) {
 
     this._shell = shell;
 
-    this._shell.addControlListener(new AjxListener(this, this._shellListener));
-
     DwtComposite.call(this, this._shell, "Portal");
 
     window.portal = this;
 
     this._loadApps();
 
-    this._navBar = new NavigationBar(this);
-    this._navBar.zShow(true);
+    this._initLayout();
+
     var l = new AjxListener(this, this._homeButtonListener);
     this._navBar.addHomeButtonListener(l);
     l = new AjxListener(this, this._logoutButtonListener);
     this._navBar.addLogoutButtonListener(l);
     l = new AjxListener(this, this.maximizeApplication);
     this._navBar.addMaximizeButtonListener(l);
-
-    this._portalPanel = new PortalPanel(this._shell);
-    this._portalPanel.zShow(true);
 
     l = new AjxListener(this, this._bookmarkSelectionListener);
     this._portalPanel.bookmarkPanel.addSelectionListener(l);
@@ -42,10 +37,6 @@ function Portal(shell) {
     this.showPortal();
 
     this.refresh();
-    this.addControlListener(new AjxListener(this, this._controlListener));
-
-    this.layout();
-    this.zShow(true);
 };
 
 Portal.prototype = new DwtComposite();
@@ -58,18 +49,18 @@ Portal.prototype.showApplicationUrl = function(url, application, bookmark)
     this._currentTarget = url;
 
     if (this._mainPanel) {
-        Dwt.setVisible(this._mainPanel.getHtmlElement(), false);
         if (this._mainPanel != this._portalPanel) {
             this._mainPanel.dispose();
+        } else {
+            this._mainPanel.reparent(DwtShell.getShell(window));
+            this._mainPanel.setVisible(false);
         }
     }
 
     this._mainPanel = new ApplicationIframe(this._shell);
+    this._mainPanel.reparentHtmlElement(this._mainPanelId);
     this._mainPanel.loadUrl(url);
-    Dwt.setVisible(this._mainPanel.getHtmlElement(), true);
     this._mainPanel.zShow(true);
-
-    this.layout();
 };
 
 Portal.prototype.getApplication = function(appName)
@@ -137,11 +128,11 @@ Portal.prototype.showPortal = function()
     this._currentTarget = null;
 
     if (this._mainPanel && this._mainPanel != this._portalPanel) {
-        Dwt.setVisible(this._mainPanel.getHtmlElement(), false);
         this._mainPanel.dispose();
     }
     this._mainPanel = this._portalPanel;
-    Dwt.setVisible(this._portalPanel.getHtmlElement(), true);
+    this._portalPanel.reparentHtmlElement(this._mainPanelId);
+    this._portalPanel.setVisible(true);
 };
 
 Portal.prototype.maximizeApplication = function()
@@ -159,22 +150,6 @@ Portal.prototype.refresh = function()
     this._portalPanel.refresh();
 };
 
-Portal.prototype.layout = function()
-{
-    var size = this._shell.getSize();
-    var width = size.x;
-    var height = size.y;
-
-    var x = 0;
-    var y = 0;
-
-    this._navBar.setLocation(x, y);
-    var size = this._navBar.getSize();
-    y += size.y;
-
-    this._mainPanel.setBounds(x, y, width, height - y);
-};
-
 // private methods ------------------------------------------------------------
 
 Portal.prototype._refreshPageInfo = function()
@@ -186,20 +161,48 @@ Portal.prototype._refreshPageInfo = function()
 
 // init -----------------------------------------------------------------------
 
+Portal.prototype._initLayout = function()
+{
+    var navBarId = Dwt.getNextId();
+    this._mainPanelId = Dwt.getNextId();
+
+    var html = [];
+    html.push("<table style='width: 100%; height: 100%;'>");
+
+    html.push("<tr>");
+    html.push("<td>");
+    html.push("<div id='");
+    html.push(navBarId);
+    html.push("'/>");
+    html.push("</td>");
+    html.push("</tr>");
+
+    html.push("<tr style='height: 100%;'>");
+    html.push("<td>");
+    html.push("<div style='height: 100%;' id='");
+    html.push(this._mainPanelId);
+    html.push("'/>");
+    html.push("</td>");
+    html.push("</tr>");
+
+    html.push("</table>");
+
+    this.setContent(html.join(""));
+
+    this._navBar = new NavigationBar(this);
+    this._navBar.reparentHtmlElement(navBarId);
+    this._navBar.zShow(true);
+
+    this._portalPanel = new PortalPanel(this._shell);
+    this._portalPanel.reparentHtmlElement(this._mainPanelId);
+    this._portalPanel.zShow(true);
+}
+
 Portal.prototype._loadApps = function()
 {
     AjxRpc.invoke(null, "secure/application?command=ls", null,
                   new AjxCallback(this, this._refreshAppsCallback,
                                   new Object()), true);
-};
-
-// shell ----------------------------------------------------------------------
-
-Portal.prototype._shellListener = function(ev)
-{
-    if (ev.oldWidth != ev.newWidth || ev.oldHeight != ev.newHeight) {
-        this.layout();
-    }
 };
 
 // util -----------------------------------------------------------------------
@@ -218,11 +221,6 @@ Portal._mkSrcDestCommand = function(command, src, dest)
 };
 
 // callbacks ------------------------------------------------------------------
-
-Portal.prototype._controlListener = function()
-{
-    this.layout();
-};
 
 Portal.prototype._bookmarkSelectionListener = function(ev)
 {
