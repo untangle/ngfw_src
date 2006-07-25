@@ -61,6 +61,8 @@ Portal.prototype.showApplicationUrl = function(url, application, bookmark)
     this._mainPanel.reparentHtmlElement(this._mainPanelId);
     this._mainPanel.loadUrl(url);
     this._mainPanel.zShow(true);
+
+    this._navBar.enableMaximize(true);
 };
 
 Portal.prototype.getApplication = function(appName)
@@ -133,6 +135,8 @@ Portal.prototype.showPortal = function()
     this._mainPanel = this._portalPanel;
     this._portalPanel.reparentHtmlElement(this._mainPanelId);
     this._portalPanel.setVisible(true);
+
+    this._navBar.enableMaximize(false);
 };
 
 Portal.prototype.maximizeApplication = function()
@@ -143,7 +147,7 @@ Portal.prototype.maximizeApplication = function()
     }
 }
 
-Portal.prototype.refresh = function()
+    Portal.prototype.refresh = function()
 {
     this._refreshPageInfo()
     this._loadApps();
@@ -198,7 +202,7 @@ Portal.prototype._initLayout = function()
     this._portalPanel.zShow(true);
 }
 
-Portal.prototype._loadApps = function()
+    Portal.prototype._loadApps = function()
 {
     AjxRpc.invoke(null, "secure/application?command=ls", null,
                   new AjxCallback(this, this._refreshAppsCallback,
