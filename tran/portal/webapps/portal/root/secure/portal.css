@@ -5,7 +5,7 @@
 }
 
 .PortalShell {
-    background-image: url('/images/Background1600x100.jpg');
+    background: #FFFFFF url(/images/background/background_body.gif) repeat-x top left;
 }
 
 .Row-Odd {
@@ -21,7 +21,7 @@
 }
 
 .MetavizePanel {
-    background-color: transparent;
+    background: url('/images/background/background_table_main_center.gif') repeat;
     width: 100%;
 }
 
@@ -36,7 +36,7 @@
 }
 
 .PortalPanel {
-    background-color: transparent;
+    background: url('/images/background/background_table_main_center.gif') repeat;
 }
 
 .WelcomePanel {

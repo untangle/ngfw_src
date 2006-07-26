@@ -171,6 +171,9 @@ Portal.prototype._initLayout = function()
     this._mainPanelId = Dwt.getNextId();
 
     var html = [];
+
+    html.push("<table cellpadding='15' cellspacing='0' style='width: 100%; height: 100%;'><tr><td>");
+
     html.push("<table cellpadding='0' cellspacing='0' style='width: 100%; height: 100%;'>");
 
     html.push("<tr>");
@@ -209,6 +212,8 @@ Portal.prototype._initLayout = function()
     html.push("<td id='table_main_bottom_right'></td>");
     html.push("</tr>");
     html.push("</table>");
+
+    html.push("</td></tr></table>");
 
     this.setContent(html.join(""));
 
