@@ -184,25 +184,26 @@ Portal.prototype._initLayout = function()
 
     html.push("<tr>");
     html.push("<td id='table_main_left'></td>");
+    html.push("<td id='table_main_center'>");
 
+    html.push("<table cellpadding='0' cellspacing='0' style='width: 100%; height: 100%;'>");
+    html.push("<tr>");
     html.push("<td>");
     html.push("<div id='");
     html.push(navBarId);
     html.push("'/>");
     html.push("</td>");
-
-    html.push("<td id='table_main_right'></td>");
     html.push("</tr>");
-
     html.push("<tr style='height: 100%;'>");
-    html.push("<td id='table_main_left'></td>");
-
     html.push("<td>");
     html.push("<div style='height: 100%;' id='");
     html.push(this._mainPanelId);
     html.push("'/>");
     html.push("</td>");
+    html.push("</tr>");
+    html.push("</table>");
 
+    html.push("</td>");
     html.push("<td id='table_main_right'></td>");
     html.push("</tr>");
 

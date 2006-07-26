@@ -99,3 +99,7 @@
     width: 23px;
     background: url('/images/background/background_table_main_left.gif') repeat-y;
 }
+
+#table_main_center {
+    background: url('/images/background/background_table_main_center.gif') repeat;
+}
