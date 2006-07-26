@@ -191,6 +191,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 baseJTextField = new javax.swing.JTextField();
                 orgJLabel = new javax.swing.JLabel();
                 orgJTextField = new javax.swing.JTextField();
+                orgOptionalJLabel = new javax.swing.JLabel();
 
                 setLayout(new java.awt.GridBagLayout());
 
@@ -354,7 +355,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 restrictIPJPanel1.setLayout(new java.awt.GridBagLayout());
 
                 baseJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                baseJLabel.setText("Search Base:");
+                baseJLabel.setText("Domain:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -394,6 +395,15 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
                 restrictIPJPanel1.add(orgJTextField, gridBagConstraints);
+
+                orgOptionalJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                orgOptionalJLabel.setText(" (Optional)");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 2;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
+                restrictIPJPanel1.add(orgOptionalJLabel, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -479,6 +489,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         public javax.swing.JTextField loginJTextField;
         private javax.swing.JLabel orgJLabel;
         public javax.swing.JTextField orgJTextField;
+        private javax.swing.JLabel orgOptionalJLabel;
         private javax.swing.JLabel passwordJLabel;
         private javax.swing.JPasswordField passwordJPasswordField;
         private javax.swing.JLabel portJLabel;
