@@ -3,8 +3,6 @@
 <%
 String sp = (String)request.getContextPath() + "/secure";
 String target = request.getParameter("target");
-PortalLogin pl = (PortalLogin)request.getUserPrincipal();
-String principal = pl.getNtlmAuth().toString();
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
