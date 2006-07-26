@@ -5,7 +5,7 @@ Logger logger = Logger.getLogger(getClass());
 
 response.addHeader("content-type", "application/x-java-jnlp-file");
 
-String host=request.getHeader("host");i
+String host=request.getHeader("host");
 // Can't use getLocalPort since we now receive on magic port 64157
 int port=request.getServerPort();
 
