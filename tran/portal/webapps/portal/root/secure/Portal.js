@@ -8,7 +8,7 @@ function Portal(shell) {
 
     this._shell = shell;
 
-    DwtComposite.call(this, this._shell, "Portal");
+    DwtComposite.call(this, this._shell, "Portal", DwtControl.RELATIVE_STYLE);
 
     window.portal = this;
 

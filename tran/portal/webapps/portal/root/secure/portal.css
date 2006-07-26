@@ -2,10 +2,10 @@
 /* All rights reserved.             */
 
 .Portal {
+    background: #FFFFFF url(/images/background/background_body.gif) repeat-x top left;
 }
 
 .PortalShell {
-    background: #FFFFFF url(/images/background/background_body.gif) repeat-x top left;
 }
 
 .Row-Odd {

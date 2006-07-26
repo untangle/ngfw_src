@@ -52,10 +52,12 @@
 
 <script language="JavaScript">
 function launch() {
-DBG = new AjxDebug(AjxDebug.DBG1, null, false);
+DBG = new AjxDebug(AjxDebug.NONE, null, false);
 
 var shell = new DwtShell("PortalShell", false);
 var portal = new Portal(shell, "smb://windows.metavize.com/");
+portal.setVisible(true);
+portal.zShow(true);
 }
 AjxCore.addOnloadListener(launch);
 </script>
