@@ -24,10 +24,12 @@ function CifsNode(parent, name, principal, type, size, lastModified,
    this.url = (parent || "") + name;
 
    if (this.name.length - 1 == this.name.lastIndexOf("/")) {
-      this.label = this.name.substring(0, this.name.length - 1);
+       this.label = this.name.substring(0, this.name.length - 1);
    } else {
       this.label = this.name;
    }
+
+   this.label = this.label.replace(/\//g, "\\");
 }
 
 CifsNode.FILE = 1;

@@ -1,78 +1,79 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function Browser(shell, url) {
-   if (0 == arguments.length) {
-      return;
-   }
+function Browser(shell, url)
+{
+    if (0 == arguments.length) {
+        return;
+    }
 
-   if (url && '/' != url.charAt(url.length - 1)) {
-      url += '/';
-   }
+    if (url && '/' != url.charAt(url.length - 1)) {
+        url += '/';
+    }
 
-   var cifsNode;
-   if (url) {
-      cifsNode = new CifsNode(null, url, null, CifsNode.SHARE); // XXX TYPE?
-   }
+    var cifsNode;
+    if (url) {
+        cifsNode = new CifsNode(null, url, null, CifsNode.SHARE); // XXX TYPE?
+    }
 
-   this._shell = shell;
+    this._shell = shell;
 
-   this._shell.addControlListener(new AjxListener(this, this._shellListener));
+    this._shell.addControlListener(new AjxListener(this, this._shellListener));
 
-   DwtComposite.call(this, this._shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
+    DwtComposite.call(this, this._shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
 
-   this._authCallback = new AjxCallback(this, this._authResource, { });
-   this._refreshCallback = new AjxCallback(this, this.refresh, { });
+    this._authCallback = new AjxCallback(this, this._authResource, { });
+    this._refreshCallback = new AjxCallback(this, this.refresh, { });
 
-   this._toolbar = this._makeToolbar();
-   this._toolbar.zShow(true);
+    this._toolbar = this._makeToolbar();
+    this._toolbar.zShow(true);
 
-   this._addressBar = this._makeAddressBar();
-   this._addressBar.zShow(true);
+    this._addressBar = this._makeAddressBar();
+    this._addressBar.zShow(true);
 
-   var dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE | Dwt.DND_DROP_COPY);
-   dragSource.addDragListener(new AjxListener(this, this._treeDragListener));
-   var dropTarget = new DwtDropTarget(CifsNode);
-   dropTarget.addDropListener(new AjxListener(this, this._treeDropListener));
-   this._dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE,
-                               dragSource, dropTarget);
+    var dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE | Dwt.DND_DROP_COPY);
+    dragSource.addDragListener(new AjxListener(this, this._treeDragListener));
+    var dropTarget = new DwtDropTarget(CifsNode);
+    dropTarget.addDropListener(new AjxListener(this, this._treeDropListener));
+    this._dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE,
+                                dragSource, dropTarget);
 
-   if (cifsNode) {
-      this._dirTree.addRoot(cifsNode);
-      this._dirTree.setScrollStyle(DwtControl.SCROLL);
-      this._dirTree.addSelectionListener(new AjxListener(this, this._dirSelectionListener));
-      this._dirTree.zShow(true);
-   }
+    if (cifsNode) {
+        this._dirTree.addRoot(cifsNode);
+        this._dirTree.setScrollStyle(DwtControl.SCROLL);
+        this._dirTree.addSelectionListener(new AjxListener(this, this._dirSelectionListener));
+        this._dirTree.zShow(true);
+    }
 
-   this._sash = new DwtSash(this, DwtSash.HORIZONTAL_STYLE, null, 3);
-   this._sashPos = 200;
-   this._sash.registerCallback(this._sashCallback, this);
-   this._sash.zShow(true);
+    this._sash = new DwtSash(this, DwtSash.HORIZONTAL_STYLE, null, 3);
+    this._sashPos = 200;
+    this._sash.registerCallback(this._sashCallback, this);
+    this._sash.zShow(true);
 
-   dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE | Dwt.DND_DROP_COPY);
-   dragSource.addDragListener(new AjxListener(this, this._detailDragListener));
-   dropTarget = new DwtDropTarget(CifsNode);
-   dropTarget.addDropListener(new AjxListener(this, this._detailDropListener));
-   this._detailPanel = new DetailPanel(this, this._authCallback);
-   this._detailPanel.setUI();
-   this._detailPanel.zShow(true);
-   this._detailPanel.addSelectionListener(new AjxListener(this, this._detailSelectionListener));
-   this._detailPanel.setDragSource(dragSource);
-   this._detailPanel.setDropTarget(dropTarget);
+    dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE | Dwt.DND_DROP_COPY);
+    dragSource.addDragListener(new AjxListener(this, this._detailDragListener));
+    dropTarget = new DwtDropTarget(CifsNode);
+    dropTarget.addDropListener(new AjxListener(this, this._detailDropListener));
+    this._detailPanel = new DetailPanel(this, this._authCallback);
+    this._detailPanel.setUI();
+    this._detailPanel.zShow(true);
+    this._detailPanel.addSelectionListener(new AjxListener(this, this._detailSelectionListener));
+    this._detailPanel.setDragSource(dragSource);
+    this._detailPanel.setDropTarget(dropTarget);
 
-   this._actionMenu = this._makeActionMenu()
-   this._detailPanel.addActionListener(new AjxListener(this, this._listActionListener));
+    this._actionMenu = this._makeActionMenu()
+        this._detailPanel.addActionListener(new AjxListener(this, this._listActionListener));
 
-   this._broadcastRoots();
+    this._broadcastRoots();
 
-   this.layout();
+    this.layout();
 
-   if (cifsNode) {
-      this.chdir(cifsNode, false);
-   }
+    if (cifsNode) {
+        this.chdir(cifsNode, false);
+    }
 
-   this.zShow(true);
-}
+    this.zShow(true);
+};
 
 Browser.prototype = new DwtComposite();
 Browser.prototype.constructor = Browser;
@@ -85,72 +86,73 @@ Browser.CIFS_NODE = "cifsNode";
 
 Browser.prototype.chdir = function(cifsNode, expandTree, expandDetail)
 {
-   this._cwd = cifsNode;
+    this._cwd = cifsNode;
 
-   this._addressField.setValue(cifsNode.url);
+    this._addressField.setValue(cifsNode.url.replace(/\//g, "\\"));
 
-   if (undefined == expandTree || expandTree) {
-      this._dirTree.chdir(cifsNode);
-   }
+    if (undefined == expandTree || expandTree) {
+        this._dirTree.chdir(cifsNode);
+    }
 
-   if (undefined == expandDetail || expandDetail) {
-      this._detailPanel.chdir(cifsNode);
-   }
-}
+    if (undefined == expandDetail || expandDetail) {
+        this._detailPanel.chdir(cifsNode);
+    }
+};
 
 Browser.prototype.mv = function(src, dest)
 {
-   var reqStr = Browser._mkSrcDestCommand("mv", src, dest)
+    var reqStr = Browser._mkSrcDestCommand("mv", src, dest)
 
-   // XXX handle error
-   MvRpc.invoke(reqStr, "secure/exec", Browser._POST_HEADERS, false,
-                this._refreshCallback, MvRpc.reloadPageCallback,
-                this._authCallback);
-}
+    // XXX handle error
+    MvRpc.invoke(reqStr, "secure/exec", Browser._POST_HEADERS, false,
+                 this._refreshCallback, MvRpc.reloadPageCallback,
+                 this._authCallback);
+};
 
 Browser.prototype.cp = function(src, dest)
 {
-   var reqStr = Browser._mkSrcDestCommand("cp", src, dest)
+    var reqStr = Browser._mkSrcDestCommand("cp", src, dest)
 
-   // XXX handle error
-   MvRpc.invoke(reqStr, "secure/exec", BROWSER._POST_HEADERS, false,
-                this._refreshCallback, MvRpc.reloadPageCallback,
-                this._authCallback);
-}
+    // XXX handle error
+    MvRpc.invoke(reqStr, "secure/exec", BROWSER._POST_HEADERS, false,
+                 this._refreshCallback, MvRpc.reloadPageCallback,
+                 this._authCallback);
+};
 
 Browser.prototype.refresh = function()
 {
-   this._detailPanel.refresh();
-   this._dirTree.refresh();
-}
+    this._detailPanel.refresh();
+    this._dirTree.refresh();
+};
 
-Browser.prototype.layout = function(ignoreSash) {
-   var size = this._shell.getSize();
-   var width = size.x;
-   var height = size.y;
+Browser.prototype.layout = function(ignoreSash)
+{
+    var size = this._shell.getSize();
+    var width = size.x;
+    var height = size.y;
 
-   var x = 0;
-   var y = 0;
+    var x = 0;
+    var y = 0;
 
-   this._toolbar.setLocation(0, 0);
-   var size = this._toolbar.getSize();
-   y += size.y;
+    this._toolbar.setLocation(0, 0);
+    var size = this._toolbar.getSize();
+    y += size.y;
 
-   this._addressBar.setLocation(0, y);
-   size = this._addressBar.getSize();
-   y += size.y;
+    this._addressBar.setLocation(0, y);
+    size = this._addressBar.getSize();
+    y += size.y;
 
-   this._dirTree.setBounds(x, y, this._sashPos, height);
-   x += this._dirTree.getSize().x;
+    this._dirTree.setBounds(x, y, this._sashPos, height);
+    x += this._dirTree.getSize().x;
 
-   if (!ignoreSash) {
-      this._sash.setBounds(x, y, 2, height);
-   }
-   x += this._sash.getSize().x;
+    if (!ignoreSash) {
+        this._sash.setBounds(x, y, 2, height);
+    }
+    x += this._sash.getSize().x;
 
-   this._detailPanel.setBounds(x, y, width - x, height);
-   x += this._detailPanel.getSize().x;
-}
+    this._detailPanel.setBounds(x, y, width - x, height);
+    x += this._detailPanel.getSize().x;
+};
 
 // private fields -------------------------------------------------------------
 
@@ -159,402 +161,405 @@ Browser._POST_HEADERS["Content-Type"] = "application/x-www-form-urlencoded";
 
 // init -----------------------------------------------------------------------
 
-Browser.prototype._makeToolbar = function() {
-   var toolbar = new DwtToolBar(this, "ToolBar", DwtControl.ABSOLUTE_STYLE, 2);
+Browser.prototype._makeToolbar = function()
+{
+    var toolbar = new DwtToolBar(this, "ToolBar", DwtControl.ABSOLUTE_STYLE, 2);
 
-   var b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
-   b.setText("Refresh");
-   b.setToolTipContent("Display latest contents");
-   b.addSelectionListener(new AjxListener(this, this._refreshButtonListener));
+    var b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
+    b.setText("Refresh");
+    b.setToolTipContent("Display latest contents");
+    b.addSelectionListener(new AjxListener(this, this._refreshButtonListener));
 
-   b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
-   b.setText("Upload");
-   b.setToolTipContent("Upload files to share");
-   b.addSelectionListener(new AjxListener(this, this._uploadButtonListener));
+    b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
+    b.setText("Upload");
+    b.setToolTipContent("Upload files to share");
+    b.addSelectionListener(new AjxListener(this, this._uploadButtonListener));
 
-   b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
-   b.setText("Delete");
-   b.setToolTipContent("Delete selected files");
-   b.addSelectionListener(new AjxListener(this, this._deleteButtonListener));
+    b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
+    b.setText("Delete");
+    b.setToolTipContent("Delete selected files");
+    b.addSelectionListener(new AjxListener(this, this._deleteButtonListener));
 
-   b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
-   b.setText("New Folder");
-   b.setToolTipContent("Create a new folder");
-   b.addSelectionListener(new AjxListener(this, this._mkdirButtonListener));
+    b = new DwtButton(toolbar, DwtButton.ALIGN_CENTER);
+    b.setText("New Folder");
+    b.setToolTipContent("Create a new folder");
+    b.addSelectionListener(new AjxListener(this, this._mkdirButtonListener));
 
-   return toolbar;
-}
+    return toolbar;
+};
 
-Browser.prototype._makeAddressBar = function() {
-   var toolbar = new DwtToolBar(this, "ToolBar", DwtControl.ABSOLUTE_STYLE, 2);
+Browser.prototype._makeAddressBar = function()
+{
+    var toolbar = new DwtToolBar(this, "ToolBar", DwtControl.ABSOLUTE_STYLE, 2);
 
-   var l = new DwtLabel(toolbar);
-   l.setText("Address");
+    var l = new DwtLabel(toolbar);
+    l.setText("Address");
 
-   this._addressField = new DwtInputField({ parent: toolbar, size: 50 });
+    this._addressField = new DwtInputField({ parent: toolbar, size: 50 });
 
-   with (this) {
-      this._addressField.getInputElement().onkeyup = function(ev) {
-         DwtInputField._keyUpHdlr(ev);
+    with (this) {
+        this._addressField.getInputElement().onkeyup = function(ev) {
+            DwtInputField._keyUpHdlr(ev);
 
-         var keyEv = DwtShell.keyEvent;
-         keyEv.setFromDhtmlEvent(ev);
-         if (DwtKeyEvent.KEY_RETURN == keyEv.keyCode) {
-            var val = keyEv.dwtObj.getValue();
-            if (val.charAt(val.length - 1) != '/') {
-               val += '/';
+            var keyEv = DwtShell.keyEvent;
+            keyEv.setFromDhtmlEvent(ev);
+            if (DwtKeyEvent.KEY_RETURN == keyEv.keyCode) {
+                var val = keyEv.dwtObj.getValue().replace(/\\/g, "/");
+                if (val.charAt(val.length - 1) != '/') {
+                    val += '/';
+                }
+                var cifsNode = new CifsNode(null, val);
+                chdir(cifsNode);
             }
-            var cifsNode = new CifsNode(null, val);
-            chdir(cifsNode);
-         }
-      };
-   }
+        };
+    }
 
-   return toolbar;
-}
+    return toolbar;
+};
 
 Browser.prototype._makeActionMenu = function()
 {
-   var actionMenu = new DwtMenu(this._detailPanel, DwtMenu.POPUP_STYLE);
+    var actionMenu = new DwtMenu(this._detailPanel, DwtMenu.POPUP_STYLE);
 
-   var i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
-   i.setText("Delete");
-   i.addSelectionListener(new AjxListener(this, this._deleteButtonListener));
-   i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
-   i.setText("Rename");
-   i.addSelectionListener(new AjxListener(this, this._renameButtonListener));
+    var i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
+    i.setText("Delete");
+    i.addSelectionListener(new AjxListener(this, this._deleteButtonListener));
+    i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
+    i.setText("Rename");
+    i.addSelectionListener(new AjxListener(this, this._renameButtonListener));
 
-   return actionMenu;
-}
+    return actionMenu;
+};
 
 Browser.prototype._broadcastRoots = function()
 {
-   var actionCb = new AjxCallback(this, this._broadcastRootsCb, new Object());
-   MvRpc.invoke("url=//", "secure/ls", null, true,
-                actionCb, MvRpc.reloadPageCallback, this._authCallback);
-}
+    var actionCb = new AjxCallback(this, this._broadcastRootsCb, new Object());
+    MvRpc.invoke("url=//", "secure/ls", null, true,
+                 actionCb, MvRpc.reloadPageCallback, this._authCallback);
+};
 
 Browser.prototype._broadcastRootsCbFn = function(obj, results)
 {
-   var root = results.xml.getElementsByTagName("root")[0];
-   var children = root.childNodes;
-   for (var i = 0; i < children.length; i++) {
-      var child = children[i];
-      var tagName = child.tagName;
-      if ("dir" == tagName || "file" == tagName) {
-         var name = "//" + child.getAttribute("name");
-         var type = CifsNode.TYPES[child.getAttribute("type")];
-         var n = new CifsNode(null, name, null, type);
-         this._dirTree.addWorkGroup(n);
-      }
-   }
-}
+    var root = results.xml.getElementsByTagName("root")[0];
+    var children = root.childNodes;
+    for (var i = 0; i < children.length; i++) {
+        var child = children[i];
+        var tagName = child.tagName;
+        if ("dir" == tagName || "file" == tagName) {
+            var name = "//" + child.getAttribute("name");
+            var type = CifsNode.TYPES[child.getAttribute("type")];
+            var n = new CifsNode(null, name, null, type);
+            this._dirTree.addWorkGroup(n);
+        }
+    }
+};
 
 // listeners ------------------------------------------------------------------
 
-Browser.prototype._detailSelectionListener = function(ev) {
-   switch (ev.detail) {
-      case DwtListView.ITEM_DBL_CLICKED:
-      var item = ev.item;
-      if (item.isDirectory()) {
-         this.chdir(item);
-      } else {
-         AjxWindowOpener.open("secure/get/" + item.getReqUrl());
-      }
-      break;
-   }
-}
+Browser.prototype._detailSelectionListener = function(ev)
+{
+    switch (ev.detail) {
+    case DwtListView.ITEM_DBL_CLICKED:
+    var item = ev.item;
+    if (item.isDirectory()) {
+        this.chdir(item);
+    } else {
+        AjxWindowOpener.open("secure/get/" + item.getReqUrl());
+    }
+    break;
+    }
+};
 
 // toolbar buttons ------------------------------------------------------------
 
-Browser.prototype._dirSelectionListener = function(evt) {
-   switch (evt.detail) {
-      case DwtTree.ITEM_SELECTED:
-      var n = evt.item.getData(Browser.CIFS_NODE);
-      this.chdir(n);
-      break;
+Browser.prototype._dirSelectionListener = function(evt)
+{
+    switch (evt.detail) {
+    case DwtTree.ITEM_SELECTED:
+    var n = evt.item.getData(Browser.CIFS_NODE);
+    this.chdir(n);
+    break;
 
-      case DwtTree.ITEM_DESELECTED:
-      break;
+    case DwtTree.ITEM_DESELECTED:
+    break;
 
-      case DwtTree.ITEM_CHECKED:
-      break;
+    case DwtTree.ITEM_CHECKED:
+    break;
 
-      case DwtTree.ITEM_ACTIONED:
-      break;
+    case DwtTree.ITEM_ACTIONED:
+    break;
 
-      case DwtTree.ITEM_DBL_CLICKED:
-      var item = evt.item;
-      var n = item.getData(Browser.CIFS_NODE);
-      if (!n.authorized) {
-         var d = new LoginDialog(this._shell, n.getDomain());
-         var o = { dialog: d, item: item };
-         var l = new AjxListener(this, this._authenticateDialogListener, o);
-         d.setButtonListener(DwtDialog.OK_BUTTON, l);
-         d.popup();
-      } else {
-         item.setExpanded(!evt.item.getExpanded());
-      }
-      break;
+    case DwtTree.ITEM_DBL_CLICKED:
+    var item = evt.item;
+    var n = item.getData(Browser.CIFS_NODE);
+    if (!n.authorized) {
+        var d = new LoginDialog(this._shell, n.getDomain());
+        var o = { dialog: d, item: item };
+        var l = new AjxListener(this, this._authenticateDialogListener, o);
+        d.setButtonListener(DwtDialog.OK_BUTTON, l);
+        d.popup();
+    } else {
+        item.setExpanded(!evt.item.getExpanded());
+    }
+    break;
 
-      default:
-   }
-}
+    default:
+    }
+};
 
 Browser.prototype._authenticateDialogListener = function(obj, evt)
 {
-   var d = obj.dialog;
-   var domain = d.getDomain();
-   var username = d.getUser();
-   var password = d.getPassword();
+    var d = obj.dialog;
+    var domain = d.getDomain();
+    var username = d.getUser();
+    var password = d.getPassword();
 
-   var reqStr = "domain=" + domain + "&username=" + username
-      + "&password=" + password;
+    var reqStr = "domain=" + domain + "&username=" + username
+    + "&password=" + password;
 
-   var obj = { dialog: d, item: obj.item }
-   var actionCb = new AjxCallback(this, this._loginCallback, obj);
-   MvRpc.invoke(reqStr, "secure/login", Browser._POST_HEADERS, false,
-                actionCb, MvRpc.reloadPageCallback, this._authCallback);
-}
+    var obj = { dialog: d, item: obj.item }
+    var actionCb = new AjxCallback(this, this._loginCallback, obj);
+    MvRpc.invoke(reqStr, "secure/login", Browser._POST_HEADERS, false,
+                 actionCb, MvRpc.reloadPageCallback, this._authCallback);
+};
 
 Browser.prototype._loginCallback = function(obj, results)
 {
-   var auth = results.xml.getElementsByTagName("auth")[0];
-   var status = auth.getAttribute("status");
-   var principal = auth.getAttribute("principal");
+    var auth = results.xml.getElementsByTagName("auth")[0];
+    var status = auth.getAttribute("status");
+    var principal = auth.getAttribute("principal");
 
-   if ("success" == status) {
-      obj.dialog.popdown();
-      this._dirTree.repopulate(obj.item, principal);
-   } else {
-      alert("FAILURE");
-   }
-}
+    if ("success" == status) {
+        obj.dialog.popdown();
+        this._dirTree.repopulate(obj.item, principal);
+    } else {
+        alert("FAILURE");
+    }
+};
 
 Browser.prototype._listActionListener = function(ev)
 {
     this._actionMenu.popup(0, ev.docX, ev.docY);
-}
-
+};
 
 Browser.prototype._refreshButtonListener = function(ev)
 {
-   this.refresh();
-}
+    this.refresh();
+};
 
 Browser.prototype._uploadButtonListener = function(ev)
 {
-   var dialog = new FileUploadDialog(this._shell, "put", this._cwd.getReqUrl());
+    var dialog = new FileUploadDialog(this._shell, "put", this._cwd.getReqUrl());
 
-   var obj = { dialog: dialog };
-   var l = new AjxListener(this, this._popdownAndRefreshCbFn, obj);
-   dialog.addUploadCompleteListener(l);
+    var obj = { dialog: dialog };
+    var l = new AjxListener(this, this._popdownAndRefreshCbFn, obj);
+    dialog.addUploadCompleteListener(l);
 
-   dialog.popup();
-}
+    dialog.popup();
+};
 
 Browser.prototype._deleteButtonListener = function(ev)
 {
-   var sel = this._detailPanel.getSelection();
-   if (0 == sel.length) {
-      return;
-   }
+    var sel = this._detailPanel.getSelection();
+    if (0 == sel.length) {
+        return;
+    }
 
-   var reqStr = "command=rm";
-   for (var i = 0; i < sel.length; i++) {
-      reqStr += "&file=" + sel[i].getReqUrl();
-   }
+    var reqStr = "command=rm";
+    for (var i = 0; i < sel.length; i++) {
+        reqStr += "&file=" + sel[i].getReqUrl();
+    }
 
-   MvRpc.invoke(reqStr, "secure/exec", Browser._POST_HEADERS, false,
-                this._refreshCallback, MvRpc.reloadPageCallback,
-                this._authCallback);
-}
+    MvRpc.invoke(reqStr, "secure/exec", Browser._POST_HEADERS, false,
+                 this._refreshCallback, MvRpc.reloadPageCallback,
+                 this._authCallback);
+};
 
 Browser.prototype._renameButtonListener = function(ev)
 {
-   var sel = this._detailPanel.getSelection();
-   if (0 == sel.length) {
-      return;
-   }
+    var sel = this._detailPanel.getSelection();
+    if (0 == sel.length) {
+        return;
+    }
 
-   var dialog = new RenameDialog(this._shell, sel[0]);
+    var dialog = new RenameDialog(this._shell, sel[0]);
 
-   var obj = { dialog: dialog };
-   var l = new AjxListener(this, this._renameDialogListenerFn, obj);
+    var obj = { dialog: dialog };
+    var l = new AjxListener(this, this._renameDialogListenerFn, obj);
 
-   dialog.setButtonListener(DwtDialog.OK_BUTTON, l);
-   dialog.addListener(DwtEvent.ENTER, l);
+    dialog.setButtonListener(DwtDialog.OK_BUTTON, l);
+    dialog.addListener(DwtEvent.ENTER, l);
 
-   dialog.popup();
-}
+    dialog.popup();
+};
 
 Browser.prototype._renameDialogListenerFn = function(obj, evt)
 {
-   // XXX first selection only
-   var dest = obj.dialog.getDest();
+    // XXX first selection only
+    var dest = obj.dialog.getDest();
 
-   if (dest) {
-      var reqStr = "command=rename&src=" + sel[0].getReqUrl() + "&dest=" + dest;
+    if (dest) {
+        var reqStr = "command=rename&src=" + sel[0].getReqUrl() + "&dest=" + dest;
 
-      var obj = { dialog: obj.dialog };
-      var actionCb = new AjxCallback(this, this._popdownAndRefreshCbFn, obj)
+        var obj = { dialog: obj.dialog };
+        var actionCb = new AjxCallback(this, this._popdownAndRefreshCbFn, obj)
 
-      MvRpc.invoke(reqStr, "secure/exec", Browser._POST_HEADERS, false,
-                   actionCb, MvRpc.reloadPageCallback, this._authCallback);
-   }
-}
+            MvRpc.invoke(reqStr, "secure/exec", Browser._POST_HEADERS, false,
+                         actionCb, MvRpc.reloadPageCallback, this._authCallback);
+    }
+};
 
 Browser.prototype._mkdirButtonListener = function(ev)
 {
-   var dialog = new MkdirDialog(this._shell, this._cwd);
+    var dialog = new MkdirDialog(this._shell, this._cwd);
 
-   var obj = { dialog: dialog };
-   var l = new AjxListener(this, this._mkdirDialogListenerFn, obj);
+    var obj = { dialog: dialog };
+    var l = new AjxListener(this, this._mkdirDialogListenerFn, obj);
 
-   dialog.setButtonListener(DwtDialog.OK_BUTTON, l);
-   dialog.addListener(DwtEvent.ENTER, l);
+    dialog.setButtonListener(DwtDialog.OK_BUTTON, l);
+    dialog.addListener(DwtEvent.ENTER, l);
 
-   dialog.popup();
-}
+    dialog.popup();
+};
 
-Browser.prototype._mkdirDialogListenerFn = function(obj, evt) {
-   var dir = obj.dialog.getDir();
+Browser.prototype._mkdirDialogListenerFn = function(obj, evt)
+{
+    var dir = obj.dialog.getDir();
 
-   if (dir) {
-      var url = "secure/exec";
-      var reqStr = "command=mkdir&url=" + dir;
+    if (dir) {
+        var url = "secure/exec";
+        var reqStr = "command=mkdir&url=" + dir;
 
-      var obj = { dialog: obj.dialog }
-      var actionCb = new AjxCallback(this, this._popdownAndRefreshCbFn, obj);
+        var obj = { dialog: obj.dialog }
+        var actionCb = new AjxCallback(this, this._popdownAndRefreshCbFn, obj);
 
-      MvRpc.invoke(reqStr, url, Browser._POST_HEADERS, false, actionCb,
-                   MvRpc.reloadPageCallback, this._authCallback);
-   }
-}
+        MvRpc.invoke(reqStr, url, Browser._POST_HEADERS, false, actionCb,
+                     MvRpc.reloadPageCallback, this._authCallback);
+    }
+};
 
 Browser.prototype._popdownAndRefreshCbFn = function(obj, evt)
 {
-   obj.dialog.popdown();
-   this.refresh();
-}
+    obj.dialog.popdown();
+    this.refresh();
+};
 
 Browser.prototype._authResource = function(obj, response)
 {
-}
-
+};
 
 // shell ----------------------------------------------------------------------
 
 Browser.prototype._shellListener = function(ev)
 {
-   if (ev.oldWidth != ev.newWidth || ev.oldHeight != ev.newHeight) {
-      this.layout();
-   }
-}
+    if (ev.oldWidth != ev.newWidth || ev.oldHeight != ev.newHeight) {
+        this.layout();
+    }
+};
 
 // sash -----------------------------------------------------------------------
 
 Browser.prototype._sashCallback = function(d)
 {
-   var oldPos = this._sashPos;
+    var oldPos = this._sashPos;
 
-   this._sashPos += d;
-   if (0 > this._sashPos) {
-      this._sashPos = 0;
-   }
+    this._sashPos += d;
+    if (0 > this._sashPos) {
+        this._sashPos = 0;
+    }
 
-   if (this._shell.getSize().x < this._sashPos) {
-      this._sashPos = x;
-   }
+    if (this._shell.getSize().x < this._sashPos) {
+        this._sashPos = x;
+    }
 
-   this.layout(true);
+    this.layout(true);
 
-   return this._sashPos - oldPos;
-}
+    return this._sashPos - oldPos;
+};
 
 // dnd ------------------------------------------------------------------------
 
 Browser.prototype._treeDragListener = function(evt)
 {
 
-}
+};
 
 Browser.prototype._treeDropListener = function(evt)
 {
-   var targetControl = evt.targetControl;
+    var targetControl = evt.targetControl;
 
-   switch (evt.action) {
-      case DwtDropEvent.DRAG_ENTER:
-      break;
+    switch (evt.action) {
+    case DwtDropEvent.DRAG_ENTER:
+        break;
 
-      case DwtDropEvent.DRAG_LEAVE:
-      break;
+    case DwtDropEvent.DRAG_LEAVE:
+        break;
 
-      case DwtDropEvent.DRAG_OP_CHANGED:
-      break;
+    case DwtDropEvent.DRAG_OP_CHANGED:
+        break;
 
-      case DwtDropEvent.DRAG_DROP:
-      var dest = evt.targetControl.getData(Browser.CIFS_NODE);
-      var src = evt.srcData;
+    case DwtDropEvent.DRAG_DROP:
+        var dest = evt.targetControl.getData(Browser.CIFS_NODE);
+        var src = evt.srcData;
 
-      switch (evt.operation) {
-         case Dwt.DND_DROP_COPY:
-         this.cp(src, dest);
-         break;
+        switch (evt.operation) {
+        case Dwt.DND_DROP_COPY:
+            this.cp(src, dest);
+            break;
 
-         case Dwt.DND_DROP_MOVE:
-         this.mv(src, dest);
-         break;
-      }
-      break;
-   }
-}
+        case Dwt.DND_DROP_MOVE:
+            this.mv(src, dest);
+            break;
+        }
+        break;
+    }
+};
 
 Browser.prototype._detailDragListener = function(evt)
 {
-   switch (evt.action) {
-      case DwtDragEvent.DRAG_START:
-      break;
+    switch (evt.action) {
+    case DwtDragEvent.DRAG_START:
+    break;
 
-      case DwtDragEvent.SET_DATA:
-      evt.srcData = evt.srcControl.getDnDSelection();
-      break;
+    case DwtDragEvent.SET_DATA:
+    evt.srcData = evt.srcControl.getDnDSelection();
+    break;
 
-      case DwtDragEvent.DRAG_END:
-      break;
-   }
-}
+    case DwtDragEvent.DRAG_END:
+    break;
+    }
+};
 
 Browser.prototype._detailDropListener = function(evt)
 {
-   var targetControl = evt.targetControl;
+    var targetControl = evt.targetControl;
 
-   switch (evt.action) {
-      case DwtDropEvent.DRAG_ENTER:
-      break;
+    switch (evt.action) {
+    case DwtDropEvent.DRAG_ENTER:
+        break;
 
-      case DwtDropEvent.DRAG_LEAVE:
-      break;
+    case DwtDropEvent.DRAG_LEAVE:
+        break;
 
-      case DwtDropEvent.DRAG_OP_CHANGED:
-      break;
+    case DwtDropEvent.DRAG_OP_CHANGED:
+        break;
 
-      case DwtDropEvent.DRAG_DROP:
-      break;
-   }
-}
+    case DwtDropEvent.DRAG_DROP:
+        break;
+    }
+};
 
 // util -----------------------------------------------------------------------
 
 Browser._mkSrcDestCommand = function(command, src, dest)
 {
-   var reqStr = "command=" + command;
+    var reqStr = "command=" + command;
 
-   for (var i = 0; i < src.length; i++) {
-      reqStr += "&src=" + src[i].getReqUrl(); // XXX does this get escaped ?
-   }
+    for (var i = 0; i < src.length; i++) {
+        reqStr += "&src=" + src[i].getReqUrl(); // XXX does this get escaped ?
+    }
 
-   reqStr += "&dest=" + dest.getReqUrl(); // XXX does this get escaped ?
+    reqStr += "&dest=" + dest.getReqUrl(); // XXX does this get escaped ?
 
-   return reqStr;
-}
+    return reqStr;
+};

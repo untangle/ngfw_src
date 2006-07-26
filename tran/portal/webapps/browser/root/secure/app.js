@@ -4,12 +4,7 @@
     },
 
     openBookmark: function(portal, bookmark) {
-        var target = bookmark.target;
-        var url = "";
-        for (var i = 0; i < target.length; i++) {
-            var c = target.charAt(i);
-            url += '\\' == c ? "/" : c;
-        }
+        var url = bookmark.target.replace(/\\/g, "/");
         portal.showApplicationUrl('/browser?target=' + url, this,
                                   bookmark);
     },
