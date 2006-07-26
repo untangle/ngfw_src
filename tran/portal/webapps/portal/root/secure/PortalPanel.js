@@ -78,6 +78,7 @@ PortalPanel.prototype._init = function()
     if (this._welcomePanel) {
         this._welcomePanel.reparent(shell);
         this._welcomePanel.setVisible(false);
+        this._welcomePanel.setVisible(false);
     }
 
     if (this.applicationPanel) {
