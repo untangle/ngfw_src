@@ -110,8 +110,12 @@ PortalPanel.prototype._init = function()
     if (0 < colspan) {
         html.push("<tr style='height: 100%;'>");
 
+        var tdStyle = " style='"
+            + (2 == colspan ? "width: 50%;" : "width: 100%;")
+            + "' ";
+
         if (this.showBookmarkPanel) {
-            html.push("<td>");
+            html.push("<td" + tdStyle + ">");
             html.push("<div style='height: 100%;' id='");
             html.push(this._bookmarkPanelId);
             html.push("'/>");
@@ -119,7 +123,7 @@ PortalPanel.prototype._init = function()
         }
 
         if (this.showApplicationPanel) {
-            html.push("<td>");
+            html.push("<td" + tdStyle + ">");
             html.push("<div style='height: 100%;' id='");
             html.push(this._applicationPanelId);
             html.push("'/>");
