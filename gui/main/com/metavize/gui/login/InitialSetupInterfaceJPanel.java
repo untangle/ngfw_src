@@ -143,7 +143,7 @@ public class InitialSetupInterfaceJPanel extends MWizardPageJPanel {
 	    super.setAuxJPanelEnabled(true);
 
 	    // add a basic description
-	    JLabel descriptionJLabel = new JLabel("<html>This Interface Test shows you when an ethernet cable is plugged into a network interface on EdgeGuard.  You should use this test to determine which network interface to plug each of your ethernet cables into.</html>");
+	    JLabel descriptionJLabel = new JLabel("<html>This Interface Test shows you when a network interface is connected to an ethernet cable, or disconnected.  You should use this test to determine which ethernet cable to plug into each network interface.</html>");
 	    descriptionJLabel.setFont(new Font("Default", 0, 12));
 	    auxJPanel.setLayout(new BorderLayout());
 	    auxJPanel.add(descriptionJLabel);
@@ -163,8 +163,7 @@ public class InitialSetupInterfaceJPanel extends MWizardPageJPanel {
 	private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
 	private static final int  C1_MW = Util.LINENO_MIN_WIDTH; /* # */
 	private static final int  C2_MW = 120;  /* network interface */
-	private static final int  C3_MW = 120;  /* connection */
-	private static final int  C4_MW = 140;  /* speed */
+	private static final int  C3_MW = 343;  /* connection */
 	
     
     
@@ -176,7 +175,6 @@ public class InitialSetupInterfaceJPanel extends MWizardPageJPanel {
 	    addTableColumn( tableColumnModel,  1,  C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX );
 	    addTableColumn( tableColumnModel,  2,  C2_MW, false, false, false, false, String.class, null, sc.html("network<br>interface") );
 	    addTableColumn( tableColumnModel,  3,  C3_MW, false, false, false, false, String.class, null, sc.html("connection") );
-	    addTableColumn( tableColumnModel,  4,  C4_MW, true,  false, false, true,  String.class,  null, sc.html("speed") );
 	    return tableColumnModel;
 	}
     
@@ -199,7 +197,7 @@ public class InitialSetupInterfaceJPanel extends MWizardPageJPanel {
 		tempRow.add( super.ROW_SAVED );
 		tempRow.add( rowIndex );
 		tempRow.add( intf.getName() );
-		tempRow.add( intf.getConnectionState() );
+		tempRow.add( intf.getConnectionState() + (intf.getConnectionState().equals("connected")?" @ "+intf.getCurrentMedia():"") );
 		tempRow.add( intf.getCurrentMedia() );
 		allRows.add( tempRow );
 	    }
