@@ -210,9 +210,7 @@ class UrlRewriter
     String getRemoteUrl()
         throws URIException
     {
-        String s = new URI(remoteUrl, false).getEscapedURIReference();
-
-        return s;
+        return remoteUrl;
     }
 
     String getHost()
