@@ -41,9 +41,10 @@ function Browser(shell, url)
     if (cifsNode) {
         this._dirTree.addRoot(cifsNode);
         this._dirTree.setScrollStyle(DwtControl.SCROLL);
-        this._dirTree.addSelectionListener(new AjxListener(this, this._dirSelectionListener));
-        this._dirTree.zShow(true);
     }
+
+    this._dirTree.addSelectionListener(new AjxListener(this, this._dirSelectionListener));
+    this._dirTree.zShow(true);
 
     this._sash = new DwtSash(this, DwtSash.HORIZONTAL_STYLE, null, 3);
     this._sashPos = 200;
@@ -64,7 +65,7 @@ function Browser(shell, url)
     this._actionMenu = this._makeActionMenu()
         this._detailPanel.addActionListener(new AjxListener(this, this._listActionListener));
 
-    this._broadcastRoots();
+    //this._broadcastRoots();
 
     this.layout();
 
@@ -233,8 +234,8 @@ Browser.prototype._makeActionMenu = function()
 
 Browser.prototype._broadcastRoots = function()
 {
-    var actionCb = new AjxCallback(this, this._broadcastRootsCb, new Object());
-    MvRpc.invoke("url=//", "secure/ls", null, true,
+    var actionCb = new AjxCallback(this, this._broadcastRootsCbFn, new Object());
+    MvRpc.invoke(null, "secure/ls?url=//", null, true,
                  actionCb, MvRpc.reloadPageCallback, this._authCallback);
 };
 
