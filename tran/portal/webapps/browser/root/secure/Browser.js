@@ -65,7 +65,12 @@ function Browser(shell, url)
     this._actionMenu = this._makeActionMenu()
         this._detailPanel.addActionListener(new AjxListener(this, this._listActionListener));
 
-    //this._broadcastRoots();
+    if (!cifsNode) {
+        this._broadcastRoots();
+    } else {
+        //var action = new AjxTimedAction(this, this._broadcastRoots, {});
+        //AjxTimedAction.scheduleAction(action, 2000);
+    }
 
     this.layout();
 
