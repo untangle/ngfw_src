@@ -58,7 +58,7 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
     private static final int RC2_MW = 150; /* name */
     private static final int RC3_MW = 100; /* hostname */
     private static final int RC4_MW = 120; /* screen size */
-    private static final int RC5_MW = 75;  /* create new console */
+    private static final int RC5_MW = 160; /* create new console */
     private static final int RC6_MW = Util.chooseMax(RT_TW - (RC0_MW + RC2_MW + RC3_MW + RC4_MW + RC5_MW), 120); /* optional command */
 
     private Object portalObject;
@@ -71,6 +71,7 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
 	this.mode = mode;
 	updateScreenModel();
 	updateAppModel();
+	updateConsoleModel();
     }
 
     private DefaultComboBoxModel appModel = new DefaultComboBoxModel();
@@ -85,6 +86,20 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
 	    }
 	}
     }
+
+    private DefaultComboBoxModel consoleModel = new DefaultComboBoxModel();
+    private static final String CONSOLE_TRUE  = "share actual desktop";
+    private static final String CONSOLE_FALSE = "show new desktop";
+    private void updateConsoleModel(){
+	consoleModel.removeAllElements();
+	consoleModel.addElement(CONSOLE_TRUE);
+	consoleModel.addElement(CONSOLE_FALSE);
+	if(RdpBookmark.CONSOLE_DEFAULT.equals("true"))
+	    consoleModel.setSelectedItem(CONSOLE_TRUE);
+	else
+	    consoleModel.setSelectedItem(CONSOLE_FALSE);
+    }
+
 
     private DefaultComboBoxModel screenModel = new DefaultComboBoxModel();
     private void updateScreenModel(){
@@ -116,7 +131,7 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
 	    addTableColumn( tableColumnModel,  2, RC2_MW, true,  true,  false, false, String.class, "[no name]", "name");
 	    addTableColumn( tableColumnModel,  3, RC3_MW, true,  true,  false, false, String.class, "", sc.html("hostname"));
 	    addTableColumn( tableColumnModel,  4, RC4_MW, false, true,  false, false, ComboBoxModel.class, screenModel, "screen size");
-	    addTableColumn( tableColumnModel,  5, RC5_MW, false, true,  false, false, Boolean.class, RdpBookmark.CONSOLE_DEFAULT, sc.html("create new<br>console"));
+	    addTableColumn( tableColumnModel,  5, RC5_MW, false, true,  false, false, ComboBoxModel.class, consoleModel, sc.html("view mode"));
 	    addTableColumn( tableColumnModel,  6, RC6_MW, true,  true,  false, false, String.class, "", sc.html("optional<br>command"));
 	    addTableColumn( tableColumnModel,  7, 10,     false, false, true,  false, RdpBookmark.class, null, "");
 	    return tableColumnModel;
@@ -156,8 +171,8 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
 		if( newElem.getHost().length() == 0 )
 		    throw new Exception("You must specify a hostname for the bookmark in row " + i + ".");
 		newElem.setSize( (String) ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem() );
-		newElem.setConsole( (Boolean) rowVector.elementAt(5) );
-		String commandString = (String) rowVector.elementAt(6);;
+		newElem.setConsole( ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().equals(CONSOLE_TRUE) );
+		String commandString = (String) rowVector.elementAt(6);
 		newElem.setCommand( commandString.length()>0?commandString:null );
 		elemList.add(newElem);
 		i++;
@@ -261,7 +276,9 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
 		ComboBoxModel comboBoxModel = copyComboBoxModel(screenModel);
 		comboBoxModel.setSelectedItem(newElem.getSize());
 		tempRow.add( comboBoxModel );
-		tempRow.add( newElem.getConsole() );
+		comboBoxModel = copyComboBoxModel(consoleModel);
+		comboBoxModel.setSelectedItem((newElem.getConsole()==true?CONSOLE_TRUE:CONSOLE_FALSE));
+		tempRow.add( comboBoxModel );
 		tempRow.add( newElem.getCommand()==null?"":newElem.getCommand() );
 		tempRow.add( newElem );
 		allRows.add( tempRow );
