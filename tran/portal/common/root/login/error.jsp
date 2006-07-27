@@ -45,8 +45,8 @@ String host=request.getHeader("host");
       <center>
 
         <font color="FF0000">Incorrect Login</font>
-	<br/>
-	<br/>
+    <br/>
+    <br/>
 
 
       <table border="0">
@@ -55,7 +55,7 @@ String host=request.getHeader("host");
           <td><i>&nbsp;<%=host %></i></td>
         </tr>
 
-        <form method="POST" action='<%= response.encodeURL("j_security_check") %>'>
+        <form method="POST" action='https://<%=host%><%=cp%>/j_security_check'>
         <tr><td align="right">Login:</td><td><input type="text" name="j_username"></td></tr>
         <tr><td align="right">Password:</td><td><input type="password" name="j_password"></td></tr>
       </table>
