@@ -18,6 +18,7 @@ import com.metavize.mvvm.addrbook.UserEntry;
 import com.metavize.gui.configuration.DirectoryCompoundSettings;
 import com.metavize.gui.configuration.DirectoryJDialog;
 
+import java.util.TreeMap;
 import java.util.List;
 import java.awt.Container;
 import java.awt.Frame;
@@ -68,8 +69,11 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 	uidJComboBox.removeAllItems();
 	uidJComboBox.addItem(PLEASE_SELECT_USER);
 	uidJComboBox.setSelectedItem(PLEASE_SELECT_USER);
+	TreeMap<UserEntryWrapper,Object> treeMap = new TreeMap<UserEntryWrapper,Object>();
 	for( UserEntry userEntry : userEntries )
-	    uidJComboBox.addItem( new UserEntryWrapper(userEntry) );
+	    treeMap.put(new UserEntryWrapper(userEntry), null);
+	for( UserEntryWrapper userEntryWrapper : treeMap.keySet() )		
+	    uidJComboBox.addItem( userEntryWrapper );
     }
     
         private void initComponents() {//GEN-BEGIN:initComponents
@@ -239,7 +243,7 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 	}
     }
 
-    class UserEntryWrapper {
+    class UserEntryWrapper implements Comparable<UserEntryWrapper>{
 	private UserEntry userEntry;
 	public UserEntryWrapper(UserEntry userEntry){
 	    this.userEntry = userEntry;
@@ -265,6 +269,17 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 		return false;
 	    UserEntry other = ((UserEntryWrapper) obj).getUserEntry();
 	    return getUserEntry().equals(other);
+	}
+	public int compareTo(UserEntryWrapper userEntryWrapper){
+	    switch(userEntry.getStoredIn().compareTo(userEntryWrapper.userEntry.getStoredIn())){
+	    case -1 :
+		return -1;
+	    case 1 :
+		return 1;
+	    default:
+	    case 0 :
+		return userEntry.getUID().compareTo(userEntryWrapper.userEntry.getUID());
+	    }
 	}
     }
 

@@ -22,7 +22,7 @@ import java.util.List;
 import javax.swing.CellEditor;
 import javax.swing.SwingUtilities;
 
-public class UidButtonRunnable implements ButtonRunnable {
+public class UidButtonRunnable implements ButtonRunnable, Comparable<UidButtonRunnable> {
 
     private String uid;
     private Window topLevelWindow;
@@ -44,6 +44,9 @@ public class UidButtonRunnable implements ButtonRunnable {
     public void setCellEditor(CellEditor cellEditor){ this.cellEditor = cellEditor; }
     public void setMTransformControlsJPanel(MTransformControlsJPanel mTransformControlsJPanel){ this.mTransformControlsJPanel = mTransformControlsJPanel; }
     public void actionPerformed(ActionEvent evt){ run(); }
+    public int compareTo(UidButtonRunnable uidButtonRunnable){
+	return uid.compareTo(uidButtonRunnable.uid);
+    }
     public void run(){
 	UidSelectJDialog uidSelectJDialog = UidSelectJDialog.factory(topLevelWindow);
 	uidSelectJDialog.setVisible(true);

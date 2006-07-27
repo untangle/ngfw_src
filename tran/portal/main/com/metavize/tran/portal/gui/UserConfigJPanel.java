@@ -123,7 +123,7 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
 		}
 		// all uid's are unique
 		if( uidHashtable.contains( uid ) )
-		    throw new Exception("The user/login ID in row: " + rowIndex + " has already been taken.");
+		    throw new Exception("The user/login ID in row: " + rowIndex + " already exists.");
 		else
 		    uidHashtable.put(uid,uid);
 	    }
