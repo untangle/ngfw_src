@@ -12,18 +12,23 @@ function NavigationBar(parent)
     var homeButtonId = Dwt.getNextId();
     var logoutButtonId = Dwt.getNextId();
     var maximizeButtonId = Dwt.getNextId();
+    var usernameId = Dwt.getNextId();
 
-  var html = [];
-  html.push("<table style='padding: 0px 0px 0px 0px' width='100%' height='96px' border=0>");
-  html.push("<tr>");
-  html.push("<td width='57px'><img src='/images/LogoNoText48x48.gif'></td>");
+    var html = [];
+    html.push("<table style='padding: 0px 0px 0px 0px' width='100%' height='96px' border=0>");
+    html.push("<tr>");
+    html.push("<td width='57px'><img src='/images/LogoNoText48x48.gif'></td>");
 
-  html.push("<td>");
-  html.push("<table width='100%' height='100%' border=0>");
-  html.push("<tr><td style='font: bold normal normal 23pt Arial,Sans-Serif; color: #777777;'>Metavize Secure Portal</td></tr>");
-  html.push("<tr><td style='font: bold normal normal 10pt Arial,Sans-Serif; color: #777777;'>logged in as inieves</td></tr>");
-  html.push("</table>");
-  html.push("</td>");
+    html.push("<td>");
+    html.push("<table width='100%' height='100%' border=0>");
+    html.push("<tr><td style='font: bold normal normal 23pt Arial,Sans-Serif; color: #777777;'>Metavize Secure Portal</td></tr>");
+    html.push("<tr><td style='font: bold normal normal 10pt Arial,Sans-Serif; color: #777777;'>");
+    html.push("<div id='");
+    html.push(usernameId);
+    html.push("'/>");
+    html.push("</td></tr>");
+    html.push("</table>");
+    html.push("</td>");
 
     html.push("<td style='padding: 0px 15px 0px 0px' width='50px' height='48px'>");
     html.push("<div id='");
@@ -52,6 +57,8 @@ function NavigationBar(parent)
     html.push("</table>");
 
     this.getHtmlElement().innerHTML = html.join("");
+
+    this._usernameDiv = document.getElementById(usernameId);
 
     this._home = new DwtButton(this,DwtLabel.ALIGN_CENTER,"DwtButton32");
     this._home.setImage("Home"); // XXX change to "Home"
@@ -92,4 +99,10 @@ NavigationBar.prototype.addLogoutButtonListener = function(l)
 NavigationBar.prototype.addMaximizeButtonListener = function(l)
 {
     this._maximize.addSelectionListener(l);
+};
+
+
+NavigationBar.prototype.setUsername = function(username)
+{
+    this._usernameDiv.innerHTML = "logged in as " + username;
 };
