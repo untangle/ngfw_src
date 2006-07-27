@@ -356,6 +356,7 @@ public class RemoteClient
         MackageDesc[] mkgs = tool.available();
         for (int i = 0; i < mkgs.length; i++) {
             System.out.println(pad(mkgs[i].getName())
+                               + "extraName: " + mkgs[i].getExtraName()
                                + "installed: " + mkgs[i].getInstalledVersion()
                                + "\tavailable: "
                                + mkgs[i].getAvailableVersion()
@@ -368,6 +369,7 @@ public class RemoteClient
         MackageDesc[] mkgs = tool.installed();
         for (int i = 0; i < mkgs.length; i++) {
             System.out.println(pad(mkgs[i].getName())
+                               + "extraName: " + mkgs[i].getExtraName()
                                + "installed: " + mkgs[i].getInstalledVersion()
                                + "\tavailable: "
                                + mkgs[i].getAvailableVersion());
@@ -379,6 +381,7 @@ public class RemoteClient
         MackageDesc[] mkgs = tool.uninstalled();
         for (int i = 0; i < mkgs.length; i++) {
             System.out.println(pad(mkgs[i].getName())
+                               + "extraName: " + mkgs[i].getExtraName()
                                + "installed: " + mkgs[i].getInstalledVersion()
                                + "\tavailable: " + mkgs[i].getAvailableVersion()
                                + "\ttype: " + mkgs[i].getType());
@@ -390,6 +393,7 @@ public class RemoteClient
         MackageDesc[] mkgs = tool.upgradable();
         for (int i = 0; i < mkgs.length; i++) {
             System.out.println(pad(mkgs[i].getName())
+                               + "extraName: " + mkgs[i].getExtraName()
                                + "installed: " + mkgs[i].getInstalledVersion()
                                + "\tavailable: " + mkgs[i].getAvailableVersion());
         }
@@ -400,6 +404,7 @@ public class RemoteClient
         MackageDesc[] mkgs = tool.upToDate();
         for (int i = 0; i < mkgs.length; i++) {
             System.out.println(pad(mkgs[i].getName())
+                               + "extraName: " + mkgs[i].getExtraName()
                                + "installed: " + mkgs[i].getInstalledVersion()
                                + "\tavailable: " + mkgs[i].getAvailableVersion());
         }
