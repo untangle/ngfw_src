@@ -311,7 +311,6 @@ class Blacklist
 
     private String mostSpecificCategory(String[] categories) {
 	String category = null;
-        logger.warn("Choosing from " + (categories == null ? null : categories.length) + " categories");
 	if (categories != null)
 	    for (int i = 0; i < categories.length; i++) {
 		if (category == null) {
