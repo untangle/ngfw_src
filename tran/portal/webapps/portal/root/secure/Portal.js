@@ -58,8 +58,9 @@ Portal.prototype.showApplicationUrl = function(url, application, bookmark)
     }
 
     this._mainPanel = new ApplicationIframe(this._shell);
-    this._mainPanel.loadUrl(url);
     this._mainPanel.reparentHtmlElement(this._mainPanelId);
+    this._mainPanel.loadUrl(url);
+    this._mainPanel.setVisible(true);
     this._mainPanel.zShow(true);
 
     this._navBar.enableMaximize(true);

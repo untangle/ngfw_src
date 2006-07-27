@@ -355,7 +355,7 @@ Browser.prototype._refreshButtonListener = function(ev)
 
 Browser.prototype._uploadButtonListener = function(ev)
 {
-    var dialog = new FileUploadDialog(this._shell, "put", this._cwd.getReqUrl());
+    var dialog = new FileUploadDialog(this._shell, "secure/put", this._cwd.getReqUrl());
 
     var obj = { dialog: dialog };
     var l = new AjxListener(this, this._popdownAndRefreshCbFn, obj);
