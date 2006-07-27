@@ -227,7 +227,6 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 		}
 	    }});
 	    if( saveException != null ){
-		saveException.printStackTrace();
 		ValidateFailureDialog.factory( (Window) MTransformControlsJPanel.this.contentJPanel.getTopLevelAncestor(),
 					       transformName, componentName, saveException.getMessage() );
 		throw new ValidationException();
