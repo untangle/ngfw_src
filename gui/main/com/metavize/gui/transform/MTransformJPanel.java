@@ -36,6 +36,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
     public TransformDesc getTransformDesc(){ return transformDesc; }
     protected MackageDesc mackageDesc;
     public MackageDesc getMackageDesc(){ return mackageDesc; }
+    public MackageDesc getNewMackageDesc() throws Exception{ return transformContext.getMackageDesc(); }
     protected Tid tid;
     public Tid getTid(){ return tid; }
     protected Policy policy;

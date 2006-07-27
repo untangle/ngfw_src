@@ -321,7 +321,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
             setOffView(doLater);
         else
             setProblemView(doLater);
-	String extraText = mTransformJPanel.getMackageDesc().getExtraName();
+	String extraText = mTransformJPanel.getNewMackageDesc().getExtraName();
 	if( (extraText!=null) && (extraText.length()>0) )
 	    messageJLabel.setText(extraText);
 	else
