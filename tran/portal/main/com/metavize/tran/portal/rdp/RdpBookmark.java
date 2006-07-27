@@ -98,7 +98,10 @@ public class RdpBookmark extends Bookmark
             else
                 values = new Hashtable();
         }
-        values.put(key, new String[] { val });
+        if (val == null || val == "")
+            values.remove(key);
+        else
+            values.put(key, new String[] { val });
         setTarget(FormUtil.unparseQueryString(values));
     }
 }
