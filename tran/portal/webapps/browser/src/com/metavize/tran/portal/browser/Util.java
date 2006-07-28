@@ -34,7 +34,7 @@ class Util
 
         url = "smb:" + url;
 
-        NtlmPasswordAuthentication auth = pl.getNtlmAuth(p);
+        NtlmPasswordAuthentication auth = (NtlmPasswordAuthentication) pl.getNtlmAuth(p);
 
         return new SmbFile(url, auth);
     }

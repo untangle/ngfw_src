@@ -35,7 +35,7 @@ public class CommandRunner extends HttpServlet
         throws ServletException
     {
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
-        NtlmPasswordAuthentication auth = pl.getNtlmAuth();
+        NtlmPasswordAuthentication auth = (NtlmPasswordAuthentication) pl.getNtlmAuth();
 
         String cmd = req.getParameter("command");
 

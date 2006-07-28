@@ -24,7 +24,7 @@
 <script type="text/javascript" src="/AjaxTk/I18nMsg.js"></script>
 <script type="text/javascript" src="/AjaxTk/AjxMsg.js"></script>
 
-<jsp:include page="Ajax.inc"/>
+<script type="text/javascript" src="/AjaxTk/BundledAjx.js"></script>
 
 <script type="text/javascript" src="<%=sp%>/AddBookmarkDialog.js"></script>
 <script type="text/javascript" src="<%=sp%>/AddBookmarkPanel.js"></script>
