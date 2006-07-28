@@ -26,15 +26,7 @@
 }
 
 .ApplicationIframe IFRAME {
-    background: url('/images/background/background_table_main_center.gif') repeat;
     border-style: none;
-    height: 100%;
-    width: 100%;
-}
-
-.ApplicationIframe {
-    height: 100%;
-    -width: 100%;
 }
 
 .PortalPanel {

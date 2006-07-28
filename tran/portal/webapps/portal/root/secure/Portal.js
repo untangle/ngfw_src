@@ -57,9 +57,13 @@ Portal.prototype.showApplicationUrl = function(url, application, bookmark)
         }
     }
 
-    this._mainPanel = new ApplicationIframe(this._shell);
+    var html = [];
+    html.push("<iframe src='");
+    html.push(url);
+    html.push("' height='100%' width='100%'/>");
+    this._mainPanel = new DwtComposite(this, "ApplicationIframe", DwtControl.RELATIVE_STYLE);
     this._mainPanel.reparentHtmlElement(this._mainPanelId);
-    this._mainPanel.loadUrl(url);
+    this._mainPanel.setContent(html.join(""));
     this._mainPanel.setVisible(true);
     this._mainPanel.zShow(true);
 
