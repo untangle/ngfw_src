@@ -19,7 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.metavize.mvvm.tran.IPaddr;
-import jcifs.smb.NtlmPasswordAuthentication;
+// Can't include this since we live on UI too
+// import jcifs.smb.NtlmPasswordAuthentication;
 import org.apache.log4j.Logger;
 
 /**
@@ -43,7 +44,7 @@ public class PortalLogin implements Principal, Serializable
 
     // With domain
     public PortalLogin(PortalUser user, InetAddress clientAddr,
-                       NtlmPasswordAuthentication ntlmAuth)
+                       Object ntlmAuth)
     {
         this.uid = user.getUid();
         PortalHomeSettings phs = user.getPortalHomeSettings();
@@ -140,18 +141,18 @@ public class PortalLogin implements Principal, Serializable
         return loginDate;
     }
 
-    public void addNtlmAuth(NtlmPasswordAuthentication auth)
+    public void addNtlmAuth(Object auth)
     {
         this.ntlmAuths.put(auth.toString(), auth);
     }
 
-    public NtlmPasswordAuthentication getNtlmAuth(String name)
+    public Object getNtlmAuth(String name)
     {
-        return (NtlmPasswordAuthentication)ntlmAuths.get(name);
+        return ntlmAuths.get(name);
     }
 
-    public NtlmPasswordAuthentication getNtlmAuth()
+    public Object getNtlmAuth()
     {
-        return (NtlmPasswordAuthentication)ntlmAuths.get(null);
+        return ntlmAuths.get(null);
     }
 }

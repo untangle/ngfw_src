@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.naming.ServiceUnavailableException;
+import javax.servlet.http.HttpSession;
 
 import com.metavize.mvvm.addrbook.AddressBook;
 import com.metavize.mvvm.addrbook.AddressBookConfiguration;
@@ -413,16 +414,12 @@ class PortalManagerImpl implements LocalPortalManager
         portalLogger.log(evt);
     }
 
-    private boolean isSessionLive(PortalLogin pl)
-    {
-        PortalLoginDesc pld = activeLogins.get(pl.getName());
-        return null == pld ? false : pld.isLive();
-    }
-
     // private classes --------------------------------------------------------
 
     private static class PortalLoginDesc
     {
+        private final Logger logger = Logger.getLogger(PortalLoginDesc.class);
+
         private volatile PortalLogin portalLogin;
 
         private volatile long idleTimeout;
@@ -450,14 +447,15 @@ class PortalManagerImpl implements LocalPortalManager
             this.idleTimeout = idleTimeout;
         }
 
+        void activity()
+        {
+            lastActivity = System.currentTimeMillis();
+        }
+
         boolean isLive()
         {
             long ct = System.currentTimeMillis();
-            boolean live = ct - lastActivity > idleTimeout;
-            if (live) {
-                lastActivity = ct;
-            }
-            return live;
+            return (ct - lastActivity < idleTimeout);
         }
     }
 
@@ -490,23 +488,29 @@ class PortalManagerImpl implements LocalPortalManager
             if (null != p) {
                 log.debug("Principal: " + p);
                 PortalLoginDesc pld = activeLogins.get(p.getName());
-                boolean isLive = null == pld ? false : pld.isLive();
-                if (isLive) {
+                if (pld != null) {
+                    // Here's where we update our idle time.
+                    pld.activity();
                     return true;
                 } else {
-                    // XXX clear User Principal ???
-                    localAddr.set(request.getRemoteAddr());
-                    return super.authenticate(request, response, config);
+                    HttpSession s = request.getSession(false);
+                    if (s != null) {
+                        // Need to do this so SingleSignOn isn't fooled
+                        s.setMaxInactiveInterval(-1);
+                        s.invalidate();
+                    }
+                    return false;
                 }
             } else {
                 log.debug("No principal, calling super");
-                org.apache.catalina.Session session = request.getSessionInternal(false);
-                if (session != null) {
-                    p = session.getPrincipal();
-                }
-                localAddr.set(request.getRemoteAddr());
-                return super.authenticate(request, response, config);
             }
+
+            // org.apache.catalina.Session session = request.getSessionInternal(false);
+            // if (session != null) {
+            //     p = session.getPrincipal();
+            // }
+            localAddr.set(request.getRemoteAddr());
+            return super.authenticate(request, response, config);
         }
     }
 
