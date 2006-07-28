@@ -210,7 +210,7 @@
 }
 
 .DwtTreeItem-selected {
-    background-color: #ADD6D6;
+    background-color: #C1C1E2;
 }
 
 .DwtTreeItem-actioned {
@@ -415,7 +415,7 @@
 }
 
 .DwtSelectMenu .DwtMenuItem-selected {
-    background-color: #ADD6D6;
+    background-color: #C1C1E2;
     color:black;
     cursor: default;
 }
@@ -744,8 +744,8 @@
 }
 
 .DwtCalendarDay-selected {
-    border:1px solid #ADD6D6;
-    background-color: #ADD6D6;
+    border:1px solid #C1C1E2;
+    background-color: #C1C1E2;
 }
 
 .DwtCalendarDay-activated {
