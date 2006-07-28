@@ -898,18 +898,14 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 	    for(Policy policy : policyRackMap.keySet()){
 		for(MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values()){
 		    mTransformJPanel.doRefreshState();
-		    System.err.println("Refreshed state: " + mTransformJPanel.getMackageDesc().getDisplayName());
 		}
 	    }
 	    for(MTransformJPanel mTransformJPanel : utilRackMap.values()){
 		mTransformJPanel.doRefreshState();
-		System.err.println("Refreshed state: " + mTransformJPanel.getMackageDesc().getDisplayName());
 	    }
 	    for(MTransformJPanel mTransformJPanel : coreRackMap.values()){
 		mTransformJPanel.doRefreshState();
-		System.err.println("Refreshed state: " + mTransformJPanel.getMackageDesc().getDisplayName());
 	    }
-	    System.err.println("--");
             // SHOW THE USER WHATS GOING ON
             SwingUtilities.invokeLater( new Runnable(){ public void run(){
                 // CLEAR OUT THE STORE
