@@ -100,7 +100,7 @@ class KickUserTableModel extends MSortedTableModel<Object>{
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( newElem.getUser() );
-            tempRow.add( newElem.getGroup() );
+            tempRow.add( (newElem.getGroup()==null?"no group":newElem.getGroup()) );
 	    tempRow.add( new KickButtonRunnable(newElem, "true") );
             tempRow.add( new IPaddrString(newElem.getClientAddr()) );
             tempRow.add( newElem.getLoginDate() );

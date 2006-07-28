@@ -57,7 +57,10 @@ public class KickButtonRunnable implements ButtonRunnable {
 	    setName("MV-CLIENT: KickUserThread");
 	    start();
 	    mProgressJDialog = MProgressJDialog.factory("Logging out...",
-							"The user: " + portalLogin.getUser() + " from group: " + portalLogin.getGroup() + " is being logged out.",
+							"The user: " + portalLogin.getUser()
+							+ " from group: "
+							+ (portalLogin.getGroup()==null?"(no group)":portalLogin.getGroup())
+							+ " is being logged out.",
 							topLevelWindow);
 	    mProgressJDialog.getJProgressBar().setIndeterminate(true);
 	    mProgressJDialog.getJProgressBar().setString("Logging out...");
