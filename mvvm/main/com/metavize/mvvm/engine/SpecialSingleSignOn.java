@@ -42,6 +42,7 @@ class SpecialSingleSignOn extends SingleSignOn
         for ( String contextPath : contextPathArray ) contextSet.add( contextPath );
         
         this.mvvmContextSet =  Collections.unmodifiableSet( contextSet );
+        setRequireReauthentication(true);
     }
 
     /**

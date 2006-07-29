@@ -493,12 +493,8 @@ class PortalManagerImpl implements LocalPortalManager
                     pld.activity();
                     return true;
                 } else {
-                    HttpSession s = request.getSession(false);
-                    if (s != null) {
-                        // Need to do this so SingleSignOn isn't fooled
-                        s.setMaxInactiveInterval(-1);
-                        s.invalidate();
-                    }
+                    // Since requireReauthenticatoin is on, we will always get
+                    // control, so we can just return false.
                     return false;
                 }
             } else {
