@@ -274,7 +274,7 @@ class TomcatManager
             baseHost.setAutoDeploy(true);
             OurSingleSignOn ourSsoWorkaroundValve = new OurSingleSignOn();
             /* XXXXX Hackstered to get single sign on to ignore certain contexts */
-            SingleSignOn ssoValve = new SpecialSingleSignOn( "/session-dumper", "/webstart", "", "/reports",
+            SingleSignOn ssoValve = new SpecialSingleSignOn( mvvmContext, "/session-dumper", "/webstart", "", "/reports",
                                                              "/onlinestore" );
             // ssoValve.setRequireReauthentication(true);
             baseHost.getPipeline().addValve(ourSsoWorkaroundValve);

@@ -22,10 +22,13 @@ import java.util.Set;
 import javax.servlet.ServletException;
 
 import org.apache.catalina.Valve;
+import org.apache.catalina.authenticator.Constants;
 import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 
+import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.portal.PortalLogin;
 import com.metavize.mvvm.security.MvvmPrincipal;
 
 
@@ -35,14 +38,17 @@ class SpecialSingleSignOn extends SingleSignOn
     /* Dirty hack designed to ignore sessions that are in this context path */
     private final Set<String> mvvmContextSet;
 
-    SpecialSingleSignOn( String ... contextPathArray )
+    private PortalManagerImpl pmgr;
+
+    SpecialSingleSignOn(MvvmLocalContext mvvmContext, String ... contextPathArray )
     {
         Set<String> contextSet = new HashSet<String>();
         
         for ( String contextPath : contextPathArray ) contextSet.add( contextPath );
         
         this.mvvmContextSet =  Collections.unmodifiableSet( contextSet );
-        setRequireReauthentication(true);
+
+        pmgr = (PortalManagerImpl) mvvmContext.portalManager();
     }
 
     /**
@@ -73,6 +79,22 @@ class SpecialSingleSignOn extends SingleSignOn
             }
         }
         super.invoke( request, response );
+
+        Principal principal = request.getUserPrincipal();
+        if (principal != null && principal instanceof PortalLogin) {
+            if (containerLog.isDebugEnabled())
+                containerLog.debug( "Checking liveness for " + principal.getName());
+            boolean live = pmgr.isLive(principal);
+            if (!live) {
+                request.setAuthType(null);
+                request.setUserPrincipal(null);
+                String ssoId = (String) request.getNote(Constants.REQ_SSOID_NOTE);
+                if (containerLog.isDebugEnabled())
+                    containerLog.debug( "Not live, clearing sso " + ssoId);
+                if (ssoId != null)
+                    deregister(ssoId);
+            }
+        }
     }
 
     @Override

@@ -292,6 +292,14 @@ class PortalManagerImpl implements LocalPortalManager
         return new PortalAuthenticator();
     }
 
+    boolean isLive(Principal p)
+    {
+        PortalLoginDesc pld = activeLogins.get(p.getName());
+        if (pld == null)
+            return false;
+        return pld.isLive();
+    }
+
     Realm getPortalRealm()
     {
         return portalRealm;
@@ -486,16 +494,16 @@ class PortalManagerImpl implements LocalPortalManager
             Principal p = request.getUserPrincipal();
 
             if (null != p) {
-                log.debug("Principal: " + p);
+                if (log.isDebugEnabled())
+                    log.debug("Principal: " + p);
                 PortalLoginDesc pld = activeLogins.get(p.getName());
                 if (pld != null) {
                     // Here's where we update our idle time.
                     pld.activity();
-                    return true;
                 } else {
-                    // Since requireReauthenticatoin is on, we will always get
-                    // control, so we can just return false.
-                    return false;
+                    // Happens once when timeout occurs
+                    if (log.isDebugEnabled())
+                        log.debug("No active login for " + p);
                 }
             } else {
                 log.debug("No principal, calling super");
