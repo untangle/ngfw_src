@@ -373,7 +373,7 @@ public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savab
                 restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
 
                 explorerJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                explorerJLabel.setText("Run File Explorer: ");
+                explorerJLabel.setText("Show File Explorer: ");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -381,7 +381,7 @@ public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savab
                 restrictIPJPanel.add(explorerJLabel, gridBagConstraints);
 
                 userBookmarksJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                userBookmarksJLabel.setText("Run User Bookmarks: ");
+                userBookmarksJLabel.setText("Show Bookmarks: ");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
@@ -389,7 +389,7 @@ public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savab
                 restrictIPJPanel.add(userBookmarksJLabel, gridBagConstraints);
 
                 addUserBookmarksJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                addUserBookmarksJLabel.setText("Add User Bookmarks: ");
+                addUserBookmarksJLabel.setText("Allow User Added Bookmarks: ");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 2;
