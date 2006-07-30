@@ -407,6 +407,11 @@ class PortalManagerImpl implements LocalPortalManager
         return pl;
     }
 
+    private void timeoutLogout(PortalLogin login)
+    {
+        doLogout(login, LogoutReason.TIMEOUT);
+    }
+
     private void doLogout(PortalLogin login, LogoutReason reason)
     {
         if (LogoutReason.ADMINISTRATOR == reason) {
@@ -578,8 +583,9 @@ class PortalManagerImpl implements LocalPortalManager
             while (currentThread == thread) {
                 for (PortalLoginDesc pld : activeLogins.values()) {
                     if (!pld.isLive()) {
-                        logger.info("Reaping login of " + pld.getPortalLogin());
-                        activeLogins.remove(pld.getUser());
+                        PortalLogin login = pld.getPortalLogin();
+                        logger.info("Reaping login of " + login);
+                        timeoutLogout(login);
                     }
                 }
 
