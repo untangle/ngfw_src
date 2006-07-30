@@ -7,6 +7,28 @@
  * not disclose such Confidential Information.
  *
  * $Id$
+
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
+60 2006-07-24 22:13:57Z inieves $
  */
 
 package com.metavize.tran.portal;
@@ -151,7 +173,7 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
             logger.error("Unable to deploy Portal web app");
         }
 
-        asm.setRootWelcome("./portal/");
+        asm.setRootWelcome("/portal/");
     }
 
     private void deregisterApps() {
