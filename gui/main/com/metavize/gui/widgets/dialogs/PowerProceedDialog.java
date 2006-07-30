@@ -22,12 +22,12 @@ final public class PowerProceedDialog extends MTwoButtonJDialog {
         if(powerOn){
             cancelJButton.setIcon(Util.getButtonCancelPowerOn());
             proceedJButton.setIcon(Util.getButtonContinuePowerOn());
-            messageJLabel.setText("<html><center>" + applianceName + " is about to be powered on.<br>This may halt your network, if not configurate properly.<br><b>Would you like to proceed?<b></center></html>");
+            messageJLabel.setText("<html><center>" + applianceName + " is about to be powered on.<br>This may halt your network if not configured properly.<br><b>Would you like to proceed?<b></center></html>");
         }
         else{
             cancelJButton.setIcon(Util.getButtonCancelPowerOff());
             proceedJButton.setIcon(Util.getButtonContinuePowerOff());
-            messageJLabel.setText("<html><center>" + applianceName + " is about to be powered off.<br>This may halt your network, making EdgeGuard act as a Transparent Bridge.<br><b>Would you like to proceed?<b></center></html>");
+            messageJLabel.setText("<html><center>" + applianceName + " is about to be powered off.<br>This may halt your network. EdgeGuard will act as a Transparent Bridge.<br><b>Would you like to proceed?<b></center></html>");
         }
         
         this.setVisible(true);
