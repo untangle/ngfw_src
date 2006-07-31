@@ -18,8 +18,10 @@
 
 .DetailPanel {
     background-image: url('/images/Background1600x100.jpg');
+    overflow: auto;
 }
 
 .DirTree {
     background-image: url('/images/Background1600x100.jpg');
+    overflow: auto;
 }

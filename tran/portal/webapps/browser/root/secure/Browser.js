@@ -20,7 +20,7 @@ function Browser(shell, url)
 
     this._shell.addControlListener(new AjxListener(this, this._shellListener));
 
-    DwtComposite.call(this, this._shell, "Browser", DwtComposite.ABSOLUTE_STYLE);
+    DwtComposite.call(this, this._shell, "Browser", DwtComposite.RELATIVE_STYLE);
 
     this._authCallback = new AjxCallback(this, this._authResource, { });
     this._refreshCallback = new AjxCallback(this, this.refresh, { });
@@ -148,15 +148,15 @@ Browser.prototype.layout = function(ignoreSash)
     size = this._addressBar.getSize();
     y += size.y;
 
-    this._dirTree.setBounds(x, y, this._sashPos, height);
+    this._dirTree.setBounds(x, y, this._sashPos, height - y);
     x += this._dirTree.getSize().x;
 
     if (!ignoreSash) {
-        this._sash.setBounds(x, y, 2, height);
+        this._sash.setBounds(x, y, 2, height - y);
     }
     x += this._sash.getSize().x;
 
-    this._detailPanel.setBounds(x, y, width - x, height);
+    this._detailPanel.setBounds(x, y, width - x, height - y);
     x += this._detailPanel.getSize().x;
 };
 
