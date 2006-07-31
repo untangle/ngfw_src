@@ -376,9 +376,29 @@ Browser.prototype._deleteButtonListener = function(ev)
         reqStr += "&file=" + sel[i].getReqUrl();
     }
 
-    MvRpc.invoke(reqStr, "secure/exec", Browser._POST_HEADERS, false,
-                 this._refreshCallback, MvRpc.reloadPageCallback,
-                 this._authCallback);
+    var numFilesMsg;
+    if (1 == sel.length) {
+        numFilesMsg = sel[0].label;
+    } else {
+        numFilesMsg = sel.length + " files";
+    }
+
+    var dialog = new DwtMessageDialog(DwtShell.getShell(window), null,
+                                      [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+    dialog.setMessage("Are you sure you want to delete " + numFilesMsg + "?");
+
+    var fn = function() {
+        dialog.popdown();
+
+        MvRpc.invoke(reqStr, "secure/exec", Browser._POST_HEADERS, false,
+                     this._refreshCallback, MvRpc.reloadPageCallback,
+                     this._authCallback);
+    }
+
+    var cb = new AjxListener(this, fn, {});
+    dialog.setButtonListener(DwtDialog.OK_BUTTON, cb)
+
+    dialog.popup();
 };
 
 Browser.prototype._renameButtonListener = function(ev)
