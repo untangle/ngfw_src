@@ -9,7 +9,7 @@ function RenameDialog(parent, cifsNode)
 
   var className = null; // XXX
 
-  DwtDialog.call(this, parent, className, "Rename Document");
+  DwtDialog.call(this, parent, className, "Rename File");
 
   this._panel = new RenamePanel(this, cifsNode);
   this.addListener(DwtEvent.ONFOCUS, new AjxListener(this, this._focusListener));

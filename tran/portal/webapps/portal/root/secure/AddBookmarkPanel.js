@@ -84,6 +84,7 @@ AddBookmarkPanel.prototype._showFields = function()
   } else {
     this._showDefaultFields();
   }
+  this._nameField.focus();
 };
 
 AddBookmarkPanel.prototype._showDefaultFields = function()
@@ -111,11 +112,16 @@ AddBookmarkPanel.prototype._showDefaultFields = function()
   html.push("</table>");
   this.valuePanel.getHtmlElement().innerHTML = html.join("");
 
+  this._fields = new Array();
+
   this._nameField = new DwtInputField({ parent: this });
   this._nameField.reparentHtmlElement(nameFieldId);
+  this._fields.push(this._nameField);
 
   this._targetField = new DwtInputField({ parent: this });
   this._targetField.reparentHtmlElement(targetFieldId);
+  this._fields.push(this._targetField);
+
 };
 
 AddBookmarkPanel.prototype._showPropFields = function(props)
@@ -155,15 +161,21 @@ AddBookmarkPanel.prototype._showPropFields = function(props)
     html.push("</tr>");
   }
 
+
   html.push("</table>");
   this.valuePanel.getHtmlElement().innerHTML = html.join("");
 
   this._nameField = new DwtInputField({ parent: this });
   this._nameField.reparentHtmlElement(nameFieldId);
 
+  this._fields = new Array();
   for (var label in fields) {
     var field = fields[label];
     field.reparentHtmlElement(label);
+    this._fields.push(field);
   }
+  this.focus();
+  this._nameField.focus();
+
 };
 

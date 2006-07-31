@@ -9,7 +9,7 @@ function MkdirDialog(parent, cifsNode)
 
   var className = null; // XXX
 
-  DwtDialog.call(this, parent, className, "Make Folder");
+  DwtDialog.call(this, parent, className, "New Folder");
 
   this._panel = new MkdirPanel(this, cifsNode);
   this.addListener(DwtEvent.ONFOCUS, new AjxListener(this, this._focusListener));

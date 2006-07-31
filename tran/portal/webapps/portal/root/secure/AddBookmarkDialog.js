@@ -16,6 +16,7 @@ function AddBookmarkDialog(parent, apps)
 
   this.setView(this._panel);
   this.setTabOrder(this._panel._fields);
+  this._panel._fields[0].focus();
 }
 
 AddBookmarkDialog.prototype = new DwtDialog();
