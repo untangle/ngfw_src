@@ -346,8 +346,8 @@ Portal.prototype._refreshPageInfoCallback = function(obj, results)
 
     var bmp = pp.bookmarkPanel;
 
-    var showAddBookmarks = "true" == root.getAttribute("showAddBookmarks");
-    bmp.enableAddBookmarks(showBookmarks);
+    var showAddBookmark = "true" == root.getAttribute("showAddBookmark");
+    bmp.enableAddBookmark(showAddBookmark);
 
     var bookmarkTitle = root.getAttribute("bookmarkTitle");
     bmp.setTitle(bookmarkTitle);

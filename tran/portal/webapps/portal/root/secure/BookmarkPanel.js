@@ -32,9 +32,10 @@ BookmarkPanel.prototype.setTitle = function(title)
     this._titleDiv.innerHTML = title || BookmarkPanel.DEFAULT_TITLE;
 };
 
-BookmarkPanel.prototype.enableAddBookmarks = function(enabled)
+BookmarkPanel.prototype.enableAddBookmark = function(enabled)
 {
     this.addBookmarkButton.setEnabled(enabled);
+    this.deleteBookmarkButton.setEnabled(enabled);
 };
 
 BookmarkPanel.prototype.refresh = function()

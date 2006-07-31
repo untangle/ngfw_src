@@ -77,7 +77,7 @@ public class PortalServlet extends HttpServlet
                 String bookmarkTitle = phs.getBookmarkTableTitle();
                 boolean showApps = phs.isShowExploder();
                 boolean showBookmarks = phs.isShowBookmarks();
-                boolean showAddBookmarks = phs.isShowAddBookmark();
+                boolean showAddBookmark = phs.isShowAddBookmark();
                 writer.print("<page-info title='");
                 writer.print(XmlUtil.escapeXml(title));
                 writer.print("' username='");
@@ -91,7 +91,7 @@ public class PortalServlet extends HttpServlet
                 writer.print("' showBookmarks='");
                 writer.print(showBookmarks);
                 writer.print("' showAddBookmark='");
-                writer.print(showAddBookmarks);
+                writer.print(showAddBookmark);
                 writer.println("'/>");
             } else {
                 logger.warn("bad command: " + command);
