@@ -252,7 +252,7 @@ public class Util {
 
 
     // CD //////////////////////
-    private static boolean IS_CD = true;
+    private static boolean IS_CD = false;
     public static boolean getIsCD(){ return IS_CD; }
     //////////////////////////////
 
