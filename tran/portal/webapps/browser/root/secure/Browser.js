@@ -405,6 +405,7 @@ Browser.prototype._renameDialogListenerFn = function(obj, evt)
     var dest = obj.dialog.getDest();
 
     if (dest) {
+        var sel = this._detailPanel.getSelection();
         var reqStr = "command=rename&src=" + sel[0].getReqUrl() + "&dest=" + dest;
 
         var obj = { dialog: obj.dialog };

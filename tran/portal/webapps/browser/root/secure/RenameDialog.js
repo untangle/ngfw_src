@@ -72,6 +72,7 @@ function RenamePanel(parent, cifsNode)
   this.getHtmlElement().innerHTML = html.join("");
 
   this._field = new DwtInputField({ parent: this });
+  this._field.setValue(cifsNode.label);
   this._field.reparentHtmlElement(fieldId);
 };
 
