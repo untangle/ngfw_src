@@ -283,7 +283,7 @@ Browser.prototype._dirSelectionListener = function(evt)
     switch (evt.detail) {
     case DwtTree.ITEM_SELECTED:
     var n = evt.item.getData(Browser.CIFS_NODE);
-    this.chdir(n);
+    this.chdir(n, false);
     break;
 
     case DwtTree.ITEM_DESELECTED:
