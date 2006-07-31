@@ -51,7 +51,38 @@ DirTree.prototype.chdir = function(cifsNode)
    }
    this.cwd = cifsNode;
 
-   this._expandNode(cifsNode.url, this);
+   var url = cifsNode.url;
+
+   var match = false;
+   var children = this.getItems();
+   for (var i = 0; i < children.length; i++) {
+       var child = children[i];
+       var n = child.getData(Browser.CIFS_NODE);
+       var nUrl = n.url;
+       var matches = true;
+
+       if (nUrl.length > url.length) {
+           matches = false;
+       } else {
+           for (var j = 0; j < nUrl.length; j++) {
+               if (nUrl.charAt(j) != url.charAt(j)) {
+                   matches = false;
+                   break;
+               }
+           }
+       }
+
+       if (matches) {
+           match = true;
+           break;
+       }
+   }
+
+   if (match) {
+       this._expandNode(cifsNode.url, this);
+   } else {
+       this.addRoot(cifsNode);
+   }
 }
 
 DirTree.prototype.refresh = function(url)
@@ -95,7 +126,6 @@ DirTree.prototype._expandNode = function(url, node)
    for (var i = 0; i < children.length; i++) {
       var child = children[i];
       var cifsNode = child.getData(Browser.CIFS_NODE);
-
       var childUrl = cifsNode.url;
       var matches = true;
 
