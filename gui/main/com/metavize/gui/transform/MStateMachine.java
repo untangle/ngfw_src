@@ -319,6 +319,8 @@ public class MStateMachine implements java.awt.event.ActionListener {
             setOnView(doLater);
         else if( TransformState.INITIALIZED.equals( transformState ) )
             setOffView(doLater);
+        else if( TransformState.DISABLED.equals( transformState ) )
+            setOffView(doLater);
         else
             setProblemView(doLater);
 	String extraText = mTransformJPanel.getNewMackageDesc().getExtraName();

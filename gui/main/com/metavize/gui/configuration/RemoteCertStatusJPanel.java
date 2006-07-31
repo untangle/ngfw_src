@@ -30,27 +30,42 @@ public class RemoteCertStatusJPanel extends javax.swing.JPanel
 	CertInfo certInfo = remoteCompoundSettings.getCurrentCertInfo();
         
 	// SELF SIGNED /////
-	boolean isSelfSigned = certInfo.appearsSelfSigned();
-	if( isSelfSigned )
-	    statusJLabel.setText("Self-Signed");
-	else
-	    statusJLabel.setText("Signed / Trusted");
+	try{
+	    boolean isSelfSigned = certInfo.appearsSelfSigned();
+	    if( isSelfSigned )
+		statusJLabel.setText("Self-Signed");
+	    else
+		statusJLabel.setText("Signed / Trusted");
+	}
+	catch(Exception e){ statusJLabel.setText(""); }
 
 	// START DATE //
-	String startDate = certInfo.notBefore.toString();
-	validStartJLabel.setText(startDate);
+	try{
+	    String startDate = certInfo.notBefore.toString();
+	    validStartJLabel.setText(startDate);
+	}
+	catch(Exception e){ validStartJLabel.setText(""); }
 
 	// END DATE //
-	String endDate = certInfo.notAfter.toString();
-	validEndJLabel.setText(endDate);
+	try{
+	    String endDate = certInfo.notAfter.toString();
+	    validEndJLabel.setText(endDate);
+	}
+	catch(Exception e){ validEndJLabel.setText(""); }
 	
 	// SUBJECT DN ///
-	String subjectDN = certInfo.subjectDN.toString();
-	subjectDNJLabel.setText(subjectDN);
+	try{
+	    String subjectDN = certInfo.subjectDN.toString();
+	    subjectDNJLabel.setText(subjectDN);
+	}
+	catch(Exception e){ subjectDNJLabel.setText(""); }
 
 	// ISSUER DN ///
-	String issuerDN = certInfo.issuerDN.toString();
-	issuerDNJLabel.setText(issuerDN);
+	try{
+	    String issuerDN = certInfo.issuerDN.toString();
+	    issuerDNJLabel.setText(issuerDN);
+	}
+	catch(Exception e){ issuerDNJLabel.setText(""); }
 	
     }
 
