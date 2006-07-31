@@ -42,11 +42,15 @@ public class WhitelistUserJDialog extends MConfigJDialog {
 	super(topLevelDialog);
 	compoundSettings = mailTransformCompoundSettings;
         this.account = account;
+	INSTANCE = this;
     }
 
     protected Dimension getMinSize(){
 	return new Dimension(640, 550);
     }
+    
+    private static WhitelistUserJDialog INSTANCE;
+    public static WhitelistUserJDialog instance(){ return INSTANCE; }
     
     protected void generateGui(){
         this.setTitle(NAME_WHITELIST_USER + account);

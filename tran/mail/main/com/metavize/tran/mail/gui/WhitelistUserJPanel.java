@@ -13,6 +13,8 @@ package com.metavize.tran.mail.gui;
 
 import com.metavize.gui.widgets.coloredTable.*;
 import com.metavize.gui.widgets.dialogs.RefreshLogFailureDialog;
+import com.metavize.gui.widgets.dialogs.MConfigJDialog;
+import com.metavize.gui.widgets.dialogs.MOneButtonJDialog;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 
@@ -169,15 +171,40 @@ public class WhitelistUserJPanel extends javax.swing.JPanel
         for( int i=0; i<selectedModelRows.length; i++){
             emails[i] = (String) dataVector.elementAt(selectedModelRows[i]).elementAt(2);
         }
-        try{
-            for( String email : emails )
-		mailTransformCompoundSettings.getSafelistAdminView().removeFromSafelist(account, email);
-        }
-        catch(Exception e){Util.handleExceptionNoRestart("Error removing from whitelist: " + account, e);}
-        
-        // refresh
-        whitelistUserTableModel.doRefresh(mailTransformCompoundSettings);
+	new RemoveThread(account, emails);
     }//GEN-LAST:event_removeJButtonActionPerformed
+
+    private class RemoveThread extends Thread {
+	private String[] emails;
+	private String account;
+	public RemoveThread(String account, String[] emails){
+	    this.account = account;
+	    this.emails = emails;
+	    setDaemon(true);
+	    MConfigJDialog.getInfiniteProgressJComponent().start("Removing...");
+	    start();
+	}
+	public void run(){
+	    // DO RESCUE
+            try{
+		for( String email : emails )
+		    mailTransformCompoundSettings.getSafelistAdminView().removeFromSafelist(account, email);
+		WhitelistUserJDialog.instance().refreshAll();
+            }
+            catch(Exception e){
+		Util.handleExceptionNoRestart("Error removing address", e);
+		MOneButtonJDialog.factory(WhitelistUserJPanel.this.getTopLevelAncestor(), "",
+					  "An address could not be removed.",
+					  "Safelist Remove Address Warning","");
+	    }
+	    // DO REFRESH
+	    MConfigJDialog.getInfiniteProgressJComponent().setTextLater("Refreshing...");
+	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		whitelistUserTableModel.doRefresh(mailTransformCompoundSettings);
+	    }});
+	    MConfigJDialog.getInfiniteProgressJComponent().stopLater(1500l);
+        }
+    }
     
     private int[] getSelectedModelRows(){
         int[] selectedViewRows = entryJTable.getSelectedRows();
