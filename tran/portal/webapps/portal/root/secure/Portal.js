@@ -46,7 +46,7 @@ Portal.prototype.constructor = Portal;
 
 Portal.prototype.showApplicationUrl = function(url, application, bookmark)
 {
-    shell.getToolTip().popdown();
+    this._shell.getToolTip().popdown();
 
     this._currentTarget = url;
 
