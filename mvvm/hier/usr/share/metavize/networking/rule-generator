@@ -333,6 +333,7 @@ function rawRules() {
 
 function antisubscribeRules() {
     local t_mark
+    local t_mask
     local pingList=${MVVM_PING_LIST}
     local t_httpsPorts
 
@@ -419,9 +420,16 @@ function antisubscribeRules() {
         -j MARK --set-mark ${MARK_ANTISUB}
 
     ## Antisubscribe to port 137 on the inside, this is for samba broadcasts
+    t_mark=$(( ${MARK_LOCAL} | ${MARK_INSIDE_INTF} ))
+    t_mask=$(( ${t_mark} | ${MARK_ANTISUB} ))
     ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p udp --source-port 137 \
-        -m mark --mark ${MARK_INSIDE_INTF}/$(( ${MARK_ANTISUB} | ${MARK_INSIDE_INTF} ))  \
-        -j MARK --set-mark ${MARK_ANTISUB}
+        -m mark --mark ${t_mark}/${t_mask} -j MARK --set-mark ${MARK_ANTISUB}
+
+    ## Antisubscribe to NIS if necessary.
+    if [ "x" != "x@PREFIX@" ] ; then
+        ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m mark -p udp \
+            --source-port 111 --mark 0x1000/0x1001000 -j MARK --set-mark ${MARK_ANTISUB}
+    fi
 }
 
 function antisubscribeLocal() {
