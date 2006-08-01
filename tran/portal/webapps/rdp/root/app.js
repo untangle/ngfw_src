@@ -22,17 +22,17 @@
 
     tooltipFunction: function(bookmark) {
         var obj = bookmark.splitTarget();
-        var tip = "host: " + obj.host;
+        var tip = "<html><b>Application: </b>Remote Desktop<br><b>host:</b> " + obj.host;
         if (obj.size) {
-            tip += " size: " + obj.size;
+            tip += "<br><b>size:</b> " + obj.size;
         }
         if (obj.command) {
-            tip += " command: " + obj.command;
+            tip += "<br><b>command:</b> " + obj.command;
         }
         if (obj.console) {
-            tip += " console: " + obj.console;
+            tip += "<br><b>console:</b> " + obj.console;
         }
-
+	tip += "</html>";
         return tip;
     },
 

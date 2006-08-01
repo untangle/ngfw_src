@@ -155,10 +155,11 @@ BookmarkList.prototype._mouseOverAction = function(ev, div)
         var app = portal.getApplication(item.app);
         var tooltipFn = null == app ? null : app.getTooltipFunction();
         if (tooltipFn) {
-            this.setToolTipContent(tooltipFn(item));
+		tooltip = tooltipFn(item);
         } else {
-            this.setToolTipContent(item.target);
+		tooltip = "<html><b>Application:</b> " + app.description + "<br><b>Target: </b>" + item.target + "</html>";
         }
+        this.setToolTipContent(tooltip);
     }
 };
 
