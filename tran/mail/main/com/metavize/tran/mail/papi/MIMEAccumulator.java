@@ -10,7 +10,7 @@
  */
 
 package com.metavize.tran.mail.papi;
-import com.metavize.mvvm.tapi.Pipeline;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.FileOutputStream;
@@ -18,9 +18,11 @@ import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import org.apache.log4j.Logger;
+
+import com.metavize.mvvm.tapi.event.TCPStreamer;
+import com.metavize.mvvm.tapi.Pipeline;
 import com.metavize.tran.mime.*;
 import static com.metavize.tran.util.Ascii.CRLF_BA;
-import com.metavize.mvvm.tapi.event.TCPStreamer;
 
 /**
  * Class used to accumulate MIME bytes.  Usage is tricky
@@ -307,8 +309,7 @@ public class MIMEAccumulator {
     }
     return true;
   }  
-  
-  
+
   /**
    * Returns true if the headers were parsed correctly.
    * As a side effect, the CPMIMEAccumulator is "completed"
@@ -321,7 +322,6 @@ public class MIMEAccumulator {
    * and the headers are blank.  The MIMEAccumulator
    * is not cleaned-up, but there should be no temp
    * streams open.
-   *
    *
    * @return null if there was an error
    */
@@ -346,19 +346,24 @@ public class MIMEAccumulator {
       return m_headers;
     }
     catch(com.metavize.tran.mime.HeaderParseException hpe) {
-      m_logger.warn("Error parsing MIMEHeaders", hpe);
+      m_logger.warn("Error parsing headers of MIME subsection", hpe);
+      try {in.close();}catch(Exception ignore){}
+      m_fileMIMESource = null;
+      return null;
+    }
+    catch(com.metavize.tran.mime.InvalidHeaderDataException ihde) {
+      m_logger.warn("Invalid headers found in MIME subsection", ihde);
       try {in.close();}catch(Exception ignore){}
       m_fileMIMESource = null;
       return null;
     }
     catch(Exception ex) {
-      m_logger.error("Error parsing MIMEHeaders", ex);
+      m_logger.error("Error parsing MIME body", ex);
       try {in.close();}catch(Exception ignore){}
       m_fileMIMESource = null;
       return null;
     }
   }
-
 
   /**
    * Get the length of the headers (in bytes) including
@@ -406,7 +411,6 @@ public class MIMEAccumulator {
       return null;
     }
   }
-
 
   /**
    * Get the size of the underlying file (the number
@@ -475,7 +479,6 @@ public class MIMEAccumulator {
     }
   }
 
-
   /**
    * Get a TokenStreamer for the initial
    * contents of this message.  This method is "smart"
@@ -536,9 +539,6 @@ public class MIMEAccumulator {
 // Helper methods
 //-----------------------
 
-
-
-
   /**
    * Appends the bytes to the file
    *
@@ -556,7 +556,6 @@ public class MIMEAccumulator {
       return false;
     }
   }  
-
 
   /**
    * Callback from a chunk to see if it should
@@ -591,12 +590,10 @@ public class MIMEAccumulator {
     }
   }  
 
-
   private void setUnparsed() {
     m_logger.debug("Unparsed at chunk " + m_greatestChunkAppendedAndUnparsed);
     m_unparsed = true;
   }
-
 
   /**
    * Method which returns a new index for
@@ -625,7 +622,6 @@ public class MIMEAccumulator {
       return getHeaderBytes();  
     }    
   }
-  
 
   //----------------- Inner Class -----------------------
   
@@ -710,9 +706,4 @@ public class MIMEAccumulator {
       }
     }
   }  
-
-
-
-   
-
 }
