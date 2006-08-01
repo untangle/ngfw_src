@@ -11,36 +11,32 @@
 package com.metavize.tran.mail.web.euv;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 
-import com.metavize.tran.util.Pair;
-
-import com.metavize.tran.mail.web.euv.tags.MessagesSetTag;
-import com.metavize.tran.mail.web.euv.tags.CurrentEmailAddressTag;
 import com.metavize.tran.mail.web.euv.tags.CurrentAuthTokenTag;
+import com.metavize.tran.mail.web.euv.tags.CurrentEmailAddressTag;
+import com.metavize.tran.mail.web.euv.tags.IsReceivesRemapsTag;
 import com.metavize.tran.mail.web.euv.tags.IsRemappedTag;
+import com.metavize.tran.mail.web.euv.tags.MessagesSetTag;
 import com.metavize.tran.mail.web.euv.tags.ReceivingRemapsListTag;
 import com.metavize.tran.mail.web.euv.tags.RemappedToTag;
-import com.metavize.tran.mail.web.euv.tags.ReceivingRemapsListTag;
-import com.metavize.tran.mail.web.euv.tags.IsReceivesRemapsTag;
 
-import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
 import com.metavize.tran.mail.papi.quarantine.BadTokenException;
-import com.metavize.tran.mail.papi.quarantine.NoSuchInboxException;
-import com.metavize.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
 import com.metavize.tran.mail.papi.quarantine.InboxIndex;
 import com.metavize.tran.mail.papi.quarantine.InboxRecord;
-import com.metavize.tran.mail.papi.safelist.SafelistEndUserView;
+import com.metavize.tran.mail.papi.quarantine.NoSuchInboxException;
+import com.metavize.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
+import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
 import com.metavize.tran.mail.papi.safelist.NoSuchSafelistException;
+import com.metavize.tran.mail.papi.safelist.SafelistEndUserView;
 import com.metavize.tran.mail.papi.safelist.SafelistActionFailedException;
 
-import java.util.HashSet;
-
-
+import com.metavize.tran.util.Pair;
 
 /**
  * Base class for common controler functionality
@@ -54,7 +50,7 @@ public abstract class MaintenenceControlerBase
 
     String authTkn = req.getParameter(Constants.AUTH_TOKEN_RP);
     if(authTkn == null) {
-      log("[SafelistMaintenenceControler] Auth token null");
+      log("[MaintenenceControlerBase] Auth token null");
       req.getRequestDispatcher(Constants.REQ_DIGEST_VIEW).forward(req, resp);
       return;
     }
@@ -75,7 +71,6 @@ public abstract class MaintenenceControlerBase
       req.getRequestDispatcher(Constants.SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
       return;
     }    
-
 
     String account = null;
     try {
@@ -111,7 +106,6 @@ public abstract class MaintenenceControlerBase
     CurrentAuthTokenTag.setCurrent(req, authTkn);
 
     serviceImpl(req, resp, account, quarantine, safelist);
-    
   }
 
   protected abstract void serviceImpl(HttpServletRequest req,
@@ -120,8 +114,6 @@ public abstract class MaintenenceControlerBase
     QuarantineUserView quarantine,
     SafelistEndUserView safelist)
     throws ServletException, IOException;
-
-
 
   /**
    * Adds any messages to the message set
@@ -153,17 +145,11 @@ public abstract class MaintenenceControlerBase
 
     String[] safelistToReturn = null;
 
-    int numAdded = 0;
-    int msgsReleased = 0;
     for(String addr : addresses) {
       safelistToReturn = safelist.addToSafelist(thisUserAccount, addr);
-      numAdded++;
     }
 
     InboxIndex index = null;
-
-    MessagesSetTag.addInfoMessage(req, "Added " +
-      numAdded + " address" + (numAdded>1?"es":"") + " to safelist");
 
     //Now, find any messages to release  
     HashSet<String> midsToRelease =
@@ -179,12 +165,9 @@ public abstract class MaintenenceControlerBase
     if(midsToRelease.size() > 0) {
       index = quarantine.rescue(thisUserAccount,
         (String[]) midsToRelease.toArray(new String[midsToRelease.size()]));
-        MessagesSetTag.addInfoMessage(req,
-          midsToRelease.size() + " message" + (midsToRelease.size()>0?"s":"") +
-          " released for safelisted senders");
+        MessagesSetTag.addInfoMessage(req, "Released "+ midsToRelease.size() + " message" + (midsToRelease.size() > 1 ? "s" : "") + " from safelisted senders");
     }
 
     return new Pair<String[], InboxIndex>(safelistToReturn, index);
   }
-
 } 

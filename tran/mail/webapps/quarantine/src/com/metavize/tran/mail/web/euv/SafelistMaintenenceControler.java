@@ -17,19 +17,17 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 
-import com.metavize.tran.mail.web.euv.tags.MessagesSetTag;
-
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
 import com.metavize.tran.mail.papi.quarantine.InboxIndex;
 import com.metavize.tran.mail.papi.safelist.SafelistEndUserView;
 import com.metavize.tran.mail.papi.safelist.NoSuchSafelistException;
 
 import com.metavize.tran.mail.web.euv.tags.HasSafelistTag;
+import com.metavize.tran.mail.web.euv.tags.MessagesSetTag;
 import com.metavize.tran.mail.web.euv.tags.SafelistListTag;
 import com.metavize.tran.mail.web.euv.tags.SafelistEntryTag;
 
 import com.metavize.tran.util.Pair;
-
 
 /**
  * Controler used for Safelist self-service maintenence
@@ -48,7 +46,6 @@ public class SafelistMaintenenceControler
     //block as the outcome based on exception type
     //is the same
     try {
-
       //Now, figure out what they wanted to do.  Either
       //sladd, slremove, or simply to see the safelist
       String action = req.getParameter(Constants.ACTION_RP);
@@ -56,10 +53,6 @@ public class SafelistMaintenenceControler
       if(action == null) {
         action = Constants.SAFELIST_VIEW_RV;
       }
-
-      //A "result" message, which may be displayed if
-      //they requested an action
-      String msg = null;
 
       //No matter what action we take, the outcome
       //is a summary of the safelist
@@ -74,18 +67,15 @@ public class SafelistMaintenenceControler
           req, resp, account, quarantine, safelist, targetAddresses);
         safelistContents = result.a;
 
-        MessagesSetTag.addInfoMessage(req,
-          targetAddresses.length + " addresses added to safelist");
+        MessagesSetTag.addInfoMessage(req, "Added " + targetAddresses.length + " address" + (targetAddresses.length > 1 ? "es" : "") + " to safelist");
       }
       else if(action.equals(Constants.SAFELIST_REMOVE_RV) &&
         targetAddresses != null) {
-        log("[SafelistMaintenenceControler] Remove request " +
-          targetAddresses.length + " addresses for account \"" + account + "\"");
+        log("[SafelistMaintenenceControler] Removed " + targetAddresses.length + " address" + (targetAddresses.length > 1 ? "es" : "") + " for account \"" + account + "\"");
         for(String addr : targetAddresses) {
           safelistContents = safelist.removeFromSafelist(account, addr);
         }
-        MessagesSetTag.addInfoMessage(req,
-          targetAddresses.length + " addresses removed from safelist");
+        MessagesSetTag.addInfoMessage(req, "Removed " + targetAddresses.length + " address" + (targetAddresses.length > 1 ? "es" : "") + " from safelist");
       }
       else {
         log("[SafelistMaintenenceControler] View list request for account \"" + account + "\"");
