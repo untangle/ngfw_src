@@ -88,5 +88,6 @@ ApplicationPanel.prototype._init = function()
     this._titleDiv.innerHTML = ApplicationPanel.DEFAULT_TITLE;
 
     this._applicationList = new ApplicationList(this);
+    this._applicationList.setScrollStyle(DwtControl.SCROLL);
     this._applicationList.reparentHtmlElement(listId);
 }

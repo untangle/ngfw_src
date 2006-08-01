@@ -124,5 +124,6 @@ BookmarkPanel.prototype._init = function()
     this._toolbar.reparentHtmlElement(toolbarId);
 
     this._bookmarkList = new BookmarkList(this);
+    this._bookmarkList.setScrollStyle(DwtControl.SCROLL);
     this._bookmarkList.reparentHtmlElement(listId);
 }
