@@ -73,7 +73,7 @@ public class PortalSummarizer extends BaseSummarizer {
         addEntry("User logouts", Util.trimNumber("", logoutCnt));
 
         // XXXX
-        String hdrName = "Secure Portal Logins and Logouts";
+        String hdrName = "Remote Access Portal Logins and Logouts";
 
         return summarizeEntries(hdrName);
     }

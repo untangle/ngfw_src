@@ -26,7 +26,7 @@ PortalPanel.prototype.constructor = PortalPanel;
 PortalPanel.prototype.setMotd = function(motd)
 {
     this._welcomePanel.getHtmlElement().innerHTML = motd
-    || "Welcome to Metavize Secure Portal";
+    || "Welcome to Metavize Remote Access Portal";
 };
 
 PortalPanel.prototype.showApplicationPanel = function(show)

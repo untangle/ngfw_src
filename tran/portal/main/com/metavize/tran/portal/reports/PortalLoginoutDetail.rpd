@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=PortalLoginoutDetail
-REPORT_TITLE=Secure Portal - User Logins and Logouts
+REPORT_TITLE=Remote Access Portal - User Logins and Logouts
 
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String

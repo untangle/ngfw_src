@@ -14,7 +14,7 @@ String host=request.getHeader("host");
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-<title>Metavize Secure Portal Login</title>
+<title>Metavize Remote Access Portal Login</title>
 </head>
 
 <body LINK="#0000EE" VLINK="#0000EE" style="background-image: url(<%=scheme%>://<%=host%>/images/DarkBackground1600x100.jpg);">
@@ -38,7 +38,7 @@ String host=request.getHeader("host");
       <br/>
       <br/>
       <span style="font-weight: bold;">
-      Metavize Secure Portal
+      Metavize Remote Access Portal
       </span>
       <br/>
       <br/>

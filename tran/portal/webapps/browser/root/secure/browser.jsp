@@ -10,7 +10,7 @@ String target = request.getParameter("target");
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-<title>Metavize Secure Portal</title>
+<title>Metavize Remote Access Portal</title>
 <style type="text/css">
 <!--
 @import url(/AjaxTk/img/dwtimgs.css);
