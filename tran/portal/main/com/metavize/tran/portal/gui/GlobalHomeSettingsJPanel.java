@@ -24,7 +24,7 @@ import javax.swing.SpinnerNumberModel;
 public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
 
     private static final String EXCEPTION_TIMEOUT_RANGE = "You must choose a timeout between " + 
-	(int)(PortalHomeSettings.IDLE_TIMEOUT_MIN) + " and " + (int)(PortalHomeSettings.IDLE_TIMEOUT_MAX);
+	(int)(PortalHomeSettings.IDLE_TIMEOUT_MIN)/60000 + " and " + (int)(PortalHomeSettings.IDLE_TIMEOUT_MAX)/60000;
     
     public GlobalHomeSettingsJPanel() {
         initComponents();
@@ -146,6 +146,8 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
 	// ADD BOOKMARKS //
 	showAddBookmarksCurrent = portalHomeSettings.isShowAddBookmark();
 	addJCheckBox.setSelected( showAddBookmarksCurrent );
+	addJCheckBox.setEnabled(showBookmarksCurrent);
+	addUserBookmarksJLabel.setEnabled(showBookmarksCurrent);
         
 	// TIMEOUT //
 	timeoutCurrent = (int)(portalHomeSettings.getIdleTimeout()/60000l);
@@ -312,6 +314,12 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
                 restrictIPJPanel4.add(explorerJLabel1, gridBagConstraints);
 
                 autoCreateJCheckBox.setFocusable(false);
+                autoCreateJCheckBox.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                autoCreateJCheckBoxActionPerformed(evt);
+                        }
+                });
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
@@ -604,6 +612,11 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
 
         }//GEN-END:initComponents
 
+    private void autoCreateJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoCreateJCheckBoxActionPerformed
+	if( settingsChangedListener != null )
+	    settingsChangedListener.settingsChanged(this);
+    }//GEN-LAST:event_autoCreateJCheckBoxActionPerformed
+
     private void loginTextJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_loginTextJTextFieldCaretUpdate
 	if( !loginTextJTextField.getText().trim().equals(loginTextCurrent) && (settingsChangedListener != null) )
 	    settingsChangedListener.settingsChanged(this);
@@ -627,6 +640,8 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
     private void bookmarksJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bookmarksJCheckBoxActionPerformed
 	if( settingsChangedListener != null )
 	    settingsChangedListener.settingsChanged(this);
+	addJCheckBox.setEnabled(bookmarksJCheckBox.isSelected());
+	addUserBookmarksJLabel.setEnabled(bookmarksJCheckBox.isSelected());
     }//GEN-LAST:event_bookmarksJCheckBoxActionPerformed
     
     private void explorerJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_explorerJCheckBoxActionPerformed
