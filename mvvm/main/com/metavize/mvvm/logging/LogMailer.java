@@ -153,7 +153,7 @@ public class LogMailer implements Runnable
                 SMTPAppender sapp = loggers.get(tid);
                 String partName;
                 if (tid.getId() == 0L) {
-                    partName = "MVVM Log";
+                    partName = "mvvm.log";
                 } else {
                     TransformContext tc = tm.transformContext(tid);
                     partName = tc.getTransformDesc().getName() + ".log";
