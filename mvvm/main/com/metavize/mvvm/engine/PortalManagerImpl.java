@@ -366,7 +366,9 @@ class PortalManagerImpl implements LocalPortalManager
                 return null;
             }
         } catch (ServiceUnavailableException x) {
-            logger.error("Unable to authenticate user", x);
+            /* This occurs if the user puts in invalid authentication information for the 
+             * active directory server */
+            logger.warn("Unable to authenticate user", x);
             return null;
         }
 

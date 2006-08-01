@@ -853,8 +853,9 @@ public class NetworkManagerImpl implements NetworkManager
             }
         }
 
-        /* Done before so this gets called on the first update */
+        /* Done before so these get called on the first update */
         registerListener(new IPMatcherListener());
+        registerListener(new CifsListener());
 
         updateAddress();
 

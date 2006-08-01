@@ -299,6 +299,15 @@ abstract class LdapAdapter {
     try {
       return createSuperuserContext();
     }
+    catch(AuthenticationException ex) {
+      m_logger.warn("Unable to create superuser context with settings: " +
+        "Host: \"" + settings.getLDAPHost() + "\", " +
+        "Port: \"" + settings.getLDAPPort() + "\", " +
+        "Superuser DN: \"" + getSuperuserDN() + "\", " +
+        "Pass: " + (settings.getSuperuserPass()==null?"<null>":"<not null>"),
+        ex);
+      return null;
+    }
     catch(Exception ex) {
       m_logger.error("Unable to create superuser context with settings: " +
         "Host: \"" + settings.getLDAPHost() + "\", " +

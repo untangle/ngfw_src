@@ -116,6 +116,20 @@ public class IPaddr implements Comparable, Serializable
         return makeIPaddr( oper1 & oper2 );
     }
 
+    public IPaddr or( IPaddr addr2 )
+    {
+        long oper1 = toLong();
+        long oper2 = addr2.toLong();
+        
+        return makeIPaddr( oper1 | oper2 );
+    }
+    
+    public IPaddr inverse()
+    {
+        long oper = toLong();
+        return makeIPaddr( ~oper );
+    }
+
     public int toCidr() throws ParseException
     {
         Integer cidr = (Integer)NET_TO_CIDR.get( this );
