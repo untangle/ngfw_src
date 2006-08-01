@@ -45,7 +45,14 @@ public class UidButtonRunnable implements ButtonRunnable, Comparable<UidButtonRu
     public void setMTransformControlsJPanel(MTransformControlsJPanel mTransformControlsJPanel){ this.mTransformControlsJPanel = mTransformControlsJPanel; }
     public void actionPerformed(ActionEvent evt){ run(); }
     public int compareTo(UidButtonRunnable uidButtonRunnable){
-	return uid.compareTo(uidButtonRunnable.uid);
+	if( (uid==null) && (uidButtonRunnable.uid==null))
+	    return 0;
+	else if( (uid!=null) && (uidButtonRunnable.uid==null))
+	    return 1;
+	else if( (uid==null) && (uidButtonRunnable.uid!=null))
+	    return -1;
+	else		
+	    return uid.compareTo(uidButtonRunnable.uid);
     }
     public void run(){
 	UidSelectJDialog uidSelectJDialog = UidSelectJDialog.factory(topLevelWindow);
