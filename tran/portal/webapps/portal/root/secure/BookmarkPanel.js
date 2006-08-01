@@ -66,12 +66,14 @@ BookmarkPanel.prototype._makeToolbar = function() {
     var b = new DwtButton(toolbar,DwtLabel.ALIGN_CENTER,"DwtButton32");
     //b.setText("New Bookmark");
     b.setImage("Add");
+    b.setDisabledImage("AddDisabled");
     b.setToolTipContent("Add a new bookmark");
     this.addBookmarkButton = b;
 
     b = new DwtButton(toolbar,DwtButton.ALIGN_CENTER,"DwtButton32");
     //b.setText("Delete");
     b.setImage("Remove");
+    b.setDisabledImage("RemoveDisabled");
     b.setToolTipContent("Remove selected bookmarks");
     this.deleteBookmarkButton = b;
 

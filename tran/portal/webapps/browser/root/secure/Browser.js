@@ -40,8 +40,8 @@ function Browser(shell, url)
 
     if (cifsNode) {
         this._dirTree.addRoot(cifsNode);
-        this._dirTree.setScrollStyle(DwtControl.SCROLL);
     }
+    this._dirTree.setScrollStyle(DwtControl.SCROLL);
 
     this._dirTree.addSelectionListener(new AjxListener(this, this._dirSelectionListener));
     this._dirTree.zShow(true);
