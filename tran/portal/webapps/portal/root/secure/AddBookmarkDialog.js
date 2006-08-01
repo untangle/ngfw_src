@@ -16,7 +16,6 @@ function AddBookmarkDialog(parent, apps)
 
   this.setView(this._panel);
   this.setTabOrder(this._panel._fields);
-  this._panel._fields[0].focus();
 }
 
 AddBookmarkDialog.prototype = new DwtDialog();
@@ -27,11 +26,11 @@ AddBookmarkDialog.prototype.constructor = AddBookmarkDialog;
 AddBookmarkDialog.prototype.getBookmark = function()
 {
   return this._panel.getBookmark();
-}
+};
 
 // internal methods -----------------------------------------------------------
 
-  AddBookmarkDialog.prototype._focusListener = function(ev)
+AddBookmarkDialog.prototype._focusListener = function(ev)
 {
   this._panel.focus();
-}
+};

@@ -39,7 +39,7 @@ AddBookmarkPanel.prototype.getBookmark = function()
 
 AddBookmarkPanel.prototype.focus = function()
 {
-  // XXX
+  this._nameField.focus();
 };
 
 // private methods ------------------------------------------------------------
@@ -84,7 +84,6 @@ AddBookmarkPanel.prototype._showFields = function()
   } else {
     this._showDefaultFields();
   }
-  this._nameField.focus();
 };
 
 AddBookmarkPanel.prototype._showDefaultFields = function()
@@ -121,7 +120,6 @@ AddBookmarkPanel.prototype._showDefaultFields = function()
   this._targetField = new DwtInputField({ parent: this });
   this._targetField.reparentHtmlElement(targetFieldId);
   this._fields.push(this._targetField);
-
 };
 
 AddBookmarkPanel.prototype._showPropFields = function(props)
@@ -174,8 +172,5 @@ AddBookmarkPanel.prototype._showPropFields = function(props)
     field.reparentHtmlElement(label);
     this._fields.push(field);
   }
-  this.focus();
-  this._nameField.focus();
-
 };
 
