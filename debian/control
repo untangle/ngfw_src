@@ -1428,11 +1428,11 @@ Description: The Metavize OpenVPN Software Appliance
 Package: portal-transform
 Architecture: any
 Depends: mvvm
-XB-Display-Name: Secure Portal
+XB-Display-Name: Remote Access Portal
 XB-Website: http://www.metavize.com/openvpn.html
 XB-View-Position: 990
-Description: Secure Portal
- The Secure Portal.
+Description: Remote Access Portal
+ The Remote Access Portal.
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
