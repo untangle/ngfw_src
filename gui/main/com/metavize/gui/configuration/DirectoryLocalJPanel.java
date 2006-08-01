@@ -91,6 +91,14 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
 		    throw new Exception("The user/login ID at row: " + rowIndex + " has already been taken.");
 		else
 		    uidHashtable.put(uid,uid);
+		
+		// first name contains no spaces
+		if( firstName.contains(" ") )
+		    throw new Exception("The first name at row: " + rowIndex + " must not contain any space characters.");
+		
+		// last name contains no spaces
+		if( lastName.contains(" ") )
+		    throw new Exception("The last name at row: " + rowIndex + " must not contain any space characters.");
 	    }
 
 	    // CHECK PASSWORDS FOR ONLY NEW ROWS
