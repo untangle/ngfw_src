@@ -87,24 +87,22 @@ class BackupManager {
         "restart.log");
       
       //unzip file
-      result = SimpleExec.exec("nohup",//cmd
-        new String[] {//args
-          "sh",
-          RESTORE_SCRIPT,
-          "-i",
-          tempFile.getAbsolutePath(),
-          "-v",
-          "2>&1",
-          "&"
-        },
-/*
-      RESTORE_SCRIPT,//cmd
+      result = SimpleExec.exec(RESTORE_SCRIPT,//cmd
           new String[] {//args
             "-i",
             tempFile.getAbsolutePath(),
             "-v"
           },
-*/          
+/*
+  RESTORE_SCRIPT,
+        new String[] {//args
+          "sh",
+          "-i",
+          tempFile.getAbsolutePath(),
+          "-v",
+          "2>&1",
+          "&"
+        },*/          
           null,//env
           null,//dir
           true,//stdout
@@ -113,7 +111,8 @@ class BackupManager {
           m_logger,//log-into
           true);//use MVVM threads
 
-      IOUtil.delete(tempFile);
+      // We no longer delete the file since it's a race.  jdi 7/06
+      // IOUtil.delete(tempFile);
 
     }
     catch(IOException ex) {
@@ -122,6 +121,8 @@ class BackupManager {
       m_logger.error("Exception performing restore", ex);
       throw ex;
     }
+
+    // We don't usually ever get here since the mvvm is stopped by restore-mv script
 
     if(result.exitCode != 0) {
       switch(result.exitCode) {
