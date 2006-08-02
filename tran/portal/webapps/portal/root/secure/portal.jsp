@@ -44,6 +44,8 @@
 <script type="text/javascript" src="<%=sp%>/Portal.js"></script>
 <script type="text/javascript" src="<%=sp%>/PortalPanel.js"></script>
 
+<script type="text/javascript" src="<%=sp%>/FooBar.js"></script>
+
 </head>
 
 <body>
@@ -54,10 +56,11 @@
 function launch() {
 DBG = new AjxDebug(AjxDebug.NONE, null, false);
 
-var shell = new DwtShell("PortalShell", false);
-var portal = new Portal(shell, "smb://windows.metavize.com/");
-portal.setVisible(true);
+var shell = new DwtShell(null, false);
+shell.setVirtual(true);
+var portal = new Portal(shell);
 portal.zShow(true);
+portal.setVisible(true);
 }
 AjxCore.addOnloadListener(launch);
 </script>

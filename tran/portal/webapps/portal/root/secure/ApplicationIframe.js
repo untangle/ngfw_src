@@ -7,7 +7,7 @@ function ApplicationIframe(parent)
       return;
    }
 
-   DwtComposite.call(this, parent, "ApplicationIframe", DwtControl.RELATIVE_STYLE);
+   DwtComposite.call(this, parent, "ApplicationIframe", DwtControl.STATIC_STYLE);
 }
 
 ApplicationIframe.prototype = new DwtComposite();

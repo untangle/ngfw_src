@@ -10,7 +10,7 @@ function BookmarkList(parent)
     var header = [];
 
     DwtListView.call(this, parent, "PortalList",
-                     DwtControl.RELATIVE_STYLE, header);
+                     DwtControl.STATIC_STYLE, header);
 
     this.getHtmlElement().removeChild(this._listColDiv);
 
@@ -155,9 +155,10 @@ BookmarkList.prototype._mouseOverAction = function(ev, div)
         var app = portal.getApplication(item.app);
         var tooltipFn = null == app ? null : app.getTooltipFunction();
         if (tooltipFn) {
-		tooltip = tooltipFn(item);
+            tooltip = tooltipFn(item);
         } else {
-		tooltip = "<html><b>Application:</b> " + app.description + "<br><b>Target: </b>" + item.target + "</html>";
+            tooltip = "<html><b>Application:</b> " + app.description
+                + "<br><b>Target: </b>" + item.target + "</html>";
         }
         this.setToolTipContent(tooltip);
     }

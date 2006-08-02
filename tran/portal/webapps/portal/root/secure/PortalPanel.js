@@ -7,7 +7,7 @@ function PortalPanel(parent)
         return;
     }
 
-    DwtComposite.call(this, parent, "PortalPanel", DwtControl.RELATIVE_STYLE);
+    DwtComposite.call(this, parent, "PortalPanel", DwtControl.STATIC_STYLE);
 
     this._init();
 
@@ -78,16 +78,19 @@ PortalPanel.prototype._init = function()
     if (this._welcomePanel) {
         this._welcomePanel.reparent(shell);
         this._welcomePanel.setVisible(false);
+        this._welcomePanel.zShow(false);
     }
 
     if (this.applicationPanel) {
         this.applicationPanel.reparent(shell);
         this.applicationPanel.setVisible(false);
+        this.applicationPanel.zShow(false);
     }
 
     if (this.bookmarkPanel) {
         this.bookmarkPanel.reparent(shell);
         this.bookmarkPanel.setVisible(false);
+        this.bookmarkPanel.zShow(false);
     }
 
     var html = [];
@@ -137,20 +140,24 @@ PortalPanel.prototype._init = function()
 
     this.setContent(html.join(""));
 
-    this._welcomePanel = this._welcomePanel || new DwtComposite(this, "WelcomePanel", DwtControl.RELATIVE_STYLE);
+
+    this._welcomePanel = this._welcomePanel || new DwtComposite(this, "WelcomePanel", DwtControl.STATIC_STYLE);
     this._welcomePanel.reparentHtmlElement(this._welcomePanelId);
     this._welcomePanel.setVisible(true);
+    this._welcomePanel.zShow(true);
 
     if (this.showBookmarkPanel) {
         this.bookmarkPanel = this.bookmarkPanel || new BookmarkPanel(this);
         this.bookmarkPanel.reparentHtmlElement(this._bookmarkPanelId);
         this.bookmarkPanel.setVisible(true);
+        this.bookmarkPanel.zShow(true);
     }
 
     if (this.showApplicationPanel) {
         this.applicationPanel = this.applicationPanel || new ApplicationPanel(this);
         this.applicationPanel.reparentHtmlElement(this._applicationPanelId);
         this.applicationPanel.setVisible(true);
+        this.applicationPanel.zShow(true);
     }
 };
 

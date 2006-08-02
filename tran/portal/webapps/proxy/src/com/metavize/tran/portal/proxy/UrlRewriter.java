@@ -134,7 +134,6 @@ class UrlRewriter
         if (v.startsWith(absPrefix)) {
             return "http://" + host + v.substring(absPrefix.length() - 1);
         } else {
-            logger.warn("unexpected referer: " + v);
             return v;
         }
     }

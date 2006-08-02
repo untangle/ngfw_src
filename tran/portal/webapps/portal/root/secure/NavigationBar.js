@@ -7,7 +7,7 @@ function NavigationBar(parent)
         return;
     }
 
-    DwtComposite.call(this, parent, "MetavizePanel", DwtControl.RELATIVE_STYLE);
+    DwtComposite.call(this, parent, "MetavizePanel", DwtControl.STATIC_STYLE);
 
     var homeButtonId = Dwt.getNextId();
     var logoutButtonId = Dwt.getNextId();
