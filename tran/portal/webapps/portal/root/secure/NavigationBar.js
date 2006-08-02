@@ -13,6 +13,7 @@ function NavigationBar(parent)
     var logoutButtonId = Dwt.getNextId();
     var maximizeButtonId = Dwt.getNextId();
     var usernameId = Dwt.getNextId();
+    var titleId = Dwt.getNextId();
 
     var html = [];
     html.push("<table style='padding: 0px 0px 0px 0px' width='100%' height='96px' border=0>");
@@ -21,9 +22,13 @@ function NavigationBar(parent)
 
     html.push("<td>");
     html.push("<table width='100%' height='100%' border=0>");
-    html.push("<tr><td style='font: bold normal normal 23pt Arial,Sans-Serif; color: #777777;'>Remote Access Portal</td></tr>");
-    html.push("<tr><td style='font: bold normal normal 10pt Arial,Sans-Serif; color: #777777;'>");
-    html.push("<div id='");
+    html.push("<tr><td>");
+    html.push("<div style='font: bold normal normal 23pt Arial,Sans-Serif; color: #777777;' id='");
+    html.push(titleId);
+    html.push("'/>");
+    html.push("</td></tr>");
+    html.push("<tr><td>");
+    html.push("<div style='font: bold normal normal 10pt Arial,Sans-Serif; color: #777777;' id='");
     html.push(usernameId);
     html.push("'/>");
     html.push("</td></tr>");
@@ -59,6 +64,7 @@ function NavigationBar(parent)
     this.getHtmlElement().innerHTML = html.join("");
 
     this._usernameDiv = document.getElementById(usernameId);
+    this._titleDiv = document.getElementById(titleId);
 
     this._home = new DwtButton(this,DwtLabel.ALIGN_CENTER,"DwtButton32");
     this._home.setImage("Home"); // XXX change to "Home"
@@ -106,3 +112,7 @@ NavigationBar.prototype.setUsername = function(username)
 {
     this._usernameDiv.innerHTML = "logged in as " + username;
 };
+
+NavigationBar.prototype.setTitle = function(title)
+{
+    this._titleDiv.innerHTML = title;};
