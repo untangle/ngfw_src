@@ -4,32 +4,32 @@
 function CifsNode(parent, name, principal, type, size, lastModified,
                   contentType, authorized)
 {
-   this.parent = parent;
-   this.name = name;
-   this.principal = principal;
-   this.type = type;
-   this.size = size || 0;
-   this.contentType = contentType;
-   this.authorized = authorized || true;
+    this.parent = parent;
+    this.name = name;
+    this.principal = principal;
+    this.type = type;
+    this.size = size || 0;
+    this.contentType = contentType;
+    this.authorized = authorized || true;
 
-   if (0 < lastModified) {
-      var date = new Date();
-      date.setTime(lastModified);
-      var formatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.MEDIUM, AjxDateFormat.SHORT);
-      this.lastModified = formatter.format(date);
-   } else {
-      this.lastModified = "";
-   }
+    if (0 < lastModified) {
+        var date = new Date();
+        date.setTime(lastModified);
+        var formatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.MEDIUM, AjxDateFormat.SHORT);
+        this.lastModified = formatter.format(date);
+    } else {
+        this.lastModified = "";
+    }
 
-   this.url = (parent || "") + name;
+    this.url = (parent || "") + name;
 
-   if (this.name.length - 1 == this.name.lastIndexOf("/")) {
-       this.label = this.name.substring(0, this.name.length - 1);
-   } else {
-      this.label = this.name;
-   }
+    if (this.name.length - 1 == this.name.lastIndexOf("/")) {
+        this.label = this.name.substring(0, this.name.length - 1);
+    } else {
+        this.label = this.name;
+    }
 
-   this.label = this.label.replace(/\//g, "\\");
+    this.label = this.label.replace(/\//g, "\\");
 }
 
 CifsNode.FILE = 1;
@@ -64,37 +64,37 @@ CifsNode.ICON_NAMES[CifsNode.FILE] = "File";
 CifsNode.ICON_NAMES[CifsNode.DIRECTORY] = "Folder";
 
 CifsNode.prototype = {
-   toString: function() {
-      return this.name;
-   },
+    toString: function() {
+        return this.name;
+    },
 
-   getReqUrl: function() {
-      return null == this.principal ? this.url : ("[" + this.principal + "]" + this.url);
-   },
+    getReqUrl: function() {
+        return escape(null == this.principal ? this.url : ("[" + this.principal + "]" + this.url));
+    },
 
-   isWorkGroup: function() {
-      return this.type == CifsNode.WORKGROUP;
-   },
+    isWorkGroup: function() {
+        return this.type == CifsNode.WORKGROUP;
+    },
 
-   isServer: function() {
-      return this.type == CifsNode.SERVER;
-   },
+    isServer: function() {
+        return this.type == CifsNode.SERVER;
+    },
 
-   isShare: function() {
-      return this.type == CifsNode.SHARE;
-   },
+    isShare: function() {
+        return this.type == CifsNode.SHARE;
+    },
 
-   isDirectory: function() {
-      return this.type == CifsNode.DIRECTORY;
-   },
+    isDirectory: function() {
+        return this.type == CifsNode.DIRECTORY;
+    },
 
-   getIconName: function() {
-      return CifsNode.ICON_NAMES[this.type]
-         + (this.authorized ? "" : "NoAuth");
-   },
+    getIconName: function() {
+        return CifsNode.ICON_NAMES[this.type]
+        + (this.authorized ? "" : "NoAuth");
+    },
 
-   getDomain: function() {
-      var i = this.url.indexOf('/', 2);
-      return i < 2 ? this.url : this.url.substring(2, i);
-   }
+    getDomain: function() {
+        var i = this.url.indexOf('/', 2);
+        return i < 2 ? this.url : this.url.substring(2, i);
+    }
 }
