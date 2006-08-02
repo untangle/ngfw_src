@@ -34,6 +34,9 @@ public class SmbLogin extends HttpServlet
     {
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
 
+        resp.setContentType("text/xml");
+        resp.addHeader("Cache-Control", "no-cache");
+
         String d = req.getParameter("domain");
         String u = req.getParameter("username");
         String p = req.getParameter("password");

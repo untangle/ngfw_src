@@ -339,7 +339,7 @@ Browser.prototype._loginCallback = function(obj, results)
         obj.dialog.popdown();
         this._dirTree.repopulate(obj.item, principal);
     } else {
-        alert("FAILURE");
+        //alert("FAILURE");
     }
 };
 

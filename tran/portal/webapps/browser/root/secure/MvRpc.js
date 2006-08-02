@@ -35,7 +35,8 @@ MvRpc.MAGIC_RE = /<!-- MagicComment: MVTimeout -->/;
 MvRpc._callbackFn = function(obj, results)
 {
    if (results.xml) {
-      if (obj.authCallback && "auth-error" == results.xml.firstChild.tagName) {
+       var errors = results.xml.getElementsByTagName("auth-error");
+       if (obj.authCallback && null != errors && 0 < errors.length) {
          return obj.authCallback.run(results);
       } else if (obj.actionCallback) {
          return obj.actionCallback.run(results);
