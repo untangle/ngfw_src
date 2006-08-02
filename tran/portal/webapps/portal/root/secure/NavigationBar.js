@@ -21,7 +21,7 @@ function NavigationBar(parent)
 
     html.push("<td>");
     html.push("<table width='100%' height='100%' border=0>");
-    html.push("<tr><td style='font: bold normal normal 23pt Arial,Sans-Serif; color: #777777;'>Metavize Remote Access Portal</td></tr>");
+    html.push("<tr><td style='font: bold normal normal 23pt Arial,Sans-Serif; color: #777777;'>Remote Access Portal</td></tr>");
     html.push("<tr><td style='font: bold normal normal 10pt Arial,Sans-Serif; color: #777777;'>");
     html.push("<div id='");
     html.push(usernameId);
