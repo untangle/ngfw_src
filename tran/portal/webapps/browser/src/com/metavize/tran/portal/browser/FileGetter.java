@@ -80,7 +80,6 @@ public class FileGetter extends HttpServlet
                 String contentType = mimeMap.getContentType(f.getName());
                 resp.setContentType(contentType); // XXX
                 resp.setContentLength(f.getContentLength()); // XXX
-                resp.addHeader("Cache-Control", "no-cache"); // XXX
                 dumpFile(f, os);
             }
         } catch (IOException exn) {
@@ -123,7 +122,8 @@ public class FileGetter extends HttpServlet
 
         while (0 <= (c = is.read(buf))) {
             os.write(buf, 0, c);
-            os.flush();
         }
+
+        os.flush();
     }
 }
