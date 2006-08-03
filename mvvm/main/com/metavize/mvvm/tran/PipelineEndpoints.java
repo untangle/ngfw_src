@@ -426,7 +426,7 @@ public class PipelineEndpoints extends LogEvent
         sb.addField("session-id", sessionId);
         sb.addField("protocol", getProtocolName());
 
-        sb.addField("policy", policy.getName());
+        sb.addField("policy", (( policy == null ) ? "<none>" : policy.getName()));
         sb.addField("policy-direction", getDirectionName());
 
         sb.addField("client-iface", getClientIntf(clientIntf));
