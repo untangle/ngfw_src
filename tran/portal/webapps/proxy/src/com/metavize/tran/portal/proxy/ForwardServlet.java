@@ -72,6 +72,8 @@ public class ForwardServlet extends HttpServlet
         int idleTime = 1200;
         HttpSession session = req.getSession();
 
+        portalManager.incrementStatCounter(LocalPortalManager.FORWARD_COUNTER);
+
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
 
         if (null == pl) {

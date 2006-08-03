@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.portal.PortalLogin;
 import com.metavize.mvvm.util.XmlUtil;
 import jcifs.smb.SmbAuthException;
@@ -53,6 +55,8 @@ public class FileLister extends HttpServlet
     private static final String MIME_TYPES_PATH = "/etc/mime.types";
 
     private MimetypesFileTypeMap mimeMap;
+    private LocalPortalManager portalManager;
+
     private Logger logger;
 
     // HttpServlet methods ----------------------------------------------------
@@ -61,6 +65,8 @@ public class FileLister extends HttpServlet
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
+        portalManager.incrementStatCounter(LocalPortalManager.CIFS_COUNTER);
+
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
 
         resp.setContentType("text/xml");
@@ -112,6 +118,8 @@ public class FileLister extends HttpServlet
     public void init() throws ServletException
     {
         logger = Logger.getLogger(getClass());
+
+        portalManager = MvvmContextFactory.context().portalManager();
 
         try {
             mimeMap = new MimetypesFileTypeMap(MIME_TYPES_PATH);

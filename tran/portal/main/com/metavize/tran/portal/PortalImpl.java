@@ -28,8 +28,10 @@ import com.metavize.mvvm.portal.PortalEvent;
 import com.metavize.mvvm.portal.PortalSettings;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
+import com.metavize.mvvm.tran.MutateTStats;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformStartException;
+import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.tran.TransformStopException;
 import com.metavize.tran.portal.rdp.RdpBookmark;
 import com.metavize.tran.portal.vnc.VncBookmark;
@@ -264,6 +266,14 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         MvvmContextFactory.context().portalManager().setPortalSettings(settings);
     }
 
+    @Override
+    public TransformStats getStats() throws IllegalStateException
+    {
+        TransformStats superStats = super.getStats();
+        TransformStats mvvmStats = MvvmContextFactory.context().portalManager().getStats();
+        return MutateTStats.unholyMatrimony(superStats, mvvmStats);
+    }
+    
     // AbstractTransform methods ----------------------------------------------
 
     @Override

@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.portal.PortalLogin;
 import jcifs.smb.SmbFile;
 import org.apache.log4j.Logger;
@@ -33,6 +35,7 @@ public class FileGetter extends HttpServlet
 
     // XXX attach map to container context
     private MimetypesFileTypeMap mimeMap;
+    private LocalPortalManager portalManager;
 
     private Logger logger;
 
@@ -42,6 +45,8 @@ public class FileGetter extends HttpServlet
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
+        portalManager.incrementStatCounter(LocalPortalManager.CIFS_COUNTER);
+
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
 
         int l = req.getContextPath().length() + req.getServletPath().length() + 1;
@@ -95,6 +100,8 @@ public class FileGetter extends HttpServlet
     public void init() throws ServletException
     {
         logger = Logger.getLogger(getClass());
+
+        portalManager = MvvmContextFactory.context().portalManager();
 
         try {
             mimeMap = new MimetypesFileTypeMap(MIME_TYPES_PATH);

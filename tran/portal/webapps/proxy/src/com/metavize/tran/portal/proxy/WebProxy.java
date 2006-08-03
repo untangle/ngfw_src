@@ -35,6 +35,7 @@ import javax.servlet.http.HttpSession;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.NetworkManager;
+import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.tran.IPaddr;
 import org.apache.commons.fileupload.MultipartStream;
 import org.apache.commons.fileupload.ParameterParser;
@@ -66,12 +67,14 @@ public class WebProxy extends HttpServlet
 
     private MvvmLocalContext mvvmContext;
     private NetworkManager netManager;
+    private LocalPortalManager portalManager;
     private Logger logger;
 
     @Override
     public void init() throws ServletException
     {
         mvvmContext = MvvmContextFactory.context();
+        portalManager = mvvmContext.portalManager();
         netManager = mvvmContext.networkManager();
         logger = Logger.getLogger(getClass());
     }
@@ -122,6 +125,8 @@ public class WebProxy extends HttpServlet
         throws ServletException
     {
         HttpSession s = req.getSession();
+
+        portalManager.incrementStatCounter(LocalPortalManager.PROXY_COUNTER);
 
         method.setFollowRedirects(false);
         HttpMethodParams params = method.getParams();

@@ -22,10 +22,11 @@ public class MTransformDisplayJPanel extends com.metavize.gui.transform.MTransfo
         super(mTransformJPanel);
 
         super.activity0JLabel.setText("LOGIN");
-        super.activity1JLabel.setText("LOGOUT");
-        super.activity2JLabel.setText(" ");
-        super.activity3JLabel.setText(" ");
+        super.activity1JLabel.setText("WEB");
+        super.activity2JLabel.setText("FILE");
+        super.activity3JLabel.setText("DESKTOP");
 
     }
 
+    final protected boolean getUpdateThroughput(){ return false; }
 }
