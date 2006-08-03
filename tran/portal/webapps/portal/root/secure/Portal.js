@@ -179,7 +179,7 @@ Portal.prototype._initLayout = function()
 
     var html = [];
 
-    html.push("<table cellpadding='15' cellspacing='0' style='width: 100%; height: 100%;'><tr><td>");
+    html.push("<table cellpadding='5' cellspacing='0' style='width: 100%; height: 100%;'><tr><td>");
 
     html.push("<table cellpadding='0' cellspacing='0' style='width: 100%; height: 100%;'>");
 

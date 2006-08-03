@@ -16,19 +16,19 @@ function NavigationBar(parent)
     var titleId = Dwt.getNextId();
 
     var html = [];
-    html.push("<table style='padding: 0px 0px 0px 0px' width='100%' height='96px' border=0>");
-    html.push("<tr>");
+    html.push("<table style='padding: 0px 0px 0px 0px' width='100%' border='0' cellpadding='0' cellspacing='0'>");
+    html.push("<tr style='height: 48px'>");
     html.push("<td width='57px'><img src='/images/LogoNoText48x48.gif'></td>");
 
     html.push("<td>");
     html.push("<table width='100%' height='100%' border=0>");
     html.push("<tr><td>");
-    html.push("<div style='font: bold normal normal 23pt Arial,Sans-Serif; color: #777777;' id='");
+    html.push("<div style='font: bold normal normal 15pt Arial,Sans-Serif; color: #777777;' id='");
     html.push(titleId);
     html.push("'/>");
     html.push("</td></tr>");
     html.push("<tr><td>");
-    html.push("<div style='font: bold normal normal 10pt Arial,Sans-Serif; color: #777777;' id='");
+    html.push("<div style='font: bold normal normal 8pt Arial,Sans-Serif; color: #777777;' id='");
     html.push(usernameId);
     html.push("'/>");
     html.push("</td></tr>");
@@ -53,13 +53,8 @@ function NavigationBar(parent)
     html.push("'/>");
     html.push("</td>");
 
-    html.push("</tr>");
-    html.push("<tr>");
-    html.push("<td colspan='5' style='padding: 0px 0px 0px 0px'>");
-    html.push("<hr width='100%' size='1' color='#969696'/>");
-    html.push("</td>");
-    html.push("</tr>");
     html.push("</table>");
+    html.push("<hr style='width:100%; color:#969696; padding:0px 0px 0px 0px'/>");
 
     this.getHtmlElement().innerHTML = html.join("");
 
