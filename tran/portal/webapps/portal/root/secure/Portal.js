@@ -331,6 +331,7 @@ Portal.prototype._refreshPageInfoCallback = function(obj, results)
 
     var root = results.xml.getElementsByTagName("page-info")[0];
     document.title = root.getAttribute("title");
+    this._navBar.setTitle(document.title);
 
     var username = root.getAttribute("username");
     this._navBar.setUsername(username);
