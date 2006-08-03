@@ -43,7 +43,9 @@ import com.metavize.mvvm.portal.PortalUser;
 import com.metavize.mvvm.portal.RemoteApplicationManager;
 import com.metavize.mvvm.security.LoginFailureReason;
 import com.metavize.mvvm.security.LogoutReason;
+import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.tran.TransformStats;
 import com.metavize.mvvm.util.TransactionWork;
 import jcifs.smb.NtlmPasswordAuthentication;
 import org.apache.catalina.Realm;
@@ -68,6 +70,9 @@ class PortalManagerImpl implements LocalPortalManager
 
     public static final long REAPING_FREQ = 5000;
 
+    private static final int LOGIN_COUNTER = Transform.GENERIC_0_COUNTER;
+    private static final int LOGOUT_COUNTER = Transform.GENERIC_4_COUNTER;
+
     // Add two seconds to each failed login attempt to blunt the force
     // of scripted dictionary attacks.
     private static final long LOGIN_FAIL_SLEEP_TIME = 2000;
@@ -86,6 +91,8 @@ class PortalManagerImpl implements LocalPortalManager
 
     private PortalSettings portalSettings;
     private EventLogger portalLogger;
+
+    private PortalTransformStats stats = new PortalTransformStats();
 
     PortalManagerImpl(MvvmContextImpl mvvmContext)
     {
@@ -129,6 +136,11 @@ class PortalManagerImpl implements LocalPortalManager
     }
 
     // public methods ---------------------------------------------------------
+
+    public TransformStats getStats()
+    {
+        return stats;
+    }
 
     public RemoteApplicationManager remoteApplicationManager()
     {
@@ -342,6 +354,11 @@ class PortalManagerImpl implements LocalPortalManager
         }
     }
 
+    public void incrementStatCounter(int num)
+    {
+        stats.incrementCount(num);
+    }
+
     private PortalLogin login(String uid, String password, InetAddress addr)
     {
         try {
@@ -403,6 +420,7 @@ class PortalManagerImpl implements LocalPortalManager
         PortalLoginDesc pld = new PortalLoginDesc(pl, it);
         activeLogins.put(uid, pld);
 
+        stats.incSessions();
         PortalLoginEvent event = new PortalLoginEvent(addr, uid, true);
         portalLogger.log(event);
 
@@ -424,12 +442,35 @@ class PortalManagerImpl implements LocalPortalManager
 
         activeLogins.remove(login.getUser());
 
+        stats.decSessions();
+        incrementStatCounter(LOGOUT_COUNTER);
         PortalLogoutEvent evt = new PortalLogoutEvent(login.getClientAddr(),
                                                       login.getUser(), reason);
         portalLogger.log(evt);
     }
 
     // private classes --------------------------------------------------------
+
+    private class PortalTransformStats extends TransformStats
+    {
+        // Everything is empty/ignored/zero EXCEPT:
+        // tcpSessionTotal -- how many user sessions ever since mvvm boot
+        void incSessions() {
+            tcpSessionCount++;
+            tcpSessionTotal++;
+        }
+
+        void decSessions() {
+            tcpSessionCount--;
+        }
+
+        void incSessionRequests() {
+            tcpSessionRequestTotal++;
+        }
+
+        // tcpSessionCount -- how many user sessions right now
+        // tcpRequestTotal -- how many login attempts ever
+    }
 
     private static class PortalLoginDesc
     {
@@ -531,20 +572,28 @@ class PortalManagerImpl implements LocalPortalManager
 
         public Principal authenticate(String username, String credentials)
         {
+            Principal result = null;
             String password = credentials;
             InetAddress addr;
 
             String addrStr = localAddr.get();
             if (null == addrStr) {
-                return null;
+                result = null;
             } else {
                 try {
                     addr = InetAddress.getByName(addrStr);
-                    return login(username, password, addr);
+                    stats.incSessionRequests();
+                    incrementStatCounter(LOGIN_COUNTER);
+                    result = login(username, password, addr);
                 } catch (UnknownHostException exn) {
-                    return null;
+                    result = null;
                 }
             }
+            if (result == null)
+                incrementStatCounter(LOGOUT_COUNTER);
+
+            return result;
+
         }
 
         @Override

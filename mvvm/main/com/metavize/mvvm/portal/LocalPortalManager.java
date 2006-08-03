@@ -12,7 +12,9 @@
 package com.metavize.mvvm.portal;
 
 import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.tran.TransformStats;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +26,13 @@ import java.util.Set;
  */
 public interface LocalPortalManager
 {
+    // This sux.  Duped in Transform and needs to be app independent. XXXXX
+    static final int PROXY_COUNTER = Transform.GENERIC_1_COUNTER;
+    static final int CIFS_COUNTER = Transform.GENERIC_2_COUNTER;
+
+    // This one is shared by both remote desktop apps
+    static final int FORWARD_COUNTER =  Transform.GENERIC_3_COUNTER;
+
     /**
      * The list of all bookmarks for the given user.  Is sorted with
      * user's bookmarks at top, then group (if any), then global.
@@ -76,4 +85,10 @@ public interface LocalPortalManager
 
     // Need this for the transform to give to UI.
     EventLogger getEventLogger(TransformContext tctx);
+
+    // Need this for the transform to give to UI.
+    TransformStats getStats();
+
+    // Need this for webapps to bling
+    void incrementStatCounter(int num);
  }

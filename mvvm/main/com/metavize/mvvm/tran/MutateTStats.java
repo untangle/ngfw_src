@@ -177,4 +177,25 @@ public final class MutateTStats {
             stats.lastActivityDate.setTime(MetaEnv.currentTimeMillis());
         }
     }
+
+    // Horrifically used by portal XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    public static TransformStats unholyMatrimony(TransformStats tstats, TransformStats mstats)
+    {
+        TransformStats result = new TransformStats();
+
+        // Byte and Chunk counts always zero so just ignore
+
+        result.udpSessionCount = mstats.udpSessionCount;
+        result.tcpSessionCount = mstats.tcpSessionCount;
+        result.udpSessionTotal = mstats.udpSessionTotal;
+        result.tcpSessionTotal = mstats.tcpSessionTotal;
+        result.udpSessionRequestTotal = mstats.udpSessionRequestTotal;
+        result.tcpSessionRequestTotal = mstats.tcpSessionRequestTotal;
+        result.startDate = tstats.startDate;
+        result.lastConfigureDate = tstats.lastConfigureDate;
+        result.lastActivityDate = tstats.lastActivityDate;
+        for (int i = 0; i < 16; i++)
+            result.incrementCount(i, mstats.getCount(i));
+        return result;
+    }
 }
