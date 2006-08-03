@@ -14,6 +14,7 @@ package com.metavize.tran.portal.browser;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,10 +25,14 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.portal.PortalLogin;
 import com.metavize.mvvm.util.XmlUtil;
+
 import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileFilter;
+import jcifs.smb.SmbFileFilter;
+import jcifs.util.transport.TransportException;
+
 import org.apache.log4j.Logger;
 
 public class FileLister extends HttpServlet
@@ -60,9 +65,52 @@ public class FileLister extends HttpServlet
     private Logger logger;
 
     // HttpServlet methods ----------------------------------------------------
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+        throws ServletException
+    {
+        try {
+            runDoGet(req, resp);
+        } catch (ServletException se) {
+            Throwable throwable = se.getRootCause();
+            /* XXX this is nasty, should be done with a proper try/catch */
+            logger.debug( "Caught an exception: ", se );
+            
+            /* XXX This is gnar gnar XXX */
+            while ( true ) {
+                if ( throwable == null ) break;
+                
+                logger.debug( "Cause: ", throwable );
+
+                /* XXX Should fix the SmbException to use the new initCause function in throwable */
+                if ( throwable instanceof SmbException ) {
+                    if (((SmbException)throwable).getRootCause() == null ) break;
+                    throwable = ((SmbException)throwable).getRootCause();
+                } else {
+                    if ( throwable.getCause() == null ) break;
+                    throwable = throwable.getCause();
+                }
+            } 
+            
+            if ( throwable instanceof TransportException ||
+                 throwable instanceof UnknownHostException ) {
+                logger.info( "Error listing directory: ", throwable );
+
+                /* Unable to send an error because the listing has already began */
+                // try {
+                // resp.sendError(resp.SC_INTERNAL_SERVER_ERROR);
+                // } catch (IOException e) {
+                // throw new ServletException(e);
+                // }
+
+            } else {
+                /* Rethrow the servlet exception */
+                throw se;
+            }
+        }        
+    }
+
+    protected void runDoGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
         portalManager.incrementStatCounter(LocalPortalManager.CIFS_COUNTER);
