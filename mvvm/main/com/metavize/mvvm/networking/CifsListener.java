@@ -42,11 +42,7 @@ class CifsListener implements NetworkSettingsListener
         IPaddr address   = network.getNetwork();
         IPaddr netmask   = network.getNetmask();
         IPaddr broadcast = address.or( netmask.inverse());
-        
-        // XXX START Delete ME
-        logger.warn( "Address: " + address + " broadcast: " + broadcast );
-        // XXX END DELETE ME
-        
+                
         Config.setProperty( BROADCAST_PROPERTY,    broadcast.toString());
         Config.setProperty( SMB_BIND_PROPERTY,     address.toString());
         Config.setProperty( NETBIOS_BIND_PROPERTY, address.toString());
