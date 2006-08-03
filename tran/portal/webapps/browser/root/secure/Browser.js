@@ -68,8 +68,8 @@ function Browser(shell, url)
     if (!cifsNode) {
         this._broadcastRoots();
     } else {
-        var action = new AjxTimedAction(this, this._broadcastRoots, {});
-        AjxTimedAction.scheduleAction(action, 2000);
+//         var action = new AjxTimedAction(this, this._broadcastRoots, {});
+//         AjxTimedAction.scheduleAction(action, 2000);
     }
 
     this.layout();
