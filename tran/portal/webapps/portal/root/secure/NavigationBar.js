@@ -115,4 +115,5 @@ NavigationBar.prototype.setUsername = function(username)
 
 NavigationBar.prototype.setTitle = function(title)
 {
-    this._titleDiv.innerHTML = title;};
+    this._titleDiv.innerHTML = title;
+};
