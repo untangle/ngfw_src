@@ -806,7 +806,7 @@ public class NetworkManagerImpl implements NetworkManager
 
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
 
-        /* If there are no settings, get the settings from the database */
+        /* If there are no settings, get the settings from the boxes configuration */
         if ( this.networkSettings == null ) {
             /* Need to create new settings, (The method setNetworkingConfiguration assumes that
              * settings is already set, and cannot be used here) */
@@ -822,6 +822,12 @@ public class NetworkManagerImpl implements NetworkManager
 
             /* Save the network settings */
             setNetworkSettings( internal );
+            
+            /* Default to HTTPs on */
+            configuration.isOutsideAccessEnabled( true );
+            configuration.setIsOutsideAdministrationEnabled( false );
+            configuration.setIsOutsideQuarantineEnabled( true );
+            configuration.setIsOutsideReportingEnabled( false );
 
             /* Save the remote settings */
             setRemoteSettings( configuration );
