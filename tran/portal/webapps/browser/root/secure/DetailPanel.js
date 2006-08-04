@@ -114,12 +114,16 @@ DetailPanel.prototype._createItemHtml = function(item) {
 
     htmlArr[idx++] = "<td";
     var width = AjxEnv.isIE ? (col._width + 4) : col._width;
-    if (col.memberName == "size")
-      htmlArr[idx++] = " align=right";
     htmlArr[idx++] = width ? (" width=" + width + ">") : ">";
     // add a div to force clipping (TD's dont obey it)
-    htmlArr[idx++] = "<div";
-    htmlArr[idx++] = width ? " style='width: " + width + "'>" : ">";
+    htmlArr[idx++] = "<div style='";
+    if (col.memberName == "size") {
+      htmlArr[idx++] = "text-align: right; padding-right: 4;";
+    }
+    if (width) {
+        htmlArr[idx++] = "width: " + width + ";";
+    }
+    htmlArr[idx++] = "'>";
 
     var value = item[col.memberName];
     htmlArr[idx++] = (value || "") + "</div></td>";
