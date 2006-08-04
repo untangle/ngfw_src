@@ -112,10 +112,10 @@ class UrlRewriter
     String rewriteUrl(String v)
     {
         if (v.startsWith(HTTP)) {
-            return SLASH_SLASH + localHost + contextBase + "http/"
+            return HTTPS + localHost + contextBase + "http/"
                 + v.substring(HTTP.length()); // XXX https
         } else if (v.startsWith(HTTPS)) {
-            return SLASH_SLASH + localHost + contextBase + "https/"
+            return HTTPS + localHost + contextBase + "https/"
                 + v.substring(HTTPS.length()); // XXX https
         } else if (v.startsWith(SLASH_SLASH)) {
             return SLASH_SLASH + localHost + contextBaseProto

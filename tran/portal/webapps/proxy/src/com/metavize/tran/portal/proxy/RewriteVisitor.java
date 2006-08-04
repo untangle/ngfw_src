@@ -69,9 +69,12 @@ class RewriteVisitor extends NodeVisitor
 
         if (tagName.equalsIgnoreCase("script")) {
             String type = tag.getAttribute("type");
+            String language = tag.getAttribute("language");
             if (null != type
                 && (type.equalsIgnoreCase("text/javascript")
                     || type.equalsIgnoreCase("application/x-javascript"))) {
+                inScript = true;
+            } else if (null != language && language.equalsIgnoreCase("javascript")) {
                 inScript = true;
             }
         }
