@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Comparator;
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -198,6 +200,19 @@ public class FileLister extends HttpServlet
             throw new ServletException("could not list directory", exn);
         }
 
+	Arrays.sort(files, new Comparator<SmbFile>() {
+			public int compare(SmbFile o1, SmbFile o2) {
+			    String o1Name = o1.getName();
+			    String o2Name = o2.getName();
+			    if (o1Name == null && o2Name == null)
+				return 0;
+			    if (o1Name == null)
+				return -1;
+			    if (o2Name == null)
+				return 1;
+			    return o1Name.compareTo(o2Name);
+			}
+		});
 
         os.println("<root path='" + p + "'>");
 

@@ -20,6 +20,7 @@ function CifsNode(parent, name, principal, type, size, lastModified,
     } else {
         this.lastModified = "";
     }
+    this.lastModifiedRaw = lastModified;  // Save for later comparison
 
     this.url = (parent || "") + name;
 

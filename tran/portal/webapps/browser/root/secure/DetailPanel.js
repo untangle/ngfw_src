@@ -114,6 +114,8 @@ DetailPanel.prototype._createItemHtml = function(item) {
 
     htmlArr[idx++] = "<td";
     var width = AjxEnv.isIE ? (col._width + 4) : col._width;
+    if (col.memberName == "size")
+      htmlArr[idx++] = " align=right";
     htmlArr[idx++] = width ? (" width=" + width + ">") : ">";
     // add a div to force clipping (TD's dont obey it)
     htmlArr[idx++] = "<div";
@@ -135,10 +137,18 @@ DetailPanel.prototype._sortColumn = function(col, asc)
   this._lastSortAsc = asc;
 
   var fn = function(a, b) {
-    av = a[col.memberName];
-    bv = b[col.memberName];
+    if (col.memberName == "size") {
+      av = a[col.memberName] - 0;
+      bv = b[col.memberName] - 0;
+    } else if (col.memberName == "lastModified") {
+      av = a["lastModifiedRaw"] - 0;
+      bv = b["lastModifiedRaw"] - 0;
+    } else {
+      av = a[col.memberName];
+      bv = b[col.memberName];
+    }
 
-    return (asc ? 1 : -1) * (a < b ? -1 : (a > b ? 1 : 0));
+    return (asc ? 1 : -1) * (av < bv ? -1 : (av > bv ? 1 : 0));
   }
 
   this.getList().sort(fn);
