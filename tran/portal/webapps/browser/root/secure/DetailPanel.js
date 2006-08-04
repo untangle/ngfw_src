@@ -116,9 +116,9 @@ DetailPanel.prototype._createItemHtml = function(item) {
     var width = AjxEnv.isIE ? (col._width + 4) : col._width;
     htmlArr[idx++] = width ? (" width=" + width + ">") : ">";
     // add a div to force clipping (TD's dont obey it)
-    htmlArr[idx++] = "<div style='";
+    htmlArr[idx++] = "<div style='padding: 0 4 0 4;";
     if (col.memberName == "size") {
-      htmlArr[idx++] = "text-align: right; padding-right: 4;";
+      htmlArr[idx++] = "text-align: right;";
     }
     if (width) {
         htmlArr[idx++] = "width: " + width + ";";
