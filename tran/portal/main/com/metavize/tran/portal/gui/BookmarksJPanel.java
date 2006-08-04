@@ -88,7 +88,7 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
     }
 
     private DefaultComboBoxModel consoleModel = new DefaultComboBoxModel();
-    private static final String CONSOLE_TRUE  = "share actual desktop";
+    private static final String CONSOLE_TRUE  = "steal actual desktop";
     private static final String CONSOLE_FALSE = "show new desktop";
     private void updateConsoleModel(){
 	consoleModel.removeAllElements();
