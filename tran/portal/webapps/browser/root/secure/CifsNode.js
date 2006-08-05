@@ -73,6 +73,10 @@ CifsNode.prototype = {
         return escape(null == this.principal ? this.url : ("[" + this.principal + "]" + this.url));
     },
 
+    getPostUrl: function() {
+        return null == this.principal ? this.url : ("[" + this.principal + "]" + this.url);
+    },
+
     isWorkGroup: function() {
         return this.type == CifsNode.WORKGROUP;
     },
