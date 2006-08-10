@@ -38,7 +38,7 @@ public class MWizardPageJPanel extends javax.swing.JPanel {
     protected boolean leavingBackwards(){ return true; }
     protected boolean enteringForwards(){ return true; }
     protected boolean enteringBackwards(){ return true; }
-	protected void initialFocus(){}
+    protected void initialFocus(){}
     
     protected void doSave(Object settings, boolean validateOnly) throws Exception {}
     

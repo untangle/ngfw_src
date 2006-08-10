@@ -15,9 +15,6 @@ import java.io.*;
 
 public class SystemStats
 {
-    public SystemStats()
-    {
-    }
 
     public static void main (String[] args)
     {
@@ -26,18 +23,18 @@ public class SystemStats
         System.exit(0);
     }
     
-    public void test()
+    public static void test()
     {
-        System.out.println("Memory: " + getMemoryMegs() + "M");
+        System.out.println("Memory: " + getMemoryMegs() + "MB");
         System.out.println("Physical CPU(s): " + getPhysicalCPU());
         System.out.println("Logical  CPU(s): " + getLogicalCPU());
         System.out.println("Clock Speed: " + getClockSpeed() + " MHz" );
         System.out.println("BogoMIPS: " + getBogoMIPS());
-        System.out.println("DiskSize: " + getDiskMegs() + "M");
-        System.out.println("Network Cards: " + getNumNIC());
+        System.out.println("DiskSize: " + getDiskGigs() + "GB");
+        System.out.println("Network Cards: " + getNumNICs());
     }
 
-    public int getMemoryMegs()
+    public static int getMemoryMegs()
     {
         try {
             BufferedReader input = new BufferedReader(new FileReader("/proc/meminfo"));
@@ -59,7 +56,7 @@ public class SystemStats
         return -1;
     }
 
-    public int getPhysicalCPU()
+    public static int getPhysicalCPU()
     {
         try {
             String[] args = {"/bin/sh","-c","cat /proc/cpuinfo | grep physical | uniq | wc -l"};
@@ -75,7 +72,7 @@ public class SystemStats
         return -1;
     }
 
-    public int getLogicalCPU()
+    public static int getLogicalCPU()
     {
         try {
             String[] args = {"/bin/sh","-c","cat /proc/cpuinfo | grep processor | uniq | wc -l"};
@@ -91,7 +88,7 @@ public class SystemStats
         return -1;
     }
 
-    public int getClockSpeed()
+    public static int getClockSpeed()
     {
         try {
             String[] args = {"/bin/sh","-c","cat /proc/cpuinfo | grep MHz | head -n 1 | awk '{print $4}'"};
@@ -107,7 +104,7 @@ public class SystemStats
         return -1;
     }
 
-    public int getBogoMIPS()
+    public static int getBogoMIPS()
     {
         try {
             String[] args = {"/bin/sh","-c","cat /proc/cpuinfo | grep bogomips | head -n 1 | awk '{print $3}'"};
@@ -123,10 +120,10 @@ public class SystemStats
         return -1;
     }
 
-    public int getDiskMegs()
+    public static int getDiskGigs()
     {
         try {
-            String[] args = {"/bin/sh","-c"," cat /proc/partitions | egrep 'sda|hda' | egrep -v 'sda[1-9]|hda[1-9]' | awk '{print $3*512/1000000}'"};
+            String[] args = {"/bin/sh","-c"," cat /proc/partitions | egrep 'sda|hda' | egrep -v 'sda[1-9]|hda[1-9]' | awk '{print $3*512/1000000000}'"};
             Process proc = Runtime.getRuntime().exec(args);
             BufferedReader input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             try {
@@ -139,7 +136,7 @@ public class SystemStats
         return -1;
     }
 
-    public int getNumNIC()
+    public static int getNumNICs()
     {
         try {
             String[] args = {"/bin/sh","-c","/sbin/ifconfig | egrep '^eth' | wc -l "};

@@ -12,7 +12,6 @@
 package com.metavize.gui.install;
 
 import com.metavize.gui.widgets.wizard.*;
-import com.metavize.gui.util.*;
 
 import javax.swing.SwingUtilities;
 import javax.swing.JProgressBar;
@@ -21,42 +20,77 @@ import java.awt.Color;
 
 public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
+    private static final int MEMORY_MIN_MEGS  = 1024;
+    private static final int MEMORY_GOOD_MEGS = 2048;
+    private static final int CPU_MIN_MHZ  = 1000;
+    private static final int CPU_GOOD_MHZ = 2000;
+    private static final int DISK_MIN_GIGS  = 40;
+    private static final int DISK_GOOD_GIGS = 60;
+    private static final int NICS_MIN_COUNT  = 2;
+    private static final int NICS_GOOD_COUNT = 3;
     
     public InstallBenchmarkJPanel() {
         initComponents();
     }
 
-    public boolean enteringForwards(){
-	try{
-	    InstallWizard.getInfiniteProgressJComponent().startLater("Checking...");
-	    SwingUtilities.invokeAndWait( new Runnable(){ public void run() {
-		updateJProgressBar(memoryJProgressBar, "Checking...", true, 0, 68, 91, 255);
-		updateJProgressBar(cpuJProgressBar, "Checking...", true, 0, 68, 91, 255);
-		updateJProgressBar(diskJProgressBar, "Checking...", true, 0, 68, 91, 255);
-		updateJProgressBar(nicJProgressBar, "Checking...", true, 0, 68, 91, 255);
-		memoryResultJLabel.setText("undetermined");
-		cpuResultJLabel.setText("undetermined");
-		diskResultJLabel.setText("undetermined");
-		nicResultJLabel.setText("undetermined");
-	    }});
-	    Thread.currentThread().sleep(3000l);
-	    SwingUtilities.invokeAndWait( new Runnable(){ public void run() {
-		updateJProgressBar(memoryJProgressBar, "Test Failed", false, 33, 255, 0, 0);
-		updateJProgressBar(cpuJProgressBar, "Warning", false, 66, 255, 255, 0);
-		updateJProgressBar(diskJProgressBar, "Warning", false, 100, 0, 255, 0);
-		updateJProgressBar(nicJProgressBar, "Test Passed", false, 100, 0, 255, 0);
-		memoryResultJLabel.setText("1024 MB");
-		cpuResultJLabel.setText("2.0 GHz (x2)");
-		diskResultJLabel.setText("80 GB");
-		nicResultJLabel.setText("3 interfaces");
-	    }});
-	    InstallWizard.getInfiniteProgressJComponent().stopLater(4000l);
+    protected void initialFocus(){
+	new DetectThread();
+    }
+
+    class DetectThread extends Thread {
+	public void DetectThread(){
+	    setDaemon(true);
+	    start();
 	}
-	catch(Exception e){
-	    InstallWizard.getInfiniteProgressJComponent().stopLater(-1);
-	    Util.handleExceptionNoRestart("Error doing update.",e);
+	public void run(){
+	    System.out.println("HERE");
+	    try{
+		InstallWizard.getInfiniteProgressJComponent().startLater("Checking...");
+		SwingUtilities.invokeLater( new Runnable(){ public void run() {
+		    updateJProgressBar(memoryJProgressBar, "Checking...", true, 0, 68, 91, 255);
+		    updateJProgressBar(cpuJProgressBar, "Checking...", true, 0, 68, 91, 255);
+		    updateJProgressBar(diskJProgressBar, "Checking...", true, 0, 68, 91, 255);
+		    updateJProgressBar(nicJProgressBar, "Checking...", true, 0, 68, 91, 255);
+		    memoryResultJLabel.setText("undetermined");
+		    cpuResultJLabel.setText("undetermined");
+		    diskResultJLabel.setText("undetermined");
+		    nicResultJLabel.setText("undetermined");
+		}});
+		
+		// RUN TEST
+		final int memory   = SystemStats.getMemoryMegs();
+		final int cpuCount = SystemStats.getLogicalCPU();
+		final int cpuSpeed = SystemStats.getClockSpeed();
+		final int disk     = SystemStats.getDiskGigs();
+		final int nics     = SystemStats.getNumNICs();
+		// COMPUTE RESULTS
+		final Object memoryResults[] = computeResults(memory,MEMORY_MIN_MEGS,MEMORY_GOOD_MEGS);
+		final Object cpuResults[]    = computeResults(cpuSpeed,CPU_MIN_MHZ,CPU_GOOD_MHZ);
+		final Object diskResults[]   = computeResults(disk,DISK_MIN_GIGS,DISK_GOOD_GIGS);
+		final Object nicsResults[]   = computeResults(nics,NICS_MIN_COUNT,NICS_GOOD_COUNT);
+		
+		SwingUtilities.invokeLater( new Runnable(){ public void run() {
+		    updateJProgressBar(memoryJProgressBar, (String)memoryResults[0], false, (Integer)memoryResults[1],
+				       (Integer)memoryResults[2], (Integer)memoryResults[3], (Integer)memoryResults[4]);
+		    updateJProgressBar(cpuJProgressBar, (String)cpuResults[0], false, (Integer)cpuResults[1],
+				       (Integer)cpuResults[2], (Integer)cpuResults[3], (Integer)cpuResults[4]);
+		    updateJProgressBar(diskJProgressBar, (String)diskResults[0], false, (Integer)diskResults[1],
+				       (Integer)diskResults[2], (Integer)diskResults[3], (Integer)diskResults[4]);
+		    updateJProgressBar(nicJProgressBar, (String)nicsResults[0], false, (Integer)nicsResults[1],
+				       (Integer)nicsResults[2], (Integer)nicsResults[3], (Integer)nicsResults[4]);
+		    
+		    memoryResultJLabel.setText(memory + " MB");
+		    cpuResultJLabel.setText(cpuSpeed + " MHz" + (cpuCount>1?" (x"+cpuCount+")":""));
+		    diskResultJLabel.setText(disk + " GB");
+		    nicResultJLabel.setText(nics + " interface" + (nics>1?"s":""));
+		}});
+		InstallWizard.getInfiniteProgressJComponent().stopLater(4000l);
+	    }
+	    catch(Exception e){
+		InstallWizard.getInfiniteProgressJComponent().stopLater(-1);
+		e.printStackTrace();
+	    }
 	}
-	return true;
     }
 
     private void updateJProgressBar(JProgressBar jProgressBar, String message, boolean indeterminate, int value, int r, int g, int b){
@@ -64,6 +98,30 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 	jProgressBar.setIndeterminate(indeterminate);
 	jProgressBar.setValue(value);
 	jProgressBar.setForeground(new Color(r,g,b));
+    }
+
+    private Object[] computeResults(Integer score, Integer min, Integer max){
+	String resultString;
+	Integer resultValue, resultR, resultG, resultB;
+	if( score <= min ){
+	    resultString = "Test Failed";
+	    resultValue  = 33;
+	    resultR = 255;
+	    resultG = resultB = 0;
+	}
+	else if(score <= max ){
+	    resultString = "Warning";
+	    resultValue = 66;
+	    resultR = resultG = 255;
+	    resultB = 0;
+	}
+	else{
+	    resultString = "Test Passed";
+	    resultValue = 100;
+	    resultG = 255;
+	    resultR = resultB = 0;
+	}
+	return new Object[]{resultString,resultValue,resultR,resultG,resultB};
     }
 
         private void initComponents() {//GEN-BEGIN:initComponents
@@ -133,16 +191,17 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
                 memoryJPanel.add(memoryNameJLabel, gridBagConstraints);
 
-                memoryResultJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+                memoryResultJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                memoryResultJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
                 memoryResultJLabel.setText("1024 MB");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 0.5;
+                gridBagConstraints.weightx = 1.0;
                 memoryJPanel.add(memoryResultJLabel, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -178,16 +237,17 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
                 cpuJPanel.add(cpuNameJLabel, gridBagConstraints);
 
-                cpuResultJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+                cpuResultJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                cpuResultJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
                 cpuResultJLabel.setText("1.5Ghz (2x)");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 0.5;
+                gridBagConstraints.weightx = 1.0;
                 cpuJPanel.add(cpuResultJLabel, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -223,10 +283,11 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
                 diskJPanel.add(diskNameJLabel, gridBagConstraints);
 
-                diskResultJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+                diskResultJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                diskResultJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
                 diskResultJLabel.setText("45 GB");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
@@ -268,10 +329,11 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
                 nicJPanel.add(nicNameJLabel, gridBagConstraints);
 
-                nicResultJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+                nicResultJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                nicResultJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
                 nicResultJLabel.setText("3 Interfaces");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;

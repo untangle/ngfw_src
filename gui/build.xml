@@ -100,14 +100,35 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
     <jar destfile="${build.jar}/gui.jar" index="yes">
       <fileset dir="${build.gui}">
         <exclude name="com/metavize/jsp/**"/>
+	<exclude name="com/metavize/gui/install/**"/>
       </fileset>
       <fileset dir="${src.main}">
         <include name="**/*png"/>
         <include name="**/*gif"/>
         <include name="**/*jpg"/>
+	<exclude name="com/metavize/gui/install/**"/>
       </fileset>
       <fileset dir="../mvvm/resources">
         <include name="License*.txt"/>
+      </fileset>
+    </jar>
+    <jar destfile="${build.jar}/installWizard.jar" index="yes">
+      <manifest>
+	<attribute name="Built-By" value="Metavize, Inc."/>
+	<attribute name="Main-Class" value="com.metavize.gui.install.InstallWizard"/>
+      </manifest>
+      <fileset dir="${build.gui}">
+	<include name="com/metavize/gui/install/**"/>
+	<include name="com/metavize/gui/util/**"/>
+	<include name="com/metavize/gui/widgets/*"/>
+	<include name="com/metavize/gui/widgets/dialogs/**"/>
+	<include name="com/metavize/gui/widgets/wizard/**"/>
+	<include name="com/metavize/gui/login/**"/>
+      </fileset>
+      <fileset dir="${src.main}">
+        <include name="com/metavize/gui/widgets/wizard/*png"/>
+        <include name="com/metavize/gui/install/*png"/>
+        <include name="com/metavize/gui/images/*png"/>
       </fileset>
     </jar>
   </target>
@@ -122,6 +143,7 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
 
   <target name="install.gui" depends="jar.gui">
     <copy file="${build.jar}/gui.jar" todir="${dist.mvvm.lib}"/>
+    <copy file="${build.jar}/installWizard.jar" todir="${dist.bin}"/>
   </target>
 
   <target name="install.servlets" depends="jar.servlets">

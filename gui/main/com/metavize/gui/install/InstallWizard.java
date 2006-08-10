@@ -21,7 +21,7 @@ public class InstallWizard extends MWizardJDialog {
     
     public InstallWizard() {
 	setModal(true);
-        setTitle("Metavize EdgeGuard Install Wizard");
+        setTitle("Metavize EdgeGuard Hardware Wizard");
         addWizardPageJPanel(new InstallWelcomeJPanel(),   "1. Welcome", false, false);
         addWizardPageJPanel(new InstallBenchmarkJPanel(), "2. Hardware Test", false, false);
         addWizardPageJPanel(new InstallWarningJPanel(),   "3. Warning", false, false);
@@ -57,7 +57,9 @@ public class InstallWizard extends MWizardJDialog {
 	}
     }
 
-
+    public static void main(String[] args){
+	new InstallWizard().setVisible(true);
+    }
 }
 
 
