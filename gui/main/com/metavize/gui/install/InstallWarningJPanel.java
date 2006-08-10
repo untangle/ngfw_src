@@ -15,33 +15,13 @@ import com.metavize.gui.widgets.wizard.*;
 import com.metavize.gui.util.*;
 import javax.swing.SwingUtilities;
 
-public class InstallResultsJPanel extends MWizardPageJPanel {
+public class InstallWarningJPanel extends MWizardPageJPanel {
 
     
-    public InstallResultsJPanel() {
+    public InstallWarningJPanel() {
         initComponents();
     }
 
-    public boolean enteringForwards(){
-	try{
-	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		if(InstallWizard.testsPassed()){
-		    headerJLabel.setText("<html>Congratulations!<br>Your hardware meets requirements.</html>");
-		    subheaderJLabel.setText("<html>You may continue installation...</html>");
-		    messageJLabel.setText("<html>Press the Finish button to continue.</html>");
-		}
-		else{
-		    headerJLabel.setText("<html><font color=\"#FF0000\">Warning!<br>Your hardware does not meet requirements.</font></html>");
-		    subheaderJLabel.setText("<html>You may not continue installation...</html>");
-		    messageJLabel.setText("<html>Press the Finish button to exit.</html>");				
-		}
-	    }});
-	}
-	catch(Exception e){
-	    Util.handleExceptionNoRestart("Error waiting for update", e);
-	}
-	return true;
-    }
 
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
@@ -60,7 +40,7 @@ public class InstallResultsJPanel extends MWizardPageJPanel {
                 contentJPanel.setOpaque(false);
                 headerJLabel.setFont(new java.awt.Font("Dialog", 1, 18));
                 headerJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                headerJLabel.setText("<html>Congratulations!<br>SOME RESULT MESSAGE GOES HERE</html>");
+                headerJLabel.setText("<html><font color=\"#FF0000\">Warning!</font></html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -69,9 +49,9 @@ public class InstallResultsJPanel extends MWizardPageJPanel {
                 gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
                 contentJPanel.add(headerJLabel, gridBagConstraints);
 
-                subheaderJLabel.setFont(new java.awt.Font("Dialog", 1, 18));
+                subheaderJLabel.setFont(new java.awt.Font("Dialog", 0, 18));
                 subheaderJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                subheaderJLabel.setText("<html>some result submessage goes here</html>");
+                subheaderJLabel.setText("<html><font color=\"#FF0000\">If you continue, your boot disk will be erased in preparation for the EdgeGuard installation process.</font></html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
@@ -81,7 +61,7 @@ public class InstallResultsJPanel extends MWizardPageJPanel {
                 contentJPanel.add(subheaderJLabel, gridBagConstraints);
 
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                messageJLabel.setText("<html>some sub sub message goes here</html>");
+                messageJLabel.setText("<html>If you would not like to continue, press the Close Window button.  Otherwise, press the Finish button.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 2;
