@@ -38,7 +38,7 @@ MVVM_INSIDE_INTF=${MVVM_INSIDE_INTF:-"eth1"}
 MVVM_OUTSIDE_INTF=${MVVM_OUTSIDE_INTF:-"eth0"}
 
 if [ "x${USER}" = "x" -o "x${USER}" = "xroot" ]; then
-        MVVM_NICENESS=-15
+        MVVM_NICENESS=0
 else
         MVVM_NICENESS=0
 fi
@@ -122,6 +122,9 @@ JAVA_OPTS_BEA="-Xgcpause -Xgcprio:pausetime"
 #  Maximum at 320m so we leave a lot of space for stacks but still have enough for 10,000 sessions
 #  Stack size 96k which is small enough but still works
 JAVA_OPTS_COMMON="-verbose:gc -Xloggc:$MVVM_GC_LOG -Xms128m -Xmx320m -Xss96k -server"
+if [ "x" != "x@PREFIX@" ] ; then
+    JAVA_OPTS_COMMON="-ea $JAVA_OPTS_COMMON"
+fi
 
 if [ -f $JAVA_HOME/bin/console ] ; then
     JAVA_OPTS="$JAVA_OPTS_COMMON $JAVA_OPTS_BEA" #   BEA
