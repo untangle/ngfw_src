@@ -248,6 +248,16 @@ public final class Netcap {
     public native void setSessionLimit( int limit );
 
     /**
+     * Set the scheduling policy to use for Netcap Server threads
+     */
+    public native void setNewSessionSchedPolicy( int policy );
+
+    /**
+     * Set the scheduling policy to use for Session threads
+     */
+    public native void setSessionSchedPolicy( int policy );
+
+    /**
      * Retrieve the netcap interface that an ip will go out on.
      */
     public byte getOutgoingInterface( InetAddress destination ) throws JNetcapException

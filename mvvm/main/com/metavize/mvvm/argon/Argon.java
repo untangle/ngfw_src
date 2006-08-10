@@ -40,6 +40,8 @@ public class Argon
     /* Maximum number of threads allowed at any time */
     private static int MAX_THREADS = 10000;
 
+    public static final int SCHED_NORMAL = 0;
+
     /* The networking manager impl is passed in at init time */
     private NetworkManagerImpl networkManager = null;
 
@@ -57,6 +59,8 @@ public class Argon
     int mvutilDebugLevel    = 0;
 
     int sessionThreadLimit  = 10000;
+    int newSessionSchedPolicy  = SCHED_NORMAL;
+    int sessionSchedPolicy  = SCHED_NORMAL;
     boolean isShieldEnabled = true;
     String shieldFile       = null;
     Shield shield;
@@ -165,6 +169,17 @@ public class Argon
             sessionThreadLimit  = Integer.parseInt( temp );
         }
 
+        // Policy used for session threads (and new session threads if not specified below)
+        if (( temp = System.getProperty( "argon.sessionSchedPolicy" )) != null ) {
+            sessionSchedPolicy  = Integer.parseInt( temp );
+            newSessionSchedPolicy  = sessionSchedPolicy;
+        }
+
+        // Policy used for newSession (Netcap Server) threads
+        if (( temp = System.getProperty( "argon.newSessionSchedPolicy" )) != null ) {
+            newSessionSchedPolicy  = Integer.parseInt( temp );
+        }
+
 
         try {
             Properties properties = new Properties();
@@ -225,6 +240,9 @@ public class Argon
         Vector.mvutilDebugLevel( mvutilDebugLevel );
         Vector.vectorDebugLevel( vectorDebugLevel );
         Vector.jvectorDebugLevel( jvectorDebugLevel );
+
+        Netcap.getInstance().setNewSessionSchedPolicy( this.newSessionSchedPolicy );
+        Netcap.getInstance().setSessionSchedPolicy( this.sessionSchedPolicy );
 
         /* Donate a few threads */
         Netcap.donateThreads( numThreads );

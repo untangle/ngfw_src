@@ -33,6 +33,11 @@
 #include "jnetcap.h"
 #include JH_Netcap
 
+/* Too hard to include kernel include files, so we just define it again here. XXX */
+#ifndef SCHED_NORMAL
+#define SCHED_NORMAL		0
+#endif
+
 #define _verify_mvutil_initialized()    if ( _jnetcap.mvutil != _INITIALIZED ) return -1
 #define _verify_netcap_initialized()    if ( _jnetcap.netcap != _INITIALIZED ) return -1
 #define _verify_scheduler_initialized() if ( _jnetcap.scheduler != _INITIALIZED ) return -1
@@ -50,6 +55,10 @@
 #define _SESSION_LIMIT_DEFAULT 10000
 // XXXX Set this to 20 or something.
 #define _SESSION_LIMIT_MIN     5
+
+/* WARN: These are overriden by the argon property, so ignore them */
+#define _NEW_SESSION_SCHED_POLICY_DEFAULT   SCHED_NORMAL
+#define _SESSION_SCHED_POLICY_DEFAULT       SCHED_NORMAL
 
 #define _STATION_GUARD  0x53AD4332
 #define _RELIEVE_GUARD  0xDEADD00D
@@ -75,6 +84,10 @@ static struct {
     } java;
     
     int session_limit;
+
+    int new_session_sched_policy;
+
+    int session_sched_policy;
     
     int session_count;
 
@@ -96,6 +109,8 @@ static struct {
     },
 
     .session_limit = _SESSION_LIMIT_DEFAULT,
+    .new_session_sched_policy = _NEW_SESSION_SCHED_POLICY_DEFAULT,
+    .session_sched_policy = _SESSION_SCHED_POLICY_DEFAULT,
     .session_count = 0,
     .session_mutex = PTHREAD_MUTEX_INITIALIZER,
 
@@ -232,6 +247,32 @@ JNIEXPORT void JNICALL JF_Netcap( setSessionLimit )
     debug( 0, "JNETCAP: Setting session limit to %d\n", limit );
 
     _jnetcap.session_limit = limit;
+}
+
+/*
+ * Class:     com_metavize_jnetcap_Netcap
+ * Method:    setNewSessionSchedPolicy
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL JF_Netcap( setNewSessionSchedPolicy )
+  (JNIEnv *env, jobject _this, jint policy )
+{
+    debug( 0, "JNETCAP: Setting new session sched policy to %d\n", policy );
+
+    _jnetcap.new_session_sched_policy = policy;
+}
+
+/*
+ * Class:     com_metavize_jnetcap_Netcap
+ * Method:    setSessionSchedPolicy
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL JF_Netcap( setSessionSchedPolicy )
+  (JNIEnv *env, jobject _this, jint policy )
+{
+    debug( 0, "JNETCAP: Setting session sched policy to %d\n", policy );
+
+    _jnetcap.session_sched_policy = policy;
 }
 
 
@@ -416,7 +457,7 @@ JNIEXPORT jint JNICALL JF_Netcap( donateThreads )
 
     /* Donate a few threads */
     for ( ; num_threads > 0 ; num_threads-- ) {
-        arg = jnetcap_thread_create( netcap_thread_donate, NULL, SCHED_OTHER, NULL );
+        arg = jnetcap_thread_create( netcap_thread_donate, NULL, _jnetcap.new_session_sched_policy, NULL );
         
         if ( arg == NULL ) {
             return jmvutil_error( JMVUTIL_ERROR_STT, ERR_CRITICAL, "jnetcap_thread_create\n" );
@@ -774,7 +815,7 @@ static void              _udp_hook( netcap_session_t* netcap_sess, void* arg )
     int _critical_section() {
         pthread_t id;
         
-        thread_arg = jnetcap_thread_create( _udp_run_thread, netcap_sess, SCHED_OTHER, NULL );
+        thread_arg = jnetcap_thread_create( _udp_run_thread, netcap_sess, _jnetcap.session_sched_policy, NULL );
         if ( thread_arg == NULL  ) return errlog( ERR_CRITICAL, "jnetcap_thread_create\n" );
         
         if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, thread_arg )) {
@@ -811,7 +852,7 @@ static void              _icmp_hook( netcap_session_t* netcap_sess, netcap_pkt_t
     int _critical_section() {
         pthread_t id;
         
-        thread_arg = jnetcap_thread_create( _icmp_run_thread, netcap_sess, SCHED_OTHER, NULL );
+        thread_arg = jnetcap_thread_create( _icmp_run_thread, netcap_sess, _jnetcap.session_sched_policy, NULL );
         if ( thread_arg == NULL ) return errlog( ERR_CRITICAL, "jnetcap_thread_create" );
     
         if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, thread_arg )) {
@@ -846,10 +887,10 @@ static void              _tcp_hook( netcap_session_t* netcap_sess, void* arg )
     
     int _critical_section() {
         pthread_t id;
-        
-        thread_arg = jnetcap_thread_create( _tcp_run_thread, netcap_sess, SCHED_OTHER, NULL );
+
+        thread_arg = jnetcap_thread_create( _tcp_run_thread, netcap_sess, _jnetcap.session_sched_policy, NULL );
         if ( thread_arg == NULL ) return errlog( ERR_CRITICAL, "jnetcap_thread_create" );
-        
+
         if ( pthread_create( &id, &uthread_attr.other.medium, _run_thread, thread_arg )) {
             return perrlog( "pthread_create" );
         }
@@ -1028,6 +1069,8 @@ static void*             _run_thread( void* _arg )
     pthread_t id;
     void* ret;
     JavaVM* jvm;
+    struct sched_param empty;
+    // int curpolicy = -1;
 
     if ( _arg == NULL ) return errlogargs_null();
 
@@ -1050,7 +1093,16 @@ static void*             _run_thread( void* _arg )
             id = pthread_self();
 
             /* Not a fatal error */
-            if ( pthread_setschedparam( id, arg.policy, arg.param ) < 0 ) perrlog( "pthread_setschedparam" );
+            if ( pthread_setschedparam( id, arg.policy, arg.param ) < 0 ) perrlog( "pthread_setschedparam(param)" );
+        } else if ( arg.policy != SCHED_NORMAL ) {
+            // This has to happen here, for some reason it doesn't work if we
+            // do it at pthread create time. jdi
+            id = pthread_self();
+            bzero(&empty, sizeof(struct sched_param));
+            // pthread_getschedparam(id, &curpolicy, &empty);
+            // printf("%d: setting policy from %d to %d\n", id, curpolicy, arg.policy);
+            if ( pthread_setschedparam( id, arg.policy, &empty ) < 0 )
+                perrlog( "pthread_setschedparam(policy)" ); /* Not fatal */
         }
         
         /* Run the required function */
