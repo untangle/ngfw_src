@@ -124,7 +124,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 	super.setVisible(isVisible);
     }
     
-    protected void updateButtonState(boolean disableAll){
+    public void updateButtonState(boolean disableAll){
 	if( disableAll ){
 	    nextJButton.setEnabled(false);
 	    previousJButton.setEnabled(false);

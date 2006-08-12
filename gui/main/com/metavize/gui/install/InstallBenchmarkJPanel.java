@@ -38,8 +38,10 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
     private static final String NICS_REQUIRED = "("+NICS_MIN_COUNT+" interfaces required)";
 
     private boolean testPassed = false;
+    private InstallWizard installWizard;
     
-    public InstallBenchmarkJPanel() {
+    public InstallBenchmarkJPanel(InstallWizard installWizard) {
+	this.installWizard = installWizard;
         initComponents();
     }
 
@@ -56,7 +58,8 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
     class DetectThread extends Thread {
 	public DetectThread(){
 	    setDaemon(true);
-	    //	    InstallWizard.getInfiniteProgressJComponent().startLater("Checking...");[B
+	    //	    InstallWizard.getInfiniteProgressJComponent().startLater("Checking...");
+	    installWizard.updateButtonState(true);
 	    updateJProgressBar(memoryJProgressBar, "Checking...", true, 0, 68, 91, 255);
 	    updateJProgressBar(cpuJProgressBar, "Checking...", true, 0, 68, 91, 255);
 	    updateJProgressBar(diskJProgressBar, "Checking...", true, 0, 68, 91, 255);
@@ -85,6 +88,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 		sleep(3000l);
 
 		SwingUtilities.invokeAndWait( new Runnable(){ public void run() {
+		    installWizard.updateButtonState(false);
 		    updateJProgressBar(memoryJProgressBar, (String)memoryResults[0], false, (Integer)memoryResults[1],
 				       (Integer)memoryResults[2], (Integer)memoryResults[3], (Integer)memoryResults[4]);
 		    updateJProgressBar(cpuJProgressBar, (String)cpuResults[0], false, (Integer)cpuResults[1],
