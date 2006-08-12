@@ -93,8 +93,6 @@ public class RemapperControler
         //Nothing to do
         req.getRequestDispatcher(Constants.MAP_ADDRESS_VIEW).forward(req, resp);
       }
-
-      
     }
     catch(Exception ex) {
       log("[RemapperControler] Exception servicing request", ex);

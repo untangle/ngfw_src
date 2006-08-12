@@ -24,7 +24,7 @@ public final class MailSummary
   private String m_quarantineCategory;
   private String m_quarantineDetail;
   private int m_attachmentCount = 0;
-
+  private long m_quarantineSize;
 
   public MailSummary() {}
 
@@ -32,13 +32,15 @@ public final class MailSummary
     String subject,
     String quarantineCategory,
     String quarantineDetail,
-    int attachmentCount) {
+    int attachmentCount,
+    long quarantineSize) {
 
     m_sender = sender;
     m_subject = subject;
     m_quarantineCategory = quarantineCategory;
     m_quarantineDetail = quarantineDetail;
     m_attachmentCount = attachmentCount;
+    m_quarantineSize = quarantineSize;
   }
 
   public int getAttachmentCount() {
@@ -80,6 +82,12 @@ public final class MailSummary
   public void setQuarantineDetail(String det) {
     m_quarantineDetail = det;
   }
+  public long getQuarantineSize() {
+    return m_quarantineSize;
+  }
+  public void setQuarantineSize(long size) {
+    m_quarantineSize = size;
+  }
 
   public String getFormattedQuarantineDetail() {
     //Attempts to convert to a formatted float.  If this fails (i.e.
@@ -104,15 +112,12 @@ public final class MailSummary
       append(", Subject: ").append(getSubject()).
       append(", Cat: ").append(getQuarantineCategory()).
       append(", AttachCount: ").append(getAttachmentCount()).
-      append(", Detail: ").append(getQuarantineDetail());
+      append(", Detail: ").append(getQuarantineDetail()).
+      append(", Size: ").append(getQuarantineSize());
 
     return sb.toString();
   }
 
-  
-
-
-  
 /*  
 
   public static void main(String[] args) throws Exception {

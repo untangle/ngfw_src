@@ -78,18 +78,15 @@ public class QuarantineStore {
     ERROR
   };
 
-  private final MVLogger m_logger =
-    new MVLogger(QuarantineStore.class);
+  private final MVLogger m_logger = new MVLogger(QuarantineStore.class);
   private File m_rootDir;
   private AddressLock m_addressLock;
   private MasterTable m_masterTable;
   private InboxDirectoryTree m_dirTracker;
 
-  private QuarantineEjectionHandler m_deleter =
-    new DeletingEjectionHandler();
+  private QuarantineEjectionHandler m_deleter = new DeletingEjectionHandler();
 
   public QuarantineStore(File rootDir) {
-
     boolean knownHosed = false;
     m_rootDir = rootDir;
 
@@ -113,7 +110,6 @@ public class QuarantineStore {
     m_logger.debug("About to Open Master Table...");
     m_masterTable = MasterTable.open(m_rootDir, m_dirTracker);
     m_logger.debug("Opened Master Table...");
-
   }
 
   /**
@@ -203,6 +199,7 @@ public class QuarantineStore {
     m_addressLock.lock(inboxAddr);
 
     long size = file.length();
+    summary.setQuarantineSize(size);
 
     boolean renamedFile = true;
     String newFileName;
@@ -219,8 +216,7 @@ public class QuarantineStore {
         }
         renamedFile = false;
       }
-    }
-    else {
+    } else {
       newFileName = copyFileToInbox(file, dir);
       if(newFileName == null) {
         m_addressLock.unlock(inboxAddr);
@@ -229,11 +225,8 @@ public class QuarantineStore {
       renamedFile = false;
     }
 
-    
-    
-
     //Update (append) to the index
-    if(!appendSummaryToIndex(dir, inboxAddr, recipients, newFileName, size, summary)) {
+    if(!appendSummaryToIndex(dir, inboxAddr, recipients, newFileName, summary)) {
       if(renamedFile) {
         //We're likely so hosed at this point
         //anyway, what's the use of worrying about
@@ -295,8 +288,6 @@ public class QuarantineStore {
       eject(mapping.getKey(), pruningDeleter, pruningSelector);
       observer.postVisitInboxForOldMessages(mapping.getKey(), mapping.getValue().getDir());
     }
-
-
 
     //Go through the list of dead inbox candidates
     for(String account : pruningSelector.getDoomedInboxes()) {
@@ -389,7 +380,6 @@ public class QuarantineStore {
    * @return the result
    */
   public Pair<GenericStatus, InboxIndexImpl> getIndex(String address) {
-
     address = address.toLowerCase();
 
     //Get/create the inbox directory
@@ -418,7 +408,6 @@ public class QuarantineStore {
     }
     return new Pair<GenericStatus, InboxIndexImpl>(GenericStatus.SUCCESS, read.b);
   }
-
 
 
   /**
@@ -555,7 +544,6 @@ public class QuarantineStore {
     String inboxAddr,
     String[] recipients,
     String fileNameInInbox,
-    long size,
     MailSummary summary) {
 
     //Update (append) to the index
@@ -563,10 +551,8 @@ public class QuarantineStore {
       inboxDir,
       new InboxRecordImpl(fileNameInInbox,
         System.currentTimeMillis(),
-        size,
         summary,
         recipients));
-
   }
 
   //
@@ -861,7 +847,4 @@ public class QuarantineStore {
       }
     }
   }
-
-
-
 }

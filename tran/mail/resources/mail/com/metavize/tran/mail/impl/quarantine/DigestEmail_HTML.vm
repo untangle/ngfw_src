@@ -601,6 +601,8 @@ hr {
                         <th scope="col"><img src="$image_root/with_attach.png"/></th>
                         <th scope="col">Score</th>
                         <th scope="col">Subject</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Size (KB)</th>
                       </tr>
                     </thead>
                     <tfoot>
@@ -613,8 +615,8 @@ hr {
                       </tr>
                     #else
                       <tr>
-                        <th scope="row">Total</th>
-                        <td colspan="5">$totalNumRecords mails</td>
+                        <th scope="row">TOTALS</th>
+                        <td colspan="5">$totalNumRecords</td>
                       </tr>
                     #end
                     </tfoot>
@@ -641,6 +643,8 @@ hr {
                             </td>
                             <td>$record.getMailSummary().FormattedQuarantineDetail</td>
                             <td>$jsEscaper.escapeJS($record.getMailSummary().Subject)</td>
+                            <td>$record.FormattedDate</td>
+                            <td>$record.FormattedSize</td>
                           </tr>
                           #set ($isEven = $isEven + 1)
                           #if ($isEven > 1)

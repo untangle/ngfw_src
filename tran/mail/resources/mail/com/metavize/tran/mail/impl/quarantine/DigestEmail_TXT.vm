@@ -21,6 +21,6 @@
 ##
 
 This email is a summary of the email quarantine for $user_email.  You currently
-have $totalNumRecords emails quarantined.  To review mails to release or delete,
+have $totalNumRecords quarantined.  To review mails to release or delete,
 please visit your inbox at $linkgenerator.generateInboxLink()
 

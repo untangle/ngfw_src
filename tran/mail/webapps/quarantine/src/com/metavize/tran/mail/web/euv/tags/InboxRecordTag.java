@@ -28,10 +28,11 @@ public final class InboxRecordTag
   public static final String FROM_PROP = "from";
   public static final String SUBJECT_PROP = "subject";
   public static final String SCORE_PROP = "detail";
+  public static final String DATE_PROP = "idate";
+  public static final String SIZE_PROP = "size";
 
   private String m_propName;
   private boolean m_jsEscape = true;
-
 
   public void setProp(String s) {
     m_propName = s;
@@ -70,11 +71,13 @@ public final class InboxRecordTag
       return record.getMailSummary().getSubject();
     }
     if(name.equals(SCORE_PROP)) {
-      try {
-        return String.format("%03.1f", Float.parseFloat(record.getMailSummary().getQuarantineDetail()));
-      }
-      catch(Exception ex) {
-      }
+        return record.getMailSummary().getFormattedQuarantineDetail();
+    }
+    if(name.equals(DATE_PROP)) {
+        return record.getFormattedDate();
+    }
+    if(name.equals(SIZE_PROP)) {
+        return record.getFormattedSize();
     }
     return null;          
   }

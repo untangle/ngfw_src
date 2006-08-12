@@ -22,16 +22,14 @@ public final class InboxRecordImpl
   extends InboxRecord
   implements Serializable {
 
+  public InboxRecordImpl() {}
+
   public InboxRecordImpl(String mailID,
     long addedOn,
-    long size,
     MailSummary summary,
     String[] recipients) {
     
-    super(mailID, addedOn, size, summary, recipients);
+    super(mailID, addedOn, summary, recipients);
     
-  }
-
-  public InboxRecordImpl() {
   }
 }

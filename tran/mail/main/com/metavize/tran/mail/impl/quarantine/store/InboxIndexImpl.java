@@ -53,12 +53,24 @@ public final class InboxIndexImpl
       return 0;
     }
     InboxRecord rec = Collections.max(this.values(), InboxRecordComparator.getComparator(
-      InboxRecordComparator.SortBy.INTERN_DATE, true));
+    InboxRecordComparator.SortBy.INTERN_DATE, true));
     return rec==null?0:rec.getInternDate();
   }
 
   public Iterator<InboxRecord> iterator() {
     return values().iterator();
+  }
+
+  public int inboxCount() {
+      return size();
+  }
+
+  public long inboxSize() {
+      long inboxSize = 0;
+      for(InboxRecord iRecord : this) {
+          inboxSize += iRecord.getSize();
+      }
+      return inboxSize;
   }
 
   public InboxRecord getRecord(String mailID) {

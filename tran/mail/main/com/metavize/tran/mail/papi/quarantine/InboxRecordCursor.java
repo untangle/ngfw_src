@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
-
 /**
  * Hack class, for providing cursor-like functionality
  * when going through InboxRecords.  This is a hack because
@@ -31,6 +30,8 @@ public final class InboxRecordCursor
   private int m_firstID;
   private int m_lastID;
   private InboxRecord[] m_records;
+  private long m_inboxCount;
+  private long m_inboxSize;
   private boolean m_hasNext;
   private boolean m_hasPrev;
   private InboxRecordComparator.SortBy m_sortedBy;
@@ -41,6 +42,8 @@ public final class InboxRecordCursor
     int firstID,
     int lastID,
     InboxRecord[] records,
+    int inboxCount,
+    long inboxSize,
     boolean hasNext,
     boolean hasPrev,
     InboxRecordComparator.SortBy sortBy,
@@ -50,6 +53,8 @@ public final class InboxRecordCursor
     m_firstID = firstID;
     m_lastID = lastID;
     m_records = records;
+    m_inboxCount = inboxCount;
+    m_inboxSize = inboxSize;
     m_hasNext = hasNext;
     m_hasPrev = hasPrev;
     m_sortedBy = sortBy;
@@ -75,6 +80,20 @@ public final class InboxRecordCursor
    */
   public int size() {
     return m_records.length;
+  }
+
+  /**
+   * Get the total number of records in the current set.
+   */
+  public long inboxCount() {
+    return m_inboxCount;
+  }
+  
+  /**
+   * Get the total size of records in the current set.
+   */
+  public long inboxSize() {
+    return m_inboxSize;
   }
   
   /**
@@ -122,7 +141,6 @@ public final class InboxRecordCursor
     return m_ascending;
   }
 
-
   public static InboxRecordCursor get(
     InboxRecord[] allRecords,
     InboxRecordComparator.SortBy sortBy,
@@ -140,22 +158,27 @@ public final class InboxRecordCursor
       startingAt = 0;
     }
 
-    if(
-      (startingAt + windowSz) > allRecords.length) {
+    if((startingAt + windowSz) > allRecords.length) {
       windowSz = allRecords.length - startingAt;
     }
 
     InboxRecord[] ret = new InboxRecord[windowSz];
     System.arraycopy(allRecords, startingAt, ret, 0, windowSz);
 
+    long inboxSize = 0;
+    for (InboxRecord iRecord : allRecords) {
+        inboxSize += iRecord.getSize();
+    }
+
     return new InboxRecordCursor(startingAt,
       startingAt,
       startingAt + windowSz,
       ret,
+      allRecords.length,
+      inboxSize,
       startingAt + windowSz < allRecords.length,
       startingAt > 0,
       sortBy,
       ascending);
   }
-
 }

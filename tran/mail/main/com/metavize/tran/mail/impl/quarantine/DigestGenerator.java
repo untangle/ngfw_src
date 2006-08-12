@@ -12,43 +12,37 @@
 package com.metavize.tran.mail.impl.quarantine;
 
 import com.metavize.mvvm.MvvmContextFactory;
-
 import com.metavize.tran.mail.papi.quarantine.InboxIndex;
 import com.metavize.tran.mail.papi.quarantine.InboxRecord;
 import com.metavize.tran.mail.papi.quarantine.InboxRecordComparator;
-
-import static com.metavize.tran.util.Ascii.CRLF;
-import com.metavize.tran.util.Pair;
-
+import com.metavize.tran.mime.ByteArrayMIMESource;
 import com.metavize.tran.mime.ContentTypeHeaderField;
 import com.metavize.tran.mime.ContentXFerEncodingHeaderField;
+import com.metavize.tran.mime.EmailAddress;
 import com.metavize.tran.mime.HeaderNames;
 import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.mime.MIMEMessageHeaders;
-import com.metavize.tran.mime.MIMEUtil;
-import com.metavize.tran.mime.MIMESourceRecord;
 import com.metavize.tran.mime.MIMEPart;
+import com.metavize.tran.mime.MIMESourceRecord;
+import com.metavize.tran.mime.MIMEUtil;
 import com.metavize.tran.mime.RcptType;
-import com.metavize.tran.mime.EmailAddress;
-import com.metavize.tran.mime.ByteArrayMIMESource;
+import static com.metavize.tran.util.Ascii.CRLF;
+import com.metavize.tran.util.IOUtil;
+import com.metavize.tran.util.Pair;
 
 import org.apache.log4j.Logger;
-
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.Template;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.net.URLEncoder;
 import java.util.Properties;
 import java.util.Arrays;
-
-import java.net.URLEncoder;
-
-import java.io.File;
-import java.io.InputStream;
-import java.io.FileOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
-import com.metavize.tran.util.IOUtil;
 
 /**
  *
@@ -200,9 +194,7 @@ class DigestGenerator {
     catch(Exception ex) {
       m_logger.error("Unable to load templates", ex);
     }
-
   }
-
 
   MIMEMessage generateMsg(InboxIndex index,
     String serverHost,
@@ -212,8 +204,7 @@ class DigestGenerator {
 
     try {
       MIMEMessageHeaders headers = new MIMEMessageHeaders();
-  
-      
+
       //Take care of boiler-plate headers
       headers.addHeaderField(HeaderNames.DATE, MIMEUtil.getRFC822Date());
       headers.addHeaderField(HeaderNames.MIME_VERSION, "1.0");
@@ -260,8 +251,6 @@ the line below is commented-out
       }
       headers.addRecipient(toAddress, RcptType.TO);
 
-      
-      
       EmailAddress fromAddress =
         EmailAddress.parseNE(from);
       if(fromAddress == null) {
@@ -273,7 +262,6 @@ the line below is commented-out
   
       //Create the MIME message, initialized on these headers
       MIMEMessage ret = new MIMEMessage(headers);
-
 
       //Create the auth token
       String authToken = atm.createAuthToken(to.trim());
@@ -290,7 +278,7 @@ the line below is commented-out
       //at the top
       Arrays.sort(allRecords, InboxRecordComparator.getComparator(
         InboxRecordComparator.SortBy.INTERN_DATE, false));
-        
+
       if(allRecords == null || allRecords.length == 0) {
         context.put(HAS_RECORDS_VV, Boolean.FALSE);
         context.put(HAS_RECORDS_NOT_SHOWN_VV, Boolean.FALSE);
@@ -298,7 +286,7 @@ the line below is commented-out
         context.put(TOTAL_NUM_RECORDS_VV, new Integer(0));
       }
       else {
-        context.put(TOTAL_NUM_RECORDS_VV, new Integer(allRecords.length));
+        context.put(TOTAL_NUM_RECORDS_VV, String.valueOf(index.inboxCount()) + " mails (" + String.format("%01.3f", new Float(index.inboxSize() / 1024.0)) + " KB)");
         InboxRecord[] recsToDisplay = null;
         context.put(HAS_RECORDS_VV, Boolean.TRUE);
         if(allRecords.length > MAX_RECORDS_PER_EMAIL) {
@@ -315,7 +303,6 @@ the line below is commented-out
         context.put(INBOX_RECORDS_VV, recsToDisplay);
       }
 
-  
       //Create the (text) Body part
       MIMEPart textPart = new MIMEPart();
       textPart.getMPHeaders().addHeaderField(HeaderNames.CONTENT_TYPE,
@@ -334,15 +321,12 @@ the line below is commented-out
       //Add the text body to the returned message
       ret.addChild(textPart);
 
-
-  
       //Create the (html) Body part
       MIMEPart htmlPart = new MIMEPart();
       htmlPart.getMPHeaders().addHeaderField(HeaderNames.CONTENT_TYPE,
         ContentTypeHeaderField.TEXT_HTML);
       htmlPart.getMPHeaders().addHeaderField(HeaderNames.CONTENT_TRANSFER_ENCODING,
         ContentXFerEncodingHeaderField.SEVEN_BIT_STR);
-
 
       byte[] htmlBytes = mergeTemplate(context,
         m_htmlTemplate,

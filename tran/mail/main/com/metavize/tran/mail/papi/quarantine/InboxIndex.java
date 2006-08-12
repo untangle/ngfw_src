@@ -39,8 +39,12 @@ public interface InboxIndex
 
   /**
    * Get the number of mails within the index (inbox)
+   * - HashMap size() method
    */
   public int size();
+
+  public int inboxCount();
+  public long inboxSize();
 
   /**
    * Returns null if not found
@@ -48,5 +52,4 @@ public interface InboxIndex
   public InboxRecord getRecord(String id);
 
   public InboxRecord[] getAllRecords();
-
 }

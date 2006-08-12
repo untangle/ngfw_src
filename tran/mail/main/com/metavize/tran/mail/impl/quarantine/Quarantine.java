@@ -55,8 +55,6 @@ import com.metavize.tran.util.IOUtil;
 import com.metavize.tran.util.Pair;
 import org.apache.log4j.Logger;
 
-
-
 /**
  *
  */
@@ -80,7 +78,6 @@ public class Quarantine
   private GlobEmailAddressMapper m_addressAliases;
   private MailTransformImpl m_impl;
 
-
   public Quarantine() {
     m_store = new QuarantineStore(
       new File(new File(System.getProperty("bunnicula.home")), "quarantine")
@@ -93,9 +90,7 @@ public class Quarantine
 
     m_addressAliases = new GlobEmailAddressMapper(new 
       ArrayList<Pair<String, String>>());
-
   }
-
 
   /**
    * Properties are not maintained explicitly
@@ -127,9 +122,6 @@ public class Quarantine
     //Update the quarantine-for stuff
     m_quarantineForList = new GlobEmailAddressList(
       fromEmailAddressRule(settings.getAllowedAddressPatterns()));
-
-    
-          
 
     if (null != m_cronJob) {
         int h = m_settings.getDigestHourOfDay();
@@ -204,7 +196,6 @@ public class Quarantine
    * Warning - this method executes synchronously
    */
   public void sendDigestsNow() {
-
     List<Inbox> allInboxes = m_store.listInboxes();
 
     long cutoff = System.currentTimeMillis() - ONE_DAY;
@@ -325,7 +316,6 @@ public class Quarantine
       listForInbox.add(recipientAddress);
     }
 
-
     //Now go ahead and perform inserts.  Note that we could save a few cycles
     //by breaking-out the (common) case of a mail with a single recipient
     ArrayList<Pair<String, String>> outcomeList = new ArrayList<Pair<String, String>>();
@@ -366,14 +356,7 @@ public class Quarantine
     }
     return true;
 
-
-
 /*    
-    
-
-
-          
-
     //Perform any remapping
     ArrayList<String> sRecipients = new ArrayList<String>();
     for(EmailAddress eAddr : recipients) {
@@ -595,9 +578,6 @@ public class Quarantine
 
     return m_addressAliases.getReverseMapping(account);
   }
-  
-
-
 
   /**
    * Helper method which sends a digest email.  Returns
@@ -644,9 +624,7 @@ public class Quarantine
     IOUtil.close(in);
 
     return ret;
-
   }
-
 
   private void checkAndThrowCommonErrors(QuarantineStore.GenericStatus status,
     String account)
@@ -681,7 +659,6 @@ public class Quarantine
     return ret;  
   }
 
-
   private List toEmailAddressPairRuleList(List<Pair<String, String>> typedList) {
     ArrayList ret = new ArrayList();
 
@@ -701,9 +678,6 @@ public class Quarantine
     }
     return ret;  
   }
-
-
-
 
   //------------- Inner Class --------------------
 
@@ -737,11 +711,9 @@ public class Quarantine
       IOUtil.delete(data);
     }
   }
-
 }
 
 /*
-
         new Thread(new Runnable() {
           public void run() {
             try {
@@ -780,7 +752,6 @@ public class Quarantine
 //              setMailTransformSettings(settings);
               System.out.println("********* Done.");
                 
-              
             }
             catch(Exception ex) {
               ex.printStackTrace();

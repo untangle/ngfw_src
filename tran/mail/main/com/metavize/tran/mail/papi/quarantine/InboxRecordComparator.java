@@ -25,27 +25,27 @@ public final class InboxRecordComparator {
    */
   public static enum SortBy {
     /**
-     * Sort by the date the message was interned
+     * 0 = Sort by the date the message was interned
      */
     INTERN_DATE,
     /**
-     * Sort by the message size
+     * 1 = Sort by the message size
      */
     SIZE,
     /**
-     * Sort by the sender of the message
+     * 2 = Sort by the sender of the message
      */
     SENDER,
     /**
-     * Sort by the subject
+     * 3 = Sort by the subject
      */
     SUBJECT,
     /**
-     * Sort by the quarantine detail
+     * 4 = Sort by the quarantine detail (score)
      */
     DETAIL,
     /**
-     * Sort by the attachment count
+     * 5 = Sort by the attachment count
      */
     ATTACHMENT_COUNT    
   };
@@ -74,7 +74,6 @@ public final class InboxRecordComparator {
     
     m_fwdComparitors.put(SortBy.ATTACHMENT_COUNT, new AttachmentComp().setReverse(false));
     m_bwdComparitors.put(SortBy.ATTACHMENT_COUNT, new AttachmentComp().setReverse(true));
-    
   }
 
   /**
@@ -120,7 +119,6 @@ public final class InboxRecordComparator {
       return (other.getClass().equals(this.getClass())) &&
         (((IRComp) other).m_reverse == m_reverse);
     }    
-        
   }
 
   
@@ -192,7 +190,6 @@ public final class InboxRecordComparator {
   }
 
 
-
   //============================ Inner Class ============================
   
   private static class DetailComp extends IRComp {
@@ -250,7 +247,6 @@ public final class InboxRecordComparator {
             d1.compareTo(d2)//Neither is a number
         );
     }
-
   }
 
   
@@ -265,6 +261,4 @@ public final class InboxRecordComparator {
           1:0;
     }
   }   
-
-
 }

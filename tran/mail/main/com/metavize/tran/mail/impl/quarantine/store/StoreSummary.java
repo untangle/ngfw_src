@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import java.util.*;
 
-
 /**
  * POJO representing the state of the Store.  Used
  * by the {@link com.metavize.tran.mail.impl.quarantine.store.MasterTable MasterTable}
@@ -79,7 +78,6 @@ class StoreSummary {
   boolean containsInbox(String lcAddress) {
     return m_map.containsKey(lcAddress);
   }
-  
 
   void addInbox(String lcAddress, InboxSummary meta) {
     m_map.put(lcAddress, meta);
@@ -104,7 +102,7 @@ class StoreSummary {
     inbox.incrementTotalSz(sz);
     inbox.incrementTotalMails(1);
   }
-  
+
   void mailRemoved(InboxSummary inbox, long sz) {
     m_totalSz.getAndAdd(-1*sz);
     m_totalMails.getAndAdd(-1);
@@ -126,8 +124,6 @@ class StoreSummary {
     m_totalMails.getAndAdd(-1*inbox.updateTotalMails(totalMails));
     m_totalMails.getAndAdd(inbox.getTotalMails());
   }
-  
-
 
   /**
    * Returns null if not found.
@@ -144,7 +140,4 @@ class StoreSummary {
   Set<Map.Entry<String,InboxSummary>> entries() {
     return m_map.entrySet();
   }
-
-  
-
 }

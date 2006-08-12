@@ -420,7 +420,8 @@ public class SmtpSessionHandler
         msg.getMMHeaders().getSubject(),
         getQuarantineCategory(),
         getQuarantineDetail(report),
-        msg.getAttachmentCount()),
+        msg.getAttachmentCount(),
+        file.length()),
       addresses);
   }
 }

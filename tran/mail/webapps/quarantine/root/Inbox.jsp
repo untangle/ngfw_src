@@ -42,7 +42,6 @@
       }      
       
       function doResort(newSort) {
-        
         var nextAscend = "true"
         if(document.form1.<quarantine:constants keyName="sort"/>.value == newSort) {
           //If not changing the sort criteria, the toggle up/down
@@ -58,6 +57,14 @@
         }
         document.form1.<quarantine:constants keyName="ascend"/>.value = nextAscend;
         document.form1.submit();        
+      }
+
+      function doResortByInternDate() {
+        doResort("0");
+      }
+
+      function doResortBySize() {
+        doResort("1");
       }
 
       function doResortBySender() {
@@ -191,8 +198,6 @@
         </quarantine:isReceivesRemaps>
       </quarantine:isRemapped>
       
-      
-
 		<!-- MAIN MESSAGE -->
 		<br/>
 		<center>
@@ -295,11 +300,13 @@
                             <img src="images/with_attach.png" height="16px" width="16px"/></a></th>
                           <th scope="col"><a href="javascript:doResortByScore();">Score</a></th>
                           <th scope="col"><a href="javascript:doResortBySubject();">Subject</a></th>
+                          <th scope="col"><a href="javascript:doResortByInternDate();">Date</a></th>
+                          <th scope="col"><a href="javascript:doResortBySize();">Size (KB)</a></th>
                         </tr>
                       </thead>
                       <tfoot>
                         <tr>
-                          <td colspan="4">
+                          <td colspan="3">
                             Mails Per Page: &nbsp;
                             <select name="rowsPerPage">
                             <quarantine:forEachRPPOption>
@@ -312,7 +319,12 @@
                             </quarantine:forEachRPPOption>
                             </select>                            
                           </td>
-                          <td>
+
+                          <th scope="row" align=left>TOTALS</th>
+                          <td align=left><quarantine:indexMsgTotals/></td>
+                          <td> </td> <!-- table cell filler to shift navigation table cell to right (Prev|Next) -->
+
+                          <td align=center width=130> <!-- align center w/ 130 pixel width to match navigation table cell in header -->
                             <div class="tableFooter">
                               <quarantine:hasPagnation linkType="prev" includeIfTrue="true">
                                 <a href="javascript:mv_doPrev();">Prev</a>
@@ -328,10 +340,6 @@
                               </quarantine:hasPagnation>
                             </div>
                           </td>
-<!--                        
-                          <th scope="row">Total</th>
-                          <td colspan="4"><quarantine:indexMsgCount/> mails</td>
--->                          
                         </tr>
                       </tfoot>
                       <tbody>
@@ -357,6 +365,8 @@
                             </quarantine:hasAttachments>
                             <td><quarantine:inboxRecord prop="detail" JSEscape="true"/></td>
                             <td><quarantine:inboxRecord prop="subject" JSEscape="true"/></td>
+                            <td><quarantine:inboxRecord prop="idate" JSEscape="true"/></td>
+                            <td><quarantine:inboxRecord prop="size" JSEscape="true"/></td>
                           </tr>
                         </quarantine:forEachInboxRecord>
                       </tbody>
@@ -369,7 +379,6 @@
           </quarantine:hasInboxRecords>
 	</center>
 
-	
 		<br/>
 	<center>Powered by Metavize&reg; EdgeGuard&reg;</center>
 

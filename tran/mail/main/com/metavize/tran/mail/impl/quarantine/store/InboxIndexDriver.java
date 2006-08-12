@@ -246,6 +246,8 @@ class InboxIndexDriver
   private static void writeRecord(InboxRecord record,
     PrintWriter pw) throws IOException {
 
+    MailSummary summary = record.getMailSummary();
+
     pw.println(RECORD_SEP);
     writeVersion(pw, VERSION);
     pw.println(nullToQQ(record.getMailID()));
@@ -260,7 +262,6 @@ class InboxIndexDriver
       writeMultilineEntry(pw, s);
     }
 
-    MailSummary summary = record.getMailSummary();
     writeMultilineEntry(pw, summary.getSender());
     writeMultilineEntry(pw, summary.getSubject());
     writeMultilineEntry(pw, summary.getQuarantineCategory());
@@ -305,6 +306,9 @@ class InboxIndexDriver
 
     try {
       InboxRecordImpl ret = new InboxRecordImpl();
+      MailSummary summary = new MailSummary();
+      ret.setMailSummary(summary);
+
       ret.setMailID(readLine(reader));
       ret.setInternDate(readLong(reader));
       ret.setSize(readLong(reader));
@@ -315,8 +319,6 @@ class InboxIndexDriver
       }
       ret.setRecipients(recipients);
 
-      MailSummary summary = new MailSummary();
-      ret.setMailSummary(summary);
       summary.setSender(readMultilineEntry(reader));
       summary.setSubject(readMultilineEntry(reader));
       summary.setQuarantineCategory(readMultilineEntry(reader));
@@ -336,13 +338,15 @@ class InboxIndexDriver
 
     try {
       InboxRecordImpl ret = new InboxRecordImpl();
+      MailSummary summary = new MailSummary();
+      ret.setMailSummary(summary);
+
       ret.setMailID(readLine(reader));
       ret.setInternDate(readLong(reader));
       ret.setSize(readLong(reader));
       //Fake the recipients (just assume same as inbox)
       ret.setRecipients(new String[] {inboxOwnerAddress});
-      MailSummary summary = new MailSummary();
-      ret.setMailSummary(summary);
+
       summary.setSender(readMultilineEntry(reader));
       summary.setSubject(readMultilineEntry(reader));
       summary.setQuarantineCategory(readMultilineEntry(reader));
@@ -362,13 +366,15 @@ class InboxIndexDriver
 
     try {
       InboxRecordImpl ret = new InboxRecordImpl();
+      MailSummary summary = new MailSummary();
+      ret.setMailSummary(summary);
+
       ret.setMailID(readLine(reader));
       ret.setInternDate(readLong(reader));
       ret.setSize(readLong(reader));
       //Fake the recipients (just assume same as inbox)
       ret.setRecipients(new String[] {inboxOwnerAddress});
-      MailSummary summary = new MailSummary();
-      ret.setMailSummary(summary);
+
       summary.setSender(readMultilineEntry(reader));
       summary.setSubject(readMultilineEntry(reader));
       summary.setQuarantineCategory(readMultilineEntry(reader));
