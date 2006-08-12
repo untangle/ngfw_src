@@ -144,6 +144,9 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
   <target name="install.gui" depends="jar.gui">
     <copy file="${build.jar}/gui.jar" todir="${dist.mvvm.lib}"/>
     <copy file="${build.jar}/installWizard.jar" todir="${dist.bin}"/>
+    <copy todir="${dist.bin}" flatten="true">
+      <fileset refid="kunststoff.jarset"/>
+    </copy>
   </target>
 
   <target name="install.servlets" depends="jar.servlets">

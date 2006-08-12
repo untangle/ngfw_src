@@ -120,20 +120,20 @@ public class SystemStats
         return -1;
     }
 
-    public static int getDiskGigs()
+    public static float getDiskGigs()
     {
         try {
             String[] args = {"/bin/sh","-c"," cat /proc/partitions | egrep 'sda|hda' | egrep -v 'sda[1-9]|hda[1-9]' | awk '{print $3*512/1000000000}'"};
             Process proc = Runtime.getRuntime().exec(args);
             BufferedReader input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             try {
-                int num = (int)Integer.parseInt(input.readLine());
+		float num = (float)Float.parseFloat(input.readLine());
                 return num;
             }
             catch (java.lang.NumberFormatException e) {}
         }
         catch (IOException e) {}
-        return -1;
+        return -1f;
     }
 
     public static int getNumNICs()

@@ -16,18 +16,28 @@ import com.metavize.gui.widgets.wizard.*;
 import javax.swing.SwingUtilities;
 import javax.swing.JProgressBar;
 import java.awt.Color;
-
+import java.text.DecimalFormat;
 
 public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
+    private static final String FAILURE_MESSAGE = "<html><b><font color=\"#FF0000\">Warning! Your hardware does not meet all requirements.  Press the Next button to exit.</font></b></html>";
+    private static final String WARNING_MESSAGE = "<html><b><font color=\"#000000\">Warning! Your hardware meets minimum requirements, but performance may not be optimal.  Press the Next button to continue.</font></b></html>";
+    private static final String PASSED_MESSAGE = "<html><b><font color=\"#000000\">Success! Your hardware meets all requirements.  Press the Next button to continue.</font></b></html>";
+
     private static final int MEMORY_MIN_MEGS  = 1024;
     private static final int MEMORY_GOOD_MEGS = 2048;
+    private static final String MEMORY_REQUIRED = "("+MEMORY_MIN_MEGS+" MB required)";
     private static final int CPU_MIN_MHZ  = 1000;
     private static final int CPU_GOOD_MHZ = 2000;
-    private static final int DISK_MIN_GIGS  = 40;
+    private static final String CPU_REQUIRED = "("+CPU_MIN_MHZ+" MHz required)";
+    private static final int DISK_MIN_GIGS  = 10;
     private static final int DISK_GOOD_GIGS = 60;
+    private static final String DISK_REQUIRED = "("+DISK_MIN_GIGS+" GB required)";
     private static final int NICS_MIN_COUNT  = 2;
     private static final int NICS_GOOD_COUNT = 3;
+    private static final String NICS_REQUIRED = "("+NICS_MIN_COUNT+" interfaces required)";
+
+    private boolean testPassed = false;
     
     public InstallBenchmarkJPanel() {
         initComponents();
@@ -37,39 +47,44 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 	new DetectThread();
     }
 
+    protected boolean leavingForwards(){
+	if(!testPassed)
+	    System.exit(1);
+	return true;
+    }
+
     class DetectThread extends Thread {
-	public void DetectThread(){
+	public DetectThread(){
 	    setDaemon(true);
+	    //	    InstallWizard.getInfiniteProgressJComponent().startLater("Checking...");[B
+	    updateJProgressBar(memoryJProgressBar, "Checking...", true, 0, 68, 91, 255);
+	    updateJProgressBar(cpuJProgressBar, "Checking...", true, 0, 68, 91, 255);
+	    updateJProgressBar(diskJProgressBar, "Checking...", true, 0, 68, 91, 255);
+	    updateJProgressBar(nicJProgressBar, "Checking...", true, 0, 68, 91, 255);
+	    memoryResultJLabel.setText("undetermined ");
+	    cpuResultJLabel.setText("undetermined");
+	    diskResultJLabel.setText("undetermined");
+	    nicResultJLabel.setText("undetermined");
+	    resultJLabel.setText("");
 	    start();
 	}
 	public void run(){
-	    System.out.println("HERE");
-	    try{
-		InstallWizard.getInfiniteProgressJComponent().startLater("Checking...");
-		SwingUtilities.invokeLater( new Runnable(){ public void run() {
-		    updateJProgressBar(memoryJProgressBar, "Checking...", true, 0, 68, 91, 255);
-		    updateJProgressBar(cpuJProgressBar, "Checking...", true, 0, 68, 91, 255);
-		    updateJProgressBar(diskJProgressBar, "Checking...", true, 0, 68, 91, 255);
-		    updateJProgressBar(nicJProgressBar, "Checking...", true, 0, 68, 91, 255);
-		    memoryResultJLabel.setText("undetermined");
-		    cpuResultJLabel.setText("undetermined");
-		    diskResultJLabel.setText("undetermined");
-		    nicResultJLabel.setText("undetermined");
-		}});
-		
+	    try{		
 		// RUN TEST
 		final int memory   = SystemStats.getMemoryMegs();
 		final int cpuCount = SystemStats.getLogicalCPU();
 		final int cpuSpeed = SystemStats.getClockSpeed();
-		final int disk     = SystemStats.getDiskGigs();
+		final float disk   = SystemStats.getDiskGigs();
 		final int nics     = SystemStats.getNumNICs();
 		// COMPUTE RESULTS
-		final Object memoryResults[] = computeResults(memory,MEMORY_MIN_MEGS,MEMORY_GOOD_MEGS);
-		final Object cpuResults[]    = computeResults(cpuSpeed,CPU_MIN_MHZ,CPU_GOOD_MHZ);
-		final Object diskResults[]   = computeResults(disk,DISK_MIN_GIGS,DISK_GOOD_GIGS);
-		final Object nicsResults[]   = computeResults(nics,NICS_MIN_COUNT,NICS_GOOD_COUNT);
+		final Object memoryResults[] = computeResults((float)memory,MEMORY_MIN_MEGS,MEMORY_GOOD_MEGS,MEMORY_REQUIRED);
+		final Object cpuResults[]    = computeResults((float)cpuSpeed,CPU_MIN_MHZ,CPU_GOOD_MHZ,CPU_REQUIRED);
+		final Object diskResults[]   = computeResults(disk,DISK_MIN_GIGS,DISK_GOOD_GIGS,DISK_REQUIRED);
+		final Object nicsResults[]   = computeResults((float)nics,NICS_MIN_COUNT,NICS_GOOD_COUNT,NICS_REQUIRED);
 		
-		SwingUtilities.invokeLater( new Runnable(){ public void run() {
+		sleep(3000l);
+
+		SwingUtilities.invokeAndWait( new Runnable(){ public void run() {
 		    updateJProgressBar(memoryJProgressBar, (String)memoryResults[0], false, (Integer)memoryResults[1],
 				       (Integer)memoryResults[2], (Integer)memoryResults[3], (Integer)memoryResults[4]);
 		    updateJProgressBar(cpuJProgressBar, (String)cpuResults[0], false, (Integer)cpuResults[1],
@@ -78,41 +93,59 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 				       (Integer)diskResults[2], (Integer)diskResults[3], (Integer)diskResults[4]);
 		    updateJProgressBar(nicJProgressBar, (String)nicsResults[0], false, (Integer)nicsResults[1],
 				       (Integer)nicsResults[2], (Integer)nicsResults[3], (Integer)nicsResults[4]);
-		    
+
 		    memoryResultJLabel.setText(memory + " MB");
 		    cpuResultJLabel.setText(cpuSpeed + " MHz" + (cpuCount>1?" (x"+cpuCount+")":""));
-		    diskResultJLabel.setText(disk + " GB");
-		    nicResultJLabel.setText(nics + " interface" + (nics>1?"s":""));
+		    DecimalFormat decimalFormat = new DecimalFormat("#####.##");
+		    diskResultJLabel.setText(decimalFormat.format(disk) + " GB");
+		    nicResultJLabel.setText(nics + " interface" + (nics==1?"":"s"));
+
+		    if(((Integer)memoryResults[1]<=33) || ((Integer)cpuResults[1]<=33)
+		       || ((Integer)diskResults[1]<=33) || ((Integer)nicsResults[1]<=33)){
+			resultJLabel.setText(FAILURE_MESSAGE);
+			testPassed = false;
+		    }
+		    else if(((Integer)memoryResults[1]<=66) || ((Integer)cpuResults[1]<=66)
+		       || ((Integer)diskResults[1]<=66) || ((Integer)nicsResults[1]<=66)){
+			resultJLabel.setText(WARNING_MESSAGE);
+			testPassed = true;
+		    }
+		    else{
+			resultJLabel.setText(PASSED_MESSAGE);
+			testPassed = true;
+		    }
 		}});
-		InstallWizard.getInfiniteProgressJComponent().stopLater(4000l);
+		//InstallWizard.getInfiniteProgressJComponent().stopLater(4000l);
 	    }
 	    catch(Exception e){
-		InstallWizard.getInfiniteProgressJComponent().stopLater(-1);
+		//InstallWizard.getInfiniteProgressJComponent().stopLater(-1);
 		e.printStackTrace();
 	    }
 	}
     }
 
-    private void updateJProgressBar(JProgressBar jProgressBar, String message, boolean indeterminate, int value, int r, int g, int b){
+    private void updateJProgressBar(JProgressBar jProgressBar, String message, boolean indeterminate,
+				    int value, int r, int g, int b){
 	jProgressBar.setString(message);
 	jProgressBar.setIndeterminate(indeterminate);
 	jProgressBar.setValue(value);
 	jProgressBar.setForeground(new Color(r,g,b));
     }
 
-    private Object[] computeResults(Integer score, Integer min, Integer max){
+    private Object[] computeResults(Float score, Integer min, Integer max, String failureString){
 	String resultString;
 	Integer resultValue, resultR, resultG, resultB;
-	if( score <= min ){
-	    resultString = "Test Failed";
+	if( score < min ){
+	    resultString = "Test Failed " + failureString;
 	    resultValue  = 33;
 	    resultR = 255;
 	    resultG = resultB = 0;
 	}
-	else if(score <= max ){
+	else if(score < max ){
 	    resultString = "Warning";
 	    resultValue = 66;
-	    resultR = resultG = 255;
+	    resultR = 255;
+	    resultG = 155;
 	    resultB = 0;
 	}
 	else{
@@ -349,7 +382,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
                 contentJPanel.add(nicJPanel, gridBagConstraints);
 
                 resultJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                resultJLabel.setText("This is where the resule message goes...");
+                resultJLabel.setText(" ");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

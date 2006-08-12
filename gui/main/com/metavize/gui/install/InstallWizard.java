@@ -11,9 +11,13 @@
 
 package com.metavize.gui.install;
 
+import com.incors.plaf.kunststoff.*;
 import com.metavize.gui.widgets.wizard.*;
 import com.metavize.gui.widgets.dialogs.*;
 import java.awt.Dimension;
+import javax.swing.UIManager;
+import javax.swing.plaf.ColorUIResource;
+import java.awt.Color;
 
 public class InstallWizard extends MWizardJDialog {
 
@@ -37,10 +41,6 @@ public class InstallWizard extends MWizardJDialog {
     }
     
     protected void wizardFinishedAbnormal(int currentPage){
-	if( currentPage == 1 ){
-	    wizardFinishedNormal();
-	    return;
-	}
 
 	MTwoButtonJDialog dialog = MTwoButtonJDialog.factory(this, "Install Wizard", "If you exit now, " +
 								 " you will not be able to continue installation.  " +
@@ -58,6 +58,17 @@ public class InstallWizard extends MWizardJDialog {
     }
 
     public static void main(String[] args){
+
+        try {
+            KunststoffLookAndFeel kunststoffLaf = new KunststoffLookAndFeel();
+            kunststoffLaf.setCurrentTheme(new KunststoffTheme());
+            UIManager.setLookAndFeel(kunststoffLaf);
+        }
+        catch (Exception e) {
+	    System.err.println("Error starting LAF:");
+	    e.printStackTrace();
+        }
+	UIManager.put("ProgressBar.selectionForeground", new ColorUIResource(Color.BLACK));
 	new InstallWizard().setVisible(true);
     }
 }
