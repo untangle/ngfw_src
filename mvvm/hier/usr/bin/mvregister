@@ -10,7 +10,7 @@ NEWPWFILE="/tmp/newpw$$"
 
 /bin/rm -f "$REGDONE"
 /bin/rm -f "$NEWPWFILE"
-/usr/bin/wget --no-check-certificate --timeout=30 --output-document="$NEWPWFILE" --tries=1 --post-file="$REGINFO" "$REGISTRATION_URL"
+/usr/bin/wget --timeout=30 --output-document="$NEWPWFILE" --tries=1 --post-file="$REGINFO" "$REGISTRATION_URL"
 if [ "$?" -eq "0" ]; then
     NEWPW=$(/bin/cat "$NEWPWFILE")
     /bin/rm -f "$NEWPWFILE"
