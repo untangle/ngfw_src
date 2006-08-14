@@ -608,15 +608,19 @@ hr {
                     <tfoot>
                     #if ($hasRecsNotShown)
                       <tr>
-                        <th scope="row">Not Listed</th>
-                        <td colspan="5">
+                        <th scope="row">NOT LISTED</th>
+                        <td colspan="3" align=left width=300>
                           $numRecsNotShown older mails
-                          <a href="$linkgenerator.generateInboxLink()">in your online inbox</a></td>
+                          <a href="$linkgenerator.generateInboxLink()">in your online inbox</a>
+                        </td>
+
+                        <th scope="row">TOTALS</th>
+                        <td colspan="3" align=left>$totalNumRecords</td>
                       </tr>
                     #else
                       <tr>
                         <th scope="row">TOTALS</th>
-                        <td colspan="5">$totalNumRecords</td>
+                        <td colspan="6" align=left>$totalNumRecords</td>
                       </tr>
                     #end
                     </tfoot>
