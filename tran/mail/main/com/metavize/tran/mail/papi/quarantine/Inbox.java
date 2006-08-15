@@ -13,7 +13,6 @@ package com.metavize.tran.mail.papi.quarantine;
 
 import java.io.Serializable;
 
-
 /**
  * Summary of an Inbox (I had already used "InboxSummary" as a class
  * name somewhere else, and didn't feel like changing it).
@@ -54,7 +53,17 @@ public final class Inbox
     return m_numMails;
   }     
   
+  // need get and set pair prefixes for velocity
+  public final String getFormattedTotalSz() {
+      try {
+        // in kilobytes
+        return String.format("%01.3f", new Float(getTotalSz() / 1024.0));
+      } catch(Exception ex) { return "<unknown>"; }
+  }
 
+  public final void setFormattedTotalSz(String totalSz) {
+      String dummy = totalSz;
+  }
 
   @Override
   public String toString() {
@@ -75,5 +84,4 @@ public final class Inbox
   public int hashCode() {
     return getAddress().hashCode();
   }
-
 }
