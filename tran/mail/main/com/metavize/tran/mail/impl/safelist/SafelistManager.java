@@ -13,12 +13,17 @@ package com.metavize.tran.mail.impl.safelist;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.metavize.mvvm.util.TransactionWork;
+import com.metavize.tran.mail.impl.GlobEmailAddressMapper;
 import com.metavize.tran.mail.MailTransformImpl;
 import com.metavize.tran.mail.papi.MailTransformSettings;
 import com.metavize.tran.mail.papi.safelist.NoSuchSafelistException;
@@ -45,7 +50,8 @@ public class SafelistManager
 
     // caches of values held by persistent hibernate mapping objects
     private HashMap<String, ArrayList<String>> m_sndrsByRcpnt = new HashMap<String, ArrayList<String>>();
-    private HashSet<String> m_allSndrs = new HashSet<String>();
+    private HashMap<String, Pattern> m_allSndrs = new HashMap<String, Pattern>();
+    private Object allSndrsLock = new Object ();
 
     public SafelistManager() {}
 
@@ -85,13 +91,31 @@ public class SafelistManager
           }
         }
 
-        boolean bReturn = addrStr == null?
-          false:m_allSndrs.contains(addrStr);
-          
-/*        
-        EmailAddress eAddr = (null != envelopeSender ? envelopeSender : (null != mimeFrom ? mimeFrom : null));
-        boolean bReturn = (null == eAddr) ? bReturn = false : m_allSndrs.contains(eAddr.getAddress().toLowerCase());
-*/        
+        boolean bReturn = false;
+
+        synchronized (allSndrsLock) {
+            if (null != addrStr) {
+                if (true == m_allSndrs.containsKey(addrStr)) {
+                    m_logger.debug("literal match, sender: " + addrStr);
+                    bReturn = true;
+                } else { // is not a literal match so try limited regex match
+                    Pattern sndrPattern;
+                    Matcher sndrMatcher;
+
+                    for (Iterator iter = m_allSndrs.values().iterator();
+                         true == iter.hasNext(); ) {
+                        sndrPattern = (Pattern) iter.next();
+                        sndrMatcher = sndrPattern.matcher(addrStr);
+                        if (true == sndrMatcher.matches()) {
+                            m_logger.debug("pattern match: " + sndrPattern + ", sender: " + addrStr);
+                            bReturn = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         m_logger.debug("sender ( " + envelopeSender + ", " + mimeFrom + "): is safelisted: " + bReturn);
         return bReturn;
     }
@@ -118,6 +142,9 @@ public class SafelistManager
         }
         // else recipient is adding new sender
         sndrs.add(newSndr);
+        synchronized (allSndrsLock) {
+            addSndr(m_allSndrs, newSndr);
+        }
 
         setSndrs(rcpnt, sndrs);
         return toStringArray(sndrs);
@@ -144,6 +171,9 @@ public class SafelistManager
         }
         // else recipient is removing sender
         sndrs.remove(obsSndr);
+        synchronized (allSndrsLock) {
+            removeSndr(m_allSndrs, obsSndr);
+        }
 
         setSndrs(rcpnt, sndrs);
         return toStringArray(sndrs);
@@ -166,8 +196,12 @@ public class SafelistManager
             sndrs.clear();
         }
 
-        for (String sndr : newSndrs) {
-            sndrs.add(sndr.toLowerCase());
+        synchronized (allSndrsLock) {
+            for (String sndr : newSndrs) {
+                sndr = sndr.toLowerCase();
+                sndrs.add(sndr);
+                addSndr(m_allSndrs, sndr);
+            }
         }
 
         setSndrs(rcpnt, sndrs);
@@ -232,6 +266,7 @@ public class SafelistManager
         m_sndrsByRcpnt.remove(rcpnt.toLowerCase());
 
         setSndrs(null, null);
+        renew((List<SafelistSettings>) mlSettings.getSafelistSettings());
         return;
     }
 
@@ -287,6 +322,7 @@ public class SafelistManager
             // but we only use one copy of sender
             slSndr = safelist.getSender();
             tmpSndr = slSndr.getAddr();
+
             allHMSndrs.put(tmpSndr, slSndr); // cache sender
 
             rcpntHMSafelists = allHMSafelistsByRcpnt.get(tmpRcpnt);
@@ -471,7 +507,7 @@ public class SafelistManager
         m_logger.debug("reading all safelists");
 
         HashMap<String, ArrayList<String>> sndrsByRcpnt = new HashMap<String, ArrayList<String>>();
-        HashSet<String> allSndrs = new HashSet<String>();
+        HashMap<String, Pattern> allSndrs = new HashMap<String, Pattern>();
 
         SafelistRecipient slRcpnt;
         SafelistSender slSndr;
@@ -490,8 +526,7 @@ public class SafelistManager
 
             m_logger.debug("using safelist: " + safelist + ", recipient: " + rcpnt + ", sender: " + sndr);
 
-            // we implicitly ignore duplicates w/ HashSet
-            allSndrs.add(sndr);
+            addSndr(allSndrs, sndr);
 
             sndrs = sndrsByRcpnt.get(rcpnt);
             if (null == sndrs) {
@@ -513,9 +548,28 @@ public class SafelistManager
         }
 
         m_sndrsByRcpnt = sndrsByRcpnt;
-        m_allSndrs = allSndrs;
+        synchronized (allSndrsLock) {
+            m_allSndrs = allSndrs;
+        }
 
         return;
+    }
+
+    // add/replace sndr - assumes sndr is already in lower-case format
+    private void addSndr(HashMap<String, Pattern> sndrs, String sndr)
+    {
+        String sndrTmp = GlobEmailAddressMapper.fixupWildcardAddress(sndr);
+        Pattern sndrPattern = Pattern.compile(sndrTmp);
+
+        // we implicitly ignore duplicates w/ HashSet
+        sndrs.put(sndr, sndrPattern);
+        return;
+    }
+
+    // remove sndr - assumes sndr is already in lower-case format
+    private Pattern removeSndr(HashMap<String, Pattern> sndrs, String sndr)
+    {
+        return (Pattern) sndrs.remove(sndr);
     }
 
     private ArrayList<String> renewGetSndrs(List<SafelistSettings> safelists, String rcpnt)
