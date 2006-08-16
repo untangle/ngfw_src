@@ -2,6 +2,7 @@
 <!-- Created with iReport - A designer for JasperReports -->
 <!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 
+<!--4 bottom columns-->
 <!--pageWidth="612" value matched in convert-reports.sed-->
 <!--topMargin="19" odd value chosen for convert-reports.sed-->
 <jasperReport name="@REPORT_NAME@" whenNoDataType="AllSectionsNoDetail" pageWidth="612" pageHeight="791" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="19" bottomMargin="5">

@@ -1,4 +1,4 @@
-TEMPLATE=Detail
+TEMPLATE=DetailOneCol
 REPORT_NAME=BoxBackupDetail
 REPORT_TITLE=24-Hour Replacement Backup Incidents
 
@@ -20,17 +20,9 @@ SELECT evt.time_stamp, success, description \
   ORDER BY evt.time_stamp DESC
 
 TOPLEFT.label=Timestamp
-TOPLMID.label=
 TOPRMID.label=Backup
-TOPRIGHT.label=
-BOTLMID.label=
 BOTRMID.label=Detail
-BOTRIGHT.label=
 
 TOPLEFT.expr=$F{time_stamp}
-TOPLMID.expr=""
 TOPRMID.expr=$F{success}.booleanValue() == true ? "succeeded" : "failed"
-TOPRIGHT.expr=""
-BOTLMID.expr=""
 BOTRMID.expr=$F{description} == null ? "" : $F{description}
-BOTRIGHT.expr=""

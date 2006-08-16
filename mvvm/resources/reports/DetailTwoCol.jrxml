@@ -2,7 +2,7 @@
 <!-- Created using an evaluation version of JasperAssistant (http://www.jasperassistant.com) -->
 <!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 
-<!--3 bottom columns-->
+<!--2 bottom columns-->
 <!--pageWidth="612" value matched in convert-reports.sed-->
 <!--topMargin="19" odd value chosen for convert-reports.sed-->
 <jasperReport name="@REPORT_NAME@" whenNoDataType="AllSectionsNoDetail" pageWidth="612" pageHeight="791" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="19" bottomMargin="5">
@@ -130,18 +130,11 @@
           <text><![CDATA[@TOPLMID.label@]]></text>
         </staticText>
         <staticText>
-          <reportElement positionType="Float" x="206" y="0" width="285" height="12"/>
+          <reportElement positionType="Float" x="206" y="0" width="366" height="12"/>
           <textElement>
             <font isItalic="true"/>
           </textElement>
           <text><![CDATA[@TOPRMID.label@]]></text>
-        </staticText>
-        <staticText>
-          <reportElement positionType="Float" x="493" y="0" width="79" height="12"/>
-          <textElement>
-            <font isItalic="true"/>
-          </textElement>
-          <text><![CDATA[@TOPRIGHT.label@]]></text>
         </staticText>
         <staticText>
           <reportElement positionType="Float" x="112" y="14" width="92" height="12"/>
@@ -151,18 +144,11 @@
           <text><![CDATA[@BOTLMID.label@]]></text>
         </staticText>
         <staticText>
-          <reportElement positionType="Float" x="206" y="14" width="285" height="12"/>
+          <reportElement positionType="Float" x="206" y="14" width="366" height="12"/>
           <textElement>
             <font isItalic="true"/>
           </textElement>
           <text><![CDATA[@BOTRMID.label@]]></text>
-        </staticText>
-        <staticText>
-          <reportElement positionType="Float" x="493" y="14" width="79" height="12"/>
-          <textElement>
-            <font isItalic="true"/>
-          </textElement>
-          <text><![CDATA[@BOTRIGHT.label@]]></text>
         </staticText>
     </band>
   </columnHeader>

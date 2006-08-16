@@ -2,7 +2,7 @@
 <!-- Created using an evaluation version of JasperAssistant (http://www.jasperassistant.com) -->
 <!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 
-<!--3 bottom columns-->
+<!--1 bottom column-->
 <!--pageWidth="612" value matched in convert-reports.sed-->
 <!--topMargin="19" odd value chosen for convert-reports.sed-->
 <jasperReport name="@REPORT_NAME@" whenNoDataType="AllSectionsNoDetail" pageWidth="612" pageHeight="791" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="19" bottomMargin="5">
@@ -123,46 +123,18 @@
           <text><![CDATA[@TOPLEFT.label@]]></text>
         </staticText>
         <staticText>
-          <reportElement positionType="Float" x="112" y="0" width="92" height="12"/>
-          <textElement>
-            <font isItalic="true"/>
-          </textElement>
-          <text><![CDATA[@TOPLMID.label@]]></text>
-        </staticText>
-        <staticText>
-          <reportElement positionType="Float" x="206" y="0" width="285" height="12"/>
+          <reportElement positionType="Float" x="112" y="0" width="460" height="12"/>
           <textElement>
             <font isItalic="true"/>
           </textElement>
           <text><![CDATA[@TOPRMID.label@]]></text>
         </staticText>
         <staticText>
-          <reportElement positionType="Float" x="493" y="0" width="79" height="12"/>
-          <textElement>
-            <font isItalic="true"/>
-          </textElement>
-          <text><![CDATA[@TOPRIGHT.label@]]></text>
-        </staticText>
-        <staticText>
-          <reportElement positionType="Float" x="112" y="14" width="92" height="12"/>
-          <textElement>
-            <font isItalic="true"/>
-          </textElement>
-          <text><![CDATA[@BOTLMID.label@]]></text>
-        </staticText>
-        <staticText>
-          <reportElement positionType="Float" x="206" y="14" width="285" height="12"/>
+          <reportElement positionType="Float" x="112" y="14" width="460" height="12"/>
           <textElement>
             <font isItalic="true"/>
           </textElement>
           <text><![CDATA[@BOTRMID.label@]]></text>
-        </staticText>
-        <staticText>
-          <reportElement positionType="Float" x="493" y="14" width="79" height="12"/>
-          <textElement>
-            <font isItalic="true"/>
-          </textElement>
-          <text><![CDATA[@BOTRIGHT.label@]]></text>
         </staticText>
     </band>
   </columnHeader>
@@ -184,46 +156,18 @@
         <textFieldExpression class="@TOPLEFT.type@"><![CDATA[@TOPLEFT.expr@]]></textFieldExpression>
       </textField>
       <textField>
-        <reportElement positionType="Float" x="112" y="0" width="92" height="12"/>
-        <textElement>
-          <font fontName="SansSerif"/>
-        </textElement>
-        <textFieldExpression class="@TOPLMID.type@"><![CDATA[@TOPLMID.expr@]]></textFieldExpression>
-      </textField>
-      <textField>
-        <reportElement positionType="Float" x="206" y="0" width="286" height="12"/>
+        <reportElement positionType="Float" x="112" y="0" width="460" height="12"/>
         <textElement>
           <font fontName="SansSerif"/>
         </textElement>
         <textFieldExpression class="@TOPRMID.type@"><![CDATA[@TOPRMID.expr@]]></textFieldExpression>
       </textField>
       <textField>
-        <reportElement positionType="Float" x="493" y="0" width="79" height="12"/>
-        <textElement>
-          <font fontName="SansSerif"/>
-        </textElement>
-        <textFieldExpression class="@TOPRIGHT.type@"><![CDATA[@TOPRIGHT.expr@]]></textFieldExpression>
-      </textField>
-      <textField>
-        <reportElement positionType="Float" x="112" y="14" width="92" height="12"/>
-        <textElement>
-          <font fontName="SansSerif"/>
-        </textElement>
-        <textFieldExpression class="@BOTLMID.type@"><![CDATA[@BOTLMID.expr@]]></textFieldExpression>
-      </textField>
-      <textField>
-        <reportElement positionType="Float" x="206" y="14" width="286" height="12"/>
+        <reportElement positionType="Float" x="112" y="14" width="460" height="12"/>
         <textElement>
           <font fontName="SansSerif"/>
         </textElement>
         <textFieldExpression class="@BOTRMID.type@"><![CDATA[@BOTRMID.expr@]]></textFieldExpression>
-      </textField>
-      <textField>
-        <reportElement positionType="Float" x="493" y="14" width="79" height="12"/>
-        <textElement>
-          <font fontName="SansSerif"/>
-        </textElement>
-        <textFieldExpression class="@BOTRIGHT.type@"><![CDATA[@BOTRIGHT.expr@]]></textFieldExpression>
       </textField>
     </band>
   </detail>
