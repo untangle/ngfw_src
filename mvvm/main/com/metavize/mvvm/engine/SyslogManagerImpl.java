@@ -30,9 +30,12 @@ import org.apache.log4j.Logger;
 class SyslogManagerImpl implements SyslogManager
 {
     private static final SyslogManagerImpl MANAGER = new SyslogManagerImpl();
+    private final static long NEXT_PERIOD = (1000l * 60l * 60l * 6l); //6 hrs
 
     private final ThreadLocal<SyslogSender> syslogSenders;
     private final Logger logger = Logger.getLogger(getClass());
+
+    private static long nextTimeMS = 0;
 
     private DatagramSocket syslogSocket;
 
@@ -62,13 +65,13 @@ class SyslogManagerImpl implements SyslogManager
             }
         }
 
-        SyslogSender sb = syslogSenders.get();
-        if (null == sb) {
-            sb = new SyslogSender();
-            syslogSenders.set(sb);
+        SyslogSender syslogSender = syslogSenders.get();
+        if (null == syslogSender) {
+            syslogSender = new SyslogSender();
+            syslogSenders.set(syslogSender);
         }
 
-        sb.sendSyslog(e, tag);
+        syslogSender.sendSyslog(e, tag);
     }
 
     // package protected methods ----------------------------------------------
@@ -128,12 +131,18 @@ class SyslogManagerImpl implements SyslogManager
             synchronized (SyslogManagerImpl.this) {
                 if (null != syslogSocket && threshold.inThreshold(e)) {
                     DatagramPacket p = sb.makePacket(e, facility,
-                                                     hostname,
-                                                     tag);
+                                                     hostname, tag);
                     try {
                         syslogSocket.send(p);
-                    } catch (IOException exn) {
-                        logger.warn("could not send syslog", exn);
+                    } catch (Exception exn) {
+                        long curTimeMS = System.currentTimeMillis();
+
+                        if (curTimeMS >= nextTimeMS) {
+                            // wait NEXT_PERIOD ms to log exception again
+                            nextTimeMS = curTimeMS + NEXT_PERIOD;
+                            // log as info instead of warn b/c rbscott sez so
+                            logger.info("could not send syslog, host: " + syslogSocket.getInetAddress().getHostName() + ", port: " + syslogSocket.getPort(), exn);
+                        }
                     }
                 }
             }
