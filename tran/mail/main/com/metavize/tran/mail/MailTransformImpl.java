@@ -245,7 +245,7 @@ public class MailTransformImpl extends AbstractTransform
                 if(settings.getQuarantineSettings() == null) {
                     QuarantineSettings qs = new QuarantineSettings();
 
-                    qs.setMaxQuarantineTotalSz(10 * 1000000000);//10Gig - I hope
+                    qs.setMaxQuarantineTotalSz(10 * 1000000000L);//10Gig
                     qs.setDigestHourOfDay(6);//6 am
                     qs.setDigestMinuteOfDay(0);//6 am
                     byte[] secretKey = new byte[4];
