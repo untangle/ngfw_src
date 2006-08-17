@@ -51,7 +51,7 @@ public class InstallWarningJPanel extends MWizardPageJPanel {
 
                 subheaderJLabel.setFont(new java.awt.Font("Dialog", 0, 18));
                 subheaderJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                subheaderJLabel.setText("<html><font color=\"#FF0000\">If you continue, your boot disk will be erased in preparation for the EdgeGuard installation process.</font></html>");
+                subheaderJLabel.setText("<html><font color=\"#FF0000\">If you continue, in preparation for the EdgeGuard installation process, YOUR DISK WILL BE ERASED AND ALL ITS DATA WILL BE LOST!</font></html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
