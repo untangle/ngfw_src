@@ -20,6 +20,18 @@ public interface QuarantineMaintenenceView
   extends QuarantineManipulation {
 
   /**
+   * Total size of the entire store (in bytes)
+   */
+  public long getInboxesTotalSize()
+    throws QuarantineUserActionFailedException;
+
+  /**
+   * Total size of the entire store
+   * (in kilobytes (inMB = false) or megabytes (inMB = true))
+   */
+  public String getFormattedInboxesTotalSize(boolean inMB);
+
+  /**
    * List all inboxes maintained by this Quarantine
    *
    * @return the list of all inboxes

@@ -128,6 +128,20 @@ public class QuarantineStore {
     return m_masterTable.getTotalQuarantineSize();
   }
 
+  public final String getFormattedTotalSize(boolean inMB) {
+      try {
+        double unitDivisor;
+
+        if (false == inMB) {
+           unitDivisor = 1024.0; // in kilobytes
+        } else {
+           unitDivisor = (1024.0 * 1024.0); // in megabytes
+        }
+
+        return String.format("%01.3f", new Float(getTotalSize() / unitDivisor));
+      } catch(Exception ex) { return "<unknown>"; }
+  }
+
   /**
    * Provides a summary of all Inboxes.
    */

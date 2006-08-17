@@ -341,7 +341,6 @@ public class MailTransformImpl extends AbstractTransform
     }
   }
 
-
   class QuarantineUserViewWrapper
     extends QuarantineManipulationWrapper
     implements QuarantineUserView {
@@ -375,11 +374,20 @@ public class MailTransformImpl extends AbstractTransform
       throws QuarantineUserActionFailedException {
       return s_quarantine.getMappedFrom(account);
     }
-
   }
+
   class QuarantineMaintenenceViewWrapper
     extends QuarantineManipulationWrapper
     implements QuarantineMaintenenceView {
+
+    public long getInboxesTotalSize()
+      throws QuarantineUserActionFailedException {
+      return s_quarantine.getInboxesTotalSize();
+    }
+
+    public String getFormattedInboxesTotalSize(boolean inMB) {
+      return s_quarantine.getFormattedInboxesTotalSize(inMB);
+    }
 
     public List<Inbox> listInboxes()
       throws QuarantineUserActionFailedException {
@@ -396,6 +404,7 @@ public class MailTransformImpl extends AbstractTransform
       s_quarantine.rescueInbox(account);
     }
   }
+
   class QuarantineTransformViewWrapper
     implements QuarantineTransformView {
     public boolean quarantineMail(File file,
@@ -404,7 +413,6 @@ public class MailTransformImpl extends AbstractTransform
       return s_quarantine.quarantineMail(file, summary, recipients);
     }
   }
-
 
   class SafelistTransformViewWrapper
     implements SafelistTransformView {
@@ -452,13 +460,11 @@ public class MailTransformImpl extends AbstractTransform
 
     public void test() {
     }
-
   }
 
   class SafelistEndUserViewWrapper
     extends SafelistManipulationWrapper
     implements SafelistEndUserView {
-
   }
 
   class SafelistAdminViewWrapper
@@ -485,5 +491,4 @@ public class MailTransformImpl extends AbstractTransform
       return s_safelistMngr.safelistExists(safelistOwnerAddress);
     }
   }
-
 }

@@ -471,6 +471,15 @@ public class Quarantine
 
   //--QuarantineMaintenenceView --
 
+  public long getInboxesTotalSize()
+    throws QuarantineUserActionFailedException {
+    return m_store.getTotalSize();
+  }
+
+  public String getFormattedInboxesTotalSize(boolean inMB) {
+    return m_store.getFormattedTotalSize(inMB);
+  }
+
   public List<Inbox> listInboxes()
     throws QuarantineUserActionFailedException {
     return m_store.listInboxes();
@@ -537,7 +546,6 @@ public class Quarantine
     m_impl.setMailTransformSettings(settings);
   }
 
-
   public boolean unmapSelfService(String inboxName, String aliasToRemove)
     throws QuarantineUserActionFailedException {
 
@@ -564,7 +572,6 @@ public class Quarantine
 //    System.out.println("***DEBUG*** Returning True");
     return true;
   }
-  
 
   public String getMappedTo(String account)
     throws QuarantineUserActionFailedException {
