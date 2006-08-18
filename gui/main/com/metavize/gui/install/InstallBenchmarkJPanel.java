@@ -20,13 +20,13 @@ import java.text.DecimalFormat;
 
 public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
-    private static final String FAILURE_MESSAGE = "<html><b><font color=\"#FF0000\">Warning!"
-	+ " Your hardware does not meet all requirements.  Press the Next button to exit.</font></b></html>";
-    private static final String WARNING_MESSAGE = "<html><b><font color=\"#000000\">Warning!"
-	+ " Your hardware meets minimum requirements, but performance may not be optimal."
-	+ " Press the Next button to continue.</font></b></html>";
-    private static final String PASSED_MESSAGE = "<html><b><font color=\"#000000\">Success!"
-	+ " Your hardware meets all requirements. Press the Next button to continue.</font></b></html>";
+    private static final String FAILURE_MESSAGE = "<html><font color=\"#FF0000\"><b>Warning!</b>"
+	+ " Your hardware does not meet all requirements. Read above to find out why. Press the Next button to exit now.</font></html>";
+    private static final String WARNING_MESSAGE = "<html><font color=\"#FF9B00\"><b>Warning!</b>"
+	+ " Your hardware meets minimum requirements, but performance may not be optimal. Read above to find out how to improve performance."
+	+ " Press the Next button to exit.</font></html>";
+    private static final String PASSED_MESSAGE = "<html><font color=\"#445BFF\"><b>Success!</b>"
+	+ " Your hardware meets all requirements. Press the Next button to continue.</font></html>";
 
     private static final int MEMORY_MIN_MEGS   = 500;
     private static final int MEMORY_GOOD_MEGS  = 1000;
@@ -34,17 +34,17 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
     private static final String MEMORY_REQUIRED = "("+MEMORY_MIN_MEGS+" MB required)";
 
     private static final int CPU_MIN_MHZ   = 1000;
-    private static final int CPU_GOOD_MHZ  = 2000;
-    private static final int CPU_GREAT_MHZ = 4000;
+    private static final int CPU_GOOD_MHZ  = 1600;
+    private static final int CPU_GREAT_MHZ = 3000;
     private static final String CPU_REQUIRED = "("+CPU_MIN_MHZ+" MHz required)";
 
-    private static final int DISK_MIN_GIGS   = 10;
-    private static final int DISK_GOOD_GIGS  = 30;
-    private static final int DISK_GREAT_GIGS = 60;
+    private static final int DISK_MIN_GIGS   = 20;
+    private static final int DISK_GOOD_GIGS  = 40;
+    private static final int DISK_GREAT_GIGS = 80;
     private static final String DISK_REQUIRED = "("+DISK_MIN_GIGS+" GB required)";
 
     private static final int NICS_MIN_COUNT   = 2;
-    private static final int NICS_GOOD_COUNT  = 3;
+    private static final int NICS_GOOD_COUNT  = 2;
     private static final int NICS_GREAT_COUNT = 3;
     private static final String NICS_REQUIRED = "("+NICS_MIN_COUNT+" interfaces required)";
 
@@ -69,7 +69,6 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
     class DetectThread extends Thread {
 	public DetectThread(){
 	    setDaemon(true);
-	    //	    InstallWizard.getInfiniteProgressJComponent().startLater("Checking...");
 	    installWizard.updateButtonState(true);
 	    updateJProgressBar(memoryJProgressBar, "Checking...", true, 0, 68, 91, 255);
 	    updateJProgressBar(cpuJProgressBar, "Checking...", true, 0, 68, 91, 255);
@@ -88,21 +87,31 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 		final int memory   = SystemStats.getMemoryMegs();
 		final int cpuCount = SystemStats.getLogicalCPU();
 		final int cpuSpeed = SystemStats.getClockSpeed();
+		float cpuMultiplier;
+		if( cpuCount == 1 )
+		    cpuMultiplier = 1f;
+		else if( cpuCount == 2 )
+		    cpuMultiplier = 1.5f;
+		else if( cpuCount == 4 )
+		    cpuMultiplier = 2.5f;
+		else
+		    cpuMultiplier = 3f;
+		final int logicalCpuSpeed = (int)((float)cpuSpeed * cpuMultiplier);
 		final float disk   = SystemStats.getDiskGigs();
 		final int nics     = SystemStats.getNumNICs();
-		// COMPUTE RESULTS
-		final Object memoryResults[] = computeResults((float)memory,
-							      MEMORY_MIN_MEGS,MEMORY_GOOD_MEGS,MEMORY_GREAT_MEGS,
-							      MEMORY_REQUIRED);
-		final Object cpuResults[]    = computeResults((float)cpuSpeed,
-							      CPU_MIN_MHZ,CPU_GOOD_MHZ,CPU_GREAT_MHZ,
-							      CPU_REQUIRED);
-		final Object diskResults[]   = computeResults(disk,
-							      DISK_MIN_GIGS,DISK_GOOD_GIGS,DISK_GREAT_GIGS,
-							      DISK_REQUIRED);
-		final Object nicsResults[]   = computeResults((float)nics,
-							      NICS_MIN_COUNT,NICS_GOOD_COUNT,NICS_GREAT_COUNT,
-							      NICS_REQUIRED);
+		// COMPUTE RESULTS	       
+		final Object memoryResults[] = computeNormalResults((float)memory,
+								    MEMORY_MIN_MEGS,MEMORY_GOOD_MEGS,MEMORY_GREAT_MEGS,
+								    MEMORY_REQUIRED);
+		final Object cpuResults[]    = computeNormalResults(logicalCpuSpeed,
+								    CPU_MIN_MHZ,CPU_GOOD_MHZ,CPU_GREAT_MHZ,
+								    CPU_REQUIRED);
+		final Object diskResults[]   = computeNormalResults(disk,
+								    DISK_MIN_GIGS,DISK_GOOD_GIGS,DISK_GREAT_GIGS,
+								    DISK_REQUIRED);
+		final Object nicsResults[]   = computeNicResults((float)nics,
+								 NICS_MIN_COUNT,NICS_GOOD_COUNT,NICS_GREAT_COUNT,
+								 NICS_REQUIRED);
 		
 		sleep(3000l);
 
@@ -118,7 +127,8 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 				       (Integer)nicsResults[2], (Integer)nicsResults[3], (Integer)nicsResults[4]);
 
 		    memoryResultJLabel.setText(memory + " MB");
-		    cpuResultJLabel.setText(cpuSpeed + " MHz" + (cpuCount>1?" (x"+cpuCount+")":""));
+		    cpuResultJLabel.setText(cpuSpeed + " MHz" + " ("+cpuCount+" detected)" 
+					    + "  [approximated as a single " + logicalCpuSpeed + " MHz CPU]");
 		    DecimalFormat decimalFormat = new DecimalFormat("#####.##");
 		    diskResultJLabel.setText(decimalFormat.format(disk) + " GB");
 		    nicResultJLabel.setText(nics + " interface" + (nics==1?"":"s"));
@@ -138,10 +148,8 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 			testPassed = true;
 		    }
 		}});
-		//InstallWizard.getInfiniteProgressJComponent().stopLater(4000l);
 	    }
 	    catch(Exception e){
-		//InstallWizard.getInfiniteProgressJComponent().stopLater(-1);
 		e.printStackTrace();
 	    }
 	}
@@ -155,11 +163,42 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 	jProgressBar.setForeground(new Color(r,g,b));
     }
 
-    private Object[] computeResults(Float score, Integer min, Integer good, Integer great, String failureString){
+    private Object[] computeNormalResults(Float score, Integer min, Integer good, Integer great, String failureString){
 	String resultString;
 	Integer resultValue, resultR, resultG, resultB;
 	if( score < min ){
-	    resultString = "Failed " + failureString;
+	    resultString = "Failure " + failureString;
+	    resultValue  = (int) (25f*(score/((float)min)));
+	    resultR = 255;
+	    resultG = resultB = 0;
+	}
+	else if(score < good ){
+	    resultString = "Warning";
+	    resultValue = 25 + (int) (25f*(score/((float)good)));
+	    resultR = 255;
+	    resultG = 155;
+	    resultB = 0;
+	}
+	else if(score < great){
+	    resultString = "Good";
+	    resultValue = 50 + (int) (25f*(score/((float)great)));
+	    resultG = 255;
+	    resultR = resultB = 0;
+	}
+	else{
+	    resultString = "Excellent";
+	    resultValue = 95;
+	    resultG = 255;
+	    resultR = resultB = 0;
+	}
+	return new Object[]{resultString,resultValue,resultR,resultG,resultB};
+    }
+
+    private Object[] computeNicResults(Float score, Integer min, Integer good, Integer great, String failureString){
+	String resultString;
+	Integer resultValue, resultR, resultG, resultB;
+	if( score < min ){
+	    resultString = "Failure " + failureString;
 	    resultValue  = 25;
 	    resultR = 255;
 	    resultG = resultB = 0;
@@ -179,7 +218,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 	}
 	else{
 	    resultString = "Excellent";
-	    resultValue = 100;
+	    resultValue = 95;
 	    resultG = 255;
 	    resultR = resultB = 0;
 	}
