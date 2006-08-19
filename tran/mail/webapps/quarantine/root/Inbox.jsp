@@ -27,9 +27,15 @@
           document.form1.elements[i].checked = isOn;
         }
       }
+
       function uncheckMaster() {
         document.form1.checkall.checked = false;
       }      
+
+      function doRefresh() {
+        document.form1.<quarantine:constants keyName="action"/>.value = "<quarantine:constants valueName="refresh"/>";
+        document.form1.submit();
+      }
       
       function doPurge() {
         document.form1.<quarantine:constants keyName="action"/>.value = "<quarantine:constants valueName="purge"/>";
@@ -318,6 +324,7 @@
                               </quarantine:isRPPOptionSelected>
                             </quarantine:forEachRPPOption>
                             </select>                            
+                            <input name="Update" value="Update" onclick="doRefresh()" type="button">
                           </td>
 
                           <th scope="row" align=left>TOTALS</th>

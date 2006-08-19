@@ -16,6 +16,7 @@ public class WebConstants {
   public static final String ACTION_RP = "action";
   public static final String PURGE_RV = "purge";
   public static final String RESCUE_RV = "rescue";
+  public static final String REFRESH_RV = "refresh";
   public static final String SAFELIST_VIEW_RV = "slview";
   public static final String SAFELIST_ADD_RV = "sladd";
   public static final String SAFELIST_REMOVE_RV = "slremove";
@@ -31,7 +32,6 @@ public class WebConstants {
   //key for the value of the (base64 encoded) email address
   public static final String UNMAPPER_TARGET_ADDR_RP = "unmapaddr";
 
-
   //The action is really redundant, as there is only
   //one "action" for this servlet.  However, with all of
   //the other obnoxious scafolding around web<->java coding
@@ -39,6 +39,4 @@ public class WebConstants {
   public static final String MAPPER_DO_REMAP_RV = "remap";
   public static final String MAPPER_VIEW_RV = "remap";
   public static final String MAPPER_TARGET_ADDR_RP = "mapaddr";
-  
-
 }

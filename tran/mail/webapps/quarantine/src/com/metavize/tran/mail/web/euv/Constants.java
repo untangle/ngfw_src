@@ -18,7 +18,6 @@ import com.metavize.tran.mail.papi.quarantine.WebConstants;
 public final class Constants
   extends WebConstants {
 
-
   public static final String REQ_DIGEST_ADDR_RP = "draddr";
 
   public static final String SORT_BY_RP = "sort";
@@ -26,7 +25,6 @@ public final class Constants
   public static final String FIRST_RECORD_RP = "first";
 
   public static final int RECORDS_PER_PAGE = 25;
-
 
   /**
    * Page to forward end-users to, if the system is
@@ -56,6 +54,4 @@ public final class Constants
 
   public static final String MAP_CTL = "/mp";
   public static final String MAP_ADDRESS_VIEW = "/Rmap.jsp";
-  
-  
 }

@@ -32,9 +32,8 @@ import com.metavize.tran.mail.web.euv.tags.PagnationPropertiesTag;
 
 import com.metavize.tran.util.Pair;
 
-
 /**
- * Controler used for inbox maintenence (purge/rescue/view).
+ * Controler used for inbox maintenence (purge/rescue/refresh/view).
  */
 public class InboxMaintenenceControler
   extends MaintenenceControlerBase {
@@ -47,9 +46,11 @@ public class InboxMaintenenceControler
     throws ServletException, IOException {
 
     try {
-
       //Now, figure out what they wanted to do.  Either
-      //purge, rescue, or simply to see the index
+      //purge, rescue, refresh, or simply to see the index
+      //Note that refresh or simply to see the index,
+      //we fall through and take the basic action (not purge and rescue)
+
       String action = req.getParameter(Constants.ACTION_RP);
       log("[InboxMaintenenceControler] Action " + action);
       if(action == null) {
@@ -89,8 +90,8 @@ public class InboxMaintenenceControler
           log("[InboxMaintenenceControler] Rescue request for account \"" + account + "\"");
           index = quarantine.rescue(account, mids);
           MessagesSetTag.addInfoMessage(req,
-            mids.length + " message" + (mids.length>1?"s":"") + " released");        
-        }        
+            mids.length + " message" + (mids.length>1?"s":"") + " released");
+        }
       }
       
       if(action.equals(Constants.SAFELIST_ADD_RV)) {
@@ -121,9 +122,7 @@ public class InboxMaintenenceControler
       PagnationPropertiesTag.setCurrentRowsPerPAge(req, "" + rowsPerPage);
 
       req.getRequestDispatcher(Constants.INBOX_VIEW).forward(req, resp);
-      
-    }
-    catch(NoSuchInboxException ex) {
+    } catch(NoSuchInboxException ex) {
       //Odd case.  Someone had a valid auth token, yet
       //there is no inbox.  Likely, it was deleted.  Don't
       //give them an error - simply forward them to the display
