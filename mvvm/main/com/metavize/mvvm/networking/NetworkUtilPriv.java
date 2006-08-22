@@ -402,7 +402,7 @@ class NetworkUtilPriv extends NetworkUtil
             defaultRoute = primary.getNetwork();
             netmask = primary.getNetmask();
             /* Only add the default route if dns is enabled */
-            if ( dns.getDnsEnabled() && isEnabled) {
+            if ( isEnabled && dns.getDnsEnabled() ) {
                 dnsServerList.add( defaultRoute );
             } else {
                 /* Otherwise, dhcp would serve the addresses the box uses for DNS */
@@ -414,13 +414,18 @@ class NetworkUtilPriv extends NetworkUtil
             /* This might be incorrect to assume the default route of the box */
             defaultRoute = settings.getDefaultRoute();
             netmask = primary.getNetmask();
-            if ( !settings.getDns1().isEmpty()) dnsServerList.add( settings.getDns1());
-            if ( !settings.getDns2().isEmpty()) dnsServerList.add( settings.getDns2());
+            if ( isEnabled && dns.getDnsEnabled()) {
+                dnsServerList.add( primary.getNetwork());
+            } else {
+                if ( !settings.getDns1().isEmpty()) dnsServerList.add( settings.getDns1());
+                if ( !settings.getDns2().isEmpty()) dnsServerList.add( settings.getDns2());
+            }
+
 
             /* Don't bind to an interface */
             interfaceName = null;
         }
-
+        
         return ServicesInternalSettings.
             makeInstance( isEnabled, dhcp, dns, defaultRoute, netmask, dnsServerList,
                           interfaceName, primary.getNetwork());
@@ -519,19 +524,34 @@ class NetworkUtilPriv extends NetworkUtil
         List<IPaddr> dnsServerList = new LinkedList<IPaddr>();
         String interfaceName =  null;
 
+        boolean isEnabled = settings.getIsEnabled();
+
         IPNetwork primary = serviceSpace.getPrimaryAddress();
 
+        /* XXX Code is duplicated with toInternal XXX */
         if ( serviceSpace.getIsNatEnabled()) {
             defaultRoute = primary.getNetwork();
             netmask = primary.getNetmask();
-            dnsServerList.add( defaultRoute );
+            /* Only add the default route if dns is enabled */
+            if ( isEnabled && services.getIsDnsEnabled() ) {
+                dnsServerList.add( defaultRoute );
+            } else {
+                /* Otherwise, dhcp would serve the addresses the box uses for DNS */
+                if ( !settings.getDns1().isEmpty()) dnsServerList.add( settings.getDns1());
+                if ( !settings.getDns2().isEmpty()) dnsServerList.add( settings.getDns2());
+            }
             interfaceName = serviceSpace.getDeviceName();
         } else {
             /* This might be incorrect to assume the default route of the box */
             defaultRoute = settings.getDefaultRoute();
             netmask = primary.getNetmask();
-            if ( !settings.getDns1().isEmpty()) dnsServerList.add( settings.getDns1());
-            if ( !settings.getDns2().isEmpty()) dnsServerList.add( settings.getDns2());
+            if ( isEnabled && services.getIsDnsEnabled()) {
+                dnsServerList.add( primary.getNetwork());
+            } else {
+                if ( !settings.getDns1().isEmpty()) dnsServerList.add( settings.getDns1());
+                if ( !settings.getDns2().isEmpty()) dnsServerList.add( settings.getDns2());
+            }
+
 
             /* Don't bind to an interface */
             interfaceName = null;

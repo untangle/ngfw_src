@@ -53,13 +53,13 @@ public class ServicesInternalSettings
     private final String interfaceName;
 
 
-    public ServicesInternalSettings( boolean isEnabled,
-                                     boolean isDhcpEnabled, IPaddr dhcpStartAddress, IPaddr dhcpEndAddress,
-                                     int dhcpLeaseTime, List<DhcpLeaseInternal> leaseList, 
-                                     boolean isDnsEnabled, HostName dnsLocalDomain, 
-                                     List<DnsStaticHostInternal> hostList,
-                                     IPaddr defaultRoute, IPaddr netmask, List<IPaddr> dnsServerList,
-                                     String interfaceName, IPaddr serviceAddress )
+    private ServicesInternalSettings( boolean isEnabled,
+                                      boolean isDhcpEnabled, IPaddr dhcpStartAddress, IPaddr dhcpEndAddress,
+                                      int dhcpLeaseTime, List<DhcpLeaseInternal> leaseList, 
+                                      boolean isDnsEnabled, HostName dnsLocalDomain, 
+                                      List<DnsStaticHostInternal> hostList,
+                                      IPaddr defaultRoute, IPaddr netmask, List<IPaddr> dnsServerList,
+                                      String interfaceName, IPaddr serviceAddress )
     {
         /* Indicator for whether or not services are enabled */
         this.isEnabled         = isEnabled;
@@ -227,6 +227,20 @@ public class ServicesInternalSettings
         settings.setDnsStaticHostList( getDnsStaticHostRuleList()); /* This returns a copy */
 
         return settings;
+    }
+
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "is-enabled: " + getIsEnabled());
+        sb.append( "\ndhcp: " + getIsDhcpEnabled());
+        sb.append( "\ndhcp-range: " + getDhcpStartAddress() + "-" + getDhcpEndAddress());
+        sb.append( "\ndhcp-params: " + getDefaultRoute() + "/" + getNetmask());
+        for ( IPaddr dnsServer : getDnsServerList()) sb.append( "\ndns-server: " + dnsServer );
+        sb.append( "\ndns: " + getIsDnsEnabled());
+        sb.append( "\ndns-domain: " + getDnsLocalDomain());
+
+        return sb.toString();
     }
 
     public static ServicesInternalSettings 

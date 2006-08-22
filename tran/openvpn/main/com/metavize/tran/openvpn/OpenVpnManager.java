@@ -384,6 +384,8 @@ class OpenVpnManager
         } catch ( Exception e ) {
             logger.error( "Unable to delete the previous client configuration files." );
         }
+        ServicesInternalSettings sis = MvvmContextFactory.context().
+            networkManager().getServicesInternalSettings();
 
         for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
             if ( !client.isEnabled()) continue;
@@ -398,22 +400,19 @@ class OpenVpnManager
 
             /* XXXX This won't work for a bridge configuration */
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
-
             
             if(client.getGroup().isUseDNS()) {
-              ServicesInternalSettings sis = MvvmContextFactory.context().
-                networkManager().getServicesInternalSettings();
-              if(sis.getIsEnabled() && sis.getIsDnsEnabled()) {
-                List<IPaddr> dnsServers = sis.getDnsServerList();
-
-                for(IPaddr addr : dnsServers) {
+              List<IPaddr> dnsServers = sis.getDnsServerList();
+              
+              for(IPaddr addr : dnsServers) {
                   sw.appendVariable( "push", "\"dhcp-option DNS " + addr.toString() + "\"");
-                }
-                
-                HostName localDomain = sis.getDnsLocalDomain();
-                if(localDomain != null) {
-                  sw.appendVariable( "push", "\"dhcp-option DOMAIN " + localDomain.toString() + "\"");
-                }
+              }
+              
+              if(sis.getIsEnabled() && sis.getIsDnsEnabled()) {
+                  HostName localDomain = sis.getDnsLocalDomain();
+                  if(localDomain != null) {
+                      sw.appendVariable( "push", "\"dhcp-option DOMAIN " + localDomain.toString() + "\"");
+                  }
               }
             }
 
