@@ -57,7 +57,6 @@ public class MessageBoundaryScanner {
     (byte) CR, (byte) LF, (byte) CR, (byte) LF
   };
 
-
   public enum ScanningState {
     INIT,
     LOOKING_FOR_HEADERS_END,
@@ -72,10 +71,7 @@ public class MessageBoundaryScanner {
   private boolean m_isEmptyMessage = false;
   private ScanningState m_state = ScanningState.INIT;
 
-
-  public MessageBoundaryScanner() {
-
-  }
+  public MessageBoundaryScanner() {}
 
   /**
    * Reset this Object for reuse
@@ -113,8 +109,6 @@ public class MessageBoundaryScanner {
     return m_isEmptyMessage;
   }
 
-
-  
   /**
    * Process the headers, returning true
    * when the end of the headers has been found (a CR
@@ -156,6 +150,8 @@ public class MessageBoundaryScanner {
     //
     //We can only detect this if we have at least 5
     //bytes, so make sure we have at least that many.
+
+    //m_logger.info("scanning state (header): " + m_state + ", buf: " + bbToString(buf) + ", " + buf);
 
     if(m_state == ScanningState.INIT) {
       //Special case.  We cannot know what is going on
@@ -234,6 +230,29 @@ public class MessageBoundaryScanner {
       
       m_state = ScanningState.LOOKING_FOR_HEADERS_END;      
     }
+
+    // handle amread's special syntactically incorrect message
+    // - last header field/value does not end with <CRLF>
+    //   and DATA section is immediately terminated by <CRLF.CRLF>
+    //   or
+    //   last header field/value ends with <CRLF>
+    //   and DATA section is only terminated by <.CRLF>
+    if(buf.remaining() == 5) {
+      if((buf.get(buf.position()) == CR) &&
+         (buf.get(buf.position()+1) == LF) &&
+         (buf.get(buf.position()+2) == DOT) &&
+         (buf.get(buf.position()+3) == CR) &&
+         (buf.get(buf.position()+4) == LF)) {
+
+        m_state = ScanningState.INIT_BODY;
+        //Advance buffer past 1st CRLF pair
+        // - last header field/value ends with <CRLF>
+        // - processBody will handle the rest of buffer <.CRLF>
+        //   as a case of a blank message body
+        buf.position(buf.position() + 2);
+        return true;
+      }
+    }
       
     //Scan for the end of headers
     int headersEnd = findPattern(buf, CRLF_CRLF, 0, CRLF_CRLF.length);
@@ -256,12 +275,8 @@ public class MessageBoundaryScanner {
       buf.position(buf.limit() - Math.max(headerTermBackset, msgEndBackset));
       return false;
     }
-    
   }
-    
-  
 
-  
   /**
    * Process a body chunk, moving bytes from
    * source to sink.  Look for lines to 
@@ -296,6 +311,8 @@ public class MessageBoundaryScanner {
   public boolean processBody(ByteBuffer source,
     ByteBuffer sink) {
 
+    //m_logger.info("scanning state (body): " + m_state + ", source: " + bbToString(source) + ", " + source);
+
     if(m_state == ScanningState.DONE) {
       return true;
     }
@@ -305,22 +322,22 @@ public class MessageBoundaryScanner {
     //may also start the body termination.
     //For this case, we look for ".CRLF"
     if(m_state == ScanningState.INIT_BODY) {
-      //Not enough bytes to determine
-      //if this is the end
+      //Not enough bytes to determine if this is the end
       if(source.remaining() < 3) {
         return false;
       }
       //Check for no body case, knowing what we
       //last saw was the CRLF terminating the headers
-      if(
-        (source.get(source.position()) == DOT) &&
-        (source.get(source.position()+1) == CR) &&
-        (source.get(source.position()+2) == LF)) {
+      if((source.get(source.position()) == DOT) &&
+         (source.get(source.position()+1) == CR) &&
+         (source.get(source.position()+2) == LF)) {
+
         m_isEmptyMessage = true;
         source.position(source.position()+3);
         m_state = ScanningState.DONE;
         return true;
       }
+
       m_state = ScanningState.LOOKING_FOR_BODY_END;
     }
 
@@ -364,6 +381,7 @@ public class MessageBoundaryScanner {
           dup.limit(index);
           sink.put(dup);
         }        
+
         //Position source just after CRLF.CRLF
         source.position(index + CRLF_DOT_CRLF.length);
         m_state = ScanningState.DONE;
