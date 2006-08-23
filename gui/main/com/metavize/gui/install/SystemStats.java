@@ -12,6 +12,7 @@
 package com.metavize.gui.install;
 
 import java.io.*;
+import java.util.*;
 
 public class SystemStats
 {
@@ -120,10 +121,10 @@ public class SystemStats
         return -1;
     }
 
-    public static float getDiskGigs()
+    public static float getDiskGigs(String diskstr)
     {
         try {
-            String[] args = {"/bin/sh","-c"," cat /proc/partitions | egrep 'sda|hda' | egrep -v 'sda[1-9]|hda[1-9]' | awk '{print $3*512/1000000000}'"};
+            String[] args = {"/bin/sh","-c"," cat /proc/partitions | egrep '" + diskstr + "' | egrep -v 'sda[1-9]|hda[1-9]|uba[1-9]' | awk '{print $3*512/1000000000}'"};
             Process proc = Runtime.getRuntime().exec(args);
             BufferedReader input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             try {
@@ -134,6 +135,34 @@ public class SystemStats
         }
         catch (IOException e) {}
         return -1f;
+    }
+
+    public static float getDiskGigs()
+    {
+        return getDiskGigs("sda|hda|uba");
+    }
+
+    public static List<String> getAvailableDisks(String subset)
+    {
+        LinkedList<String> avail = new LinkedList();
+        
+        try {
+            String[] args = {"/bin/sh","-c"," cat /proc/partitions | egrep '" + subset + "' | egrep -v 'sda[1-9]|hda[1-9]|uba[1-9]' | awk '{print $4}'"};
+            Process proc = Runtime.getRuntime().exec(args);
+            BufferedReader input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            String line = null;
+            while ((line = input.readLine()) != null) {
+                avail.add(line);
+            }
+        }
+        catch (IOException e) {}
+        
+        return avail;
+    }
+
+    public static List<String> getAvailableDisks()
+    {
+        return getAvailableDisks("sda|hda|uba");
     }
 
     public static int getNumNICs()
