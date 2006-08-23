@@ -103,7 +103,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 		final Object memoryResults[] = computeNormalResults((float)memory,
 								    MEMORY_MIN_MEGS,MEMORY_GOOD_MEGS,MEMORY_GREAT_MEGS,
 								    MEMORY_REQUIRED);
-		final Object cpuResults[]    = computeNormalResults(logicalCpuSpeed,
+		final Object cpuResults[]    = computeNormalResults((float)logicalCpuSpeed,
 								    CPU_MIN_MHZ,CPU_GOOD_MHZ,CPU_GREAT_MHZ,
 								    CPU_REQUIRED);
 		final Object diskResults[]   = computeNormalResults(disk,
