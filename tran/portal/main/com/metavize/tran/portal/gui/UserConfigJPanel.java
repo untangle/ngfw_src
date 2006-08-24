@@ -64,6 +64,8 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
     private MTransformControlsJPanel mTransformControlsJPanel;
     private JPanel panel;
 
+    protected boolean getSortable(){ return false; }
+
     public UserConfigTableModel(MTransformControlsJPanel mTransformControlsJPanel, JPanel jPanel){
 	this.mTransformControlsJPanel = mTransformControlsJPanel;
 	panel = jPanel;
