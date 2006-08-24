@@ -1,0 +1,17 @@
+#!/bin/sh
+
+exec >> @MVVM_LOG@/openvpn.log 2>&1
+
+currentPid=`pidof openvpn`
+expectedPid=`cat /var/run/openvpn.client.pid`
+
+if [ -z "${currentPid}" ] || [ "${currentPid}x" != "${expectedPid}x" ]; then
+    echo "OpenVPN is no longer running, attempting a restart"
+    killall openvpn
+    /etc/init.d/openvpn restart
+fi
+
+echo -n "."
+
+true
+

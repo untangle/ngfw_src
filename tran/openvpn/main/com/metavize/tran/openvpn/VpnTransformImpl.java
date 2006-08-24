@@ -65,10 +65,11 @@ public class VpnTransformImpl extends AbstractTransform
     private final CertificateManager certificateManager = new CertificateManager();
     private final AddressMapper addressMapper = new AddressMapper();
     private final OpenVpnMonitor openVpnMonitor;
+    private final OpenVpnCaretaker openVpnCaretaker = new OpenVpnCaretaker();
 
     private final EventHandler handler;
 
-    private VpnSettings settings;
+    VpnSettings settings;
 
     private Sandbox sandbox = null;
 
@@ -95,7 +96,8 @@ public class VpnTransformImpl extends AbstractTransform
         setVpnSettings( settings );
 
         /* Stop the open vpn monitor(I don't think this actually does anything, rbs) */
-        openVpnMonitor.stop();
+        this.openVpnMonitor.stop();
+        this.openVpnCaretaker.stop();
     }
 
     // VpnTransform methods --------------------------------------------------
@@ -158,8 +160,12 @@ public class VpnTransformImpl extends AbstractTransform
                 this.openVpnManager.restart( this.settings );
                 this.handler.configure( this.settings );
 
-                if ( !this.settings.getIsEdgeGuardClient()) openVpnMonitor.enable();
-                else                                        openVpnMonitor.disable();
+                if ( this.settings.getIsEdgeGuardClient()) {
+                    this.openVpnMonitor.disable();
+                    this.openVpnCaretaker.start();
+                } else { 
+                    this.openVpnMonitor.enable();
+                }
             }
         } catch ( TransformException exn ) {
             logger.error( "Could not save VPN settings", exn );
@@ -473,12 +479,15 @@ public class VpnTransformImpl extends AbstractTransform
             throw new UnconfiguredException( e );
         }
 
-
         deployWebApp();
 
         /* Only start the monitor for servers */
-        if ( !settings.getIsEdgeGuardClient()) this.openVpnMonitor.enable();
-        else                                   this.openVpnMonitor.disable();
+        if ( settings.getIsEdgeGuardClient()) {
+            this.openVpnMonitor.disable();
+            this.openVpnCaretaker.start();
+        } else { 
+            this.openVpnMonitor.enable();
+        }
     }
 
     @Override protected void postStop() throws TransformStopException
@@ -490,7 +499,8 @@ public class VpnTransformImpl extends AbstractTransform
         super.preStop();
 
         try {
-            openVpnMonitor.disable();
+            this.openVpnMonitor.disable();
+            this.openVpnCaretaker.stop();
         } catch ( Exception e ) {
             logger.warn( "Error disabling openvpn monitor", e );
         }
@@ -508,6 +518,7 @@ public class VpnTransformImpl extends AbstractTransform
 
         try {
             this.openVpnMonitor.stop();
+            this.openVpnCaretaker.stop();
         } catch ( Exception e ) {
             logger.warn( "Error stopping openvpn monitor", e );
         }
