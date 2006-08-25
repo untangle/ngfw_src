@@ -608,9 +608,11 @@ class DhcpManager
     private void appendNameServers( StringBuilder sb, ServicesInternalSettings settings )
     {
         String nameservers = "";
-        IPaddr tmp;
 
-        for ( IPaddr dns : settings.getDnsServerList()) nameservers += dns + " ";
+        for ( IPaddr dns : settings.getDnsServerList()) {
+            if ( nameservers.length() != 0 ) nameservers += ",";
+            nameservers += dns.toString();
+        }
 
         nameservers = nameservers.trim();
 
