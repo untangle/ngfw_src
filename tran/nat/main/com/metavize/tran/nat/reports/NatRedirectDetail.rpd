@@ -1,6 +1,6 @@
 TEMPLATE=DetailFourCol
-REPORT_NAME=NetworkSharingRedirectEvents
-REPORT_TITLE=Network Sharing - Redirect Events
+REPORT_NAME=RouterRedirectEvents
+REPORT_TITLE=Router - Redirect Events
 
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String

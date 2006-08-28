@@ -99,7 +99,7 @@ public class NatSummarizer extends BaseSummarizer {
         addEntry("DMZ Host inbound redirections", Util.trimNumber("",dmzRedirections) );
 
         // XXXX
-        String tranName = "Network Sharing";
+        String tranName = "Router";
 
         return summarizeEntries(tranName);
     }

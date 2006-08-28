@@ -1,6 +1,6 @@
 TEMPLATE=MasterOfTwoChildren
 REPORT_NAME=NatMaster
-REPORT_TITLE=Network Sharing - Summary
+REPORT_TITLE=Router - Summary
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
 SUBREPORT_1=com/metavize/tran/nat/reports/NatDmzSummary.jasper
