@@ -314,7 +314,7 @@
                         <tr>
                           <td colspan="3">
                             Mails Per Page: &nbsp;
-                            <select name="rowsPerPage">
+                            <select name="rowsPerPage" onChange="doRefresh();">
                             <quarantine:forEachRPPOption>
                               <quarantine:isRPPOptionSelected includeIfTrue="true">
                                 <option value="<quarantine:rPPOption/>" selected="selected"><quarantine:rPPOption/></option>
@@ -324,7 +324,6 @@
                               </quarantine:isRPPOptionSelected>
                             </quarantine:forEachRPPOption>
                             </select>                            
-                            <input name="Update" value="Update" onclick="doRefresh()" type="button">
                           </td>
 
                           <th scope="row" align=left>TOTALS</th>
