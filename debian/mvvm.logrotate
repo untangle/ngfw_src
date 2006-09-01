@@ -46,3 +46,9 @@ notifempty
 copytruncate
 }
 
+/var/log/mvvm/report.log {
+rotate 9
+compress
+notifempty
+copytruncate
+}
