@@ -25,15 +25,16 @@ public class InstallWizard extends MWizardJDialog {
     
     public InstallWizard() {
 	setModal(true);
-        setTitle("Metavize EdgeGuard Hardware Wizard");
-        addWizardPageJPanel(new InstallWelcomeJPanel(),   "1. Welcome", false, false);
-        addWizardPageJPanel(new InstallBenchmarkJPanel(this), "2. Hardware Test", false, false);
-        addWizardPageJPanel(new InstallWarningJPanel(),   "3. Warning", false, false);
+        setTitle("Metavize EdgeGuard CD Install Wizard");
+        addWizardPageJPanel(new InstallWelcomeJPanel(),       "1. Welcome", false, false);
+	addWizardPageJPanel(new InstallDiskJPanel(this),      "2. Choose Install Disk", false, false);
+        addWizardPageJPanel(new InstallBenchmarkJPanel(this), "3. Hardware Test", false, false);
+        addWizardPageJPanel(new InstallWarningJPanel(),       "4. Final Warning", false, false);
     }
 
-    public static boolean testsPassed(){
-	return true;		
-    }
+    private static String targetDisk;
+    public static void setTargetDisk(String xTargetDisk){ xTargetDisk = targetDisk; }
+    public static String getTargetDisk(){ return targetDisk; }
     
     protected void wizardFinishedNormal(){
 	super.wizardFinishedNormal();
@@ -41,10 +42,10 @@ public class InstallWizard extends MWizardJDialog {
     }
     
     protected void wizardFinishedAbnormal(int currentPage){
-
 	MTwoButtonJDialog dialog = MTwoButtonJDialog.factory(this, "Install Wizard", "If you exit now, " +
-								 " you will not be able to continue installation.  " +
-								 "You should continue, if possible.  ", "Install Wizard Warning", "Warning");
+							     " you will not be able to continue installation.  " +
+							     "You should continue, if possible.  ", "Install Wizard Warning",
+							     "Warning");
 	dialog.setProceedText("<html><b>Exit</b> Wizard</html>");
 	dialog.setCancelText("<html><b>Continue</b> Wizard</html>");
 	dialog.setVisible(true);
@@ -58,7 +59,6 @@ public class InstallWizard extends MWizardJDialog {
     }
 
     public static void main(String[] args){
-
         try {
             KunststoffLookAndFeel kunststoffLaf = new KunststoffLookAndFeel();
             kunststoffLaf.setCurrentTheme(new KunststoffTheme());

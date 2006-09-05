@@ -12,6 +12,7 @@
 package com.metavize.gui.install;
 
 import com.metavize.gui.widgets.wizard.*;
+import com.metavize.gui.widgets.dialogs.*;
 
 import javax.swing.SwingUtilities;
 import javax.swing.JProgressBar;
@@ -21,12 +22,12 @@ import java.text.DecimalFormat;
 public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
     private static final String FAILURE_MESSAGE = "<html><font color=\"#FF0000\"><b>Warning!</b>"
-	+ " Your hardware does not meet all requirements. Read above to find out why. Press the Next button to exit now.</font></html>";
+	+ " Your hardware does not meet all requirements. Press the Next button in the main window to exit now.</font></html>";
     private static final String WARNING_MESSAGE = "<html><font color=\"#FF9B00\"><b>Warning!</b>"
-	+ " Your hardware meets minimum requirements, but performance may not be optimal. Read above to find out how to improve performance."
-	+ " Press the Next button to exit.</font></html>";
+	+ " Your hardware meets minimum requirements, but performance may not be optimal. Press the Next button"
+	+ " in the main window to continue.</font></html>";
     private static final String PASSED_MESSAGE = "<html><font color=\"#445BFF\"><b>Success!</b>"
-	+ " Your hardware meets all requirements. Press the Next button to continue.</font></html>";
+	+ " Your hardware meets all requirements. Press the Next button in the main window to continue.</font></html>";
 
     private static final int MEMORY_MIN_MEGS   = 500;
     private static final int MEMORY_GOOD_MEGS  = 1000;
@@ -114,7 +115,8 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 								 NICS_REQUIRED);
 		
 		sleep(3000l);
-
+		
+		
 		SwingUtilities.invokeAndWait( new Runnable(){ public void run() {
 		    installWizard.updateButtonState(false);
 		    updateJProgressBar(memoryJProgressBar, (String)memoryResults[0], false, (Integer)memoryResults[1],
@@ -132,29 +134,34 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 		    DecimalFormat decimalFormat = new DecimalFormat("#####.##");
 		    diskResultJLabel.setText(decimalFormat.format(disk) + " GB");
 		    nicResultJLabel.setText(nics + " interface" + (nics==1?"":"s"));
-
-		    if(((Integer)memoryResults[1]<=25) || ((Integer)cpuResults[1]<=25)
-		       || ((Integer)diskResults[1]<=25) || ((Integer)nicsResults[1]<=25)){
-			resultJLabel.setText(FAILURE_MESSAGE);
-			testPassed = false;
-		    }
-		    else if(((Integer)memoryResults[1]<=50) || ((Integer)cpuResults[1]<=50)
-		       || ((Integer)diskResults[1]<=50) || ((Integer)nicsResults[1]<=50)){
-			resultJLabel.setText(WARNING_MESSAGE);
-			testPassed = true;
-		    }
-		    else{
-			resultJLabel.setText(PASSED_MESSAGE);
-			testPassed = true;
-		    }
 		}});
+		String resultMessage;
+		if(((Integer)memoryResults[1]<=25) || ((Integer)cpuResults[1]<=25)
+		   || ((Integer)diskResults[1]<=25) || ((Integer)nicsResults[1]<=25)){
+		    resultMessage = FAILURE_MESSAGE;
+		    //resultJLabel.setText(FAILURE_MESSAGE);
+		    testPassed = false;
+		}
+		else if(((Integer)memoryResults[1]<=50) || ((Integer)cpuResults[1]<=50)
+			|| ((Integer)diskResults[1]<=50) || ((Integer)nicsResults[1]<=50)){
+		    resultMessage = WARNING_MESSAGE;
+		    //resultJLabel.setText(WARNING_MESSAGE);
+		    testPassed = true;
+		}
+		else{
+		    resultMessage = PASSED_MESSAGE;
+		    //resultJLabel.setText(PASSED_MESSAGE);
+		    testPassed = true;
+		}
+		MOneButtonJDialog dialog = MOneButtonJDialog.factory(InstallBenchmarkJPanel.this.getTopLevelAncestor(), "Install Wizard", resultMessage,
+								     "Install Wizard Warning", "Warning");
 	    }
 	    catch(Exception e){
 		e.printStackTrace();
 	    }
 	}
     }
-
+    
     private void updateJProgressBar(JProgressBar jProgressBar, String message, boolean indeterminate,
 				    int value, int r, int g, int b){
 	jProgressBar.setString(message);

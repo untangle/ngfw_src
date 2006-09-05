@@ -123,10 +123,17 @@ $Id: build.xml,v 1.22 2005/03/25 04:00:30 jdi Exp $
 	<include name="com/metavize/gui/widgets/*"/>
 	<include name="com/metavize/gui/widgets/dialogs/**"/>
 	<include name="com/metavize/gui/widgets/wizard/**"/>
+	<include name="com/metavize/gui/widgets/editTable/**"/>
+	<include name="com/metavize/gui/widgets/coloredTable/**"/>
+	<include name="com/metavize/gui/transform/Savable.class"/>
+	<include name="com/metavize/gui/transform/Refreshable.class"/>
+	<include name="com/metavize/gui/transform/CompoundSettings.class"/>
 	<include name="com/metavize/gui/login/**"/>
       </fileset>
       <fileset dir="${src.main}">
         <include name="com/metavize/gui/widgets/wizard/*png"/>
+        <include name="com/metavize/gui/widgets/editTable/*png"/>
+        <include name="com/metavize/gui/widgets/coloredTable/*png"/>
         <include name="com/metavize/gui/install/*png"/>
         <include name="com/metavize/gui/images/*png"/>
       </fileset>
