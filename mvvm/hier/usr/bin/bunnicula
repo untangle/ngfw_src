@@ -71,7 +71,7 @@ if [ -f /proc/sys/net/ipv4/tcp_window_scaling ] ; then
 fi
 
 
-CLASSPATH="@MVVM_HOME@/conf:@MVVM_HOME@/lib/bootstrap.jar"
+CLASSPATH="@MVVM_HOME@/conf:@MVVM_HOME@/lib/mvvm-bootstrap.jar"
 
 #
 # build environment tweeks

@@ -11,9 +11,9 @@
 #include "libmvutil.h"
 
 #include <pthread.h>
-#include "debug.h"
-#include "errlog.h"
-#include "uthread.h"
+#include "mvutil/debug.h"
+#include "mvutil/errlog.h"
+#include "mvutil/uthread.h"
 
 static pthread_mutex_t init_mutex = PTHREAD_MUTEX_INITIALIZER;
 static int             inited = 0;

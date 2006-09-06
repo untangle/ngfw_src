@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.tran.http.HttpSettings"
+        table="TR_HTTP_SETTINGS"
+    >
+
+        <id
+            name="id"
+            column="SETTINGS_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-HttpSettings.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <property
+            name="enabled"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="ENABLED"
+            not-null="true"
+        />
+
+        <property
+            name="nonHttpBlocked"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="NON_HTTP_BLOCKED"
+            not-null="true"
+        />
+
+        <property
+            name="maxHeaderLength"
+            type="int"
+            update="true"
+            insert="true"
+            column="MAX_HEADER_LENGTH"
+            not-null="true"
+        />
+
+        <property
+            name="blockLongHeaders"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="BLOCK_LONG_HEADERS"
+            not-null="true"
+        />
+
+        <property
+            name="maxUriLength"
+            type="int"
+            update="true"
+            insert="true"
+            column="MAX_URI_LENGTH"
+            not-null="true"
+        />
+
+        <property
+            name="blockLongUris"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="BLOCK_LONG_URIS"
+            not-null="true"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-HttpSettings.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.mvvm.portal.PortalHomeSettings"
+        table="Portal_Home_Settings"
+    >
+
+        <id
+            name="id"
+            column="ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-PortalHomeSettings.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <property
+            name="homePageTitle"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="HOME_PAGE_TITLE"
+        />
+
+        <property
+            name="homePageText"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="HOME_PAGE_TEXT"
+        />
+
+        <property
+            name="bookmarkTableTitle"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="BOOKMARK_TABLE_TITLE"
+        />
+
+        <property
+            name="showExploder"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="SHOW_EXPLODER"
+        />
+
+        <property
+            name="showBookmarks"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="SHOW_BOOKMARKS"
+        />
+
+        <property
+            name="showAddBookmark"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="SHOW_ADD_BOOKMARK"
+        />
+
+        <property
+            name="idleTimeout"
+            type="long"
+            update="true"
+            insert="true"
+            column="IDLE_TIMEOUT"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-PortalHomeSettings.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

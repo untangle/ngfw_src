@@ -8,12 +8,13 @@
  *
  * $Id$
  */
-#include "relay.h"
-
 #include <stdlib.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/list.h>
+
+#include <vector/relay.h>
+
 
 relay_t* relay_create ()
 {

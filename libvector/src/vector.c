@@ -8,8 +8,6 @@
  *
  * $Id$
  */
-#include "vector.h"
-
 #include <stdlib.h>
 #include <pthread.h>
 #include <errno.h>
@@ -21,7 +19,9 @@
 #include <mvutil/unet.h>
 #include <mvutil/list.h>
 #include <mvutil/mvpoll.h>
-#include "relay.h"
+
+#include <vector/vector.h>
+#include <vector/relay.h>
 
 #ifdef DEBUG_ON
 #define VECTOR_DEBUG 1

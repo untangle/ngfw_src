@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.mvvm.portal.PortalSettings"
+        table="Portal_Settings"
+    >
+
+        <id
+            name="id"
+            column="ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-PortalSettings.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <list
+            name="users"
+            lazy="false"
+            cascade="all-delete-orphan"
+        >
+
+            <key
+                column="settings_id"
+            >
+            </key>
+
+            <index
+                column="position"
+            />
+
+            <one-to-many
+                  class="com.metavize.mvvm.portal.PortalUser"
+            />
+
+        </list>
+
+        <list
+            name="groups"
+            lazy="false"
+            cascade="all-delete-orphan"
+        >
+
+            <key
+                column="settings_id"
+            >
+            </key>
+
+            <index
+                column="position"
+            />
+
+            <one-to-many
+                  class="com.metavize.mvvm.portal.PortalGroup"
+            />
+
+        </list>
+
+        <many-to-one
+            name="global"
+            class="com.metavize.mvvm.portal.PortalGlobal"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="global_settings_id"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-PortalSettings.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

@@ -8,8 +8,6 @@
  *
  * $Id$
  */
-#include "fd_sink.h"
-
 #include <libnetcap.h>
 
 #include <stdlib.h>
@@ -18,7 +16,9 @@
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/unet.h>
-#include "event.h"
+
+#include <vector/fd_sink.h>
+#include <vector/event.h>
 
 #define FD_SINK_DEBUG 1
 #define FD_SINK_DEBUG_LVL 9

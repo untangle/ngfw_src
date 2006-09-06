@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.tran.protofilter.ProtoFilterSettings"
+        table="TR_PROTOFILTER_SETTINGS"
+    >
+
+        <id
+            name="id"
+            column="SETTINGS_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-ProtoFilterSettings.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <many-to-one
+            name="tid"
+            class="com.metavize.mvvm.security.Tid"
+            cascade="none"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="TID"
+            not-null="true"
+        />
+
+        <property
+            name="byteLimit"
+            type="int"
+            update="true"
+            insert="true"
+            column="BYTELIMIT"
+        />
+
+        <property
+            name="chunkLimit"
+            type="int"
+            update="true"
+            insert="true"
+            column="CHUNKLIMIT"
+        />
+
+        <property
+            name="unknownString"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="UNKNOWNSTRING"
+        />
+
+        <property
+            name="stripZeros"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="STRIPZEROS"
+        />
+
+        <list
+            name="patterns"
+            lazy="false"
+            cascade="all-delete-orphan"
+        >
+
+            <key
+                column="SETTINGS_ID"
+            >
+            </key>
+
+            <index
+                column="POSITION"
+            />
+
+            <one-to-many
+                  class="com.metavize.tran.protofilter.ProtoFilterPattern"
+            />
+
+        </list>
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-ProtoFilterSettings.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

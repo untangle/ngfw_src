@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.mvvm.tran.PipelineEndpoints"
+        table="PL_ENDP"
+        mutable="false"
+    >
+
+        <id
+            name="id"
+            column="EVENT_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-PipelineEndpoints.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <property
+            name="sessionId"
+            type="int"
+            update="true"
+            insert="true"
+            column="SESSION_ID"
+        />
+
+        <property
+            name="protocol"
+            type="short"
+            update="true"
+            insert="true"
+            column="PROTO"
+        />
+
+        <property
+            name="createDate"
+            type="java.util.Date"
+            update="true"
+            insert="true"
+            column="CREATE_DATE"
+        />
+
+        <property
+            name="clientIntf"
+            type="byte"
+            update="true"
+            insert="true"
+            column="CLIENT_INTF"
+        />
+
+        <property
+            name="serverIntf"
+            type="byte"
+            update="true"
+            insert="true"
+            column="SERVER_INTF"
+        />
+
+        <property
+            name="CClientAddr"
+            type="com.metavize.mvvm.type.InetAddressUserType"
+            update="true"
+            insert="true"
+        >
+            <column
+                name="C_CLIENT_ADDR" 
+                sql-type="inet"
+            />
+        </property>
+
+        <property
+            name="SClientAddr"
+            type="com.metavize.mvvm.type.InetAddressUserType"
+            update="true"
+            insert="true"
+        >
+            <column
+                name="S_CLIENT_ADDR" 
+                sql-type="inet"
+            />
+        </property>
+
+        <property
+            name="CServerAddr"
+            type="com.metavize.mvvm.type.InetAddressUserType"
+            update="true"
+            insert="true"
+        >
+            <column
+                name="C_SERVER_ADDR" 
+                sql-type="inet"
+            />
+        </property>
+
+        <property
+            name="SServerAddr"
+            type="com.metavize.mvvm.type.InetAddressUserType"
+            update="true"
+            insert="true"
+        >
+            <column
+                name="S_SERVER_ADDR" 
+                sql-type="inet"
+            />
+        </property>
+
+        <property
+            name="CClientPort"
+            type="int"
+            update="true"
+            insert="true"
+            column="C_CLIENT_PORT"
+        />
+
+        <property
+            name="SClientPort"
+            type="int"
+            update="true"
+            insert="true"
+            column="S_CLIENT_PORT"
+        />
+
+        <property
+            name="CServerPort"
+            type="int"
+            update="true"
+            insert="true"
+            column="C_SERVER_PORT"
+        />
+
+        <property
+            name="SServerPort"
+            type="int"
+            update="true"
+            insert="true"
+            column="S_SERVER_PORT"
+        />
+
+        <many-to-one
+            name="policy"
+            class="com.metavize.mvvm.policy.Policy"
+            cascade="none"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="POLICY_ID"
+        />
+
+        <property
+            name="inbound"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="POLICY_INBOUND"
+            not-null="true"
+        />
+
+        <property
+            name="timeStamp"
+            type="java.util.Date"
+            update="true"
+            insert="true"
+            column="TIME_STAMP"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-PipelineEndpoints.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

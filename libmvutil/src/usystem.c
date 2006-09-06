@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-#include "usystem.h"
+#include "mvutil/usystem.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -17,8 +17,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include "debug.h"
-#include "errlog.h"
+#include "mvutil/debug.h"
+#include "mvutil/errlog.h"
 
 #define MAX_ARGS 256
 

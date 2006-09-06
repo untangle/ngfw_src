@@ -1,5 +1,5 @@
 /* $Id$ */
-#include "unet.h"
+#include "mvutil/unet.h"
 
 #include <string.h>
 
@@ -12,9 +12,9 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <poll.h>
-#include "errlog.h"
-#include "uthread.h"
-#include "debug.h"
+#include "mvutil/errlog.h"
+#include "mvutil/uthread.h"
+#include "mvutil/debug.h"
 
 #define __QUEUE_LENGTH 2048
 #define START_PORT 9500

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.mvvm.Period"
+        table="PERIOD"
+    >
+
+        <id
+            name="id"
+            column="PERIOD_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-Period.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <property
+            name="hour"
+            type="int"
+            update="true"
+            insert="true"
+            column="HOUR"
+            not-null="true"
+        />
+
+        <property
+            name="minute"
+            type="int"
+            update="true"
+            insert="true"
+            column="MINUTE"
+            not-null="true"
+        />
+
+        <property
+            name="sunday"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="SUNDAY"
+        />
+
+        <property
+            name="monday"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="MONDAY"
+        />
+
+        <property
+            name="tuesday"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="TUESDAY"
+        />
+
+        <property
+            name="wednesday"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="WEDNESDAY"
+        />
+
+        <property
+            name="thursday"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="THURSDAY"
+        />
+
+        <property
+            name="friday"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="FRIDAY"
+        />
+
+        <property
+            name="saturday"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="SATURDAY"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-Period.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

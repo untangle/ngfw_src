@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.tran.nat.NatStatisticEvent"
+        table="TR_NAT_STATISTIC_EVT"
+        mutable="false"
+    >
+
+        <id
+            name="id"
+            column="EVENT_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-NatStatisticEvent.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <property
+            name="natSessions"
+            type="int"
+            update="true"
+            insert="true"
+            column="NAT_SESSIONS"
+        />
+
+        <property
+            name="tcpIncomingRedirects"
+            type="int"
+            update="true"
+            insert="true"
+            column="TCP_INCOMING"
+        />
+
+        <property
+            name="tcpOutgoingRedirects"
+            type="int"
+            update="true"
+            insert="true"
+            column="TCP_OUTGOING"
+        />
+
+        <property
+            name="udpIncomingRedirects"
+            type="int"
+            update="true"
+            insert="true"
+            column="UDP_INCOMING"
+        />
+
+        <property
+            name="udpOutgoingRedirects"
+            type="int"
+            update="true"
+            insert="true"
+            column="UDP_OUTGOING"
+        />
+
+        <property
+            name="icmpIncomingRedirects"
+            type="int"
+            update="true"
+            insert="true"
+            column="ICMP_INCOMING"
+        />
+
+        <property
+            name="icmpOutgoingRedirects"
+            type="int"
+            update="true"
+            insert="true"
+            column="ICMP_OUTGOING"
+        />
+
+        <property
+            name="dmzSessions"
+            type="int"
+            update="true"
+            insert="true"
+            column="DMZ_SESSIONS"
+        />
+
+        <property
+            name="timeStamp"
+            type="java.util.Date"
+            update="true"
+            insert="true"
+            column="TIME_STAMP"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-NatStatisticEvent.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

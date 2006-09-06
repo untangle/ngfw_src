@@ -174,10 +174,13 @@ public class Main
     // XXX get rid of all these throws
     private void startMvvm() throws Exception
     {
-        URL mvvmJar = new URL("file://" + bunniculaLib + "/mvvm.jar");
-        URL jVectorJar = new URL("file://" + bunniculaLib + "/jvector.jar");
-        URL jNetcapJar = new URL("file://" + bunniculaLib + "/jnetcap.jar");
-        URL[] urls = new URL[] { mvvmJar, jVectorJar, jNetcapJar };
+        URL mvvmImplJar = new URL("file://" + bunniculaLib + "/mvvm-impl.jar");
+        URL mvvmApiJar = new URL("file://" + bunniculaLib + "/mvvm-api.jar");
+        URL mvvmLocalApiJar = new URL("file://" + bunniculaLib + "/mvvm-localapi.jar");
+        URL jVectorJar = new URL("file://" + bunniculaLib + "/jvector-impl.jar");
+        URL jNetcapJar = new URL("file://" + bunniculaLib + "/jnetcap-impl.jar");
+        URL[] urls = new URL[] { mvvmImplJar, mvvmApiJar, mvvmLocalApiJar,
+                                 jVectorJar, jNetcapJar };
         ucl = new URLClassLoader(urls, getClass().getClassLoader());
 
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();

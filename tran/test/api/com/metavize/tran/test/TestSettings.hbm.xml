@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.tran.test.TestSettings"
+        table="TR_TEST_SETTINGS"
+    >
+
+        <id
+            name="id"
+            column="ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-TestSettings.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <many-to-one
+            name="tid"
+            class="com.metavize.mvvm.security.Tid"
+            cascade="none"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="TID"
+            not-null="true"
+        />
+
+        <property
+            name="mode"
+            type="com.metavize.tran.test.ModeUserType"
+            update="true"
+            insert="true"
+            column="MODE"
+        />
+
+        <property
+            name="buffered"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="BUFFERED"
+        />
+
+        <property
+            name="normal"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="NORMAL"
+        />
+
+        <property
+            name="release"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="RELEASE"
+        />
+
+        <property
+            name="quiet"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="QUIET"
+        />
+
+        <property
+            name="minRandomBufferSize"
+            type="int"
+            update="true"
+            insert="true"
+            column="MIN_RANDOM_BUFFER_SIZE"
+        />
+
+        <property
+            name="maxRandomBufferSize"
+            type="int"
+            update="true"
+            insert="true"
+            column="MAX_RANDOM_BUFFER_SIZE"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-TestSettings.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

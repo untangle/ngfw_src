@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.tran.virus.VirusLogEvent"
+        table="TR_VIRUS_EVT"
+        mutable="false"
+    >
+
+        <id
+            name="id"
+            column="EVENT_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-VirusLogEvent.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <many-to-one
+            name="pipelineEndpoints"
+            class="com.metavize.mvvm.tran.PipelineEndpoints"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="PL_ENDP_ID"
+            not-null="true"
+        />
+
+        <property
+            name="result"
+            type="com.metavize.tran.virus.VirusScannerResultUserType"
+            update="true"
+            insert="true"
+        >
+            <column
+                name="CLEAN" 
+            />
+            <column
+                name="VIRUS_NAME" 
+            />
+            <column
+                name="VIRUS_CLEANED" 
+            />
+        </property>
+
+        <property
+            name="vendorName"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="VENDOR_NAME"
+        />
+
+        <property
+            name="timeStamp"
+            type="java.util.Date"
+            update="true"
+            insert="true"
+            column="TIME_STAMP"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-VirusLogEvent.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

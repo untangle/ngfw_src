@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.tran.openvpn.VpnSite"
+        table="tr_openvpn_site"
+    >
+
+        <id
+            name="id"
+            column="RULE_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-VpnSite.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <list
+            name="exportedAddressList"
+            lazy="false"
+            cascade="all-delete-orphan"
+        >
+
+            <key
+                column="client_id"
+            >
+            </key>
+
+            <index
+                column="position"
+            />
+
+            <one-to-many
+                  class="com.metavize.tran.openvpn.ClientSiteNetwork"
+            />
+
+        </list>
+
+        <property
+            name="isEdgeGuard"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="is_edgeguard"
+        />
+
+        <many-to-one
+            name="group"
+            class="com.metavize.tran.openvpn.VpnGroup"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="group_id"
+        />
+
+        <property
+            name="address"
+            type="com.metavize.mvvm.type.IPaddrUserType"
+            update="true"
+            insert="true"
+        >
+            <column
+                name="address" 
+                sql-type="inet"
+            />
+        </property>
+
+        <property
+            name="distributionKey"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="dist_key"
+        />
+
+        <property
+            name="distributionPassword"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="dist_passwd"
+        />
+
+        <property
+            name="name"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="NAME"
+        />
+
+        <property
+            name="category"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="CATEGORY"
+        />
+
+        <property
+            name="description"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="DESCRIPTION"
+        />
+
+        <property
+            name="live"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="LIVE"
+        />
+
+        <property
+            name="alert"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="ALERT"
+        />
+
+        <property
+            name="log"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="LOG"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-VpnSite.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-#include "mailbox.h"
+#include "mvutil/mailbox.h"
 
 #include <features.h>
 #include <unistd.h>
@@ -17,12 +17,12 @@
 #include <semaphore.h>
 #include <stdlib.h>
 
-#include "errlog.h"
-#include "debug.h"
-#include "list.h"
-#include "unet.h"
-#include "utime.h"
-#include "mvpoll.h"
+#include "mvutil/errlog.h"
+#include "mvutil/debug.h"
+#include "mvutil/list.h"
+#include "mvutil/unet.h"
+#include "mvutil/utime.h"
+#include "mvutil/mvpoll.h"
 
 #define MB_LOCK(mb)       if (lock_wrlock(&(mb)->lock)<0) \
                                     return errlog(ERR_CRITICAL,"Unable to lock mailbox\n")

@@ -24,14 +24,14 @@
 #include <mcheck.h>
 
 #include <libnetcap.h>
-#include <mvutil/libmvutil.h>
+#include <libmvutil.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/uthread.h>
 #include <jmvutil.h>
 
 #include "jnetcap.h"
-#include JH_Netcap
+#include "com_metavize_jnetcap_Netcap.h"
 
 /* Too hard to include kernel include files, so we just define it again here. XXX */
 #ifndef SCHED_NORMAL

@@ -8,12 +8,12 @@
  *
  * $Id$
  */
-#include "uthread.h"
+#include "mvutil/uthread.h"
 
 #include <pthread.h>
 #include <stdlib.h>
 
-#include "errlog.h"
+#include "mvutil/errlog.h"
 
 #define SMALL_STACK_SIZE 96*1024
 

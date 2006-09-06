@@ -1,6 +1,4 @@
 /* $Id$ */
-#include "version.h"
-
 #include "libnetcap.h"
 #include <mvutil/debug.h>
 

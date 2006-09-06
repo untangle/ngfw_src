@@ -11,9 +11,9 @@
 
 #include <sys/types.h>
 #include <unistd.h>
-#include "errlog.h"
+#include "mvutil/errlog.h"
 
-#include "utime.h"
+#include "mvutil/utime.h"
 
 unsigned long utime_usec_diff (struct timeval* earlier, struct timeval* later)
 {

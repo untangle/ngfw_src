@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-#include "event.h"
+#include <vector/event.h>
 
 #include <stdlib.h>
 #include <mvutil/errlog.h>

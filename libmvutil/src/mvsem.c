@@ -8,13 +8,13 @@
  *
  * $Id$
  */
-#include "mvsem.h"
+#include "mvutil/mvsem.h"
 
 #include <stdlib.h>
 #include <semaphore.h>
-#include "list.h"
-#include "errlog.h"
-#include "debug.h"
+#include "mvutil/list.h"
+#include "mvutil/errlog.h"
+#include "mvutil/debug.h"
 
 static eventmask_t _poll (mvpoll_key_t* key);
 

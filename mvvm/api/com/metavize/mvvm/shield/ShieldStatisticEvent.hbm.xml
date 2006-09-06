@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.mvvm.shield.ShieldStatisticEvent"
+        table="SHIELD_STATISTIC_EVT"
+        mutable="false"
+    >
+
+        <id
+            name="id"
+            column="EVENT_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-ShieldStatisticEvent.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <property
+            name="accepted"
+            type="int"
+            update="true"
+            insert="true"
+            column="ACCEPTED"
+        />
+
+        <property
+            name="limited"
+            type="int"
+            update="true"
+            insert="true"
+            column="LIMITED"
+        />
+
+        <property
+            name="dropped"
+            type="int"
+            update="true"
+            insert="true"
+            column="DROPPED"
+        />
+
+        <property
+            name="rejected"
+            type="int"
+            update="true"
+            insert="true"
+            column="REJECTED"
+        />
+
+        <property
+            name="relaxed"
+            type="int"
+            update="true"
+            insert="true"
+            column="RELAXED"
+        />
+
+        <property
+            name="lax"
+            type="int"
+            update="true"
+            insert="true"
+            column="LAX"
+        />
+
+        <property
+            name="tight"
+            type="int"
+            update="true"
+            insert="true"
+            column="TIGHT"
+        />
+
+        <property
+            name="closed"
+            type="int"
+            update="true"
+            insert="true"
+            column="CLOSED"
+        />
+
+        <property
+            name="timeStamp"
+            type="java.util.Date"
+            update="true"
+            insert="true"
+            column="TIME_STAMP"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-ShieldStatisticEvent.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

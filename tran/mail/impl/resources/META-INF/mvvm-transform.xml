@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright (c) 2004, 2005 Metavize Inc.
+All rights reserved.
+
+This software is the confidential and proprietary information of
+Metavize Inc. ("Confidential Information").  You shall
+not disclose such Confidential Information.
+
+$Id: mvvm-transform.xml,v 1.3 2005/02/07 22:15:39 amread Exp $
+-->
+
+<mvvm-transform>
+  <transform-desc name="mail-casing"
+                  display-name="Email"
+                  classname="com.metavize.tran.mail.MailTransformImpl"
+                  gui-classname="com.metavize.tran.mail.gui.MCasingJPanel"
+                  single-instance="true"/>
+  <export>mail-casing-localapi.jar</export>
+</mvvm-transform>

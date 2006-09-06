@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (c) 2004, 2005 Metavize Inc.
+# Copyright (c) 2004, 2005, 2006 Metavize Inc.
 # All rights reserved.
 #
 # This software is the confidential and proprietary information of
@@ -13,12 +13,12 @@ set -e
 
 JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
 
-CLASSPATH="@MVVM_LIB@/mvvm-client.jar:@THIRDPARTY_MVVM_LIB@/hibernate3.jar"
+CLASSPATH="@MVVM_LIB@/mvvm-api.jar:@THIRDPARTY_MVVM_LIB@/hibernate3.jar:@THIRDPARTY_MVVM_LIB@/log4j-1.2.9.jar"
 for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
 
-for m in @MVVM_TOOLBOX@/*.mar; do CLASSPATH="$CLASSPATH:$m"; done
+for m in @MVVM_TOOLBOX@/*.jar; do CLASSPATH="$CLASSPATH:$m"; done
 
 export CLASSPATH
 exec ${JAVA_HOME}/bin/java com.metavize.mvvm.client.RemoteClient "$@"

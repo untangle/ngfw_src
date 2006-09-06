@@ -8,13 +8,13 @@
  *
  * $Id$
  */
-#include "fd_source.h"
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <mvutil/debug.h>
 #include <mvutil/errlog.h>
+
+#include <vector/fd_source.h>
 
 #define FD_SOURCE_DEBUG 1
 #define FD_SOURCE_DEBUG_LVL 9

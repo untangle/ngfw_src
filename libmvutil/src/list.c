@@ -8,11 +8,11 @@
  *
  * $Id$
  */
-#include "list.h"
+#include "mvutil/list.h"
 
 #include <stdlib.h>
-#include "errlog.h"
-#include "debug.h"
+#include "mvutil/errlog.h"
+#include "mvutil/debug.h"
 
 #define LIST_RDLOCK(list)     if (pthread_rwlock_rdlock(&(list)->lock)<0) \
                                     return errlog(ERR_CRITICAL,"Unable to rdlock list\n")

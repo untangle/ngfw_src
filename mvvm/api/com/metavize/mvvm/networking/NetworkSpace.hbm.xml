@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.mvvm.networking.NetworkSpace"
+        table="mvvm_network_space"
+    >
+
+        <id
+            name="id"
+            column="RULE_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-NetworkSpace.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <property
+            name="businessPapers"
+            type="long"
+            update="true"
+            insert="true"
+            column="papers"
+        />
+
+        <list
+            name="networkList"
+            lazy="false"
+            cascade="all-delete-orphan"
+        >
+
+            <key
+                column="space_id"
+            >
+            </key>
+
+            <index
+                column="position"
+            />
+
+            <one-to-many
+                  class="com.metavize.mvvm.networking.IPNetworkRule"
+            />
+
+        </list>
+
+        <property
+            name="isTrafficForwarded"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="is_traffic_forwarded"
+        />
+
+        <property
+            name="isDhcpEnabled"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="is_dhcp_enabled"
+        />
+
+        <property
+            name="isNatEnabled"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="is_nat_enabled"
+        />
+
+        <property
+            name="natAddress"
+            type="com.metavize.mvvm.type.IPaddrUserType"
+            update="true"
+            insert="true"
+        >
+            <column
+                name="nat_address" 
+                sql-type="inet"
+            />
+        </property>
+
+        <many-to-one
+            name="natSpace"
+            class="com.metavize.mvvm.networking.NetworkSpace"
+            cascade="none"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="nat_space"
+        />
+
+        <property
+            name="isDmzHostEnabled"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="dmz_host_enabled"
+        />
+
+        <property
+            name="dmzHost"
+            type="com.metavize.mvvm.type.IPaddrUserType"
+            update="true"
+            insert="true"
+        >
+            <column
+                name="dmz_host" 
+                sql-type="inet"
+            />
+        </property>
+
+        <property
+            name="isDmzHostLoggingEnabled"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="dmz_host_logging"
+        />
+
+        <property
+            name="mtu"
+            type="int"
+            update="true"
+            insert="true"
+            column="mtu"
+        />
+
+        <property
+            name="name"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="NAME"
+        />
+
+        <property
+            name="category"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="CATEGORY"
+        />
+
+        <property
+            name="description"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="DESCRIPTION"
+        />
+
+        <property
+            name="live"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="LIVE"
+        />
+
+        <property
+            name="alert"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="ALERT"
+        />
+
+        <property
+            name="log"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="LOG"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-NetworkSpace.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

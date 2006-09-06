@@ -1,5 +1,5 @@
 /* $Id$ */
-#include "debug.h"
+#include "mvutil/debug.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -8,7 +8,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <execinfo.h>
-#include "errlog.h"
+#include "mvutil/errlog.h"
 
 #define DATE_DEFAULT  1
 #define LEVEL_DEFAULT 0

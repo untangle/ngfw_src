@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.mvvm.MailSettings"
+        table="MAIL_SETTINGS"
+    >
+
+        <id
+            name="id"
+            column="MAIL_SETTINGS_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-MailSettings.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <property
+            name="reportEmail"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="REPORT_EMAIL"
+        />
+
+        <property
+            name="useMxRecords"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="USE_MX_RECORDS"
+            not-null="true"
+        />
+
+        <property
+            name="smtpHost"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="SMTP_HOST"
+        />
+
+        <property
+            name="smtpPort"
+            type="int"
+            update="true"
+            insert="true"
+            column="SMTP_PORT"
+            not-null="true"
+        />
+
+        <property
+            name="useTls"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="USE_TLS"
+            not-null="true"
+        />
+
+        <property
+            name="fromAddress"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="FROM_ADDRESS"
+        />
+
+        <property
+            name="authUser"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="AUTH_USER"
+        />
+
+        <property
+            name="authPass"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="AUTH_PASS"
+        />
+
+        <property
+            name="localHostName"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="LOCAL_HOST_NAME"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-MailSettings.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

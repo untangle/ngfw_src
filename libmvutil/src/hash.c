@@ -8,15 +8,15 @@
  *
  * $Id$
  */
-#include "hash.h"
+#include "mvutil/hash.h"
 
 #include <stdlib.h>
 #include <sys/types.h>
 #include <string.h>
 #include <errno.h>
-#include "lock.h"
-#include "errlog.h"
-#include "debug.h"
+#include "mvutil/lock.h"
+#include "mvutil/errlog.h"
+#include "mvutil/debug.h"
 
 #define _HASH_SUCCESS 0
 #define _HASH_FAILURE -1

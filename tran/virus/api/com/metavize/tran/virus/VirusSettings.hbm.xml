@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.tran.virus.VirusSettings"
+        table="TR_VIRUS_SETTINGS"
+    >
+
+        <id
+            name="id"
+            column="SETTINGS_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-VirusSettings.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <many-to-one
+            name="tid"
+            class="com.metavize.mvvm.security.Tid"
+            cascade="none"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="TID"
+            not-null="true"
+        />
+
+        <property
+            name="ftpDisableResume"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="DISABLE_FTP_RESUME"
+        />
+
+        <property
+            name="httpDisableResume"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="DISABLE_HTTP_RESUME"
+        />
+
+        <property
+            name="tricklePercent"
+            type="int"
+            update="true"
+            insert="true"
+            column="TRICKLE_PERCENT"
+        />
+
+        <property
+            name="ftpDisableResumeDetails"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="FTP_DISABLE_RESUME_DETAILS"
+        />
+
+        <property
+            name="httpDisableResumeDetails"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="HTTP_DISABLE_RESUME_DETAILS"
+        />
+
+        <property
+            name="tricklePercentDetails"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="TRICKLE_PERCENT_DETAILS"
+        />
+
+        <many-to-one
+            name="httpInbound"
+            class="com.metavize.tran.virus.VirusConfig"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="HTTP_INBOUND"
+            not-null="true"
+        />
+
+        <many-to-one
+            name="httpOutbound"
+            class="com.metavize.tran.virus.VirusConfig"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="HTTP_OUTBOUND"
+            not-null="true"
+        />
+
+        <many-to-one
+            name="ftpInbound"
+            class="com.metavize.tran.virus.VirusConfig"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="FTP_INBOUND"
+            not-null="true"
+        />
+
+        <many-to-one
+            name="ftpOutbound"
+            class="com.metavize.tran.virus.VirusConfig"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="FTP_OUTBOUND"
+            not-null="true"
+        />
+
+        <many-to-one
+            name="SMTPInbound"
+            class="com.metavize.tran.virus.VirusSMTPConfig"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="SMTP_INBOUND"
+            not-null="true"
+        />
+
+        <many-to-one
+            name="SMTPOutbound"
+            class="com.metavize.tran.virus.VirusSMTPConfig"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="SMTP_OUTBOUND"
+            not-null="true"
+        />
+
+        <many-to-one
+            name="POPInbound"
+            class="com.metavize.tran.virus.VirusPOPConfig"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="POP_INBOUND"
+            not-null="true"
+        />
+
+        <many-to-one
+            name="POPOutbound"
+            class="com.metavize.tran.virus.VirusPOPConfig"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="POP_OUTBOUND"
+            not-null="true"
+        />
+
+        <many-to-one
+            name="IMAPInbound"
+            class="com.metavize.tran.virus.VirusIMAPConfig"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="IMAP_INBOUND"
+            not-null="true"
+        />
+
+        <many-to-one
+            name="IMAPOutbound"
+            class="com.metavize.tran.virus.VirusIMAPConfig"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="IMAP_OUTBOUND"
+            not-null="true"
+        />
+
+        <list
+            name="httpMimeTypes"
+            table="TR_VIRUS_VS_MT"
+            lazy="false"
+            cascade="all-delete-orphan"
+        >
+
+            <key
+                column="SETTINGS_ID"
+            >
+            </key>
+
+            <index
+                column="POSITION"
+            />
+
+            <many-to-many
+                class="com.metavize.mvvm.tran.MimeTypeRule"
+                column="RULE_ID"
+                outer-join="auto"
+             />
+
+        </list>
+
+        <list
+            name="extensions"
+            table="TR_VIRUS_VS_EXT"
+            lazy="false"
+            cascade="all-delete-orphan"
+        >
+
+            <key
+                column="SETTINGS_ID"
+            >
+            </key>
+
+            <index
+                column="POSITION"
+            />
+
+            <many-to-many
+                class="com.metavize.mvvm.tran.StringRule"
+                column="RULE_ID"
+                outer-join="auto"
+             />
+
+        </list>
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-VirusSettings.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

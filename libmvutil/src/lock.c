@@ -8,16 +8,16 @@
  *
  * $Id$
  */
-#include "lock.h"
+#include "mvutil/lock.h"
 
 #include <stdlib.h>
 #include <pthread.h>
 #include <string.h>
 #include <errno.h>
 #include <semaphore.h>
-#include "hash.h"
-#include "errlog.h"
-#include "debug.h"
+#include "mvutil/hash.h"
+#include "mvutil/errlog.h"
+#include "mvutil/debug.h"
 
 #define ERR_ALREADY_OWN -2
 

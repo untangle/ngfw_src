@@ -1,0 +1,3 @@
+# -*-ruby-*-
+
+TransformBuilder.makeCasing( "ftp" )

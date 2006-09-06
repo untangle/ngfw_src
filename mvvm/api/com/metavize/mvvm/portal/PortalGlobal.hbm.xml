@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.mvvm.portal.PortalGlobal"
+        table="Portal_Global"
+    >
+
+        <id
+            name="id"
+            column="ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-PortalGlobal.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <property
+            name="autoCreateUsers"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="AUTO_CREATE_USERS"
+        />
+
+        <property
+            name="loginPageTitle"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="LOGIN_PAGE_TITLE"
+        />
+
+        <property
+            name="loginPageText"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="LOGIN_PAGE_TEXT"
+        />
+
+        <many-to-one
+            name="portalHomeSettings"
+            class="com.metavize.mvvm.portal.PortalHomeSettings"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="home_settings_id"
+        />
+
+        <list
+            name="bookmarks"
+            table="PORTAL_GLOBAL_BM_MT"
+            lazy="false"
+            cascade="all-delete-orphan"
+        >
+
+            <key
+                column="SETTINGS_ID"
+            >
+            </key>
+
+            <index
+                column="POSITION"
+            />
+
+            <many-to-many
+                class="com.metavize.mvvm.portal.Bookmark"
+                column="BOOKMARK_ID"
+                outer-join="auto"
+             />
+
+        </list>
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-PortalGlobal.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

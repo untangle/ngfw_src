@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.mvvm.networking.Route"
+        table="mvvm_network_route"
+    >
+
+        <id
+            name="id"
+            column="RULE_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-Route.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <many-to-one
+            name="networkSpace"
+            class="com.metavize.mvvm.networking.NetworkSpace"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="network_space"
+        />
+
+        <property
+            name="destination"
+            type="com.metavize.mvvm.networking.IPNetworkUserType"
+            update="true"
+            insert="true"
+        >
+            <column
+                name="destination" 
+            />
+        </property>
+
+        <property
+            name="nextHop"
+            type="com.metavize.mvvm.type.IPaddrUserType"
+            update="true"
+            insert="true"
+        >
+            <column
+                name="next_hop" 
+                sql-type="inet"
+            />
+        </property>
+
+        <property
+            name="name"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="NAME"
+        />
+
+        <property
+            name="category"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="CATEGORY"
+        />
+
+        <property
+            name="description"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="DESCRIPTION"
+        />
+
+        <property
+            name="live"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="LIVE"
+        />
+
+        <property
+            name="alert"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="ALERT"
+        />
+
+        <property
+            name="log"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="LOG"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-Route.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

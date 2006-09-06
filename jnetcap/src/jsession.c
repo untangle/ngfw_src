@@ -17,7 +17,7 @@
 #include <signal.h>
 
 #include <libnetcap.h>
-#include <mvutil/libmvutil.h>
+#include <libmvutil.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/uthread.h>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.tran.mail.papi.MailTransformSettings"
+        table="TR_MAIL_SETTINGS"
+    >
+
+        <id
+            name="id"
+            column="SETTINGS_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-MailTransformSettings.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <property
+            name="smtpEnabled"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="SMTP_ENABLED"
+            not-null="true"
+        />
+
+        <property
+            name="popEnabled"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="POP_ENABLED"
+            not-null="true"
+        />
+
+        <property
+            name="imapEnabled"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="IMAP_ENABLED"
+            not-null="true"
+        />
+
+        <property
+            name="smtpInboundTimeout"
+            type="long"
+            update="true"
+            insert="true"
+            column="SMTP_INBOUND_TIMEOUT"
+            not-null="true"
+        />
+
+        <property
+            name="smtpOutboundTimeout"
+            type="long"
+            update="true"
+            insert="true"
+            column="SMTP_OUTBOUND_TIMEOUT"
+            not-null="true"
+        />
+
+        <property
+            name="popInboundTimeout"
+            type="long"
+            update="true"
+            insert="true"
+            column="POP_INBOUND_TIMEOUT"
+            not-null="true"
+        />
+
+        <property
+            name="popOutboundTimeout"
+            type="long"
+            update="true"
+            insert="true"
+            column="POP_OUTBOUND_TIMEOUT"
+            not-null="true"
+        />
+
+        <property
+            name="imapInboundTimeout"
+            type="long"
+            update="true"
+            insert="true"
+            column="IMAP_INBOUND_TIMEOUT"
+            not-null="true"
+        />
+
+        <property
+            name="imapOutboundTimeout"
+            type="long"
+            update="true"
+            insert="true"
+            column="IMAP_OUTBOUND_TIMEOUT"
+            not-null="true"
+        />
+
+        <many-to-one
+            name="quarantineSettings"
+            class="com.metavize.tran.mail.papi.quarantine.QuarantineSettings"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="QUARANTINE_SETTINGS"
+            not-null="false"
+        />
+
+        <list
+            name="safelistSettings"
+            table="TR_MAIL_SAFELISTS"
+            lazy="false"
+            cascade="all-delete-orphan"
+        >
+
+            <key
+                column="SETTING_ID"
+            >
+            </key>
+
+            <index
+                column="POSITION"
+            />
+
+            <many-to-many
+                class="com.metavize.tran.mail.papi.safelist.SafelistSettings"
+                column="SAFELS_ID"
+                outer-join="auto"
+             />
+
+        </list>
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-MailTransformSettings.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

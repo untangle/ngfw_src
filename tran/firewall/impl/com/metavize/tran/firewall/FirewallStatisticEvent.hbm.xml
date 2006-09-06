@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.tran.firewall.FirewallStatisticEvent"
+        table="TR_FIREWALL_STATISTIC_EVT"
+        mutable="false"
+    >
+
+        <id
+            name="id"
+            column="EVENT_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-FirewallStatisticEvent.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <property
+            name="tcpBlockedDefault"
+            type="int"
+            update="true"
+            insert="true"
+            column="TCP_BLOCK_DEFAULT"
+        />
+
+        <property
+            name="tcpBlockedRule"
+            type="int"
+            update="true"
+            insert="true"
+            column="TCP_BLOCK_RULE"
+        />
+
+        <property
+            name="tcpPassedDefault"
+            type="int"
+            update="true"
+            insert="true"
+            column="TCP_PASS_DEFAULT"
+        />
+
+        <property
+            name="tcpPassedRule"
+            type="int"
+            update="true"
+            insert="true"
+            column="TCP_PASS_RULE"
+        />
+
+        <property
+            name="udpBlockedDefault"
+            type="int"
+            update="true"
+            insert="true"
+            column="UDP_BLOCK_DEFAULT"
+        />
+
+        <property
+            name="udpBlockedRule"
+            type="int"
+            update="true"
+            insert="true"
+            column="UDP_BLOCK_RULE"
+        />
+
+        <property
+            name="udpPassedDefault"
+            type="int"
+            update="true"
+            insert="true"
+            column="UDP_PASS_DEFAULT"
+        />
+
+        <property
+            name="udpPassedRule"
+            type="int"
+            update="true"
+            insert="true"
+            column="UDP_PASS_RULE"
+        />
+
+        <property
+            name="icmpBlockedDefault"
+            type="int"
+            update="true"
+            insert="true"
+            column="ICMP_BLOCK_DEFAULT"
+        />
+
+        <property
+            name="icmpBlockedRule"
+            type="int"
+            update="true"
+            insert="true"
+            column="ICMP_BLOCK_RULE"
+        />
+
+        <property
+            name="icmpPassedDefault"
+            type="int"
+            update="true"
+            insert="true"
+            column="ICMP_PASS_DEFAULT"
+        />
+
+        <property
+            name="icmpPassedRule"
+            type="int"
+            update="true"
+            insert="true"
+            column="ICMP_PASS_RULE"
+        />
+
+        <property
+            name="timeStamp"
+            type="java.util.Date"
+            update="true"
+            insert="true"
+            column="TIME_STAMP"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-FirewallStatisticEvent.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

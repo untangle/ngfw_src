@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.tran.protofilter.ProtoFilterPattern"
+        table="TR_PROTOFILTER_PATTERN"
+    >
+
+        <id
+            name="id"
+            column="RULE_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-ProtoFilterPattern.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <property
+            name="metavizeId"
+            type="int"
+            update="true"
+            insert="true"
+            column="METAVIZE_ID"
+        />
+
+        <property
+            name="protocol"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="PROTOCOL"
+        />
+
+        <property
+            name="description"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="DESCRIPTION"
+        />
+
+        <property
+            name="category"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="CATEGORY"
+        />
+
+        <property
+            name="definition"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="DEFINITION"
+        />
+
+        <property
+            name="quality"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="QUALITY"
+        />
+
+        <property
+            name="blocked"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="BLOCKED"
+        />
+
+        <property
+            name="alert"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="ALERT"
+        />
+
+        <property
+            name="log"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="LOG"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-ProtoFilterPattern.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.tran.httpblocker.HttpBlockerEvent"
+        table="TR_HTTPBLK_EVT_BLK"
+        mutable="false"
+    >
+
+        <id
+            name="id"
+            column="EVENT_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-HttpBlockerEvent.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <many-to-one
+            name="requestLine"
+            class="com.metavize.tran.http.RequestLine"
+            cascade="save-update"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="REQUEST_ID"
+        />
+
+        <property
+            name="action"
+            type="com.metavize.tran.httpblocker.ActionUserType"
+            update="true"
+            insert="true"
+            column="ACTION"
+        />
+
+        <property
+            name="reason"
+            type="com.metavize.tran.httpblocker.ReasonUserType"
+            update="true"
+            insert="true"
+            column="REASON"
+        />
+
+        <property
+            name="category"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="CATEGORY"
+        />
+
+        <property
+            name="timeStamp"
+            type="java.util.Date"
+            update="true"
+            insert="true"
+            column="TIME_STAMP"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-HttpBlockerEvent.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

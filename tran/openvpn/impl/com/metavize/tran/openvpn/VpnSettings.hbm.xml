@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.tran.openvpn.VpnSettings"
+        table="tr_openvpn_settings"
+    >
+
+        <id
+            name="id"
+            column="ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-VpnSettings.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <many-to-one
+            name="tid"
+            class="com.metavize.mvvm.security.Tid"
+            cascade="none"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="TID"
+            not-null="true"
+        />
+
+        <property
+            name="bridgeMode"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="is_bridge"
+        />
+
+        <property
+            name="isEdgeGuardClient"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="is_edgeguard_client"
+        />
+
+        <list
+            name="groupList"
+            lazy="false"
+            cascade="all-delete-orphan"
+        >
+
+            <key
+                column="settings_id"
+            >
+            </key>
+
+            <index
+                column="position"
+            />
+
+            <one-to-many
+                  class="com.metavize.tran.openvpn.VpnGroup"
+            />
+
+        </list>
+
+        <list
+            name="clientList"
+            lazy="false"
+            cascade="all-delete-orphan"
+        >
+
+            <key
+                column="settings_id"
+            >
+            </key>
+
+            <index
+                column="position"
+            />
+
+            <one-to-many
+                  class="com.metavize.tran.openvpn.VpnClient"
+            />
+
+        </list>
+
+        <list
+            name="siteList"
+            lazy="false"
+            cascade="all-delete-orphan"
+        >
+
+            <key
+                column="settings_id"
+            >
+            </key>
+
+            <index
+                column="position"
+            />
+
+            <one-to-many
+                  class="com.metavize.tran.openvpn.VpnSite"
+            />
+
+        </list>
+
+        <property
+            name="serverAddress"
+            type="com.metavize.mvvm.type.IPaddrUserType"
+            update="true"
+            insert="true"
+        >
+            <column
+                name="server_address" 
+                sql-type="inet"
+            />
+        </property>
+
+        <list
+            name="exportedAddressList"
+            lazy="false"
+            cascade="all-delete-orphan"
+        >
+
+            <key
+                column="settings_id"
+            >
+            </key>
+
+            <index
+                column="position"
+            />
+
+            <one-to-many
+                  class="com.metavize.tran.openvpn.ServerSiteNetwork"
+            />
+
+        </list>
+
+        <property
+            name="exposeClients"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="expose_clients"
+        />
+
+        <property
+            name="keepAlive"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="keep_alive"
+        />
+
+        <property
+            name="maxClients"
+            type="int"
+            update="true"
+            insert="true"
+            column="max_clients"
+        />
+
+        <property
+            name="publicPort"
+            type="int"
+            update="true"
+            insert="true"
+            column="public_port"
+        />
+
+        <property
+            name="domain"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="domain"
+        />
+
+        <property
+            name="keySize"
+            type="int"
+            update="true"
+            insert="true"
+            column="key_size"
+        />
+
+        <property
+            name="country"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="country"
+        />
+
+        <property
+            name="province"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="province"
+        />
+
+        <property
+            name="locality"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="locality"
+        />
+
+        <property
+            name="organization"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="org"
+        />
+
+        <property
+            name="organizationUnit"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="org_unit"
+        />
+
+        <property
+            name="email"
+            type="java.lang.String"
+            update="true"
+            insert="true"
+            column="email"
+        />
+
+        <property
+            name="caKeyOnUsb"
+            type="boolean"
+            update="true"
+            insert="true"
+            column="is_ca_on_usb"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-VpnSettings.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.tran.nat.DhcpAbsoluteLease"
+        table="DHCP_ABS_LEASE"
+        mutable="false"
+    >
+
+        <id
+            name="id"
+            column="EVENT_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-DhcpAbsoluteLease.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <property
+            name="mac"
+            type="com.metavize.mvvm.type.firewall.MACAddressUserType"
+            update="true"
+            insert="true"
+        >
+            <column
+                name="MAC" 
+            />
+        </property>
+
+        <property
+            name="hostname"
+            type="com.metavize.mvvm.type.HostNameUserType"
+            update="true"
+            insert="true"
+        >
+            <column
+                name="HOSTNAME" 
+            />
+        </property>
+
+        <property
+            name="IP"
+            type="com.metavize.mvvm.type.IPaddrUserType"
+            update="true"
+            insert="true"
+        >
+            <column
+                name="IP" 
+                sql-type="inet"
+            />
+        </property>
+
+        <property
+            name="endOfLease"
+            type="java.util.Date"
+            update="true"
+            insert="true"
+            column="END_OF_LEASE"
+        />
+
+        <property
+            name="eventType"
+            type="int"
+            update="true"
+            insert="true"
+            column="EVENT_TYPE"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-DhcpAbsoluteLease.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

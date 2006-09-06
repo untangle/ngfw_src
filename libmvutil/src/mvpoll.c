@@ -8,17 +8,17 @@
  *
  * $Id$
  */
-#include "mvpoll.h"
+#include "mvutil/mvpoll.h"
 
 #include <pthread.h>
 
 #include <stdlib.h>
 #include <unistd.h>
-#include "hash.h"
-#include "list.h"
-#include "unet.h"
-#include "errlog.h"
-#include "debug.h"
+#include "mvutil/hash.h"
+#include "mvutil/list.h"
+#include "mvutil/unet.h"
+#include "mvutil/errlog.h"
+#include "mvutil/debug.h"
 
 /**
  * This is a (set x key) storage struct

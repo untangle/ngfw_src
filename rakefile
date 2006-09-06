@@ -1,0 +1,75 @@
+# -*-ruby-*-
+
+## This is how you define where the stamp file will go
+module Rake
+  StampFile = 'taskstamps.txt'
+end
+
+require 'buildtools/stamp-task.rb'
+
+require 'buildtools/rake-util.rb'
+require 'buildtools/c-compiler.rb'
+require 'buildtools/transform.rb'
+require 'buildtools/jars.rb'
+
+task :default => :devel
+
+task :clean do
+  FileUtils.rm_rf($BuildEnv.devel) if File.exist?($BuildEnv.devel)
+  FileUtils.rm_rf($BuildEnv.staging) if File.exist?($BuildEnv.staging)
+  ## Clear the stamp hashes
+  Rake::StampHash.instance.clear
+end
+
+task :devel => [Package['install']]
+$InstallTarget = InstallTarget.new(Package['install'], [Package['mvvm'], Package['gui'], Package['tran']], 'install')
+
+task :prod => [:prodcfg, Package['install']]
+
+task :prodcfg do
+  $BuildEnv.isDevel = false
+  $BuildEnv.prefix = '/'
+end
+
+task Package['mvvm'] => [:structure]
+
+task :structure do
+  [$BuildEnv.devel, $BuildEnv.devel, $BuildEnv.grabbag].each do |t|
+    ensureDirectory(t)
+  end
+end
+
+## Building downloads
+Kernel.system( "make -C ../downloads" )
+
+## Require all of the sub packages.
+## Done manually because order matters.
+## XXX Could create a new helper method that sets a prefix directory before
+## calling require and then unsets it afterwards.
+require 'libmvutil/package.rb'
+require 'libnetcap/package.rb'
+require 'libvector/package.rb'
+require 'jmvutil/package.rb'
+require 'jnetcap/package.rb'
+require 'jvector/package.rb'
+require 'mvvm/package.rb'
+require 'gui/package.rb'
+require 'tran/package.rb'
+
+libalpine_so = "#{$BuildEnv.staging}/libalpine.so"
+
+file libalpine_so do
+  compilerEnv = CCompilerEnv.new({ 'flags' => "#{CCompilerEnv::DebugFlags}" })
+  archives = ['libmvutil', 'libnetcap', 'libvector', 'jmvutil', 'jnetcap', 'jvector'].map do |n|
+    Package[n]['archive'].filename
+  end
+
+  CBuilder.new(compilerEnv).makeSharedLibrary(archives, libalpine_so, [],
+                                              ['xml2', 'sysfs'], ['ipq'])
+end
+
+$InstallTarget.registerDependency(libalpine_so)
+
+$InstallTarget.installFiles(libalpine_so, "#{Package['mvvm'].distDirectory}/usr/lib/mvvm")
+
+graphViz('foo.dot')

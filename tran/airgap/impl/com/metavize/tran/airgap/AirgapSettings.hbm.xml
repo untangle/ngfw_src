@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.tran.airgap.AirgapSettings"
+        table="TR_AIRGAP_SETTINGS"
+    >
+
+        <id
+            name="id"
+            column="SETTINGS_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-AirgapSettings.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <many-to-one
+            name="tid"
+            class="com.metavize.mvvm.security.Tid"
+            cascade="none"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="TID"
+            not-null="true"
+        />
+
+        <list
+            name="shieldNodeRuleList"
+            lazy="false"
+            cascade="all-delete-orphan"
+        >
+
+            <key
+                column="SETTINGS_ID"
+            >
+            </key>
+
+            <index
+                column="POSITION"
+            />
+
+            <one-to-many
+                  class="com.metavize.tran.airgap.ShieldNodeRule"
+            />
+
+        </list>
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-AirgapSettings.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>

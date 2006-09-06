@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN" 
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="false"
+>
+    <class
+        name="com.metavize.mvvm.addrbook.AddressBookSettings"
+        table="AB_SETTINGS"
+    >
+
+        <id
+            name="id"
+            column="SETTINGS_ID"
+            type="java.lang.Long"
+        >
+            <generator class="native">
+              <!--  
+                  To add non XDoclet generator parameters, create a file named 
+                  hibernate-generator-params-AddressBookSettings.xml 
+                  containing the additional parameters and place it in your merge dir. 
+              --> 
+            </generator>
+        </id>
+
+        <many-to-one
+            name="ADRepositorySettings"
+            class="com.metavize.mvvm.addrbook.RepositorySettings"
+            cascade="all"
+            outer-join="auto"
+            update="true"
+            insert="true"
+            column="AD_REPO_SETTINGS"
+            not-null="true"
+        />
+
+        <property
+            name="addressBookConfiguration"
+            type="com.metavize.mvvm.addrbook.AddressBookConfigurationUserType"
+            update="true"
+            insert="true"
+            column="AB_CONFIGURATION"
+            not-null="true"
+        />
+
+        <!--
+            To add non XDoclet property mappings, create a file named
+                hibernate-properties-AddressBookSettings.xml
+            containing the additional properties and place it in your merge dir.
+        -->
+
+    </class>
+
+</hibernate-mapping>
