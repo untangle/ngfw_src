@@ -15,9 +15,9 @@ ServletBuilder.new(gui, 'com.metavize.gui.webstart.jsp',
 
 $InstallTarget.installJars(Jars::Gui, gui.getWebappDir('webstart'), nil, true)
 
-guiRuntimeJars = ['asm.jar', 'cglib-2.1.jar', 'commons-logging-1.0.4.jar',
-                  'log4j-1.2.9.jar' ].map do |f|
-  Jars.downloadTarget("hibernate-3.0/lib/#{f}")
+guiRuntimeJars = ['asm.jar', 'cglib-2.1.3.jar', 'commons-logging-1.0.4.jar',
+                  'log4j-1.2.11.jar' ].map do |f|
+  Jars.downloadTarget("hibernate-3.2/lib/#{f}")
 end
 guiRuntimeJars << Jars.downloadTarget('hibernate-client/hibernate-client.jar')
 $InstallTarget.installJars(guiRuntimeJars, gui.getWebappDir('webstart'), nil, true)

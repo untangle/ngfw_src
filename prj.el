@@ -24,10 +24,10 @@
     (mapcar (lambda (a) (concat "./tran/" a "/main")) transforms)
     (mapcar (lambda (a) (concat "./tran/" a "/main")) casings)
     (mapcar (lambda (a) (concat "./" a "/src/")) jni-projects)))
- '(jde-make-program "make")
+ '(jde-make-program "rake")
  '(jde-compile-option-directory ".")
  '(jde-make-working-directory ".")
- '(jde-make-args "all")
+ '(jde-make-args "default")
  '(jde-global-classpath
    (append
     (mapcar (lambda (a)

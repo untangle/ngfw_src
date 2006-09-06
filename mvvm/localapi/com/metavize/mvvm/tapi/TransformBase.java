@@ -87,21 +87,21 @@ public abstract class TransformBase implements Transform
         if (wasStarted || TransformState.RUNNING == runState) {
             return false;
         } else {
-            TransactionWork<Integer> tw = new TransactionWork<Integer>()
+            TransactionWork<Long> tw = new TransactionWork<Long>()
                 {
-                    Integer result;
+                    Long result;
 
                     // XXX move this shit to TransformContext
                     public boolean doWork(Session s)
                     {
                         Query q = s.createQuery("SELECT count(sc) FROM TransformStateChange sc WHERE sc.tid = :tid AND sc.state = 'running'");
                         q.setParameter("tid", tid);
-                        result = (Integer)q.uniqueResult();
+                        result = (Long)q.uniqueResult();
 
                         return true;
                     }
 
-                    public Integer getResult()
+                    public Long getResult()
                     {
                         return result;
                     }

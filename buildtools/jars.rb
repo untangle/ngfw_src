@@ -12,14 +12,14 @@ class Jars
 
   ## Named groups of jars
   Log4j      = [ Jars.downloadTarget('logging-log4j-1.2.9/dist/lib/log4j-1.2.9.jar') ]
-  Hibernate   = %w( hibernate-3.0/hibernate3.jar
-                    hibernate-3.0/lib/antlr-2.7.5H3.jar
-                    hibernate-3.0/lib/asm.jar
-                    hibernate-3.0/lib/cglib-2.1.jar
-                    hibernate-3.0/lib/commons-collections-2.1.1.jar
-                    hibernate-3.0/lib/dom4j-1.6.jar
-                    hibernate-3.0/lib/ehcache-1.1.jar
-                    hibernate-3.0/lib/jta.jar
+  Hibernate   = %w( hibernate-3.2/hibernate3.jar
+                    hibernate-3.2/lib/antlr-2.7.6.jar
+                    hibernate-3.2/lib/asm.jar
+                    hibernate-3.2/lib/cglib-2.1.3.jar
+                    hibernate-3.2/lib/commons-collections-2.1.1.jar
+                    hibernate-3.2/lib/dom4j-1.6.1.jar
+                    hibernate-3.2/lib/ehcache-1.2.jar
+                    hibernate-3.2/lib/jta.jar
                   ).map { |f| Jars.downloadTarget(f) }
 
   C3p0       = [ Jars.downloadTarget('c3p0-0.9.0.4/lib/c3p0-0.9.0.4.jar') ]
@@ -41,7 +41,7 @@ class Jars
   ## Miscellaneous Jars
   JavaMail   = [ Jars.downloadTarget('javamail-1.3.3_01/mail.jar')]
   Jcifs      = [ Jars.downloadTarget('jcifs_1.2.9/jcifs-1.2.9.jar')]
-  Dom4j      = [ Jars.downloadTarget('hibernate-3.0/lib/dom4j-1.6.jar')]
+  Dom4j      = [ Jars.downloadTarget('hibernate-3.2/lib/dom4j-1.6.1.jar')]
   Activation = [ Jars.downloadTarget('jaf-1.0.2/activation.jar')]
   Trove      = [ Jars.downloadTarget('trove-1.0.2/lib/trove.jar')]
   Postgres   = [ Jars.downloadTarget('postgres-jdbc-7.4_215/pg74.215.jdbc3.jar')]
