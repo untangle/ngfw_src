@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,6 +14,16 @@ package com.metavize.mvvm.security;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.Period;
 
@@ -22,22 +32,20 @@ import com.metavize.mvvm.Period;
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="ADMIN_SETTINGS"
  */
+@Entity
+@Table(name = "admin_settings")
 public class AdminSettings implements Serializable
 {
     private static final long serialVersionUID = -6013161516125662391L;
 
     private Long id;
-    private Set users = new HashSet();
+    private Set<User> users = new HashSet();
     private Period summaryPeriod;
 
-    /**
-     * @hibernate.id
-     * column="ADMIN_SETTINGS_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="admin_settings_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -53,19 +61,15 @@ public class AdminSettings implements Serializable
      * the system.
      *
      * @return system users.
-     * @hibernate.set
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="ADMIN_SETTING_ID"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.mvvm.security.User"
      */
-    public Set getUsers()
+    @OneToMany(cascade=CascadeType.ALL)
+    @JoinColumn(name="admin_setting_id")
+    public Set<User> getUsers()
     {
         return users;
     }
 
-    public void setUsers(Set users)
+    public void setUsers(Set<User> users)
     {
         this.users = users;
     }
@@ -79,10 +83,9 @@ public class AdminSettings implements Serializable
      * Specifies how often summary alerts/reports are generated.
      *
      * @return the summary period.
-     * @hibernate.many-to-one
-     * column="SUMMARY_PERIOD_ID"
-     * cascade="all"
      */
+    @ManyToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name="summary_period_id")
     public Period getSummaryPeriod()
     {
         return summaryPeriod;
