@@ -294,7 +294,7 @@ class Package
     @mutex.synchronize do
       ## This is where the virtual target comes into play!! XXXX ##
       target = @targets[name]
-      raise "Target '#{name}' is not registered" if (target == nil)
+      raise "Target #{@name}['#{name}'] is not registered" if (target == nil)
 
       target
     end

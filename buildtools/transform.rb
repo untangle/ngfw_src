@@ -1,9 +1,9 @@
 # -*-ruby-*-
 
 class TransformBuilder
-  TransformSuffix = "transform"
-  CasingSuffix = "casing"
-  BaseSuffix = "base"
+  TransformSuffix = 'transform'
+  CasingSuffix = 'casing'
+  BaseSuffix = 'base'
 
   def TransformBuilder.makeTransform(name, depsImpl = [], depsGui = [],
                                      depsLocalApi = [], baseTransforms = [])
@@ -27,10 +27,10 @@ class TransformBuilder
   ## Create the necessary packages and targets to build a transform
   def TransformBuilder.makePackage(name, suffix, depsImpl = [], depsGui = [],
                                    depsLocalApi = [], baseTransforms = [])
-    mvvm = Package["mvvm"]
-    gui  = Package["gui"]
+    mvvm = Package['mvvm']
+    gui  = Package['gui']
     transform = Package["#{name}-#{suffix}"]
-    Package["tran"].registerTarget("#{name}", transform)
+    Package['tran'].registerTarget(name, transform)
 
     localApiJar = nil
 
@@ -48,7 +48,7 @@ class TransformBuilder
       paths = baseTransforms.map { |bt| ["tran/#{bt}/api",
                                          "tran/#{bt}/localapi"] }.flatten
 
-      localApiJar = JarTarget.buildTarget(transform, deps, "localapi",
+      localApiJar = JarTarget.buildTarget(transform, deps, 'localapi',
                                           ["tran/#{name}/api", "tran/#{name}/localapi"] + paths)
       $InstallTarget.installJars(localApiJar, "#{transform.distDirectory}/usr/share/metavize/toolbox")
     end
@@ -67,7 +67,7 @@ class TransformBuilder
 
     baseTransforms.each { |bt| directories << "tran/#{bt}/impl" }
 
-    jt = JarTarget.buildTarget(transform, deps, "impl", directories)
+    jt = JarTarget.buildTarget(transform, deps, 'impl', directories)
     $InstallTarget.installJars(jt, "#{transform.distDirectory}/usr/share/metavize/toolbox")
 
     ## Only create the GUI api if there are files for the GUI
@@ -80,7 +80,7 @@ class TransformBuilder
         end
       end
 
-      jt = JarTarget.buildTarget(transform, deps, "gui",
+      jt = JarTarget.buildTarget(transform, deps, 'gui',
                                  ["tran/#{name}/api", "tran/#{name}/gui",
                                   "tran/#{name}/fake"])
       $InstallTarget.installJars(jt, "#{transform.distDirectory}/usr/share/metavize/web/webstart",
@@ -97,9 +97,9 @@ class TransformBuilder
 
   ## Helper to retrieve the standard dependencies for an impl
   def TransformBuilder.baseJarsImpl
-    mvvm = Package["mvvm"]
-    Jars::Base + [Jars::JFreeChart, Jars::Jasper, mvvm["api"], mvvm["localapi"],
-                  mvvm["reporting"]]
+    mvvm = Package['mvvm']
+    Jars::Base + [Jars::JFreeChart, Jars::Jasper, mvvm['api'], mvvm['localapi'],
+                  mvvm['reporting']]
   end
 
   ## Helper to retrieve the standard dependencies for local API
@@ -111,6 +111,6 @@ class TransformBuilder
   ## Helper to retrieve the standard dependencies for a GUI jar
   def TransformBuilder.baseJarsGui
     Jars::Base + Jars::Gui + Jars::TomcatEmb +
-      [Package["mvvm"]["api"], Package["gui"]["impl"]]
+      [Package['mvvm']['api'], Package['gui']['api']]
   end
 end

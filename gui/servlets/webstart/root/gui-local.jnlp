@@ -42,7 +42,8 @@ MackageDesc[] mds = mc.toolboxManager().installed();
   <resources>
     <j2se version="1.5+" initial-heap-size="48m" max-heap-size="128m"/>
 
-    <jar href="./gui-impl.jar" main="true"/>
+    <jar href="./gui-api.jar" main="true"/>
+    <jar href="./gui-impl.jar"/>
     <jar href="./mvvm-api.jar"/>
 
     <jar href="./asm.jar"/>

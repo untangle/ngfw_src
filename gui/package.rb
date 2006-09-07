@@ -3,9 +3,13 @@
 mvvm = Package['mvvm']
 gui = Package['gui']
 
-## Implementation
+## Api
 deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [mvvm['api']]
+jt = JarTarget.buildTarget(gui, deps, 'api', 'gui/api')
+$InstallTarget.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 
+## Implementation
+deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [mvvm['api'], gui['api']]
 jt = JarTarget.buildTarget(gui, deps, 'impl', 'gui/impl')
 $InstallTarget.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 
