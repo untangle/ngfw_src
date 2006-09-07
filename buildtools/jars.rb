@@ -21,6 +21,10 @@ class Jars
                     hibernate-3.2/lib/ehcache-1.2.jar
                     hibernate-3.2/lib/jta.jar
                   ).map { |f| Jars.downloadTarget(f) }
+  HibernateAnnotations = %w(
+    hibernate-annotations-3.2.0.CR1/hibernate-annotations.jar
+    hibernate-annotations-3.2.0.CR1/lib/ejb3-persistence.jar
+  ).map { |f| Jars.downloadTarget(f) }
 
   C3p0       = [ Jars.downloadTarget('c3p0-0.9.0.4/lib/c3p0-0.9.0.4.jar') ]
   Ant        = [ Jars.downloadTarget('apache-ant-1.6.5/lib/ant.jar') ]
@@ -53,7 +57,7 @@ class Jars
 
   ## Groups used for compiling
   # This is available to everything?
-  Base       = Jars.makeGroup(Log4j, Hibernate, Postgres, Activation, Jcifs,
+  Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres, Activation, Jcifs,
                               C3p0, Ant, JavaMailApi, TomcatEmb, Velocity)
 
   # Jars for compiling the GUI, and GUI transform components

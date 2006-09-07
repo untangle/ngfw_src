@@ -158,6 +158,7 @@ class JavaCompiler
     ensureDirectory dstdir
 
     cp = classpath.join(":")
+
     debug "javac classpath: #{cp}"
     info "javac -d #{dstdir}"
 

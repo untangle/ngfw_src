@@ -12,15 +12,21 @@
 package com.metavize.mvvm.security;
 
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * An MVVM user.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="MVVM_USER"
  */
+@Entity
+@Table(name = "mvvm_user")
 public class User implements Serializable
 {
     private static final long serialVersionUID = 11521040868224140L;
@@ -88,11 +94,8 @@ public class User implements Serializable
         this.sendAlerts = sendAlerts;
     }
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @GeneratedValue
     public Long getId()
     {
         return id;
@@ -107,11 +110,8 @@ public class User implements Serializable
      * Login name.
      *
      * @return user login.
-     * @hibernate.property
-     * column="LOGIN"
-     * length="24"
-     * not-null="true"
      */
+    @Column(nullable=false, length=24)
     public String getLogin()
     {
         return login;
@@ -126,12 +126,8 @@ public class User implements Serializable
      * Password, encrypted with password utils.
      *
      * @return encrypted password bytes.
-     * @hibernate.property
-     * type="binary"
-     * length="24"
-     * column="PASSWORD"
-     * not-null="true"
      */
+    @Column(nullable=false, length=24)
     public byte[] getPassword()
     {
         return password;
@@ -147,11 +143,8 @@ public class User implements Serializable
      * Name.
      *
      * @return username.
-     * @hibernate.property
-     * column="NAME"
-     * length="64"
-     * not-null="true"
      */
+    @Column(nullable=false, length=64)
     public String getName()
     {
         return name;
@@ -166,10 +159,8 @@ public class User implements Serializable
      * Read only accounts can't change settings.
      *
      * @return true if this is a read only.
-     * @hibernate.property
-     * column="READ_ONLY"
-     * not-null="true"
      */
+    @Column(name="read_only", nullable=false)
     public boolean isReadOnly()
     {
         return readOnly;
@@ -185,6 +176,7 @@ public class User implements Serializable
      *
      * @param password to be encrypted.
      */
+    @Transient
     public void setClearPassword(String password)
     {
         this.password = PasswordUtil.encrypt(password);
@@ -194,9 +186,8 @@ public class User implements Serializable
      * Set email for MVVM to send messages.
      *
      * @return user's contact email.
-     * column="EMAIL"
-     * length="64"
      */
+    @Column(length=64)
     public String getEmail()
     {
         return email;
@@ -211,10 +202,8 @@ public class User implements Serializable
      * GECOS field.
      *
      * @return random info about user.
-     * @hibernate.property
-     * column="NOTES"
-     * length="256"
      */
+    @Column(length=256)
     public String getNotes()
     {
         return notes;
@@ -229,9 +218,8 @@ public class User implements Serializable
      * Specifies if this user will receive email Alerts.
      *
      * @return true if alerts are sent.
-     * @hibernate.property
-     * column="SEND_ALERTS"
      */
+    @Column(name="send_alerts")
     public boolean getSendAlerts()
     {
         return sendAlerts;

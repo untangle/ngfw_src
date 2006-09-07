@@ -11,12 +11,16 @@
 
 package com.metavize.mvvm.engine;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.lang.ref.WeakReference;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +35,7 @@ import org.dom4j.Document;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 
 /**
@@ -72,6 +77,7 @@ class Util
 
         try {
             ShortBus cfg = new ShortBus();
+            addAnnotatedClasses(jfs, cfg);
 
             Set seen = new HashSet();
             for (JarFile jf : jfs) {
@@ -97,6 +103,7 @@ class Util
 
         try {
             ShortBus cfg = new ShortBus();
+            addAnnotatedClasses(cl, cfg);
 
             Set seen = new HashSet();
             while (null != cl) {
@@ -115,6 +122,55 @@ class Util
         }
 
         return sessionFactory;
+    }
+
+    private static void addAnnotatedClasses(ClassLoader cl, ShortBus cfg)
+    {
+        Enumeration<URL> e = null;
+
+        try {
+            e = cl.getResources("META-INF/annotated-classes");
+        } catch (IOException exn) {
+            logger.warn("could not load annotated-classes", exn);
+        }
+
+        while (null != e && e.hasMoreElements()) {
+            try {
+                URL url = e.nextElement();
+                InputStream is = url.openStream();
+                InputStreamReader isr = new InputStreamReader(is);
+                BufferedReader br = new BufferedReader(isr);
+                String line;
+                while (null != (line = br.readLine())) {
+                    try {
+                        Class c = Class.forName(line);
+                        cfg.addAnnotatedClass(c);
+                    } catch (ClassNotFoundException exn) {
+                        logger.warn("skipping unknown class: " + line, exn);
+                    }
+                }
+            } catch (IOException exn) {
+                logger.warn("could not read annotated-classes", exn);
+            }
+        }
+    }
+
+    private static void addAnnotatedClasses(List<JarFile> jfs, ShortBus cfg)
+    {
+        List<URL> urls = new ArrayList<URL>(jfs.size());
+
+        for (JarFile jf : jfs) {
+            String urlStr = "file://" + jf.getName();
+            try {
+                urls.add(new URL(urlStr));
+            } catch (MalformedURLException exn) {
+                logger.warn("skipping bad url: " + urlStr, exn);
+            }
+        }
+
+        ClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]));
+
+        addAnnotatedClasses(cl, cfg);
     }
 
     private static void addClassLoader(URLClassLoader ucl, ShortBus cfg,
@@ -207,7 +263,7 @@ class Util
 
     // private classes --------------------------------------------------------
 
-    private static class ShortBus extends Configuration
+    private static class ShortBus extends AnnotationConfiguration
     {
         public void addDom4j(Document doc)
         {
