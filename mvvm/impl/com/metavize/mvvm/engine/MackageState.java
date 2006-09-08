@@ -11,14 +11,20 @@
 
 package com.metavize.mvvm.engine;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * State of mackage.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="MACKAGE_STATE"
  */
+@Entity
+@Table(name = "mackage_state", schema="settings")
 class MackageState
 {
     private Long id;
@@ -35,11 +41,9 @@ class MackageState
         this.enabled = enabled;
     }
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="upgrade_settings_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -54,9 +58,8 @@ class MackageState
      * Name of mackage.
      *
      * @return name of mackage.
-     * @hibernate.property
-     * column="MACKAGE_NAME"
      */
+    @Column(name="mackage_name", nullable=false)
     public String getMackageName()
     {
         return mackageName;
@@ -71,9 +74,8 @@ class MackageState
      * Extra name of mackage.
      *
      * @return the mackage's extra name.
-     * @hibernate.property
-     * column="EXTRA_NAME"
      */
+    @Column(name="extra_name")
     public String getExtraName()
     {
         return extraName;
@@ -89,9 +91,8 @@ class MackageState
      * Status of transform.
      *
      * @return true if and only if mackage is enabled.
-     * @hibernate.property
-     * column="ENABLED"
      */
+    @Column(nullable=false)
     public boolean isEnabled()
     {
         return enabled;
