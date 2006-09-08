@@ -146,7 +146,7 @@ class Util
                 String line;
                 while (null != (line = br.readLine())) {
                     try {
-                        Class c = Class.forName(line);
+                        Class c = cl.loadClass(line);
                         cfg.addAnnotatedClass(c);
                     } catch (ClassNotFoundException exn) {
                         logger.warn("skipping unknown class: " + line, exn);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,17 +12,28 @@
 package com.metavize.tran.test;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.security.Tid;
+import org.hibernate.annotations.Type;
 
 /**
  * Settings for the Test Transform.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_TEST_SETTINGS"
  */
+@Entity
+@Table(name="tr_test_settings", schema="settings")
 public class TestSettings implements Serializable
 {
     private static final long serialVersionUID = 4143567998376955882L;
@@ -43,7 +54,7 @@ public class TestSettings implements Serializable
 
     public TestSettings( Tid tid)
     {
-    this.tid = tid;
+        this.tid = tid;
     }
 
     public void resetSettings()
@@ -54,11 +65,9 @@ public class TestSettings implements Serializable
         buffered = false;
     }
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -73,10 +82,9 @@ public class TestSettings implements Serializable
      * Transform id for these settings.
      *
      * @return tid for these settings
-     * @hibernate.many-to-one
-     * column="TID"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="tid", nullable=false)
     public Tid getTid()
     {
         return tid;
@@ -91,10 +99,8 @@ public class TestSettings implements Serializable
      * Mode to operate in.
      *
      * @return mode.
-     * @hibernate.property
-     * type="com.metavize.tran.test.ModeUserType"
-     * column="MODE"
      */
+    @Type(type="com.metavize.tran.test.ModeUserType")
     public Mode getMode()
     {
         return mode;
@@ -109,25 +115,19 @@ public class TestSettings implements Serializable
      * Buffered?
      *
      * @return true if buffered.
-     * @hibernate.property
-     * column="BUFFERED"
      */
     public boolean isBuffered()
     {
         return buffered;
     }
 
-   public void setBuffered(boolean buffered)
+    public void setBuffered(boolean buffered)
     {
         this.buffered = buffered;
     }
 
     /**
      * Normal?
-     *
-     * @return a <code>boolean</code> value
-     * @hibernate.property
-     * column="NORMAL"
      */
     public boolean isNormal()
     {
@@ -143,8 +143,6 @@ public class TestSettings implements Serializable
      * Release sessions, true by default.
      *
      * @return true if sessions are released.
-     * @hibernate.property
-     * column="RELEASE"
      */
     public boolean getRelease()
     {
@@ -160,8 +158,6 @@ public class TestSettings implements Serializable
      * By default, logs lots of info, quiet suppresses this.
      *
      * @return true
-     * @hibernate.property
-     * column="QUIET"
      */
     public boolean isQuiet()
     {
@@ -178,6 +174,7 @@ public class TestSettings implements Serializable
      *
      * @return true for random buffer sizes.
      */
+    @Transient
     public boolean getRandomBufferSizes()
     {
         return randomBufferSizes;
@@ -193,9 +190,8 @@ public class TestSettings implements Serializable
      * 63.
      *
      * @return minimum buffer size.
-     * @hibernate.property
-     * column="MIN_RANDOM_BUFFER_SIZE"
      */
+    @Column(name="min_random_buffer_size")
     public int getMinRandomBufferSize()
     {
         return minRandomBufferSize;
@@ -211,9 +207,8 @@ public class TestSettings implements Serializable
      * 16500;
      *
      * @return maximum buffer size.
-     * @hibernate.property
-     * column="MAX_RANDOM_BUFFER_SIZE"
      */
+    @Column(name="max_random_buffer_size")
     public int getMaxRandomBufferSize()
     {
         return maxRandomBufferSize;
