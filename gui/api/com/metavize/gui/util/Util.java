@@ -22,43 +22,69 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.net.*;
 import java.text.*;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ListResourceBundle;
 import java.util.Map;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import javax.jnlp.*;
 import javax.swing.*;
-import java.lang.reflect.Constructor;
 
 import com.metavize.gui.login.*;
 import com.metavize.gui.main.MMainJFrame;
 import com.metavize.gui.main.PolicyStateMachine;
 import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.gui.pipeline.MRackJPanel;
-import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.transform.CompoundSettings;
+import com.metavize.gui.widgets.editTable.*;
 import com.metavize.mvvm.*;
+import com.metavize.mvvm.addrbook.*;
 import com.metavize.mvvm.client.*;
 import com.metavize.mvvm.logging.*;
 import com.metavize.mvvm.policy.*;
+import com.metavize.mvvm.portal.RemotePortalManager;
 import com.metavize.mvvm.security.*;
-import com.metavize.mvvm.addrbook.*;
 import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.tran.*;
-import com.metavize.mvvm.portal.RemotePortalManager;
 
 public class Util {
 
     public static final String EXCEPTION_PORT_RANGE = "The port must be an integer number between 1 and 65535.";
 
+    private static final ResourceBundle ENVIRONMENT;
+
+    static {
+        ResourceBundle rb;
+
+        try {
+            InputStream is = Util.class.getClassLoader().getResourceAsStream("environment.properties");
+            rb = new PropertyResourceBundle(is);
+        } catch (IOException exn) {
+            System.out.println("could not initialize environment properties");
+            rb = new ListResourceBundle() {
+                    protected Object[][] getContents()
+                    {
+                        return new Object[0][0];
+                    }
+                };
+        }
+
+        ENVIRONMENT = rb;
+    }
+
     private Util(){}
 
     public static void initialize(){
         shutdownableMap = new HashMap<String,Shutdownable>();
-	statsCache = new StatsCache();
+    statsCache = new StatsCache();
         logDateFormat = new SimpleDateFormat("EEE, MMM d HH:mm:ss");
         log = new Vector();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -92,8 +118,8 @@ public class Util {
         buttonBackupToHardDisk = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Backup_To_Hard_Disk_130x17.png") );
         buttonBackupToUsbKey = new ImageIcon( classLoader.getResource("com/metavize/gui/images/Button_Backup_To_Usb_Key_130x17.png") );
 
-	INVALID_BACKGROUND_COLOR = Color.PINK;
-	VALID_BACKGROUND_COLOR = new Color(224, 224, 224);
+    INVALID_BACKGROUND_COLOR = Color.PINK;
+    VALID_BACKGROUND_COLOR = new Color(224, 224, 224);
     }
 
     // LOGOUT /////////////////////
@@ -137,7 +163,7 @@ public class Util {
             loggingManager = mvvmContext.loggingManager();
             appServerManager = mvvmContext.appServerManager();
             addressBook = mvvmContext.appAddressBook();
-	    remotePortalManager = mvvmContext.portalManager();
+        remotePortalManager = mvvmContext.portalManager();
         }
         else{
             toolboxManager = null;
@@ -149,7 +175,7 @@ public class Util {
             loggingManager = null;
             appServerManager = null;
             addressBook = null;
-	    remotePortalManager = null;
+        remotePortalManager = null;
         }
     }
 
@@ -367,9 +393,9 @@ public class Util {
         shutdownableMap.put(name, shutdownable);
     }
     private static void doShutdown(){
-	Util.printMessage("Shutdown initiated by: " + Thread.currentThread().getName() );
+    Util.printMessage("Shutdown initiated by: " + Thread.currentThread().getName() );
         for( Map.Entry<String,Shutdownable> shutdownableEntry : shutdownableMap.entrySet() ){
-	    System.err.println("Shutting down: " + shutdownableEntry.getKey());
+        System.err.println("Shutting down: " + shutdownableEntry.getKey());
             shutdownableEntry.getValue().doShutdown();
         }
         shutdownableMap.clear();
@@ -486,70 +512,70 @@ public class Util {
     }
 
     public synchronized static void handleExceptionWithRestart(String output, Exception e) throws Exception {
-        Throwable throwableRef = e;	
+        Throwable throwableRef = e;
 
         while( throwableRef != null){
             if( throwableRef instanceof InvocationConnectionException ){
-		System.err.println(output);
-		e.printStackTrace();
-		if( !Util.getShutdownInitiated() ){
-		    Util.setShutdownInitiated(true);
-		    doShutdown();
-		    mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
-		    mLoginJFrame.reshowLogin();
-		    MvvmRemoteContextFactory.factory().logout();
-		}
+        System.err.println(output);
+        e.printStackTrace();
+        if( !Util.getShutdownInitiated() ){
+            Util.setShutdownInitiated(true);
+            doShutdown();
+            mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
+            mLoginJFrame.reshowLogin();
+            MvvmRemoteContextFactory.factory().logout();
+        }
                 return;
             }
             else if( throwableRef instanceof InvocationTargetExpiredException ){
-		System.err.println(output);
-		e.printStackTrace();
-		if( !Util.getShutdownInitiated() ){
-		    Util.setShutdownInitiated(true);
-		    doShutdown();
-		    mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
-		    mLoginJFrame.reshowLogin();
-		    MvvmRemoteContextFactory.factory().logout();
-		}
+        System.err.println(output);
+        e.printStackTrace();
+        if( !Util.getShutdownInitiated() ){
+            Util.setShutdownInitiated(true);
+            doShutdown();
+            mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
+            mLoginJFrame.reshowLogin();
+            MvvmRemoteContextFactory.factory().logout();
+        }
                 return;
             }
             else if( throwableRef instanceof com.metavize.mvvm.client.LoginExpiredException ){
-		System.err.println(output);
-		e.printStackTrace();
-		if( !Util.getShutdownInitiated() ){
-		    Util.setShutdownInitiated(true);		
-		    doShutdown();
-		    mLoginJFrame.resetLogin("Login expired.  Re-login.");
-		    mLoginJFrame.reshowLogin();
-		    MvvmRemoteContextFactory.factory().logout();
-		}
+        System.err.println(output);
+        e.printStackTrace();
+        if( !Util.getShutdownInitiated() ){
+            Util.setShutdownInitiated(true);
+            doShutdown();
+            mLoginJFrame.resetLogin("Login expired.  Re-login.");
+            mLoginJFrame.reshowLogin();
+            MvvmRemoteContextFactory.factory().logout();
+        }
                 return;
             }
             else if(    (throwableRef instanceof ConnectException)
                         || (throwableRef instanceof SocketException)
                         || (throwableRef instanceof SocketTimeoutException) ){
-		System.err.println(output);
-		e.printStackTrace();
-		if( !Util.getShutdownInitiated() ){
-		    Util.setShutdownInitiated(true);
-		    doShutdown();
-		    mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
-		    mLoginJFrame.reshowLogin();
-		    MvvmRemoteContextFactory.factory().logout();
-		}
+        System.err.println(output);
+        e.printStackTrace();
+        if( !Util.getShutdownInitiated() ){
+            Util.setShutdownInitiated(true);
+            doShutdown();
+            mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
+            mLoginJFrame.reshowLogin();
+            MvvmRemoteContextFactory.factory().logout();
+        }
                 return;
             }
             else if( throwableRef instanceof LoginStolenException ){
-		if( !Util.getShutdownInitiated() ){
-		    String loginName = ((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName();
-		    String loginAddress = ((LoginStolenException)throwableRef).getThief().getClientAddr().getHostAddress();
-		    new LoginStolenJDialog(loginName, loginAddress);
-		    Util.setShutdownInitiated(true);	       
-		    doShutdown();
-		    mLoginJFrame.resetLogin("Login ended by: " + loginName + " at " + loginAddress);
-		    mLoginJFrame.reshowLogin();
-		    MvvmRemoteContextFactory.factory().logout();
-		}
+        if( !Util.getShutdownInitiated() ){
+            String loginName = ((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName();
+            String loginAddress = ((LoginStolenException)throwableRef).getThief().getClientAddr().getHostAddress();
+            new LoginStolenJDialog(loginName, loginAddress);
+            Util.setShutdownInitiated(true);
+            doShutdown();
+            mLoginJFrame.resetLogin("Login ended by: " + loginName + " at " + loginAddress);
+            mLoginJFrame.reshowLogin();
+            MvvmRemoteContextFactory.factory().logout();
+        }
                 return;
             }
             throwableRef = throwableRef.getCause();
@@ -568,23 +594,23 @@ public class Util {
 
     // GENERAL UTIL ////////////////////////////////
     public static void setPortView(JSpinner jSpinner, int defaultValue){
-	jSpinner.setModel(new SpinnerNumberModel(defaultValue,0,65535,1));
-	((JSpinner.NumberEditor)jSpinner.getEditor()).getFormat().setGroupingUsed(false);
+    jSpinner.setModel(new SpinnerNumberModel(defaultValue,0,65535,1));
+    ((JSpinner.NumberEditor)jSpinner.getEditor()).getFormat().setGroupingUsed(false);
     }
     public static void setAAClientProperty(Component parentComponent, boolean isAAEnabled){
-	if( parentComponent instanceof JComponent ){
-	    try{ ((JComponent)parentComponent).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(isAAEnabled)); }
-	    catch(Exception e){}
-	}
-	
-	if( parentComponent instanceof Container ){
-	    for( Component component : ((Container)parentComponent).getComponents() ){
-		setAAClientProperty(component, isAAEnabled);
-	    }
-	}
+    if( parentComponent instanceof JComponent ){
+        try{ ((JComponent)parentComponent).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(isAAEnabled)); }
+        catch(Exception e){}
+    }
+
+    if( parentComponent instanceof Container ){
+        for( Component component : ((Container)parentComponent).getComponents() ){
+        setAAClientProperty(component, isAAEnabled);
+        }
+    }
     }
     public static int chooseMax(int iValue, int iMinValue){
-        if(iValue >= iMinValue){ return iValue;	}
+        if(iValue >= iMinValue){ return iValue; }
         else { return iMinValue; }
     }
 
@@ -602,14 +628,19 @@ public class Util {
     }
 
     public static boolean isEqual(Object a, Object b){
-	if( (a==null) && (b==null) )
-	    return true;
-	else if( (a!=null) && (b==null) )
-	    return false;
-	else if( (a==null) && (b!=null) )
-	    return false;
-	else
-	    return a.equals(b) && b.equals(a);
+    if( (a==null) && (b==null) )
+        return true;
+    else if( (a!=null) && (b==null) )
+        return false;
+    else if( (a==null) && (b!=null) )
+        return false;
+    else
+        return a.equals(b) && b.equals(a);
+    }
+
+    public static String getVersion()
+    {
+        return ENVIRONMENT.getString("version");
     }
 
     ///////////////////////////////////////////
@@ -653,33 +684,33 @@ public class Util {
 
     // TRANSFORM LOADING //////////////////////
     public static Transform getTransform(String transformName) throws Exception {
-	Transform transform = null;
-	List<Tid> transformInstances = Util.getTransformManager().transformInstances(transformName);
-	if(transformInstances.size()>0){
-	    TransformContext transformContext = Util.getTransformManager().transformContext(transformInstances.get(0));	    
-	    transform = transformContext.transform();
-	}
-	return transform;
+    Transform transform = null;
+    List<Tid> transformInstances = Util.getTransformManager().transformInstances(transformName);
+    if(transformInstances.size()>0){
+        TransformContext transformContext = Util.getTransformManager().transformContext(transformInstances.get(0));
+        transform = transformContext.transform();
+    }
+    return transform;
     }
 
     public static Object getRemoteObject(String className, String transformName) throws Exception {
-	Transform transform = getTransform(transformName);
-	if( transform != null){
-	    TransformDesc transformDesc = transform.getTransformDesc();
-	    Class transformClass = Util.getClassLoader().loadClass(className, transformDesc);
-	    Constructor transformConstructor = transformClass.getConstructor(new Class[]{});
-	    return transformConstructor.newInstance();
-	}
-	else
-	    return null;
+    Transform transform = getTransform(transformName);
+    if( transform != null){
+        TransformDesc transformDesc = transform.getTransformDesc();
+        Class transformClass = Util.getClassLoader().loadClass(className, transformDesc);
+        Constructor transformConstructor = transformClass.getConstructor(new Class[]{});
+        return transformConstructor.newInstance();
+    }
+    else
+        return null;
     }
 
     public static CompoundSettings getCompoundSettings(String className, String transformName) throws Exception {
-	return (CompoundSettings) getRemoteObject(className, transformName);
+    return (CompoundSettings) getRemoteObject(className, transformName);
     }
-    
+
     public static Component getSettingsComponent(String className, String transformName) throws Exception {
-	return (Component) getRemoteObject(className, transformName);
+    return (Component) getRemoteObject(className, transformName);
     }
     //////////////////////////////////////////
 }

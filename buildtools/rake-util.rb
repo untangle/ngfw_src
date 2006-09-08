@@ -128,7 +128,9 @@ class BuildEnv
       /@THIRDPARTY_REPORTS_LIB@/ => "#{prefix}/usr/share/java/reports",
       /@ENDORSED_LIB@/ => "#{prefix}/usr/share/java/endorsed",
       /@FAKE_PKG_LIST@/ => "#{prefix}/tmp/pkg-list",
-      /@ALPINE_LIB@/ => "#{prefix}/usr/lib/mvvm"
+      /@ALPINE_LIB@/ => "#{prefix}/usr/lib/mvvm",
+      /@VERSION@/ => "fixme",
+      /@CDBUILD@/ => "false" # (fixme)
     }
   end
 
