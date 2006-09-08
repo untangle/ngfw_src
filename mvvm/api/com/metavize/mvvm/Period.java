@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,15 +13,20 @@ package com.metavize.mvvm;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Period for tasks at a particular time on a set of days.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="PERIOD"
  */
+@Entity
+@Table(schema="settings")
 public class Period implements Serializable
 {
     private static final long serialVersionUID = 2173836337317097459L;
@@ -41,9 +46,6 @@ public class Period implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public Period() { }
 
     public Period(int hour, int minute, boolean allDays)
@@ -120,11 +122,9 @@ public class Period implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="PERIOD_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="period_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -137,12 +137,8 @@ public class Period implements Serializable
 
     /**
      * Hour of update.
-     *
-     * @return the hour.
-     * @hibernate.property
-     * column="HOUR"
-     * not-null="true"
      */
+    @Column(nullable=false)
     public int getHour()
     {
         return hour;
@@ -157,10 +153,8 @@ public class Period implements Serializable
      * Minute of update.
      *
      * @return the minute.
-     * @hibernate.property
-     * column="MINUTE"
-     * not-null="true"
      */
+    @Column(nullable=false)
     public int getMinute()
     {
         return minute;
@@ -175,9 +169,8 @@ public class Period implements Serializable
      * Happen on Sunday.
      *
      * @return true if it happens on Sunday.
-     * @hibernate.property
-     * column="SUNDAY"
      */
+    @Column(nullable=false)
     public boolean getSunday()
     {
         return sunday;
@@ -192,9 +185,8 @@ public class Period implements Serializable
      * Happen on Monday.
      *
      * @return true if it happens on Monday.
-     * @hibernate.property
-     * column="MONDAY"
      */
+    @Column(nullable=false)
     public boolean getMonday()
     {
         return monday;
@@ -209,9 +201,8 @@ public class Period implements Serializable
      * Happen on Tuesday.
      *
      * @return true if it happens on Tuesday.
-     * @hibernate.property
-     * column="TUESDAY"
      */
+    @Column(nullable=false)
     public boolean getTuesday()
     {
         return tuesday;
@@ -226,9 +217,8 @@ public class Period implements Serializable
      * Happen on Wednesday.
      *
      * @return true if it happens on Wednesday.
-     * @hibernate.property
-     * column="WEDNESDAY"
      */
+    @Column(nullable=false)
     public boolean getWednesday()
     {
         return wednesday;
@@ -246,6 +236,7 @@ public class Period implements Serializable
      * @hibernate.property
      * column="THURSDAY"
      */
+    @Column(nullable=false)
     public boolean getThursday()
     {
         return thursday;
@@ -263,6 +254,7 @@ public class Period implements Serializable
      * @hibernate.property
      * column="FRIDAY"
      */
+    @Column(nullable=false)
     public boolean getFriday()
     {
         return friday;
@@ -280,6 +272,7 @@ public class Period implements Serializable
      * @hibernate.property
      * column="SATURDAY"
      */
+    @Column(nullable=false)
     public boolean getSaturday()
     {
         return saturday;

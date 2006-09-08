@@ -12,6 +12,16 @@
 package com.metavize.mvvm.toolbox;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.Period;
 
@@ -20,9 +30,9 @@ import com.metavize.mvvm.Period;
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="upgrade_settings"
  */
+@Entity
+@Table(name = "upgrade_settings", schema="settings")
 public class UpgradeSettings implements Serializable
 {
     private static final long serialVersionUID = -6231213396376580006L;
@@ -33,9 +43,6 @@ public class UpgradeSettings implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate settings.
-     */
     public UpgradeSettings() { }
 
     public UpgradeSettings(Period period)
@@ -45,11 +52,9 @@ public class UpgradeSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="UPGRADE_SETTINGS_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="upgrade_settings_id")
+    @GeneratedValue
     public Long getId()
     {
         return id;
@@ -65,10 +70,8 @@ public class UpgradeSettings implements Serializable
      * an update.
      *
      * @return true if we autoupgrade.
-     * @hibernate.property
-     * column="AUTO_UPGRADE"
-     * not-null="true"
      */
+    @Column(name="auto_upgrade", nullable=false)
     public boolean getAutoUpgrade()
     {
         return autoUpgrade;
@@ -84,10 +87,9 @@ public class UpgradeSettings implements Serializable
      *
      * @return upgrade period.
      * @hibernate.many-to-one
-     * column="PERIOD"
-     * not-null="true"
-     * cascade="all"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="period", nullable=false)
     public Period getPeriod()
     {
         return period;

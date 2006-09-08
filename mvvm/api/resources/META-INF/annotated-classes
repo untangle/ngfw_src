@@ -1,2 +1,4 @@
+com.metavize.mvvm.Period
 com.metavize.mvvm.security.AdminSettings
 com.metavize.mvvm.security.User
+com.metavize.mvvm.toolbox.UpgradeSettings

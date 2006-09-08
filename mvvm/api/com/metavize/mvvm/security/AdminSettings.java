@@ -17,6 +17,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -34,7 +35,7 @@ import com.metavize.mvvm.Period;
  * @version 1.0
  */
 @Entity
-@Table(name = "admin_settings")
+@Table(name = "admin_settings", schema="settings")
 public class AdminSettings implements Serializable
 {
     private static final long serialVersionUID = -6013161516125662391L;
@@ -42,6 +43,8 @@ public class AdminSettings implements Serializable
     private Long id;
     private Set<User> users = new HashSet();
     private Period summaryPeriod;
+
+    public AdminSettings() { }
 
     @Id
     @Column(name="admin_settings_id")
@@ -62,7 +65,7 @@ public class AdminSettings implements Serializable
      *
      * @return system users.
      */
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinColumn(name="admin_setting_id")
     public Set<User> getUsers()
     {
@@ -84,7 +87,7 @@ public class AdminSettings implements Serializable
      *
      * @return the summary period.
      */
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinColumn(name="summary_period_id")
     public Period getSummaryPeriod()
     {
