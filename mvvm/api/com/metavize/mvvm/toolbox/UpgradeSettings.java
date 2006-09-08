@@ -32,7 +32,7 @@ import com.metavize.mvvm.Period;
  * @version 1.0
  */
 @Entity
-@Table(name = "upgrade_settings", schema="settings")
+@Table(name="upgrade_settings", schema="settings")
 public class UpgradeSettings implements Serializable
 {
     private static final long serialVersionUID = -6231213396376580006L;

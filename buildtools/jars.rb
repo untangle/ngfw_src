@@ -18,7 +18,7 @@ class Jars
                     hibernate-3.2/lib/cglib-2.1.3.jar
                     hibernate-3.2/lib/commons-collections-2.1.1.jar
                     hibernate-3.2/lib/dom4j-1.6.1.jar
-                    hibernate-3.2/lib/ehcache-1.2.jar
+                    hibernate-3.2/lib/oscache-2.1.jar
                     hibernate-3.2/lib/jta.jar
                   ).map { |f| Jars.downloadTarget(f) }
   HibernateAnnotations = %w(

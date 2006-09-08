@@ -135,7 +135,10 @@ class Util
         }
 
         while (null != e && e.hasMoreElements()) {
+            Thread t = Thread.currentThread();
+            ClassLoader oldCl = t.getContextClassLoader();
             try {
+                t.setContextClassLoader(cl);
                 URL url = e.nextElement();
                 InputStream is = url.openStream();
                 InputStreamReader isr = new InputStreamReader(is);
@@ -151,6 +154,8 @@ class Util
                 }
             } catch (IOException exn) {
                 logger.warn("could not read annotated-classes", exn);
+            } finally {
+                t.setContextClassLoader(oldCl);
             }
         }
     }

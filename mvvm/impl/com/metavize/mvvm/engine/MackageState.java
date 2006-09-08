@@ -42,7 +42,7 @@ class MackageState
     }
 
     @Id
-    @Column(name="upgrade_settings_id")
+    @Column(name="id")
     @GeneratedValue
     private Long getId()
     {
