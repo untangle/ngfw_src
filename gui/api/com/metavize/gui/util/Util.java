@@ -643,6 +643,11 @@ public class Util {
         return ENVIRONMENT.getString("version");
     }
 
+    public static boolean isCdBuild()
+    {
+        return Boolean.parseBoolean(ENVIRONMENT.getString("cdbuild"));
+    }
+
     ///////////////////////////////////////////
 
 
