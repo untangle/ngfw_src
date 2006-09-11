@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -15,15 +15,29 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * Schedule for the Reporting Transform.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_REPORTING_SCHED"
  */
+@Entity
+@Table(name="tr_reporting_sched", schema="settings")
 public class Schedule implements Serializable
 {
     private static final long serialVersionUID = 2064742840204258979L;
@@ -75,11 +89,9 @@ public class Schedule implements Serializable
         monthlyNFirst = true;
     }
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -94,10 +106,8 @@ public class Schedule implements Serializable
      * daily schedule for daily report
      *
      * @return daily schedule
-     * @hibernate.property
-     * column="DAILY"
-     * not-null="true"
      */
+    @Column(nullable=false)
     public boolean getDaily()
     {
         return daily;
@@ -117,18 +127,13 @@ public class Schedule implements Serializable
      *   SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
      *
      * @return the weekly schedule list for reports
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="TR_REPORTING_WK_SCHED"
-     * @hibernate.collection-key
-     * column="SETTING_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.tran.reporting.WeeklyScheduleRule"
-     * column="RULE_ID"
      */
-    public List getWeeklySched()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_reporting_wk_sched",
+               joinColumns = @JoinColumn(name="setting_id"),
+               inverseJoinColumns = @JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<WeeklyScheduleRule> getWeeklySched()
     {
         return weeklySched;
     }
@@ -146,10 +151,8 @@ public class Schedule implements Serializable
      * (if every day, then not weekly and not on first of month)
      *
      * @return monthly_n_daily schedule
-     * @hibernate.property
-     * column="MONTHLY_N_DAILY"
-     * not-null="true"
      */
+    @Column(name="monthly_n_daily", nullable=false)
     public boolean getMonthlyNDaily()
     {
         return monthlyNDaily;
@@ -174,10 +177,8 @@ public class Schedule implements Serializable
      *   SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
      *
      * @return monthly_n_daily schedule
-     * @hibernate.property
-     * column="MONTHLY_N_DAY_OF_WK"
-     * not-null="true"
      */
+    @Column(name="monthly_n_day_of_wk", nullable=false)
     public int getMonthlyNDayOfWk()
     {
         return monthlyNDayOfWk;
@@ -199,10 +200,8 @@ public class Schedule implements Serializable
      * (if first of month, then not daily and not weekly)
      *
      * @return monthly_n_daily schedule
-     * @hibernate.property
-     * column="MONTHLY_N_FIRST"
-     * not-null="true"
      */
+    @Column(name="monthly_n_first", nullable=false)
     public boolean getMonthlyNFirst()
     {
         return monthlyNFirst;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,7 +12,20 @@
 package com.metavize.tran.reporting;
 
 import java.io.Serializable;
-
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 /**
  * Weekly schedule rule for the Reporting Transform.
  *
@@ -21,6 +34,8 @@ import java.io.Serializable;
  * @hibernate.class
  * table="TR_REPORTING_WK_SCHED_RULE"
  */
+@Entity
+@Table(name="tr_reporting_wk_sched_rule", schema="settings")
 public class WeeklyScheduleRule implements Serializable
 {
     private static final long serialVersionUID = 2064742840204258978L;
@@ -35,11 +50,9 @@ public class WeeklyScheduleRule implements Serializable
         this.day = day;
     }
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -54,10 +67,8 @@ public class WeeklyScheduleRule implements Serializable
      * Day of week (if day is specified, then day is live)
      *
      * @return day of week
-     * @hibernate.property
-     * column="DAY"
-     * not-null="true"
      */
+    @Column(nullable=false)
     public int getDay()
     {
         return day;

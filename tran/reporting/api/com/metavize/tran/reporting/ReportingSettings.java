@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,6 +12,20 @@
 package com.metavize.tran.reporting;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.IPMaddrDirectory;
@@ -21,9 +35,9 @@ import com.metavize.mvvm.tran.IPMaddrDirectory;
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_REPORTING_SETTINGS"
  */
+@Entity
+@Table(name="tr_reporting_settings", schema="settings")
 public class ReportingSettings implements Serializable
 {
     private static final long serialVersionUID = 2064742840204258977L;
@@ -37,11 +51,9 @@ public class ReportingSettings implements Serializable
 
     public ReportingSettings() { }
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -56,10 +68,9 @@ public class ReportingSettings implements Serializable
      * Transform id for these settings.
      *
      * @return tid for these settings
-     * @hibernate.many-to-one
-     * column="TID"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="tid", nullable=false)
     public Tid getTid()
     {
         return tid;
@@ -75,10 +86,8 @@ public class ReportingSettings implements Serializable
      * - false = do not email detail info, true = do email detail info
      *
      * @return email detail
-     * @hibernate.property
-     * column="EMAIL_DETAIL"
-     * not-null="true"
      */
+    @Column(name="email_detail", nullable=false)
     public boolean getEmailDetail()
     {
         return emailDetail;
@@ -94,11 +103,9 @@ public class ReportingSettings implements Serializable
      * Network Directory (maps IP addresses to reporting names)
      *
      * @return the network directory
-     * @hibernate.many-to-one
-     * column="NETWORK_DIRECTORY"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="network_directory", nullable=false)
     public IPMaddrDirectory getNetworkDirectory()
     {
         return networkDirectory;
@@ -113,11 +120,9 @@ public class ReportingSettings implements Serializable
      * Schedule (daily, weekly, monthly) for reports
      *
      * @return schedule for reports
-     * @hibernate.many-to-one
-     * column="SCHEDULE"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="schedule", nullable=false)
     public Schedule getSchedule()
     {
         return schedule;
