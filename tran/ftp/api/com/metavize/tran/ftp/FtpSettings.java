@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,16 +12,25 @@
 package com.metavize.tran.ftp;
 
 import java.io.Serializable;
-
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Ftp casing settings.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_FTP_SETTINGS"
  */
+@Entity
+@Table(name="tr_ftp_settings", schema="settings")
 public class FtpSettings implements Serializable
 {
     private static final long serialVersionUID = -828243820153242416L;
@@ -36,11 +45,9 @@ public class FtpSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="SETTINGS_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -55,10 +62,8 @@ public class FtpSettings implements Serializable
      * Enabled status for casing.
      *
      * @return true when casing is enabled, false otherwise.
-     * @hibernate.property
-     * column="ENABLED"
-     * not-null="true"
      */
+    @Column(nullable=false)
     public boolean isEnabled()
     {
         return enabled;
