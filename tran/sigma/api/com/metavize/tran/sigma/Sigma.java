@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,6 +14,4 @@ import com.metavize.mvvm.tran.Transform;
 
 public interface Sigma extends Transform
 {
-    SigmaSettings getSigmaSettings();
-    void setSigmaSettings(SigmaSettings settings);
 }

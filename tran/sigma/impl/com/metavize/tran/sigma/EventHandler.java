@@ -11,8 +11,6 @@
 
 package com.metavize.tran.sigma;
 
-import java.nio.*;
-
 import com.metavize.mvvm.tapi.*;
 import com.metavize.mvvm.tapi.event.*;
 import com.metavize.mvvm.tran.Transform;
@@ -20,7 +18,6 @@ import org.apache.log4j.Logger;
 
 public class EventHandler extends AbstractEventHandler
 {
-    private SigmaSettings settings = null;
     private final Logger logger = Logger.getLogger(getClass());
 
     private class SessionInfo {
@@ -30,16 +27,6 @@ public class EventHandler extends AbstractEventHandler
     public EventHandler(Transform transform)
     {
         super(transform);
-    }
-
-    public void setSettings(SigmaSettings settings)
-    {
-        this.settings = settings;
-    }
-
-    public SigmaSettings getSettings()
-    {
-        return this.settings;
     }
 
     public void handleTCPNewSession (TCPSessionEvent event)
