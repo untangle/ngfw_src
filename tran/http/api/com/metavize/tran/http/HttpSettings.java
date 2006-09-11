@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,16 +12,25 @@
 package com.metavize.tran.http;
 
 import java.io.Serializable;
-
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Http casing settings.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_HTTP_SETTINGS"
  */
+@Entity
+@Table(name="tr_http_settings", schema="settings")
 public class HttpSettings implements Serializable
 {
     public static final int MIN_HEADER_LENGTH = 1024;
@@ -46,11 +55,9 @@ public class HttpSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="SETTINGS_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -65,10 +72,8 @@ public class HttpSettings implements Serializable
      * Enabled status for casing.
      *
      * @return true when casing is enabled, false otherwise.
-     * @hibernate.property
-     * column="ENABLED"
-     * not-null="true"
      */
+    @Column(nullable=false)
     public boolean isEnabled()
     {
         return enabled;
@@ -83,10 +88,8 @@ public class HttpSettings implements Serializable
      * Enables non-http traffic on port 80.
      *
      * @return a <code>boolean</code> value
-     * @hibernate.property
-     * column="NON_HTTP_BLOCKED"
-     * not-null="true"
      */
+    @Column(name="non_http_blocked", nullable=false)
     public boolean isNonHttpBlocked()
     {
         return nonHttpBlocked;
@@ -101,10 +104,8 @@ public class HttpSettings implements Serializable
      * Maximum allowable header length.
      *
      * @return maximum characters allowed in a HTTP header.
-     * @hibernate.property
-     * column="MAX_HEADER_LENGTH"
-     * not-null="true"
      */
+    @Column(name="max_header_length", nullable=false)
     public int getMaxHeaderLength()
     {
         return maxHeaderLength;
@@ -126,10 +127,8 @@ public class HttpSettings implements Serializable
      * the behavior is determined by setNonHttpBlocked.
      *
      * @return true if connections containing long headers are blocked.
-     * @hibernate.property
-     * column="BLOCK_LONG_HEADERS"
-     * not-null="true"
      */
+    @Column(name="block_long_headers", nullable=false)
     public boolean getBlockLongHeaders()
     {
         return blockLongHeaders;
@@ -144,10 +143,8 @@ public class HttpSettings implements Serializable
      * Maximum allowable URI length.
      *
      * @return maximum characters allowed in the request-line URI.
-     * @hibernate.property
-     * column="MAX_URI_LENGTH"
-     * not-null="true"
      */
+    @Column(name="max_uri_length", nullable=false)
     public int getMaxUriLength()
     {
         return maxUriLength;
@@ -169,10 +166,8 @@ public class HttpSettings implements Serializable
      * the behavior is determined by setNonHttpBlocked.
      *
      * @return true if connections containing long URIs are blocked.
-     * @hibernate.property
-     * column="BLOCK_LONG_URIS"
-     * not-null="true"
      */
+    @Column(name="block_long_uris", nullable=false)
     public boolean getBlockLongUris()
     {
         return blockLongUris;
