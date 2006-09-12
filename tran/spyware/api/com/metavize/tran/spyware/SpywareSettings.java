@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,17 +14,32 @@ package com.metavize.tran.spyware;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.security.Tid;
+import com.metavize.mvvm.tran.IPMaddrRule;
+import com.metavize.mvvm.tran.StringRule;
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * Settings for the Spyware transform.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_SPYWARE_SETTINGS"
  */
+@Entity
+@Table(name="tr_spyware_settings", schema="settings")
 public class SpywareSettings implements Serializable
 {
     private static final long serialVersionUID = -2701816808325279608L;
@@ -41,10 +56,10 @@ public class SpywareSettings implements Serializable
     private String spywareDetails = "no description";
     private String blockAllActiveXDetails = "no description";
     private String urlBlacklistDetails = "no description";
-    private List activeXRules;
-    private List cookieRules;
-    private List subnetRules;
-    private List domainWhitelist = new ArrayList();
+    private List<StringRule> activeXRules;
+    private List<StringRule> cookieRules;
+    private List<IPMaddrRule> subnetRules;
+    private List<StringRule> domainWhitelist = new ArrayList<StringRule>();
 
     // not for the GUI! XXX move to a private class
     private int accessVersion = -1;
@@ -53,9 +68,6 @@ public class SpywareSettings implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public SpywareSettings() { }
 
     public SpywareSettings(Tid tid)
@@ -65,11 +77,9 @@ public class SpywareSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="SETTINGS_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -84,10 +94,9 @@ public class SpywareSettings implements Serializable
      * Transform id for these settings.
      *
      * @return tid for these settings
-     * @hibernate.many-to-one
-     * column="TID"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="tid", nullable=false)
     public Tid getTid()
     {
         return tid;
@@ -102,9 +111,8 @@ public class SpywareSettings implements Serializable
      * ActiveX scanner enabled.
      *
      * @return true if active.
-     * @hibernate.property
-     * column="ACTIVEX_ENABLED"
      */
+    @Column(name="activex_enabled", nullable=false)
     public boolean getActiveXEnabled()
     {
         return activeXEnabled;
@@ -119,9 +127,8 @@ public class SpywareSettings implements Serializable
      * Cookie blocker enabled.
      *
      * @return true if cookie is enabled.
-     * @hibernate.property
-     * column="COOKIE_ENABLED"
      */
+    @Column(name="cookie_enabled", nullable=false)
     public boolean getCookieBlockerEnabled()
     {
         return cookieBlockerEnabled;
@@ -136,9 +143,8 @@ public class SpywareSettings implements Serializable
      * Spyware enabled.
      *
      * @return true if spyware checking enabled.
-     * @hibernate.property
-     * column="SPYWARE_ENABLED"
      */
+    @Column(name="spyware_enabled", nullable=false)
     public boolean getSpywareEnabled()
     {
         return spywareEnabled;
@@ -153,9 +159,8 @@ public class SpywareSettings implements Serializable
      * All ActiveX blocked.
      *
      * @return true if all ActiveX should be blocked.
-     * @hibernate.property
-     * column="BLOCK_ALL_ACTIVEX"
      */
+    @Column(name="block_all_activex", nullable=false)
     public boolean getBlockAllActiveX()
     {
         return blockAllActiveX;
@@ -170,9 +175,8 @@ public class SpywareSettings implements Serializable
      * Enables the URL blacklist.
      *
      * @return true if blacklist enabled, false otherwise.
-     * @hibernate.property
-     * column="URL_BLACKLIST_ENABLED"
      */
+    @Column(name="url_blacklist_enabled", nullable=false)
     public boolean getUrlBlacklistEnabled()
     {
         return urlBlacklistEnabled;
@@ -183,13 +187,7 @@ public class SpywareSettings implements Serializable
         this.urlBlacklistEnabled = urlBlacklistEnabled;
     }
 
-    /**
-     * XXX what does this do
-     *
-     * @return XXX
-     * @hibernate.property
-     * column="ACTIVEX_DETAILS"
-     */
+    @Column(name="activex_details")
     public String getActiveXDetails()
     {
         return activeXDetails;
@@ -200,13 +198,7 @@ public class SpywareSettings implements Serializable
         this.activeXDetails = activeXDetails;
     }
 
-    /**
-     * XXX what does this do
-     *
-     * @return XXX
-     * @hibernate.property
-     * column="COOKIE_DETAILS"
-     */
+    @Column(name="cookie_details")
     public String getCookieBlockerDetails()
     {
         return cookieBlockerDetails;
@@ -217,13 +209,7 @@ public class SpywareSettings implements Serializable
         this.cookieBlockerDetails = cookieBlockerDetails;
     }
 
-    /**
-     * XXX what does this do?
-     *
-     * @return XXX
-     * @hibernate.property
-     * column="SPYWARE_DETAILS"
-     */
+    @Column(name="spyware_details")
     public String getSpywareDetails()
     {
         return spywareDetails;
@@ -234,13 +220,7 @@ public class SpywareSettings implements Serializable
         this.spywareDetails = spywareDetails;
     }
 
-    /**
-     * XXX what does this do?
-     *
-     * @return XXX
-     * @hibernate.property
-     * column="BLOCK_ALL_ACTIVEX_DETAILS"
-     */
+    @Column(name="block_all_activex_details")
     public String getBlockAllActiveXDetails()
     {
         return blockAllActiveXDetails;
@@ -251,13 +231,7 @@ public class SpywareSettings implements Serializable
         this.blockAllActiveXDetails = blockAllActiveXDetails;
     }
 
-    /**
-     * XXX what does this do?
-     *
-     * @return XXX
-     * @hibernate.property
-     * column="URL_BLACKLIST_DETAILS"
-     */
+    @Column(name="url_blacklist_details")
     public String getUrlBlacklistDetails()
     {
         return urlBlacklistDetails;
@@ -272,23 +246,18 @@ public class SpywareSettings implements Serializable
      * ActiveX rules.
      *
      * @return the list of ActiveXRules
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="TR_SPYWARE_AR"
-     * @hibernate.collection-key
-     * column="SETTINGS_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.tran.StringRule"
-     * column="RULE_ID"
      */
-    public List getActiveXRules()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_spyware_ar",
+               joinColumns = @JoinColumn(name="settings_id"),
+               inverseJoinColumns = @JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<StringRule> getActiveXRules()
     {
         return activeXRules;
     }
 
-    public void setActiveXRules(List activeXRules)
+    public void setActiveXRules(List<StringRule> activeXRules)
     {
         this.activeXRules = activeXRules;
     }
@@ -297,23 +266,18 @@ public class SpywareSettings implements Serializable
      * Cookie rules.
      *
      * @return the list of CookieRules.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="TR_SPYWARE_CR"
-     * @hibernate.collection-key
-     * column="SETTINGS_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.tran.StringRule"
-     * column="RULE_ID"
      */
-    public List getCookieRules()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_spyware_cr",
+               joinColumns = @JoinColumn(name="settings_id"),
+               inverseJoinColumns = @JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<StringRule> getCookieRules()
     {
         return cookieRules;
     }
 
-    public void setCookieRules(List cookieRules)
+    public void setCookieRules(List<StringRule> cookieRules)
     {
         this.cookieRules = cookieRules;
     }
@@ -322,23 +286,18 @@ public class SpywareSettings implements Serializable
      * IPMaddr rules.
      *
      * @return the list of Subnet Rules.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="TR_SPYWARE_SR"
-     * @hibernate.collection-key
-     * column="SETTINGS_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.tran.IPMaddrRule"
-     * column="RULE_ID"
      */
-    public List getSubnetRules()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_spyware_sr",
+               joinColumns = @JoinColumn(name="settings_id"),
+               inverseJoinColumns = @JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<IPMaddrRule> getSubnetRules()
     {
         return subnetRules;
     }
 
-    public void setSubnetRules(List subnetRules)
+    public void setSubnetRules(List<IPMaddrRule> subnetRules)
     {
         this.subnetRules = subnetRules;
     }
@@ -347,23 +306,18 @@ public class SpywareSettings implements Serializable
      * Domains not subject to blacklist checking.
      *
      * @return the list of passed domains.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="TR_SPYWARE_WL"
-     * @hibernate.collection-key
-     * column="SETTINGS_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.tran.StringRule"
-     * column="RULE_ID"
      */
-    public List getDomainWhitelist()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_spyware_wl",
+               joinColumns = @JoinColumn(name="settings_id"),
+               inverseJoinColumns = @JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<StringRule> getDomainWhitelist()
     {
         return domainWhitelist;
     }
 
-    public void setDomainWhitelist(List domainWhitelist)
+    public void setDomainWhitelist(List<StringRule> domainWhitelist)
     {
         this.domainWhitelist = domainWhitelist;
     }
@@ -374,10 +328,8 @@ public class SpywareSettings implements Serializable
      * Current version of subnet list.
      *
      * @return -1 for not initialized, otherwise latest version number.
-     * @hibernate.property
-     * column="SUBNET_VERSION"
-     * not-null="true"
      */
+    @Column(name="subnet_version", nullable=false)
     public int getSubnetVersion()
     {
         return accessVersion;
@@ -392,10 +344,8 @@ public class SpywareSettings implements Serializable
      * Current version of ActiveX list.
      *
      * @return -1 for not initialized, otherwise latest version number.
-     * @hibernate.property
-     * column="ACTIVEX_VERSION"
-     * not-null="true"
      */
+    @Column(name="activex_version", nullable=false)
     public int getActiveXVersion()
     {
         return activeXVersion;
@@ -410,10 +360,8 @@ public class SpywareSettings implements Serializable
      * Current version of Cookie list.
      *
      * @return -1 for not initialized, otherwise latest version number.
-     * @hibernate.property
-     * column="COOKIE_VERSION"
-     * not-null="true"
      */
+    @Column(name="cookie_version", nullable=false)
     public int getCookieVersion()
     {
         return cookieVersion;
@@ -424,4 +372,3 @@ public class SpywareSettings implements Serializable
         this.cookieVersion = cookieVersion;
     }
 }
-
