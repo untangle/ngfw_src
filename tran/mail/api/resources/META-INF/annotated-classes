@@ -1,6 +1,7 @@
 com.metavize.tran.mail.papi.EmailAddressPairRule
 com.metavize.tran.mail.papi.EmailAddressRule
 com.metavize.tran.mail.papi.MailTransformSettings
+com.metavize.tran.mail.papi.quarantine.QuarantineSettings
 com.metavize.tran.mail.papi.safelist.SafelistRecipient
 com.metavize.tran.mail.papi.safelist.SafelistSender
 com.metavize.tran.mail.papi.safelist.SafelistSettings
