@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003,2004, 2005 Metavize Inc.
+ * Copyright (c) 2003,2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,15 +11,26 @@
 package com.metavize.tran.protofilter;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Rule for proto filter patterns
  *
  * @author <a href="mailto:dmorris@metavize.com">Dirk Morris</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_PROTOFILTER_PATTERN"
  */
+@Entity
+@Table(name="tr_protofilter_pattern", schema="settings")
 public class ProtoFilterPattern implements Serializable
 {
     // Converter sets all old patterns to this mid
@@ -41,13 +52,10 @@ public class ProtoFilterPattern implements Serializable
     private boolean alert = false;
     private boolean log = false;
 
-    /**
-     * Hibernate constructor
-     */
-    public ProtoFilterPattern() {}
+    public ProtoFilterPattern() { }
 
-    ProtoFilterPattern(int mvid, String protocol, String category, String description,
-                       String definition,  String quality,
+    ProtoFilterPattern(int mvid, String protocol, String category,
+                       String description, String definition,  String quality,
                        boolean blocked, boolean alert, boolean log)
     {
         this.mvid = mvid;
@@ -61,65 +69,49 @@ public class ProtoFilterPattern implements Serializable
         this.log = log;
     }
 
-    // For use by UI
+    @Transient
     public boolean isReadOnly() {
         return (mvid == USER_CREATED_METAVIZE_ID);
     }
 
-    /**
-     * @hibernate.id
-     * column="RULE_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="rule_id")
+    @GeneratedValue
     protected Long getId() { return id; }
     protected void setId(Long id) { this.id = id; }
 
     /**
      *
-     * Note that metavize id should not be set by the user.  It is only ever set for
-     * Metavize built-in patterns.
-     *
-     * @hibernate.property
-     * column="METAVIZE_ID"
+     * Note that metavize id should not be set by the user.  It is
+     * only ever set for Metavize built-in patterns.
      */
+    @Column(name="metavize_id")
     public int getMetavizeId() { return mvid; }
     public void setMetavizeId(int mvid) { this.mvid = mvid; }
 
-    // For UI
+    @Transient
     public void setMetavizeId(Integer mvid) { this.mvid = mvid.intValue(); }
 
     /**
      * Protocol name
-     *
-     * @hibernate.property
-     * column="PROTOCOL"
      */
     public String getProtocol() { return this.protocol; }
     public void setProtocol(String s) { this.protocol = s; }
 
     /**
      * Description name
-     *
-     * @hibernate.property
-     * column="DESCRIPTION"
      */
     public String getDescription() { return this.description; }
     public void setDescription(String s) { this.description = s; }
 
     /**
      * Category of the rule
-     *
-     * @hibernate.property
-     * column="CATEGORY"
      */
     public String getCategory() { return this.category; }
     public void setCategory(String s) { this.category = s; }
 
     /**
      * Definition (Regex) of the rule
-     *
-     * @hibernate.property
-     * column="DEFINITION"
      */
     public String getDefinition() { return this.definition; }
 
@@ -130,18 +122,12 @@ public class ProtoFilterPattern implements Serializable
 
     /**
      * Flag that indicates if the traffic should be quality
-     *
-     * @hibernate.property
-     * column="QUALITY"
      */
     public String getQuality() { return this.quality; }
     public void setQuality(String s) { this.quality = s; }
 
     /**
      * Flag that indicates if the traffic should be blocked
-     *
-     * @hibernate.property
-     * column="BLOCKED"
      */
     public boolean isBlocked() { return this.blocked; }
     public void setBlocked(boolean b) { this.blocked = b; }
@@ -150,8 +136,6 @@ public class ProtoFilterPattern implements Serializable
      * Should admin be alerted.
      *
      * @return true if alerts should be sent.
-     * @hibernate.property
-     * column="ALERT"
      */
     public boolean getAlert()
     {
@@ -166,8 +150,6 @@ public class ProtoFilterPattern implements Serializable
      * Should admin be logged.
      *
      * @return true if should be logged.
-     * @hibernate.property
-     * column="LOG"
      */
     public boolean getLog()
     {
