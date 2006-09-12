@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,18 +11,30 @@
 
 package com.metavize.tran.boxbackup;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.security.Tid;
 
 /**
  * Settings for the BoxBackup transform.
- *
- * @hibernate.class
- * table="TR_BOXBACKUP_SETTINGS"
  */
-public class BoxBackupSettings implements java.io.Serializable
+@Entity
+@Table(name="tr_boxbackup_settings", schema="settings")
+public class BoxBackupSettings implements Serializable
 {
     private static final long serialVersionUID = 6441984722150846433L;
 
@@ -32,11 +44,7 @@ public class BoxBackupSettings implements java.io.Serializable
     private int minuteInHour;
     private String backupURL;
 
-
-    /**
-     * Hibernate constructor.
-     */
-    private BoxBackupSettings() {}
+    private BoxBackupSettings() { }
 
     /**
      * Real constructor
@@ -46,50 +54,40 @@ public class BoxBackupSettings implements java.io.Serializable
         this.tid = tid;
     }
 
-    /**
-     * @hibernate.id
-     * column="SETTINGS_ID"
-     * generator-class="native"
-     */
-    private Long getId() {return id;}
-    private void setId(Long id) {this.id = id;}
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
+    private Long getId() { return id; }
+    private void setId(Long id) { this.id = id; }
 
     /**
      * Transform id for these settings.
      *
      * @return tid for these settings
-     * @hibernate.many-to-one
-     * column="TID"
-     * not-null="true"
      */
-    public Tid getTid() {return tid;}
-    public void setTid(Tid tid) {this.tid = tid;}
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="tid", nullable=false)
+    public Tid getTid() { return tid; }
+    public void setTid(Tid tid) { this.tid = tid; }
 
     /**
-     *
      * @return the Hour of the day
-     * @hibernate.property
-     * column="HOUR_IN_DAY"
-     */ 
-    public int getHourInDay() {return hourInDay;}
-    public void setHourInDay(int hour) {this.hourInDay = hour;}
+     */
+    @Column(name="hour_in_day")
+    public int getHourInDay() { return hourInDay; }
+    public void setHourInDay(int hour) { this.hourInDay = hour; }
 
-  /**
-    *
-    * @return the Minute of the day when digest emails should be sent.
-    * @hibernate.property
-    * column="MINUTE_IN_DAY"
-    */
+    /**
+     * @return the Minute of the day when digest emails should be sent.
+     */
+    @Column(name="minute_in_day")
     public int getMinuteInHour() { return minuteInHour; }
-    public void setMinuteInHour(int mih) {this.minuteInHour = mih;}
+    public void setMinuteInHour(int mih) { this.minuteInHour = mih; }
 
-  /**
-    *
-    * @return email address.
-    * @hibernate.property
-    * column="BACKUP_URL"
-    */
-  public String getBackupURL() { return backupURL; }
-  public void setBackupURL(String url) { this.backupURL = url; }
-    
+    /**
+     * @return email address.
+     */
+    @Column(name="backup_url")
+    public String getBackupURL() { return backupURL; }
+    public void setBackupURL(String url) {  this.backupURL = url; }
 }
