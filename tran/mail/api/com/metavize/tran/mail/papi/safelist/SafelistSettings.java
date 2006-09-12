@@ -12,15 +12,27 @@
 package com.metavize.tran.mail.papi.safelist;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Setting for safelist (recipient and sender pair).
  *
  * @author <a href="mailto:amread@nyx.net">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_MAIL_SAFELS_SETTINGS"
  */
+@Entity
+@Table(name="tr_mail_safels_settings", schema="settings")
 public class SafelistSettings implements Serializable
 {
     private static final long serialVersionUID = -7466793822226799781L;
@@ -36,11 +48,9 @@ public class SafelistSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="SAFELS_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="safels_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -110,11 +120,9 @@ public class SafelistSettings implements Serializable
     // * cascade="all" //original
     /**
      * @return the recipient of this safelist
-     * @hibernate.many-to-one
-     * column="RECIPIENT"
-     * cascade="save-update"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="recipient", nullable=false)
     public SafelistRecipient getRecipient()
     {
         return recipient;
@@ -130,11 +138,9 @@ public class SafelistSettings implements Serializable
     // * cascade="all" //original
     /**
      * @return the sender of this safelist
-     * @hibernate.many-to-one
-     * column="SENDER"
-     * cascade="save-update"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="sender", nullable=false)
     public SafelistSender getSender()
     {
         return sender;

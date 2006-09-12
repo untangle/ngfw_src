@@ -54,7 +54,7 @@ public class Schedule implements Serializable
 
     private Long id;
     private boolean daily; // false = no, true = yes
-    private List weeklySched = new LinkedList();
+    private List<WeeklyScheduleRule> weeklySched = new LinkedList<WeeklyScheduleRule>();
     // monthlyNDaily, monthlyNDayOfWk, and monthlyNFirst are mutually exclusive
     // - enabling one will disable the other two
     private boolean monthlyNDaily; // false = no, true = yes
@@ -138,7 +138,7 @@ public class Schedule implements Serializable
         return weeklySched;
     }
 
-    public void setWeeklySched(List weeklySched)
+    public void setWeeklySched(List<WeeklyScheduleRule> weeklySched)
     {
         this.weeklySched = weeklySched;
         return;

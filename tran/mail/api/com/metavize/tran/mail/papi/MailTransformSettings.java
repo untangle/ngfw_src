@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,17 +13,31 @@ package com.metavize.tran.mail.papi;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
+import com.metavize.tran.mail.papi.safelist.SafelistSettings;
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * Mail casing settings.
  *
  * @author <a href="mailto:amread@nyx.net">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_MAIL_SETTINGS"
  */
+@Entity
+@Table(name="tr_mail_settings", schema="settings")
 public class MailTransformSettings implements Serializable
 {
     private static final long serialVersionUID = -6466793822226799781L;
@@ -44,7 +58,7 @@ public class MailTransformSettings implements Serializable
     private long imapInboundTimeout;
     private long imapOutboundTimeout;
     private QuarantineSettings quarantineSettings;
-    private List safelistSettings; // xdoclet doesn't support java 1.5 syntax
+    private List<SafelistSettings> safelistSettings;
 
     // constructors -----------------------------------------------------------
 
@@ -52,11 +66,9 @@ public class MailTransformSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="SETTINGS_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -72,9 +84,8 @@ public class MailTransformSettings implements Serializable
      *
      * @return true if SMTP casing is enabled, false otherwise.
      * @hibernate.property
-     * column="SMTP_ENABLED"
-     * not-null="true"
      */
+    @Column(name="smtp_enabled", nullable=false)
     public boolean isSmtpEnabled()
     {
         return smtpEnabled;
@@ -90,9 +101,8 @@ public class MailTransformSettings implements Serializable
      *
      * @return true of POP casing is enabled, false otherwise.
      * @hibernate.property
-     * column="POP_ENABLED"
-     * not-null="true"
      */
+    @Column(name="pop_enabled", nullable=false)
     public boolean isPopEnabled()
     {
         return popEnabled;
@@ -107,10 +117,8 @@ public class MailTransformSettings implements Serializable
      * Enabled status of IMAP casing.
      *
      * @return true of IMAP casing is enabled, false otherwise.
-     * @hibernate.property
-     * column="IMAP_ENABLED"
-     * not-null="true"
      */
+    @Column(name="imap_enabled", nullable=false)
     public boolean isImapEnabled()
     {
         return imapEnabled;
@@ -125,10 +133,8 @@ public class MailTransformSettings implements Serializable
      * Timeout for SMTP inbound traffic.
      *
      * @return timeout for SMTP in millis.
-     * @hibernate.property
-     * column="SMTP_INBOUND_TIMEOUT"
-     * not-null="true"
      */
+    @Column(name="smtp_inbound_timeout", nullable=false)
     public long getSmtpInboundTimeout()
     {
         return smtpInboundTimeout;
@@ -143,10 +149,8 @@ public class MailTransformSettings implements Serializable
      * Timeout for SMTP outbound traffic.
      *
      * @return timeout for SMTP in millis.
-     * @hibernate.property
-     * column="SMTP_OUTBOUND_TIMEOUT"
-     * not-null="true"
      */
+    @Column(name="Smtp_outbound_timeout", nullable=false)
     public long getSmtpOutboundTimeout()
     {
         return smtpOutboundTimeout;
@@ -161,10 +165,8 @@ public class MailTransformSettings implements Serializable
      * Timeout for POP inbound traffic.
      *
      * @return timeout for POP in millis.
-     * @hibernate.property
-     * column="POP_INBOUND_TIMEOUT"
-     * not-null="true"
      */
+    @Column(name="pop_inbound_timeout", nullable=false)
     public long getPopInboundTimeout()
     {
         return popInboundTimeout;
@@ -179,10 +181,8 @@ public class MailTransformSettings implements Serializable
      * Timeout for POP outbound traffic.
      *
      * @return timeout for POP in millis.
-     * @hibernate.property
-     * column="POP_OUTBOUND_TIMEOUT"
-     * not-null="true"
      */
+    @Column(name="pop_outbound_timeout", nullable=false)
     public long getPopOutboundTimeout()
     {
         return popOutboundTimeout;
@@ -197,10 +197,8 @@ public class MailTransformSettings implements Serializable
      * Timeout for IMAP inbound traffic.
      *
      * @return timeout for IMAP in millis.
-     * @hibernate.property
-     * column="IMAP_INBOUND_TIMEOUT"
-     * not-null="true"
      */
+    @Column(name="imap_inbound_timeout", nullable=false)
     public long getImapInboundTimeout()
     {
         return imapInboundTimeout;
@@ -215,10 +213,8 @@ public class MailTransformSettings implements Serializable
      * Timeout for IMAP outbound traffic.
      *
      * @return timeout for IMAP in millis.
-     * @hibernate.property
-     * column="IMAP_OUTBOUND_TIMEOUT"
-     * not-null="true"
      */
+    @Column(name="imap_outbound_timeout", nullable=false)
     public long getImapOutboundTimeout()
     {
         return imapOutboundTimeout;
@@ -230,21 +226,16 @@ public class MailTransformSettings implements Serializable
     }
 
     /**
-     * Set the Quarantine properties associated with this
-     * casing
+     * Quarantine properties associated with this casing.
      */
-    public void setQuarantineSettings(QuarantineSettings s) {
-       this.quarantineSettings = s;
-    }
-    /**
-     *
-     * @hibernate.many-to-one
-     * column="QUARANTINE_SETTINGS"
-     * not-null="false"
-     * cascade="all"
-     */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="quarantine_settings", nullable=false)
     public QuarantineSettings getQuarantineSettings() {
       return quarantineSettings;
+    }
+
+    public void setQuarantineSettings(QuarantineSettings s) {
+       this.quarantineSettings = s;
     }
 
     /**
@@ -252,23 +243,18 @@ public class MailTransformSettings implements Serializable
      *  orphan children are deleted)
      *
      * @return the list of Safelist settings
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="TR_MAIL_SAFELISTS"
-     * @hibernate.collection-key
-     * column="SETTING_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.tran.mail.papi.safelist.SafelistSettings"
-     * column="SAFELS_ID"
      */
-    public List getSafelistSettings()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_mail_safelists",
+               joinColumns = @JoinColumn(name="setting_id"),
+               inverseJoinColumns = @JoinColumn(name="safels_id"))
+    @IndexColumn(name="position")
+    public List<SafelistSettings> getSafelistSettings()
     {
         return safelistSettings;
     }
 
-    public void setSafelistSettings(List safelistSettings)
+    public void setSafelistSettings(List<SafelistSettings> safelistSettings)
     {
         this.safelistSettings = safelistSettings;
 

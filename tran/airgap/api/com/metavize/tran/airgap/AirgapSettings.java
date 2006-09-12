@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,22 +12,32 @@
 package com.metavize.tran.airgap;
 
 import java.io.Serializable;
-
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.security.Tid;
-
 import com.metavize.tran.airgap.ShieldNodeRule;
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * Settings for the Airgap Transform.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_AIRGAP_SETTINGS"
  */
+@Entity
+@Table(name="tr_airgap_settings", schema="settings")
 public class AirgapSettings implements Serializable
 {
     private static final long serialVersionUID = -4330737456182204381L;
@@ -35,8 +45,8 @@ public class AirgapSettings implements Serializable
     private Long id;
     private Tid tid;
 
-    private List shieldNodeRuleList = new LinkedList();
-    
+    private List<ShieldNodeRule> shieldNodeRuleList = new LinkedList<ShieldNodeRule>();
+
     public AirgapSettings() { }
 
     public AirgapSettings(Tid tid)
@@ -44,11 +54,9 @@ public class AirgapSettings implements Serializable
         this.tid = tid;
     }
 
-    /**
-     * @hibernate.id
-     * column="SETTINGS_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     public Long getId()
     {
         return id;
@@ -63,10 +71,9 @@ public class AirgapSettings implements Serializable
      * Transform id for these settings.
      *
      * @return tid for these settings
-     * @hibernate.many-to-one
-     * column="TID"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="tid", nullable=false)
     public Tid getTid()
     {
         return tid;
@@ -81,27 +88,23 @@ public class AirgapSettings implements Serializable
      * Shield node configuration rules.
      *
      * @return the list of user settings
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="SETTINGS_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.tran.airgap.ShieldNodeRule"
      */
+    @OneToMany(targetEntity=ShieldNodeRule.class, cascade=CascadeType.ALL,
+               fetch=FetchType.EAGER)
+    @JoinColumn(name="settings_id")
+    @IndexColumn(name="position")
     public List getShieldNodeRuleList()
     {
-        if ( null == this.shieldNodeRuleList ) {
+        if (null == this.shieldNodeRuleList) {
             this.shieldNodeRuleList = new LinkedList();
         }
 
         return this.shieldNodeRuleList;
     }
-    
-    public void setShieldNodeRuleList( List shieldNodeRuleList )
+
+    public void setShieldNodeRuleList(List shieldNodeRuleList)
     {
-        if ( null == shieldNodeRuleList  ) {
+        if (null == shieldNodeRuleList) {
             shieldNodeRuleList = new LinkedList();
         }
 

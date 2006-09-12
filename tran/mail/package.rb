@@ -4,7 +4,7 @@ TransformBuilder.makeCasing("mail")
 
 mail = Package["mail-casing"]
 
-deps = [Package["mvvm"]["api"]]
+deps = Jars::Base + [Package["mvvm"]["api"]]
 
 jt = JarTarget.buildTarget(mail, deps, "api", "tran/mail/api")
 

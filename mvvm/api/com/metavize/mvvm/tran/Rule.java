@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,15 +12,18 @@
 package com.metavize.mvvm.tran;
 
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
 /**
  * Rule for matching based on IP addresses and subnets.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="RULE"
  */
+@MappedSuperclass
 public abstract class Rule implements Serializable
 {
     private static final long serialVersionUID = -7861114769604834397L;
@@ -40,9 +43,6 @@ public abstract class Rule implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public Rule() { }
 
     public Rule(boolean live)
@@ -86,11 +86,9 @@ public abstract class Rule implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="RULE_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="rule_id")
+    @GeneratedValue
     protected Long getId()
     {
         return id;
@@ -105,8 +103,6 @@ public abstract class Rule implements Serializable
      * Get a name for display purposes.
      *
      * @return name.
-     * @hibernate.property
-     * column="NAME"
      */
     public String getName()
     {
@@ -122,8 +118,6 @@ public abstract class Rule implements Serializable
      * Get a category for display purposes.
      *
      * @return category.
-     * @hibernate.property
-     * column="CATEGORY"
      */
     public String getCategory()
     {
@@ -139,8 +133,6 @@ public abstract class Rule implements Serializable
      * Get a description for display purposes.
      *
      * @return human description;
-     * @hibernate.property
-     * column="DESCRIPTION"
      */
     public String getDescription()
     {
@@ -156,8 +148,6 @@ public abstract class Rule implements Serializable
      * Will the rule be used for matching?
      *
      * @return true if this address is matched.
-     * @hibernate.property
-     * column="LIVE"
      */
     public boolean isLive()
     {
@@ -173,8 +163,6 @@ public abstract class Rule implements Serializable
      * Should admin be alerted.
      *
      * @return true if alerts should be sent.
-     * @hibernate.property
-     * column="ALERT"
      */
     public boolean getAlert()
     {
@@ -190,8 +178,6 @@ public abstract class Rule implements Serializable
      * Should admin be logged.
      *
      * @return true if should be logged.
-     * @hibernate.property
-     * column="LOG"
      */
     public boolean getLog()
     {

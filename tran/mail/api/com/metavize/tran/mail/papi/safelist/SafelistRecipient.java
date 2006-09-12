@@ -11,6 +11,11 @@
 package com.metavize.tran.mail.papi.safelist;
 
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import com.metavize.tran.mail.papi.MessageInfo;
 
@@ -19,9 +24,9 @@ import com.metavize.tran.mail.papi.MessageInfo;
  *
  * @author <a href="mailto:cng@metavize.com">C Ng</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_MAIL_SAFELS_RECIPIENT"
  */
+@Entity
+@Table(name="tr_mail_safels_recipient", schema="settings")
 public class SafelistRecipient implements Serializable
 {
     /* constants */
@@ -40,11 +45,9 @@ public class SafelistRecipient implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     protected Long getId()
     {
         return id;
@@ -61,10 +64,8 @@ public class SafelistRecipient implements Serializable
      * The email address, in RFC822 format
      *
      * @return email address.
-     * @hibernate.property
-     * column="ADDR"
-     * not-null="true"
      */
+    @Column(nullable=false)
     public String getAddr()
     {
         return addr;

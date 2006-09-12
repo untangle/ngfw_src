@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,11 +14,22 @@ package com.metavize.tran.airgap;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.shield.ShieldNodeSettings;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.Rule;
+import org.hibernate.annotations.Type;
 
 
 /**
@@ -26,9 +37,9 @@ import com.metavize.mvvm.tran.Rule;
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_AIRGAP_SHIELD_NODE_RULE"
  */
+@Entity
+@Table(name = "tr_airgap_shield_node_rule", schema="settings")
 public class ShieldNodeRule extends Rule implements ShieldNodeSettings
 {
     private static final long serialVersionUID = -6928365798856031269L;
@@ -50,16 +61,14 @@ public class ShieldNodeRule extends Rule implements ShieldNodeSettings
     private static final Map DIVIDER_MAP_STRING_TO_FLOAT = new HashMap();
 
     /* Hibernate constructor */
-    public ShieldNodeRule()
-    {
-    }
+    public ShieldNodeRule() { }
 
-    public ShieldNodeRule( boolean isLive, IPaddr address, IPaddr netmask, float divider, String category,
-                           String description )
+    public ShieldNodeRule(boolean isLive, IPaddr address, IPaddr netmask,
+                           float divider, String category, String description)
     {
-        setLive( isLive );
-        setCategory( category );
-        setDescription( description );
+        setLive(isLive);
+        setCategory(category);
+        setDescription(description);
         this.address = address;
         this.netmask = netmask;
         this.divider = divider;
@@ -71,29 +80,28 @@ public class ShieldNodeRule extends Rule implements ShieldNodeSettings
      * @return the node to modify
      *
      * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="ADDRESS"
-     * sql-type="inet"
      */
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getAddress()
     {
         return this.address;
     }
 
-    public void setAddress( IPaddr address )
+    public void setAddress(IPaddr address)
     {
         this.address = address;
     }
 
-    public void setAddress( String addressString ) throws UnknownHostException, ParseException
+    public void setAddress(String addressString)
+        throws UnknownHostException, ParseException
     {
-        setAddress( IPaddr.parse( addressString ));
+        setAddress(IPaddr.parse(addressString));
     }
 
+    @Transient
     public String getAddressString()
     {
-        if ( address == null || address.isEmpty()) return "";
+        if (address == null || address.isEmpty()) return "";
 
         return address.toString();
     }
@@ -103,31 +111,28 @@ public class ShieldNodeRule extends Rule implements ShieldNodeSettings
      * Netmask onto which to apply this configuration.
      *
      * @return the netmask
-     *
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="NETMASK"
-     * sql-type="inet"
      */
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getNetmask()
     {
         return this.netmask;
     }
 
-    public void setNetmask( IPaddr netmask )
+    public void setNetmask(IPaddr netmask)
     {
         this.netmask = netmask;
     }
 
-    public void setNetmask( String netmaskString ) throws UnknownHostException, ParseException
+    public void setNetmask(String netmaskString)
+        throws UnknownHostException, ParseException
     {
-        setNetmask( IPaddr.parse( netmaskString ));
+        setNetmask(IPaddr.parse(netmaskString));
     }
 
+    @Transient
     public String getNetmaskString()
     {
-        if ( netmask == null || netmask.isEmpty()) return "";
+        if (netmask == null || netmask.isEmpty()) return "";
 
         return netmask.toString();
     }
@@ -136,28 +141,30 @@ public class ShieldNodeRule extends Rule implements ShieldNodeSettings
      * Divider up to which this applies, 0 is the highest and not recommended.
      *
      * @return the port to redirect to.
-     * @hibernate.property
-     * column="DIVIDER"
-     * not-null="true"
      */
+    @Column(nullable=false)
     public float getDivider()
     {
-        /* This will "fix" dividers that have values that are not the enumeration */
+        /* This will "fix" dividers that have values that are not the
+         * enumeration */
         getDividerString();
         return this.divider;
     }
 
-    public void setDivider( float divider )
+    public void setDivider(float divider)
     {
         this.divider = divider;
         getDividerString();
     }
 
-    /* These are all guarded to guarantee the user doesn't set to an invalid value */
+    /* These are all guarded to guarantee the user doesn't set to an
+     * invalid value */
+    @Transient
     public String getDividerString()
     {
-        String dividerString = (String)DIVIDER_MAP_FLOAT_TO_STRING.get( this.divider );
-        if ( dividerString == null ) {
+        String dividerString = (String)DIVIDER_MAP_FLOAT_TO_STRING
+            .get(this.divider);
+        if (dividerString == null) {
             this.divider  = DIVIDER_VALUES[0];
             dividerString = DIVIDER_ENUMERATION[0];
         }
@@ -165,21 +172,23 @@ public class ShieldNodeRule extends Rule implements ShieldNodeSettings
         return dividerString;
     }
 
-    public void setDivider( String divider )
+    public void setDivider(String divider)
     {
-        Float dividerValue = (Float)DIVIDER_MAP_STRING_TO_FLOAT.get( divider );
-        if ( dividerValue == null ) {
+        Float dividerValue = (Float)DIVIDER_MAP_STRING_TO_FLOAT.get(divider);
+        if (dividerValue == null) {
             this.divider = DIVIDER_VALUES[0];
         } else {
             this.divider = dividerValue;
         }
     }
 
+    @Transient
     public static String[] getDividerEnumeration()
     {
         return DIVIDER_ENUMERATION;
     }
 
+    @Transient
     public static String getDividerDefault()
     {
         return DIVIDER_ENUMERATION[0];
@@ -194,13 +203,15 @@ public class ShieldNodeRule extends Rule implements ShieldNodeSettings
             "100 users"
         };
 
-        /* A little bit of a tapering off starting at 50 for 100 (capped in netcap to the value
-         * NC_SHIELD_DIVIDER_MAX */
+        /* A little bit of a tapering off starting at 50 for 100
+         * (capped in netcap to the value NC_SHIELD_DIVIDER_MAX */
         DIVIDER_VALUES = new float[] { 5.0f, 25.0f, 40.0f, 75.0f };
 
-        for ( int c = 0 ; c < DIVIDER_ENUMERATION.length ; c++ ) {
-            DIVIDER_MAP_FLOAT_TO_STRING.put( DIVIDER_VALUES[c], DIVIDER_ENUMERATION[c] );
-            DIVIDER_MAP_STRING_TO_FLOAT.put( DIVIDER_ENUMERATION[c], DIVIDER_VALUES[c] );
+        for (int c = 0 ; c < DIVIDER_ENUMERATION.length ; c++) {
+            DIVIDER_MAP_FLOAT_TO_STRING.put(DIVIDER_VALUES[c],
+                                            DIVIDER_ENUMERATION[c]);
+            DIVIDER_MAP_STRING_TO_FLOAT.put(DIVIDER_ENUMERATION[c],
+                                            DIVIDER_VALUES[c]);
         }
     }
 }
