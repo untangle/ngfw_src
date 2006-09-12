@@ -12,79 +12,87 @@
 package com.metavize.tran.spam;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
 
 /**
  * Spam control: Definition of spam control settings (either direction)
  *
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_SPAM_POP_CONFIG"
  */
+@Entity
+@Table(name="tr_spam_pop_config", schema="settings")
 public class SpamPOPConfig extends SpamProtoConfig
 {
     private static final long serialVersionUID = 7520156745253589117L;
 
     /* settings */
 
-private SpamMessageAction zMsgAction = SpamMessageAction.MARK;
+    private SpamMessageAction zMsgAction = SpamMessageAction.MARK;
 
 
     // constructor ------------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public SpamPOPConfig() {}
 
     public SpamPOPConfig(boolean bScan,
-        SpamMessageAction zMsgAction,
-        int strength,
-        String zNotes,
-        String subjectTemplate,
-        String bodyTemplate,
-        String headerName,
-        String isSpamHeaderValue,
-        String isHamHeaderValue)
+                         SpamMessageAction zMsgAction,
+                         int strength,
+                         String zNotes,
+                         String subjectTemplate,
+                         String bodyTemplate,
+                         String headerName,
+                         String isSpamHeaderValue,
+                         String isHamHeaderValue)
     {
         super(bScan,
-          strength,
-          zNotes,
-          subjectTemplate,
-          bodyTemplate,
-          headerName,
-          isSpamHeaderValue,
-          isHamHeaderValue);
+              strength,
+              zNotes,
+              subjectTemplate,
+              bodyTemplate,
+              headerName,
+              isSpamHeaderValue,
+              isHamHeaderValue);
         this.zMsgAction = zMsgAction;
     }
 
     // business methods ------------------------------------------------------
 
     /*
-    public String render(String site, String category)
-    {
-        String message = BLOCK_TEMPLATE.replace("@HEADER@", header);
-        message = message.replace("@SITE@", site);
-        message = message.replace("@CATEGORY@", category);
-        message = message.replace("@CONTACT@", contact);
+      public String render(String site, String category)
+      {
+      String message = BLOCK_TEMPLATE.replace("@HEADER@", header);
+      message = message.replace("@SITE@", site);
+      message = message.replace("@CATEGORY@", category);
+      message = message.replace("@CONTACT@", contact);
 
-        return message;
-    }
+      return message;
+      }
     */
 
     // accessors --------------------------------------------------------------
 
     /**
-     * messageAction: a string specifying a response if a message contains spam (defaults to MARK)
-     * one of MARK or PASS
+     * messageAction: a string specifying a response if a message
+     * contains spam (defaults to MARK) one of MARK or PASS
      *
      * @return the action to take if a message is judged to be spam.
-     * @hibernate.property
-     * column="MSG_ACTION"
-     * type="com.metavize.tran.spam.SpamMessageActionUserType"
-     * not-null="true"
      */
+    @Column(name="msg_action", nullable=false)
+    @Type(type="com.metavize.tran.spam.SpamMessageActionUserType")
     public SpamMessageAction getMsgAction()
     {
         return zMsgAction;
@@ -98,6 +106,7 @@ private SpamMessageAction zMsgAction = SpamMessageAction.MARK;
     }
 
     /* for GUI */
+    @Transient
     public String[] getMsgActionEnumeration()
     {
         SpamMessageAction[] azMsgAction = SpamMessageAction.getValues();
@@ -108,5 +117,4 @@ private SpamMessageAction zMsgAction = SpamMessageAction.MARK;
 
         return azStr;
     }
-
 }

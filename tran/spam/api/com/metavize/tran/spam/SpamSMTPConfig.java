@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,16 +12,30 @@
 package com.metavize.tran.spam;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.metavize.tran.mail.papi.smtp.SmtpNotifyMessageGenerator;
+import org.hibernate.annotations.Type;
 
 /**
  * Spam control: Definition of spam control settings (either direction)
  *
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_SPAM_SMTP_CONFIG"
  */
+@Entity
+@Table(name="tr_spam_smtp_config", schema="settings")
 public class SpamSMTPConfig extends SpamProtoConfig
 {
     private static final long serialVersionUID = 7520156745253589107L;
@@ -37,10 +51,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
 
     // constructor ------------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
-    public SpamSMTPConfig() {}
+    public SpamSMTPConfig() { }
 
     public SpamSMTPConfig(boolean bScan,
                           SMTPSpamMessageAction zMsgAction,
@@ -58,14 +69,14 @@ public class SpamSMTPConfig extends SpamProtoConfig
                           int throttleSec)
     {
         super(bScan,
-          strength,
-          zNotes,
-          subjectTemplate,
-          bodyTemplate,
-          headerName,
-          isSpamHeaderValue,
-          isHamHeaderValue);
-        this.zMsgAction = zMsgAction;   
+              strength,
+              zNotes,
+              subjectTemplate,
+              bodyTemplate,
+              headerName,
+              isSpamHeaderValue,
+              isHamHeaderValue);
+        this.zMsgAction = zMsgAction;
         this.zNotifyAction = zNotifyAction;
         m_notifySubjectWrapperTemplate = notifySubjectTemplate;
         m_notifyBodyWrapperTemplate =  notifyBodyTemplate;
@@ -78,65 +89,64 @@ public class SpamSMTPConfig extends SpamProtoConfig
 
 
     /**
-    * Get the tempalte used to create the subject
-    * for a notification message.
-    */
+     * Get the tempalte used to create the subject
+     * for a notification message.
+     */
+    @Transient
     public String getNotifySubjectTemplate() {
-      return m_notifySubjectWrapperTemplate;
+        return m_notifySubjectWrapperTemplate;
     }
-  
+
     public void setNotifySubjectTemplate(String template) {
-      m_notifySubjectWrapperTemplate = template;
-      ensureNotifyMessageGenerator();
-      m_notifyMsgGenerator.setSubject(template);
-    }
-  
-    /**
-    * Get the tempalte used to create the body
-    * for a notification message.
-    */
-    public String getNotifyBodyTemplate() {
-      return m_notifyBodyWrapperTemplate;
-    }
-  
-    public void setNotifyBodyTemplate(String template) {
-      m_notifyBodyWrapperTemplate = template;
-      ensureNotifyMessageGenerator();
-      m_notifyMsgGenerator.setBody(template);
-    }
-  
-    /**
-      * Access the helper object, for producing
-      * notifications based on the values of the
-      * {@link #getNotifySubjectTemplate subject} and
-      * {@link #getNotifyBodyTemplate body} templates.
-      *
-      *
-      */
-    public SmtpNotifyMessageGenerator getNotifyMessageGenerator() {
-      ensureNotifyMessageGenerator();
-      return m_notifyMsgGenerator;
-    }
-  
-    private void ensureNotifyMessageGenerator() {
-      if(m_notifyMsgGenerator == null) {
-        m_notifyMsgGenerator = new SmtpNotifyMessageGenerator(
-          getNotifySubjectTemplate(),
-          getNotifyBodyTemplate(),
-          false);
-      }
+        m_notifySubjectWrapperTemplate = template;
+        ensureNotifyMessageGenerator();
+        m_notifyMsgGenerator.setSubject(template);
     }
 
     /**
-     * messageAction: a string specifying a response if a message contains spam (defaults to MARK)
-     * one of BLOCK, MARK, or PASS
+     * Get the tempalte used to create the body
+     * for a notification message.
+     */
+    @Transient
+    public String getNotifyBodyTemplate() {
+        return m_notifyBodyWrapperTemplate;
+    }
+
+    public void setNotifyBodyTemplate(String template) {
+        m_notifyBodyWrapperTemplate = template;
+        ensureNotifyMessageGenerator();
+        m_notifyMsgGenerator.setBody(template);
+    }
+
+    /**
+     * Access the helper object, for producing
+     * notifications based on the values of the
+     * {@link #getNotifySubjectTemplate subject} and
+     * {@link #getNotifyBodyTemplate body} templates.
+     */
+    @Transient
+    public SmtpNotifyMessageGenerator getNotifyMessageGenerator() {
+        ensureNotifyMessageGenerator();
+        return m_notifyMsgGenerator;
+    }
+
+    private void ensureNotifyMessageGenerator() {
+        if(m_notifyMsgGenerator == null) {
+            m_notifyMsgGenerator = new SmtpNotifyMessageGenerator(
+                                                                  getNotifySubjectTemplate(),
+                                                                  getNotifyBodyTemplate(),
+                                                                  false);
+        }
+    }
+
+    /**
+     * messageAction: a string specifying a response if a message
+     * contains spam (defaults to MARK) one of BLOCK, MARK, or PASS
      *
      * @return the action to take if a message is judged to be spam.
-     * @hibernate.property
-     * column="MSG_ACTION"
-     * type="com.metavize.tran.spam.SMTPSpamMessageActionUserType"
-     * not-null="true"
      */
+    @Column(name="msg_action", nullable=false)
+    @Type(type="com.metavize.tran.spam.SMTPSpamMessageActionUserType")
     public SMTPSpamMessageAction getMsgAction()
     {
         return zMsgAction;
@@ -149,7 +159,8 @@ public class SpamSMTPConfig extends SpamProtoConfig
         return;
     }
 
-    /* for GUI */
+    /** for GUI */
+    @Transient
     public String[] getMsgActionEnumeration()
     {
         SMTPSpamMessageAction[] azMsgAction = SMTPSpamMessageAction.getValues();
@@ -162,15 +173,14 @@ public class SpamSMTPConfig extends SpamProtoConfig
     }
 
     /**
-     * notifyAction: a string specifying a response to events if a message containing spam (defaults to NEITHER)
-     * one of SENDER, RECEIVER, or NEITHER
+     * notifyAction: a string specifying a response to events if a
+     * message containing spam (defaults to NEITHER) one of SENDER,
+     * RECEIVER, or NEITHER
      *
      * @return the action to take if a message is judged to be spam.
-     * @hibernate.property
-     * column="NOTIFY_ACTION"
-     * type="com.metavize.tran.spam.SpamSMTPNotifyActionUserType"
-     * not-null="true"
      */
+    @Column(name="notify_action", nullable=false)
+    @Type(type="com.metavize.tran.spam.SpamSMTPNotifyActionUserType")
     public SpamSMTPNotifyAction getNotifyAction()
     {
         return zNotifyAction;
@@ -184,6 +194,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
     }
 
     /* for GUI */
+    @Transient
     public String[] getNotifyActionEnumeration()
     {
         SpamSMTPNotifyAction[] azNotifyAction = SpamSMTPNotifyAction.getValues();
@@ -196,13 +207,12 @@ public class SpamSMTPConfig extends SpamProtoConfig
     }
 
     /**
-     * throttle: a boolean specifying whether or not to throttle a connection from a suspect spammer
+     * throttle: a boolean specifying whether or not to throttle a
+     * connection from a suspect spammer
      *
      * @return whether or not to throttle a spammer
-     * @hibernate.property
-     * column="THROTTLE"
-     * not-null="true"
      */
+    @Column(nullable=false)
     public boolean getThrottle()
     {
         return throttle;
@@ -215,13 +225,12 @@ public class SpamSMTPConfig extends SpamProtoConfig
     }
 
     /**
-     * throttleSec: a integer specifying how long to delay a connection from a suspect spammer if throttling
+     * throttleSec: a integer specifying how long to delay a
+     * connection from a suspect spammer if throttling
      *
      * @return how long to delay the connection if throttling
-     * @hibernate.property
-     * column="THROTTLE_SEC"
-     * not-null="true"
      */
+    @Column(name="throttle_sec", nullable=false)
     public int getThrottleSec()
     {
         return throttleSec;
@@ -232,5 +241,4 @@ public class SpamSMTPConfig extends SpamProtoConfig
         this.throttleSec = throttleSec;
         return;
     }
-    
 }

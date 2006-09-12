@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,6 +12,18 @@
 package com.metavize.tran.spam;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.security.Tid;
 
@@ -20,9 +32,9 @@ import com.metavize.mvvm.security.Tid;
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_SPAM_SETTINGS"
  */
+@Entity
+@Table(name="tr_spam_settings", schema="settings")
 public class SpamSettings implements Serializable
 {
     private static final long serialVersionUID = -7246008133224040004L;
@@ -39,9 +51,6 @@ public class SpamSettings implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public SpamSettings() { }
 
     public SpamSettings(Tid tid)
@@ -51,11 +60,9 @@ public class SpamSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="SETTINGS_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -70,10 +77,9 @@ public class SpamSettings implements Serializable
      * Transform id for these settings.
      *
      * @return tid for these settings
-     * @hibernate.many-to-one
-     * column="TID"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="tid", nullable=false)
     public Tid getTid()
     {
         return tid;
@@ -88,11 +94,9 @@ public class SpamSettings implements Serializable
      * Inbound SMTP spam settings.
      *
      * @return inbound SMTP settings.
-     * @hibernate.many-to-one
-     * column="SMTP_INBOUND"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="smtp_inbound", nullable=false)
     public SpamSMTPConfig getSMTPInbound()
     {
         return SMTPInbound;
@@ -108,11 +112,9 @@ public class SpamSettings implements Serializable
      * Outbound SMTP spam settings.
      *
      * @return outbound SMTP settings.
-     * @hibernate.many-to-one
-     * column="SMTP_OUTBOUND"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="smtp_outbound", nullable=false)
     public SpamSMTPConfig getSMTPOutbound()
     {
         return SMTPOutbound;
@@ -128,11 +130,9 @@ public class SpamSettings implements Serializable
      * Inbound POP spam settings.
      *
      * @return inbound POP settings.
-     * @hibernate.many-to-one
-     * column="POP_INBOUND"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="pop_inbound", nullable=false)
     public SpamPOPConfig getPOPInbound()
     {
         return POPInbound;
@@ -148,11 +148,9 @@ public class SpamSettings implements Serializable
      * Outbound POP spam settings.
      *
      * @return outbound POP settings.
-     * @hibernate.many-to-one
-     * column="POP_OUTBOUND"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="pop_outbound", nullable=false)
     public SpamPOPConfig getPOPOutbound()
     {
         return POPOutbound;
@@ -168,11 +166,9 @@ public class SpamSettings implements Serializable
      * Inbound IMAP spam settings.
      *
      * @return inbound IMAP settings.
-     * @hibernate.many-to-one
-     * column="IMAP_INBOUND"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="imap_inbound", nullable=false)
     public SpamIMAPConfig getIMAPInbound()
     {
         return IMAPInbound;
@@ -188,11 +184,9 @@ public class SpamSettings implements Serializable
      * Outbound IMAP spam settings.
      *
      * @return outbound IMAP settings.
-     * @hibernate.many-to-one
-     * column="IMAP_OUTBOUND"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="imap_outbound", nullable=false)
     public SpamIMAPConfig getIMAPOutbound()
     {
         return IMAPOutbound;

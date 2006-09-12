@@ -1,0 +1,4 @@
+com.metavize.tran.spam.SpamIMAPConfig
+com.metavize.tran.spam.SpamPOPConfig
+com.metavize.tran.spam.SpamSMTPConfig
+com.metavize.tran.spam.SpamSettings
