@@ -12,15 +12,26 @@
 package com.metavize.tran.httpblocker;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Settings for a Blacklist category.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_HTTPBLK_BLCAT"
  */
+@Entity
+@Table(name="tr_httpblk_blcat", schema="settings")
 public class BlacklistCategory implements Serializable
 {
     private static final long serialVersionUID = 445403437262316857L;
@@ -34,9 +45,6 @@ public class BlacklistCategory implements Serializable
     private boolean blockExpressions = false;
     private boolean logOnly = false;
 
-    /**
-     * Hibernate constructor.
-     */
     public BlacklistCategory() { }
 
     public BlacklistCategory(String name, String displayName,
@@ -49,11 +57,9 @@ public class BlacklistCategory implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="CATEGORY_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="category_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -68,8 +74,6 @@ public class BlacklistCategory implements Serializable
      * The internal category name.
      *
      * @return the category name.
-     * @hibernate.property
-     * column="NAME"
      */
     public String getName()
     {
@@ -85,9 +89,8 @@ public class BlacklistCategory implements Serializable
      * Name for UI.
      *
      * @return this display name.
-     * @hibernate.property
-     * column="DISPLAY_NAME"
      */
+    @Column(name="display_name")
     public String getDisplayName()
     {
         return displayName;
@@ -102,8 +105,6 @@ public class BlacklistCategory implements Serializable
      * Description of the category.
      *
      * @return the description.
-     * @hibernate.property
-     * column="DESCRIPTION"
      */
     public String getDescription()
     {
@@ -119,9 +120,8 @@ public class BlacklistCategory implements Serializable
      * Domain block rules are used when blockDomains is true.
      *
      * @return true if domain block rules are used.
-     * @hibernate.property
-     * column="BLOCK_DOMAINS"
      */
+    @Column(name="block_domains")
     public boolean getBlockDomains()
     {
         return blockDomains;
@@ -139,6 +139,7 @@ public class BlacklistCategory implements Serializable
      * @hibernate.property
      * column="BLOCK_URLS"
      */
+    @Column(name="block_urls")
     public boolean getBlockUrls()
     {
         return blockUrls;
@@ -153,9 +154,8 @@ public class BlacklistCategory implements Serializable
      * Expressions are used for blocking when blockExpressions is true.
      *
      * @return a <code>boolean</code> value
-     * @hibernate.property
-     * column="BLOCK_EXPRESSIONS"
      */
+    @Column(name="block_expressions")
     public boolean getBlockExpressions()
     {
         return blockExpressions;
@@ -170,9 +170,8 @@ public class BlacklistCategory implements Serializable
      * Should items be logged only.
      *
      * @return true of logged only
-     * @hibernate.property
-     * column="LOG_ONLY"
      */
+    @Column(name="log_only")
     public boolean getLogOnly()
     {
         return logOnly;

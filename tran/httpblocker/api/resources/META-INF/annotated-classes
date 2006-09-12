@@ -1,0 +1,3 @@
+com.metavize.tran.httpblocker.BlacklistCategory
+com.metavize.tran.httpblocker.BlockTemplate
+com.metavize.tran.httpblocker.HttpBlockerSettings

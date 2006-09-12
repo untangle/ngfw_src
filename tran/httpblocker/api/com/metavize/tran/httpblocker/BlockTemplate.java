@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,16 +13,32 @@ package com.metavize.tran.httpblocker;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Iterator;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import com.metavize.mvvm.security.Tid;
 
 /**
  * Message to be displayed when a message is blocked.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_HTTPBLK_TEMPLATE"
- * mutable="false"
  */
+@Entity
+@Table(name="tr_httpblk_template", schema="settings")
 public class BlockTemplate implements Serializable
 {
     private static final long serialVersionUID = -2176543704833470091L;
@@ -69,11 +85,9 @@ public class BlockTemplate implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="MESSAGE_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="message_id")
+    @GeneratedValue
     public Long getId()
     {
         return id;
@@ -88,8 +102,6 @@ public class BlockTemplate implements Serializable
      * Customizable banner on the block page.
      *
      * @return the header.
-     * @hibernate.property
-     * column="HEADER"
      */
     public String getHeader()
     {
@@ -103,10 +115,6 @@ public class BlockTemplate implements Serializable
 
     /**
      * Contact information.
-     *
-     * @return a <code>String</code> value
-     * @hibernate.property
-     * column="CONTACT"
      */
     public String getContact()
     {

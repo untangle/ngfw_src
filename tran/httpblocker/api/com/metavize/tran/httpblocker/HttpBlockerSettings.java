@@ -15,17 +15,33 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.security.Tid;
+import com.metavize.mvvm.tran.IPMaddrRule;
+import com.metavize.mvvm.tran.MimeTypeRule;
+import com.metavize.mvvm.tran.StringRule;
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * HttpBlocker settings.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_HTTPBLK_SETTINGS"
  */
+@Entity
+@Table(name="tr_httpblk_settings", schema="settings")
 public class HttpBlockerSettings implements Serializable
 {
     private static final long serialVersionUID = 1806394002255164868L;
@@ -39,19 +55,16 @@ public class HttpBlockerSettings implements Serializable
 
     private boolean fascistMode = false;
 
-    private List passedClients = new ArrayList();
-    private List passedUrls = new ArrayList();
+    private List<IPMaddrRule> passedClients = new ArrayList<IPMaddrRule>();
+    private List<StringRule> passedUrls = new ArrayList<StringRule>();
 
-    private List blockedUrls = new ArrayList();
-    private List blockedMimeTypes = new ArrayList();
-    private List blockedExtensions = new ArrayList();
-    private List blacklistCategories = new ArrayList();
+    private List<StringRule> blockedUrls = new ArrayList<StringRule>();
+    private List<MimeTypeRule> blockedMimeTypes = new ArrayList<MimeTypeRule>();
+    private List<StringRule> blockedExtensions = new ArrayList<StringRule>();
+    private List<BlacklistCategory> blacklistCategories = new ArrayList<BlacklistCategory>();
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public HttpBlockerSettings() { }
 
     public HttpBlockerSettings(Tid tid)
@@ -80,11 +93,9 @@ public class HttpBlockerSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="SETTINGS_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -99,10 +110,9 @@ public class HttpBlockerSettings implements Serializable
      * Transform id for these settings.
      *
      * @return tid for these settings.
-     * @hibernate.many-to-one
-     * column="TID"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="tid", nullable=false)
     public Tid getTid()
     {
         return tid;
@@ -117,11 +127,9 @@ public class HttpBlockerSettings implements Serializable
      * Template for block messages.
      *
      * @return the block message.
-     * @hibernate.many-to-one
-     * column="TEMPLATE"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="template", nullable=false)
     public BlockTemplate getBlockTemplate()
     {
         return blockTemplate;
@@ -136,10 +144,8 @@ public class HttpBlockerSettings implements Serializable
      * Block all requests to hosts identified only by an IP address.
      *
      * @return true when IP requests are blocked.
-     * @hibernate.property
-     * column="BLOCK_ALL_IP_HOSTS"
-     * not-null="true"
      */
+    @Column(name="block_all_ip_hosts", nullable=false)
     public boolean getBlockAllIpHosts()
     {
         return blockAllIpHosts;
@@ -154,9 +160,8 @@ public class HttpBlockerSettings implements Serializable
      * If true, block everything that is not whitelisted.
      *
      * @return true to block.
-     * @hibernate.property
-     * column="FASCIST_MODE"
      */
+    @Column(name="fascist_mode", nullable=false)
     public boolean getFascistMode()
     {
         return fascistMode;
@@ -171,23 +176,18 @@ public class HttpBlockerSettings implements Serializable
      * Clients not subject to blacklisting.
      *
      * @return the list of passed clients.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="TR_HTTPBLK_PASSED_CLIENTS"
-     * @hibernate.collection-key
-     * column="SETTING_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.tran.IPMaddrRule"
-     * column="RULE_ID"
      */
-    public List getPassedClients()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_httpblk_passed_clients",
+               joinColumns = @JoinColumn(name="setting_id"),
+               inverseJoinColumns = @JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<IPMaddrRule> getPassedClients()
     {
         return passedClients;
     }
 
-    public void setPassedClients(List passedClients)
+    public void setPassedClients(List<IPMaddrRule> passedClients)
     {
         this.passedClients = passedClients;
     }
@@ -196,23 +196,18 @@ public class HttpBlockerSettings implements Serializable
      * URLs not subject to blacklist checking.
      *
      * @return the list of passed URLs.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="TR_HTTPBLK_PASSED_URLS"
-     * @hibernate.collection-key
-     * column="SETTING_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.tran.StringRule"
-     * column="RULE_ID"
      */
-    public List getPassedUrls()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_httpblk_passed_urls",
+               joinColumns = @JoinColumn(name="setting_id"),
+               inverseJoinColumns = @JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<StringRule> getPassedUrls()
     {
         return passedUrls;
     }
 
-    public void setPassedUrls(List passedUrls)
+    public void setPassedUrls(List<StringRule> passedUrls)
     {
         this.passedUrls = passedUrls;
     }
@@ -221,23 +216,18 @@ public class HttpBlockerSettings implements Serializable
      * URLs not subject to blacklist checking.
      *
      * @return the list of blocked URLs.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="TR_HTTPBLK_BLOCKED_URLS"
-     * @hibernate.collection-key
-     * column="SETTING_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.tran.StringRule"
-     * column="RULE_ID"
      */
-    public List getBlockedUrls()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_httpblk_blocked_urls",
+               joinColumns = @JoinColumn(name="setting_id"),
+               inverseJoinColumns = @JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<StringRule> getBlockedUrls()
     {
         return blockedUrls;
     }
 
-    public void setBlockedUrls(List blockedUrls)
+    public void setBlockedUrls(List<StringRule> blockedUrls)
     {
         this.blockedUrls = blockedUrls;
     }
@@ -246,23 +236,18 @@ public class HttpBlockerSettings implements Serializable
      * Mime-Types to be blocked.
      *
      * @return the list of blocked MIME types.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="TR_HTTPBLK_MIME_TYPES"
-     * @hibernate.collection-key
-     * column="SETTING_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.tran.MimeTypeRule"
-     * column="RULE_ID"
      */
-    public List getBlockedMimeTypes()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_httpblk_mime_types",
+               joinColumns = @JoinColumn(name="setting_id"),
+               inverseJoinColumns = @JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<MimeTypeRule> getBlockedMimeTypes()
     {
         return blockedMimeTypes;
     }
 
-    public void setBlockedMimeTypes(List blockedMimeTypes)
+    public void setBlockedMimeTypes(List<MimeTypeRule> blockedMimeTypes)
     {
         this.blockedMimeTypes = blockedMimeTypes;
     }
@@ -271,23 +256,18 @@ public class HttpBlockerSettings implements Serializable
      * Extensions to be blocked.
      *
      * @return the list of blocked extensions.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="TR_HTTPBLK_EXTENSIONS"
-     * @hibernate.collection-key
-     * column="SETTING_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.tran.StringRule"
-     * column="RULE_ID"
      */
-    public List getBlockedExtensions()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_httpblk_extensions",
+               joinColumns = @JoinColumn(name="setting_id"),
+               inverseJoinColumns = @JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<StringRule> getBlockedExtensions()
     {
         return blockedExtensions;
     }
 
-    public void setBlockedExtensions(List blockedExtensions)
+    public void setBlockedExtensions(List<StringRule> blockedExtensions)
     {
         this.blockedExtensions = blockedExtensions;
     }
@@ -296,21 +276,16 @@ public class HttpBlockerSettings implements Serializable
      * Blacklist blocking options.
      *
      * @return the list of blacklist categories.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="SETTING_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.tran.httpblocker.BlacklistCategory"
      */
-    public List getBlacklistCategories()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="setting_id")
+    @IndexColumn(name="position")
+    public List<BlacklistCategory> getBlacklistCategories()
     {
         return blacklistCategories;
     }
 
-    public void setBlacklistCategories(List blacklistCategories)
+    public void setBlacklistCategories(List<BlacklistCategory> blacklistCategories)
     {
         this.blacklistCategories = blacklistCategories;
     }
