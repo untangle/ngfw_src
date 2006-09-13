@@ -75,7 +75,6 @@ public class InstallDiskJPanel extends MWizardPageJPanel {
 	if(selectedRow > -1){
 	    String selectedDisk = (String) diskJPanel.getJTable().getValueAt(selectedRow,0);
 	    InstallWizard.setTargetDisk(selectedDisk);
-	    System.out.println("Selected: " + selectedDisk);
 	    return true;
 	}
 	else{
