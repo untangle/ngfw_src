@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,15 +12,27 @@
 package com.metavize.tran.virus;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Virus configuration for a traffic category.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_VIRUS_CONFIG"
  */
+@Entity
+@Table(name="tr_virus_config", schema="settings")
 public class VirusConfig implements Serializable
 {
     private static final long serialVersionUID = -3027701380223646753L;
@@ -33,9 +45,6 @@ public class VirusConfig implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public VirusConfig() { }
 
     public VirusConfig(boolean scan, boolean copyOnBlock)
@@ -51,14 +60,11 @@ public class VirusConfig implements Serializable
         this.notes = notes;
     }
 
-
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="CONFIG_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="config_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -73,9 +79,8 @@ public class VirusConfig implements Serializable
      * Scan traffic.
      *
      * @return true if traffic should be scanned.
-     * @hibernate.property
-     * column="SCAN"
      */
+    @Column(nullable=false)
     public boolean getScan()
     {
         return scan;
@@ -86,13 +91,7 @@ public class VirusConfig implements Serializable
         this.scan = scan;
     }
 
-    /**
-     * XXX what is this for
-     *
-     * @return XXX
-     * @hibernate.property
-     * column="COPY_ON_BLOCK"
-     */
+    @Column(name="copy_on_block", nullable=false)
     public boolean getCopyOnBlock()
     {
         return copyOnBlock;
@@ -103,13 +102,6 @@ public class VirusConfig implements Serializable
         this.copyOnBlock = copyOnBlock;
     }
 
-    /**
-     * XXX what is this?
-     *
-     * @return XXX
-     * @hibernate.property
-     * column="NOTES"
-     */
     public String getNotes()
     {
         return notes;
@@ -120,13 +112,7 @@ public class VirusConfig implements Serializable
         this.notes = notes;
     }
 
-    /**
-     * XXX what is this?
-     *
-     * @return XXX
-     * @hibernate.property
-     * column="COPY_ON_BLOCK_NOTES"
-     */
+    @Column(name="copy_on_block_notes")
     public String getCopyOnBlockNotes()
     {
         return copyOnBlockNotes;
@@ -136,5 +122,4 @@ public class VirusConfig implements Serializable
     {
         this.copyOnBlockNotes = copyOnBlockNotes;
     }
-
 }

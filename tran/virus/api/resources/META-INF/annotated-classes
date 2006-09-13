@@ -1,0 +1,5 @@
+com.metavize.tran.virus.VirusConfig
+com.metavize.tran.virus.VirusIMAPConfig
+com.metavize.tran.virus.VirusPOPConfig
+com.metavize.tran.virus.VirusSMTPConfig
+com.metavize.tran.virus.VirusSettings

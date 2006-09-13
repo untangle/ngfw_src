@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,17 +13,32 @@ package com.metavize.tran.virus;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.security.Tid;
+import com.metavize.mvvm.tran.MimeTypeRule;
+import com.metavize.mvvm.tran.StringRule;
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * Settings for the VirusTransform.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_VIRUS_SETTINGS"
  */
+@Entity
+@Table(name="tr_virus_settings", schema="settings")
 public class VirusSettings implements Serializable
 {
     private static final long serialVersionUID = -7246008133224046834L;
@@ -48,14 +63,11 @@ public class VirusSettings implements Serializable
     private VirusIMAPConfig IMAPInbound;
     private VirusIMAPConfig IMAPOutbound;
 
-    private List httpMimeTypes;
-    private List extensions;
+    private List<MimeTypeRule> httpMimeTypes;
+    private List<StringRule> extensions;
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public VirusSettings() { }
 
     public VirusSettings(Tid tid)
@@ -65,11 +77,9 @@ public class VirusSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="SETTINGS_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -84,10 +94,9 @@ public class VirusSettings implements Serializable
      * Transform id for these settings.
      *
      * @return tid for these settings
-     * @hibernate.many-to-one
-     * column="TID"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="tid", nullable=false)
     public Tid getTid()
     {
         return tid;
@@ -102,9 +111,8 @@ public class VirusSettings implements Serializable
      * Disable resume of FTP download.
      *
      * @return true if FTP resume is disabled.
-     * @hibernate.property
-     * column="DISABLE_FTP_RESUME"
      */
+    @Column(name="disable_ftp_resume", nullable=false)
     public boolean getFtpDisableResume()
     {
         return ftpDisableResume;
@@ -120,9 +128,8 @@ public class VirusSettings implements Serializable
      * Disable resume of HTTP download.
      *
      * @return true if HTTP resume is disabled.
-     * @hibernate.property
-     * column="DISABLE_HTTP_RESUME"
      */
+    @Column(name="disable_http_resume", nullable=false)
     public boolean getHttpDisableResume()
     {
         return httpDisableResume;
@@ -137,9 +144,8 @@ public class VirusSettings implements Serializable
      * The trickle rate.
      *
      * @return the trickle rate, between 0 and 100.
-     * @hibernate.property
-     * column="TRICKLE_PERCENT"
      */
+    @Column(name="trickle_percent", nullable=false)
     public int getTricklePercent()
     {
         return tricklePercent;
@@ -155,13 +161,7 @@ public class VirusSettings implements Serializable
         this.tricklePercent = tricklePercent;
     }
 
-    /**
-     * XXX what is this for?
-     *
-     * @return XXX
-     * @hibernate.property
-     * column="FTP_DISABLE_RESUME_DETAILS"
-     */
+    @Column(name="ftp_disable_resume_details")
     public String getFtpDisableResumeDetails()
     {
         return ftpDisableResumeDetails;
@@ -172,13 +172,7 @@ public class VirusSettings implements Serializable
         this.ftpDisableResumeDetails = ftpDisableResumeDetails;
     }
 
-    /**
-     * XXX what is this for?
-     *
-     * @return XXX
-     * @hibernate.property
-     * column="HTTP_DISABLE_RESUME_DETAILS"
-     */
+    @Column(name="http_disable_resume_details")
     public String getHttpDisableResumeDetails()
     {
         return httpDisableResumeDetails;
@@ -189,13 +183,7 @@ public class VirusSettings implements Serializable
         this.httpDisableResumeDetails = httpDisableResumeDetails;
     }
 
-    /**
-     * XXX what is this for?
-     *
-     * @return XXX
-     * @hibernate.property
-     * column="TRICKLE_PERCENT_DETAILS"
-     */
+    @Column(name="trickle_percent_details")
     public String getTricklePercentDetails()
     {
         return tricklePercentDetails;
@@ -210,11 +198,9 @@ public class VirusSettings implements Serializable
      * Inbound HTTP virus settings.
      *
      * @return inbound HTTP settings.
-     * @hibernate.many-to-one
-     * column="HTTP_INBOUND"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="http_inbound", nullable=false)
     public VirusConfig getHttpInbound()
     {
         return httpInbound;
@@ -229,11 +215,9 @@ public class VirusSettings implements Serializable
      * Outbound HTTP virus settings.
      *
      * @return outbound HTTP settings.
-     * @hibernate.many-to-one
-     * column="HTTP_OUTBOUND"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="http_outbound", nullable=false)
     public VirusConfig getHttpOutbound()
     {
         return httpOutbound;
@@ -248,11 +232,9 @@ public class VirusSettings implements Serializable
      * Inbound FTP virus settings.
      *
      * @return inbound FTP settings.
-     * @hibernate.many-to-one
-     * column="FTP_INBOUND"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="ftp_inbound", nullable=false)
     public VirusConfig getFtpInbound()
     {
         return ftpInbound;
@@ -267,11 +249,9 @@ public class VirusSettings implements Serializable
      * Outbound FTP virus settings.
      *
      * @return outbound FTP settings.
-     * @hibernate.many-to-one
-     * column="FTP_OUTBOUND"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="ftp_outbound", nullable=false)
     public VirusConfig getFtpOutbound()
     {
         return ftpOutbound;
@@ -286,11 +266,9 @@ public class VirusSettings implements Serializable
      * Inbound SMTP virus settings.
      *
      * @return inbound SMTP settings.
-     * @hibernate.many-to-one
-     * column="SMTP_INBOUND"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="smtp_inbound", nullable=false)
     public VirusSMTPConfig getSMTPInbound()
     {
         return SMTPInbound;
@@ -306,11 +284,9 @@ public class VirusSettings implements Serializable
      * Outbound SMTP virus settings.
      *
      * @return outbound SMTP settings.
-     * @hibernate.many-to-one
-     * column="SMTP_OUTBOUND"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="smtp_outbound", nullable=false)
     public VirusSMTPConfig getSMTPOutbound()
     {
         return SMTPOutbound;
@@ -326,11 +302,9 @@ public class VirusSettings implements Serializable
      * Inbound POP virus settings.
      *
      * @return inbound POP settings.
-     * @hibernate.many-to-one
-     * column="POP_INBOUND"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="pop_inbound", nullable=false)
     public VirusPOPConfig getPOPInbound()
     {
         return POPInbound;
@@ -346,11 +320,9 @@ public class VirusSettings implements Serializable
      * Outbound POP virus settings.
      *
      * @return outbound POP settings.
-     * @hibernate.many-to-one
-     * column="POP_OUTBOUND"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="pop_outbound", nullable=false)
     public VirusPOPConfig getPOPOutbound()
     {
         return POPOutbound;
@@ -366,11 +338,9 @@ public class VirusSettings implements Serializable
      * Inbound IMAP virus settings.
      *
      * @return inbound IMAP settings.
-     * @hibernate.many-to-one
-     * column="IMAP_INBOUND"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="imap_inbound", nullable=false)
     public VirusIMAPConfig getIMAPInbound()
     {
         return IMAPInbound;
@@ -386,11 +356,9 @@ public class VirusSettings implements Serializable
      * Outbound IMAP virus settings.
      *
      * @return outbound IMAP settings.
-     * @hibernate.many-to-one
-     * column="IMAP_OUTBOUND"
-     * cascade="all"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="imap_outbound", nullable=false)
     public VirusIMAPConfig getIMAPOutbound()
     {
         return IMAPOutbound;
@@ -406,23 +374,18 @@ public class VirusSettings implements Serializable
      * Set of scanned mime types
      *
      * @return the list of scanned mime types.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="TR_VIRUS_VS_MT"
-     * @hibernate.collection-key
-     * column="SETTINGS_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.tran.MimeTypeRule"
-     * column="RULE_ID"
      */
-    public List getHttpMimeTypes()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_virus_vs_mt",
+               joinColumns = @JoinColumn(name="settings_id"),
+               inverseJoinColumns = @JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<MimeTypeRule> getHttpMimeTypes()
     {
         return httpMimeTypes;
     }
 
-    public void setHttpMimeTypes(List httpMimeTypes)
+    public void setHttpMimeTypes(List<MimeTypeRule> httpMimeTypes)
     {
         this.httpMimeTypes = httpMimeTypes;
     }
@@ -431,23 +394,18 @@ public class VirusSettings implements Serializable
      * Extensions to be scanned.
      *
      * @return the set of scanned extensions.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="TR_VIRUS_VS_EXT"
-     * @hibernate.collection-key
-     * column="SETTINGS_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.tran.StringRule"
-     * column="RULE_ID"
      */
-    public List getExtensions()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_virus_vs_ext",
+               joinColumns = @JoinColumn(name="settings_id"),
+               inverseJoinColumns = @JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<StringRule> getExtensions()
     {
         return extensions;
     }
 
-    public void setExtensions(List extensions)
+    public void setExtensions(List<StringRule> extensions)
     {
         this.extensions = extensions;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,20 +12,32 @@
 package com.metavize.tran.virus;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
 import com.metavize.tran.mail.papi.smtp.SmtpNotifyMessageGenerator;
+import org.hibernate.annotations.Type;
 
 /**
  * Virus control: Definition of virus control settings (either direction)
  *
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_VIRUS_SMTP_CONFIG"
  */
-public class VirusSMTPConfig
-  extends VirusMailConfig
-  implements Serializable
+@Entity
+@Table(name="tr_virus_smtp_config", schema="settings")
+public class VirusSMTPConfig extends VirusMailConfig implements Serializable
 {
 
     private static final long serialVersionUID = 7520156745253589007L;
@@ -39,21 +51,18 @@ public class VirusSMTPConfig
 
     // constructor ------------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public VirusSMTPConfig() {}
 
     public VirusSMTPConfig(boolean bScan,
-      SMTPVirusMessageAction zMsgAction,
-      SMTPNotifyAction zNotifyAction,
-      String zNotes,
-      String subjectTemplate,
-      String bodyTemplate,
-      String notifySubjectTemplate,
-      String notifyBodyTemplate)
+                           SMTPVirusMessageAction zMsgAction,
+                           SMTPNotifyAction zNotifyAction,
+                           String zNotes,
+                           String subjectTemplate,
+                           String bodyTemplate,
+                           String notifySubjectTemplate,
+                           String notifyBodyTemplate)
     {
-        super(bScan, zNotes, subjectTemplate, bodyTemplate);    
+        super(bScan, zNotes, subjectTemplate, bodyTemplate);
         this.zMsgAction = zMsgAction;
         this.zNotifyAction = zNotifyAction;
         m_notifySubjectTemplate = notifySubjectTemplate;
@@ -62,59 +71,57 @@ public class VirusSMTPConfig
 
     // business methods ------------------------------------------------------
 
-
+    @Transient
     public String getNotifySubjectTemplate() {
-      return m_notifySubjectTemplate;
+        return m_notifySubjectTemplate;
     }
-  
+
     public void setNotifySubjectTemplate(String template) {
-      m_notifySubjectTemplate = template;
-      ensureNotifyMessageGenerator();
-      m_notifier.setSubject(template);
+        m_notifySubjectTemplate = template;
+        ensureNotifyMessageGenerator();
+        m_notifier.setSubject(template);
     }
-  
+
+    @Transient
     public String getNotifyBodyTemplate() {
-      return m_notifyBodyTemplate;
+        return m_notifyBodyTemplate;
     }
-  
+
     public void setNotifyBodyTemplate(String template) {
-      m_notifyBodyTemplate = template;
-      ensureNotifyMessageGenerator();
-      m_notifier.setBody(template);
+        m_notifyBodyTemplate = template;
+        ensureNotifyMessageGenerator();
+        m_notifier.setBody(template);
     }
-  
+
     /**
-      * Access the helper object, for sending notifications
-      * based on the {@link #getSubjectWrapperTemplate subject}
-      * and {@link #getBodyWrapperTemplate body} templates.
-      *
-      *
-      */
+     * Access the helper object, for sending notifications based on
+     * the {@link #getSubjectWrapperTemplate subject} and {@link
+     * #getBodyWrapperTemplate body} templates.
+     */
+    @Transient
     public SmtpNotifyMessageGenerator getNotificationMessageGenerator() {
-      ensureNotifyMessageGenerator();
-      return m_notifier;
+        ensureNotifyMessageGenerator();
+        return m_notifier;
     }
-  
+
     private void ensureNotifyMessageGenerator() {
-      if(m_notifier == null) {
-        m_notifier = new SmtpNotifyMessageGenerator(
-          getNotifySubjectTemplate(),
-          getNotifyBodyTemplate(),
-          false);
-      }
-    }    
-    
+        if(m_notifier == null) {
+            m_notifier = new SmtpNotifyMessageGenerator(
+                                                        getNotifySubjectTemplate(),
+                                                        getNotifyBodyTemplate(),
+                                                        false);
+        }
+    }
+
 
     /**
      * messageAction: a string specifying a response if a message
      * contains virus (defaults to CLEAN) one of CLEAN, BLOCK, or PASS
      *
      * @return the action to take if a message is judged to be virus.
-     * @hibernate.property
-     * column="ACTION"
-     * type="com.metavize.tran.virus.SMTPVirusMessageActionUserType"
-     * not-null="true"
      */
+    @Column(name="action", nullable=false)
+    @Type(type="com.metavize.tran.virus.SMTPVirusMessageActionUserType")
     public SMTPVirusMessageAction getMsgAction()
     {
         return zMsgAction;
@@ -128,6 +135,7 @@ public class VirusSMTPConfig
     }
 
     /* for GUI */
+    @Transient
     public String[] getMsgActionEnumeration()
     {
         SMTPVirusMessageAction[] azMsgAction = SMTPVirusMessageAction.getValues();
@@ -145,11 +153,9 @@ public class VirusSMTPConfig
      * RECEIVER, BOTH, or NEITHER
      *
      * @return the action to take if a message is judged to be virus.
-     * @hibernate.property
-     * column="NOTIFY_ACTION"
-     * type="com.metavize.tran.mail.papi.smtp.SMTPNotifyActionUserType"
-     * not-null="true"
      */
+    @Column(name="notify_action", nullable=false)
+    @Type(type="com.metavize.tran.mail.papi.smtp.SMTPNotifyActionUserType")
     public SMTPNotifyAction getNotifyAction()
     {
         return zNotifyAction;
@@ -163,6 +169,7 @@ public class VirusSMTPConfig
     }
 
     /* for GUI */
+    @Transient
     public String[] getNotifyActionEnumeration()
     {
         SMTPNotifyAction[] azNotifyAction = SMTPNotifyAction.getValues();
