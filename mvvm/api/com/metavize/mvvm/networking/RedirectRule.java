@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,37 +12,42 @@
 package com.metavize.mvvm.networking;
 
 import java.net.UnknownHostException;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ParseException;
-
-import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
-import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
-import com.metavize.mvvm.tran.firewall.intf.IntfDBMatcher;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.TrafficIntfRule;
+import com.metavize.mvvm.tran.firewall.intf.IntfDBMatcher;
+import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
+import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
+import org.hibernate.annotations.Type;
 
 /**
  * Rule for matching based on IP addresses and subnets.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="mvvm_redirect_rule"
  */
+@Entity
+@Table(name="mvvm_redirect_rule", schema="settings")
 public class RedirectRule extends TrafficIntfRule
 {
     // !!! private static final long serialVersionUID = -7898386470255279187L;
-    
+
     private static final String REDIRECT_PORT_PING         = "n/a";
     private static final String REDIRECT_PORT_UNCHANGED    = "unchanged";
     private static final String REDIRECT_ADDRESS_UNCHANGED = "unchanged";
 
     private static final String ACTION_REDIRECT     = "Redirect";
     private static final String ACTION_REDIRECT_LOG = "Redirect & Log";
-    
-    private static final String[] ACTION_ENUMERATION = { ACTION_REDIRECT_LOG, ACTION_REDIRECT };
-    
+
+    private static final String[] ACTION_ENUMERATION
+        = { ACTION_REDIRECT_LOG, ACTION_REDIRECT };
+
     private boolean isDstRedirect;
 
     /* A local redirect is special case where many of the parameters
@@ -54,19 +59,17 @@ public class RedirectRule extends TrafficIntfRule
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public RedirectRule() { }
 
-    public RedirectRule( boolean       isLive,        ProtocolMatcher protocol, 
-                         IntfDBMatcher srcIntf,       IntfDBMatcher  dstIntf, 
+    public RedirectRule( boolean       isLive,        ProtocolMatcher protocol,
+                         IntfDBMatcher srcIntf,       IntfDBMatcher  dstIntf,
                          IPDBMatcher   srcAddress,    IPDBMatcher    dstAddress,
                          PortDBMatcher srcPort,       PortDBMatcher  dstPort,
                          boolean       isDstRedirect, IPaddr redirectAddress, int redirectPort )
     {
-        super( isLive, protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort );
-        
+        super( isLive, protocol, srcIntf, dstIntf, srcAddress, dstAddress,
+               srcPort, dstPort );
+
         /* Attributes of the redirect */
         this.isDstRedirect   = isDstRedirect;
         this.redirectAddress = redirectAddress;
@@ -80,7 +83,7 @@ public class RedirectRule extends TrafficIntfRule
     public final void fixPing() throws ParseException
     {
         super.fixPing();
-        
+
         if ( getProtocol().equals( ProtocolMatcher.MATCHER_PING )) {
             /* Indicate to use the redirect port for ping */
             this.redirectPort = -1;
@@ -96,9 +99,8 @@ public class RedirectRule extends TrafficIntfRule
      * Is this a destination redirect or a source redirect
      *
      * @return If this is a destination redirect.
-     * @hibernate.property
-     * column="is_dst_redirect"
      */
+    @Column(name="is_dst_redirect", nullable=false)
     public boolean isDstRedirect()
     {
         return isDstRedirect;
@@ -113,9 +115,8 @@ public class RedirectRule extends TrafficIntfRule
      * Is this is a local redirect.
      *
      * @return If this is a local redirect.
-     * @hibernate.property
-     * column="is_local_redirect"
      */
+    @Column(name="is_local_redirect", nullable=false)
     public boolean isLocalRedirect()
     {
         return isLocalRedirect;
@@ -130,9 +131,8 @@ public class RedirectRule extends TrafficIntfRule
      * Redirect port. -1 to not modify
      *
      * @return the port to redirect to.
-     * @hibernate.property
-     * column="redirect_port"
      */
+    @Column(name="redirect_port")
     public int getRedirectPort()
     {
         return redirectPort;
@@ -158,11 +158,12 @@ public class RedirectRule extends TrafficIntfRule
         }
     }
 
+    @Transient
     public String getRedirectPortString()
     {
         if ( redirectPort == 0 ) return REDIRECT_PORT_UNCHANGED;
         else if ( redirectPort == -1 ) return REDIRECT_PORT_PING;
-        
+
         return "" + redirectPort;
     }
 
@@ -170,13 +171,9 @@ public class RedirectRule extends TrafficIntfRule
      * Redirect host. null to not modify
      *
      * @return the host to redirect to.
-     *
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="redirect_addr"
-     * sql-type="inet"
      */
+    @Column(name="redirect_addr")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getRedirectAddress()
     {
         return redirectAddress;
@@ -186,7 +183,7 @@ public class RedirectRule extends TrafficIntfRule
     {
         this.redirectAddress = host;
     }
-    
+
     public void setRedirectAddress( String host ) throws UnknownHostException, ParseException
     {
         if ( host.equalsIgnoreCase( REDIRECT_ADDRESS_UNCHANGED )) {
@@ -196,6 +193,7 @@ public class RedirectRule extends TrafficIntfRule
         }
     }
 
+    @Transient
     public String getRedirectAddressString()
     {
         if ( redirectAddress == null || redirectAddress.isEmpty()) {
@@ -204,12 +202,13 @@ public class RedirectRule extends TrafficIntfRule
         return redirectAddress.toString();
     }
 
-    public  String getAction()
+    @Transient
+    public String getAction()
     {
         return ( getLog()) ? ACTION_REDIRECT_LOG : ACTION_REDIRECT;
     }
-    
-    public  void setAction( String action ) throws ParseException
+
+    public void setAction( String action ) throws ParseException
     {
         if ( action.equalsIgnoreCase( ACTION_REDIRECT )) {
             setLog( false );
@@ -219,7 +218,7 @@ public class RedirectRule extends TrafficIntfRule
             throw new ParseException( "Invalid action: " + action );
         }
     }
-    
+
     public static String[] getActionEnumeration()
     {
         return ACTION_ENUMERATION;

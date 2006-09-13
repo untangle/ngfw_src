@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,48 +11,45 @@
 
 package com.metavize.mvvm.networking;
 
-import com.metavize.mvvm.tran.Rule;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.HostNameList;
+import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.Rule;
+import org.hibernate.annotations.Type;
 
 /**
  * Rule for storing DNS static hosts.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="mvvm_dns_static_host_rule"
  */
+@Entity
+@Table(name="mvvm_dns_static_host_rule", schema="settings")
 public class DnsStaticHostRule extends Rule
 {
-    private HostNameList hostNameList  = HostNameList.getEmptyHostNameList();
-    private IPaddr       staticAddress = null;
+    private HostNameList hostNameList = HostNameList.getEmptyHostNameList();
+    private IPaddr staticAddress = null;
 
-    // Constructors 
-    /**
-     * Hibernate constructor 
-     */
-    public DnsStaticHostRule()
-    {
-    }
+    // Constructors
+    public DnsStaticHostRule() { }
 
-    public DnsStaticHostRule( HostNameList hostNameList, IPaddr staticAddress )
+    public DnsStaticHostRule(HostNameList hostNameList, IPaddr staticAddress)
     {
         this.hostNameList  = hostNameList;
         this.staticAddress = staticAddress;
     }
 
-    
+
     /**
      * Host name list
      *
      * @return the host name list.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.HostNameListUserType"
-     * @hibernate.column
-     * name="hostname_list"
      */
+    @Column(name="hostname_list")
+    @Type(type="com.metavize.mvvm.type.HostNameListUserType")
     public HostNameList getHostNameList()
     {
         if ( hostNameList == null )
@@ -70,18 +67,15 @@ public class DnsStaticHostRule extends Rule
      * Get static IP address
      *
      * @return desired static address.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="static_address"
-     * sql-type="inet"
      */
+    @Column(name="static_address")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getStaticAddress()
     {
         return this.staticAddress;
     }
-    
-    public void setStaticAddress( IPaddr staticAddress ) 
+
+    public void setStaticAddress( IPaddr staticAddress )
     {
         this.staticAddress = staticAddress;
     }

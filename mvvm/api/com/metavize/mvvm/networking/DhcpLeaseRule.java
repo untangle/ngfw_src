@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,12 +12,16 @@
 package com.metavize.mvvm.networking;
 
 import java.util.Date;
-
-import com.metavize.mvvm.tran.Rule;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.tran.IPNullAddr;
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.firewall.MACAddress;
+import org.hibernate.annotations.Type;
 
 
 /**
@@ -25,9 +29,9 @@ import com.metavize.mvvm.tran.firewall.MACAddress;
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="mvvm_dhcp_lease_rule"
  */
+@Entity
+@Table(name="mvvm_dhcp_lease_rule", schema="settings")
 public class DhcpLeaseRule extends Rule
 {
     private MACAddress macAddress;
@@ -37,16 +41,12 @@ public class DhcpLeaseRule extends Rule
     private Date       endOfLease      = null;
     private boolean    resolvedByMac   = true;
 
-    // Constructors 
-    /**
-     * Hibernate constructor 
-     */
-    public DhcpLeaseRule()
-    {
-    }
+    // Constructors
+    public DhcpLeaseRule() { }
 
-    public DhcpLeaseRule( MACAddress macAddress, String hostname, IPNullAddr currentAddress,
-                          IPNullAddr staticAddress, Date endOfLease, boolean resolvedByMac )
+    public DhcpLeaseRule(MACAddress macAddress, String hostname,
+                         IPNullAddr currentAddress, IPNullAddr staticAddress,
+                         Date endOfLease, boolean resolvedByMac )
     {
         this.macAddress     = macAddress;
         this.hostname       = hostname;
@@ -60,11 +60,9 @@ public class DhcpLeaseRule extends Rule
      * MAC address
      *
      * @return the mac address.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.firewall.MACAddressUserType"
-     * @hibernate.column
-     * name="MAC_ADDRESS"
      */
+    @Column(name="mac_address")
+    @Type(type="com.metavize.mvvm.type.firewall.MACAddressUserType")
     public MACAddress getMacAddress()
     {
         return macAddress;
@@ -74,14 +72,11 @@ public class DhcpLeaseRule extends Rule
     {
         this.macAddress = macAddress;
     }
-    
+
     /**
      * Host name
      *
      * @return the desired/assigned host name for this machine.
-     * @hibernate.property
-     * @hibernate.column
-     * name="HOSTNAME"
      */
     public String getHostname()
     {
@@ -96,14 +91,15 @@ public class DhcpLeaseRule extends Rule
         this.hostname = hostname;
     }
 
+    @Transient
     public IPNullAddr getCurrentAddress()
     {
         if ( this.currentAddress == null ) return ( this.currentAddress = IPNullAddr.getNullAddr());
 
         return this.currentAddress;
     }
-    
-    public void setCurrentAddress( IPNullAddr currentAddress ) 
+
+    public void setCurrentAddress( IPNullAddr currentAddress )
     {
         this.currentAddress = currentAddress;
     }
@@ -112,27 +108,25 @@ public class DhcpLeaseRule extends Rule
      * Get static IP address for this MAC address
      *
      * @return desired static address.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPNullAddrUserType"
-     * @hibernate.column
-     * name="STATIC_ADDRESS"
-     * sql-type="inet"
      */
+    @Column(name="static_address")
+    @Type(type="com.metavize.mvvm.type.IPNullAddrUserType")
     public IPNullAddr getStaticAddress()
     {
         if ( this.staticAddress == null ) return ( this.staticAddress = IPNullAddr.getNullAddr());
 
         return this.staticAddress;
     }
-    
-    public void setStaticAddress( IPNullAddr staticAddress ) 
+
+    public void setStaticAddress( IPNullAddr staticAddress )
     {
         this.staticAddress = staticAddress;
     }
-    
+
+    @Transient
     public Date getEndOfLease()
     {
-	return endOfLease;
+        return endOfLease;
     }
 
     public void setEndOfLease( Date endOfLease )
@@ -144,10 +138,8 @@ public class DhcpLeaseRule extends Rule
      * Resolve by MAC
      *
      * @return true if the MAC address is used to resolve this rule.
-     * @hibernate.property
-     * @hibernate.column
-     * name="IS_RESOLVE_MAC"
      */
+    @Column(name="is_resolve_mac", nullable=false)
     public boolean getResolvedByMac()
     {
         return resolvedByMac;
@@ -156,5 +148,5 @@ public class DhcpLeaseRule extends Rule
     public void setResolvedByMac( boolean resolvedByMac )
     {
         this.resolvedByMac = resolvedByMac;
-    }    
+    }
 }
