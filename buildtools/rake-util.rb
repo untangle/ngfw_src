@@ -164,7 +164,8 @@ class JavaCompiler
     debug "javac classpath: #{cp}"
     info "javac -d #{dstdir}"
 
-    raise "Javac failed" unless Kernel.system(JavacCommand, "-classpath", cp, "-d", dstdir, "@" + files.path)
+    raise "javac failed" unless
+      Kernel.system(JavacCommand, "-classpath", cp, "-d", dstdir, "@" + files.path)
   end
 
   def JavaCompiler.jar(jarTarget)
@@ -172,22 +173,25 @@ class JavaCompiler
     dst = jarTarget.jarFile
 
     info "Jar #{src} -> #{dst}"
-    raise "Jar failed" unless  Kernel.system(JarCommand, "cf", dst, "-C", src, ".")
+    raise "jar failed" unless  Kernel.system(JarCommand, "cf", dst, "-C", src, ".")
     dst
   end
 
   def JavaCompiler.jarSigner(jar, keystore, aliaz, storepass)
-    Kernel.system(JarSignerCommand, '-keystore', keystore, '-storepass', storepass, jar, aliaz)
+    raise "JarSigner failed" unless
+      Kernel.system(JarSignerCommand, '-keystore', keystore, '-storepass', storepass, jar, aliaz)
   end
 
   def JavaCompiler.javah(jar, destination, classes)
     ensureDirectory destination
-    Kernel.system( JavahCommand, "-d", destination, "-classpath", jar, *classes )
+    raise "javah failed" unless
+      Kernel.system( JavahCommand, "-d", destination, "-classpath", jar, *classes )
   end
 
   def JavaCompiler.run(classpath, classname, *args)
     cp = classpath.join(':')
-    Kernel.system(JavaCommand, "-cp", cp, classname, *args)
+    raise "java #{classname} failed" unless
+      Kernel.system(JavaCommand, "-cp", cp, classname, *args)
   end
 end
 
@@ -406,7 +410,7 @@ class InstallTarget < Target
 
     registerInstallTargets(is) do |f|
       if sign
-        JavaCompiler.jarSigner(f, 'gui/keystore', 'key', '0x7a0f4b2f2b0560fa')
+        JavaCompiler.jarSigner(f, 'gui/keystore', 'key', 'ohF3deeTjai7Thic')
       end
     end
   end
