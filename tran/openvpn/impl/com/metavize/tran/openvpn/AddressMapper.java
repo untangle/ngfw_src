@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -10,26 +10,23 @@
  */
 package com.metavize.tran.openvpn;
 
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
-import java.util.Iterator;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-
-import java.net.InetAddress;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.apache.log4j.Logger;
-
-import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import org.apache.log4j.Logger;
 
 /* Class used to assign addresses to clients */
 class AddressMapper
@@ -39,7 +36,7 @@ class AddressMapper
     AddressMapper()
     {
     }
-    
+
     /**
      * Assign addresses to the server and all of the clients.
      * XXXX This function needs some serious whitebox testing
@@ -49,10 +46,10 @@ class AddressMapper
     {
         /* A mapping from a group to its list of clients */
         Map<VpnGroup,List<VpnClient>> groupToClientList = new HashMap<VpnGroup,List<VpnClient>>();
-        
+
         /* Create a new list that combines the clients and the sites */
         List<VpnClient> clientList = new LinkedList((List<VpnClient>)settings.getClientList());
-        clientList.addAll((List<VpnClient>)settings.getSiteList());
+        clientList.addAll(settings.getSiteList());
 
         if ( settings.getGroupList().size() == 0 ) throw new TransformException( "No groups" );
 
@@ -60,10 +57,10 @@ class AddressMapper
 
         /* Create a mapping from the group to its list of clients */
 
-        /* Always add the first group, even if there aren't any clients in it, 
+        /* Always add the first group, even if there aren't any clients in it,
          * this is where the server pulls its address from */
         groupToClientList.put( serverGroup, new LinkedList());
-        
+
         for ( VpnClient client : clientList ) {
             VpnGroup group = client.getGroup();
             if ( group == null ) {
@@ -79,7 +76,7 @@ class AddressMapper
                 groupClientList = new LinkedList();
                 groupToClientList.put( group, groupClientList );
             }
-            
+
             /* Add this client to the list */
             groupClientList.add( client );
         }
@@ -93,21 +90,21 @@ class AddressMapper
 
             List addrs = new LinkedList();
             boolean isServerGroup = group.equals( serverGroup );
-            
+
             /* Create a new ip matcher to validate all of the created addresses */
-            IPMatcher matcher = 
+            IPMatcher matcher =
                 IPMatcherFactory.getInstance().makeSubnetMatcher( group.getAddress(), group.getNetmask());
-                                           
+
             /* Create enough addresses for all of the clients, and possible the server */
-            Set<IPaddr> addressSet = createAddressSet( clients.size() + ( isServerGroup ? 1 : 0 ), 
+            Set<IPaddr> addressSet = createAddressSet( clients.size() + ( isServerGroup ? 1 : 0 ),
                                                        group, matcher, isBridge );
-            
+
             /* Remove any duplicates in the current list */
             removeDuplicateAddresses( settings, matcher, clients, isServerGroup );
 
             /* Now remove all of the entries that are taken */
             removeTakenAddresses( settings, matcher, clients, addressSet, isServerGroup );
-            
+
             /* Now assign the remaining address to clients that don't have addresses */
             assignRemainingClients( settings, clients, addressSet, isServerGroup );
         }
@@ -117,7 +114,7 @@ class AddressMapper
         }
     }
 
-    private Set<IPaddr> createAddressSet( int size, VpnGroup group, IPMatcher matcher, boolean isBridge ) 
+    private Set<IPaddr> createAddressSet( int size, VpnGroup group, IPMatcher matcher, boolean isBridge )
         throws TransformException
     {
         /* Get the base address */
@@ -126,33 +123,33 @@ class AddressMapper
         byte[] addressData = base.getAddress();
         addressData[3] &= 0xFC;
         addressData[3] |= 1;
-        
+
         Set<IPaddr> addressSet = new LinkedHashSet<IPaddr>();
-        
+
         for (  ; size-- > 0 ; ) {
             /* Create the inet address */
             IPaddr address = getByAddress( addressData );
-            
+
             /* Check to see if it is in the range */
             if ( !matcher.isMatch( address.getAddr())) {
                 /* This is a configuration problem */
-                logger.info( "Unable to configure clients, not enough client addresses for " + 
+                logger.info( "Unable to configure clients, not enough client addresses for " +
                              group.getName());
-                // throw new TransformException( "Not enough addresses to assign all clients in group " + 
+                // throw new TransformException( "Not enough addresses to assign all clients in group " +
                 // group.getName());
                 break;
             }
-            
+
             addressSet.add( address );
-            
+
             getNextAddress( addressData, isBridge );
         }
-        
+
         return addressSet;
     }
 
     /** These are addresses that are already assigned upon starting */
-    void removeDuplicateAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList, 
+    void removeDuplicateAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList,
                                    boolean assignServer )
     {
         Set<IPaddr> addressSet = new HashSet<IPaddr>();
@@ -177,9 +174,9 @@ class AddressMapper
             }
         }
     }
-    
+
     /* Remove the addresses that are taken in the address pool to be distributed to clients */
-    void removeTakenAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList, 
+    void removeTakenAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList,
                                Set<IPaddr> addressSet, boolean assignServer )
     {
         /* First check the server address */
@@ -187,7 +184,7 @@ class AddressMapper
             IPaddr serverAddress = settings.getServerAddress();
             if (( null !=  serverAddress ) && matcher.isMatch( serverAddress.getAddr())) {
                 addressSet.remove( serverAddress );
-            } else { 
+            } else {
                 settings.setServerAddress( null );
             }
         }
@@ -198,7 +195,7 @@ class AddressMapper
                 /* The return code doesn't really matter */
                 addressSet.remove( address );
             } else {
-                /* This will clear clients that currently have addresses are not in 
+                /* This will clear clients that currently have addresses are not in
                  * this address space */
                 client.setAddress( null );
             }
@@ -209,7 +206,7 @@ class AddressMapper
                                  Set<IPaddr> addressSet, boolean assignServer )
     {
         Iterator<IPaddr> iter = addressSet.iterator();
-        
+
         /* If necessary assign the server an address */
         if ( assignServer && ( null == settings.getServerAddress())) {
             settings.setServerAddress( iter.next());
@@ -221,7 +218,7 @@ class AddressMapper
             /* Nothing to do for this clients that current have addresses or there aren't more
              * more available addresses */
             if ( client.getAddress() != null || !iter.hasNext()) continue;
-            
+
             /* Once you use the node, you must remove it from the set so it is never used again */
             client.setAddress( iter.next());
             iter.remove();
@@ -253,7 +250,7 @@ class AddressMapper
                     current[0]++;
                 }
             }
-        }        
+        }
     }
 
     /* A safe function (exceptionless) for InetAddress.getByAddress */

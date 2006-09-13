@@ -17,12 +17,11 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 import com.metavize.mvvm.ArgonException;
-import com.metavize.mvvm.NetworkManager;
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MvvmContextFactory;
-
-import com.metavize.mvvm.networking.NetworkException;
+import com.metavize.mvvm.NetworkManager;
 import com.metavize.mvvm.networking.LocalNetworkManager;
+import com.metavize.mvvm.networking.NetworkException;
 import com.metavize.mvvm.networking.internal.ServicesInternalSettings;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
@@ -177,7 +176,7 @@ class OpenVpnManager
             MvvmContextFactory.context().argonManager().registerIntf( IntfConstants.VPN_INTF, intf );
 
             /* ** XXXXXXX Bridge mode is unsupported */
-            
+
             // if ( isBridgeMode ) {
             // am.enableInternalBridgeIntf( MvvmContextFactory.context().networkingManager().get(), intf );
             // }
@@ -201,7 +200,7 @@ class OpenVpnManager
         ScriptRunner.getInstance().exec( VPN_STOP_SCRIPT );
 
         try {
-            // 
+            //
             // am.disableInternalBridgeIntf( MvvmContextFactory.context().networkingManager().get());
             MvvmContextFactory.context().networkManager().updateAddress();
         } catch ( Exception e ) {
@@ -260,7 +259,7 @@ class OpenVpnManager
          * traffic
          * not sure about this comment, the entries seem to get
          * pushed automatically. */
-        for ( SiteNetwork siteNetwork : (List<SiteNetwork>)settings.getExportedAddressList()) {
+        for ( ServerSiteNetwork siteNetwork : settings.getExportedAddressList()) {
             writePushRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
         }
 
@@ -268,7 +267,7 @@ class OpenVpnManager
         for ( VpnSite site : (List<VpnSite>)settings.getSiteList()) {
             if ( !site.isEnabled()) continue;
 
-            for ( SiteNetwork siteNetwork : (List<SiteNetwork>)site.getExportedAddressList()) {
+            for ( ClientSiteNetwork siteNetwork : site.getExportedAddressList()) {
                 IPaddr network = siteNetwork.getNetwork();
                 IPaddr netmask = siteNetwork.getNetmask();
 
@@ -302,7 +301,7 @@ class OpenVpnManager
         throws TransformException
     {
         NetworkManager nm = MvvmContextFactory.context().networkManager();
-        
+
         String publicAddress = nm.getPublicAddress();
         writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
         writeClientConfigurationFile( settings, client, WIN_CLIENT_DEFAULTS,  WIN_EXTENSION );
@@ -355,11 +354,11 @@ class OpenVpnManager
 
         /* This is kind of janky */
         String publicAddress = networkManager.getPublicAddress();
-        
+
         /* Strip off the port, (This guarantees if they set it to a hostname the value will be
          * correct) */
         publicAddress = publicAddress.split( ":" )[0];
-        
+
         publicAddress = publicAddress.trim();
 
         sw.appendVariable( FLAG_REMOTE, publicAddress + " " + settings.getPublicPort());
@@ -401,14 +400,14 @@ class OpenVpnManager
 
             /* XXXX This won't work for a bridge configuration */
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
-            
+
             if(client.getGroup().isUseDNS()) {
               List<IPaddr> dnsServers = sis.getDnsServerList();
-              
+
               for(IPaddr addr : dnsServers) {
                   sw.appendVariable( "push", "\"dhcp-option DNS " + addr.toString() + "\"");
               }
-              
+
               if(sis.getIsEnabled() && sis.getIsDnsEnabled()) {
                   HostName localDomain = sis.getDnsLocalDomain();
                   if(localDomain != null) {
@@ -434,7 +433,7 @@ class OpenVpnManager
             /* XXXX This won't work for a bridge configuration */
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
 
-            for ( SiteNetwork siteNetwork : (List<SiteNetwork>)site.getExportedAddressList()) {
+            for ( ClientSiteNetwork siteNetwork : site.getExportedAddressList()) {
                 writeClientRoute( sw, siteNetwork.getNetwork(), siteNetwork.getNetmask());
             }
 

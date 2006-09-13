@@ -15,8 +15,6 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
@@ -26,6 +24,7 @@ import com.metavize.mvvm.tapi.event.UDPNewSessionRequestEvent;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import org.apache.log4j.Logger;
 
 class EventHandler extends AbstractEventHandler
 {
@@ -101,7 +100,7 @@ class EventHandler extends AbstractEventHandler
         if ( this.isEdgeGuardClient ) {
             transform.incrementCount( Constants.PASS_COUNTER );
             request.release();
-            
+
             return;
         }
 
@@ -194,9 +193,9 @@ class EventHandler extends AbstractEventHandler
             /* Continue if the client isn't live or the group the client is in isn't live */
             if ( !site.isEnabled()) continue;
 
-            for ( SiteNetwork siteNetwork : (List<SiteNetwork>)site.getExportedAddressList()) {
+            for ( ClientSiteNetwork siteNetwork : site.getExportedAddressList()) {
                 if ( !siteNetwork.isLive()) continue;
-                IPMatcher matcher = 
+                IPMatcher matcher =
                     imf.makeSubnetMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask());
 
                 clientAddressList.add( matcher );
@@ -206,9 +205,9 @@ class EventHandler extends AbstractEventHandler
             }
         }
 
-        for ( SiteNetwork siteNetwork : (List<SiteNetwork>)settings.getExportedAddressList()) {
+        for ( ServerSiteNetwork siteNetwork : settings.getExportedAddressList()) {
             if ( !siteNetwork.isLive()) continue;
-            IPMatcher matcher = 
+            IPMatcher matcher =
                 imf.makeSubnetMatcher( siteNetwork.getNetwork(), siteNetwork.getNetmask());
 
             exportedAddressList.add( matcher );

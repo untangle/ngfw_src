@@ -11,6 +11,7 @@
 
 (setq jni-projects '("jnetcap" "jvector"))
 
+(setq prj-dir (file-name-directory jde-loading-project-file))
 (jde-set-variables
  ;; TODO base on dir listing, include webapps
  '(jde-sourcepath
@@ -31,29 +32,25 @@
  '(jde-global-classpath
    (append
     (mapcar (lambda (a)
-              (concat "./tran/output/" a)) casings)
-    '("../downloads/output/bcel-5.1/bcel-5.1.jar"
-      "../downloads/output/c3p0-0.9.0.2/lib/c3p0-0.9.0.2.jar"
-      "../downloads/output/commons-fileupload-1.1/commons-fileupload-1.1.jar"
-      "../downloads/output/commons-httpclient-3.0/commons-httpclient-3.0.jar"
-      "../downloads/output/concurrent-1.3.4/lib/concurrent.jar"
-      "../downloads/output/gnu.regexp-1.1.4/lib/gnu-regexp-1.1.4.jar"
-      "../downloads/output/hibernate-3.2/hibernate3.jar"
-      "../downloads/output/hibernate-annotations-3.2.0.CR1/hibernate-annotations.jar"
-      "../downloads/output/htmlparser1_6_20060319/htmlparser1_6/lib/htmlparser.jar"
-      "../downloads/output/htmlparser1_6_20060319/htmlparser1_6/lib/htmllexer.jar"
-      "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/catalina-optional.jar"
-      "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/catalina.jar"
-      "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/jsp-api.jar"
-      "../downloads/output/jakarta-tomcat-5.0.28-embed/lib/servlet-api.jar"
-      "../downloads/output/javamail-1.3.1/mail.jar"
-      "../downloads/output/javassist-2.6/javassist.jar"
-      "../downloads/output/jcifs_1.1.11/jcifs-1.1.11.jar"
-      "../downloads/output/jfreechart-0.9.21/jfreechart-0.9.21.jar"
-      "../downloads/output/junit3.8.1/junit.jar"
-      "../downloads/output/logging-log4j-1.2.9/dist/lib/log4j-1.2.9.jar"
-      "../downloads/output/trove/lib/trove.jar"
-      "./jnetcap/output/jar/jnetcap.jar"
-      "./jvector/output/jar/jvector.jar"
-      "./mvvm/output/jar/mvvm.jar"
-      "./mvvm/output/jar/tranutil.jar"))))
+              (concat "../downloads/output/" a))
+            '("c3p0-0.9.0.4/lib/c3p0-0.9.0.4.jar"
+              "commons-fileupload-1.1/commons-fileupload-1.1.jar"
+              "commons-httpclient-3.0/commons-httpclient-3.0.jar"
+              "hibernate-3.2/hibernate3.jar"
+              "hibernate-annotations-3.2.0.CR1/hibernate-annotations.jar"
+              "hibernate-annotations-3.2.0.CR1/lib/ejb3-persistence.jar"
+              "htmlparser1_6_20060319/htmlparser1_6/lib/htmllexer.jar"
+              "htmlparser1_6_20060319/htmlparser1_6/lib/htmlparser.jar"
+              "apache-tomcat-5.5.17-embed/lib/catalina.jar"
+              "apache-tomcat-5.5.17-embed/lib/catalina-optional.jar"
+              "apache-tomcat-5.5.17-embed/lib/jsp-api.jar"
+              "apache-tomcat-5.5.17-embed/lib/servlet-api.jar"
+              "javamail-1.3.3_01/mail.jar"
+              "jcifs_1.2.9/jcifs-1.2.9.jar"
+              "junit3.8.1/junit.jar"
+              "logging-log4j-1.2.9/dist/lib/log4j-1.2.9.jar"
+              "bcel-5.1/bcel-5.1.jar"))
+    ;; XXX i think jde relavitizes the path names w/ respect to the
+    ;; current directory, which causes this to fail
+    ;;(directory-files (concat prj-dir "./staging/grabbag") t ".*\.jar")
+)))

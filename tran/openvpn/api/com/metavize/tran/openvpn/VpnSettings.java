@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,39 +12,51 @@
 package com.metavize.tran.openvpn;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.security.Tid;
-
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
+import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.Type;
 
 /**
  * Settings for the open vpn transform.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="tr_openvpn_settings"
  */
+@Entity
+@Table(name="tr_openvpn_settings", schema="settings")
 public class VpnSettings implements Serializable, Validatable
 {
     static public final long serialVersionUID = -7623287947661641339L;
 
-    static private final int KEY_SIZE_ENUMERATION[] = new int[] 
-        { 
+    static private final int KEY_SIZE_ENUMERATION[] = new int[]
+        {
             1024, 1152, 1280, 1408,
             1536, 1664, 1792, 1920,
             2048
         };
 
-    static private final int KEY_SIZE_DEFAULT    = KEY_SIZE_ENUMERATION[4];
+    private static final int KEY_SIZE_DEFAULT    = KEY_SIZE_ENUMERATION[4];
     public static final int DEFAULT_PUBLIC_PORT = 1194;
 
-    
     private Long id;
     private Tid tid;
 
@@ -52,10 +64,10 @@ public class VpnSettings implements Serializable, Validatable
     private boolean isEdgeGuardClient = false;
 
     /* The virtual address of the vpn server */
-    private IPaddr  serverAddress;
-    
+    private IPaddr serverAddress;
+
     /* List of addresses that should be visible to the VPN */
-    private List    exportedAddressList;
+    private List<ServerSiteNetwork> exportedAddressList;
 
     private boolean keepAlive;
 
@@ -63,9 +75,9 @@ public class VpnSettings implements Serializable, Validatable
 
     private int maxClients = 100;
 
-    private List groupList;
-    private List clientList;
-    private List siteList;
+    private List<VpnGroup> groupList;
+    private List<VpnClient> clientList;
+    private List<VpnSite> siteList;
 
     /* This is the port to put into config files */
     private int publicPort = DEFAULT_PUBLIC_PORT;
@@ -80,10 +92,8 @@ public class VpnSettings implements Serializable, Validatable
     private String  organizationUnit = "";
     private String  email;
     private boolean caKeyOnUsb;
-    
-    public VpnSettings() 
-    {
-    }
+
+    public VpnSettings() { }
 
     public VpnSettings( Tid tid )
     {
@@ -93,33 +103,32 @@ public class VpnSettings implements Serializable, Validatable
     public void validate() throws ValidateException
     {
         /* XXXXXXXXXXX */
-        
+
         /* That is the only setting required for edgeguard client */
         if ( isEdgeGuardClient ) return;
-        
+
         if (( groupList == null ) || ( groupList.size() == 0 )) throw new ValidateException( "No groups" );
-        
+
         GroupList validateGroupList = new GroupList( this.groupList );
         validateGroupList.validate();
-        
+
         ClientList validateClientList = new ClientList( this.clientList );
         validateClientList.validate();
-        
+
         SiteList validateSiteList = new SiteList( this.siteList );
         validateSiteList.validate( validateClientList );
 
         ExportList validateExportList = new ExportList( this.exportedAddressList );
         validateExportList.validate();
-        
-        /* XXX Check for overlap in all of the settings */        
+
+        /* XXX Check for overlap in all of the settings */
     }
 
     /* Typically private, but package access so the ID can be reused */
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     Long getId()
     {
         return id;
@@ -134,10 +143,9 @@ public class VpnSettings implements Serializable, Validatable
      * Transform id for these settings.
      *
      * @return tid for these settings
-     * @hibernate.many-to-one
-     * column="TID"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="tid", nullable=false)
     public Tid getTid()
     {
         return tid;
@@ -149,13 +157,12 @@ public class VpnSettings implements Serializable, Validatable
     }
 
     /** Network settings for the VPN */
-    
-    
+
+
     /**
      * @return whether the vpn is in bridge mode.
-     * @hibernate.property
-     * column="is_bridge"
      */
+    @Column(name="is_bridge", nullable=false)
     public boolean isBridgeMode()
     {
         return this.isBridgeMode;
@@ -168,9 +175,8 @@ public class VpnSettings implements Serializable, Validatable
 
     /**
      * @return whether this is an openvpn of another edgeguard client.
-     * @hibernate.property
-     * column="is_edgeguard_client"
      */
+    @Column(name="is_edgeguard_client", nullable=false)
     public boolean getIsEdgeGuardClient()
     {
         return this.isEdgeGuardClient;
@@ -183,26 +189,22 @@ public class VpnSettings implements Serializable, Validatable
 
     /**
      * The list of VPN groups associated with this vpn configuration.
-     * ??? This may just be infrastructure for down the line, and the current GUI
-     * may only support one address group.
+     * ??? This may just be infrastructure for down the line, and the
+     * current GUI may only support one address group.
      *
      * @return the list of vpn address groups.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="settings_id"
-     * @hibernate.collection-index
-     * column="position"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.tran.openvpn.VpnGroup"
      */
-    public List getGroupList()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="settings_id")
+    @IndexColumn(name="position")
+    public List<VpnGroup> getGroupList()
     {
-        if ( this.groupList == null ) this.groupList = new LinkedList();
+        if ( this.groupList == null ) this.groupList = new LinkedList<VpnGroup>();
 
         return this.groupList;
     }
-    public void setGroupList( List groupList )
+
+    public void setGroupList( List<VpnGroup> groupList )
     {
         this.groupList = groupList;
     }
@@ -211,23 +213,18 @@ public class VpnSettings implements Serializable, Validatable
      * The list of VPN clients.
      *
      * @return the list of Patterns
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="settings_id"
-     * @hibernate.collection-index
-     * column="position"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.tran.openvpn.VpnClient"
      */
-    public List getClientList()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="settings_id")
+    @IndexColumn(name="position")
+    public List<VpnClient> getClientList()
     {
-        if ( this.clientList == null ) this.clientList = new LinkedList();
-        
+        if ( this.clientList == null ) this.clientList = new LinkedList<VpnClient>();
+
         return this.clientList;
     }
-    
-    public void setClientList( List clientList )
+
+    public void setClientList( List<VpnClient> clientList )
     {
         this.clientList = clientList;
     }
@@ -236,31 +233,27 @@ public class VpnSettings implements Serializable, Validatable
      * The list of VPN clients.
      *
      * @return the list of Patterns
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="settings_id"
-     * @hibernate.collection-index
-     * column="position"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.tran.openvpn.VpnSite"
      */
-    public List getSiteList()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="settings_id")
+    @IndexColumn(name="position")
+    public List<VpnSite> getSiteList()
     {
-        if ( this.siteList == null ) this.siteList = new LinkedList();
-        
+        if ( this.siteList == null ) this.siteList = new LinkedList<VpnSite>();
+
         return this.siteList;
     }
-    
-    public void setSiteList( List siteList )
+
+    public void setSiteList( List<VpnSite> siteList )
     {
         this.siteList = siteList;
     }
 
     /**
-     * @return a new list containing all of the clients and the sites. A VpnSite is a subclass of a 
-     * VpnClient.
+     * @return a new list containing all of the clients and the
+     * sites. A VpnSite is a subclass of a VpnClient.
      */
+    @Transient
     public List getCompleteClientList()
     {
         /* ??? Is there a better way to do this */
@@ -274,12 +267,9 @@ public class VpnSettings implements Serializable, Validatable
      * Static address for the openvpn server.
      *
      * @return virtual address of the open vpn server.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="server_address"
-     * sql-type="inet"
      */
+    @Column(name="server_address")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getServerAddress()
     {
         return this.serverAddress;
@@ -294,53 +284,46 @@ public class VpnSettings implements Serializable, Validatable
      * The list of exported networks for this site.
      *
      * @return the list of exported networks for this site.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="settings_id"
-     * @hibernate.collection-index
-     * column="position"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.tran.openvpn.ServerSiteNetwork"
      */
-    public List getExportedAddressList()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="settings_id")
+    @IndexColumn(name="position")
+    public List<ServerSiteNetwork> getExportedAddressList()
     {
-        if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList();
+        if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList<ServerSiteNetwork>();
 
         return this.exportedAddressList;
     }
-    public void setExportedAddressList( List exportedAddressList )
+    public void setExportedAddressList( List<ServerSiteNetwork> exportedAddressList )
     {
         this.exportedAddressList = exportedAddressList;
     }
-   
+
     /**
-     * True if clients should be allowed to see other clients 
+     * True if clients should be allowed to see other clients
      * @return whether the vpn is in bridge mode.
-     * @hibernate.property
-     * column="expose_clients"
      */
+    @Column(name="expose_clients", nullable=false)
     public boolean getExposeClients()
     {
         return this.exposeClients;
     }
-    
+
     public void setExposeClients( boolean exposeClients )
     {
         this.exposeClients = exposeClients;
     }
-    
+
     /**
      * True if clients should keep the connection alive with pings. (may want to hide this from the user)
      * @return keep alive
-     * @hibernate.property
-     * column="keep_alive"
      */
+    @Column(name="keep_alive", nullable=false)
     public boolean getKeepAlive()
     {
         return this.keepAlive;
     }
-    
+
     public void setKeepAlive( boolean keepAlive )
     {
         this.keepAlive = keepAlive;
@@ -348,44 +331,39 @@ public class VpnSettings implements Serializable, Validatable
 
     /**
      * @return Maximum number of concurrent clients.(probably not exposed)
-     * @hibernate.property
-     * column="max_clients"
      */
+    @Column(name="max_clients", nullable=false)
     public int getMaxClients()
     {
         return this.maxClients;
     }
-    
+
     public void setMaxClients( int maxClients )
     {
         this.maxClients = maxClients;
     }
 
-
     /**
      * @return Public port where the user can connect to OpenVPN from,
      *         defaults to 1194.
-     * @hibernate.property
-     * column="public_port"
      */
+    @Column(name="public_port", nullable=false)
     public int getPublicPort()
     {
         if ( this.publicPort < 0 || this.publicPort > 0xFFFF ) this.publicPort = DEFAULT_PUBLIC_PORT;
         return this.publicPort;
     }
-    
+
     public void setPublicPort( int newValue )
     {
         if ( newValue < 0 || newValue > 0xFFFF ) newValue = DEFAULT_PUBLIC_PORT;
         this.publicPort = newValue;
     }
-    
-    /* Certificate information */    
-    
+
+    /* Certificate information */
+
     /**
      * @return domain.
-     * @hibernate.property
-     * column="domain"
      */
     public String getDomain()
     {
@@ -399,9 +377,8 @@ public class VpnSettings implements Serializable, Validatable
 
     /**
      * @return key size.
-     * @hibernate.property
-     * column="key_size"
      */
+    @Column(name="key_size", nullable=false)
     public int getKeySize()
     {
         return this.keySize;
@@ -411,21 +388,19 @@ public class VpnSettings implements Serializable, Validatable
     {
         this.keySize = keySize;
     }
-    
-    static public int[] getKeySizeEnumeration()
+
+    public static int[] getKeySizeEnumeration()
     {
         return KEY_SIZE_ENUMERATION;
     }
 
-    static public int getKeySizeDefault()
+    public static int getKeySizeDefault()
     {
         return KEY_SIZE_DEFAULT;
     }
 
     /**
      * @return country.
-     * @hibernate.property
-     * column="country"
      */
     public String getCountry()
     {
@@ -439,8 +414,6 @@ public class VpnSettings implements Serializable, Validatable
 
     /**
      * @return province.
-     * @hibernate.property
-     * column="province"
      */
     public String getProvince()
     {
@@ -454,8 +427,6 @@ public class VpnSettings implements Serializable, Validatable
 
     /**
      * @return locality(city).
-     * @hibernate.property
-     * column="locality"
      */
     public String getLocality()
     {
@@ -469,9 +440,8 @@ public class VpnSettings implements Serializable, Validatable
 
     /**
      * @return organization.
-     * @hibernate.property
-     * column="org"
      */
+    @Column(name="org")
     public String getOrganization()
     {
         return this.organization;
@@ -484,9 +454,8 @@ public class VpnSettings implements Serializable, Validatable
 
     /**
      * @return organizationUnit.
-     * @hibernate.property
-     * column="org_unit"
      */
+    @Column(name="org_unit")
     public String getOrganizationUnit()
     {
         return organizationUnit;
@@ -500,16 +469,15 @@ public class VpnSettings implements Serializable, Validatable
     /**
      * @return true if the settings have been configured
      */
+    @Transient
     boolean isConfigured()
     {
         if ( isEdgeGuardClient ) return true;
         return ( !( this.organizationUnit == null ) && ( this.organizationUnit.length() > 0 ));
     }
-    
+
     /**
      * @return email.
-     * @hibernate.property
-     * column="email"
      */
     public String getEmail()
     {
@@ -526,6 +494,7 @@ public class VpnSettings implements Serializable, Validatable
      * @hibernate.property
      * column="is_ca_on_usb"
      */
+    @Column(name="is_ca_on_usb", nullable=false)
     public boolean getCaKeyOnUsb()
     {
         return this.caKeyOnUsb;

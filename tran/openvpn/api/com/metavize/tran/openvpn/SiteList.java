@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,20 +11,19 @@
 package com.metavize.tran.openvpn;
 
 import java.io.Serializable;
-
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
-import com.metavize.mvvm.tran.AddressValidator;
 import com.metavize.mvvm.tran.AddressRange;
+import com.metavize.mvvm.tran.AddressValidator;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
 
 public class SiteList implements Serializable, Validatable
 {
-    // XXX SERIALVER private static final long serialVersionUID = 1032713361795879615L;
+    private static final long serialVersionUID = -4628267406258118779L;
 
     List<VpnSite> siteList;
 
@@ -42,7 +41,7 @@ public class SiteList implements Serializable, Validatable
     {
         return this.siteList;
     }
-    
+
     public void setSiteList( List<VpnSite> siteList )
     {
         this.siteList = siteList;
@@ -53,16 +52,16 @@ public class SiteList implements Serializable, Validatable
         List<AddressRange> checkList = new LinkedList<AddressRange>();
 
         for ( VpnSite site : this.siteList ) {
-            for ( SiteNetwork siteNetwork : (List<SiteNetwork>)site.getExportedAddressList()) {
-                checkList.add( AddressRange.makeNetwork( siteNetwork.getNetwork().getAddr(), 
+            for ( SiteNetwork siteNetwork : site.getExportedAddressList()) {
+                checkList.add( AddressRange.makeNetwork( siteNetwork.getNetwork().getAddr(),
                                                          siteNetwork.getNetmask().getAddr()));
             }
         }
 
         return checkList;
     }
-   
-    /** 
+
+    /**
      * Validate the object, throw an exception if it is not valid */
     public void validate() throws ValidateException
     {
@@ -72,7 +71,7 @@ public class SiteList implements Serializable, Validatable
     void validate( ClientList clientList ) throws ValidateException
     {
         Set<String> nameSet = new HashSet<String>();
-        
+
         for ( VpnSite site : getSiteList()) {
             site.validate();
             String name = site.getInternalName();
@@ -80,7 +79,7 @@ public class SiteList implements Serializable, Validatable
                 throw new ValidateException( "Client and site names must all be unique: '" + name + "'" );
             }
         }
-        
+
         /* XXX This assumes that the client list is saved before the site list */
         if ( clientList != null ) {
             for ( VpnClient client : clientList.getClientList()) {
@@ -90,7 +89,7 @@ public class SiteList implements Serializable, Validatable
                 }
             }
         }
-        
+
         /* XXX Check for overlap, and check for conflicts with the network settings */
         AddressValidator.getInstance().validate( buildAddressRange());
     }

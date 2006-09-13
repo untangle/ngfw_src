@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,11 +11,13 @@
 
 package com.metavize.tran.openvpn;
 
-import com.metavize.mvvm.tran.Rule;
-import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.Validatable;
+import javax.persistence.MappedSuperclass;
 
+import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.Rule;
+import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
+import org.hibernate.annotations.Type;
 
 /**
  * A network that is available at a site.
@@ -23,33 +25,24 @@ import com.metavize.mvvm.tran.ValidateException;
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  */
+@MappedSuperclass
 public abstract class SiteNetwork extends Rule implements Validatable
 {
     private static final long serialVersionUID = -2918169040527785684L;
 
     private IPaddr network;
     private IPaddr netmask;
-    
+
     // constructors -----------------------------------------------------------
-    
-    /**
-     * Hibernate constructor.
-     */
-    public SiteNetwork()
-    {
-    }
+
+    public SiteNetwork() { }
 
     // accessors --------------------------------------------------------------
 
     /**
-     *
      * @return network exported by this client or server.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="network"
-     * sql-type="inet"
      */
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getNetwork()
     {
         return this.network;
@@ -59,17 +52,13 @@ public abstract class SiteNetwork extends Rule implements Validatable
     {
         this.network = network;
     }
-    
+
     /**
      * Get the range of netmask on the client side(null for site->machine).
      *
      * @return This is the network that is reachable when this client connects.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="netmask"
-     * sql-type="inet"
      */
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getNetmask()
     {
         return this.netmask;
@@ -79,7 +68,7 @@ public abstract class SiteNetwork extends Rule implements Validatable
     {
         this.netmask = netmask;
     }
-    
+
     public void validate() throws ValidateException
     {
         /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */

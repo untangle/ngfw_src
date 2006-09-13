@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,38 +12,49 @@
 package com.metavize.tran.openvpn;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.LinkedList;
-
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.util.regex.PatternSyntaxException;
-
-import java.util.Map;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
+import org.hibernate.annotations.Type;
 
 /**
  * the configuration for a vpn client.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="tr_openvpn_client"
  */
+@Entity
+@Table(name="tr_openvpn_client", schema="settings")
+@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public class VpnClient extends Rule implements Validatable
 {
+    private static final long serialVersionUID = -403968809913481068L;
+
     private static final Pattern NAME_PATTERN;
-    
-    // XXX SERIALVER private static final long serialVersionUID = 4143567998376955882L;
+
     private static final int MAX_NAME_LENGTH = 60;
-    
+
     private IPaddr address;            // may be null.
-    
+
     // The address group to pull this client address
     private VpnGroup group;
 
@@ -53,7 +64,7 @@ public class VpnClient extends Rule implements Validatable
      * to the page and uses this key, they are allowed to download the
      * configuration for one session */
     private String distributionKey;
-    
+
     /* Most likely unused for early versions but a nice possiblity for
      * the future */
     private String distributionPassword;
@@ -66,25 +77,18 @@ public class VpnClient extends Rule implements Validatable
 
     /* Email addresss where to send the client */
     private String distributionEmail = null;
-    
+
     // constructors -----------------------------------------------------------
-    
-    /**
-     * Hibernate constructor.
-     */
-    public VpnClient()
-    {
-    }
+
+    public VpnClient() { }
 
     // accessors --------------------------------------------------------------
 
     /**
      * @return The address group that this client belongs to.
-     * @hibernate.many-to-one
-     * cascade="all"
-     * class="com.metavize.tran.openvpn.VpnGroup"
-     * column="group_id"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="group_id", nullable=false)
     public VpnGroup getGroup()
     {
         return this.group;
@@ -99,12 +103,8 @@ public class VpnClient extends Rule implements Validatable
      * Static address for this client, this cannot be set, it is assigned.
      *
      * @return static address of the machine.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="address"
-     * sql-type="inet"
      */
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getAddress()
     {
         return this.address;
@@ -114,12 +114,11 @@ public class VpnClient extends Rule implements Validatable
     {
         this.address = address;
     }
-    
+
     /**
      * @return the key required to download the client.
-     * @hibernate.property
-     * column="dist_key"
      */
+    @Column(name="dist_key")
     public String getDistributionKey()
     {
         return this.distributionKey;
@@ -132,9 +131,8 @@ public class VpnClient extends Rule implements Validatable
 
     /**
      * @return the key password to download the client.(unused)
-     * @hibernate.property
-     * column="dist_passwd"
      */
+    @Column(name="dist_passwd")
     public String getDistributionPassword()
     {
         return this.distributionPassword;
@@ -146,6 +144,7 @@ public class VpnClient extends Rule implements Validatable
     }
 
     /* Indicates whether or not the server should distribute a config for this client */
+    @Transient
     public boolean getDistributeClient()
     {
         return this.distributeClient;
@@ -155,12 +154,13 @@ public class VpnClient extends Rule implements Validatable
     {
         this.distributeClient = distributeClient;
     }
-    
+
+    @Transient
     public boolean getDistributeUsb()
     {
         return ( this.distributionEmail == null );
     }
-    
+
     public void setDistributeUsb( boolean distributeUsb )
     {
         /* In order to distribute over usb, you have to null out the email address  *
@@ -168,7 +168,8 @@ public class VpnClient extends Rule implements Validatable
          * email. */
         if ( distributeUsb ) this.distributionEmail = null;
     }
-    
+
+    @Transient
     public String getDistributionEmail()
     {
         return this.distributionEmail;
@@ -180,6 +181,7 @@ public class VpnClient extends Rule implements Validatable
     }
 
     /* This is the name that is used as the common name in the certificate */
+    @Transient
     public String getInternalName()
     {
         return getName().trim().toLowerCase().replace( " ", "_" );
@@ -196,6 +198,7 @@ public class VpnClient extends Rule implements Validatable
         if ( this.group == null ) throw new ValidateException( "Group cannot be null" );
     }
 
+    @Transient
     public String getCertificateStatus()
     {
         return this.certificateStatus;
@@ -211,11 +214,13 @@ public class VpnClient extends Rule implements Validatable
         this.certificateStatus = "valid";
     }
 
+    @Transient
     public void setCertificateStatusRevoked( )
     {
         this.certificateStatus = "revoked";
     }
 
+    @Transient
     public boolean getIsEdgeGuard()
     {
         /* A single client can never be an edgeguard */
@@ -224,11 +229,12 @@ public class VpnClient extends Rule implements Validatable
 
     /* If the client is alive and the group it is in is enabled, and it has been\
      * assigned an address. */
+    @Transient
     public boolean isEnabled()
     {
         return isLive() && ( this.group != null ) && ( this.group.isLive()) && ( this.address != null );
     }
-    
+
     static void validateName( String name ) throws ValidateException
     {
         if ( name == null ) throw new ValidateException( "Name cannot be null" );
@@ -238,10 +244,10 @@ public class VpnClient extends Rule implements Validatable
         }
 
         if ( name.length() > MAX_NAME_LENGTH ) {
-            throw new ValidateException( "A client's name is limited to " + 
+            throw new ValidateException( "A client's name is limited to " +
                                          MAX_NAME_LENGTH + " characters." );
         }
-        
+
         if ( !NAME_PATTERN.matcher( name ).matches()) {
             throw new ValidateException( "A client name should only contains numbers, letters, " +
                                          "dashes and periods.  Spaces are not allowed. " + name );
@@ -259,7 +265,7 @@ public class VpnClient extends Rule implements Validatable
             System.err.println( "Unable to intialize the host label pattern" );
             p = null;
         }
-        
-        NAME_PATTERN = p;        
+
+        NAME_PATTERN = p;
     }
 }

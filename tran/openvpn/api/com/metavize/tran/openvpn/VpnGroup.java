@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,22 +11,28 @@
 
 package com.metavize.tran.openvpn;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
+import org.hibernate.annotations.Type;
 
 /**
  * A VPN group of address and clients.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="tr_openvpn_group"
  */
+@Entity
+@Table(name="tr_openvpn_group", schema="settings")
 public class VpnGroup extends Rule implements Validatable
 {
-    // XXX SERIALVER private static final long serialVersionUID = 1032713361795879615L;
+    private static final long serialVersionUID = 1979887183265796668L;
 
     /* The interface that clients from the client pool are associated with */
     private byte intf;
@@ -35,24 +41,17 @@ public class VpnGroup extends Rule implements Validatable
     private IPaddr netmask;
     private boolean useDNS = false;
 
-    /**
-     * Hibernate constructor.
-     */
-    public VpnGroup()
-    {
-    }
+    public VpnGroup() { }
 
     /**
      * Should clients use DNS from the server
-     *
-     * @hibernate.property
-     * column="USE_DNS"
-     */    
+     */
+    @Column(name="use_dns", nullable=false)
     public boolean isUseDNS()
     {
        return useDNS;
     }
-    
+
     public void setUseDNS(boolean useDNS)
     {
         this.useDNS = useDNS;
@@ -61,13 +60,10 @@ public class VpnGroup extends Rule implements Validatable
     /**
      * Get the pool of addresses for the clients.
      *
-     * @return the pool address to send to the client, don't use in bridging mode.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="address"
-     * sql-type="inet"
+     * @return the pool address to send to the client, don't use in
+     * bridging mode.
      */
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getAddress()
     {
         return this.address;
@@ -79,16 +75,13 @@ public class VpnGroup extends Rule implements Validatable
     }
 
     /**
-     * Get the pool of netmaskes for the clients, in bridging mode this must come from
-     * the pool that the interface is bridged with.
+     * Get the pool of netmaskes for the clients, in bridging mode
+     * this must come from the pool that the interface is bridged
+     * with.
      *
      * @return the pool netmask to send to the client
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="netmask"
-     * sql-type="inet"
      */
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getNetmask()
     {
         return this.netmask;
@@ -102,8 +95,8 @@ public class VpnGroup extends Rule implements Validatable
     /* XXX Use a string or byte */
     /**
      * @return Default interface to associate VPN traffic with.
-     * column="intf"
      */
+    @Transient
     public byte getIntf()
     {
         return this.intf;
@@ -114,19 +107,25 @@ public class VpnGroup extends Rule implements Validatable
         this.intf = intf;
     }
 
-    /* This is the name that is used as the common name in the certificate */
+    /**
+     * This is the name that is used as the common name in the
+     * certificate
+     */
+    @Transient
     public String getInternalName()
     {
         return getName().trim().toLowerCase();
     }
-    
+
     public void validate() throws ValidateException
     {
         /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
     }
 
-    /*
-     * GUI depends on get name for to string to show the list of clients */
+    /**
+     * GUI depends on get name for to string to show the list of
+     * clients
+     */
     public String toString()
     {
         return getName();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,23 +11,31 @@
 
 package com.metavize.tran.openvpn;
 
-import com.metavize.mvvm.tran.IPaddr;
-
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ValidateException;
+import org.hibernate.annotations.IndexColumn;
 
 /**
- *  A site network for a client.  Done this way so the client site networks and the server 
- *  site networks are in their own tables.
+ * A site network for a client.  Done this way so the client site
+ * networks and the server site networks are in their own tables.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="tr_openvpn_site"
  */
-public class  VpnSite extends VpnClient
+@Entity
+@Table(name="tr_openvpn_site", schema="settings")
+public class VpnSite extends VpnClient
 {
     // XXX Fixme
     // private static final long serialVersionUID = -3950973798403822835L;
@@ -40,10 +48,10 @@ public class  VpnSite extends VpnClient
     private List    exportedAddressList;
 
     private boolean isEdgeGuard = false;
-    
+
     public VpnSite()
     {
-        /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXX This should have all of the stuff 
+        /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXX This should have all of the stuff
          * about exports in it, but for now just keep it in both places */
     }
 
@@ -52,22 +60,18 @@ public class  VpnSite extends VpnClient
      * Should rename the column from client_id to site_id.
      *
      * @return the list of exported networks for this site.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="client_id"
-     * @hibernate.collection-index
-     * column="position"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.tran.openvpn.ClientSiteNetwork"
      */
-    public List getExportedAddressList()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="client_id")
+    @IndexColumn(name="position")
+    public List<ClientSiteNetwork> getExportedAddressList()
     {
-        if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList();
+        if ( this.exportedAddressList == null ) this.exportedAddressList = new LinkedList<ClientSiteNetwork>();
 
         return this.exportedAddressList;
     }
-    public void setExportedAddressList( List exportedAddressList )
+
+    public void setExportedAddressList( List<ClientSiteNetwork> exportedAddressList )
     {
         this.exportedAddressList = exportedAddressList;
     }
@@ -77,6 +81,7 @@ public class  VpnSite extends VpnClient
      * @hibernate.property
      * column="is_edgeguard"
      */
+    @Column(name="is_edgeguard", nullable=false)
     public boolean getIsEdgeGuard()
     {
         return this.isEdgeGuard;
@@ -91,7 +96,7 @@ public class  VpnSite extends VpnClient
      * XXXX This is a convenience method that doesn't scale if there are
      * multiple networks and netmasks
      */
-    
+    @Transient
     public ClientSiteNetwork getSiteNetwork()
     {
         List list = getExportedAddressList();
@@ -106,14 +111,14 @@ public class  VpnSite extends VpnClient
         } else {
             site = (ClientSiteNetwork)list.get( 0 );
         }
-        
+
         return site;
     }
 
     public void setSiteNetwork( IPaddr network, IPaddr netmask )
     {
         List list = getExportedAddressList();
-        
+
         ClientSiteNetwork site;
         if ( list.size() < 1 ) {
             site = new ClientSiteNetwork();
@@ -121,7 +126,7 @@ public class  VpnSite extends VpnClient
         } else {
             site = (ClientSiteNetwork)list.get( 0 );
         }
-        
+
         site.setLive( true );
         site.setNetwork( network );
         site.setNetmask( netmask );
@@ -137,4 +142,4 @@ public class  VpnSite extends VpnClient
     }
 }
 
-    
+
