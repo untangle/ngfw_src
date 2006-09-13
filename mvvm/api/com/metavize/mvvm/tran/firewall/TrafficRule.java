@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,14 +12,16 @@
 package com.metavize.mvvm.tran.firewall;
 
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 
 import com.metavize.mvvm.tran.IPaddr;
-import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.ParseException;
-
+import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
+import org.hibernate.annotations.Type;
 
 /**
  * Rule for matching based on IP addresses and subnets.
@@ -27,9 +29,10 @@ import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
  */
+@MappedSuperclass
 abstract class TrafficRule extends Rule
 {
-    // !!! private static final long serialVersionUID = -3950973798403822835L;
+    private static final long serialVersionUID = 3300082570569262876L;
 
     private ProtocolMatcher protocol;
 
@@ -41,14 +44,9 @@ abstract class TrafficRule extends Rule
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
-    public TrafficRule()
-    {
-    }
+    public TrafficRule() { }
 
-    public TrafficRule( boolean       isLive,     ProtocolMatcher protocol, 
+    public TrafficRule( boolean       isLive,     ProtocolMatcher protocol,
                         IPDBMatcher   srcAddress, IPDBMatcher     dstAddress,
                         PortDBMatcher srcPort,    PortDBMatcher   dstPort )
     {
@@ -78,11 +76,9 @@ abstract class TrafficRule extends Rule
      * Protocol matcher
      *
      * @return the protocol matcher.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.firewall.ProtocolMatcherUserType"
-     * @hibernate.column
-     * name="PROTOCOL_MATCHER"
      */
+    @Column(name="protocol_matcher")
+    @Type(type="com.metavize.mvvm.type.firewall.ProtocolMatcherUserType")
     public ProtocolMatcher getProtocol()
     {
         return protocol;
@@ -92,16 +88,14 @@ abstract class TrafficRule extends Rule
     {
         this.protocol = protocol;
     }
-        
+
     /**
      * source IPDBMatcher
      *
      * @return the source IP matcher.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.firewall.IPMatcherUserType"
-     * @hibernate.column
-     * name="SRC_IP_MATCHER"
      */
+    @Column(name="src_ip_matcher")
+    @Type(type="com.metavize.mvvm.type.firewall.IPMatcherUserType")
     public IPDBMatcher getSrcAddress()
     {
         return srcAddress;
@@ -111,16 +105,14 @@ abstract class TrafficRule extends Rule
     {
         this.srcAddress = srcAddress;
     }
-    
+
     /**
      * destination IPDBMatcher
      *
      * @return the destination IP matcher.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.firewall.IPMatcherUserType"
-     * @hibernate.column
-     * name="DST_IP_MATCHER"
      */
+    @Column(name="dst_ip_matcher")
+    @Type(type="com.metavize.mvvm.type.firewall.IPMatcherUserType")
     public IPDBMatcher getDstAddress()
     {
         return dstAddress;
@@ -130,16 +122,14 @@ abstract class TrafficRule extends Rule
     {
         this.dstAddress = dstAddress;
     }
-    
+
     /**
      * source PortDBMatcher
      *
      * @return the source IP matcher.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.firewall.PortMatcherUserType"
-     * @hibernate.column
-     * name="SRC_PORT_MATCHER"
      */
+    @Column(name="src_port_matcher")
+    @Type(type="com.metavize.mvvm.type.firewall.PortMatcherUserType")
     public PortDBMatcher getSrcPort()
     {
         return srcPort;
@@ -149,16 +139,14 @@ abstract class TrafficRule extends Rule
     {
         this.srcPort = srcPort;
     }
-    
+
     /**
      * destination PortDBMatcher
      *
      * @return the destination IP matcher.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.firewall.PortMatcherUserType"
-     * @hibernate.column
-     * name="DST_PORT_MATCHER"
      */
+    @Column(name="dst_port_matcher")
+    @Type(type="com.metavize.mvvm.type.firewall.PortMatcherUserType")
     public PortDBMatcher getDstPort()
     {
         return dstPort;

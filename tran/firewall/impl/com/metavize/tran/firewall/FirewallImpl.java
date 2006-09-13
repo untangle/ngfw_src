@@ -31,11 +31,11 @@ import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
+import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.metavize.mvvm.tran.firewall.port.PortMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -79,8 +79,8 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
     public FirewallSettings getFirewallSettings()
     {
-	if( settings == null )
-	    logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+    if( settings == null )
+        logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
         return settings;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,20 +11,33 @@
 
 package com.metavize.tran.firewall;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.ParseException;
-import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
-import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
+import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.TrafficDirectionRule;
+import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
+import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
 
 /**
  * Rule for matching based on IP addresses and subnets.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="FIREWALL_RULE"
  */
+@Entity
+@Table(name="firewall_rule", schema="settings")
 public class FirewallRule extends TrafficDirectionRule
 {
     private static final long serialVersionUID = -5024800839738084290L;
@@ -38,12 +51,7 @@ public class FirewallRule extends TrafficDirectionRule
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
-    public FirewallRule()
-    {
-    }
+    public FirewallRule() { }
 
     public FirewallRule( boolean       isLive,     ProtocolMatcher protocol,
                          boolean       inbound,    boolean outbound,
@@ -52,7 +60,7 @@ public class FirewallRule extends TrafficDirectionRule
                          boolean isTrafficBlocker )
     {
         super( isLive, protocol, inbound, outbound, srcAddress, dstAddress, srcPort, dstPort );
-        
+
         /* Attributes of the firewall */
         this.isTrafficBlocker = isTrafficBlocker;
     }
@@ -64,9 +72,8 @@ public class FirewallRule extends TrafficDirectionRule
      * Does this rule block traffic or let it pass.
      *
      * @return if this rule blocks traffic.
-     * @hibernate.property
-     * column="IS_TRAFFIC_BLOCKER"
      */
+    @Column(name="is_traffic_blocker", nullable=false)
     public boolean isTrafficBlocker()
     {
         return isTrafficBlocker;
@@ -77,9 +84,9 @@ public class FirewallRule extends TrafficDirectionRule
         this.isTrafficBlocker = isTrafficBlocker;
     }
 
+    @Transient
     public  String getAction()
     {
-
         return ( isTrafficBlocker ) ? ACTION_BLOCK : ACTION_PASS;
     }
 
@@ -94,6 +101,7 @@ public class FirewallRule extends TrafficDirectionRule
         }
     }
 
+    @Transient
     public static String[] getActionEnumeration()
     {
         return ACTION_ENUMERATION;

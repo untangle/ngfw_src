@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -15,19 +15,32 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.Validatable;
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * Settings for the Firewall transform.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_FIREWALL_SETTINGS"
  */
+@Entity
+@Table(name="tr_firewall_settings", schema="settings")
 public class FirewallSettings implements Serializable, Validatable
 {
     private Long id;
@@ -36,20 +49,14 @@ public class FirewallSettings implements Serializable, Validatable
     /* XXX Must be updated */
     private static final long serialVersionUID = 1629094295874759581L;
 
-    private List firewallRuleList = null;
+    private List<FirewallRule> firewallRuleList = null;
 
     private boolean quickExit = true;
     private boolean rejectSilently = true;
     private boolean isDefaultAccept = true;
 
-    /**
-     * Hibernate constructor.
-     */
     private FirewallSettings() {}
 
-    /**
-     * Real constructor
-     */
     public FirewallSettings(Tid tid)
     {
         this.tid = tid;
@@ -64,11 +71,9 @@ public class FirewallSettings implements Serializable, Validatable
         }
     }
 
-    /**
-     * @hibernate.id
-     * column="SETTINGS_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -83,10 +88,9 @@ public class FirewallSettings implements Serializable, Validatable
      * Transform id for these settings.
      *
      * @return tid for these settings
-     * @hibernate.many-to-one
-     * column="TID"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="tid", nullable=false)
     public Tid getTid()
     {
         return tid;
@@ -100,10 +104,8 @@ public class FirewallSettings implements Serializable, Validatable
     /**
      * If true, exit on the first positive or negative match.  Otherwise, exit
      * on the first negative match.
-     *
-     * @hibernate.property
-     * column="IS_QUICKEXIT"
      */
+    @Column(name="is_quickexit", nullable=false)
     public boolean isQuickExit()
     {
         return this.quickExit;
@@ -117,10 +119,8 @@ public class FirewallSettings implements Serializable, Validatable
     /**
      *  If true, the session is rejected quietly (default), otherwise the connection
      *  is rejected silently.
-     *
-     * @hibernate.property
-     * column="IS_REJECT_SILENT"
      */
+    @Column(name="is_reject_silent", nullable=false)
     public boolean isRejectSilently()
     {
         return this.rejectSilently;
@@ -133,10 +133,8 @@ public class FirewallSettings implements Serializable, Validatable
 
     /**
      *  If true, the session is accepted if it doesn't match any other rules.
-     *
-     * @hibernate.property
-     * column="IS_DEFAULT_ACCEPT"
      */
+    @Column(name="is_default_accept", nullable=false)
     public boolean isDefaultAccept()
     {
         return this.isDefaultAccept;
@@ -151,23 +149,18 @@ public class FirewallSettings implements Serializable, Validatable
      * List of the redirect rules.
      *
      * @return the list of the redirect rules.
-     * @hibernate.list
-     * cascade="all"
-     * table="TR_FIREWALL_RULES"
-     * @hibernate.collection-key
-     * column="SETTING_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.tran.firewall.FirewallRule"
-     * column="RULE_ID"
      */
-    public List getFirewallRuleList()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_firewall_rules",
+               joinColumns = @JoinColumn(name="setting_id"),
+               inverseJoinColumns = @JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<FirewallRule> getFirewallRuleList()
     {
         return firewallRuleList;
     }
 
-    public void setFirewallRuleList(List s )
+    public void setFirewallRuleList(List<FirewallRule> s)
     {
         this.firewallRuleList = s;
     }
