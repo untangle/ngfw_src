@@ -14,49 +14,52 @@ package com.metavize.tran.ids;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.security.Tid;
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * Hibernate object to store IDS settings.
  *
  * @author <a href="mailto:nchilders@metavize.com">Nick Childers</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_IDS_SETTINGS"
  */
-
+@Entity
+@Table(name="tr_ids_settings", schema="settings")
 public class IDSSettings implements Serializable {
     private static final long serialVersionUID = -7056565971726289302L;
     private int maxChunks;
     private Long id;
     private Tid tid;
-    private List rules = new ArrayList();
-    private List variables = new ArrayList();
-    private List immutableVariables = new ArrayList();
+    private List<IDSRule> rules = new ArrayList<IDSRule>();
+    private List<IDSVariable> variables = new ArrayList<IDSVariable>();
+    private List<IDSVariable> immutableVariables = new ArrayList<IDSVariable>();
 
-    /**
-     * Hibernate constructor
-     */
     public IDSSettings() {}
 
     public IDSSettings(Tid tid) {
         this.tid = tid;
     }
 
-    /**
-     * @hibernate.id
-     * column="SETTINGS_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     protected Long getID() { return id; }
     protected void setID(Long id) { this.id = id; }
 
-    /**
-     * @hibernate.property
-     * column="MAX_CHUNKS"
-     */
-
+    @Column(name="max_chunks")
     protected int getMaxChunks() { return maxChunks; }
     protected void setMaxChunks(int maxChunks) { this.maxChunks = maxChunks; }
 
@@ -64,62 +67,36 @@ public class IDSSettings implements Serializable {
      * Transform id for these settings.
      *
      * @return tid for these settings.
-     * @hibernate.many-to-one
-     * column="TID"
-     * not-null="true"
      */
-        public Tid getTid() {
-            return tid;
-        }
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="tid", nullable=false)
+    public Tid getTid() {
+        return tid;
+    }
 
-        public void setTid(Tid tid) {
-            this.tid = tid;
-        }
+    public void setTid(Tid tid) {
+        this.tid = tid;
+    }
 
-    /**
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="SETTINGS_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.tran.ids.IDSRule"
-     */
-    public List getRules() { return this.rules; }
-    public void setRules(List rules) { this.rules = rules; }
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="settings_id")
+    @IndexColumn(name="position")
+    public List<IDSRule> getRules() { return this.rules; }
+    public void setRules(List<IDSRule> rules) { this.rules = rules; }
 
-    /**
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="TR_IDS_MUTABLE_VARIABLES"
-     * @hibernate.collection-key
-     * column="SETTING_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.tran.ids.IDSVariable"
-     * column="VARIABLE_ID"
-     */
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_ids_mutable_variables",
+               joinColumns = @JoinColumn(name="setting_id"),
+               inverseJoinColumns = @JoinColumn(name="variable_id"))
+    @IndexColumn(name="position")
+    public List<IDSVariable> getVariables() { return this.variables; }
+    public void setVariables(List<IDSVariable> variables) { this.variables = variables; }
 
-    public List getVariables() { return this.variables; }
-    public void setVariables(List variables) { this.variables = variables; }
-
-    /**
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="TR_IDS_IMMUTABLE_VARIABLES"
-     * @hibernate.collection-key
-     * column="SETTING_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.tran.ids.IDSVariable"
-     * column="VARIABLE_ID"
-     */
-
-    public List getImmutableVariables() { return this.immutableVariables; }
-    public void setImmutableVariables(List variables) { this.immutableVariables = variables; }
-
-
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_ids_immutable_variables",
+               joinColumns = @JoinColumn(name="setting_id"),
+               inverseJoinColumns = @JoinColumn(name="variable_id"))
+    @IndexColumn(name="position")
+    public List<IDSVariable> getImmutableVariables() { return this.immutableVariables; }
+    public void setImmutableVariables(List<IDSVariable> variables) { this.immutableVariables = variables; }
 }

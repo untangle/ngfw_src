@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,20 +11,26 @@
 
 package com.metavize.tran.ids;
 
-import com.metavize.mvvm.tran.Rule;
-
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import com.metavize.mvvm.tran.Rule;
 
 /**
  * Hibernate object to store IDS rules.
  *
  * @author <a href="mailto:nchilders@metavize.com">Nick Childers</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_IDS_RULE"
  */
-
-public class IDSRule extends Rule implements Serializable {
+@Entity
+@Table(name="tr_ids_rule", schema="settings")
+public class IDSRule extends Rule implements Serializable
+{
     private static final long serialVersionUID = -7009708957041660234L;
 
     // Actions (indices to ACTIONS)
@@ -33,7 +39,7 @@ public class IDSRule extends Rule implements Serializable {
     public static final int PASS = 2;
     public static final int BLOCK = 3;
     public static final String[] ACTIONS = { "alert","log","pass","block" };
-	
+
     //Hibernate Variables
     private String rule;
 
@@ -50,47 +56,46 @@ public class IDSRule extends Rule implements Serializable {
     private transient IDSRuleSignature signature;
     private transient boolean remove; //Should no longer be in the list
 
-    /**
-     * Hibernate constructor
-     */
     public IDSRule() {}
 
     public IDSRule(String rule, String  category, String description) {
 
         super("Name", category,description,false);
-		
+
         this.rule = rule;
         this.modified = false;
         this.remove = false;
     }
-	
+
+    @Transient
     public long getKeyValue() { return super.getId(); }
     public void setKeyValue(Long val) { super.setId(val); }
 
+    @Transient
     public boolean getModified() { return modified; }
     public void setModified(boolean val) { modified = val; }
-	
-    /**
-     * @hibernate.property
-     * column="RULE"
-     */
-    public String getText() { return this.rule; }
-    public void setText(String s) { this.rule = s; }	
 
-    /**
-     * @hibernate.property
-     * column="SID"
-     */
+    @Column(name="rule")
+    public String getText() { return this.rule; }
+    public void setText(String s) { this.rule = s; }
+
+    @Column(nullable=false)
     public int getSid() { return this.sid; }
-    public void setSid(int sid) { this.sid = sid; }	
+    public void setSid(int sid) { this.sid = sid; }
 
     //Non Hibernate functions
+    @Transient
+    public IDSRuleHeader getHeader() {
+        return header;
+    }
+
     public void setHeader(IDSRuleHeader header) {
         this.header = header;
     }
-	
-    public IDSRuleHeader getHeader() {
-        return header;
+
+    @Transient
+    public IDSRuleSignature getSignature() {
+        return signature;
     }
 
     public void setSignature(IDSRuleSignature signature) {
@@ -98,28 +103,26 @@ public class IDSRule extends Rule implements Serializable {
         //super.setDescription(getMessage());
     }
 
-    public IDSRuleSignature getSignature() {
-        return signature;
+    /* every rule signature has classification (so default text is replaced) */
+    @Transient
+    public String getClassification() {
+        return classification;
     }
 
-    /* every rule signature has classification (so default text is replaced) */
     public void setClassification(String classification) {
         this.classification = classification;
         return;
     }
 
-    public String getClassification() {
-        return classification;
+    /* not all rule signatures have url (so default text may be returned) */
+    @Transient
+    public String getURL() {
+        return url;
     }
 
-    /* not all rule signatures have url (so default text may be returned) */
     public void setURL(String url) {
         this.url = url;
         return;
-    }
-
-    public String getURL() {
-        return url;
     }
 
     public boolean remove() {
@@ -134,6 +137,7 @@ public class IDSRule extends Rule implements Serializable {
         return !(isLive() || getLog());
     }
 
+    @Transient
     public int getAction() {
         if (isLive())
             return BLOCK;
@@ -147,7 +151,8 @@ public class IDSRule extends Rule implements Serializable {
     public boolean equals(Object o) {
         if (o instanceof IDSRule) {
             IDSRule other = (IDSRule) o;
-            // Following isn't totally complete, but is good enough for what we use from Rule. XX
+            // Following isn't totally complete, but is good enough
+            // for what we use from Rule. XX
             return (rule == null ? other.rule == null : rule.equals(other.rule)) &&
                 isLive() == other.isLive() &&
                 getLog() == other.getLog();

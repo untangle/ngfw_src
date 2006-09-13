@@ -12,6 +12,12 @@
 package com.metavize.tran.ids;
 
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Hibernate object to store IDS Variable.
@@ -21,7 +27,8 @@ import java.io.Serializable;
  * @hibernate.class
  * table="TR_IDS_VARIABLE"
  */
-
+@Entity
+@Table(name="tr_ids_variable", schema="settings")
 public class IDSVariable implements Serializable {
     private Long id;
     private static final long serialVersionUID = -7777708957041660234L;
@@ -29,9 +36,6 @@ public class IDSVariable implements Serializable {
     private String definition;
     private String description;
 
-    /**
-     * Hibernate constructor
-     */
     public IDSVariable() {}
 
     public IDSVariable(String var, String def, String desc) {
@@ -44,37 +48,21 @@ public class IDSVariable implements Serializable {
         this.description = desc;
     }
 
-    /**
-     * @hibernate.id
-     * column="VARIABLE_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="variable_id")
+    @GeneratedValue
     protected Long getId() { return id; }
     protected void setId(Long id) { this.id = id; }
 
-    /**
-     * @hibernate.property
-     * column="VARIABLE"
-     * length="512"
-     */
-
+    @Column(length=512)
     public String getVariable() { return this.variable; }
     public void setVariable(String s) { this.variable = s; }
-    /**
-     * @hibernate.property
-     * column="DEFINITION"
-     * length="512"
-     */
 
+    @Column(length=512)
     public String getDefinition() { return this.definition; }
     public void setDefinition(String s) { this.definition = s; }
 
-    /**
-     * @hibernate.property
-     * column="DESCRIPTION"
-     * length="1024"
-     */
-
+    @Column(length=1024)
     public String getDescription() { return this.description; }
     public void setDescription(String s) { this.description = s; }
 }
