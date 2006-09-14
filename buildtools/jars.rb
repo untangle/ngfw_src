@@ -51,6 +51,9 @@ class Jars
   Postgres   = [ Jars.downloadTarget('postgres-jdbc-7.4_215/pg74.215.jdbc3.jar')]
   Velocity   = [ Jars.downloadTarget('velocity-1.4/velocity-1.4.jar') ]
 
+  ## Jars required to run/compile unit tests
+  Junit      = [ Jars.downloadTarget('junit4.1/junit-4.1.jar')]
+
 
 
   Jnlp       = [ ThirdpartyJar.get("#{$BuildEnv.javahome}/sample/jnlp/servlet/jnlp.jar") ]

@@ -71,7 +71,7 @@ include Debug
 class BuildEnv
   ThirdPartyJar = "usr/share/java/mvvm"
 
-  attr_reader :prefix, :staging, :devel, :deb, :isDevel, :buildtools, :grabbag, :downloads, :javahome, :servletcommon, :filterset, :include
+  attr_reader :prefix, :staging, :devel, :deb, :isDevel, :buildtools, :grabbag, :downloads, :javahome, :servletcommon, :include
   attr_writer :prefix, :target, :isDevel
 
   def initialize()
