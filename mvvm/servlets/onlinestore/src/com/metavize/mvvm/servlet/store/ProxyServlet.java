@@ -197,6 +197,53 @@ public class ProxyServlet extends HttpServlet
         }
     }
 
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+        throws ServletException
+    {
+        HttpSession s = req.getSession();
+        HttpClient httpClient = (HttpClient)s.getAttribute(HTTP_CLIENT);
+
+        String pi = req.getPathInfo();
+        String qs = req.getQueryString();
+
+        String url = BASE_URL + (null == pi ? "" : pi)
+                + (null == qs ? "" : ("?" + qs));
+
+        InputStream is = null;
+        OutputStream os = null;
+
+        try {
+            RawPostMethod post = new RawPostMethod(url);
+            post.setFollowRedirects(true);
+            copyHeaders(req, post);
+            post.setBodyStream(req.getContentType(), req.getInputStream(),
+                               req.getIntHeader("Content-Length"));
+            int rc = httpClient.executeMethod(post);
+            copyHeaders(post, resp, req);
+            is = post.getResponseBodyAsStream();
+            os = resp.getOutputStream();
+            copyStream(is, os);
+        } catch (IOException exn) {
+            throw new ServletException("Could not do post", exn);
+        } finally {
+            if (null != is) {
+                try {
+                    is.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close Socket InputStream");
+                }
+            }
+
+            if (null != os) {
+                try {
+                    os.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close Socket OutputStream");
+                }
+            }
+        }
+    }
+
     private void copyStream(InputStream is, OutputStream os)
         throws IOException
     {
