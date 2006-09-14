@@ -51,8 +51,4 @@ public enum TransformState
      * Disabled.
      */
     DISABLED;
-
-    // Object methods ----------------------------------------------------------
-
-    public String toString() { return super.toString().toLowerCase(); }
 }

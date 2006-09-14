@@ -27,6 +27,7 @@ import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformState;
+import org.hibernate.annotations.Type;
 
 /**
  * Record of transform state change.
@@ -59,7 +60,7 @@ class TransformStateChange extends LogEvent
      * @return transform state at time of log.
      */
     @Enumerated(EnumType.STRING)
-    @Column(nullable=false)
+    @Type(type="com.metavize.mvvm.type.TransformStateUserType")
     TransformState getState()
     {
         return state;

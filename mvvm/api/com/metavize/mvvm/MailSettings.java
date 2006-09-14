@@ -12,15 +12,20 @@
 package com.metavize.mvvm;
 
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * MVVM mail settings.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="MAIL_SETTINGS"
  */
+@Entity
+@Table(name="mail_settings", schema="settings")
 public class MailSettings implements Serializable
 {
     private static final long serialVersionUID = 6722526215093951941L;
@@ -47,11 +52,9 @@ public class MailSettings implements Serializable
     private String  authPass;
     private String  localHostName;
 
-    /**
-     * @hibernate.id
-     * column="MAIL_SETTINGS_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="mail_settings_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -64,14 +67,13 @@ public class MailSettings implements Serializable
 
     /**
      * The comma-separated email address(es) to send reports to.
-     *
-     * @hibernate.property
-     * column="REPORT_EMAIL"
      */
+    @Column(name="report_email")
     public String getReportEmail()
     {
-    if( reportEmail == null )
-        reportEmail = new String();
+        if (reportEmail == null) {
+            reportEmail = new String();
+        }
         return reportEmail;
     }
 
@@ -85,10 +87,8 @@ public class MailSettings implements Serializable
      * server to send emails.
      *
      * @return true if should use MX records
-     * @hibernate.property
-     * not-null="true"
-     * column="USE_MX_RECORDS"
      */
+    @Column(name="use_mx_records", nullable=false)
     public boolean isUseMxRecords()
     {
         return useMxRecords;
@@ -104,15 +104,14 @@ public class MailSettings implements Serializable
      * emails.  This can be a host name or an IP address.
      *
      * @return a <code>String</code> value
-     * @hibernate.property
-     * column="SMTP_HOST"
      */
+    @Column(name="smtp_host")
     public String getSmtpHost()
     {
-	if( smtpHost == null )
-	    return "";
-	else
-	    return smtpHost;
+        if( smtpHost == null )
+            return "";
+        else
+            return smtpHost;
     }
 
     public void setSmtpHost(String smtpHost)
@@ -125,10 +124,8 @@ public class MailSettings implements Serializable
      * is null, this is ignored.
      *
      * @return the TCP port to connect to.
-     * @hibernate.property
-     * not-null="true"
-     * column="SMTP_PORT"
      */
+    @Column(name="smtp_port", nullable=false)
     public int getSmtpPort()
     {
         return smtpPort;
@@ -147,6 +144,7 @@ public class MailSettings implements Serializable
      * not-null="true"
      * column="USE_TLS"
      */
+    @Column(name="use_tls", nullable=false)
     public boolean isUseTls()
     {
         return useTls;

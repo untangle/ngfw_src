@@ -31,6 +31,7 @@ import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformState;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.Type;
 
 /**
  * Internal transform state.
@@ -165,8 +166,8 @@ class TransformPersistentState
      *
      * @return the target state.
      */
-    @Enumerated(EnumType.STRING)
     @Column(name="target_state", nullable=false)
+    @Type(type="com.metavize.mvvm.type.TransformStateUserType")
     TransformState getTargetState()
     {
         return targetState;
