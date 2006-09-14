@@ -159,9 +159,8 @@ public class MailSettings implements Serializable
      * The From address for mail coming from the Metavize system.
      *
      * @return a <code>String</code> value
-     * @hibernate.property
-     * column="FROM_ADDRESS"
      */
+    @Column(name="from_address")
     public String getFromAddress()
     {
         return fromAddress;
@@ -173,12 +172,12 @@ public class MailSettings implements Serializable
     }
 
     /**
-     * The User to use for SMTP Auth.  If null or if the pass is null, don't use SMTP auth.
+     * The User to use for SMTP Auth.  If null or if the pass is null,
+     * don't use SMTP auth.
      *
      * @return a <code>String</code> giving the user name for SMTP Auth
-     * @hibernate.property
-     * column="AUTH_USER"
      */
+    @Column(name="auth_user")
     public String getAuthUser()
     {
         return authUser;
@@ -190,12 +189,12 @@ public class MailSettings implements Serializable
     }
 
     /**
-     * The Password to use for SMTP Auth.  If null or if the user is null, don't use SMTP auth.
+     * The Password to use for SMTP Auth.  If null or if the user is
+     * null, don't use SMTP auth.
      *
      * @return a <code>String</code> giving the password for SMTP Auth
-     * @hibernate.property
-     * column="AUTH_PASS"
      */
+    @Column(name="auth_pass")
     public String getAuthPass()
     {
         return authPass;
@@ -207,13 +206,12 @@ public class MailSettings implements Serializable
     }
 
     /**
-     * The Local host name to use for sending (SMTP HELO).  If null, use the actual
-     * local host name (currently always mv-edgeguard).
+     * The Local host name to use for sending (SMTP HELO).  If null,
+     * use the actual local host name (currently always mv-edgeguard).
      *
      * @return a <code>String</code> giving the local host name for HELO
-     * @hibernate.property
-     * column="LOCAL_HOST_NAME"
      */
+    @Column(name="local_host_name")
     public String getLocalHostName()
     {
         return localHostName;

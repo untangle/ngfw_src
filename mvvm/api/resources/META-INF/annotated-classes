@@ -1,3 +1,4 @@
+com.metavize.mvvm.MailSettings
 com.metavize.mvvm.Period
 com.metavize.mvvm.networking.DhcpLeaseRule
 com.metavize.mvvm.networking.DnsStaticHostRule
