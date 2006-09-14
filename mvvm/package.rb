@@ -32,7 +32,10 @@ ServletBuilder.new(mvvm, 'com.metavize.mvvm.invoker.jsp',
                    'mvvm/servlets/http-invoker', [], [],
                    [$BuildEnv.servletcommon], true)
 
-deps = [ 'commons-httpclient-3.0/commons-httpclient-3.0.jar' ].map { |n| ThirdpartyJar.get("#{$BuildEnv.downloads}/#{n}") }
+deps = %w( commons-httpclient-3.0/commons-httpclient-3.0.jar
+           commons-codec-1.3/commons-codec-1.3.jar
+           commons-fileupload-1.1/commons-fileupload-1.1.jar
+         ).map { |n| ThirdpartyJar.get("#{$BuildEnv.downloads}/#{n}") }
 ServletBuilder.new(mvvm, 'com.metavize.mvvm.store.jsp',
                    'mvvm/servlets/onlinestore', deps)
 
