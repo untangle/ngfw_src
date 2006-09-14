@@ -249,8 +249,8 @@ public class SpywareSettings implements Serializable
      */
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_spyware_ar",
-               joinColumns = @JoinColumn(name="settings_id"),
-               inverseJoinColumns = @JoinColumn(name="rule_id"))
+               joinColumns=@JoinColumn(name="settings_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
     public List<StringRule> getActiveXRules()
     {
@@ -269,8 +269,8 @@ public class SpywareSettings implements Serializable
      */
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_spyware_cr",
-               joinColumns = @JoinColumn(name="settings_id"),
-               inverseJoinColumns = @JoinColumn(name="rule_id"))
+               joinColumns=@JoinColumn(name="settings_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
     public List<StringRule> getCookieRules()
     {
@@ -289,8 +289,8 @@ public class SpywareSettings implements Serializable
      */
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_spyware_sr",
-               joinColumns = @JoinColumn(name="settings_id"),
-               inverseJoinColumns = @JoinColumn(name="rule_id"))
+               joinColumns=@JoinColumn(name="settings_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
     public List<IPMaddrRule> getSubnetRules()
     {
@@ -309,8 +309,8 @@ public class SpywareSettings implements Serializable
      */
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_spyware_wl",
-               joinColumns = @JoinColumn(name="settings_id"),
-               inverseJoinColumns = @JoinColumn(name="rule_id"))
+               joinColumns=@JoinColumn(name="settings_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
     public List<StringRule> getDomainWhitelist()
     {

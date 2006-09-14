@@ -152,8 +152,8 @@ public class FirewallSettings implements Serializable, Validatable
      */
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_firewall_rules",
-               joinColumns = @JoinColumn(name="setting_id"),
-               inverseJoinColumns = @JoinColumn(name="rule_id"))
+               joinColumns=@JoinColumn(name="setting_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
     public List<FirewallRule> getFirewallRuleList()
     {

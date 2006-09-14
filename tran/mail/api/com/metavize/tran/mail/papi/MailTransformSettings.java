@@ -246,8 +246,8 @@ public class MailTransformSettings implements Serializable
      */
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_mail_safelists",
-               joinColumns = @JoinColumn(name="setting_id"),
-               inverseJoinColumns = @JoinColumn(name="safels_id"))
+               joinColumns=@JoinColumn(name="setting_id"),
+               inverseJoinColumns=@JoinColumn(name="safels_id"))
     @IndexColumn(name="position")
     public List<SafelistSettings> getSafelistSettings()
     {

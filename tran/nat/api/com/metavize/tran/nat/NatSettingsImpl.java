@@ -280,8 +280,8 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
      */
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_nat_redirects",
-               joinColumns = @JoinColumn(name="setting_id"),
-               inverseJoinColumns = @JoinColumn(name="rule_id"))
+               joinColumns=@JoinColumn(name="setting_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
     public List<RedirectRule> getRedirectList()
     {
@@ -424,8 +424,8 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
      */
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_dhcp_leases",
-               joinColumns = @JoinColumn(name="setting_id"),
-               inverseJoinColumns = @JoinColumn(name="rule_id"))
+               joinColumns=@JoinColumn(name="setting_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
     public List<DhcpLeaseRule> getDhcpLeaseList()
     {
@@ -480,8 +480,8 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
      */
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_nat_dns_hosts",
-               joinColumns = @JoinColumn(name="setting_id"),
-               inverseJoinColumns = @JoinColumn(name="rule_id"))
+               joinColumns=@JoinColumn(name="setting_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
     public List<DnsStaticHostRule> getDnsStaticHostList()
     {

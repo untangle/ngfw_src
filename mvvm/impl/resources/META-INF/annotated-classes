@@ -1,1 +1,3 @@
 com.metavize.mvvm.engine.MackageState
+com.metavize.mvvm.engine.TransformPersistentState
+com.metavize.mvvm.engine.TransformStateChange

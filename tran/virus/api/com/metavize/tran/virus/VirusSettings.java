@@ -377,8 +377,8 @@ public class VirusSettings implements Serializable
      */
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_virus_vs_mt",
-               joinColumns = @JoinColumn(name="settings_id"),
-               inverseJoinColumns = @JoinColumn(name="rule_id"))
+               joinColumns=@JoinColumn(name="settings_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
     public List<MimeTypeRule> getHttpMimeTypes()
     {
@@ -397,8 +397,8 @@ public class VirusSettings implements Serializable
      */
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_virus_vs_ext",
-               joinColumns = @JoinColumn(name="settings_id"),
-               inverseJoinColumns = @JoinColumn(name="rule_id"))
+               joinColumns=@JoinColumn(name="settings_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
     public List<StringRule> getExtensions()
     {

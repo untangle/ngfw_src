@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,6 +14,13 @@ package com.metavize.mvvm.logging;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 /**
  * A log event and message.
@@ -21,13 +28,9 @@ import java.util.Date;
  * Hibernate mappings for this class are in the MVVM resource
  * directory.
  */
+@MappedSuperclass
 public abstract class LogEvent implements Comparable, Serializable
 {
-    // XXX wrong! each class should have a serial UID
-    private static final long serialVersionUID = 3836086272903683391L;
-
-    // How big a varchar() do we get for default String fields.  This
-    // should be elsewhere. XXX
     public static final int DEFAULT_STRING_SIZE = 255;
 
     private Long id;
@@ -39,11 +42,9 @@ public abstract class LogEvent implements Comparable, Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="EVENT_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="event_id")
+    @GeneratedValue
     public Long getId()
     {
         return id;
@@ -58,17 +59,18 @@ public abstract class LogEvent implements Comparable, Serializable
      * Time the event was logged, as filled in by logger.
      *
      * @return time logged.
-     * @hibernate.property
-     * column="TIME_STAMP"
      */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="time_stamp")
     public Date getTimeStamp()
     {
-	return timeStamp;
+        return timeStamp;
     }
 
     /**
-     * Don't make Aaron angry!  This should only be set by the event logging
-     * system unless you're doing tricky things (with Aaron's approval).
+     * Don't make Aaron angry!  This should only be set by the event
+     * logging system unless you're doing tricky things (with Aaron's
+     * approval).
      */
     public void setTimeStamp(Date timeStamp)
     {
@@ -82,10 +84,12 @@ public abstract class LogEvent implements Comparable, Serializable
     // public methods ---------------------------------------------------------
 
     /**
-     * LogEvents inserted into the database when this method returns true.
+     * LogEvents inserted into the database when this method returns
+     * true.
      *
      * @return true when this event is saved to the database.
      */
+    @Transient
     public boolean isPersistent()
     {
         return true;
@@ -95,6 +99,7 @@ public abstract class LogEvent implements Comparable, Serializable
 
     public abstract void appendSyslog(SyslogBuilder a);
 
+    @Transient
     public String getSyslogId()
     {
         String[] s = getClass().getName().split("\\.");
@@ -102,6 +107,7 @@ public abstract class LogEvent implements Comparable, Serializable
         return s[s.length - 1];
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         return SyslogPriority.INFORMATIONAL; // statistics or normal operation

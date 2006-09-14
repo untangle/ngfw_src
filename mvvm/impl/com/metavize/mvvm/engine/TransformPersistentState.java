@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,21 +11,35 @@
 
 package com.metavize.mvvm.engine;
 
-
 import java.util.LinkedList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.TransformState;
+import org.hibernate.annotations.CollectionOfElements;
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * Internal transform state.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TRANSFORM_PERSISTENT_STATE"
  */
+@Entity
+@Table(name="transform_persistent_state")
 class TransformPersistentState
 {
     private Long id;
@@ -51,11 +65,9 @@ class TransformPersistentState
 
     // bean methods -----------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     Long getId()
     {
         return id;
@@ -70,11 +82,9 @@ class TransformPersistentState
      * Transform id.
      *
      * @return tid for this instance.
-     * @hibernate.many-to-one
-     * cascade="none"
-     * column="TID"
-     * not-null="true"
      */
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name="tid", nullable=false)
     Tid getTid()
     {
         return tid;
@@ -89,11 +99,8 @@ class TransformPersistentState
      * Internal name of the transform.
      *
      * @return the transform's name.
-     * @hibernate.property
-     * column="NAME"
-     * not-null="true"
-     * length="64"
      */
+    @Column(nullable=false, length=64)
     String getName()
     {
         return name;
@@ -109,30 +116,26 @@ class TransformPersistentState
      * database settings.
      *
      * @return transform arguments.
-     * @hibernate.list
-     * table="TRANSFORM_ARGS"
-     * @hibernate.collection-key
-     * column="TPS_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-element
-     * type="string"
-     * column="ARG"
-     * not-null="true"
-    */
-    List getArgs()
+     */
+    @CollectionOfElements
+    @JoinTable(name="transform_args",
+               joinColumns=@JoinColumn(name="tps_id"))
+    @Column(name="arg", nullable=false)
+    @IndexColumn(name="position")
+    List<String> getArgs()
     {
         return args;
-    }
-
-    String[] getArgArray()
-    {
-        return (String[])args.toArray(new String[args.size()]);
     }
 
     void setArgs(List args)
     {
         this.args = args;
+    }
+
+    @Transient
+    String[] getArgArray()
+    {
+        return (String[])args.toArray(new String[args.size()]);
     }
 
     /**
@@ -141,12 +144,8 @@ class TransformPersistentState
      * XXX for now length of 16 because not really used anyway
      *
      * @return public key
-     * @hibernate.property
-     * type="binary"
-     * column="PUBLIC_KEY"
-     * length="16"
-     * not-null="true"
      */
+    @Column(name="public_key", length=16, nullable=false)
     byte[] getPublicKey()
     {
         return publicKey;
@@ -165,11 +164,9 @@ class TransformPersistentState
      * state.
      *
      * @return the target state.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.TransformStateUserType"
-     * column="TARGET_STATE"
-     * not-null="true"
      */
+    @Enumerated(EnumType.STRING)
+    @Column(name="target_state", nullable=false)
     TransformState getTargetState()
     {
         return targetState;

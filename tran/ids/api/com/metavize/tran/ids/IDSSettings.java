@@ -86,16 +86,16 @@ public class IDSSettings implements Serializable {
 
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_ids_mutable_variables",
-               joinColumns = @JoinColumn(name="setting_id"),
-               inverseJoinColumns = @JoinColumn(name="variable_id"))
+               joinColumns=@JoinColumn(name="setting_id"),
+               inverseJoinColumns=@JoinColumn(name="variable_id"))
     @IndexColumn(name="position")
     public List<IDSVariable> getVariables() { return this.variables; }
     public void setVariables(List<IDSVariable> variables) { this.variables = variables; }
 
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_ids_immutable_variables",
-               joinColumns = @JoinColumn(name="setting_id"),
-               inverseJoinColumns = @JoinColumn(name="variable_id"))
+               joinColumns=@JoinColumn(name="setting_id"),
+               inverseJoinColumns=@JoinColumn(name="variable_id"))
     @IndexColumn(name="position")
     public List<IDSVariable> getImmutableVariables() { return this.immutableVariables; }
     public void setImmutableVariables(List<IDSVariable> variables) { this.immutableVariables = variables; }

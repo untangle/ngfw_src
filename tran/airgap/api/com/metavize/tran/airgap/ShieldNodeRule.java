@@ -39,7 +39,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name = "tr_airgap_shield_node_rule", schema="settings")
+@Table(name="tr_airgap_shield_node_rule", schema="settings")
 public class ShieldNodeRule extends Rule implements ShieldNodeSettings
 {
     private static final long serialVersionUID = -6928365798856031269L;

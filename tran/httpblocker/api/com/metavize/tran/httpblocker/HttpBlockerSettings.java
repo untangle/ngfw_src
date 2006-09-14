@@ -179,8 +179,8 @@ public class HttpBlockerSettings implements Serializable
      */
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_httpblk_passed_clients",
-               joinColumns = @JoinColumn(name="setting_id"),
-               inverseJoinColumns = @JoinColumn(name="rule_id"))
+               joinColumns=@JoinColumn(name="setting_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
     public List<IPMaddrRule> getPassedClients()
     {
@@ -199,8 +199,8 @@ public class HttpBlockerSettings implements Serializable
      */
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_httpblk_passed_urls",
-               joinColumns = @JoinColumn(name="setting_id"),
-               inverseJoinColumns = @JoinColumn(name="rule_id"))
+               joinColumns=@JoinColumn(name="setting_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
     public List<StringRule> getPassedUrls()
     {
@@ -219,8 +219,8 @@ public class HttpBlockerSettings implements Serializable
      */
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_httpblk_blocked_urls",
-               joinColumns = @JoinColumn(name="setting_id"),
-               inverseJoinColumns = @JoinColumn(name="rule_id"))
+               joinColumns=@JoinColumn(name="setting_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
     public List<StringRule> getBlockedUrls()
     {
@@ -239,8 +239,8 @@ public class HttpBlockerSettings implements Serializable
      */
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_httpblk_mime_types",
-               joinColumns = @JoinColumn(name="setting_id"),
-               inverseJoinColumns = @JoinColumn(name="rule_id"))
+               joinColumns=@JoinColumn(name="setting_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
     public List<MimeTypeRule> getBlockedMimeTypes()
     {
@@ -259,8 +259,8 @@ public class HttpBlockerSettings implements Serializable
      */
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinTable(name="tr_httpblk_extensions",
-               joinColumns = @JoinColumn(name="setting_id"),
-               inverseJoinColumns = @JoinColumn(name="rule_id"))
+               joinColumns=@JoinColumn(name="setting_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
     public List<StringRule> getBlockedExtensions()
     {

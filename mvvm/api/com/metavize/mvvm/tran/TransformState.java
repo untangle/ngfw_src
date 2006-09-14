@@ -21,72 +21,38 @@ import java.util.Map;
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
  */
-public class TransformState implements Serializable
+public enum TransformState
 {
-    private static final long serialVersionUID = 2291079542779127610L;
-
     /**
      * Instantiated, but not initialized. This is a transient state,
      * just after the main transform class has been instantiated, but
      * before init has been called.
      */
-    public static final TransformState LOADED;
+    LOADED,
 
     /**
      * Initialized, but not running. The transform instance enters
      * this state after it has been initialized, or when it is
      * stopped.
      */
-    public static final TransformState INITIALIZED;
+    INITIALIZED,
 
     /**
      * Running.
      */
-    public static final TransformState RUNNING;
+    RUNNING,
 
     /**
      * Destroyed, this instance should not be used.
      */
-    public static final TransformState DESTROYED;
+    DESTROYED,
 
     /**
      * Disabled.
      */
-    public static final TransformState DISABLED;
+    DISABLED;
 
-    private static final Map INSTANCES = new HashMap();
+    // Object methods ----------------------------------------------------------
 
-    static {
-        LOADED = new TransformState("loaded");
-        INITIALIZED = new TransformState("initialized");
-        RUNNING = new TransformState("running");
-        DESTROYED = new TransformState("destroyed");
-        DISABLED = new TransformState("disabled");
-
-        INSTANCES.put(LOADED.toString(), LOADED);
-        INSTANCES.put(INITIALIZED.toString(), INITIALIZED);
-        INSTANCES.put(RUNNING.toString(), RUNNING);
-        INSTANCES.put(DESTROYED.toString(), DESTROYED);
-        INSTANCES.put(DISABLED.toString(), DISABLED);
-    }
-
-    private String state;
-
-    public static TransformState getInstance(String state)
-    {
-        return (TransformState)INSTANCES.get(state);
-    }
-
-    private TransformState(String state) { this.state = state; }
-
-    // Object methods ---------------------------------------------------------
-
-    public String toString() { return state; }
-
-    // Serialization ----------------------------------------------------------
-
-    Object readResolve()
-    {
-        return getInstance(state);
-    }
+    public String toString() { return super.toString().toLowerCase(); }
 }

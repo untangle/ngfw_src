@@ -12,6 +12,16 @@
 package com.metavize.mvvm.engine;
 
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
@@ -23,9 +33,9 @@ import com.metavize.mvvm.tran.TransformState;
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TRANSFORM_STATE_CHANGE"
  */
+@Entity
+@Table(name="transform_state_change", schema="events")
 class TransformStateChange extends LogEvent
 {
     private Tid tid;
@@ -47,11 +57,9 @@ class TransformStateChange extends LogEvent
      * State the transform has changed into.
      *
      * @return transform state at time of log.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.TransformStateUserType"
-     * column="STATE"
-     * not-null="true"
      */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
     TransformState getState()
     {
         return state;
@@ -66,10 +74,9 @@ class TransformStateChange extends LogEvent
      * Transform id.
      *
      * @return tid for this instance.
-     * @hibernate.many-to-one
-     * cascade="none"
-     * column="TID"
      */
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name="tid", nullable=false)
     Tid getTid()
     {
         return tid;
@@ -89,6 +96,7 @@ class TransformStateChange extends LogEvent
         sb.addField("state", state.toString());
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "Software_Appliance"; // XXX
