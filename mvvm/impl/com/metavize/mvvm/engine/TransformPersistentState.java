@@ -118,7 +118,7 @@ class TransformPersistentState
      *
      * @return transform arguments.
      */
-    @CollectionOfElements
+    @CollectionOfElements(fetch=FetchType.EAGER)
     @JoinTable(name="transform_args",
                joinColumns=@JoinColumn(name="tps_id"))
     @Column(name="arg", nullable=false)
