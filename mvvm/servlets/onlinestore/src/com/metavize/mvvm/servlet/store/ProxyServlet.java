@@ -88,6 +88,36 @@ public class ProxyServlet extends HttpServlet
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
+        String url = getUrl(req);
+
+        HttpMethod get = new GetMethod(url);
+        get.setFollowRedirects(false);
+
+        doIt(get, req, resp);
+    }
+
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+        throws ServletException
+    {
+        String url = getUrl(req);
+
+        RawPostMethod post = new RawPostMethod(url);
+        post.setFollowRedirects(false);
+        try {
+            post.setBodyStream(req.getContentType(), req.getInputStream(),
+                               req.getIntHeader("Content-Length"));
+            doIt(post, req, resp);
+        } catch (IOException exn) {
+            logger.warn("could not do post", exn);
+        }
+    }
+
+    private void doIt(HttpMethod method, HttpServletRequest req,
+                      HttpServletResponse resp)
+        throws ServletException
+    {
+        MvvmLocalContext ctx = MvvmContextFactory.context();
+
         HttpSession s = req.getSession();
 
         HttpClient httpClient = (HttpClient)s.getAttribute(HTTP_CLIENT);
@@ -95,14 +125,13 @@ public class ProxyServlet extends HttpServlet
         if (null == httpClient) {
             httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
             state = httpClient.getState();
-            String boxKey = "XXX";
+            String boxKey = ctx.getActivationKey();
             state.addCookie(new Cookie(COOKIE_DOMAIN, "boxkey", boxKey, "/", -1, false));
             s.setAttribute(HTTP_CLIENT, httpClient);
         } else {
             state = httpClient.getState();
         }
 
-        MvvmLocalContext ctx = MvvmContextFactory.context();
         ToolboxManager tool = ctx.toolboxManager();
         tool.installed();
         StringBuilder sb = new StringBuilder();
@@ -129,23 +158,16 @@ public class ProxyServlet extends HttpServlet
         OutputStream os = null;
 
         try {
-            String pi = req.getPathInfo();
-            String qs = req.getQueryString();
+            copyHeaders(req, method);
+            int rc = httpClient.executeMethod(method);
+            is = method.getResponseBodyAsStream();
 
-            String url = BASE_URL + (null == pi ? "" : pi)
-                + (null == qs ? "" : ("?" + qs));
-            HttpMethod get = new GetMethod(url);
-            get.setFollowRedirects(true);
-            copyHeaders(req, get);
-            int rc = httpClient.executeMethod(get);
-            is = get.getResponseBodyAsStream();
-
-            StatusLine sl = get.getStatusLine();
+            StatusLine sl = method.getStatusLine();
             resp.setStatus(sl.getStatusCode());
-            copyHeaders(get, resp, req);
+            copyHeaders(method, resp, req);
 
             boolean rewriteStream = false;
-            for (Header h : get.getResponseHeaders()) {
+            for (Header h : method.getResponseHeaders()) {
                 String name = h.getName();
                 String value = h.getValue();
 
@@ -197,51 +219,13 @@ public class ProxyServlet extends HttpServlet
         }
     }
 
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-        throws ServletException
+    private String getUrl(HttpServletRequest req)
     {
-        HttpSession s = req.getSession();
-        HttpClient httpClient = (HttpClient)s.getAttribute(HTTP_CLIENT);
-
         String pi = req.getPathInfo();
         String qs = req.getQueryString();
 
-        String url = BASE_URL + (null == pi ? "" : pi)
-                + (null == qs ? "" : ("?" + qs));
-
-        InputStream is = null;
-        OutputStream os = null;
-
-        try {
-            RawPostMethod post = new RawPostMethod(url);
-            post.setFollowRedirects(true);
-            copyHeaders(req, post);
-            post.setBodyStream(req.getContentType(), req.getInputStream(),
-                               req.getIntHeader("Content-Length"));
-            int rc = httpClient.executeMethod(post);
-            copyHeaders(post, resp, req);
-            is = post.getResponseBodyAsStream();
-            os = resp.getOutputStream();
-            copyStream(is, os);
-        } catch (IOException exn) {
-            throw new ServletException("Could not do post", exn);
-        } finally {
-            if (null != is) {
-                try {
-                    is.close();
-                } catch (IOException exn) {
-                    logger.warn("could not close Socket InputStream");
-                }
-            }
-
-            if (null != os) {
-                try {
-                    os.close();
-                } catch (IOException exn) {
-                    logger.warn("could not close Socket OutputStream");
-                }
-            }
-        }
+        return BASE_URL + (null == pi ? "" : pi)
+            + (null == qs ? "" : ("?" + qs));
     }
 
     private void copyStream(InputStream is, OutputStream os)
@@ -355,8 +339,7 @@ public class ProxyServlet extends HttpServlet
                 // don't forward
             } else if (name.equalsIgnoreCase("location")
                        || name.equalsIgnoreCase("content-location")) {
-                // XXX follow redirects is true, so we dont need this?
-                logger.warn("Location header not implemented");
+                resp.setHeader(name, value);
             } else {
                 resp.setHeader(name, value);
             }
