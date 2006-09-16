@@ -127,7 +127,7 @@ public class ProxyServlet extends HttpServlet
                     httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
                     state = httpClient.getState();
                     String boxKey = ctx.getActivationKey();
-                    //state.addCookie(new Cookie(COOKIE_DOMAIN, "boxkey", boxKey, "/", -1, false));
+                    state.addCookie(new Cookie(COOKIE_DOMAIN, "boxkey", boxKey, "/", -1, false));
                     s.setAttribute(HTTP_CLIENT, httpClient);
                 } else {
                     state = httpClient.getState();
