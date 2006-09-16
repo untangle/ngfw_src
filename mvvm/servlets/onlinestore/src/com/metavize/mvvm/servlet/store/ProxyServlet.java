@@ -89,7 +89,6 @@ public class ProxyServlet extends HttpServlet
         throws ServletException
     {
         String url = getUrl(req);
-
         HttpMethod get = new GetMethod(url);
         get.setFollowRedirects(false);
 
@@ -100,7 +99,6 @@ public class ProxyServlet extends HttpServlet
         throws ServletException
     {
         String url = getUrl(req);
-
         RawPostMethod post = new RawPostMethod(url);
         post.setFollowRedirects(false);
         try {
@@ -123,11 +121,18 @@ public class ProxyServlet extends HttpServlet
         HttpClient httpClient = (HttpClient)s.getAttribute(HTTP_CLIENT);
         HttpState state;
         if (null == httpClient) {
-            httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
-            state = httpClient.getState();
-            String boxKey = ctx.getActivationKey();
-            state.addCookie(new Cookie(COOKIE_DOMAIN, "boxkey", boxKey, "/", -1, false));
-            s.setAttribute(HTTP_CLIENT, httpClient);
+            synchronized (s) {
+                httpClient = (HttpClient)s.getAttribute(HTTP_CLIENT);
+                if (null == httpClient) {
+                    httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
+                    state = httpClient.getState();
+                    String boxKey = ctx.getActivationKey();
+                    //state.addCookie(new Cookie(COOKIE_DOMAIN, "boxkey", boxKey, "/", -1, false));
+                    s.setAttribute(HTTP_CLIENT, httpClient);
+                } else {
+                    state = httpClient.getState();
+                }
+            }
         } else {
             state = httpClient.getState();
         }
@@ -315,7 +320,7 @@ public class ProxyServlet extends HttpServlet
             } else if (k.equalsIgnoreCase("host")) {
                 method.addRequestHeader("Host", STORE_HOST);
             } else if (k.equalsIgnoreCase("referer")) {
-                // XXX we don't use this
+                method.addRequestHeader("Referer", BASE_URL);
             } else {
                 for (Enumeration f = req.getHeaders(k); f.hasMoreElements(); ) {
                     String v = (String)f.nextElement();
