@@ -33,12 +33,17 @@ final class ArgonInterface
      * In order to avoid the pain of typecasting everywhere, netcap and argon are 
      * should be bytes, but are typecast inside of the constructor 
      */
-    ArgonInterface( String name, int netcap, int argon )
+    ArgonInterface( String name, int argon, int netcap )
     {
         this.name = name;
         this.netcap = (byte)netcap;
         this.argon = (byte)argon;
         this.string =  "'" + this.name + "' " + this.argon + "/" + this.netcap;
+    }
+
+    ArgonInterface( String name, int argon )
+    {
+        this( name, argon, (byte)(argon + 1 ));
     }
 
     /** Get the linux/physical name of the interface (eg. eth0) */
