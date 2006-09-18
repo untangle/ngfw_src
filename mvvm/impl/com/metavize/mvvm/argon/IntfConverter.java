@@ -84,7 +84,7 @@ public final class IntfConverter
 
     private static IntfConverter INSTANCE = new IntfConverter();
 
-    private final Logger logger = Logger.getLogger( this.getClass());
+    private Logger logger = Logger.getLogger( this.getClass());
 
     private IntfConverter()
     {
