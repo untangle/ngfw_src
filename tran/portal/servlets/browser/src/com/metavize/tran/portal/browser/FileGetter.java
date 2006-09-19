@@ -45,6 +45,9 @@ public class FileGetter extends HttpServlet
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
+        String mode = req.getParameter("mode");
+        boolean saveAsMode = null != mode && mode.equalsIgnoreCase("save");
+
         portalManager.incrementStatCounter(LocalPortalManager.CIFS_COUNTER);
 
         PortalLogin pl = (PortalLogin)req.getUserPrincipal();
@@ -80,6 +83,11 @@ public class FileGetter extends HttpServlet
                 String contentType = mimeMap.getContentType(f.getName());
                 resp.setContentType(contentType); // XXX
                 resp.setContentLength(f.getContentLength()); // XXX
+                if (saveAsMode) {
+                    String name = f.getName();
+                    resp.setHeader("Content-Disposition",
+                                   "attachment; filename=\"" + name + "s\"");
+                }
                 dumpFile(f, os);
             }
         } catch (IOException exn) {

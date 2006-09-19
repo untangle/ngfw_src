@@ -62,8 +62,11 @@ function Browser(shell, url)
     this._detailPanel.setDragSource(dragSource);
     this._detailPanel.setDropTarget(dropTarget);
 
-    this._actionMenu = this._makeActionMenu()
-        this._detailPanel.addActionListener(new AjxListener(this, this._listActionListener));
+    this._dirActionMenu = this._makeDirActionMenu();
+    this._fileActionMenu = this._makeFileActionMenu();
+
+
+    this._detailPanel.addActionListener(new AjxListener(this, this._listActionListener));
 
     if (!cifsNode) {
         this._broadcastRoots();
@@ -223,11 +226,31 @@ Browser.prototype._makeAddressBar = function()
     return toolbar;
 };
 
-Browser.prototype._makeActionMenu = function()
+Browser.prototype._makeDirActionMenu = function()
 {
     var actionMenu = new DwtMenu(this._detailPanel, DwtMenu.POPUP_STYLE);
 
     var i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
+    i.setText("Delete");
+    i.addSelectionListener(new AjxListener(this, this._deleteButtonListener));
+    i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
+    i.setText("Rename");
+    i.addSelectionListener(new AjxListener(this, this._renameButtonListener));
+
+    return actionMenu;
+};
+
+Browser.prototype._makeFileActionMenu = function()
+{
+    var actionMenu = new DwtMenu(this._detailPanel, DwtMenu.POPUP_STYLE);
+
+    var i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
+    i.setText("Display");
+    i.addSelectionListener(new AjxListener(this, this._displayListener));
+    i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
+    i.setText("Save As...");
+    i.addSelectionListener(new AjxListener(this, this._saveAsListener));
+    i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
     i.setText("Delete");
     i.addSelectionListener(new AjxListener(this, this._deleteButtonListener));
     i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
@@ -345,7 +368,17 @@ Browser.prototype._loginCallback = function(obj, results)
 
 Browser.prototype._listActionListener = function(ev)
 {
-    this._actionMenu.popup(0, ev.docX, ev.docY);
+    var sel = this._detailPanel.getSelection();
+    if (1 == sel.length) {
+        if (sel[0].isDirectory()) {
+            this._dirActionMenu.popup(0, ev.docX, ev.docY);
+        } else {
+            this._fileActionMenu.popup(0, ev.docX, ev.docY);
+        }
+    } else if (1 < sel.length) {
+        // XXX group menu
+        this._dirActionMenu.popup(0, ev.docX, ev.docY);
+    }
 };
 
 Browser.prototype._refreshButtonListener = function(ev)
@@ -363,6 +396,24 @@ Browser.prototype._uploadButtonListener = function(ev)
 
     dialog.popup();
 };
+
+Browser.prototype._displayListener = function(ev)
+{
+    var sel = this._detailPanel.getSelection();
+    if (0 < sel.length) {
+        var item = sel[0]; // XXX first item only
+        AjxWindowOpener.open("secure/get/" + item.getReqUrl());
+    }
+}
+
+Browser.prototype._saveAsListener = function(ev)
+{
+    var sel = this._detailPanel.getSelection();
+    if (0 < sel.length) {
+        var item = sel[0]; // XXX first item only
+        window.location.href = "secure/get/" + item.getReqUrl() + "?mode=save";
+    }
+}
 
 Browser.prototype._deleteButtonListener = function(ev)
 {

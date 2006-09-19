@@ -27,8 +27,8 @@ import com.metavize.mvvm.MvvmState;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.Version;
 import com.metavize.mvvm.security.Tid;
-import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.LocalTransformManager;
+import com.metavize.mvvm.tran.TransformContext;
 import org.apache.log4j.Logger;
 
 public class LogMailer implements Runnable
@@ -119,8 +119,9 @@ public class LogMailer implements Runnable
                 if (now - MIN_MESSAGE_PERIOD < lastSendTime)
                     Thread.sleep(MIN_MESSAGE_PERIOD  - (now - lastSendTime));
                 if (MvvmContextFactory.state() == MvvmState.RUNNING &&
-                    MvvmContextFactory.context().networkingManager().get().isExceptionReportingEnabled())
+                    MvvmContextFactory.context().networkingManager().get().isExceptionReportingEnabled()) {
                     sendMessage(triggerer);
+                }
                 lastSendTime = System.currentTimeMillis();
             } catch (InterruptedException x) {
                 // Normal
@@ -128,7 +129,6 @@ public class LogMailer implements Runnable
             }  catch (Exception exn) {
                 logger.warn("danger, danger, will robinson", exn); // never die
             }
-//            l.clear();
         }
     }
 
@@ -143,9 +143,10 @@ public class LogMailer implements Runnable
         }
     }
 
-  /**
-     Send the contents of all the cyclic buffers as an e-mail message.
-   */
+    /**
+     * Send the contents of all the cyclic buffers as an e-mail
+     * message.
+     */
     protected void sendMessage(Tid triggeringTid) {
         try {
             LocalTransformManager tm = MvvmContextFactory.context().transformManager();
