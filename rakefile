@@ -72,4 +72,4 @@ $InstallTarget.registerDependency(libalpine_so)
 
 $InstallTarget.installFiles(libalpine_so, "#{Package['mvvm'].distDirectory}/usr/lib/mvvm")
 
-graphViz('foo.dot')
+#graphViz('foo.dot')
