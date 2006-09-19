@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,19 +11,30 @@
 
 package com.metavize.tran.virus;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.tran.mail.papi.MessageInfo;
 import com.metavize.tran.mail.papi.smtp.SMTPNotifyAction;
+import org.hibernate.annotations.Columns;
+import javax.persistence.Entity;
+import org.hibernate.annotations.Type;
 
 /**
  * Log for SMTP Virus events.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_VIRUS_EVT_SMTP"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_virus_evt_smtp", schema="events")
 public class VirusSmtpEvent extends VirusEvent
 {
     private MessageInfo messageInfo;
@@ -34,9 +45,6 @@ public class VirusSmtpEvent extends VirusEvent
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public VirusSmtpEvent() { }
 
     public VirusSmtpEvent(MessageInfo messageInfo, VirusScannerResult result,
@@ -52,21 +60,25 @@ public class VirusSmtpEvent extends VirusEvent
 
     // VirusEvent methods -----------------------------------------------------
 
+    @Transient
     public String getType()
     {
         return "SMTP";
     }
 
+    @Transient
     public String getLocation()
     {
         return null == messageInfo ? "" : messageInfo.getSubject();
     }
 
+    @Transient
     public boolean isInfected()
     {
         return !result.isClean();
     }
 
+    @Transient
     public int getActionType()
     {
         char type = action.getKey();
@@ -79,11 +91,13 @@ public class VirusSmtpEvent extends VirusEvent
         }
     }
 
+    @Transient
     public String getActionName()
     {
         return action.getName();
     }
 
+    @Transient
     public String getVirusName()
     {
         String n = result.getVirusName();
@@ -91,6 +105,7 @@ public class VirusSmtpEvent extends VirusEvent
         return null == n ? "" : n;
     }
 
+    @Transient
     public PipelineEndpoints getPipelineEndpoints()
     {
         return null == messageInfo ? null : messageInfo.getPipelineEndpoints();
@@ -102,10 +117,9 @@ public class VirusSmtpEvent extends VirusEvent
      * Associate e-mail message info with event.
      *
      * @return e-mail message info.
-     * @hibernate.many-to-one
-     * column="MSG_ID"
-     * cascade="save-update"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="msg_id")
     public MessageInfo getMessageInfo()
     {
         return messageInfo;
@@ -120,16 +134,13 @@ public class VirusSmtpEvent extends VirusEvent
      * Virus scan result.
      *
      * @return the scan result.
-     * @hibernate.property
-     * cascade="save-update"
-     * type="com.metavize.tran.virus.VirusScannerResultUserType"
-     * @hibernate.column
-     * name="CLEAN"
-     * @hibernate.column
-     * name="VIRUS_NAME"
-     * @hibernate.column
-     * name="VIRUS_CLEANED"
      */
+    @Columns(columns = {
+            @Column(name="clean"),
+            @Column(name="virus_name"),
+            @Column(name="virus_cleaned")
+        })
+    @Type(type="com.metavize.tran.virus.VirusScannerResultUserType")
     public VirusScannerResult getResult()
     {
         return result;
@@ -144,10 +155,8 @@ public class VirusSmtpEvent extends VirusEvent
      * The action taken
      *
      * @return action.
-     * @hibernate.property
-     * type="com.metavize.tran.virus.SMTPVirusMessageActionUserType"
-     * column="ACTION"
      */
+    @Type(type="com.metavize.tran.virus.SMTPVirusMessageActionUserType")
     public SMTPVirusMessageAction getAction()
     {
         return action;
@@ -162,10 +171,9 @@ public class VirusSmtpEvent extends VirusEvent
      * The notify action taken
      *
      * @return action.
-     * @hibernate.property
-     * type="com.metavize.tran.mail.papi.smtp.SMTPNotifyActionUserType"
-     * column="NOTIFY_ACTION"
      */
+    @Column(name="notify_action")
+    @Type(type="com.metavize.tran.mail.papi.smtp.SMTPNotifyActionUserType")
     public SMTPNotifyAction getNotifyAction()
     {
         return notifyAction;
@@ -180,9 +188,8 @@ public class VirusSmtpEvent extends VirusEvent
      * Spam scanner vendor.
      *
      * @return the vendor
-     * @hibernate.property
-     * column="VENDOR_NAME"
      */
+    @Column(name="vendor_name")
     public String getVendorName()
     {
         return vendorName;

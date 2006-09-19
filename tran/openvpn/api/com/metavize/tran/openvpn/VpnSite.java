@@ -78,8 +78,6 @@ public class VpnSite extends VpnClient
 
     /**
      * @return whether the other side is an edgeguard.
-     * @hibernate.property
-     * column="is_edgeguard"
      */
     @Column(name="is_edgeguard", nullable=false)
     public boolean getIsEdgeGuard()

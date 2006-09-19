@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,20 +11,29 @@
 
 package com.metavize.tran.spyware;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.tran.http.RequestLine;
+import javax.persistence.Entity;
 
 /**
  * Log event for a spyware hit.
  *
  * @author
  * @version 1.0
- * @hibernate.class
- * table="TR_SPYWARE_EVT_COOKIE"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_spyware_evt_cookie", schema="events")
 public class SpywareCookieEvent extends SpywareEvent
 {
     private String identification;
@@ -49,26 +58,31 @@ public class SpywareCookieEvent extends SpywareEvent
 
     // SpywareEvent methods ---------------------------------------------------
 
+    @Transient
     public String getType()
     {
         return "Cookie";
     }
 
+    @Transient
     public String getReason()
     {
         return "in Cookie List";
     }
 
+    @Transient
     public String getLocation()
     {
         return requestLine.getUrl().toString();
     }
 
+    @Transient
     public boolean isBlocked()
     {
         return true;
     }
 
+    @Transient
     public PipelineEndpoints getPipelineEndpoints()
     {
         return requestLine.getPipelineEndpoints();
@@ -80,10 +94,9 @@ public class SpywareCookieEvent extends SpywareEvent
      * Request line for this HTTP response pair.
      *
      * @return the request line.
-     * @hibernate.many-to-one
-     * column="REQUEST_ID"
-     * cascade="save-update"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="request_id")
     public RequestLine getRequestLine()
     {
         return requestLine;
@@ -98,9 +111,8 @@ public class SpywareCookieEvent extends SpywareEvent
      * The identification (name of IP address range matched)
      *
      * @return the protocl name.
-     * @hibernate.property
-     * column="IDENT"
      */
+    @Column(name="ident")
     public String getIdentification()
     {
         return identification;
@@ -116,9 +128,8 @@ public class SpywareCookieEvent extends SpywareEvent
      *
      * @return if true the cookie was zeroed going to the server,
      * otherwise it was removed going to the client
-     * @hibernate.property
-     * column="TO_SERVER"
      */
+    @Column(name="to_server", nullable=false)
     public boolean isToServer()
     {
         return toServer;

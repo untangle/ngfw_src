@@ -11,29 +11,34 @@
 
 package com.metavize.mvvm.portal;
 
-import java.net.InetAddress;
 import java.io.Serializable;
-import java.util.Date;
+import java.net.InetAddress;
 import java.sql.Timestamp;
+import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.security.LoginFailureReason;
 import com.metavize.mvvm.tran.IPaddr;
+import javax.persistence.Entity;
+import org.hibernate.annotations.Type;
 
 /**
  * Log event for a login/login-attempt.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="PORTAL_LOGIN_EVT"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="portal_login_evt", schema="events")
 public class PortalLoginEvent extends PortalEvent implements Serializable
 {
     private static final long serialVersionUID = 5003003603098874917L;
-    
+
     private IPaddr clientAddr;
     private String uid;
     private boolean succeeded;
@@ -44,13 +49,15 @@ public class PortalLoginEvent extends PortalEvent implements Serializable
     public PortalLoginEvent() { }
 
     // For successes
-    public PortalLoginEvent(InetAddress clientAddr, String uid, boolean succeeded)
+    public PortalLoginEvent(InetAddress clientAddr, String uid,
+                            boolean succeeded)
     {
         this(clientAddr, uid, succeeded, null);
     }
 
     // For failures
-    public PortalLoginEvent(InetAddress clientAddr, String uid, boolean succeeded, LoginFailureReason reason)
+    public PortalLoginEvent(InetAddress clientAddr, String uid,
+                            boolean succeeded, LoginFailureReason reason)
     {
         this.clientAddr = new IPaddr(clientAddr);
         this.uid = uid;
@@ -64,12 +71,9 @@ public class PortalLoginEvent extends PortalEvent implements Serializable
      * Client address
      *
      * @return the address of the client
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="CLIENT_ADDR"
-     * sql-type="inet"
      */
+    @Column(name="client_addr")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getClientAddr()
     {
         return clientAddr;
@@ -84,8 +88,6 @@ public class PortalLoginEvent extends PortalEvent implements Serializable
      * Login used to login.  May be  used to join to PORTAL_USER.
      *
      * @return a <code>String</code> giving the uid for the user
-     * @hibernate.property
-     * column="UID"
      */
     public String getUid()
     {
@@ -98,12 +100,12 @@ public class PortalLoginEvent extends PortalEvent implements Serializable
     }
 
     /**
-     * Whether or not the login succeeeded, if not there will be a reason.
+     * Whether or not the login succeeeded, if not there will be a
+     * reason.
      *
      * @return whether or not the login was successful
-     * @hibernate.property
-     * column="SUCCEEDED"
      */
+    @Column(nullable=false)
     public boolean isSucceeded()
     {
         return succeeded;
@@ -118,10 +120,8 @@ public class PortalLoginEvent extends PortalEvent implements Serializable
      * Reason for login failure.
      *
      * @return the reason.
-     * @hibernate.property
-     * column="REASON"
-     * type="com.metavize.mvvm.security.LoginFailureReasonUserType"
      */
+    @Type(type="com.metavize.mvvm.security.LoginFailureReasonUserType")
     public LoginFailureReason getReason()
     {
         return reason;
@@ -145,11 +145,13 @@ public class PortalLoginEvent extends PortalEvent implements Serializable
             sb.addField("reason", reason.toString());
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "PortalLogin";
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         if (false == succeeded) {
@@ -163,6 +165,7 @@ public class PortalLoginEvent extends PortalEvent implements Serializable
 
     public String toString()
     {
-        return "PortalLoginEvent id: " + getId() + " uid: " + uid + " succeeded: " + succeeded;
+        return "PortalLoginEvent id: " + getId() + " uid: " + uid
+            + " succeeded: " + succeeded;
     }
 }

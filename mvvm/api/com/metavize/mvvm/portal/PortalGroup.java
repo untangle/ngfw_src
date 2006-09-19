@@ -14,6 +14,19 @@ package com.metavize.mvvm.portal;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * Portal group.  Group name is free, and currently has no
@@ -21,9 +34,9 @@ import java.util.List;
  *
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  * @version 1.0
- * @hibernate.class
- * table="PORTAL_GROUP"
  */
+@Entity
+@Table(name="portal_group", schema="settings")
 public class PortalGroup implements Serializable
 {
     private static final long serialVersionUID = -1681114764096389437L;
@@ -33,13 +46,10 @@ public class PortalGroup implements Serializable
     private String description;
 
     private PortalHomeSettings portalHomeSettings;
-    private List bookmarks = new ArrayList();
+    private List<Bookmark> bookmarks = new ArrayList<Bookmark>();
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public PortalGroup() { }
 
     /**
@@ -52,12 +62,40 @@ public class PortalGroup implements Serializable
         this.name = name;
     }
 
+    // accessors --------------------------------------------------------------
+
+    @Id
+    @Column(name="id")
+    @GeneratedValue
+    protected Long getId()
+    {
+        return id;
+    }
+
+    protected void setId(Long id)
+    {
+        this.id = id;
+    }
+
+    /**
+     * Get a name for display purposes.
+     *
+     * @return name.
+     */
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
     /**
      * description/comments
      *
      * @return the recorded comments
-     * @hibernate.property
-     * column="DESCRIPTION"
      */
     public String getDescription()
     {
@@ -73,40 +111,6 @@ public class PortalGroup implements Serializable
         this.description = description;
     }
 
-    // accessors --------------------------------------------------------------
-
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
-    protected Long getId()
-    {
-        return id;
-    }
-
-    protected void setId(Long id)
-    {
-        this.id = id;
-    }
-
-    /**
-     * Get a name for display purposes.
-     *
-     * @return name.
-     * @hibernate.property
-     * column="NAME"
-     */
-    public String getName()
-    {
-        return name;
-    }
-
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
     /**
      * The PortalHomeSettings that this group has.  This may be null,
      * in which case the global settings are used.  Thus, this should
@@ -114,10 +118,9 @@ public class PortalGroup implements Serializable
      * show the global settings until that point.
      *
      * @return the PortalHomeSettings.
-     * @hibernate.many-to-one
-     * cascade="all"
-     * column="home_settings_id"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="home_settings_id", nullable=false)
     public PortalHomeSettings getPortalHomeSettings()
     {
         return portalHomeSettings;
@@ -132,26 +135,23 @@ public class PortalGroup implements Serializable
      * List of bookmarks
      *
      * @return the list of bookmarks for this group.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="PORTAL_GROUP_BM_MT"
-     * @hibernate.collection-key
-     * column="SETTINGS_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.portal.Bookmark"
-     * column="BOOKMARK_ID"
      */
-    public List getBookmarks()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="portal_group_bm_mt",
+               joinColumns=@JoinColumn(name="settings_id"),
+               inverseJoinColumns=@JoinColumn(name="bookmark_id"))
+    @IndexColumn(name="position")
+    public List<Bookmark> getBookmarks()
     {
         return bookmarks;
     }
 
-    public void setBookmarks(List bookmarks)
+    public void setBookmarks(List<Bookmark> bookmarks)
     {
         this.bookmarks = bookmarks;
     }
+
+    // Object methods ----------------------------------------------------------
 
     public int hashCode()
     {

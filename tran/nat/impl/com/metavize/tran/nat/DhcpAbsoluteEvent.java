@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -15,27 +15,33 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
+import javax.persistence.Entity;
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * Log event for a DHCP absolute event .
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_NAT_EVT_DHCP_ABS"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_nat_evt_dhcp_abs", schema="events")
 public class DhcpAbsoluteEvent extends LogEvent implements Serializable
 {
-    private List absoluteLeaseList = null;
+    private List<DhcpAbsoluteLease> absoluteLeaseList = null;
 
-    /**
-     * Hibernate constructor
-     */
     public DhcpAbsoluteEvent() {}
 
     public DhcpAbsoluteEvent( List s )
@@ -47,23 +53,18 @@ public class DhcpAbsoluteEvent extends LogEvent implements Serializable
      * List of the absolute leases associated with the event.
      *
      * @return the list of the redirect rules.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="TR_NAT_EVT_DHCP_ABS_LEASES"
-     * @hibernate.collection-key
-     * column="EVENT_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.tran.nat.DhcpAbsoluteLease"
-     * column="LEASE_ID"
      */
-    public List getAbsoluteLeaseList()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="tr_nat_evt_dhcp_abs_leases",
+               joinColumns=@JoinColumn(name="event_id"),
+               inverseJoinColumns=@JoinColumn(name="lease_id"))
+    @IndexColumn(name="position")
+    public List<DhcpAbsoluteLease> getAbsoluteLeaseList()
     {
         return absoluteLeaseList;
     }
 
-    public void setAbsoluteLeaseList( List s )
+    public void setAbsoluteLeaseList( List<DhcpAbsoluteLease> s )
     {
         absoluteLeaseList = s;
     }
@@ -89,11 +90,13 @@ public class DhcpAbsoluteEvent extends LogEvent implements Serializable
         //   but is not useful to add to sys log (see rbscott for more info)
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "DHCP_AbsoluteLeases";
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         return SyslogPriority.INFORMATIONAL; // statistics or normal operation

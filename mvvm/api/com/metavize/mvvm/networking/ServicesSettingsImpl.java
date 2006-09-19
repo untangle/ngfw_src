@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,21 +12,33 @@
 package com.metavize.mvvm.networking;
 
 import java.io.Serializable;
-
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.HostName;
+import com.metavize.mvvm.tran.IPaddr;
+import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.Type;
 
 /**
  * Settings for the network spaces.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="mvvm_network_services"
  */
+@Entity
+@Table(name="mvvm_network_services", schema="settings")
 public class ServicesSettingsImpl implements ServicesSettings, Serializable
 {
 
@@ -41,37 +53,33 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     private int     dhcpLeaseTime = 0;
 
     /* Dhcp leasess */
-    private List dhcpLeaseList = new LinkedList();
+    private List<DhcpLeaseRule> dhcpLeaseList = new LinkedList<DhcpLeaseRule>();
 
     /* DNS Masquerading settings */
     private boolean  dnsEnabled = false;
     private HostName dnsLocalDomain = HostName.getEmptyHostName();
 
     /* DNS Static Hosts */
-    private List dnsStaticHostList = new LinkedList();
+    private List<DnsStaticHostRule> dnsStaticHostList = new LinkedList<DnsStaticHostRule>();
 
-    public ServicesSettingsImpl()
-    {
-    }
+    public ServicesSettingsImpl() { }
 
     public ServicesSettingsImpl( DhcpServerSettings dhcp, DnsServerSettings dns )
     {
         this.dhcpEnabled       = dhcp.getDhcpEnabled();
         this.dhcpStartAddress  = dhcp.getDhcpStartAddress();
         this.dhcpEndAddress    = dhcp.getDhcpEndAddress();
-        this.dhcpLeaseTime     = dhcp.getDhcpLeaseTime();        
+        this.dhcpLeaseTime     = dhcp.getDhcpLeaseTime();
         this.dhcpLeaseList     = dhcp.getDhcpLeaseList();
 
         this.dnsEnabled        = dns.getDnsEnabled();
         this.dnsLocalDomain    = dns.getDnsLocalDomain();
         this.dnsStaticHostList = dns.getDnsStaticHostList();
     }
-    
-    /**
-     * @hibernate.id
-     * column="settings_id"
-     * generator-class="native"
-     */
+
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     protected Long getId()
     {
         return id;
@@ -86,9 +94,8 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
      * Get whether or not dhcp is enabled..
      *
      * @return is DHCP enabled.
-     * @hibernate.property
-     * column="is_dhcp_enabled"
      */
+    @Column(name="is_dhcp_enabled", nullable=false)
     public boolean getDhcpEnabled()
     {
         return dhcpEnabled;
@@ -103,12 +110,9 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
      * DHCP server start address.
      *
      * @return DHCP server start address.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="dhcp_start_address"
-     * sql-type="inet"
      */
+    @Column(name="dhcp_start_address")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getDhcpStartAddress()
     {
         if ( this.dhcpStartAddress == null ) this.dhcpStartAddress = NetworkUtil.EMPTY_IPADDR;
@@ -125,12 +129,9 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
      * DHCP server end address.
      *
      * @return DHCP server end address.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="dhcp_end_address"
-     * sql-type="inet"
      */
+    @Column(name="dhcp_end_address")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getDhcpEndAddress()
     {
         if ( this.dhcpEndAddress == null ) this.dhcpEndAddress = NetworkUtil.EMPTY_IPADDR;
@@ -167,9 +168,8 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
      * Get the default DHCP lease time.
      *
      * @return default DHCP lease.
-     * @hibernate.property
-     * column="dhcp_lease_time"
      */
+    @Column(name="dhcp_lease_time", nullable=false)
     public int getDhcpLeaseTime()
     {
         return this.dhcpLeaseTime;
@@ -184,35 +184,28 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
      * List of the dhcp leases.
      *
      * @return the list of the dhcp leases.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="mvvm_dhcp_lease_list"
-     * @hibernate.collection-key
-     * column="setting_id"
-     * @hibernate.collection-index
-     * column="position"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.networking.DhcpLeaseRule"
-     * column="rule_id"
      */
-    public List getDhcpLeaseList()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="mvvm_dhcp_lease_list",
+               joinColumns=@JoinColumn(name="setting_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<DhcpLeaseRule> getDhcpLeaseList()
     {
         return dhcpLeaseList;
     }
 
-    public void setDhcpLeaseList( List newValue )
+    public void setDhcpLeaseList( List<DhcpLeaseRule> newValue )
     {
-        if ( newValue == null ) newValue = new LinkedList();
+        if ( newValue == null ) newValue = new LinkedList<DhcpLeaseRule>();
         dhcpLeaseList = newValue;
     }
 
-    
+
     /**
      * @return If DNS Masquerading is enabled.
-     *
-     * @hibernate.property
-     * column="dns_enabled"
      */
+    @Column(name="dns_enabled", nullable=false)
     public boolean getDnsEnabled()
     {
         return dnsEnabled;
@@ -222,16 +215,14 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     {
         this.dnsEnabled = newValue;
     }
-    
+
     /**
      * Local Domain
      *
      * @return the local domain
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.HostNameUserType"
-     * @hibernate.column
-     * name="dns_local_domain"
      */
+    @Column(name="dns_local_domain")
+    @Type(type="com.metavize.mvvm.type.HostNameUserType")
     public HostName getDnsLocalDomain()
     {
         if ( this.dnsLocalDomain == null ) this.dnsLocalDomain = HostName.getEmptyHostName();
@@ -248,25 +239,20 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
      * List of the DNS Static Host rules.
      *
      * @return the list of the DNS Static Host rules.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="mvvm_dns_host_list"
-     * @hibernate.collection-key
-     * column="setting_id"
-     * @hibernate.collection-index
-     * column="position"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.networking.DnsStaticHostRule"
-     * column="rule_id"
      */
-    public List getDnsStaticHostList()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="mvvm_dns_host_list",
+               joinColumns=@JoinColumn(name="setting_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<DnsStaticHostRule> getDnsStaticHostList()
     {
         return dnsStaticHostList;
     }
 
-    public void setDnsStaticHostList( List newValue )
+    public void setDnsStaticHostList( List<DnsStaticHostRule> newValue )
     {
-        if ( newValue == null ) newValue = new LinkedList();
+        if ( newValue == null ) newValue = new LinkedList<DnsStaticHostRule>();
         dnsStaticHostList = newValue;
     }
 }

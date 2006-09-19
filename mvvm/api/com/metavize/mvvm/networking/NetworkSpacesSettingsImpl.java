@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,24 +11,35 @@
 
 package com.metavize.mvvm.networking;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.LinkedList;
-
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
+import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.Type;
 
 /**
  * Settings for the network spaces.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="mvvm_network_settings"
  */
+@Entity
+@Table(name="mvvm_network_settings", schema="settings")
 public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Serializable, Validatable
 {
     private Long id;
@@ -37,11 +48,11 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     private boolean isEnabled = false;
     private boolean hasCompletedSetup = true;
 
-    private List interfaceList = new LinkedList();
-    private List networkSpaceList = new LinkedList();
-    private List routingTable = new LinkedList();
-    private List redirectList = new LinkedList();
-    
+    private List<Interface> interfaceList = new LinkedList<Interface>();
+    private List<NetworkSpace> networkSpaceList = new LinkedList();
+    private List<Route> routingTable = new LinkedList<Route>();
+    private List<RedirectRule> redirectList = new LinkedList<RedirectRule>();
+
     private IPaddr defaultRoute = NetworkUtil.EMPTY_IPADDR;
     private IPaddr dns1 = NetworkUtil.EMPTY_IPADDR;
     private IPaddr dns2 = NetworkUtil.EMPTY_IPADDR;
@@ -51,11 +62,9 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     {
     }
 
-    /**
-     * @hibernate.id
-     * column="settings_id"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     protected Long getId()
     {
         return id;
@@ -70,9 +79,8 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
      * Get whether or not the settings are enabled..
      *
      * @return is NAT is being used.
-     * @hibernate.property
-     * column="is_enabled"
      */
+    @Column(name="is_enabled", nullable=false)
     public boolean getIsEnabled()
     {
         return this.isEnabled;
@@ -86,11 +94,9 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     /**
      * The current setup state for this tranform.  (deprecated, unconfigured, basic, advanced).
      * @return The current setup state for this transform.
-     * @hibernate.property
-     * type="com.metavize.mvvm.networking.SetupStateUserType"
-     * @hibernate.column
-     * name="setup_state"
      */
+    @Column(name="setup_state")
+    @Type(type="com.metavize.mvvm.networking.SetupStateUserType")
     public SetupState getSetupState()
     {
         return this.setupState;
@@ -105,22 +111,19 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
      * The list of interfaces.
      *
      * @return the list of interfaces
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="settings_id"
-     * @hibernate.collection-index
-     * column="position"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.mvvm.networking.Interface"
      */
-    public List getInterfaceList()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="settings_id")
+    @IndexColumn(name="position")
+    public List<Interface> getInterfaceList()
     {
-        if ( this.interfaceList == null ) this.interfaceList = new LinkedList();
+        if ( this.interfaceList == null ) {
+            this.interfaceList = new LinkedList<Interface>();
+        }
         return this.interfaceList;
     }
-    
-    public void setInterfaceList( List newValue )
+
+    public void setInterfaceList( List<Interface> newValue )
     {
         if ( newValue == null ) newValue = new LinkedList();
         this.interfaceList = newValue;
@@ -130,24 +133,21 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
      * The list of network spaces.
      *
      * @return the list of network spaces
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="settings_id"
-     * @hibernate.collection-index
-     * column="position"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.mvvm.networking.NetworkSpace"
      */
-    public List getNetworkSpaceList()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="settings_id")
+    @IndexColumn(name="position")
+    public List<NetworkSpace> getNetworkSpaceList()
     {
-        if ( this.networkSpaceList == null ) this.networkSpaceList = new LinkedList();
+        if ( this.networkSpaceList == null ) {
+            this.networkSpaceList = new LinkedList<NetworkSpace>();
+        }
         return this.networkSpaceList;
     }
-    
-    public void setNetworkSpaceList( List newValue )
+
+    public void setNetworkSpaceList( List<NetworkSpace> newValue )
     {
-        if ( newValue == null ) newValue = new LinkedList();
+        if ( newValue == null ) newValue = new LinkedList<NetworkSpace>();
         this.networkSpaceList = newValue;
     }
 
@@ -155,24 +155,19 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
      * The routing table.
      *
      * @return the routing table
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="settings_id"
-     * @hibernate.collection-index
-     * column="position"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.mvvm.networking.Route"
      */
-    public List getRoutingTable()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="settings_id")
+    @IndexColumn(name="position")
+    public List<Route> getRoutingTable()
     {
-        if ( this.routingTable == null ) this.routingTable = new LinkedList();
+        if ( this.routingTable == null ) this.routingTable = new LinkedList<Route>();
         return this.routingTable;
     }
 
-    public void setRoutingTable( List newValue )
+    public void setRoutingTable( List<Route> newValue )
     {
-        if ( newValue == null ) newValue = new LinkedList();
+        if ( newValue == null ) newValue = new LinkedList<Route>();
         this.routingTable = newValue;
     }
 
@@ -180,18 +175,15 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
      * Default route for the box.
      *
      * @return the default route for the box.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="default_route"
-     * sql-type="inet"
      */
+    @Column(name="default_route")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getDefaultRoute()
     {
         if ( this.defaultRoute == null ) this.defaultRoute = NetworkUtil.EMPTY_IPADDR;
         return this.defaultRoute;
     }
-    
+
     public void setDefaultRoute( IPaddr newValue )
     {
         if ( newValue == null || newValue.isEmpty()) newValue = NetworkUtil.EMPTY_IPADDR;
@@ -203,39 +195,31 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
      * NatSettings.
      *
      * @return the list of the redirect rules.
-     * @hibernate.list
-     * cascade="all"
-     * table="mvvm_redirects"
-     * @hibernate.collection-key
-     * column="setting_id"
-     * @hibernate.collection-index
-     * column="position"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.networking.RedirectRule"
-     * column="rule_id"
      */
-    public List getRedirectList()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="mvvm_redirects",
+               joinColumns=@JoinColumn(name="setting_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<RedirectRule> getRedirectList()
     {
-        if ( this.redirectList == null ) this.redirectList = new LinkedList();
+        if ( this.redirectList == null ) this.redirectList = new LinkedList<RedirectRule>();
         return this.redirectList;
     }
 
-    public void setRedirectList( List newValue )
+    public void setRedirectList( List<RedirectRule> newValue )
     {
-        if ( newValue == null ) newValue = new LinkedList();
+        if ( newValue == null ) newValue = new LinkedList<RedirectRule>();
         this.redirectList = newValue;
     }
-    
+
     /**
      * Address of the primary dns server
      *
      * @return Address of the primary dns server
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="dns_1"
-     * sql-type="inet"
      */
+    @Column(name="dns_1")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getDns1()
     {
         if ( this.dns1 == null ) this.dns1 = NetworkUtil.EMPTY_IPADDR;
@@ -247,17 +231,14 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         if ( newValue == null || newValue.isEmpty()) newValue = NetworkUtil.EMPTY_IPADDR;
         this.dns1 = newValue;
     }
-    
+
     /**
      * Address of the secondary dns server
      *
      * @return Address of the secondary dns server
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="dns_2"
-     * sql-type="inet"
      */
+    @Column(name="dns_2")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getDns2()
     {
         if ( this.dns2 == null ) this.dns2 = NetworkUtil.EMPTY_IPADDR;
@@ -283,9 +264,8 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
      * and should never return to false;
      *
      * @return true if the user never finished the wizard.
-     * @hibernate.property
-     * column="completed_setup"
      */
+    @Column(name="completed_setup", nullable=false)
     public boolean getHasCompletedSetup()
     {
         return this.hasCompletedSetup;
@@ -299,30 +279,30 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append( "Network Settings\n" );
         sb.append( "setup-state: " + getSetupState() + " isEnabled: " + getIsEnabled());
         sb.append( " completed-setup: " + getHasCompletedSetup());
-        
+
         sb.append( "\nInterfaces:\n" );
         for ( Iterator iter = getInterfaceList().iterator() ; iter.hasNext() ; ) {
             Interface intf = (Interface)iter.next();
             sb.append( intf + "\n" );
         }
-        
+
         sb.append( "Network Spaces:\n" );
         for ( Iterator iter = getNetworkSpaceList().iterator() ; iter.hasNext() ; ) {
             NetworkSpace space = (NetworkSpace)iter.next();
             sb.append( space + "\n" );
         }
-        
+
         sb.append( "Routing table:\n" );
-        
+
         for ( Iterator iter = getRoutingTable().iterator() ; iter.hasNext() ; ) {
             Route route = (Route)iter.next();
             sb.append( route + "\n" );
         }
-        
+
         sb.append( "dns1:     " + getDns1());
         sb.append( "\ndns2:     " + getDns2());
         sb.append( "\ngateway:  " + getDefaultRoute());

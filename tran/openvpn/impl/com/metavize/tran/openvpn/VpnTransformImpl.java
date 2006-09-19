@@ -17,10 +17,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import com.metavize.mvvm.ArgonException;
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MailSender;
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.ArgonException;
 import com.metavize.mvvm.logging.EventManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.Affinity;
@@ -163,7 +163,7 @@ public class VpnTransformImpl extends AbstractTransform
                 if ( this.settings.getIsEdgeGuardClient()) {
                     this.openVpnMonitor.disable();
                     this.openVpnCaretaker.start();
-                } else { 
+                } else {
                     this.openVpnMonitor.enable();
                 }
             }
@@ -485,7 +485,7 @@ public class VpnTransformImpl extends AbstractTransform
         if ( settings.getIsEdgeGuardClient()) {
             this.openVpnMonitor.disable();
             this.openVpnCaretaker.start();
-        } else { 
+        } else {
             this.openVpnMonitor.enable();
         }
     }

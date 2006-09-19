@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,40 +11,50 @@
 
 package com.metavize.mvvm.networking;
 
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
-
-import com.metavize.mvvm.tran.Rule;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.Rule;
+import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.Type;
 
 /**
  * The configuration state for one network space.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="mvvm_network_space"
  */
+@Entity
+@Table(name="mvvm_network_space", schema="settings")
 public class NetworkSpace extends Rule
 {
     /* There should be at least one */
-    private List networkList = new LinkedList();
+    private List<IPNetworkRule> networkList = new LinkedList();
 
     public static final int DEFAULT_MTU = 1500;
     public static final int MIN_MTU = 100;
     public static final int MAX_MTU = 3000;
     public static final String DEFAULT_SPACE_NAME = "space";
-    
+
     private boolean isPrimary;
 
     /* This is a special piece, it should stay the same for the life of a network space.  */
     private long businessPapers;
     private boolean isDhcpEnabled;
     private boolean isTrafficForwarded = true;
-    
+
     private int mtu = DEFAULT_MTU;
 
     /* This is the address that traffic is NATd to */
@@ -53,16 +63,16 @@ public class NetworkSpace extends Rule
 
     /* If non-null, NAT to whatever the primary address of this space is */
     private NetworkSpace natSpace;
-    
+
     private boolean isDmzHostEnabled = false;
     private boolean isDmzHostLoggingEnabled = false;
     private IPaddr  dmzHost;
 
     /* The current status of the interface, only valid if DHCP is enabled */
     private DhcpStatus dhcpStatus = DhcpStatus.EMPTY_STATUS;
-    
+
     /** Helper constructor */
-    public NetworkSpace( boolean isEnabled, 
+    public NetworkSpace( boolean isEnabled,
                          List networkList, boolean isDhcpEnabled, boolean isTrafficForwarded, int mtu,
                          boolean isNatEnabled, IPaddr natAddress,
                          boolean isDmzHostEnabled, boolean isDmzHostLoggingEnabled, IPaddr dmzHost )
@@ -87,6 +97,7 @@ public class NetworkSpace extends Rule
         this.setName( DEFAULT_SPACE_NAME );
     }
 
+    @Transient
     public boolean getIsPrimary()
     {
         return this.isPrimary;
@@ -101,9 +112,8 @@ public class NetworkSpace extends Rule
      * Get the business papers for the space.
      *
      * @return The business papers for the space.
-     * @hibernate.property
-     * column="papers"
      */
+    @Column(name="papers", nullable=false)
     public long getBusinessPapers()
     {
         return this.businessPapers;
@@ -121,27 +131,22 @@ public class NetworkSpace extends Rule
      * The list of networks in this network space.
      *
      * @return The list of networks in this network space.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="space_id"
-     * @hibernate.collection-index
-     * column="position"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.mvvm.networking.IPNetworkRule"
-     */    
-    public List getNetworkList()
+     */
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="space_id")
+    @IndexColumn(name="position")
+    public List<IPNetworkRule> getNetworkList()
     {
-        if ( this.networkList == null ) this.networkList = new LinkedList();
-            
+        if ( this.networkList == null ) this.networkList = new LinkedList<IPNetworkRule>();
+
         return this.networkList;
     }
-    
-    public void setNetworkList( List networkList )
+
+    public void setNetworkList( List<IPNetworkRule> networkList )
     {
         /* This make a copy of the list involved */
         if ( networkList == null ) {
-            networkList = new LinkedList();
+            networkList = new LinkedList<IPNetworkRule>();
         }
 
         this.networkList = networkList;
@@ -152,9 +157,8 @@ public class NetworkSpace extends Rule
      * Turning off traffic forwarding indicates that traffic cannot leave this network
      * space, but sessions from other spaces may be able to enter it.
      * @return Whether or not traffic is forwarded.
-     * @hibernate.property
-     * column="is_traffic_forwarded"
-     */    
+     */
+    @Column(name="is_traffic_forwarded", nullable=false)
     public boolean getIsTrafficForwarded()
     {
         return isTrafficForwarded;
@@ -168,9 +172,8 @@ public class NetworkSpace extends Rule
     /**
      * Does this network space get its address from a DHCP server.
      * @return Does this network space get its address from a DHCP server.
-     * @hibernate.property
-     * column="is_dhcp_enabled"
      */
+    @Column(name="is_dhcp_enabled", nullable=false)
     public boolean getIsDhcpEnabled()
     {
         return isDhcpEnabled;
@@ -184,9 +187,8 @@ public class NetworkSpace extends Rule
     /**
      * Is this space running NAT.
      * @return is nat running on this space.
-     * @hibernate.property
-     * column="is_nat_enabled"
      */
+    @Column(name="is_nat_enabled", nullable=false)
     public boolean getIsNatEnabled()
     {
         return isNatEnabled;
@@ -201,51 +203,45 @@ public class NetworkSpace extends Rule
      * Address to NAT connections to if, NAT is enabled.
      *
      * @return address to NAT connections to.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="nat_address"
-     * sql-type="inet"
      */
+    @Column(name="nat_address")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getNatAddress()
     {
         /* null tests */
         return this.natAddress;
     }
-    
+
     public void setNatAddress( IPaddr address )
     {
         this.natAddress = address;
     }
 
-    /** XXX Should this have cascade="all" because this is typically inside of the NetworkSettings object, 
-     * which also saves the list of network spaces. */
-    /**
-     * The network space to NAT to.  If this is non-null, then NAT will use the primary
-     * address of the selected network space as the NAT address.  This cannot point
-     * to itself.
-     * @return The network space to nat traffic to. 
-     * @hibernate.many-to-one
-     * cascade="none"
-     * class="com.metavize.mvvm.networking.NetworkSpace"
-     * column="nat_space"
+    /** XXX Should this have cascade="all" because this is typically
+     * inside of the NetworkSettings object, which also saves the list
+     * of network spaces.  The network space to NAT to.  If this is
+     * non-null, then NAT will use the primary address of the selected
+     * network space as the NAT address.  This cannot point to itself.
+     *
+     * @return The network space to nat traffic to.
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="nat_space")
     public NetworkSpace getNatSpace()
     {
         return this.natSpace;
     }
-    
+
     public void setNatSpace( NetworkSpace newValue )
     {
         this.natSpace = newValue;
     }
-    
+
     /**
      * Is the DMZ host enabled.
      * @return is this space using a DMZ host.
-     * @hibernate.property
-     * column="dmz_host_enabled"
      */
+    @Column(name="dmz_host_enabled", nullable=false)
     public boolean getIsDmzHostEnabled()
     {
         return isDmzHostEnabled;
@@ -260,18 +256,15 @@ public class NetworkSpace extends Rule
      * Address to send incoming requests to.
      *
      * @return address to the address to send all requests to.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="dmz_host"
-     * sql-type="inet"
      */
+    @Column(name="dmz_host")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getDmzHost()
     {
         /* null tests */
         return this.dmzHost;
     }
-    
+
     public void setDmzHost( IPaddr dmzHost )
     {
         this.dmzHost = dmzHost;
@@ -280,9 +273,8 @@ public class NetworkSpace extends Rule
     /**
      * Is the DMZ host enabled.
      * @return is this space using a DMZ host.
-     * @hibernate.property
-     * column="dmz_host_logging"
      */
+    @Column(name="dmz_host_logging", nullable=false)
     public boolean getIsDmzHostLoggingEnabled()
     {
         return isDmzHostLoggingEnabled;
@@ -296,16 +288,15 @@ public class NetworkSpace extends Rule
     /**
      * the mtu for this network space.
      * @return the mtu for this network space.
-     * @hibernate.property
-     * column="mtu"
      */
+    @Column(nullable=false)
     public int getMtu()
     {
         if ( this.mtu <= MIN_MTU || this.mtu >= MAX_MTU ) this.mtu = DEFAULT_MTU;
 
         return this.mtu;
     }
-   
+
     public void setMtu( int mtu )
     {
         if ( mtu <= MIN_MTU || mtu >= MAX_MTU ) mtu = DEFAULT_MTU;
@@ -315,34 +306,35 @@ public class NetworkSpace extends Rule
     /* The following are not stored inside of the database */
     /* Retrieve the address that a DHCP server assigned to this network space, null
      * if dhcp is disabled. */
+    @Transient
     public DhcpStatus getDhcpStatus()
     {
         if ( this.dhcpStatus == null ) this.dhcpStatus = DhcpStatus.EMPTY_STATUS;
         return this.dhcpStatus;
     }
- 
+
     /* Set the address a DHCP assigned to this network space */
     void setDhcpStatus( DhcpStatus dhcpStatus )
     {
         if ( dhcpStatus == null ) dhcpStatus = DhcpStatus.EMPTY_STATUS;
- 
+
         this.dhcpStatus = dhcpStatus;
     }
 
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append( "name:        "   + getName());
         sb.append( "\nisEnabled:   " + isLive());
         sb.append( "\nnetworks:    " + getNetworkList());
         sb.append( "\ndhcp:        " + getIsDhcpEnabled());
         sb.append( "\nforwarded:   " + getIsTrafficForwarded());
-        sb.append( "\nmtu:         " + getMtu()); 
+        sb.append( "\nmtu:         " + getMtu());
         sb.append( "\nnat:         " + getIsNatEnabled());
         sb.append( "\nnat-address: " + getNatAddress());
-                
-        sb.append( "\ndmz-host:    " + getIsDmzHostEnabled() + " logging " + getIsDmzHostLoggingEnabled() + 
+
+        sb.append( "\ndmz-host:    " + getIsDmzHostEnabled() + " logging " + getIsDmzHostLoggingEnabled() +
                    "["  + getDmzHost() + "]" );
 
         return sb.toString();

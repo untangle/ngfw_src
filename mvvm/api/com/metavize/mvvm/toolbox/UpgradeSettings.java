@@ -86,7 +86,6 @@ public class UpgradeSettings implements Serializable
      * Specifies when apt-get update should be run.
      *
      * @return upgrade period.
-     * @hibernate.many-to-one
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinColumn(name="period", nullable=false)

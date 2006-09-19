@@ -11,29 +11,34 @@
 
 package com.metavize.mvvm.portal;
 
-import java.net.InetAddress;
 import java.io.Serializable;
-import java.util.Date;
+import java.net.InetAddress;
 import java.sql.Timestamp;
+import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.tran.IPaddr;
+import javax.persistence.Entity;
+import org.hibernate.annotations.Type;
 
 /**
  * Log event for an application launch
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="PORTAL_APP_LAUNCH_EVT"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="portal_app_launch_evt", schema="events")
 public class PortalAppLaunchEvent extends LogEvent implements Serializable
 {
     private static final long serialVersionUID = 1003003630088749917L;
-    
+
     private IPaddr clientAddr;
     private String uid;
     private boolean succeeded;
@@ -46,13 +51,18 @@ public class PortalAppLaunchEvent extends LogEvent implements Serializable
     public PortalAppLaunchEvent() { }
 
     // For successes
-    public PortalAppLaunchEvent(IPaddr clientAddr, String uid, boolean succeeded, Application app, String destination)
+    public PortalAppLaunchEvent(IPaddr clientAddr, String uid,
+                                boolean succeeded, Application app,
+                                String destination)
     {
         this(clientAddr, uid, succeeded, null, app, destination);
     }
 
     // For failures
-    public PortalAppLaunchEvent(IPaddr clientAddr, String uid, boolean succeeded, AppLaunchFailureReason reason, Application app, String destination)
+    public PortalAppLaunchEvent(IPaddr clientAddr, String uid,
+                                boolean succeeded,
+                                AppLaunchFailureReason reason,
+                                Application app, String destination)
     {
         this.clientAddr = clientAddr;
         this.uid = uid;
@@ -68,12 +78,9 @@ public class PortalAppLaunchEvent extends LogEvent implements Serializable
      * Client address
      *
      * @return the address of the client
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="CLIENT_ADDR"
-     * sql-type="inet"
      */
+    @Column(name="client_addr")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getClientAddr()
     {
         return clientAddr;
@@ -88,8 +95,6 @@ public class PortalAppLaunchEvent extends LogEvent implements Serializable
      * uid used to appLaunch.  May be  used to join to PORTAL_USER.
      *
      * @return a <code>String</code> giving the uid for the user
-     * @hibernate.property
-     * column="UID"
      */
     public String getUid()
     {
@@ -102,12 +107,12 @@ public class PortalAppLaunchEvent extends LogEvent implements Serializable
     }
 
     /**
-     * Whether or not the appLaunch succeeeded, if not there will be a reason.
+     * Whether or not the appLaunch succeeeded, if not there will be a
+     * reason.
      *
      * @return whether or not the appLaunch was successful
-     * @hibernate.property
-     * column="SUCCEEDED"
      */
+    @Column(nullable=false)
     public boolean isSucceeded()
     {
         return succeeded;
@@ -122,10 +127,8 @@ public class PortalAppLaunchEvent extends LogEvent implements Serializable
      * Reason for appLaunch failure.
      *
      * @return the reason.
-     * @hibernate.property
-     * column="REASON"
-     * type="com.metavize.mvvm.portal.AppLaunchFailureReasonUserType"
      */
+    @Type(type="com.metavize.mvvm.portal.AppLaunchFailureReasonUserType")
     public AppLaunchFailureReason getReason()
     {
         return reason;
@@ -140,9 +143,8 @@ public class PortalAppLaunchEvent extends LogEvent implements Serializable
      * application named launched.
      *
      * @return a <code>String</code> naming the app that was launched
-     * @hibernate.property
-     * column="app_name"
      */
+    @Column(name="app_name")
     public String getAppName()
     {
         return appName;
@@ -156,9 +158,8 @@ public class PortalAppLaunchEvent extends LogEvent implements Serializable
     /**
      * Destination of application.  May be null (for non host services)
      *
-     * @return a <code>String</code> giving the destination of the app, if any, otherwise null
-     * @hibernate.property
-     * column="destination"
+     * @return a <code>String</code> giving the destination of the
+     * app, if any, otherwise null.
      */
     public String getDestination()
     {
@@ -186,11 +187,13 @@ public class PortalAppLaunchEvent extends LogEvent implements Serializable
             sb.addField("destination", destination);
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "PortalAppLaunch";
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         if (false == succeeded) {
@@ -204,7 +207,7 @@ public class PortalAppLaunchEvent extends LogEvent implements Serializable
 
     public String toString()
     {
-        return "PortalAppLaunchEvent id: " + getId() + " uid: " + uid + " succeeded: " + succeeded +
-            " app: " + appName;
+        return "PortalAppLaunchEvent id: " + getId() + " uid: "
+            + uid + " succeeded: " + succeeded + " app: " + appName;
     }
 }

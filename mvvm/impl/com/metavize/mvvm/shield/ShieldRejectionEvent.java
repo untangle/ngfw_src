@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,20 +13,25 @@ package com.metavize.mvvm.shield;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
+import javax.persistence.Entity;
+import org.hibernate.annotations.Type;
 
 /**
  * Log event for the shield rejection.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="SHIELD_REJECTION_EVT"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="shield_rejection_evt", schema="settings")
 public class ShieldRejectionEvent extends LogEvent implements Serializable
 {
     private InetAddress clientAddr;
@@ -38,12 +43,7 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
     private int         dropped;
 
     // Constructors
-    /**
-     * Hibernate constructor
-     */
-    public ShieldRejectionEvent()
-    {
-    }
+    public ShieldRejectionEvent() { }
 
     public ShieldRejectionEvent( InetAddress clientAddr, byte clientIntf, double reputation, int mode,
                                  int limited, int dropped, int rejected )
@@ -62,12 +62,9 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
      * IP of the user that generated the event
      *
      * @return the identity of the user that generated the event
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.InetAddressUserType"
-     * @hibernate.column
-     * name="CLIENT_ADDR"
-     * sql-type="inet"
      */
+    @Column(name="client_addr")
+    @Type(type="com.metavize.mvvm.type.InetAddressUserType")
     public InetAddress getClientAddr()
     {
         return this.clientAddr;
@@ -82,9 +79,8 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
      * Interface where all of the events were received.
      *
      * @return the identity of the user that generated the event
-     * @hibernate.property
-     * column="CLIENT_INTF"
      */
+    @Column(name="client_intf", nullable=false)
     public byte getClientIntf()
     {
         return this.clientIntf;
@@ -99,9 +95,8 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
      * Reputation of the user at the time of the event.
      *
      * @return reputation at the time of the event.
-     * @hibernate.property
-     * column="REPUTATION"
      */
+    @Column(nullable=false)
     public double getReputation()
     {
         return reputation;
@@ -116,9 +111,8 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
      * Mode of the system when this event occured.
      *
      * @return Mode of the system at the time of the event.
-     * @hibernate.property
-     * column="MODE"
      */
+    @Column(nullable=false)
     public int getMode()
     {
         return mode;
@@ -133,9 +127,8 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
      * Number of limited sessions since the last time the user generated an event.
      *
      * @return reputation at the time of the event.
-     * @hibernate.property
-     * column="LIMITED"
      */
+    @Column(nullable=false)
     public int getLimited()
     {
         return limited;
@@ -150,9 +143,8 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
      * Number of rejected sessions since the last time the user generated an event.
      *
      * @return reputation at the time of the event.
-     * @hibernate.property
-     * column="REJECTED"
      */
+    @Column(nullable=false)
     public int getRejected()
     {
         return rejected;
@@ -167,9 +159,8 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
      * Number of dropped sessions since the last time the user generated an event.
      *
      * @return reputation at the time of the event.
-     * @hibernate.property
-     * column="DROPPED"
      */
+    @Column(nullable=false)
     public int getDropped()
     {
         return dropped;
@@ -194,11 +185,13 @@ public class ShieldRejectionEvent extends LogEvent implements Serializable
         sb.addField("dropped", dropped);
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "Shield_Rejection";
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         return SyslogPriority.WARNING; // traffic altered

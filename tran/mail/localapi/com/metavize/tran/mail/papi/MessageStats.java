@@ -8,20 +8,30 @@
  *
  * $Id$
  */
+
 package com.metavize.tran.mail.papi;
 
-
 import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import javax.persistence.Entity;
 
 /**
  * Log e-mail message stats.
  *
  * @author <a href="mailto:cng@metavize.com">C Ng</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_MAIL_MESSAGE_STATS"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_mail_message_stats", schema="events")
 public class MessageStats implements Serializable
 {
     /* constants */
@@ -36,7 +46,7 @@ public class MessageStats implements Serializable
     private long numBytes;
 
     /* constructors */
-    public MessageStats() {}
+    public MessageStats() { }
 
     public MessageStats(MessageInfo messageInfo, int numAttachments, long numBytes)
     {
@@ -47,12 +57,9 @@ public class MessageStats implements Serializable
 
     /* public methods */
 
-    /**
-     *
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -67,10 +74,9 @@ public class MessageStats implements Serializable
      * Associate e-mail message stats with e-mail message info.
      *
      * @return e-mail message info.
-     * @hibernate.many-to-one
-     * column="MSG_ID"
-     * cascade="all"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="msg_id")
     public MessageInfo getMessageInfo()
     {
         return messageInfo;
@@ -86,9 +92,8 @@ public class MessageStats implements Serializable
      * Total bytes in message, (body + header?  just body? XX)
      *
      * @return the number of bytes in the message
-     * @hibernate.property
-     * column="MSG_BYTES"
      */
+    @Column(name="msg_bytes", nullable=false)
     public long getNumBytes()
     {
         return numBytes;
@@ -103,9 +108,8 @@ public class MessageStats implements Serializable
      * Total attachments in message, (body + header?  just body? XX)
      *
      * @return the number of attachments in the message
-     * @hibernate.property
-     * column="MSG_ATTACHMENTS"
      */
+    @Column(name="msg_attachments", nullable=false)
     public int getNumAttachments()
     {
         return numAttachments;
@@ -115,5 +119,4 @@ public class MessageStats implements Serializable
     {
         this.numAttachments = numAttachments;
     }
-
 }

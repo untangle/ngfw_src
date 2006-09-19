@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,19 +11,24 @@
 
 package com.metavize.tran.firewall;
 
+import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
+import javax.persistence.Entity;
 
 /**
  * Log event for a Firewall statistics.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_FIREWALL_STATISTIC_EVT"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_firewall_statistic_evt", schema="events")
 public class FirewallStatisticEvent extends StatisticEvent
 {
     /* Number of outbound firewall sessions */
@@ -47,9 +52,6 @@ public class FirewallStatisticEvent extends StatisticEvent
     private int icmpPassedRule;
 
     // Constructors
-    /**
-     * Hibernate constructor
-     */
     public FirewallStatisticEvent()
     {
         this.tcpBlockedDefault = 0;
@@ -95,9 +97,8 @@ public class FirewallStatisticEvent extends StatisticEvent
      * Number of tcp sessions blocked by the default rule.
      *
      * @return Number of tcp sessions blocked by the default.
-     * @hibernate.property
-     * column="TCP_BLOCK_DEFAULT"
      */
+    @Column(name="tcp_block_default", nullable=false)
     public int getTcpBlockedDefault()
     {
         return this.tcpBlockedDefault;
@@ -117,9 +118,8 @@ public class FirewallStatisticEvent extends StatisticEvent
      * Number of tcp sessions blocked by a rule.
      *
      * @return Number of tcp sessions blocked by a rule.
-     * @hibernate.property
-     * column="TCP_BLOCK_RULE"
      */
+    @Column(name="tcp_block_rule", nullable=false)
     public int getTcpBlockedRule()
     {
         return this.tcpBlockedRule;
@@ -139,9 +139,8 @@ public class FirewallStatisticEvent extends StatisticEvent
      * Number of tcp sessions passed by the default rule.
      *
      * @return Number of tcp sessions passed by the default.
-     * @hibernate.property
-     * column="TCP_PASS_DEFAULT"
      */
+    @Column(name="tcp_pass_default", nullable=false)
     public int getTcpPassedDefault()
     {
         return this.tcpPassedDefault;
@@ -161,9 +160,8 @@ public class FirewallStatisticEvent extends StatisticEvent
      * Number of tcp sessions passed by a rule.
      *
      * @return Number of tcp sessions passed by a rule.
-     * @hibernate.property
-     * column="TCP_PASS_RULE"
      */
+    @Column(name="tcp_pass_rule", nullable=false)
     public int getTcpPassedRule()
     {
         return this.tcpPassedRule;
@@ -184,9 +182,8 @@ public class FirewallStatisticEvent extends StatisticEvent
      * Number of udp sessions blocked by the default rule.
      *
      * @return Number of udp sessions blocked by the default.
-     * @hibernate.property
-     * column="UDP_BLOCK_DEFAULT"
      */
+    @Column(name="udp_block_default", nullable=false)
     public int getUdpBlockedDefault()
     {
         return this.udpBlockedDefault;
@@ -206,9 +203,8 @@ public class FirewallStatisticEvent extends StatisticEvent
      * Number of udp sessions blocked by a rule.
      *
      * @return Number of udp sessions blocked by a rule.
-     * @hibernate.property
-     * column="UDP_BLOCK_RULE"
      */
+    @Column(name="udp_block_rule", nullable=false)
     public int getUdpBlockedRule()
     {
         return this.udpBlockedRule;
@@ -228,9 +224,8 @@ public class FirewallStatisticEvent extends StatisticEvent
      * Number of udp sessions passed by the default rule.
      *
      * @return Number of udp sessions passed by the default.
-     * @hibernate.property
-     * column="UDP_PASS_DEFAULT"
      */
+    @Column(name="udp_pass_default", nullable=false)
     public int getUdpPassedDefault()
     {
         return this.udpPassedDefault;
@@ -250,9 +245,8 @@ public class FirewallStatisticEvent extends StatisticEvent
      * Number of udp sessions passed by a rule.
      *
      * @return Number of udp sessions passed by a rule.
-     * @hibernate.property
-     * column="UDP_PASS_RULE"
      */
+    @Column(name="udp_pass_rule", nullable=false)
     public int getUdpPassedRule()
     {
         return this.udpPassedRule;
@@ -272,9 +266,8 @@ public class FirewallStatisticEvent extends StatisticEvent
      * Number of icmp sessions blocked by the default rule.
      *
      * @return Number of icmp sessions blocked by the default.
-     * @hibernate.property
-     * column="ICMP_BLOCK_DEFAULT"
      */
+    @Column(name="icmp_block_default", nullable=false)
     public int getIcmpBlockedDefault()
     {
         return this.icmpBlockedDefault;
@@ -294,9 +287,8 @@ public class FirewallStatisticEvent extends StatisticEvent
      * Number of icmp sessions blocked by a rule.
      *
      * @return Number of icmp sessions blocked by a rule.
-     * @hibernate.property
-     * column="ICMP_BLOCK_RULE"
      */
+    @Column(name="icmp_block_rule", nullable=false)
     public int getIcmpBlockedRule()
     {
         return this.icmpBlockedRule;
@@ -316,9 +308,8 @@ public class FirewallStatisticEvent extends StatisticEvent
      * Number of icmp sessions passed by the default rule.
      *
      * @return Number of icmp sessions passed by the default.
-     * @hibernate.property
-     * column="ICMP_PASS_DEFAULT"
      */
+    @Column(name="icmp_pass_default", nullable=false)
     public int getIcmpPassedDefault()
     {
         return this.icmpPassedDefault;
@@ -338,9 +329,8 @@ public class FirewallStatisticEvent extends StatisticEvent
      * Number of icmp sessions passed by a rule.
      *
      * @return Number of icmp sessions passed by a rule.
-     * @hibernate.property
-     * column="ICMP_PASS_RULE"
      */
+    @Column(name="icmp_pass_rule", nullable=false)
     public int getIcmpPassedRule()
     {
         return this.icmpPassedRule;
@@ -386,11 +376,13 @@ public class FirewallStatisticEvent extends StatisticEvent
         sb.addField("icmp-pass-rule", icmpPassedRule);
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "Statistic";
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         return SyslogPriority.INFORMATIONAL; // statistics or normal operation

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,27 +12,34 @@
 package com.metavize.tran.openvpn;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.sql.Timestamp;
+import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.tran.IPaddr;
+import javax.persistence.Entity;
+import org.hibernate.annotations.Type;
 
 /**
  * Log event for when a client logs in.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="tr_openvpn_connect_evt"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_openvpn_connect_evt", schema="events")
 public class ClientConnectEvent extends LogEvent implements Serializable
 {
     private static final long serialVersionUID = 5000360330098789417L;
-    
+
     private IPaddr address;
     private int port;
     private String clientName;
@@ -41,10 +48,7 @@ public class ClientConnectEvent extends LogEvent implements Serializable
     private long bytesRx; /* Total bytes received */
     private long bytesTx; /* Total bytes transmitted */
 
-    // Constructors 
-    /**
-     * Hibernate constructor 
-     */
+    // Constructors
     public ClientConnectEvent() {}
 
     public ClientConnectEvent( Date start, IPaddr address, int port, String clientName )
@@ -59,17 +63,14 @@ public class ClientConnectEvent extends LogEvent implements Serializable
      * Address where the client connected from.
      *
      * @return Address of where the client connected from.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="remote_address"
-     * sql-type="inet"
      */
+    @Column(name="remote_address")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getAddress()
     {
         return this.address;
     }
-    
+
     public void setAddress( IPaddr address )
     {
         this.address = address;
@@ -79,9 +80,8 @@ public class ClientConnectEvent extends LogEvent implements Serializable
      * Port used to connect
      *
      * @return Client port
-     * @hibernate.property
-     * column="remote_port"
      */
+    @Column(name="remote_port", nullable=false)
     public int getPort()
     {
         return this.port;
@@ -96,9 +96,8 @@ public class ClientConnectEvent extends LogEvent implements Serializable
      * Name of the client that was connected.
      *
      * @return Client name
-     * @hibernate.property
-     * column="client_name"
      */
+    @Column(name="client_name")
     public String getClientName()
     {
         return this.clientName;
@@ -113,20 +112,20 @@ public class ClientConnectEvent extends LogEvent implements Serializable
      * Time the session started.
      *
      * @return time logged.
-     * @hibernate.property
-     * column="start_time"
      */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="start_time")
     public Date getStart()
     {
         return this.start;
     }
-    
+
     void setStart( Date start )
     {
-	if( start instanceof Timestamp )
-	    this.start = new Date(start.getTime());
-	else
-	    this.start = start;
+    if( start instanceof Timestamp )
+        this.start = new Date(start.getTime());
+    else
+        this.start = start;
     }
 
     /**
@@ -134,9 +133,9 @@ public class ClientConnectEvent extends LogEvent implements Serializable
      * may be null if the session is still open</b>
      *
      * @return time logged.
-     * @hibernate.property
-     * column="end_time"
      */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="end_time")
     public Date getEnd()
     {
         return this.end;
@@ -144,19 +143,19 @@ public class ClientConnectEvent extends LogEvent implements Serializable
 
     void setEnd( Date end )
     {
-	if( end instanceof Timestamp )
-	    this.end = new Date(end.getTime());
-	else
-	    this.end = end;
+        if( end instanceof Timestamp ) {
+            this.end = new Date(end.getTime());
+        } else {
+            this.end = end;
+        }
     }
 
     /**
      * Total bytes received during this session.
      *
      * @return time logged.
-     * @hibernate.property
-     * column="rx_bytes"
      */
+    @Column(name="rx_bytes", nullable=false)
     public long getBytesRx()
     {
         return this.bytesRx;
@@ -166,14 +165,13 @@ public class ClientConnectEvent extends LogEvent implements Serializable
     {
         this.bytesRx = bytesRx;
     }
-    
+
     /**
      * Total transmitted received during this session.
      *
      * @return time logged.
-     * @hibernate.property
-     * column="tx_bytes"
      */
+    @Column(name="tx_bytes", nullable=false)
     public long getBytesTx()
     {
         return this.bytesTx;
@@ -201,11 +199,13 @@ public class ClientConnectEvent extends LogEvent implements Serializable
         sb.addField("bytes-transmitted", getBytesTx());
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "Client_Connect";
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         return SyslogPriority.INFORMATIONAL; // statistics or normal operation

@@ -140,9 +140,6 @@ public class MailSettings implements Serializable
      * Specifies if we should use TLS if the mail server supports it.
      *
      * @return true if should use TLS when availaable
-     * @hibernate.property
-     * not-null="true"
-     * column="USE_TLS"
      */
     @Column(name="use_tls", nullable=false)
     public boolean isUseTls()

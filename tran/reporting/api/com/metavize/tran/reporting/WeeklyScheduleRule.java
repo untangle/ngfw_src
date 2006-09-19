@@ -26,13 +26,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
 /**
  * Weekly schedule rule for the Reporting Transform.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_REPORTING_WK_SCHED_RULE"
  */
 @Entity
 @Table(name="tr_reporting_wk_sched_rule", schema="settings")

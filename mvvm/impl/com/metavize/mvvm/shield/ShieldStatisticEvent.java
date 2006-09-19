@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,20 +12,24 @@
 package com.metavize.mvvm.shield;
 
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
+import javax.persistence.Entity;
 
 /**
  * Log event for the shield rejection.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="SHIELD_STATISTIC_EVT"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="shield_statistic_evt", schema="events")
 public class ShieldStatisticEvent extends LogEvent implements Serializable
 {
     private int accepted;
@@ -38,9 +42,6 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
     private int closed;
 
     // Constructors
-    /**
-     * Hibernate constructor
-     */
     public ShieldStatisticEvent()
     {
         this.accepted = 0;
@@ -70,9 +71,8 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
      * Number of accepted connections since the last log event
      *
      * @return Number of accepted connections since the last log event
-     * @hibernate.property
-     * column="ACCEPTED"
      */
+    @Column(nullable=false)
     public int getAccepted()
     {
         return accepted;
@@ -87,9 +87,8 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
      * Number of limited sessions since the last time the user generated an event.
      *
      * @return number of limited sessions since the last log event.
-     * @hibernate.property
-     * column="LIMITED"
      */
+    @Column(nullable=false)
     public int getLimited()
     {
         return limited;
@@ -100,14 +99,12 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
         this.limited = limited;
     }
 
-
     /**
      * Number of dropped sessions since the last time the user generated an event.
      *
      * @return number of dropped sessions since the last log event.
-     * @hibernate.property
-     * column="DROPPED"
      */
+    @Column(nullable=false)
     public int getDropped()
     {
         return dropped;
@@ -122,9 +119,8 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
      * Number of rejected connections since the last log event
      *
      * @return Number of rejected connections since the last log event
-     * @hibernate.property
-     * column="REJECTED"
      */
+    @Column(nullable=false)
     public int getRejected()
     {
         return rejected;
@@ -140,9 +136,8 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
      * Number of ticks the shield spent in relaxed mode since the last log event.
      *
      * @return number of ticks the shield spent in relaxed mode since the last log event.
-     * @hibernate.property
-     * column="RELAXED"
      */
+    @Column(nullable=false)
     public int getRelaxed()
     {
         return relaxed;
@@ -157,9 +152,8 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
      * Number of ticks the shield spent in lax mode since the last log event.
      *
      * @return number of ticks the shield spent in lax mode since the last log event.
-     * @hibernate.property
-     * column="LAX"
      */
+    @Column(nullable=false)
     public int getLax()
     {
         return lax;
@@ -170,14 +164,12 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
         this.lax = lax;
     }
 
-
     /**
      * Number of ticks the shield spent in tight mode since the last log event.
      *
      * @return number of ticks the shield spent in tight mode since the last log event.
-     * @hibernate.property
-     * column="TIGHT"
      */
+    @Column(nullable=false)
     public int getTight()
     {
         return tight;
@@ -192,9 +184,8 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
      * Number of ticks the shield spent in closed mode since the last log event.
      *
      * @return number of ticks the shield spent in closed mode since the last log event.
-     * @hibernate.property
-     * column="CLOSED"
      */
+    @Column(nullable=false)
     public int getClosed()
     {
         return closed;
@@ -220,11 +211,13 @@ public class ShieldStatisticEvent extends LogEvent implements Serializable
         sb.addField("closed", closed);
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "Shield_Statistic";
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         return SyslogPriority.INFORMATIONAL; // statistics or normal operation

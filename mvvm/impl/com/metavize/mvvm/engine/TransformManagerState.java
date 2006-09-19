@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,6 +11,12 @@
 
 package com.metavize.mvvm.engine;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.security.Tid;
 
@@ -19,9 +25,9 @@ import com.metavize.mvvm.security.Tid;
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TRANSFORM_MANAGER_STATE"
  */
+@Entity
+@Table(name="transform_manager_state", schema="settings")
 class TransformManagerState
 {
     private Long id;
@@ -29,11 +35,9 @@ class TransformManagerState
 
     TransformManagerState() { }
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -48,9 +52,8 @@ class TransformManagerState
      * Last tid assigned.
      *
      * @return last assigned tid.
-     * @hibernate.property
-     * column="LAST_TID"
      */
+    @Column(name="last_tid", nullable=false)
     Long getLastTid()
     {
         return lastTid;

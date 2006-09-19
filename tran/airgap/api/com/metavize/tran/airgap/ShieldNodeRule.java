@@ -78,8 +78,6 @@ public class ShieldNodeRule extends Rule implements ShieldNodeSettings
      * Node being modified.
      *
      * @return the node to modify
-     *
-     * @hibernate.property
      */
     @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getAddress()

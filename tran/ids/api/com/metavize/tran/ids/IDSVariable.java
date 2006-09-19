@@ -24,8 +24,6 @@ import javax.persistence.Transient;
  *
  * @author <a href="mailto:nchilders@metavize.com">Nick Childers</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_IDS_VARIABLE"
  */
 @Entity
 @Table(name="tr_ids_variable", schema="settings")

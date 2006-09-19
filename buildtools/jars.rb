@@ -22,8 +22,8 @@ class Jars
                     hibernate-3.2/lib/jta.jar
                   ).map { |f| Jars.downloadTarget(f) }
   HibernateAnnotations = %w(
-    hibernate-annotations-3.2.0.CR1/hibernate-annotations.jar
-    hibernate-annotations-3.2.0.CR1/lib/ejb3-persistence.jar
+    hibernate-annotations-3.2.0.CR2/hibernate-annotations.jar
+    hibernate-annotations-3.2.0.CR2/lib/ejb3-persistence.jar
   ).map { |f| Jars.downloadTarget(f) }
 
   C3p0       = [ Jars.downloadTarget('c3p0-0.9.0.4/lib/c3p0-0.9.0.4.jar') ]

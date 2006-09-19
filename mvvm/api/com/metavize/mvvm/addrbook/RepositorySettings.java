@@ -11,17 +11,21 @@
 
 package com.metavize.mvvm.addrbook;
 
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Settings for the AddressBook repository (really,
  * a bunch of LDAP settings).
- *
- * @hibernate.class
- * table="AB_REPOSITORY_SETTINGS"
  */
-public class RepositorySettings
-  implements java.io.Serializable {
-  
+@Entity
+@Table(name="ab_repository_settings")
+public class RepositorySettings implements Serializable
+{
     private static final long serialVersionUID = 1856246303246961114L;
 
     private Long id;
@@ -32,15 +36,14 @@ public class RepositorySettings
     private String m_ouFilter;
     private int m_ldapPort;
 
-    public RepositorySettings() {
-    }
+    public RepositorySettings() { }
 
     public RepositorySettings(String superuser,
                               String superuserPass,
                               String domain,
                               String ldapHost,
                               int ldapPort) {
-      
+
         m_superuser = superuser;
         m_superuserPass = superuserPass;
         m_domain = domain;
@@ -49,12 +52,9 @@ public class RepositorySettings
         m_ouFilter = "";
     }
 
-    /**
-     * @hibernate.id
-     * column="SETTINGS_ID"
-     * generator-class="native"
-     * not-null="true"
-     */
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     private Long getId() {
         return id;
     }
@@ -63,23 +63,15 @@ public class RepositorySettings
         this.id = id;
     }
 
-    /**
-     * @hibernate.property
-     * column="SUPERUSER"
-     */
     public String getSuperuser() {
         return m_superuser;
     }
-  
+
     public void setSuperuser(String dn) {
         m_superuser = dn;
     }
 
-
-    /**
-     * @hibernate.property
-     * column="SUPERUSER_PASS"
-     */  
+    @Column(name="superuser_pass")
     public String getSuperuserPass() {
         return m_superuserPass;
     }
@@ -88,53 +80,36 @@ public class RepositorySettings
         m_superuserPass = pass;
     }
 
-
     /**
-     * @hibernate.property
-     * column="DOMAIN"
-     */    
+     * Get the AD domain
+     */
     public String getDomain() {
         return m_domain;
     }
 
-
-    /**
-     * Get the AD domain
-     */
     public void setDomain(String domain) {
         m_domain = domain;
+    }
+
+    @Column(name="ldap_host")
+    public String getLDAPHost() {
+        return m_ldapHost;
     }
 
     public void setLDAPHost(String ldapHost) {
         m_ldapHost = ldapHost;
     }
 
-    /**
-     * @hibernate.property
-     * column="LDAP_HOST"
-     */     
-    public String getLDAPHost() {
-        return m_ldapHost;
+    @Column(name="port", nullable=false)
+    public int getLDAPPort() {
+        return m_ldapPort;
     }
-
-
 
     public void setLDAPPort(int port) {
         m_ldapPort = port;
     }
 
-    /**
-     * @hibernate.property
-     * column="PORT"
-     */
-    public int getLDAPPort() {
-        return m_ldapPort;
-    }
-
-    /**
-     * @hibernate.property
-     * column="OU_FILTER"
-     */  
+    @Column(name="ou_filter")
     public String getOUFilter() {
         return m_ouFilter;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,15 +12,22 @@
 package com.metavize.mvvm.logging;
 
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 /**
  * Settings for the LoggingManager.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="LOGGING_SETTINGS"
  */
+@Entity
+@Table(name="logging_settings", schema="settings")
 public class LoggingSettings implements Serializable
 {
     private Long id;
@@ -32,9 +39,6 @@ public class LoggingSettings implements Serializable
 
     // Constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public LoggingSettings() { }
 
     public LoggingSettings(String syslogHost, int syslogPort,
@@ -49,11 +53,9 @@ public class LoggingSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="SETTINGS_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -68,9 +70,8 @@ public class LoggingSettings implements Serializable
      * Packets are sent when syslogEnabled is true.
      *
      * @return true if syslog is enabled, false otherwise.
-     * @hibernate.property
-     * column="SYSLOG_ENABLED"
      */
+    @Column(name="syslog_enabled", nullable=false)
     public boolean isSyslogEnabled()
     {
         return syslogEnabled;
@@ -85,9 +86,8 @@ public class LoggingSettings implements Serializable
      * Syslog destination hostname.
      *
      * @return the Syslog host.
-     * @hibernate.property
-     * column="SYSLOG_HOST"
      */
+    @Column(name="syslog_host")
     public String getSyslogHost()
     {
         return syslogHost;
@@ -102,9 +102,8 @@ public class LoggingSettings implements Serializable
      * Syslog destination port.
      *
      * @return the Syslog port.
-     * @hibernate.property
-     * column="SYSLOG_PORT"
      */
+    @Column(name="syslog_port", nullable=false)
     public int getSyslogPort()
     {
         return syslogPort;
@@ -115,15 +114,13 @@ public class LoggingSettings implements Serializable
         this.syslogPort = syslogPort;
     }
 
-
     /**
      * Facility to log as.
      *
      * @return the Syslog facility.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.SyslogFacilityUserType"
-     * column="SYSLOG_FACILITY"
      */
+    @Column(name="syslog_facility")
+    @Type(type="com.metavize.mvvm.type.SyslogFacilityUserType")
     public SyslogFacility getSyslogFacility()
     {
         return syslogFacility;
@@ -138,10 +135,9 @@ public class LoggingSettings implements Serializable
      * Syslog threshold.
      *
      * @return a <code>SyslogPriority</code> value
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.SyslogPriorityUserType"
-     * column="SYSLOG_THRESHOLD"
      */
+    @Column(name="syslog_threshold")
+    @Type(type="com.metavize.mvvm.type.SyslogPriorityUserType")
     public SyslogPriority getSyslogThreshold()
     {
         return syslogThreshold;

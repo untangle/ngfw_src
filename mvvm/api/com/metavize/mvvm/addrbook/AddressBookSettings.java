@@ -11,65 +11,62 @@
 
 package com.metavize.mvvm.addrbook;
 
+import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 /**
  * Settings for the AddressBook
- *
- * @hibernate.class
- * table="AB_SETTINGS"
  */
-public class AddressBookSettings
-  implements java.io.Serializable {
+@Entity
+@Table(name="ab_settings", schema="settings")
+public class AddressBookSettings implements Serializable {
+    private static final long serialVersionUID = 1981170448212868734L;
 
-  private static final long serialVersionUID = 1981170448212868734L;
-
-  private Long id;
-  private RepositorySettings m_aDSettings;
-  private AddressBookConfiguration m_configuration;
+    private Long id;
+    private RepositorySettings m_aDSettings;
+    private AddressBookConfiguration m_configuration;
 
 
-  public AddressBookSettings() {
-  }
+    public AddressBookSettings() { }
 
-  /**
-   * @hibernate.id
-   * column="SETTINGS_ID"
-   * generator-class="native"
-   * not-null="true"
-   */
-  private Long getId() {
-      return id;
-  }
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
+    private Long getId() {
+        return id;
+    }
 
-  private void setId(Long id) {
-      this.id = id;
-  }
+    private void setId(Long id) {
+        this.id = id;
+    }
 
-  /**
-    * @hibernate.many-to-one
-    * column="AD_REPO_SETTINGS"
-    * cascade="all"
-    * not-null="true"
-    */
-  public RepositorySettings getADRepositorySettings() {
-    return m_aDSettings;
-  }
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="ad_repo_settings", nullable=false)
+    public RepositorySettings getADRepositorySettings() {
+        return m_aDSettings;
+    }
 
-  public void setADRepositorySettings(RepositorySettings aDSettings) {
-    m_aDSettings = aDSettings;
-  }
+    public void setADRepositorySettings(RepositorySettings aDSettings) {
+        m_aDSettings = aDSettings;
+    }
 
-  /**
-    * @hibernate.property
-    * column="AB_CONFIGURATION"
-    * type="com.metavize.mvvm.addrbook.AddressBookConfigurationUserType"
-    * not-null="true"
-    */
-  public AddressBookConfiguration getAddressBookConfiguration() {
-    return m_configuration;
-  }
+    @Column(name="ab_configuration")
+    @Type(type="com.metavize.mvvm.addrbook.AddressBookConfigurationUserType")
+    public AddressBookConfiguration getAddressBookConfiguration() {
+        return m_configuration;
+    }
 
-  public void setAddressBookConfiguration(AddressBookConfiguration c) {
-    m_configuration = c;
-  }
+    public void setAddressBookConfiguration(AddressBookConfiguration c) {
+        m_configuration = c;
+    }
 }

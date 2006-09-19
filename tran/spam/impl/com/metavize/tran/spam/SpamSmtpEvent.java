@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,19 +11,28 @@
 
 package com.metavize.tran.spam;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import com.metavize.tran.mail.papi.MessageInfo;
 import com.metavize.tran.mail.papi.AddressKind;
+import com.metavize.tran.mail.papi.MessageInfo;
+import javax.persistence.Entity;
+import org.hibernate.annotations.Type;
 
 /**
  * Log for SMTP Spam events.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_SPAM_EVT_SMTP"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_spam_evt_smtp", schema="events")
 public class SpamSmtpEvent extends SpamEvent
 {
     private MessageInfo messageInfo;
@@ -34,9 +43,6 @@ public class SpamSmtpEvent extends SpamEvent
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public SpamSmtpEvent() { }
 
     public SpamSmtpEvent(MessageInfo messageInfo, float score, boolean isSpam,
@@ -51,11 +57,13 @@ public class SpamSmtpEvent extends SpamEvent
 
     // SpamEvent methods ------------------------------------------------------
 
+    @Transient
     public String getType()
     {
         return "SMTP";
     }
 
+    @Transient
     public int getActionType()
     {
         char type = action.getKey();
@@ -70,12 +78,14 @@ public class SpamSmtpEvent extends SpamEvent
         }
     }
 
+    @Transient
     public String getActionName()
     {
         return action.toString();
     }
 
     // Better sender/receiver info available for smtp
+    @Transient
     public String getSender()
     {
         String sender = get(AddressKind.ENVELOPE_FROM);
@@ -86,6 +96,7 @@ public class SpamSmtpEvent extends SpamEvent
             return sender;
     }
 
+    @Transient
     public String getReceiver()
     {
         String receiver = get(AddressKind.ENVELOPE_TO);
@@ -98,17 +109,16 @@ public class SpamSmtpEvent extends SpamEvent
             return receiver;
     }
 
-    
+
     // accessors --------------------------------------------------------------
 
     /**
      * Associate e-mail message info with event.
      *
      * @return e-mail message info.
-     * @hibernate.many-to-one
-     * column="MSG_ID"
-     * cascade="save-update"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="msg_id")
     public MessageInfo getMessageInfo()
     {
         return messageInfo;
@@ -123,9 +133,8 @@ public class SpamSmtpEvent extends SpamEvent
      * Spam scan score.
      *
      * @return the spam score
-     * @hibernate.property
-     * column="SCORE"
      */
+    @Column(nullable=false)
     public float getScore()
     {
         return score;
@@ -140,9 +149,8 @@ public class SpamSmtpEvent extends SpamEvent
      * Was it declared spam?
      *
      * @return true if the message is declared to be Spam
-     * @hibernate.property
-     * column="IS_SPAM"
      */
+    @Column(name="is_spam", nullable=false)
     public boolean isSpam()
     {
         return isSpam;
@@ -157,10 +165,8 @@ public class SpamSmtpEvent extends SpamEvent
      * The action taken
      *
      * @return action.
-     * @hibernate.property
-     * type="com.metavize.tran.spam.SMTPSpamMessageActionUserType"
-     * column="ACTION"
      */
+    @Type(type="com.metavize.tran.spam.SMTPSpamMessageActionUserType")
     public SMTPSpamMessageAction getAction()
     {
         return action;
@@ -175,9 +181,8 @@ public class SpamSmtpEvent extends SpamEvent
      * Spam scanner vendor.
      *
      * @return the vendor
-     * @hibernate.property
-     * column="VENDOR_NAME"
      */
+    @Column(name="vendor_name")
     public String getVendorName()
     {
         return vendorName;

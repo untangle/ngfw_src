@@ -83,7 +83,6 @@ public class MailTransformSettings implements Serializable
      * Enabled status of SMTP casing.
      *
      * @return true if SMTP casing is enabled, false otherwise.
-     * @hibernate.property
      */
     @Column(name="smtp_enabled", nullable=false)
     public boolean isSmtpEnabled()
@@ -100,7 +99,6 @@ public class MailTransformSettings implements Serializable
      * Enabled status of POP casing.
      *
      * @return true of POP casing is enabled, false otherwise.
-     * @hibernate.property
      */
     @Column(name="pop_enabled", nullable=false)
     public boolean isPopEnabled()

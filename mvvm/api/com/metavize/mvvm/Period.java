@@ -233,8 +233,6 @@ public class Period implements Serializable
      * Happen on Thursday.
      *
      * @return true if it happens on Thursday.
-     * @hibernate.property
-     * column="THURSDAY"
      */
     @Column(nullable=false)
     public boolean getThursday()
@@ -251,8 +249,6 @@ public class Period implements Serializable
      * Happen on Friday.
      *
      * @return true if it happens on Friday.
-     * @hibernate.property
-     * column="FRIDAY"
      */
     @Column(nullable=false)
     public boolean getFriday()
@@ -269,8 +265,6 @@ public class Period implements Serializable
      * Happen on Saturday.
      *
      * @return true if it happens on Saturday.
-     * @hibernate.property
-     * column="SATURDAY"
      */
     @Column(nullable=false)
     public boolean getSaturday()

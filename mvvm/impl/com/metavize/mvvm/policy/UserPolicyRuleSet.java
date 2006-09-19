@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,28 +14,37 @@ package com.metavize.mvvm.policy;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.IndexColumn;
 
 /**
- * A collection of UserPolicyRules (currently only one row in this table)
+ * A collection of UserPolicyRules (currently only one row in this
+ * table).
  *
  * @author
  * @version 1.0
- * @hibernate.class
- * table="MVVM_USER_POLICY_RULES"
  */
+@Entity
+@Table(name="mvvm_user_policy_rules", schema="settings")
 public class UserPolicyRuleSet implements Serializable
 {
     private static final long serialVersionUID = 1806394002255614868L;
 
     private Long id;
 
-    private List rules = new ArrayList();
+    private List<UserPolicyRule> rules = new ArrayList<UserPolicyRule>();
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public UserPolicyRuleSet() { }
 
     // business methods ------------------------------------------------------
@@ -47,11 +56,9 @@ public class UserPolicyRuleSet implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="SET_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="set_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -66,21 +73,16 @@ public class UserPolicyRuleSet implements Serializable
      * Rules in this set
      *
      * @return the list of rules
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="SET_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.mvvm.policy.UserPolicyRule"
      */
-    public List getRules()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="set_id")
+    @IndexColumn(name="position")
+    public List<UserPolicyRule> getRules()
     {
         return rules;
     }
 
-    public void setRules(List rules)
+    public void setRules(List<UserPolicyRule> rules)
     {
         this.rules = rules;
     }

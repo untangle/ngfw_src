@@ -12,6 +12,12 @@
 package com.metavize.mvvm.policy;
 
 import java.util.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.api.IPSessionDesc;
 import com.metavize.mvvm.tran.ParseException;
@@ -19,6 +25,7 @@ import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
+import org.hibernate.annotations.Type;
 
 /**
  * User Policy Rules.  These are the policy rules that are created by the user.  All of
@@ -26,9 +33,9 @@ import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
  *
  * @author
  * @version 1.0
- * @hibernate.class
- * table="USER_POLICY_RULE"
  */
+@Entity
+@Table(name="user_policy_rule", schema="settings")
 public class UserPolicyRule extends PolicyRule
 {
     /* settings */
@@ -86,11 +93,9 @@ public class UserPolicyRule extends PolicyRule
      * Protocol matcher
      *
      * @return the protocol matcher.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.firewall.ProtocolMatcherUserType"
-     * @hibernate.column
-     * name="PROTOCOL_MATCHER"
      */
+    @Column(name="protocol_matcher")
+    @Type(type="com.metavize.mvvm.type.firewall.ProtocolMatcherUserType")
     public ProtocolMatcher getProtocol()
     {
         return protocol;
@@ -105,11 +110,9 @@ public class UserPolicyRule extends PolicyRule
      * client address IPMatcher
      *
      * @return the client address IP matcher.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.firewall.IPMatcherUserType"
-     * @hibernate.column
-     * name="CLIENT_IP_MATCHER"
      */
+    @Column(name="client_ip_matcher")
+    @Type(type="com.metavize.mvvm.type.firewall.IPMatcherUserType")
     public IPMatcher getClientAddr()
     {
         return clientAddr;
@@ -124,11 +127,9 @@ public class UserPolicyRule extends PolicyRule
      * server address IPMatcher
      *
      * @return the server address IP matcher.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.firewall.IPMatcherUserType"
-     * @hibernate.column
-     * name="SERVER_IP_MATCHER"
      */
+    @Column(name="server_ip_matcher")
+    @Type(type="com.metavize.mvvm.type.firewall.IPMatcherUserType")
     public IPMatcher getServerAddr()
     {
         return serverAddr;
@@ -143,11 +144,9 @@ public class UserPolicyRule extends PolicyRule
      * client port PortMatcher
      *
      * @return the client port matcher.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.firewall.PortMatcherUserType"
-     * @hibernate.column
-     * name="CLIENT_PORT_MATCHER"
      */
+    @Column(name="client_port_matcher")
+    @Type(type="com.metavize.mvvm.type.firewall.PortMatcherUserType")
     public PortMatcher getClientPort()
     {
         return clientPort;
@@ -162,11 +161,9 @@ public class UserPolicyRule extends PolicyRule
      * server port PortMatcher
      *
      * @return the server port matcher.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.firewall.PortMatcherUserType"
-     * @hibernate.column
-     * name="SERVER_PORT_MATCHER"
      */
+    @Column(name="server_port_matcher")
+    @Type(type="com.metavize.mvvm.type.firewall.PortMatcherUserType")
     public PortMatcher getServerPort()
     {
         return serverPort;
@@ -177,6 +174,7 @@ public class UserPolicyRule extends PolicyRule
         this.serverPort = serverPort;
     }
 
+    @Transient
     public boolean isSameRow(UserPolicyRule pr)
     {
         return getId().equals(pr.getId());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,32 +12,33 @@
 package com.metavize.tran.nat;
 
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.logging.PipelineEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.networking.RedirectRule;
 import com.metavize.mvvm.tran.PipelineEndpoints;
+import javax.persistence.Entity;
 
 /**
  * Log event for the firewall.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="tr_nat_redirect_evt"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_nat_redirect_evt", schema="events")
 public class RedirectEvent extends PipelineEvent implements Serializable
 {
     private int          ruleIndex;
     private boolean      isDmz;
 
     // Constructors
-    /**
-     * Hibernate constructor
-     */
-    public RedirectEvent() {}
+    public RedirectEvent() { }
 
     public RedirectEvent( PipelineEndpoints pe, int ruleIndex )
     {
@@ -58,9 +59,8 @@ public class RedirectEvent extends PipelineEvent implements Serializable
      * Rule index, when this event was triggered.
      *
      * @return current rule index for the rule that triggered this event.
-     * @hibernate.property
-     * column="rule_index"
      */
+    @Column(name="rule_index", nullable=false)
     public int getRuleIndex()
     {
         return ruleIndex;
@@ -75,9 +75,8 @@ public class RedirectEvent extends PipelineEvent implements Serializable
      * True if this was caused by the DMZ rule.
      *
      * @return Whether or not this was a DMZ event.
-     * @hibernate.property
-     * column="is_dmz"
      */
+    @Column(name="is_dmz", nullable=false)
     public boolean getIsDmz()
     {
         return this.isDmz;
@@ -99,11 +98,13 @@ public class RedirectEvent extends PipelineEvent implements Serializable
         sb.addField("is-dmz", isDmz);
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "Redirect";
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         return SyslogPriority.WARNING; // traffic altered

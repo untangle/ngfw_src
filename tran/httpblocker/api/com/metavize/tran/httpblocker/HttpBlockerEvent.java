@@ -11,20 +11,29 @@
 
 package com.metavize.tran.httpblocker;
 
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.tran.http.RequestLine;
+import javax.persistence.Entity;
+import org.hibernate.annotations.Type;
 
 /**
  * Log event for a blocked request.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_HTTPBLK_EVT_BLK"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_httpblk_evt_blk", schema="events")
 public class HttpBlockerEvent extends LogEvent
 {
     // action types
@@ -66,6 +75,7 @@ public class HttpBlockerEvent extends LogEvent
 
     // public methods ---------------------------------------------------------
 
+    @Transient
     public boolean isNonEvent()
     {
         return nonEvent;
@@ -77,10 +87,9 @@ public class HttpBlockerEvent extends LogEvent
      * Request line for this HTTP response pair.
      *
      * @return the request line.
-     * @hibernate.many-to-one
-     * column="REQUEST_ID"
-     * cascade="save-update"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="request_id")
     public RequestLine getRequestLine()
     {
         return requestLine;
@@ -95,10 +104,8 @@ public class HttpBlockerEvent extends LogEvent
      * The action taken.
      *
      * @return the action.
-     * @hibernate.property
-     * column="ACTION"
-     * type="com.metavize.tran.httpblocker.ActionUserType"
      */
+    @Type(type="com.metavize.tran.httpblocker.ActionUserType")
     public Action getAction()
     {
         return action;
@@ -113,10 +120,8 @@ public class HttpBlockerEvent extends LogEvent
      * Reason for blocking.
      *
      * @return the reason.
-     * @hibernate.property
-     * column="REASON"
-     * type="com.metavize.tran.httpblocker.ReasonUserType"
      */
+    @Type(type="com.metavize.tran.httpblocker.ReasonUserType")
     public Reason getReason()
     {
         return reason;
@@ -129,10 +134,6 @@ public class HttpBlockerEvent extends LogEvent
 
     /**
      * A string associated with the block reason.
-     *
-     * @return a <code>String</code> value
-     * @hibernate.property
-     * column="CATEGORY"
      */
     public String getCategory()
     {
@@ -146,6 +147,7 @@ public class HttpBlockerEvent extends LogEvent
 
     // HttpBlockerEvent methods -----------------------------------------------
 
+    @Transient
     private int getActionType()
     {
         if (null == action ||
@@ -158,6 +160,7 @@ public class HttpBlockerEvent extends LogEvent
 
     // LogEvent methods -------------------------------------------------------
 
+    @Transient
     public boolean isPersistent()
     {
         return !nonEvent;
@@ -176,11 +179,13 @@ public class HttpBlockerEvent extends LogEvent
         sb.addField("category", null == category ? "none" : category);
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "Block";
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         switch(getActionType())

@@ -1,33 +1,40 @@
- /*
-  * Copyright (c) 2004, 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
 
- package com.metavize.tran.firewall;
+package com.metavize.tran.firewall;
 
- import java.io.Serializable;
+import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.logging.PipelineEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.tran.PipelineEndpoints;
+import javax.persistence.Entity;
 
- /**
-  * Log event for the firewall.
-  *
-  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
-  * @version 1.0
-  * @hibernate.class
-  * table="TR_FIREWALL_EVT"
-  * mutable="false"
-  */
-
+/**
+ * Log event for the firewall.
+ *
+ * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
+ * @version 1.0
+ */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_firewall_evt", schema="events")
 public class FirewallEvent extends PipelineEvent implements Serializable
 {
     private FirewallRule rule;
@@ -35,10 +42,7 @@ public class FirewallEvent extends PipelineEvent implements Serializable
     private boolean wasBlocked;
 
     // Constructors
-    /**
-     * Hibernate constructor
-     */
-    public FirewallEvent() {}
+    public FirewallEvent() { }
 
     public FirewallEvent( PipelineEndpoints pe,  FirewallRule rule, boolean wasBlocked, int ruleIndex )
     {
@@ -53,9 +57,8 @@ public class FirewallEvent extends PipelineEvent implements Serializable
      * Whether or not the session was blocked.
      *
      * @return If the session was passed or blocked.
-     * @hibernate.property
-     * column="WAS_BLOCKED"
      */
+    @Column(name="was_blocked", nullable=false)
     public boolean getWasBlocked()
     {
         return wasBlocked;
@@ -70,9 +73,8 @@ public class FirewallEvent extends PipelineEvent implements Serializable
      * Rule index, when this event was triggered.
      *
      * @return current rule index for the rule that triggered this event.
-     * @hibernate.property
-     * column="RULE_INDEX"
      */
+    @Column(name="rule_index", nullable=false)
     public int getRuleIndex()
     {
         return ruleIndex;
@@ -87,10 +89,9 @@ public class FirewallEvent extends PipelineEvent implements Serializable
      * Firewall rule that triggered this event
      *
      * @return firewall rule that triggered this event
-     * @hibernate.many-to-one
-     * class="com.metavize.tran.firewall.FirewallRule"
-     * column="RULE_ID"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="rule_id")
     public FirewallRule getRule()
     {
         return rule;
@@ -102,7 +103,7 @@ public class FirewallEvent extends PipelineEvent implements Serializable
     }
 
     // Syslog methods ---------------------------------------------------------
- 
+
     public void appendSyslog(SyslogBuilder sb)
     {
         getPipelineEndpoints().appendSyslog(sb);
@@ -112,11 +113,13 @@ public class FirewallEvent extends PipelineEvent implements Serializable
         sb.addField("blocked", getWasBlocked());
     }
 
+    @Transient
     public String getSyslogId()
     {
         return ""; // XXX
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         // INFORMATIONAL = statistics or normal operation

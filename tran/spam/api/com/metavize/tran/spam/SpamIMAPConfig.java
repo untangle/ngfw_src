@@ -91,7 +91,6 @@ public class SpamIMAPConfig extends SpamProtoConfig
       * contains spam (defaults to MARK) one of MARK or PASS
       *
       * @return the action to take if a message is judged to be spam.
-      * @hibernate.property
       */
      @Column(name="msg_action", nullable=false)
      @Type(type="com.metavize.tran.spam.SpamMessageActionUserType")

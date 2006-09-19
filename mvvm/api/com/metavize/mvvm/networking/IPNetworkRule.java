@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,32 +12,36 @@
 package com.metavize.mvvm.networking;
 
 import java.net.InetAddress;
-
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ParseException;
-import com.metavize.mvvm.tran.firewall.ParsingConstants;;
+import com.metavize.mvvm.tran.Rule;
+import com.metavize.mvvm.tran.firewall.ParsingConstants;
+import org.hibernate.annotations.Type;
+
+
 
 /**
- * An IPNetwork that is to go into a list, this is only to 
+ * An IPNetwork that is to go into a list, this is only to
  * allow lists of IPNetworks to be saved.  Normally, an IPNetwork is
  * just stored using the IPNetworkUserType.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="mvvm_ip_network"
  */
+@Entity
+@Table(name="mvvm_ip_network", schema="settings")
 public class IPNetworkRule extends Rule
 {
     private IPNetwork ipNetwork;
 
-    public IPNetworkRule()
-    {
-    }
+    public IPNetworkRule() { }
 
     public IPNetworkRule( IPNetwork ipNetwork )
     {
@@ -47,11 +51,9 @@ public class IPNetworkRule extends Rule
     /**
      * The IPNetwork associated with this rule.
      * @return The IPNetwork associated with this rule.
-     * @hibernate.property
-     * type="com.metavize.mvvm.networking.IPNetworkUserType"
-     * @hibernate.column
-     * name="network"
      */
+    @Column(name="network")
+    @Type(type="com.metavize.mvvm.networking.IPNetworkUserType")
     public IPNetwork getIPNetwork()
     {
         return this.ipNetwork;
@@ -64,16 +66,19 @@ public class IPNetworkRule extends Rule
 
     /** The following are convenience methods, an IPNetwork is immutable, so the
      *  corresponding setters do not exist */
+    @Transient
     public IPaddr getNetwork()
     {
         return this.ipNetwork.getNetwork();
     }
 
+    @Transient
     public IPaddr getNetmask()
     {
         return this.ipNetwork.getNetmask();
     }
 
+    @Transient
     public boolean isUnicast()
     {
         return this.ipNetwork.isUnicast();
@@ -93,14 +98,14 @@ public class IPNetworkRule extends Rule
     public static List parseList( String value ) throws ParseException
     {
         List networkList = new LinkedList();
-        
+
         /* empty list, null or throw parse exception */
         if ( value == null ) throw new ParseException( "Null list" );
 
         value = value.trim();
 
         String networkArray[] = value.split( ParsingConstants.MARKER_SEPERATOR );
-        
+
         for ( int c = 0 ; c < networkArray.length ; c++ ) networkList.add( parse( networkArray[c] ));
         return networkList;
     }

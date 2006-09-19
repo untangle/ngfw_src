@@ -491,8 +491,6 @@ public class VpnSettings implements Serializable, Validatable
 
     /**
      * @return true if the CA private key is on a USB key.
-     * @hibernate.property
-     * column="is_ca_on_usb"
      */
     @Column(name="is_ca_on_usb", nullable=false)
     public boolean getCaKeyOnUsb()

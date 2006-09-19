@@ -1,3 +1,8 @@
+com.metavize.mvvm.engine.LoginEvent
 com.metavize.mvvm.engine.MackageState
+com.metavize.mvvm.engine.TransformManagerState
 com.metavize.mvvm.engine.TransformPersistentState
 com.metavize.mvvm.engine.TransformStateChange
+com.metavize.mvvm.policy.UserPolicyRuleSet
+com.metavize.mvvm.shield.ShieldRejectionEvent
+com.metavize.mvvm.shield.ShieldStatisticEvent

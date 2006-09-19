@@ -12,17 +12,30 @@
 package com.metavize.mvvm.portal;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * Portal global.  Global settings for portal.
  *
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  * @version 1.0
- * @hibernate.class
- * table="Portal_Global"
  */
+@Entity
+@Table(name="portal_global", schema="settings")
 public class PortalGlobal implements Serializable
 {
     private static final long serialVersionUID = -5681117464960398347L;
@@ -38,20 +51,13 @@ public class PortalGlobal implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public PortalGlobal() { }
-
-
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     protected Long getId()
     {
         return id;
@@ -66,9 +72,8 @@ public class PortalGlobal implements Serializable
      * should users in address book automatically be allowed access to portal?
      *
      * @return true if this user is allowed to use the portal
-     * @hibernate.property
-     * column="AUTO_CREATE_USERS"
      */
+    @Column(name="auto_create_users", nullable=false)
     public boolean isAutoCreateUsers()
     {
         return autoCreateUsers;
@@ -83,9 +88,8 @@ public class PortalGlobal implements Serializable
      * Get a loginPageTitle for display purposes.
      *
      * @return loginPageTitle.
-     * @hibernate.property
-     * column="LOGIN_PAGE_TITLE"
      */
+    @Column(name="login_page_title")
     public String getLoginPageTitle()
     {
         return loginPageTitle;
@@ -100,9 +104,8 @@ public class PortalGlobal implements Serializable
      * Get a loginPageText for display purposes.
      *
      * @return loginPageText.
-     * @hibernate.property
-     * column="LOGIN_PAGE_TEXT"
      */
+    @Column(name="login_page_text")
     public String getLoginPageText()
     {
         return loginPageText;
@@ -118,10 +121,9 @@ public class PortalGlobal implements Serializable
      * settings customization).
      *
      * @return the PortalHomeSettings.
-     * @hibernate.many-to-one
-     * cascade="all"
-     * column="home_settings_id"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="home_settings_id", nullable=false)
     public PortalHomeSettings getPortalHomeSettings()
     {
         return portalHomeSettings;
@@ -136,23 +138,18 @@ public class PortalGlobal implements Serializable
      * List of bookmarks
      *
      * @return the list of bookmarks for this global.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="PORTAL_GLOBAL_BM_MT"
-     * @hibernate.collection-key
-     * column="SETTINGS_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.portal.Bookmark"
-     * column="BOOKMARK_ID"
      */
-    public List getBookmarks()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="portal_global_bm_mt",
+               joinColumns=@JoinColumn(name="settings_id"),
+               inverseJoinColumns=@JoinColumn(name="bookmark_id"))
+    @IndexColumn(name="position")
+    public List<Bookmark> getBookmarks()
     {
         return bookmarks;
     }
 
-    public void setBookmarks(List bookmarks)
+    public void setBookmarks(List<Bookmark> bookmarks)
     {
         this.bookmarks = bookmarks;
     }

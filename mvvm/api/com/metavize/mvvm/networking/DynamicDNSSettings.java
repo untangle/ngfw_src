@@ -11,28 +11,32 @@
 
 package com.metavize.mvvm.networking;
 
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Collections;
-
+import java.io.Serializable;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.tran.IPaddr;
-
-import java.io.Serializable;
 
 /**
  * Dynamic DNS Configuration for the box.
  *
  * @version 1.0
- * @hibernate.class
- * table="mvvm_ddns_settings"
  */
+@Entity
+@Table(name="mvvm_ddns_settings", schema="settings")
 public class DynamicDNSSettings implements Serializable
 {
     // XXXXXXXX put serializable stuff in here
-    
+
     private static final String PROVIDER_DYNDNS = "www.dyndns.org";
     private static final String PROVIDER_EASYDNS = "www.easydns.com";
     private static final String PROVIDER_ZONEEDIT = "www.zoneedit.com";
@@ -44,7 +48,7 @@ public class DynamicDNSSettings implements Serializable
     private static final String SERVER_DYNDNS = "members.dyndns.org";
     private static final String SERVER_EASYDNS = "members.easydns.com";
     private static final String SERVER_ZONEEDIT = "www.zoneedit.com";
-    
+
     private static final String[] PROVIDER_ENUMERATION = { PROVIDER_DYNDNS, PROVIDER_EASYDNS, PROVIDER_ZONEEDIT };
 
     private Long id;
@@ -53,15 +57,11 @@ public class DynamicDNSSettings implements Serializable
     private String login = "";
     private String password = "";
 
-    public DynamicDNSSettings()
-    {
-    }
+    public DynamicDNSSettings() { }
 
-    /**
-     * @hibernate.id
-     * column="settings_id"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     Long getId()
     {
         return id;
@@ -74,10 +74,8 @@ public class DynamicDNSSettings implements Serializable
 
     /**
      * @return true if dynamic dns is enabled
-     *
-     * @hibernate.property
-     * column="enabled"
      */
+    @Column(nullable=false)
     public boolean isEnabled()
     {
         return this.enabled;
@@ -90,9 +88,6 @@ public class DynamicDNSSettings implements Serializable
 
     /**
      * @return the provider for dynamic dns service
-     *
-     * @hibernate.property
-     * column="provider"
      */
     public String getProvider()
     {
@@ -105,11 +100,13 @@ public class DynamicDNSSettings implements Serializable
         this.provider = provider;
     }
 
+    @Transient
     public static String[] getProviderEnumeration()
     {
         return PROVIDER_ENUMERATION;
     }
 
+    @Transient
     public static String getProviderDefault()
     {
         return PROVIDER_ENUMERATION[0];
@@ -117,9 +114,6 @@ public class DynamicDNSSettings implements Serializable
 
     /**
      * @return the login used to log into the provider's service
-     *
-     * @hibernate.property
-     * column="login"
      */
     public String getLogin()
     {
@@ -133,9 +127,6 @@ public class DynamicDNSSettings implements Serializable
 
     /**
      * @return the password used to log into the provider's service
-     *
-     * @hibernate.property
-     * column="password"
      */
     public String getPassword()
     {
@@ -147,7 +138,7 @@ public class DynamicDNSSettings implements Serializable
         this.password = password;
     }
 
-
+    @Transient
     String getProtocol()
     {
         if (PROVIDER_DYNDNS.equals(provider))
@@ -160,6 +151,7 @@ public class DynamicDNSSettings implements Serializable
             throw new IllegalArgumentException("Unknown provider: " + provider);
     }
 
+    @Transient
     String getServer()
     {
         if (PROVIDER_DYNDNS.equals(provider))

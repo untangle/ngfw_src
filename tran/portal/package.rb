@@ -20,6 +20,7 @@ ServletBuilder.new(portal, "com.metavize.tran.portal.portal.jsp",
 deps = %w(
            commons-fileupload-1.1/commons-fileupload-1.1.jar
            commons-httpclient-3.0/commons-httpclient-3.0.jar
+           commons-codec-1.3/commons-codec-1.3.jar
            htmlparser1_6_20060319/htmlparser1_6/lib/htmlparser.jar
          ).map { |f| Jars.downloadTarget(f) }
 

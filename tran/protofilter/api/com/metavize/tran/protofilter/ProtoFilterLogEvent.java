@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,20 +11,25 @@
 
 package com.metavize.tran.protofilter;
 
+import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.metavize.mvvm.logging.PipelineEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.tran.PipelineEndpoints;
+import javax.persistence.Entity;
 
 /**
  * Log event for a proto filter match.
  *
  * @author
  * @version 1.0
- * @hibernate.class
- * table="TR_PROTOFILTER_EVT"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_virus_evt_mail", schema="events")
 public class ProtoFilterLogEvent extends PipelineEvent
 {
     private String protocol;
@@ -32,9 +37,6 @@ public class ProtoFilterLogEvent extends PipelineEvent
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public ProtoFilterLogEvent() { }
 
     public ProtoFilterLogEvent(PipelineEndpoints pe, String protocol, boolean blocked)
@@ -50,8 +52,6 @@ public class ProtoFilterLogEvent extends PipelineEvent
      * The protocol, as determined by the protocol filter.
      *
      * @return the protocol name.
-     * @hibernate.property
-     * column="PROTOCOL"
      */
     public String getProtocol()
     {
@@ -67,9 +67,8 @@ public class ProtoFilterLogEvent extends PipelineEvent
      * Whether or not we blocked it.
      *
      * @return whether or not the session was blocked (closed)
-     * @hibernate.property
-     * column="BLOCKED"
      */
+    @Column(nullable=false)
     public boolean isBlocked()
     {
         return blocked;
@@ -91,11 +90,13 @@ public class ProtoFilterLogEvent extends PipelineEvent
         sb.addField("blocked", isBlocked());
     }
 
+    @Transient
     public String getSyslogId()
     {
         return ""; // XXX
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         // WARNING = traffic altered

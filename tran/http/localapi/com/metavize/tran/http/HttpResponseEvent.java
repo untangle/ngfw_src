@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,19 +11,28 @@
 
 package com.metavize.tran.http;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
+import javax.persistence.Entity;
 
 /**
  * Log event for response.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_HTTP_EVT_RESP"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_http_evt_resp", schema="events")
 public class HttpResponseEvent extends LogEvent
 {
     private RequestLine requestLine;
@@ -32,9 +41,6 @@ public class HttpResponseEvent extends LogEvent
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public HttpResponseEvent() { }
 
     public HttpResponseEvent(RequestLine requestLine,
@@ -51,10 +57,9 @@ public class HttpResponseEvent extends LogEvent
      * Request line for this HTTP response pair.
      *
      * @return the request line.
-     * @hibernate.many-to-one
-     * column="REQUEST_ID"
-     * cascade="all"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="request_id")
     public RequestLine getRequestLine()
     {
         return requestLine;
@@ -70,9 +75,8 @@ public class HttpResponseEvent extends LogEvent
      * nonsense.
      *
      * @return the content type.
-     * @hibernate.property
-     * column="CONTENT_TYPE"
      */
+    @Column(name="content_type")
     public String getContentType()
     {
         return contentType;
@@ -88,9 +92,8 @@ public class HttpResponseEvent extends LogEvent
      * Content length, as counted by the parser.
      *
      * @return number of octets in the body.
-     * @hibernate.property
-     * column="CONTENT_LENGTH"
      */
+    @Column(name="content_length", nullable=false)
     public int getContentLength()
     {
         return contentLength;
@@ -113,11 +116,13 @@ public class HttpResponseEvent extends LogEvent
         sb.addField("content-length", contentLength);
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "Response";
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         return SyslogPriority.INFORMATIONAL; // statistics or normal operation

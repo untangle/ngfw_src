@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -9,6 +9,11 @@
  */
 
 package com.metavize.tran.ids;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.logging.PipelineEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
@@ -20,10 +25,10 @@ import com.metavize.mvvm.tran.PipelineEndpoints;
  *
  * @author <a href="mailto:nchilders@metavize.com">Nick Childers</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_IDS_EVT"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_ids_evt", schema="events")
 public class IDSLogEvent extends PipelineEvent {
 
     private String classification;
@@ -35,7 +40,8 @@ public class IDSLogEvent extends PipelineEvent {
 
     public IDSLogEvent() { }
 
-    public IDSLogEvent(PipelineEndpoints pe, int ruleSid, String classification, String message, boolean blocked) {
+    public IDSLogEvent(PipelineEndpoints pe, int ruleSid, String classification,
+                       String message, boolean blocked) {
         super(pe);
 
         this.ruleSid = ruleSid;
@@ -48,10 +54,8 @@ public class IDSLogEvent extends PipelineEvent {
 
     /**
      * SID of the rule that fired.
-     *
-     * @hibernate.property
-     * column="RULE_SID"
      */
+    @Column(name="rule_sid", nullable=false)
     public int getRuleSid() {
         return this.ruleSid;
     }
@@ -64,8 +68,6 @@ public class IDSLogEvent extends PipelineEvent {
      * Classification of signature that generated this event.
      *
      * @return the classification
-     * @hibernate.property
-     * column="CLASSIFICATION"
      */
     public String getClassification() {
         return classification;
@@ -79,8 +81,6 @@ public class IDSLogEvent extends PipelineEvent {
      * Message of signature that generated this event.
      *
      * @return the message
-     * @hibernate.property
-     * column="MESSAGE"
      */
     public String getMessage() {
         return message;
@@ -94,16 +94,15 @@ public class IDSLogEvent extends PipelineEvent {
      * Was it blocked.
      *
      * @return whether or not the session was blocked (closed)
-     * @hibernate.property
-     * column="BLOCKED"
      */
-      public boolean isBlocked() {
-          return blocked;
-      }
+    @Column(nullable=false)
+    public boolean isBlocked() {
+        return blocked;
+    }
 
-      public void setBlocked(boolean blocked) {
-          this.blocked = blocked;
-      }
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
+    }
 
     // Syslog methods ---------------------------------------------------------
 
@@ -117,11 +116,13 @@ public class IDSLogEvent extends PipelineEvent {
         sb.addField("message", message);
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "Log";
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         // NOTICE = ips event logged

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -14,21 +14,33 @@ package com.metavize.mvvm.tran;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * A sorted list of IPMaddrRules, used as a directory
  *
  * @author
  * @version 1.0
- * @hibernate.class
- * table="IPMADDR_DIR"
  */
+@Entity
+@Table(name="ipmaddr_dir", schema="settings")
 public class IPMaddrDirectory implements Serializable
 {
     private static final long serialVersionUID = -2636950101710654253L;
 
     private Long id;
-    private List entries;
+    private List<IPMaddrRule> entries;
     private String notes;
 
     public IPMaddrDirectory() {
@@ -42,11 +54,9 @@ public class IPMaddrDirectory implements Serializable
         entries.add(entry);
     }
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -62,23 +72,18 @@ public class IPMaddrDirectory implements Serializable
      * each in turn, first one to match is the winner.
      *
      * @return dictionary entries
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="IPMADDR_DIR_ENTRIES"
-     * @hibernate.collection-key
-     * column="IPMADDR_DIR_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.tran.IPMaddrRule"
-     * column="RULE_ID"
      */
-    public List getEntries()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="ipmaddr_dir_entries",
+               joinColumns=@JoinColumn(name="ipmaddr_dir_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<IPMaddrRule> getEntries()
     {
         return entries;
     }
 
-    public void setEntries(List entries)
+    public void setEntries(List<IPMaddrRule> entries)
     {
         this.entries = entries;
     }
@@ -87,9 +92,8 @@ public class IPMaddrDirectory implements Serializable
      * Notes about the directory
      *
      * @return notes about the directory
-     * @hibernate.property
-     * column="NOTES"
      */
+    @Column(name="notes")
     public String getNotes()
     {
         return notes;

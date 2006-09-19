@@ -1,2 +1,3 @@
 com.metavize.tran.firewall.FirewallRule
 com.metavize.tran.firewall.FirewallSettings
+com.metavize.tran.firewall.FirewallEvent

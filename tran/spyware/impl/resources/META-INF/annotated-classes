@@ -1,0 +1,4 @@
+com.metavize.tran.spyware.SpywareActiveXEvent
+com.metavize.tran.spyware.SpywareStatisticEvent
+com.metavize.tran.spyware.SpywareBlacklistEvent
+com.metavize.tran.spyware.SpywareCookieEvent

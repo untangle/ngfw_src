@@ -477,13 +477,13 @@ class PolicyManagerImpl implements PolicyManagerPriv
                                 if (!foundForward) {
                                     logger.info("Adding new default inbound SystemPolicyRule for ci: " + firstIntf + ", si: " + secondIntf);
                                     SystemPolicyRule newInRule = new SystemPolicyRule(firstIntf, secondIntf, defaultPolicy, true);
-                                    s.save(newInRule);
+                                    s.saveOrUpdate(newInRule);
                                     goodSys.add(newInRule);
                                 }
                                 if (!foundBackward) {
                                     logger.info("Adding new default outbound SystemPolicyRule for ci: " + secondIntf + ", si: " + firstIntf);
                                     SystemPolicyRule newOutRule = new SystemPolicyRule(secondIntf, firstIntf, defaultPolicy, false);
-                                    s.save(newOutRule);
+                                    s.saveOrUpdate(newOutRule);
                                     goodSys.add(newOutRule);
                                 }
 

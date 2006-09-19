@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,18 +11,27 @@
 
 package com.metavize.tran.spyware;
 
-import com.metavize.tran.http.RequestLine;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.metavize.mvvm.tran.PipelineEndpoints;
+import com.metavize.tran.http.RequestLine;
+import javax.persistence.Entity;
 
 /**
  * Log event for a spyware hit.
  *
  * @author
  * @version 1.0
- * @hibernate.class
- * table="TR_SPYWARE_EVT_ACTIVEX"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_spyware_evt_activex", schema="events")
 public class SpywareActiveXEvent extends SpywareEvent
 {
     private String identification;
@@ -30,9 +39,6 @@ public class SpywareActiveXEvent extends SpywareEvent
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public SpywareActiveXEvent() { }
 
     public SpywareActiveXEvent(RequestLine requestLine,
@@ -44,26 +50,31 @@ public class SpywareActiveXEvent extends SpywareEvent
 
     // SpywareEvent methods ---------------------------------------------------
 
+    @Transient
     public String getType()
     {
         return "ActiveX";
     }
 
+    @Transient
     public String getReason()
     {
         return "in ActiveX List";
     }
 
+    @Transient
     public String getLocation()
     {
         return requestLine.getUrl().toString();
     }
 
+    @Transient
     public boolean isBlocked()
     {
         return true;
     }
 
+    @Transient
     public PipelineEndpoints getPipelineEndpoints()
     {
         return requestLine.getPipelineEndpoints();
@@ -75,10 +86,9 @@ public class SpywareActiveXEvent extends SpywareEvent
      * Request line for this HTTP response pair.
      *
      * @return the request line.
-     * @hibernate.many-to-one
-     * column="REQUEST_ID"
-     * cascade="save-update"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="request_id")
     public RequestLine getRequestLine()
     {
         return requestLine;
@@ -93,9 +103,8 @@ public class SpywareActiveXEvent extends SpywareEvent
      * The identification (ActiveX class ID matched)
      *
      * @return the protocl name.
-     * @hibernate.property
-     * column="IDENT"
      */
+    @Column(name="ident")
     public String getIdentification()
     {
         return identification;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,19 +11,31 @@
 
 package com.metavize.tran.virus;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.Transient;
+
 import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.tran.http.HttpRequestEvent;
 import com.metavize.tran.http.RequestLine;
+import org.hibernate.annotations.Columns;
+import javax.persistence.Entity;
+import org.hibernate.annotations.Type;
 
 /**
  * Log for Virus events.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_VIRUS_EVT_HTTP"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_virus_evt_http", schema="events")
 public class VirusHttpEvent extends VirusEvent
 {
     private RequestLine requestLine;
@@ -32,9 +44,6 @@ public class VirusHttpEvent extends VirusEvent
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public VirusHttpEvent() { }
 
     public VirusHttpEvent(RequestLine requestLine, VirusScannerResult result,
@@ -47,21 +56,25 @@ public class VirusHttpEvent extends VirusEvent
 
     // VirusEvent methods -----------------------------------------------------
 
+    @Transient
     public String getType()
     {
         return "HTTP";
     }
 
+    @Transient
     public String getLocation()
     {
         return null == requestLine ? "" : requestLine.getUrl().toString();
     }
 
+    @Transient
     public boolean isInfected()
     {
         return !result.isClean();
     }
 
+    @Transient
     public int getActionType()
     {
         if (true == result.isClean()) {
@@ -73,6 +86,7 @@ public class VirusHttpEvent extends VirusEvent
         }
     }
 
+    @Transient
     public String getActionName()
     {
         switch(getActionType())
@@ -87,6 +101,7 @@ public class VirusHttpEvent extends VirusEvent
         }
     }
 
+    @Transient
     public String getVirusName()
     {
         String n = result.getVirusName();
@@ -94,6 +109,7 @@ public class VirusHttpEvent extends VirusEvent
         return null == n ? "" : n;
     }
 
+    @Transient
     public PipelineEndpoints getPipelineEndpoints()
     {
         return null == requestLine ? null : requestLine.getPipelineEndpoints();
@@ -105,10 +121,9 @@ public class VirusHttpEvent extends VirusEvent
      * Corresponding request line.
      *
      * @return the request line.
-     * @hibernate.many-to-one
-     * column="REQUEST_LINE"
-     * cascade="save-update"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="request_line")
     public RequestLine getRequestLine()
     {
         return requestLine;
@@ -123,16 +138,13 @@ public class VirusHttpEvent extends VirusEvent
      * Virus scan result.
      *
      * @return the scan result.
-     * @hibernate.property
-     * cascade="save-update"
-     * type="com.metavize.tran.virus.VirusScannerResultUserType"
-     * @hibernate.column
-     * name="CLEAN"
-     * @hibernate.column
-     * name="VIRUS_NAME"
-     * @hibernate.column
-     * name="VIRUS_CLEANED"
      */
+    @Columns(columns = {
+            @Column(name="clean"),
+            @Column(name="virus_name"),
+            @Column(name="virus_cleaned")
+        })
+    @Type(type="com.metavize.tran.virus.VirusScannerResultUserType")
     public VirusScannerResult getResult()
     {
         return result;
@@ -147,9 +159,8 @@ public class VirusHttpEvent extends VirusEvent
      * Spam scanner vendor.
      *
      * @return the vendor
-     * @hibernate.property
-     * column="VENDOR_NAME"
      */
+    @Column(name="vendor_name")
     public String getVendorName()
     {
         return vendorName;

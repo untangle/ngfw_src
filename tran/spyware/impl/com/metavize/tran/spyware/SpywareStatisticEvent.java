@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,19 +11,24 @@
 
 package com.metavize.tran.spyware;
 
+import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
+import javax.persistence.Entity;
 
 /**
  * Log event for a Spyware statistics.
  *
  * @author <a href="mailto:rbscott@metavize.com">rbscott</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_SPYWARE_STATISTIC_EVT"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_spyware_statistic_evt", schema="events")
 public class SpywareStatisticEvent extends StatisticEvent {
     private int pass = 0; // pass cookie, activeX, URL, or subnet access
     private int cookie = 0; // block cookie
@@ -32,10 +37,7 @@ public class SpywareStatisticEvent extends StatisticEvent {
     private int subnetAccess = 0; // log subnet access
 
     // Constructors
-    /**
-     * Hibernate constructor
-     */
-    public SpywareStatisticEvent() {}
+    public SpywareStatisticEvent() { }
 
     public SpywareStatisticEvent(int pass, int cookie, int activeX, int url, int subnetAccess)
     {
@@ -50,9 +52,8 @@ public class SpywareStatisticEvent extends StatisticEvent {
      * Number of passed events (cookie, activeX, URL, or subnet access)
      *
      * @return Number of passed events
-     * @hibernate.property
-     * column="PASS"
      */
+    @Column(nullable=false)
     public int getPass() { return pass; }
     public void setPass( int pass ) { this.pass = pass; }
     public void incrPass() { pass++; }
@@ -61,9 +62,8 @@ public class SpywareStatisticEvent extends StatisticEvent {
      * Number of blocked cookies
      *
      * @return Number of blocked cookies
-     * @hibernate.property
-     * column="COOKIE"
      */
+    @Column(nullable=false)
     public int getCookie() { return cookie; }
     public void setCookie( int cookie ) { this.cookie = cookie; }
     public void incrCookie() { cookie++; }
@@ -72,9 +72,8 @@ public class SpywareStatisticEvent extends StatisticEvent {
      * Number of blocked activeX
      *
      * @return Number of blocked activeX
-     * @hibernate.property
-     * column="ACTIVEX"
      */
+    @Column(nullable=false)
     public int getActiveX() { return activeX; }
     public void setActiveX(int activeX) { this.activeX = activeX; }
     public void incrActiveX() { activeX++; }
@@ -83,9 +82,8 @@ public class SpywareStatisticEvent extends StatisticEvent {
      * Number of blocked urls
      *
      * @return Number of blocked urls
-     * @hibernate.property
-     * column="URL"
      */
+    @Column(nullable=false)
     public int getURL() { return url; }
     public void setURL(int url) { this.url = url; }
     public void incrURL() { url++; }
@@ -94,9 +92,8 @@ public class SpywareStatisticEvent extends StatisticEvent {
      * Number of logged subnet accesses
      *
      * @return Number of logged subnet accesses
-     * @hibernate.property
-     * column="SUBNET_ACCESS"
      */
+    @Column(name="subnet_access", nullable=false)
     public int getSubnetAccess() { return subnetAccess; }
     public void setSubnetAccess(int subnetAccess) { this.subnetAccess = subnetAccess; }
     public void incrSubnetAccess() { subnetAccess++; }
@@ -119,11 +116,13 @@ public class SpywareStatisticEvent extends StatisticEvent {
         sb.addField("subnetAccess", subnetAccess);
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "Statistic";
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         return SyslogPriority.INFORMATIONAL; // statistics or normal operation

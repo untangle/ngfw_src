@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,15 +12,20 @@
 package com.metavize.mvvm.policy;
 
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Policy.  This is the new top of the world, settings wise.
  *
  * @author
  * @version
- * @hibernate.class
- * table="POLICY"
  */
+@Entity
+@Table(name="policy", schema="settings")
 public class Policy implements Serializable
 {
     private static final long serialVersionUID = 6722526125093951941L;
@@ -34,10 +39,7 @@ public class Policy implements Serializable
 
     // Constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
-    public Policy() {}
+    public Policy() { }
 
     // Internal use only
     public Policy(boolean isDefault, String name, String notes)
@@ -64,12 +66,9 @@ public class Policy implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * not-null="true"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     public Long getId()
     {
         return id;
@@ -85,15 +84,8 @@ public class Policy implements Serializable
      * policy is the one selected when a new interface is added.
      *
      * @return true for the default policy
-     * @hibernate.property
-     * column="IS_DEFAULT"
-     * not-null="true"
      */
-    public boolean getDefault()
-    {
-        return isDefault;
-    }
-
+    @Column(name="is_default", nullable=false)
     public boolean isDefault()
     {
         return isDefault;
@@ -107,11 +99,8 @@ public class Policy implements Serializable
     /**
      * The name of the policy.  This is a short name used in the UI
      * main policy selector.
-     *
-     * @hibernate.property
-     * not-null="true"
-     * column="NAME"
      */
+    @Column(nullable=false)
     public String getName()
     {
         return name;
@@ -126,8 +115,6 @@ public class Policy implements Serializable
      * notes: a string containing notes (defaults to NO_NOTES)
      *
      * @return the notes for this policy
-     * @hibernate.property
-     * column="NOTES"
      */
     public String getNotes()
     {

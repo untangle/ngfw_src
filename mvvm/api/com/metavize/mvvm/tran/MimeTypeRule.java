@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,24 +11,26 @@
 
 package com.metavize.mvvm.tran;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 /**
  * Rule for matching based on IP addresses and subnets.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="MIMETYPE_RULE"
  */
+@Entity
+@Table(name="mimetype_rule", schema="settings")
 public class MimeTypeRule extends Rule
 {
     private MimeType mimeType;
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public MimeTypeRule() { }
 
     // XXX inconstant constuctor
@@ -65,10 +67,9 @@ public class MimeTypeRule extends Rule
      * The MimeType.
      *
      * @return the mime-type.
-     * @hibernate.property
-     * column="MIME_TYPE"
-     * type="com.metavize.mvvm.type.MimeTypeUserType"
      */
+    @Column(name="mime_type")
+    @Type(type="com.metavize.mvvm.type.MimeTypeUserType")
     public MimeType getMimeType()
     {
         return mimeType;

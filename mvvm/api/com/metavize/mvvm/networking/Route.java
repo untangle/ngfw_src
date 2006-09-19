@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,18 +12,26 @@
 package com.metavize.mvvm.networking;
 
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
-import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.Rule;
+import org.hibernate.annotations.Type;
 
 /**
  * A routing entry
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="mvvm_network_route"
  */
+@Entity
+@Table(name="mvvm_network_route", schema="settings")
 public class Route extends Rule
 {
     /**
@@ -31,28 +39,26 @@ public class Route extends Rule
      * are immutable
      */
     private NetworkSpace networkSpace = null;
-    
+
     private IPNetwork destination;
     private IPaddr nextHop;
 
-    public Route()
-    {
-    }
+    public Route() { }
 
-    public Route( NetworkSpace networkSpace, IPNetwork destination, IPaddr nextHop )
+    public Route( NetworkSpace networkSpace, IPNetwork destination,
+                  IPaddr nextHop )
     {
         this.networkSpace = networkSpace;
         this.destination  = destination;
         this.nextHop      = nextHop;
     }
-    
+
     /**
-     * @return The network space this route belongs to, this will not be supported until =RELEASE3.3=.
-     * @hibernate.many-to-one
-     * cascade="all"
-     * class="com.metavize.mvvm.networking.NetworkSpace"
-     * column="network_space"
+     * @return The network space this route belongs to, this will not
+     * be supported until =RELEASE3.3=.
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="network_space", nullable=false)
     public NetworkSpace getNetworkSpace()
     {
         return this.networkSpace;
@@ -66,14 +72,13 @@ public class Route extends Rule
     /**
      * destination network that triggers this routing entry.
      * @return The destination network this route is related to.
-     * @hibernate.property
-     * type="com.metavize.mvvm.networking.IPNetworkUserType"
-     * @hibernate.column
-     * name="destination"
      */
+    @Type(type="com.metavize.mvvm.networking.IPNetworkUserType")
     public IPNetwork getDestination()
     {
-        if ( this.destination == null ) this.destination = IPNetwork.getEmptyNetwork();
+        if ( this.destination == null ) {
+            this.destination = IPNetwork.getEmptyNetwork();
+        }
         return this.destination;
     }
 
@@ -87,13 +92,9 @@ public class Route extends Rule
      * The IP address of the next router.
      *
      * @return The IP address of the router that should accept the packets.
-     *
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="next_hop"
-     * sql-type="inet"
      */
+    @Column(name="next_hop")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getNextHop()
     {
         if ( this.nextHop == null ) this.nextHop = NetworkUtil.EMPTY_IPADDR;

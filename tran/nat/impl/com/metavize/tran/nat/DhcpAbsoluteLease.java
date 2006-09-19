@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,23 +12,31 @@
 package com.metavize.tran.nat;
 
 import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.metavize.mvvm.logging.SyslogBuilder;
-import com.metavize.mvvm.tran.firewall.MACAddress;
-import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.HostName;
+import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Rule;
+import com.metavize.mvvm.tran.firewall.MACAddress;
+import javax.persistence.Entity;
+import org.hibernate.annotations.Type;
 
 /**
  * Log event for a DHCP lease event.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="DHCP_ABS_LEASE"
- * mutable="false"
  */
-public class DhcpAbsoluteLease 
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="dhcp_abs_lease", schema="events")
+public class DhcpAbsoluteLease
 {
     static final int REGISTERED = 0;
     static final int EXPIRED    = 1;
@@ -40,11 +48,8 @@ public class DhcpAbsoluteLease
     private Date       endOfLease;
     private int        eventType;
 
-    // Constructors 
-    /**
-     * Hibernate constructor 
-     */
-    public DhcpAbsoluteLease() {}
+    // Constructors
+    public DhcpAbsoluteLease() { }
 
     /**
      * XXX Event type should be an enumeration or something */
@@ -57,11 +62,9 @@ public class DhcpAbsoluteLease
         this.eventType  = now.after( endOfLease ) ? EXPIRED : REGISTERED;
     }
 
-    /**
-     * @hibernate.id
-     * column="EVENT_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     protected Long getId()
     {
         return id;
@@ -71,16 +74,13 @@ public class DhcpAbsoluteLease
     {
         this.id = id;
     }
-    
+
     /**
      * MAC address
      *
      * @return the mac address.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.firewall.MACAddressUserType"
-     * @hibernate.column
-     * name="MAC"
-     */    
+     */
+    @Type(type="com.metavize.mvvm.type.firewall.MACAddressUserType")
     public MACAddress getMac()
     {
         return mac;
@@ -90,16 +90,13 @@ public class DhcpAbsoluteLease
     {
         this.mac = mac;
     }
-    
+
     /**
      * Host name
      *
      * @return the host name.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.HostNameUserType"
-     * @hibernate.column
-     * name="HOSTNAME"
-     */    
+     */
+    @Type(type="com.metavize.mvvm.type.HostNameUserType")
     public HostName getHostname()
     {
         return hostname;
@@ -114,29 +111,25 @@ public class DhcpAbsoluteLease
      * Get IP address for this lease
      *
      * @return desired static address.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="IP"
-     * sql-type="inet"
      */
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getIP()
     {
         return this.ip;
     }
-    
-    public void setIP( IPaddr ip ) 
+
+    public void setIP( IPaddr ip )
     {
         this.ip = ip;
     }
-    
+
     /**
      * Expiration date of the lease.
      *
      * @return expiration date.
-     * @hibernate.property
-     * column="END_OF_LEASE"
      */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="end_of_lease")
     public Date getEndOfLease()
     {
         return endOfLease;
@@ -152,9 +145,8 @@ public class DhcpAbsoluteLease
      * State of the lease.
      *
      * @return expiration date.
-     * @hibernate.property
-     * column="EVENT_TYPE"
      */
+    @Column(name="event_type", nullable=false)
     public int getEventType()
     {
         return eventType;

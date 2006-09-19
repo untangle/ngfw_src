@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,8 +11,15 @@
 
 package com.metavize.mvvm.logging;
 
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+
 import com.metavize.mvvm.tran.PipelineEndpoints;
 
+@MappedSuperclass
 public abstract class PipelineEvent extends LogEvent
 {
     private PipelineEndpoints pipelineEndpoints;
@@ -32,11 +39,9 @@ public abstract class PipelineEvent extends LogEvent
      * Get the PipelineEndpoints.
      *
      * @return the PipelineEndpoints.
-     * @hibernate.many-to-one
-     * column="PL_ENDP_ID"
-     * not-null="true"
-     * cascade="all"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="pl_endp_id", nullable=false)
     public PipelineEndpoints getPipelineEndpoints()
     {
         return pipelineEndpoints;

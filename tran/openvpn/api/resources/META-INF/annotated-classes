@@ -1,6 +1,9 @@
+com.metavize.tran.openvpn.ClientConnectEvent
+com.metavize.tran.openvpn.ClientDistributionEvent
 com.metavize.tran.openvpn.ClientSiteNetwork
 com.metavize.tran.openvpn.ServerSiteNetwork
 com.metavize.tran.openvpn.VpnClient
 com.metavize.tran.openvpn.VpnGroup
 com.metavize.tran.openvpn.VpnSettings
 com.metavize.tran.openvpn.VpnSite
+com.metavize.tran.openvpn.VpnStatisticEvent

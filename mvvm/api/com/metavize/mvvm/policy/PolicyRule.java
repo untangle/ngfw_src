@@ -12,6 +12,12 @@
 package com.metavize.mvvm.policy;
 
 import java.util.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 
 import com.metavize.mvvm.api.IPSessionDesc;
 import com.metavize.mvvm.tran.Rule;
@@ -20,6 +26,7 @@ import com.metavize.mvvm.tran.Rule;
  * Hibernate mappings for this class are in the subclasses UserPolicyRule
  * and SystemPolicyRule.
  */
+@MappedSuperclass
 public abstract class PolicyRule extends Rule
 {
     /* settings */
@@ -49,10 +56,8 @@ public abstract class PolicyRule extends Rule
      * Returns the client interface
      *
      * @return the interface the client must be on to match this rule
-     * @hibernate.property
-     * column="CLIENT_INTF"
-     * not-null="true"
      */
+    @Column(name="client_intf", nullable=false)
     public byte getClientIntf()
     {
         return clientIntf;
@@ -67,10 +72,8 @@ public abstract class PolicyRule extends Rule
      * Returns the server interface
      *
      * @return the interface the server must be on to match this rule
-     * @hibernate.property
-     * column="SERVER_INTF"
-     * not-null="true"
      */
+    @Column(name="server_intf", nullable=false)
     public byte getServerIntf()
     {
         return serverIntf;
@@ -85,9 +88,9 @@ public abstract class PolicyRule extends Rule
      * Policy to apply for this rule.
      *
      * @return Policy for this rule
-     * @hibernate.many-to-one
-     * column="POLICY_ID"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="policy_id", nullable=false)
     public Policy getPolicy()
     {
         return policy;
@@ -99,13 +102,12 @@ public abstract class PolicyRule extends Rule
     }
 
     /**
-     * Choose the inbound side of the policy?  If false, choose the outbound side.
+     * Choose the inbound side of the policy?  If false, choose the
+     * outbound side.
      *
      * @return true to use inbound side of policy, false outbound
-     * @hibernate.property
-     * column="IS_INBOUND"
-     * not-null="true"
      */
+    @Column(name="is_inbound", nullable=false)
     public boolean isInbound()
     {
         return inbound;
@@ -115,5 +117,4 @@ public abstract class PolicyRule extends Rule
     {
         this.inbound = inbound;
     }
-
 }

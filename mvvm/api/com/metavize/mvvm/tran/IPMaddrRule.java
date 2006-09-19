@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,14 +11,20 @@
 
 package com.metavize.mvvm.tran;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
+
 /**
  * Rule for matching based on IP addresses and subnets.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="IPMADDR_RULE"
  */
+@Entity
+@Table(name="ipmaddr_rule", schema="settings")
 public class IPMaddrRule extends Rule
 {
     private IPMaddr ipMaddr;
@@ -44,12 +50,8 @@ public class IPMaddrRule extends Rule
      * An address or subnet.
      *
      * @return the IPMaddr.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPMaddrUserType"
-     * @hibernate.column
-     * name="IPMADDR"
-     * sql-type="inet"
      */
+    @Type(type="com.metavize.mvvm.type.IPMaddrUserType")
     public IPMaddr getIpMaddr()
     {
         return ipMaddr;

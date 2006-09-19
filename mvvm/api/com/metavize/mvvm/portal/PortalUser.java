@@ -16,6 +16,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * Portal user.  UID must match an addressbook UID (although one could
@@ -25,9 +38,9 @@ import java.util.Set;
  *
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  * @version 1.0
- * @hibernate.class
- * table="Portal_User"
  */
+@Entity
+@Table(name="portal_user", schema="settings")
 public class PortalUser implements Serializable
 {
     private static final long serialVersionUID = -3861141760496839437L;
@@ -39,13 +52,10 @@ public class PortalUser implements Serializable
     private PortalGroup portalGroup;
     private PortalHomeSettings portalHomeSettings;
 
-    private List bookmarks = new ArrayList();
+    private List<Bookmark> bookmarks = new ArrayList<Bookmark>();
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public PortalUser() { }
 
     /**
@@ -60,10 +70,10 @@ public class PortalUser implements Serializable
         this.portalGroup = portalGroup;
     }
 
-
     // business methods ------------------------------------------------------
 
-    public Bookmark addBookmark(String name, Application application, String target)
+    public Bookmark addBookmark(String name, Application application,
+                                String target)
     {
         Bookmark bm = new Bookmark(name, application, target);
         bookmarks.add(bm);
@@ -88,11 +98,9 @@ public class PortalUser implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="settings_id")
+    @GeneratedValue
     protected Long getId()
     {
         return id;
@@ -103,13 +111,6 @@ public class PortalUser implements Serializable
         this.id = id;
     }
 
-    /**
-     * Get a uid for display purposes.
-     *
-     * @return uid.
-     * @hibernate.property
-     * column="UID"
-     */
     public String getUid()
     {
         return uid;
@@ -124,9 +125,8 @@ public class PortalUser implements Serializable
      * is the user allowed access?
      *
      * @return true if this user is allowed to use the portal
-     * @hibernate.property
-     * column="LIVE"
      */
+    @Column(nullable=false)
     public boolean isLive()
     {
         return live;
@@ -141,8 +141,6 @@ public class PortalUser implements Serializable
      * description/comments
      *
      * @return the recorded comments
-     * @hibernate.property
-     * column="DESCRIPTION"
      */
     public String getDescription()
     {
@@ -161,9 +159,9 @@ public class PortalUser implements Serializable
      * The PortalGroup that this user belongs to.  May be null.
      *
      * @return the PortalGroup.
-     * @hibernate.many-to-one
-     * column="group_id"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="group_id")
     public PortalGroup getPortalGroup()
     {
         return portalGroup;
@@ -182,10 +180,9 @@ public class PortalUser implements Serializable
      * point.
      *
      * @return the PortalHomeSettings.
-     * @hibernate.many-to-one
-     * cascade="all"
-     * column="home_settings_id"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="home_settings_id")
     public PortalHomeSettings getPortalHomeSettings()
     {
         return portalHomeSettings;
@@ -200,23 +197,18 @@ public class PortalUser implements Serializable
      * List of bookmarks
      *
      * @return the list of bookmarks for this user.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * table="PORTAL_USER_BM_MT"
-     * @hibernate.collection-key
-     * column="SETTINGS_ID"
-     * @hibernate.collection-index
-     * column="POSITION"
-     * @hibernate.collection-many-to-many
-     * class="com.metavize.mvvm.portal.Bookmark"
-     * column="BOOKMARK_ID"
      */
-    public List getBookmarks()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinTable(name="portal_user_bm_mt",
+               joinColumns=@JoinColumn(name="settings_id"),
+               inverseJoinColumns=@JoinColumn(name="bookmark_id"))
+    @IndexColumn(name="position")
+    public List<Bookmark> getBookmarks()
     {
         return bookmarks;
     }
 
-    public void setBookmarks(List bookmarks)
+    public void setBookmarks(List<Bookmark> bookmarks)
     {
         this.bookmarks = bookmarks;
     }

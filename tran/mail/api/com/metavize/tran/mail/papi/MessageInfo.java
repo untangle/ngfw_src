@@ -8,6 +8,7 @@
  *
  * $Id$
  */
+
 package com.metavize.tran.mail.papi;
 
 import java.io.Serializable;
@@ -16,6 +17,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.metavize.mvvm.tran.PipelineEndpoints;
 
@@ -24,10 +37,10 @@ import com.metavize.mvvm.tran.PipelineEndpoints;
  *
  * @author <a href="mailto:cng@metavize.com">C Ng</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_MAIL_MESSAGE_INFO"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_mail_message_info", schema="events")
 public class MessageInfo implements Serializable
 {
     /* constants */
@@ -47,13 +60,13 @@ public class MessageInfo implements Serializable
     private Date timeStamp = new Date();
 
     /* Senders/Receivers */
-    private Set addresses = new HashSet();
+    private Set<MessageInfoAddr> addresses = new HashSet<MessageInfoAddr>();
 
     /* non-persistent fields */
     public Map counts = new HashMap();
 
     /* constructors */
-    public MessageInfo() {}
+    public MessageInfo() { }
 
     public MessageInfo(PipelineEndpoints pe, int serverPort, String subject)
     {
@@ -101,12 +114,9 @@ public class MessageInfo implements Serializable
 
     /* public methods */
 
-    /**
-     *
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -122,20 +132,15 @@ public class MessageInfo implements Serializable
      * Set of the addresses involved (to, from, etc) in the email.
      *
      * @return the set of the email addresses involved in the email
-     * @hibernate.set
-     * inverse="true"
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="MSG_ID"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.tran.mail.papi.MessageInfoAddr"
      */
-    public Set getAddresses()
+    @OneToMany(mappedBy="messageInfo", cascade=CascadeType.ALL,
+               fetch=FetchType.EAGER)
+    public Set<MessageInfoAddr> getAddresses()
     {
         return addresses;
     }
 
-    public void setAddresses(Set s)
+    public void setAddresses(Set<MessageInfoAddr> s)
     {
         addresses = s;
         return;
@@ -145,11 +150,9 @@ public class MessageInfo implements Serializable
      * Get the PipelineEndpoints.
      *
      * @return the PipelineEndpoints.
-     * @hibernate.many-to-one
-     * column="PL_ENDP_ID"
-     * not-null="true"
-     * cascade="all"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="pl_endp_id", nullable=false)
     public PipelineEndpoints getPipelineEndpoints()
     {
         return pipelineEndpoints;
@@ -165,10 +168,8 @@ public class MessageInfo implements Serializable
      * Identify RFC822 Subject.
      *
      * @return RFC822 Subject.
-     * @hibernate.property
-     * column="SUBJECT"
-     * not-null="true"
      */
+    @Column(nullable=false)
     public String getSubject()
     {
         return subject;
@@ -187,12 +188,8 @@ public class MessageInfo implements Serializable
      * Identify server type (SMTP, POP3, or IMAP4).
      *
      * @return server type.
-     * @hibernate.property
-     * column="SERVER_TYPE"
-     * type="char"
-     * length="1"
-     * not-null="true"
      */
+    @Column(name="server_type", length=1, nullable=false)
     public char getServerType()
     {
         return serverType;
@@ -208,9 +205,9 @@ public class MessageInfo implements Serializable
      * Identify approximate datetime that this message was received.
      *
      * @return datetime of message.
-     * @hibernate.property
-     * column="TIME_STAMP"
      */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="time_stamp")
     public Date getTimeStamp()
     {
         return timeStamp;

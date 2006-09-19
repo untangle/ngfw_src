@@ -15,18 +15,30 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.tran.PipelineEndpoints;
+import org.hibernate.annotations.Type;
 
 /**
  * Holds a RFC 2616 request-line.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_HTTP_REQ_LINE"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_http_req_line", schema="events")
 public class RequestLine implements Serializable
 {
     private static final long serialVersionUID = -2183950932382112727L;
@@ -39,9 +51,6 @@ public class RequestLine implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public RequestLine() { }
 
     public RequestLine(PipelineEndpoints pe, HttpMethod method, URI requestUri)
@@ -53,6 +62,7 @@ public class RequestLine implements Serializable
 
     // business methods -------------------------------------------------------
 
+    @Transient
     public URL getUrl()
     {
         // XXX this shouldn't happen in practice
@@ -71,11 +81,9 @@ public class RequestLine implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="REQUEST_ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="request_id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -90,11 +98,9 @@ public class RequestLine implements Serializable
      * Get the PipelineEndpoints.
      *
      * @return the PipelineEndpoints.
-     * @hibernate.many-to-one
-     * column="PL_ENDP_ID"
-     * not-null="true"
-     * cascade="all"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="pl_endp_id", nullable=false)
     public PipelineEndpoints getPipelineEndpoints()
     {
         return pipelineEndpoints;
@@ -109,10 +115,8 @@ public class RequestLine implements Serializable
      * Request method.
      *
      * @return the request method.
-     * @hibernate.property
-     * column="METHOD"
-     * type="com.metavize.tran.http.HttpMethodUserType"
      */
+    @Type(type="com.metavize.tran.http.HttpMethodUserType")
     public HttpMethod getMethod()
     {
         return method;
@@ -127,10 +131,9 @@ public class RequestLine implements Serializable
      * Request URI.
      *
      * @return the request URI.
-     * @hibernate.property
-     * column="URI"
-     * type="com.metavize.mvvm.type.UriUserType"
      */
+    @Column(name="uri")
+    @Type(type="com.metavize.mvvm.type.UriUserType")
     public URI getRequestUri()
     {
         return requestUri;
@@ -145,10 +148,8 @@ public class RequestLine implements Serializable
      * The HttpRequestEvent that logged this item.
      *
      * @return the HttpRequestEvent.
-     * @hibernate.one-to-one
-     * column="event_id"
-     * property-ref="requestLine"
      */
+    @OneToOne(mappedBy="requestLine")
     public HttpRequestEvent getHttpRequestEvent()
     {
         return httpRequestEvent;

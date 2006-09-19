@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,28 +11,34 @@
 
 package com.metavize.tran.spyware;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import com.metavize.mvvm.tran.PipelineEndpoints;
 import com.metavize.tran.http.HttpRequestEvent;
 import com.metavize.tran.http.RequestLine;
-import com.metavize.mvvm.tran.PipelineEndpoints;
+import javax.persistence.Entity;
 
 /**
  * Log event for a spyware hit.
  *
  * @author
  * @version 1.0
- * @hibernate.class
- * table="TR_SPYWARE_EVT_BLACKLIST"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_spyware_evt_blacklist", schema="events")
 public class SpywareBlacklistEvent extends SpywareEvent
 {
     private RequestLine requestLine; // pipeline endpoints & location
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public SpywareBlacklistEvent() { }
 
     public SpywareBlacklistEvent(RequestLine requestLine)
@@ -42,16 +48,19 @@ public class SpywareBlacklistEvent extends SpywareEvent
 
     // SpywareEvent methods ---------------------------------------------------
 
+    @Transient
     public String getType()
     {
         return "Blacklist";
     }
 
+    @Transient
     public String getReason()
     {
         return "in URL List";
     }
 
+    @Transient
     public String getIdentification()
     {
         HttpRequestEvent hre = requestLine.getHttpRequestEvent();
@@ -61,16 +70,19 @@ public class SpywareBlacklistEvent extends SpywareEvent
         return "http://" + host + requestLine.getRequestUri().toString();
     }
 
+    @Transient
     public boolean isBlocked()
     {
         return true;
     }
 
+    @Transient
     public String getLocation()
     {
         return requestLine.getUrl().toString();
     }
 
+    @Transient
     public PipelineEndpoints getPipelineEndpoints()
     {
         return requestLine.getPipelineEndpoints();
@@ -82,10 +94,9 @@ public class SpywareBlacklistEvent extends SpywareEvent
      * Request line for this HTTP response pair.
      *
      * @return the request line.
-     * @hibernate.many-to-one
-     * column="REQUEST_ID"
-     * cascade="all"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="request_id")
     public RequestLine getRequestLine()
     {
         return requestLine;

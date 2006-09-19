@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,6 +12,11 @@
 package com.metavize.mvvm.tran;
 
 import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.metavize.mvvm.api.IPSessionDesc;
 import com.metavize.mvvm.logging.PipelineEvent;
@@ -26,10 +31,10 @@ import com.metavize.mvvm.logging.SyslogPriority;
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="PL_STATS"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="pl_stats", schema="events")
 public class PipelineStats extends PipelineEvent
 {
     private static final long serialVersionUID = 2479594766473917892L;
@@ -50,7 +55,8 @@ public class PipelineStats extends PipelineEvent
 
     public PipelineStats() { }
 
-    public PipelineStats(IPSessionDesc begin, IPSessionDesc end, PipelineEndpoints pe)
+    public PipelineStats(IPSessionDesc begin, IPSessionDesc end,
+                         PipelineEndpoints pe)
     {
         super(pe);
 
@@ -73,9 +79,9 @@ public class PipelineStats extends PipelineEvent
      * Time the session ended
      *
      * @return the time the session ended
-     * @hibernate.property
-     * column="RAZE_DATE"
      */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="raze_date")
     public Date getRazeDate()
     {
         return razeDate;
@@ -90,9 +96,8 @@ public class PipelineStats extends PipelineEvent
      * Total bytes send from client to pipeline
      *
      * @return the number of bytes sent from the client into the pipeline
-     * @hibernate.property
-     * column="C2P_BYTES"
      */
+    @Column(name="c2p_bytes", nullable=false)
     public long getC2pBytes()
     {
         return c2pBytes;
@@ -107,9 +112,8 @@ public class PipelineStats extends PipelineEvent
      * Total bytes send from server to pipeline
      *
      * @return the number of bytes sent from the server into the pipeline
-     * @hibernate.property
-     * column="S2P_BYTES"
      */
+    @Column(name="s2p_bytes", nullable=false)
     public long getS2pBytes()
     {
         return s2pBytes;
@@ -124,9 +128,8 @@ public class PipelineStats extends PipelineEvent
      * Total bytes send from pipeline to client
      *
      * @return the number of bytes sent from the pipeline to the client
-     * @hibernate.property
-     * column="P2C_BYTES"
      */
+    @Column(name="p2c_bytes", nullable=false)
     public long getP2cBytes()
     {
         return p2cBytes;
@@ -141,9 +144,8 @@ public class PipelineStats extends PipelineEvent
      * Total bytes send from pipeline to server
      *
      * @return the number of bytes sent from the pipeline to the server
-     * @hibernate.property
-     * column="P2S_BYTES"
      */
+    @Column(name="p2s_bytes", nullable=false)
     public long getP2sBytes()
     {
         return p2sBytes;
@@ -158,9 +160,8 @@ public class PipelineStats extends PipelineEvent
      * Total chunks send from client to pipeline
      *
      * @return the number of chunks sent from the client into the pipeline
-     * @hibernate.property
-     * column="C2P_CHUNKS"
      */
+    @Column(name="c2p_chunks", nullable=false)
     public long getC2pChunks()
     {
         return c2pChunks;
@@ -175,9 +176,8 @@ public class PipelineStats extends PipelineEvent
      * Total chunks send from server to pipeline
      *
      * @return the number of chunks sent from the server into the pipeline
-     * @hibernate.property
-     * column="S2P_CHUNKS"
      */
+    @Column(name="s2p_chunks", nullable=false)
     public long getS2pChunks()
     {
         return s2pChunks;
@@ -192,9 +192,8 @@ public class PipelineStats extends PipelineEvent
      * Total chunks send from pipeline to client
      *
      * @return the number of chunks sent from the pipeline to the client
-     * @hibernate.property
-     * column="P2C_CHUNKS"
      */
+    @Column(name="p2c_chunks", nullable=false)
     public long getP2cChunks()
     {
         return p2cChunks;
@@ -209,9 +208,8 @@ public class PipelineStats extends PipelineEvent
      * Total chunks send from pipeline to server
      *
      * @return the number of chunks sent from the pipeline to the server
-     * @hibernate.property
-     * column="P2S_CHUNKS"
      */
+    @Column(name="p2s_chunks", nullable=false)
     public long getP2sChunks()
     {
         return p2sChunks;

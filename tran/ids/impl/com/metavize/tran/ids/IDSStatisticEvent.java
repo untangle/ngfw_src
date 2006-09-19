@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,9 +11,14 @@
 
 package com.metavize.tran.ids;
 
+import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
+import javax.persistence.Entity;
 
 /**
  * Log event for a IDS statistics.
@@ -21,20 +26,17 @@ import com.metavize.mvvm.logging.SyslogPriority;
  * @author <a href="mailto:nchilders@metavize.com">nchilders</a>
  * @stolen from rbscott yo
  * @version 1.0
- * @hibernate.class
- * table="TR_IDS_STATISTIC_EVT"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_ids_statistic_evt", schema="events")
 public class IDSStatisticEvent extends StatisticEvent {
     private int dnc = 0; // did-not-care
     private int logged = 0; // logged or alerted
     private int blocked = 0;
 
     // Constructors
-    /**
-     * Hibernate constructor
-     */
-    public IDSStatisticEvent() {}
+    public IDSStatisticEvent() { }
 
     public IDSStatisticEvent( int dnc, int logged, int blocked )
     {
@@ -47,9 +49,8 @@ public class IDSStatisticEvent extends StatisticEvent {
      * Number of dnc chunks (did-not-cares are not logged or blocked)
      *
      * @return Number of dnc chunks
-     * @hibernate.property
-     * column="DNC"
      */
+    @Column(nullable=false)
     public int getDNC() { return dnc; }
     public void setDNC( int dnc ) { this.dnc = dnc; }
     public void incrDNC() { dnc++; }
@@ -58,9 +59,8 @@ public class IDSStatisticEvent extends StatisticEvent {
      * Number of logged chunks
      *
      * @return Number of logged chunks
-     * @hibernate.property
-     * column="LOGGED"
      */
+    @Column(nullable=false)
     public int getLogged() { return logged; }
     public void setLogged(int logged) { this.logged = logged; }
     public void incrLogged() { logged++; }
@@ -69,9 +69,8 @@ public class IDSStatisticEvent extends StatisticEvent {
      * Number of blocked chunks
      *
      * @return Number of blocked chunks
-     * @hibernate.property
-     * column="BLOCKED"
      */
+    @Column(nullable=false)
     public int getBlocked() { return blocked; }
     public void setBlocked(int blocked) { this.blocked = blocked; }
     public void incrBlocked() { blocked++; }
@@ -92,11 +91,13 @@ public class IDSStatisticEvent extends StatisticEvent {
         sb.addField("blocked", blocked);
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "Statistic";
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         return SyslogPriority.INFORMATIONAL; // statistics or normal operation

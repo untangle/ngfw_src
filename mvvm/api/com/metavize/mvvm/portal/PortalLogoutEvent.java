@@ -11,29 +11,34 @@
 
 package com.metavize.mvvm.portal;
 
-import java.net.InetAddress;
 import java.io.Serializable;
-import java.util.Date;
+import java.net.InetAddress;
 import java.sql.Timestamp;
+import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.security.LogoutReason;
 import com.metavize.mvvm.tran.IPaddr;
+import javax.persistence.Entity;
+import org.hibernate.annotations.Type;
 
 /**
  * Log event for a portal logout.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="PORTAL_LOGOUT_EVT"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="portal_logout_evt", schema="events")
 public class PortalLogoutEvent extends PortalEvent implements Serializable
 {
     private static final long serialVersionUID = 3003003630980879147L;
-    
+
     private IPaddr clientAddr;
     private String uid;
     private LogoutReason reason;
@@ -55,12 +60,9 @@ public class PortalLogoutEvent extends PortalEvent implements Serializable
      * Client address
      *
      * @return the address of the client
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="CLIENT_ADDR"
-     * sql-type="inet"
      */
+    @Column(name="client_addr")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getClientAddr()
     {
         return clientAddr;
@@ -75,8 +77,6 @@ public class PortalLogoutEvent extends PortalEvent implements Serializable
      * Logout used to logout.  May be  used to join to PORTAL_USER.
      *
      * @return a <code>String</code> giving the uid for the user
-     * @hibernate.property
-     * column="UID"
      */
     public String getUid()
     {
@@ -92,10 +92,8 @@ public class PortalLogoutEvent extends PortalEvent implements Serializable
      * Reason for logout .
      *
      * @return the reason.
-     * @hibernate.property
-     * column="REASON"
-     * type="com.metavize.mvvm.security.LogoutReasonUserType"
      */
+    @Type(type="com.metavize.mvvm.security.LogoutReasonUserType")
     public LogoutReason getReason()
     {
         return reason;
@@ -106,7 +104,7 @@ public class PortalLogoutEvent extends PortalEvent implements Serializable
         this.reason = reason;
     }
 
-    // Syslog methods ---------------------------------------------------------
+    // Syslog methods ----------------------------------------------------------
 
     public void appendSyslog(SyslogBuilder sb)
     {
@@ -116,11 +114,13 @@ public class PortalLogoutEvent extends PortalEvent implements Serializable
         sb.addField("reason", null == reason ? "none" : reason.toString());
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "PortalLogout";
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         if (reason == LogoutReason.ADMINISTRATOR) {
@@ -130,10 +130,11 @@ public class PortalLogoutEvent extends PortalEvent implements Serializable
         }
     }
 
-    // Object methods ---------------------------------------------------------
+    // Object methods ----------------------------------------------------------
 
     public String toString()
     {
-        return "PortalLogoutEvent id: " + getId() + " uid: " + uid + " reaso: " + reason;
+        return "PortalLogoutEvent id: " + getId() + " uid: " + uid
+            + " reason: " + reason;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,17 +13,28 @@ package com.metavize.mvvm.tran;
 
 import java.awt.Color;
 import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import com.metavize.mvvm.security.Tid;
+import org.hibernate.annotations.Columns;
+import org.hibernate.annotations.Type;
 
 /**
  * Runtime Transform settings.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="TRANSFORM_PREFERENCES"
  */
+@Entity
+@Table(name="transform_preferences")
 public class TransformPreferences implements Serializable
 {
     private static final long serialVersionUID = 8220361738391151248L;
@@ -44,11 +55,9 @@ public class TransformPreferences implements Serializable
 
     // bean methods -----------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     private Long getId()
     {
         return id;
@@ -63,10 +72,9 @@ public class TransformPreferences implements Serializable
      * Transform id.
      *
      * @return tid for this instance.
-     * @hibernate.many-to-one
-     * cascade="none"
-     * column="TID"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="tid", nullable=false)
     public Tid getTid()
     {
         return tid;
@@ -81,17 +89,14 @@ public class TransformPreferences implements Serializable
      * Background color for the GUI panel.
      *
      * @return background color.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.ColorUserType"
-     * @hibernate.column
-     * name="RED"
-     * @hibernate.column
-     * name="GREEN"
-     * @hibernate.column
-     * name="BLUE"
-     * @hibernate.column
-     * name="ALPHA"
      */
+    @Columns(columns={
+            @Column(name="red"),
+            @Column(name="green"),
+            @Column(name="blue"),
+            @Column(name="alpha")
+        })
+    @Type(type="com.metavize.mvvm.type.ColorUserType")
     public Color getGuiBackgroundColor()
     {
         return guiBackgroundColor;

@@ -76,13 +76,8 @@ class Util
         SessionFactory sessionFactory = null;
 
         try {
-            ShortBus cfg = new ShortBus();
+            AnnotationConfiguration cfg = new AnnotationConfiguration();
             addAnnotatedClasses(jfs, cfg);
-
-            Set seen = new HashSet();
-            for (JarFile jf : jfs) {
-                addJar(jf, cfg, seen);
-            }
 
             long t0 = System.currentTimeMillis();
             sessionFactory = cfg.buildSessionFactory();
@@ -102,16 +97,8 @@ class Util
         SessionFactory sessionFactory = null;
 
         try {
-            ShortBus cfg = new ShortBus();
+            AnnotationConfiguration cfg = new AnnotationConfiguration();
             addAnnotatedClasses(cl, cfg);
-
-            Set seen = new HashSet();
-            while (null != cl) {
-                if (cl instanceof URLClassLoader) {
-                    addClassLoader((URLClassLoader)cl, cfg, seen);
-                }
-                cl = cl.getParent();
-            }
 
             long t0 = System.currentTimeMillis();
             sessionFactory = cfg.buildSessionFactory();
@@ -124,7 +111,8 @@ class Util
         return sessionFactory;
     }
 
-    private static void addAnnotatedClasses(ClassLoader cl, ShortBus cfg)
+    private static void addAnnotatedClasses(ClassLoader cl,
+                                            AnnotationConfiguration cfg)
     {
         Enumeration<URL> e = null;
 
@@ -160,7 +148,8 @@ class Util
         }
     }
 
-    private static void addAnnotatedClasses(List<JarFile> jfs, ShortBus cfg)
+    private static void addAnnotatedClasses(List<JarFile> jfs,
+                                            AnnotationConfiguration cfg)
     {
         List<URL> urls = new ArrayList<URL>(jfs.size());
 
@@ -176,103 +165,5 @@ class Util
         ClassLoader cl = new URLClassLoader(urls.toArray(new URL[urls.size()]));
 
         addAnnotatedClasses(cl, cfg);
-    }
-
-    private static void addClassLoader(URLClassLoader ucl, ShortBus cfg,
-                                       Set seen)
-    {
-        Thread ct = Thread.currentThread();
-        ClassLoader oldCl = ct.getContextClassLoader();
-
-        // entering URLClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ct.setContextClassLoader(ucl);
-        try {
-            URL[] urls = ucl.getURLs();
-
-            for (int i = 0; i < urls.length; i++) {
-                String f = urls[i].getFile();
-                if (!urls[i].getProtocol().equals("file")
-                    || !f.endsWith("jar") && !f.endsWith("mar")) {
-                    continue;
-                }
-
-                try {
-                    addJar(new JarFile(urls[i].getPath()), cfg, seen);
-                } catch (IOException exn) {
-                    logger.warn("could not add mappings for: " + urls[i], exn);
-                }
-            }
-        } finally {
-            ct.setContextClassLoader(oldCl);
-            // left URLClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        }
-    }
-
-    private static void addJar(JarFile jf, ShortBus cfg, Set seen)
-    {
-        for (Enumeration e = jf.entries(); e.hasMoreElements(); ) {
-            ZipEntry je = (ZipEntry)e.nextElement();
-            String name = je.getName();
-            if (name.endsWith("hbm.xml") && !seen.contains(name)) {
-                ZipEntry cache = (ZipEntry)jf.getEntry(name + ".bin");
-                if (null == cache) {
-                    logger.info("no cached dom for: " + name);
-                    addXml(cfg, jf, je);
-                } else {
-                    logger.info("using cached dom for: " + name);
-                    ObjectInputStream oos = null;
-                    try {
-                        oos = new ObjectInputStream(jf.getInputStream(cache));
-                        Document doc = (Document)oos.readObject();
-                        cfg.addDom4j(doc);
-                    } catch (Exception exn) {
-                        logger.warn("could not used cached dom for: " + name);
-                        addXml(cfg, jf, je);
-                    } finally {
-                        if (null != oos) {
-                            try {
-                                oos.close();
-                            } catch (IOException exn) {
-                                logger.warn("could not close output", exn);
-                            }
-                        }
-                    }
-                }
-                seen.add(name);
-            }
-        }
-    }
-
-    private static void addXml(ShortBus cfg, JarFile jf, ZipEntry je)
-    {
-        InputStream is = null;
-
-        try {
-            logger.info("adding mappings for: " + je.getName());
-            is = jf.getInputStream(je);
-            cfg.addInputStream(is);
-        } catch (MappingException exn) {
-            logger.warn("bad mappings for: " + je, exn);
-        } catch (IOException exn) {
-            logger.warn("could not read ZipEntry: " + je, exn);
-        } finally {
-            if (null != is) {
-                try {
-                    is.close();
-                } catch (IOException exn) {
-                    logger.warn("could not close output", exn);
-                }
-            }
-        }
-    }
-
-    // private classes --------------------------------------------------------
-
-    private static class ShortBus extends AnnotationConfiguration
-    {
-        public void addDom4j(Document doc)
-        {
-            add(doc);
-        }
     }
 }

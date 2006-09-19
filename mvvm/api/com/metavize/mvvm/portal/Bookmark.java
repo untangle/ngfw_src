@@ -12,15 +12,20 @@
 package com.metavize.mvvm.portal;
 
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Bookmark for portal use.  Points to a target for a given application
  *
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  * @version 1.0
- * @hibernate.class
- * table="Portal_Bookmark"
  */
+@Entity
+@Table(name="portal_bookmark", schema="settings")
 public class Bookmark implements Serializable
 {
     private static final long serialVersionUID = -7681114679064384937L;
@@ -32,9 +37,6 @@ public class Bookmark implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public Bookmark() { }
 
     /**
@@ -60,11 +62,9 @@ public class Bookmark implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     public Long getId()
     {
         return id;
@@ -79,8 +79,6 @@ public class Bookmark implements Serializable
      * Get a name for display purposes.
      *
      * @return name.
-     * @hibernate.property
-     * column="NAME"
      */
     public String getName()
     {
@@ -97,8 +95,6 @@ public class Bookmark implements Serializable
      * a hostname or IP address.
      *
      * @return target.
-     * @hibernate.property
-     * column="TARGET"
      */
     public String getTarget()
     {
@@ -114,9 +110,8 @@ public class Bookmark implements Serializable
      * Gets the application name of the bookmark.
      *
      * @return application name;
-     * @hibernate.property
-     * column="APPLICATION_NAME"
      */
+    @Column(name="application_name")
     public String getApplicationName()
     {
         return applicationName;
@@ -127,6 +122,7 @@ public class Bookmark implements Serializable
         this.applicationName = applicationName;
     }
 
+    // Object methods ----------------------------------------------------------
     public int hashCode()
     {
         if ( name == null || applicationName == null || target == null )

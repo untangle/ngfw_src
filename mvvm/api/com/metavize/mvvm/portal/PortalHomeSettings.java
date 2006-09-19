@@ -12,15 +12,20 @@
 package com.metavize.mvvm.portal;
 
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Portal Home Settings -- customization of portal home page.
  *
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  * @version 1.0
- * @hibernate.class
- * table="Portal_Home_Settings"
  */
+@Entity
+@Table(name="portal_home_settings", schema="settings")
 public class PortalHomeSettings implements Serializable
 {
     private static final long serialVersionUID = -4618114760496839437L;
@@ -41,18 +46,13 @@ public class PortalHomeSettings implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public PortalHomeSettings() { }
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     protected Long getId()
     {
         return id;
@@ -67,9 +67,8 @@ public class PortalHomeSettings implements Serializable
      * Get a home page title for display purposes.
      *
      * @return name.
-     * @hibernate.property
-     * column="HOME_PAGE_TITLE"
      */
+    @Column(name="home_page_title")
     public String getHomePageTitle()
     {
         return homePageTitle;
@@ -84,9 +83,8 @@ public class PortalHomeSettings implements Serializable
      * Get a home page text for display purposes.
      *
      * @return name.
-     * @hibernate.property
-     * column="HOME_PAGE_TEXT"
      */
+    @Column(name="home_page_text")
     public String getHomePageText()
     {
         return homePageText;
@@ -101,9 +99,8 @@ public class PortalHomeSettings implements Serializable
      * Get the bookmark tabletitle for display purposes.
      *
      * @return name.
-     * @hibernate.property
-     * column="BOOKMARK_TABLE_TITLE"
      */
+    @Column(name="bookmark_table_title")
     public String getBookmarkTableTitle()
     {
         return bookmarkTableTitle;
@@ -118,9 +115,8 @@ public class PortalHomeSettings implements Serializable
      * should the file explorer be launchable (have a button on the home page)
      *
      * @return true if this portal home is allowed to use the exploder
-     * @hibernate.property
-     * column="SHOW_EXPLODER"
      */
+    @Column(name="show_exploder", nullable=false)
     public boolean isShowExploder()
     {
         return showExploder;
@@ -135,9 +131,8 @@ public class PortalHomeSettings implements Serializable
      * should the bookmarks table be shown on the home page)
      *
      * @return true if this portal home is allowed to use bookmarks
-     * @hibernate.property
-     * column="SHOW_BOOKMARKS"
      */
+    @Column(name="show_bookmarks", nullable=false)
     public boolean isShowBookmarks()
     {
         return showBookmarks;
@@ -154,9 +149,8 @@ public class PortalHomeSettings implements Serializable
      * this value doesn't matter.
      *
      * @return true if this portal home is allowed to add new bookmarks
-     * @hibernate.property
-     * column="SHOW_ADD_BOOKMARK"
      */
+    @Column(name="show_add_bookmark", nullable=false)
     public boolean isShowAddBookmark()
     {
         return showAddBookmark;
@@ -171,9 +165,8 @@ public class PortalHomeSettings implements Serializable
      * what is the idle timeout for this portal home
      *
      * @return the idle timeout in milliseconds
-     * @hibernate.property
-     * column="IDLE_TIMEOUT"
      */
+    @Column(name="idle_timeout", nullable=false)
     public long getIdleTimeout()
     {
         return idleTimeout;

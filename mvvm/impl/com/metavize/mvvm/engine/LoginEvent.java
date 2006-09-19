@@ -12,21 +12,26 @@
 package com.metavize.mvvm.engine;
 
 import java.net.InetAddress;
+import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.security.LoginFailureReason;
+import javax.persistence.Entity;
+import org.hibernate.annotations.Type;
 
 /**
  * Log event for a login/login-attempt.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="MVVM_LOGIN_EVT"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="mvvm_login_evt", schema="events")
 public class LoginEvent extends LogEvent
 {
     private InetAddress clientAddr;
@@ -62,12 +67,9 @@ public class LoginEvent extends LogEvent
      * Client address
      *
      * @return the address of the client
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.InetAddressUserType"
-     * @hibernate.column
-     * name="CLIENT_ADDR"
-     * sql-type="inet"
      */
+    @Column(name="client_addr")
+    @Type(type="com.metavize.mvvm.type.InetAddressUserType")
     public InetAddress getClientAddr()
     {
         return clientAddr;
@@ -82,8 +84,6 @@ public class LoginEvent extends LogEvent
      * Login used to login.  May be  used to join to MVVM_USER.
      *
      * @return a <code>String</code> giving the login for the user
-     * @hibernate.property
-     * column="LOGIN"
      */
     public String getLogin()
     {
@@ -101,9 +101,8 @@ public class LoginEvent extends LogEvent
      * system, ignored for reporting).
      *
      * @return whether or not the login was local
-     * @hibernate.property
-     * column="LOCAL"
      */
+    @Column(nullable=false)
     public boolean isLocal()
     {
         return local;
@@ -118,9 +117,8 @@ public class LoginEvent extends LogEvent
      * Whether or not the login succeeeded, if not there will be a reason.
      *
      * @return whether or not the login was successful
-     * @hibernate.property
-     * column="SUCCEEDED"
      */
+    @Column(nullable=false)
     public boolean isSucceeded()
     {
         return succeeded;
@@ -135,10 +133,8 @@ public class LoginEvent extends LogEvent
      * Reason for login failure.
      *
      * @return the reason.
-     * @hibernate.property
-     * column="REASON"
-     * type="com.metavize.mvvm.security.LoginFailureReasonUserType"
      */
+    @Type(type="com.metavize.mvvm.security.LoginFailureReasonUserType")
     public LoginFailureReason getReason()
     {
         return reason;
@@ -163,11 +159,13 @@ public class LoginEvent extends LogEvent
             sb.addField("reason", reason.toString());
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "AdminLogin"; // XXX
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         if (false == succeeded) {

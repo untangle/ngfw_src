@@ -11,16 +11,27 @@
 package com.metavize.tran.mail.papi;
 
 import java.io.Serializable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import javax.persistence.Entity;
+import org.hibernate.annotations.Type;
 
 /**
  * Log e-mail message info.
  *
  * @author <a href="mailto:cng@metavize.com">C Ng</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_MAIL_MESSAGE_INFO_ADDR"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_mail_message_info_addr", schema="events")
 public class MessageInfoAddr implements Serializable
 {
     /* constants */
@@ -36,7 +47,7 @@ public class MessageInfoAddr implements Serializable
     private String personal;
 
     /* constructors */
-    public MessageInfoAddr() {}
+    public MessageInfoAddr() { }
 
     public MessageInfoAddr(MessageInfo messageInfo, int position,
                            AddressKind kind, String addr, String personal) {
@@ -56,11 +67,9 @@ public class MessageInfoAddr implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     protected Long getId()
     {
         return id;
@@ -73,10 +82,9 @@ public class MessageInfoAddr implements Serializable
 
     /**
      * The MessageInfo object.
-     * @hibernate.many-to-one
-     * column="MSG_ID"
-     * not-null="true"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="msg_id", nullable=false)
     public MessageInfo getMessageInfo()
     {
         return messageInfo;
@@ -93,10 +101,8 @@ public class MessageInfoAddr implements Serializable
      * and also helps the reporting.
      *
      * @return the relative position to other MessageInfoAddr
-     * @hibernate.property
-     * column="POSITION"
-     * not-null="true"
      */
+    @Column(nullable=false)
     public int getPosition()
     {
         return position;
@@ -111,10 +117,8 @@ public class MessageInfoAddr implements Serializable
      * The email address, in RFC822 format
      *
      * @return email address.
-     * @hibernate.property
-     * column="ADDR"
-     * not-null="true"
      */
+    @Column(nullable=false)
     public String getAddr()
     {
         return addr;
@@ -132,8 +136,6 @@ public class MessageInfoAddr implements Serializable
      * Get a personal for display purposes.
      *
      * @return personal.
-     * @hibernate.property
-     * column="PERSONAL"
      */
     public String getPersonal()
     {
@@ -153,10 +155,8 @@ public class MessageInfoAddr implements Serializable
      * The kind of address (To, CC, etc).
      *
      * @return addressKind.
-     * @hibernate.property
-     * type="com.metavize.tran.mail.papi.AddressKindUserType"
-     * column="KIND"
      */
+    @Type(type="com.metavize.tran.mail.papi.AddressKindUserType")
     public AddressKind getKind()
     {
         return kind;

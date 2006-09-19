@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,21 +12,26 @@
 package com.metavize.tran.openvpn;
 
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.tran.IPaddr;
+import javax.persistence.Entity;
+import org.hibernate.annotations.Type;
 
 /**
  * Log event for client distribution.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="tr_openvpn_distr_evt"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_openvpn_distr_evt", schema="settings")
 public class ClientDistributionEvent extends LogEvent implements Serializable
 {
     private static final long serialVersionUID = 7746643433102029480L;
@@ -35,12 +40,7 @@ public class ClientDistributionEvent extends LogEvent implements Serializable
     private String clientName;
 
     // Constructors
-    /**
-     * Hibernate constructor
-     */
-    public ClientDistributionEvent()
-    {
-    }
+    public ClientDistributionEvent() { }
 
     public ClientDistributionEvent( IPaddr address, String clientName )
     {
@@ -53,12 +53,9 @@ public class ClientDistributionEvent extends LogEvent implements Serializable
      * was downloaded directly to a USB key.
      *
      * @return Address of the client that performed the request.
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.IPaddrUserType"
-     * @hibernate.column
-     * name="remote_address"
-     * sql-type="inet"
      */
+    @Column(name="remote_address")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
     public IPaddr getAddress()
     {
         return this.address;
@@ -73,9 +70,8 @@ public class ClientDistributionEvent extends LogEvent implements Serializable
      * Name of the client that was distributed.
      *
      * @return Client name
-     * @hibernate.property
-     * column="client_name"
      */
+    @Column(name="client_name")
     public String getClientName()
     {
         return this.clientName;
@@ -95,11 +91,13 @@ public class ClientDistributionEvent extends LogEvent implements Serializable
         sb.addField("client-name", clientName);
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "Client_Distribution";
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         return SyslogPriority.INFORMATIONAL; // statistics or normal operation

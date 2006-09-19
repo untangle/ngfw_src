@@ -14,33 +14,41 @@ package com.metavize.mvvm.portal;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * Portal settings, all together.
  *
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  * @version 1.0
- * @hibernate.class
- * table="Portal_Settings"
  */
+@Entity
+@Table(name="portal_settings", schema="settings")
 public class PortalSettings implements Serializable
 {
     private static final long serialVersionUID = -1618117644960894373L;
 
     private Long id;
 
-    private List users;
-    private List groups;
+    private List<PortalUser> users;
+    private List<PortalGroup> groups;
 
     private PortalGlobal global;
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public PortalSettings() { }
-
 
     // business methods ------------------------------------------------------
 
@@ -55,11 +63,9 @@ public class PortalSettings implements Serializable
 
     // accessors --------------------------------------------------------------
 
-    /**
-     * @hibernate.id
-     * column="ID"
-     * generator-class="native"
-     */
+    @Id
+    @Column(name="id")
+    @GeneratedValue
     protected Long getId()
     {
         return id;
@@ -74,24 +80,19 @@ public class PortalSettings implements Serializable
      * The list of portal users associated with this portal configuration.
      *
      * @return the list of vpn portal users.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="settings_id"
-     * @hibernate.collection-index
-     * column="position"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.mvvm.portal.PortalUser"
      */
-    public List getUsers()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="settings_id")
+    @IndexColumn(name="position")
+    public List<PortalUser> getUsers()
     {
         if (users == null)
-            users = new ArrayList();
+            users = new ArrayList<PortalUser>();
 
         return this.users;
     }
 
-    public void setUsers(List users)
+    public void setUsers(List<PortalUser> users)
     {
         this.users = users;
     }
@@ -100,24 +101,19 @@ public class PortalSettings implements Serializable
      * The list of portal groups associated with this portal configuration.
      *
      * @return the list of vpn portal groups.
-     * @hibernate.list
-     * cascade="all-delete-orphan"
-     * @hibernate.collection-key
-     * column="settings_id"
-     * @hibernate.collection-index
-     * column="position"
-     * @hibernate.collection-one-to-many
-     * class="com.metavize.mvvm.portal.PortalGroup"
      */
-    public List getGroups()
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="settings_id")
+    @IndexColumn(name="position")
+    public List<PortalGroup> getGroups()
     {
         if (groups == null)
-            groups = new ArrayList();
+            groups = new ArrayList<PortalGroup>();
 
         return this.groups;
     }
 
-    public void setGroups(List groups)
+    public void setGroups(List<PortalGroup> groups)
     {
         this.groups = groups;
     }
@@ -125,11 +121,10 @@ public class PortalSettings implements Serializable
     /**
      * The global portal settings for this portal configuration.
      *
-     * @return the PortaGlobal.
-     * @hibernate.many-to-one
-     * cascade="all"
-     * column="global_settings_id"
+     * @return the PortalGlobal.
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="global_settings_id", nullable=false)
     public PortalGlobal getGlobal()
     {
         return global;
@@ -139,5 +134,4 @@ public class PortalSettings implements Serializable
     {
         this.global = global;
     }
-
 }

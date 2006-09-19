@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,16 +11,26 @@
 
 package com.metavize.mvvm.networking;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.metavize.mvvm.tran.Rule;
+import org.hibernate.annotations.Type;
 
 /**
  * A description of an interface.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="mvvm_network_intf"
  */
+@Entity
+@Table(name="mvvm_network_intf", schema="settings")
 public class Interface extends Rule
 {
     private byte argonIntf;
@@ -32,9 +42,7 @@ public class Interface extends Rule
     private boolean isPingable = true;
     private String connectionState = "";
 
-    public Interface()
-    {
-    }
+    public Interface() { }
 
     public Interface( byte argonIntf, EthernetMedia ethernetMedia, boolean isPingable )
     {
@@ -45,9 +53,8 @@ public class Interface extends Rule
 
     /**
      * @return The argon interface id for this interface.
-     * @hibernate.property
-     * column="argon_intf"
      */
+    @Column(name="argon_intf", nullable=false)
     public byte getArgonIntf()
     {
         return this.argonIntf;
@@ -56,15 +63,13 @@ public class Interface extends Rule
     public void setArgonIntf( byte argonIntf )
     {
         this.argonIntf = argonIntf;
-    }    
+    }
 
     /**
      * @return The network space this interface belongs to
-     * @hibernate.many-to-one
-     * cascade="all"
-     * class="com.metavize.mvvm.networking.NetworkSpace"
-     * column="network_space"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="network_space")
     public NetworkSpace getNetworkSpace()
     {
         return this.networkSpace;
@@ -73,23 +78,20 @@ public class Interface extends Rule
     public void setNetworkSpace( NetworkSpace networkSpace )
     {
         this.networkSpace = networkSpace;
-    }    
-
+    }
 
     /**
      * The media for type for this interface.
      * @return The media for type for this interface.
-     * @hibernate.property
-     * type="com.metavize.mvvm.networking.EthernetMediaUserType"
-     * @hibernate.column
-     * name="media"
      */
+    @Column(name="media")
+    @Type(type="com.metavize.mvvm.networking.EthernetMediaUserType")
     public EthernetMedia getEthernetMedia()
     {
         if ( this.ethernetMedia == null ) this.ethernetMedia = EthernetMedia.AUTO_NEGOTIATE;
         return this.ethernetMedia;
     }
-    
+
     public void setEthernetMedia( EthernetMedia ethernetMedia )
     {
         if ( ethernetMedia == null ) ethernetMedia = EthernetMedia.AUTO_NEGOTIATE;
@@ -99,9 +101,8 @@ public class Interface extends Rule
     /**
      * @return Whether or not this interface should respond to pings, this may be
      *         more appropriate at a property of the space.
-     * @hibernate.property
-     * column="pingable"
      */
+    @Column(name="pingable", nullable=false)
     public boolean getIsPingable()
     {
         return this.isPingable;
@@ -112,6 +113,7 @@ public class Interface extends Rule
         this.isPingable = isPingable;
     }
 
+    @Transient
     public String getConnectionState()
     {
         return this.connectionState;
@@ -123,6 +125,7 @@ public class Interface extends Rule
     }
 
     /** The following are not stored in the database ***/
+    @Transient
     public String getCurrentMedia()
     {
         return this.currentMedia;
@@ -133,6 +136,7 @@ public class Interface extends Rule
         this.currentMedia = newValue;
     }
 
+    @Transient
     public String getIntfName()
     {
         return this.intfName;

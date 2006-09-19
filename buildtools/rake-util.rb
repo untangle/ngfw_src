@@ -752,6 +752,25 @@ class JarTarget < Target
 
     return EmptyTarget.instance if javaCompiler.isEmpty
 
+    ap = basepaths.map do |bp|
+      ac = "#{bp}/resources/META-INF/annotated-classes"
+      ac if File.exist?(ac)
+    end.reject { |e| !e }
+    if 0 < ap.length then
+      tgt = "#{buildDirectory}/META-INF/annotated-classes"
+      file tgt => ap do
+        ensureDirectory(File.dirname(tgt))
+        File.open(tgt, "w") do |o|
+          ap.each do |f|
+            File.open(f) do |i|
+              i.each_line { |l| o.puts(l) }
+            end
+          end
+        end
+      end
+      deps += [ file(tgt) ]
+    end
+
     deps += [javaCompiler, buildCopyFilesTargets(package, basepaths, suffix,
                                                  buildDirectory)]
 
@@ -772,7 +791,7 @@ class JarTarget < Target
       f = FileList.new("#{path}/com/**/*") { |fl| fl.exclude(/.*\.java/) }
       ms << MoveSpec.new("#{path}", f, "")
 
-      f = FileList.new("#{path}/resources/**/*") { |fl| fl.exclude(/.*\.java/) }
+      f = FileList.new("#{path}/resources/**/*") { |fl| fl.exclude(/(.*\.java)|(META-INF\/annotated-classes)/) }
       ms << MoveSpec.new("#{path}/resources", f, "")
     end
 

@@ -121,7 +121,7 @@ public class BlacklistCategory implements Serializable
      *
      * @return true if domain block rules are used.
      */
-    @Column(name="block_domains")
+    @Column(name="block_domains", nullable=false)
     public boolean getBlockDomains()
     {
         return blockDomains;
@@ -136,10 +136,8 @@ public class BlacklistCategory implements Serializable
      * URL block rules are used when blockUrls is true.
      *
      * @return true when URL rules are used.
-     * @hibernate.property
-     * column="BLOCK_URLS"
      */
-    @Column(name="block_urls")
+    @Column(name="block_urls", nullable=false)
     public boolean getBlockUrls()
     {
         return blockUrls;
@@ -155,7 +153,7 @@ public class BlacklistCategory implements Serializable
      *
      * @return a <code>boolean</code> value
      */
-    @Column(name="block_expressions")
+    @Column(name="block_expressions", nullable=false)
     public boolean getBlockExpressions()
     {
         return blockExpressions;
@@ -171,7 +169,7 @@ public class BlacklistCategory implements Serializable
      *
      * @return true of logged only
      */
-    @Column(name="log_only")
+    @Column(name="log_only", nullable=false)
     public boolean getLogOnly()
     {
         return logOnly;

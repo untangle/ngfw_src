@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,19 +11,24 @@
 
 package com.metavize.tran.nat;
 
+import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.metavize.mvvm.logging.StatisticEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
+import javax.persistence.Entity;
 
 /**
  * Log event for a Nat statistics.
  *
  * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
  * @version 1.0
- * @hibernate.class
- * table="TR_NAT_STATISTIC_EVT"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="tr_nat_statistic_evt", schema="events")
 public class NatStatisticEvent extends StatisticEvent
 {
     /* Number of outbound nat sessions */
@@ -37,9 +42,6 @@ public class NatStatisticEvent extends StatisticEvent
     private int dmzSessions           = 0;
 
     // Constructors
-    /**
-     * Hibernate constructor
-     */
     public NatStatisticEvent() {}
 
     public NatStatisticEvent( int natSessions, int tcpIncomingRedirects, int tcpOutgoingRedirects,
@@ -61,9 +63,8 @@ public class NatStatisticEvent extends StatisticEvent
      * Number of natted connections since the last log event
      *
      * @return Number of natted connections since the last log event
-     * @hibernate.property
-     * column="NAT_SESSIONS"
      */
+    @Column(name="nat_sessions", nullable=false)
     public int getNatSessions()
     {
         return natSessions;
@@ -83,9 +84,8 @@ public class NatStatisticEvent extends StatisticEvent
      * Number of tcp incoming redirects since the last log event
      *
      * @return Number of tcp incoming redirects since the last log event
-     * @hibernate.property
-     * column="TCP_INCOMING"
      */
+    @Column(name="tcp_incoming", nullable=false)
     public int getTcpIncomingRedirects()
     {
         return tcpIncomingRedirects;
@@ -105,9 +105,8 @@ public class NatStatisticEvent extends StatisticEvent
      * Number of tcp outgoing redirects since the last log event
      *
      * @return Number of tcp outgoing redirects since the last log event
-     * @hibernate.property
-     * column="TCP_OUTGOING"
      */
+    @Column(name="tcp_outgoing", nullable=false)
     public int getTcpOutgoingRedirects()
     {
         return tcpOutgoingRedirects;
@@ -128,9 +127,8 @@ public class NatStatisticEvent extends StatisticEvent
      * Number of udp incoming redirects since the last log event
      *
      * @return Number of udp incoming redirects since the last log event
-     * @hibernate.property
-     * column="UDP_INCOMING"
      */
+    @Column(name="udp_incoming", nullable=false)
     public int getUdpIncomingRedirects()
     {
         return udpIncomingRedirects;
@@ -150,9 +148,8 @@ public class NatStatisticEvent extends StatisticEvent
      * Number of udp outgoing redirects since the last log event
      *
      * @return Number of udp outgoing redirects since the last log event
-     * @hibernate.property
-     * column="UDP_OUTGOING"
      */
+    @Column(name="udp_outgoing", nullable=false)
     public int getUdpOutgoingRedirects()
     {
         return udpOutgoingRedirects;
@@ -172,9 +169,8 @@ public class NatStatisticEvent extends StatisticEvent
      * Number of icmp incoming redirects since the last log event
      *
      * @return Number of icmp incoming redirects since the last log event
-     * @hibernate.property
-     * column="ICMP_INCOMING"
      */
+    @Column(name="icmp_incoming", nullable=false)
     public int getIcmpIncomingRedirects()
     {
         return icmpIncomingRedirects;
@@ -194,9 +190,8 @@ public class NatStatisticEvent extends StatisticEvent
      * Number of icmp outgoing redirects since the last log event
      *
      * @return Number of icmp outgoing redirects since the last log event
-     * @hibernate.property
-     * column="ICMP_OUTGOING"
      */
+    @Column(name="icmp_outgoing", nullable=false)
     public int getIcmpOutgoingRedirects()
     {
         return icmpOutgoingRedirects;
@@ -216,9 +211,8 @@ public class NatStatisticEvent extends StatisticEvent
      * Number of DMZd sessions since the last log event
      *
      * @return Number of DMZd sessions since the last log event
-     * @hibernate.property
-     * column="DMZ_SESSIONS"
      */
+    @Column(name="dmz_sessions", nullable=false)
     public int getDmzSessions()
     {
         return dmzSessions;
@@ -235,8 +229,8 @@ public class NatStatisticEvent extends StatisticEvent
     }
 
     /**
-     * Returns true if any of the stats are non-zero, whenever all the stats are zero,
-     * a new log event is not created.
+     * Returns true if any of the stats are non-zero, whenever all the
+     * stats are zero, a new log event is not created.
      */
     public boolean hasStatistics()
     {
@@ -261,11 +255,13 @@ public class NatStatisticEvent extends StatisticEvent
         sb.addField("dmz-sessions", dmzSessions);
     }
 
+    @Transient
     public String getSyslogId()
     {
         return "Statistic";
     }
 
+    @Transient
     public SyslogPriority getSyslogPriority()
     {
         return SyslogPriority.INFORMATIONAL; // statistics or normal operation

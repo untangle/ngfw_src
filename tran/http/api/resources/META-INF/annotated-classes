@@ -1,1 +1,3 @@
 com.metavize.tran.http.HttpSettings
+com.metavize.tran.http.HttpRequestEvent
+com.metavize.tran.http.RequestLine

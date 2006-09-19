@@ -12,6 +12,10 @@
 package com.metavize.mvvm.policy;
 
 import java.util.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.metavize.mvvm.api.IPSessionDesc;
 
@@ -22,9 +26,9 @@ import com.metavize.mvvm.api.IPSessionDesc;
  *
  * @author
  * @version 1.0
- * @hibernate.class
- * table="SYSTEM_POLICY_RULE"
  */
+@Entity
+@Table(name="system_policy_rule", schema="settings")
 public class SystemPolicyRule extends PolicyRule
 {
     // constructors -----------------------------------------------------------
@@ -36,6 +40,7 @@ public class SystemPolicyRule extends PolicyRule
         super(clientIntf, serverIntf, policy, inbound);
     }
 
+    @Transient
     public boolean isSameRow(SystemPolicyRule pr)
     {
         return getId().equals(pr.getId());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -11,23 +11,26 @@
 
 package com.metavize.mvvm.tran;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Index;
+
 /**
  * Rule for matching based on IP addresses and subnets.
  *
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="STRING_RULE"
  */
+@Entity
+@Table(name="string_rule", schema="settings")
 public class StringRule extends Rule
 {
     private String string;
 
     // constructors -----------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public StringRule() { }
 
     // XXX inconstant constuctor
@@ -59,11 +62,8 @@ public class StringRule extends Rule
      * XXX the indexing does not seem to work.
      *
      * @return the string.
-     * @hibernate.property
-     * @hibernate.column
-     * name="STRING"
-     * index="IDX_STRING_RULE"
      */
+    @Index(name="idx_string_rule", columnNames={ "string" })
     public String getString()
     {
         return string;

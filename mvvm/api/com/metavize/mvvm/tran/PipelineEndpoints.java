@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -13,13 +13,24 @@ package com.metavize.mvvm.tran;
 
 import java.net.InetAddress;
 import java.util.Date;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
-import com.metavize.mvvm.api.SessionEndpoints;
 import com.metavize.mvvm.api.IPSessionDesc;
+import com.metavize.mvvm.api.SessionEndpoints;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.policy.Policy;
+import javax.persistence.Entity;
+import org.hibernate.annotations.Type;
 
 /**
  * Used to record the Session endpoints at session end time.
@@ -29,10 +40,10 @@ import com.metavize.mvvm.policy.Policy;
  * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
  * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
  * @version 1.0
- * @hibernate.class
- * table="PL_ENDP"
- * mutable="false"
  */
+@Entity
+@org.hibernate.annotations.Entity(mutable=false)
+@Table(name="pl_endp", schema="events")
 public class PipelineEndpoints extends LogEvent
 {
     private static final long serialVersionUID = -5787529995276369804L;
@@ -121,12 +132,14 @@ public class PipelineEndpoints extends LogEvent
         this.policyInbound = policyInbound;
     }
 
+    @Transient
     public String getDirectionName()
     {
         return policyInbound ? "inbound" : "outbound";
     }
 
     /* This doesn't really belong here */
+    @Transient
     public String getProtocolName()
     {
         switch (protocol) {
@@ -142,9 +155,8 @@ public class PipelineEndpoints extends LogEvent
      * Session id.
      *
      * @return the id of the session
-     * @hibernate.property
-     * column="SESSION_ID"
      */
+    @Column(name="session_id", nullable=false)
     public int getSessionId()
     {
         return sessionId;
@@ -159,9 +171,8 @@ public class PipelineEndpoints extends LogEvent
      * Protocol.  Currently always either 6 (TCP) or 17 (UDP).
      *
      * @return the id of the session
-     * @hibernate.property
-     * column="PROTO"
      */
+    @Column(name="proto", nullable=false)
     public short getProtocol()
     {
         return protocol;
@@ -176,9 +187,9 @@ public class PipelineEndpoints extends LogEvent
      * Time the session began
      *
      * @return the time the session began
-     * @hibernate.property
-     * column="CREATE_DATE"
      */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="create_date")
     public Date getCreateDate()
     {
         return createDate;
@@ -193,9 +204,8 @@ public class PipelineEndpoints extends LogEvent
      * Client interface number (at client).  (0 outside, 1 inside)
      *
      * @return the number of the interface of the client
-     * @hibernate.property
-     * column="CLIENT_INTF"
      */
+    @Column(name="client_intf", nullable=false)
     public byte getClientIntf()
     {
         return clientIntf;
@@ -206,6 +216,7 @@ public class PipelineEndpoints extends LogEvent
         this.clientIntf = clientIntf;
     }
 
+    @Transient
     public String getClientIntf(byte clientInf)
     {
         return 0 == clientIntf ? "outside" : "inside";
@@ -215,9 +226,8 @@ public class PipelineEndpoints extends LogEvent
      * Server interface number (at server).  (0 outside, 1 inside)
      *
      * @return the number of the interface of the server
-     * @hibernate.property
-     * column="SERVER_INTF"
      */
+    @Column(name="server_intf", nullable=false)
     public byte getServerIntf()
     {
         return serverIntf;
@@ -228,6 +238,7 @@ public class PipelineEndpoints extends LogEvent
         this.serverIntf = serverIntf;
     }
 
+    @Transient
     public String getServerIntf(byte serverIntf)
     {
         return 0 == serverIntf ? "outside" : "inside";
@@ -237,12 +248,9 @@ public class PipelineEndpoints extends LogEvent
      * Client address, at the client side.
      *
      * @return the address of the client (as seen at client side of pipeline)
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.InetAddressUserType"
-     * @hibernate.column
-     * name="C_CLIENT_ADDR"
-     * sql-type="inet"
      */
+    @Column(name="c_client_addr")
+    @Type(type="com.metavize.mvvm.type.InetAddressUserType")
     public InetAddress getCClientAddr()
     {
         return cClientAddr;
@@ -257,12 +265,9 @@ public class PipelineEndpoints extends LogEvent
      * Client address, at the server side.
      *
      * @return the address of the client (as seen at server side of pipeline)
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.InetAddressUserType"
-     * @hibernate.column
-     * name="S_CLIENT_ADDR"
-     * sql-type="inet"
      */
+    @Column(name="s_client_addr")
+    @Type(type="com.metavize.mvvm.type.InetAddressUserType")
     public InetAddress getSClientAddr()
     {
         return sClientAddr;
@@ -277,12 +282,9 @@ public class PipelineEndpoints extends LogEvent
      * Server address, at the client side.
      *
      * @return the address of the server (as seen at client side of pipeline)
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.InetAddressUserType"
-     * @hibernate.column
-     * name="C_SERVER_ADDR"
-     * sql-type="inet"
      */
+    @Column(name="c_server_addr")
+    @Type(type="com.metavize.mvvm.type.InetAddressUserType")
     public InetAddress getCServerAddr()
     {
         return cServerAddr;
@@ -297,12 +299,9 @@ public class PipelineEndpoints extends LogEvent
      * Server address, at the server side.
      *
      * @return the address of the server (as seen at server side of pipeline)
-     * @hibernate.property
-     * type="com.metavize.mvvm.type.InetAddressUserType"
-     * @hibernate.column
-     * name="S_SERVER_ADDR"
-     * sql-type="inet"
      */
+    @Column(name="s_server_addr")
+    @Type(type="com.metavize.mvvm.type.InetAddressUserType")
     public InetAddress getSServerAddr()
     {
         return sServerAddr;
@@ -317,9 +316,8 @@ public class PipelineEndpoints extends LogEvent
      * Client port, at the client side.
      *
      * @return the port of the client (as seen at client side of pipeline)
-     * @hibernate.property
-     * column="C_CLIENT_PORT"
      */
+    @Column(name="c_client_port", nullable=false)
     public int getCClientPort()
     {
         return cClientPort;
@@ -334,9 +332,8 @@ public class PipelineEndpoints extends LogEvent
      * Client port, at the server side.
      *
      * @return the port of the client (as seen at server side of pipeline)
-     * @hibernate.property
-     * column="S_CLIENT_PORT"
      */
+    @Column(name="s_client_port", nullable=false)
     public int getSClientPort()
     {
         return sClientPort;
@@ -351,9 +348,8 @@ public class PipelineEndpoints extends LogEvent
      * Server port, at the client side.
      *
      * @return the port of the server (as seen at client side of pipeline)
-     * @hibernate.property
-     * column="C_SERVER_PORT"
      */
+    @Column(name="c_server_port", nullable=false)
     public int getCServerPort()
     {
         return cServerPort;
@@ -368,9 +364,8 @@ public class PipelineEndpoints extends LogEvent
      * Server port, at the server side.
      *
      * @return the port of the server (as seen at server side of pipeline)
-     * @hibernate.property
-     * column="S_SERVER_PORT"
      */
+    @Column(name="s_server_port", nullable=false)
     public int getSServerPort()
     {
         return sServerPort;
@@ -385,9 +380,9 @@ public class PipelineEndpoints extends LogEvent
      * Policy that was applied for this pipeline.
      *
      * @return Policy for this pipeline
-     * @hibernate.many-to-one
-     * column="POLICY_ID"
      */
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @JoinColumn(name="policy_id")
     public Policy getPolicy()
     {
         return policy;
@@ -403,10 +398,8 @@ public class PipelineEndpoints extends LogEvent
      * outbound side was chosen.
      *
      * @return true if the inbound side of policy was chosen, false if outbound
-     * @hibernate.property
-     * column="POLICY_INBOUND"
-     * not-null="true"
      */
+    @Column(name="policy_inbound", nullable=false)
     public boolean isInbound()
     {
         return policyInbound;
