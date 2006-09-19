@@ -22,6 +22,8 @@ import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.MvvmState;
 import com.metavize.mvvm.Period;
 import com.metavize.mvvm.api.RemoteShieldManager;
+import com.metavize.mvvm.localapi.LocalShieldManager;
+import com.metavize.mvvm.localapi.LocalIntfManager;
 import com.metavize.mvvm.argon.Argon;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
 import com.metavize.mvvm.client.MvvmRemoteContext;
@@ -60,6 +62,8 @@ public class MvvmContextImpl extends MvvmContextBase
     private MvvmState state;
     private AdminManagerImpl adminManager;
     private ArgonManagerImpl argonManager;
+    private LocalShieldManager localShieldManager;
+    private RemoteShieldManager remoteShieldManager;
     private HttpInvoker httpInvoker;
     private LoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
@@ -204,10 +208,21 @@ public class MvvmContextImpl extends MvvmContextBase
         return argonManager;
     }
 
-    public RemoteShieldManager shieldManager()
+    public LocalIntfManager intfManager()
     {
-        return argonManager;
+        return argonManager.getIntfManager();
     }
+
+    public LocalShieldManager localShieldManager()
+    {
+        return localShieldManager;
+    }
+
+    public RemoteShieldManager remoteShieldManager()
+    {
+        return this.remoteShieldManager;
+    }
+
 
     public MPipeManagerImpl mPipeManager()
     {
@@ -495,6 +510,10 @@ public class MvvmContextImpl extends MvvmContextBase
 
         // Retrieve the argon manager
         argonManager = ArgonManagerImpl.getInstance();
+
+        // Create the shield managers
+        localShieldManager = new LocalShieldManagerImpl();
+        remoteShieldManager = new RemoteShieldManagerImpl(localShieldManager); 
 
         appServerManager = new AppServerManagerImpl(this);
 

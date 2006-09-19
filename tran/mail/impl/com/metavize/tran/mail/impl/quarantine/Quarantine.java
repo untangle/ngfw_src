@@ -228,11 +228,6 @@ public class Quarantine
 
   private String getInternalIPAsString() {
     return MvvmContextFactory.context().networkManager().getPublicAddress();
-//    InetAddress addr = MvvmContextFactory.context().argonManager().getInsideAddress();
-//    if(addr == null) {
-//      return null;
-//    }
-//    return addr.getHostAddress();
   }
 
 

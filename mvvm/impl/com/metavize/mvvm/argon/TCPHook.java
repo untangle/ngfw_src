@@ -148,7 +148,7 @@ public class TCPHook implements NetcapHook
             }
 
             try {
-                byte intf = IntfConverter.toNetcap( clientSide.serverIntf());
+                byte intf = Argon.getInstance().getIntfManager().toNetcap( clientSide.serverIntf());
                 netcapTCPSession.serverComplete( clientAddr, clientPort, serverAddr, serverPort, intf,
                                                  flags );
                 netcapTCPSession.tcpServerSide().blocking( false );

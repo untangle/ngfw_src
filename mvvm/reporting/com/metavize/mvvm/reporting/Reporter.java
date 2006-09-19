@@ -212,10 +212,17 @@ public class Reporter
         for (int i = 0; i < mars.length; i++) {
             File f = new File(mars[i]);
 
-            // assume file is "tranname-transform.mar"
+            // assume file is "tranname-transform-impl.mar"
             String fn = f.getName();
-            String tranName = fn.substring(0, fn.length() - 4);
-
+            String tranName = fn;
+            if ( tranName.endsWith( ".jar" ) || tranName.endsWith( ".mar" )) {
+                tranName = tranName.substring(0, tranName.length() - 4);
+            }
+            
+            if ( tranName.endsWith( "-impl" )) {
+                tranName = tranName.substring(0, tranName.length() - 5);
+            }
+            
             try {
                 URLClassLoader ucl = new URLClassLoader(new URL[] { f.toURL() });
                 ct.setContextClassLoader(ucl);

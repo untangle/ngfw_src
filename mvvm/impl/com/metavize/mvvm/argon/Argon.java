@@ -24,6 +24,8 @@ import com.metavize.jvector.Vector;
 
 import com.metavize.mvvm.ArgonException;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.localapi.LocalShieldManager;
+import com.metavize.mvvm.localapi.LocalIntfManager;
 import com.metavize.mvvm.engine.PolicyManagerPriv;
 import com.metavize.mvvm.shield.ShieldMonitor;
 
@@ -59,6 +61,7 @@ public class Argon
     int jvectorDebugLevel   = 0;
     int mvutilDebugLevel    = 0;
 
+    private LocalIntfManagerImpl intfManager;
     int sessionThreadLimit  = 10000;
     int newSessionSchedPolicy  = SCHED_NORMAL;
     int sessionSchedPolicy  = SCHED_NORMAL;
@@ -79,9 +82,6 @@ public class Argon
     /* If there is a DMZ interface, it is passed in using the system property */
     String dmz     = "";
 
-    /* A list of user interfaces */
-    String userIntfs = "";
-
     /* The NAT Checker */
     private final NatChecker natChecker = new NatChecker();
     
@@ -100,7 +100,12 @@ public class Argon
         /* Parse all of the properties */
         parseProperties();
 
-        init( policyManager );
+        try {
+            init( policyManager );
+        } catch ( ArgonException e ) {
+            logger.fatal( "Error initializing argon", e );
+            throw new IllegalStateException( "no", e );
+        }
 
         registerHooks();
     }
@@ -180,24 +185,6 @@ public class Argon
         if (( temp = System.getProperty( "argon.newSessionSchedPolicy" )) != null ) {
             newSessionSchedPolicy  = Integer.parseInt( temp );
         }
-
-
-        try {
-            Properties properties = new Properties();
-            File f = new File( ArgonManagerImpl.TRANSFORM_INTF_FILE );
-
-            if ( f.exists()) {
-                properties.load( new FileInputStream( f ));
-                if (( temp = properties.getProperty( ArgonManagerImpl.PROPERTY_TRANSFORM_INTF )) != null ) {
-                    this.userIntfs = temp;
-                } else {
-                    this.userIntfs = "";
-                }
-            }
-        } catch ( Exception e ) {
-            logger.warn( "Error loading transform interface file, defaulting to no properties", e );
-            this.userIntfs = "";
-        }
     }
 
     /**
@@ -213,20 +200,15 @@ public class Argon
     /**
      * Initialize Netcap and any other supporting libraries.
      */
-    private void init( PolicyManagerPriv policyManager )
+    private void init( PolicyManagerPriv policyManager ) throws ArgonException
     {
         Netcap.init( isShieldEnabled, netcapDebugLevel, jnetcapDebugLevel );
 
         /* Start the scheduler */
         Netcap.startScheduler();
 
-        try {
-            /* Configure the array of active interfaces */
-            ArgonManagerImpl.getInstance().
-                initializeIntfArray( policyManager, inside, outside, dmz, userIntfs );
-        } catch ( ArgonException e ) {
-            logger.error( "Unable to initialize interface array.", e );
-        }
+        this.intfManager = new LocalIntfManagerImpl( policyManager );
+        this.intfManager.initializeIntfArray( inside, outside, dmz );
 
         /* Register the NatChecker */
         networkManager.registerListener( this.natChecker );
@@ -237,6 +219,12 @@ public class Argon
         if ( isShieldEnabled ) {
             shield.registerEventListener( ShieldMonitor.getInstance());
         }
+        
+        /* Initialize the shield configuration */
+        LocalShieldManager lsm = MvvmContextFactory.context().localShieldManager();
+        lsm.setIsShieldEnabled( isShieldEnabled );
+        lsm.setShieldConfigurationFile( shieldFile );
+
 
         Vector.mvutilDebugLevel( mvutilDebugLevel );
         Vector.vectorDebugLevel( vectorDebugLevel );
@@ -251,9 +239,6 @@ public class Argon
         totalThreads    = numThreads;
         activeThreads   = 0;
         Netcap.getInstance().setSessionLimit( this.sessionThreadLimit );
-
-        /* Initialize the shield configuration */
-        if ( isShieldEnabled && shieldFile != null ) shield.config( shieldFile );
 
         /* Initialize the InterfaceOverride table, this is just so the logger doesn't get into the NAT
          * transform context */
@@ -304,5 +289,12 @@ public class Argon
     public static Argon getInstance()
     {
         return INSTANCE;
+    }
+
+
+    /* ----------------- Package ----------------- */
+    LocalIntfManager getIntfManager()
+    {
+        return this.intfManager;
     }
 }

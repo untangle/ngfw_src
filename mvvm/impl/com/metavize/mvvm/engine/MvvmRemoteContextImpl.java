@@ -85,7 +85,7 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
     /* Argon manager performs double duty */
     public RemoteShieldManager shieldManager()
     {
-        return context.argonManager();
+        return context.remoteShieldManager();
     }
 
     public ReportingManager reportingManager()

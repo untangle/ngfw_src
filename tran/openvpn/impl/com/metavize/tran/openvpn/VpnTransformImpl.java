@@ -419,7 +419,7 @@ public class VpnTransformImpl extends AbstractTransform
 
         /* Initially use tun0, even though it could eventually be configured to the tap interface  */
         try {
-            MvvmContextFactory.context().argonManager().registerIntf( IntfConstants.VPN_INTF, "tun0" );
+            MvvmContextFactory.context().intfManager().registerIntf( "tun0", IntfConstants.VPN_INTF );
         } catch ( ArgonException e ) {
             throw new TransformException( "Unable to register VPN interface", e );
         }
@@ -533,7 +533,7 @@ public class VpnTransformImpl extends AbstractTransform
         unDeployWebApp();
 
         try {
-            MvvmContextFactory.context().argonManager().deregisterIntf( IntfConstants.VPN_INTF );
+            MvvmContextFactory.context().intfManager().deregisterIntf( IntfConstants.VPN_INTF );
         } catch ( Exception e ) {
             /* There is nothing else to do but print out the message */
             logger.error( "Unable to deregister vpn interface", e );

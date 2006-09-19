@@ -23,9 +23,11 @@ import org.apache.log4j.Logger;
 import com.metavize.mvvm.ArgonException;
 import com.metavize.mvvm.IntfConstants;
 
+import com.metavize.mvvm.localapi.ArgonInterface;
+
 final class ArgonInterfaceConverter
 {
-    private Logger logger = Logger.getLogger( this.getClass());
+    private static Logger logger = Logger.getLogger( ArgonInterfaceConverter.class );
 
     static final byte  OUTSIDE        = IntfConstants.EXTERNAL_INTF;
     static final byte  NETCAP_OUTSIDE = OUTSIDE + 1;
@@ -39,7 +41,6 @@ final class ArgonInterfaceConverter
     private final ArgonInterface external;
     private final ArgonInterface internal;
     private final ArgonInterface dmz;
-    private final ArgonInterface vpn;
     
     private final Map<Byte,ArgonInterface> argonToInterfaceMap;
     private final Map<Byte,ArgonInterface> netcapToInterfaceMap;
@@ -49,7 +50,7 @@ final class ArgonInterfaceConverter
 
     /* Build an interface converter from a list of the argon interfaces */
     private ArgonInterfaceConverter( ArgonInterface external, ArgonInterface internal,
-                                     ArgonInterface dmz,  ArgonInterface vpn, 
+                                     ArgonInterface dmz, 
                                      Map<Byte,ArgonInterface> argon,
                                      Map<Byte,ArgonInterface> netcap,
                                      Map<String,ArgonInterface> name,
@@ -59,7 +60,6 @@ final class ArgonInterfaceConverter
         this.external = external;
         this.internal = internal;
         this.dmz = dmz;
-        this.vpn = vpn;
         
         /* Create unmodifiable copies of all of the maps and lists */
         this.argonToInterfaceMap = Collections.unmodifiableMap( new HashMap<Byte,ArgonInterface>( argon ));
@@ -110,20 +110,53 @@ final class ArgonInterfaceConverter
         return this.dmz;
     }
 
-    /* This may be null */
-    ArgonInterface getVpn()
-    {
-        return this.vpn;
-    }
-
     List<ArgonInterface> getIntfList()
     {
         return this.intfList;
     }
+    
+    /* This is a list of non-physical interfaces (everything except for internal, external and dmz ).
+     * This list would contain interfaces like VPN. */
+    List<ArgonInterface> getCustomIntfList()
+    {
+        List list = new LinkedList<ArgonInterface>( this.intfList );
+        list.remove( getInternal());
+        list.remove( getExternal());
+        list.remove( getDmz());
+        return list;
+    }
+
+    /* Return an array of the argon interfaces */
+    byte[] getArgonIntfArray()
+    {
+        byte[] argonIntfArray = new byte[this.intfList.size()];
+        int c = 0;
+        for ( ArgonInterface intf : this.intfList ) argonIntfArray[c++] = intf.getArgon();
+        return argonIntfArray;
+    }
+
+    /* Return an array of the netcap interfaces */
+    byte[] getNetcapIntfArray()
+    {
+        byte[] netcapIntfArray = new byte[this.intfList.size()];
+        int c = 0;
+        for ( ArgonInterface intf : this.intfList ) netcapIntfArray[c++] = intf.getNetcap();
+        return netcapIntfArray;
+    }
+
+    /* Return an array of the interface names */
+    String[] getNameArray()
+    {
+        String[] nameIntfArray = new String[this.intfList.size()];
+        int c = 0;
+        for ( ArgonInterface intf : this.intfList ) nameIntfArray[c++] = intf.getName();
+        return nameIntfArray;
+    }   
 
     /* Returns true if both converters have the same set of argon interfaces */
     boolean hasMatchingInterfaces( ArgonInterfaceConverter o ) 
     {
+        if ( null == o ) return false;
         return o.argonToInterfaceMap.keySet().equals( this.argonToInterfaceMap.keySet());
     }
 
@@ -192,16 +225,17 @@ final class ArgonInterfaceConverter
             if ( name.put( intf.getName(), intf ) != null ) {
                 throw new ArgonException( "The name: " + intf.getName() + " is used twice" );
             }
+
+            logger.debug( "Adding the interface: " + intf );
         }
 
         ArgonInterface external = argon.get( IntfConstants.EXTERNAL_INTF );
         ArgonInterface internal = argon.get( IntfConstants.INTERNAL_INTF );
         ArgonInterface dmz      = argon.get( IntfConstants.DMZ_INTF );
-        ArgonInterface vpn      = argon.get( IntfConstants.VPN_INTF );
 
         if ( internal == null ) throw new ArgonException( "The internal interface is not set" );
         if ( external == null ) throw new ArgonException( "The external interface is not set" );
         
-        return new ArgonInterfaceConverter( external, internal, dmz, vpn, argon, netcap, name, intfList );
+        return new ArgonInterfaceConverter( external, internal, dmz, argon, netcap, name, intfList );
     }
 }

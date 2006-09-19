@@ -141,7 +141,8 @@ class SettingsManager
             
             interfaceList = new LinkedList<Interface>();
 
-            byte argonIntfArray[] = MvvmContextFactory.context().argonManager().getArgonIntfArray();
+            byte argonIntfArray[] = MvvmContextFactory.context().intfManager().getArgonIntfArray();
+                
             Arrays.sort( argonIntfArray );
             for ( byte argonIntf : argonIntfArray ) {
                 /* The VPN interface doesn't belong to a network space */

@@ -180,6 +180,8 @@ $InstallTarget.installJars(jts, "#{mvvm.distDirectory}/usr/share/metavize/lib")
 
 $InstallTarget.installJars(Jars::Base, "#{mvvm.distDirectory}/usr/share/java/mvvm")
 
+$InstallTarget.installJars(Jars::Reporting, "#{mvvm.distDirectory}/usr/share/java/reports")
+
 mvvm_cacerts = "#{mvvm.distDirectory}/usr/share/metavize/conf/cacerts"
 java_cacerts = "#{$BuildEnv.javahome}/jre/lib/security/cacerts"
 mv_ca = 'mvvm/resources/mv-ca.pem'
@@ -204,4 +206,7 @@ deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
   Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::Junit +
   [ mvvm['bootstrap'], mvvm['api'], mvvm['localapi'], mvvm['impl'], jnetcap['impl'], jvector['impl']]
 
+
+
 JarTarget.buildTarget(Package["unittest"], deps, 'mvvm', 'mvvm/unittest')
+# JarTarget.buildTarget(Package["mvvm"], deps, 'unittest', 'mvvm/unittest')

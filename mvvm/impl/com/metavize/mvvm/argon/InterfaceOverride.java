@@ -23,6 +23,8 @@ import com.metavize.jnetcap.Endpoint;
 import com.metavize.jnetcap.Endpoints;
 import com.metavize.jnetcap.NetcapSession;
 
+import com.metavize.mvvm.localapi.LocalIntfManager;
+
 import com.metavize.mvvm.tapi.Protocol;
 
 import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
@@ -66,13 +68,14 @@ final class InterfaceOverride
         InetAddress srcAddress = src.host();
         int srcPort = src.port();
 
-        byte srcIntf = IntfConverter.toArgon( clientSide.interfaceId());
+        LocalIntfManager lim = Argon.getInstance().getIntfManager();
+        byte srcIntf = lim.toArgon( clientSide.interfaceId());
         
         InetAddress dstAddress = dst.host();
         int dstPort = dst.port();
         
         /* This is the interface the routing table thinks it is should go out on. */
-        byte dstIntf = IntfConverter.toArgon( serverSide.interfaceId());
+        byte dstIntf = lim.toArgon( serverSide.interfaceId());
 
         Protocol protocol = Protocol.getInstance((int)netcapSession.protocol());
 
@@ -89,13 +92,13 @@ final class InterfaceOverride
         
         for ( InterfaceRedirect redirect : currentOverrideList ) {
             if ( redirect.isMatch( protocol, srcIntf, dstIntf, srcAddress, dstAddress, srcPort, dstPort )) {
-                byte intf = IntfConverter.toNetcap( redirect.argonIntf( dstIntf ));
+                byte intf = lim.toNetcap( redirect.argonIntf( dstIntf ));
                 logger.debug( "Found redirect for session, setting to interface: " + intf );
                 return intf;
             }
         }
         
-        return IntfConverter.toNetcap( dstIntf );
+        return lim.toNetcap( dstIntf );
     }
 
     void setOverrideList( List<InterfaceRedirect> overrideList )

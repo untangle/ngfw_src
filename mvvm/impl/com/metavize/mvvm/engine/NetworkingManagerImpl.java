@@ -16,17 +16,18 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.Arrays;
 
+import org.apache.log4j.Logger;
+
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.IntfEnum;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.NetworkingManager;
-import com.metavize.mvvm.argon.IntfConverter;
+import com.metavize.mvvm.localapi.LocalIntfManager;
 import com.metavize.mvvm.networking.NetworkException;
 import com.metavize.mvvm.tran.ValidateException;
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
-import org.apache.log4j.Logger;
 
 class NetworkingManagerImpl implements NetworkingManager
 {
@@ -158,8 +159,8 @@ class NetworkingManagerImpl implements NetworkingManager
 
     void buildIntfEnum()
     {
-        IntfConverter converter = IntfConverter.getInstance();
-        if ( converter == null ) { /* Running in fake mode */
+        LocalIntfManager lim = MvvmContextFactory.context().intfManager();
+        if ( lim == null ) { /* Running in fake mode */
             logger.info( "Running in fake mode, using internal and external" );
             this.intfEnum =
                 new IntfEnum( new byte[]   { IntfConstants.EXTERNAL_INTF, IntfConstants.INTERNAL_INTF },
@@ -167,7 +168,8 @@ class NetworkingManagerImpl implements NetworkingManager
             return;
         }
 
-        byte[] argonIntfArray = MvvmContextFactory.context().argonManager().getArgonIntfArray();
+        byte[] argonIntfArray = MvvmContextFactory.context().intfManager().getArgonIntfArray();
+            
         Arrays.sort( argonIntfArray );
 
         String[] intfNameArray = new String[argonIntfArray.length];

@@ -16,7 +16,6 @@ import java.net.InetAddress;
 import com.metavize.jnetcap.Shield;
 import com.metavize.jnetcap.ShieldEventListener;
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.logging.EventLogger;
 import org.apache.log4j.Logger;
 
@@ -43,7 +42,7 @@ public class ShieldMonitor implements ShieldEventListener
                      " limited: " + limited + " dropped: " + dropped + " rejected: " + rejected  );
 
         try {
-            clientIntf = IntfConverter.toArgon( clientIntf );
+            clientIntf = MvvmContextFactory.context().intfManager().toArgon( clientIntf );
 
             eventLogger.log( new ShieldRejectionEvent( ip, clientIntf, reputation, mode, limited, dropped,
                                                         rejected ));

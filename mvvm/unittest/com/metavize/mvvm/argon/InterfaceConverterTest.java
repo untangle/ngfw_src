@@ -25,12 +25,16 @@ import com.metavize.mvvm.ArgonException;
 
 public class InterfaceConverterTest
 {
-    private static final ArgonInterface EXTERNAL     = new ArgonInterface( "eth0", 1, 0 );
-    private static final ArgonInterface EXTERNAL_PPP = new ArgonInterface( "ppp0", 1, 0 );
-    private static final ArgonInterface INTERNAL     = new ArgonInterface( "eth1", 2, 1 );
-    private static final ArgonInterface DMZ          = new ArgonInterface( "eth2", 3, 2 );
-    private static final ArgonInterface VPN          = new ArgonInterface( "tun0", 4, 3 );
-    private static final ArgonInterface TRANSFORM    = new ArgonInterface( "dummy0", 5, 4 );
+    private static final ArgonInterface EXTERNAL     = new ArgonInterface( "eth0", 0, 1 );
+    private static final ArgonInterface EXTERNAL_PPP = new ArgonInterface( "ppp0", 0, 1 );
+    private static final ArgonInterface INTERNAL     = new ArgonInterface( "eth1", 1, 2 );
+    private static final ArgonInterface DMZ          = new ArgonInterface( "eth2", 2, 3 );
+    private static final ArgonInterface VPN          = new ArgonInterface( "tun0", 3, 4 );
+    private static final ArgonInterface TRANSFORM    = new ArgonInterface( "dummy0", 4, 5 );
+
+    private static final ArgonInterface SAME_ARGON   = new ArgonInterface( "foobar", 7, 1 );
+    private static final ArgonInterface SAME_NETCAP  = new ArgonInterface( "foobar", 1, 7 );
+    private static final ArgonInterface SAME_NAME    = new ArgonInterface( "eth1", 8, 7 );
 
     private static final List<ArgonInterface> BASIC = 
         Arrays.asList( new ArgonInterface[] { EXTERNAL, INTERNAL, DMZ } );
@@ -42,8 +46,10 @@ public class InterfaceConverterTest
         Arrays.asList( new ArgonInterface[] { EXTERNAL, INTERNAL, VPN } );
 
     private static final List<ArgonInterface> FULL = 
-        Arrays.asList( new ArgonInterface[] { EXTERNAL, INTERNAL, DMZ, VPN } );
+        Arrays.asList( new ArgonInterface[] { EXTERNAL, INTERNAL, DMZ, VPN, TRANSFORM } );
     
+    private static final List<ArgonInterface> FULL_CUSTOM =
+        Arrays.asList( new ArgonInterface[] { VPN, TRANSFORM } );
 
     public InterfaceConverterTest()
     {
@@ -119,6 +125,7 @@ public class InterfaceConverterTest
         instance = newInstance;        
     }
 
+    /* exception testing, to verify that exceptions are thrown at the appropriate times */
     @Test(expected=ArgonException.class) public void deregisterInternal() throws ArgonException
     {
         ArgonInterfaceConverter.makeInstance( BASIC ).deregisterIntf( IntfConstants.INTERNAL_INTF );
@@ -127,6 +134,27 @@ public class InterfaceConverterTest
     @Test(expected=ArgonException.class) public void deregisterExternal() throws ArgonException
     {
         ArgonInterfaceConverter.makeInstance( BASIC ).deregisterIntf( IntfConstants.EXTERNAL_INTF );
+    }
+
+    @Test(expected=ArgonException.class) public void duplicateArgonInterface() throws ArgonException
+    {
+        List list = new LinkedList( BASIC );
+        list.add( SAME_ARGON );
+        ArgonInterfaceConverter.makeInstance( list );
+    }
+
+    @Test(expected=ArgonException.class) public void duplicateNetcapInterface() throws ArgonException
+    {
+        List list = new LinkedList( BASIC );
+        list.add( SAME_NETCAP );
+        ArgonInterfaceConverter.makeInstance( list );
+    }
+
+    @Test(expected=ArgonException.class) public void duplicateNameInterface() throws ArgonException
+    {
+        List list = new LinkedList( BASIC );
+        list.add( SAME_NAME );
+        ArgonInterfaceConverter.makeInstance( list );
     }
 
     private void testBasics( List<ArgonInterface> input, ArgonInterfaceConverter instance ) 

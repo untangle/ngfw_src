@@ -13,6 +13,8 @@ package com.metavize.mvvm.argon;
 
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import com.metavize.jnetcap.IPTraffic;
 import com.metavize.jnetcap.NetcapHook;
 import com.metavize.jnetcap.NetcapSession;
@@ -25,7 +27,8 @@ import com.metavize.jvector.UDPSink;
 import com.metavize.jvector.UDPSource;
 import com.metavize.mvvm.policy.PolicyRule;
 import com.metavize.mvvm.tran.PipelineEndpoints;
-import org.apache.log4j.Logger;
+
+import com.metavize.mvvm.localapi.LocalIntfManager;
 
 
 public class UDPHook implements NetcapHook
@@ -113,6 +116,8 @@ public class UDPHook implements NetcapHook
          */
         protected boolean serverComplete()
         {
+            LocalIntfManager lim = Argon.getInstance().getIntfManager();
+
             if ( sessionList.isEmpty()) {
                 /* No sessions, complete with the current session parameters */
                 serverTraffic = new IPTraffic( netcapUDPSession.serverSide());
@@ -144,12 +149,12 @@ public class UDPHook implements NetcapHook
                 /* Setup the marking */
                 serverTraffic.isMarkEnabled( true );
 
-                serverTraffic.mark( IntfConverter.toNetcap( clientSide.clientIntf()));
+                serverTraffic.mark( lim.toNetcap( clientSide.clientIntf()));
             }
 
             serverTraffic.lock();
 
-            byte intf = IntfConverter.toNetcap( serverSide.serverIntf());
+            byte intf = lim.toNetcap( serverSide.serverIntf());
 
             /* XXXX ICMP HACK */
             if ( isIcmpSession ) {
@@ -186,7 +191,7 @@ public class UDPHook implements NetcapHook
                 clientTraffic.isMarkEnabled( true );
 
                 /* Packets cannot go back out on the server interface */
-                clientTraffic.mark( IntfConverter.toNetcap( serverSide.serverIntf()));
+                clientTraffic.mark( Argon.getInstance().getIntfManager().toNetcap( serverSide.serverIntf()));
             }
 
             clientTraffic.lock();

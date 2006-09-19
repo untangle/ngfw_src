@@ -26,7 +26,6 @@ import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.NetworkManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.ArgonException;
-import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
 import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.metavize.mvvm.networking.internal.RemoteInternalSettings;

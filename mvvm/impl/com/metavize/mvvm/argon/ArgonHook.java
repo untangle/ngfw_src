@@ -110,7 +110,8 @@ abstract class ArgonHook implements Runnable
             }
 
             /* Update the server interface with the override table */
-            byte originalServerIntf = IntfConverter.toArgon( netcapSession.serverSide().interfaceId());
+            byte originalServerIntf = Argon.getInstance().
+                getIntfManager().toArgon( netcapSession.serverSide().interfaceId());
             InterfaceOverride.getInstance().updateDestinationInterface( netcapSession );
 
             if ( logger.isDebugEnabled()) logger.debug( netcapSession );
@@ -118,8 +119,8 @@ abstract class ArgonHook implements Runnable
             /* If the server interface is still unknown, drop the session */
             byte serverIntf = netcapSession.serverSide().interfaceId();
             byte clientIntf = netcapSession.clientSide().interfaceId();
-            if ( IntfConverter.NETCAP_UNKNOWN == serverIntf ||
-                 IntfConverter.NETCAP_LOOPBACK == serverIntf ) {
+            if ( IntfConstants.NETCAP_UNKNOWN == serverIntf ||
+                 IntfConstants.NETCAP_LOOPBACK == serverIntf ) {
                 if ( logger.isInfoEnabled()) {
                     logger.info( "" + netcapSession + " destined to unknown or local interface, raze." );
                 }
@@ -588,8 +589,8 @@ abstract class ArgonHook implements Runnable
     /** Helper function determine if a session is going to and from a VPN interface */
     private boolean isVpnToVpn( byte netcapClientIntf, byte netcapServerIntf )
     {
-        return (( netcapClientIntf == IntfConverter.NETCAP_VPN ) && 
-                ( netcapServerIntf == IntfConverter.NETCAP_VPN ));
+        return (( netcapClientIntf == IntfConstants.NETCAP_VPN ) && 
+                ( netcapServerIntf == IntfConstants.NETCAP_VPN ));
     }
 
     /* Helper function to determine if a session is going to be NATd and going in and out

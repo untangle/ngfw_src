@@ -172,8 +172,9 @@ class OpenVpnManager
 
         try {
             boolean isBridgeMode = settings.isBridgeMode();
-            String intf = ( isBridgeMode ) ? DEVICE_BRIDGE : DEVICE_ROUTING;
-            MvvmContextFactory.context().argonManager().registerIntf( IntfConstants.VPN_INTF, intf );
+            
+            /* ** XXXXXXX Bridge mode is unsupported */
+            MvvmContextFactory.context().intfManager().registerIntf( DEVICE_ROUTING, IntfConstants.VPN_INTF );
 
             /* ** XXXXXXX Bridge mode is unsupported */
 

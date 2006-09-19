@@ -31,7 +31,7 @@ import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.ArgonException;
-import com.metavize.mvvm.argon.IntfConverter;
+import com.metavize.mvvm.localapi.LocalIntfManager;
 import com.metavize.mvvm.networking.internal.InterfaceInternal;
 import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
 import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
@@ -145,7 +145,7 @@ class NetworkUtilPriv extends NetworkUtil
         /* Boolean to indicate whether or not the user has completed setup */
         boolean hasCompletedSetup = networkSettings.getHasCompletedSetup();
 
-        IntfConverter ic = IntfConverter.getInstance();
+        LocalIntfManager lim = MvvmContextFactory.context().intfManager();
 
         int index = SPACE_INDEX_BASE;
 
@@ -174,7 +174,7 @@ class NetworkUtilPriv extends NetworkUtil
                          ( intfSpace.getBusinessPapers() == networkSpace.getBusinessPapers())) {
                         try {
                             /* Set the name of the interface */
-                            intf.setIntfName( ic.argonIntfToString( intf.getArgonIntf()));
+                            intf.setIntfName( lim.argonIntfToString( intf.getArgonIntf()));
                         } catch( ArgonException e ) {
                             logger.error( "Unable to retrieve the interface name for: " +
                                           intf.getArgonIntf(), e );
@@ -311,7 +311,7 @@ class NetworkUtilPriv extends NetworkUtil
     NetworkSpacesInternalSettings toInternal( NetworkingConfiguration configuration )
         throws NetworkException, ValidateException
     {
-        IntfConverter ic = IntfConverter.getInstance();
+        LocalIntfManager lim = MvvmContextFactory.context().intfManager();
 
         NetworkSpacesSettings newSettings = new NetworkSpacesSettingsImpl();
 
@@ -450,11 +450,11 @@ class NetworkUtilPriv extends NetworkUtil
             new DhcpStatus( NetworkUtil.BOGUS_DHCP_ADDRESS, NetworkUtil.BOGUS_DHCP_NETMASK );
 
         try {
-            IntfConverter ic = IntfConverter.getInstance();
+            LocalIntfManager lim = MvvmContextFactory.context().intfManager();
 
             /* XXX Right now the only space that supports DHCP is the external space,
              * need to update for when there are others */
-            String external = ic.argonIntfToString( IntfConstants.EXTERNAL_INTF );
+            String external = lim.getExternal().getName();
             List<InterfaceData> externalIntfDataList = netcap.getInterfaceData( external );
 
             if ( externalIntfDataList == null || ( externalIntfDataList.size() == 0 )) {
@@ -805,7 +805,7 @@ class NetworkUtilPriv extends NetworkUtil
 
     byte[] getArgonIntfArray()
     {
-        return MvvmContextFactory.context().argonManager().getArgonIntfArray();
+        return MvvmContextFactory.context().intfManager().getArgonIntfArray();
     }
 
     /* Get the hostname of the box from the /etc/hostname file */

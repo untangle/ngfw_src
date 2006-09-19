@@ -13,10 +13,13 @@ package com.metavize.mvvm.argon;
 
 import java.net.InetAddress;
 
+import org.apache.log4j.Logger;
+
 import com.metavize.jnetcap.Endpoint;
 import com.metavize.jnetcap.Endpoints;
 import com.metavize.jnetcap.NetcapSession;
-import org.apache.log4j.Logger;
+
+import com.metavize.mvvm.localapi.LocalIntfManager;
 
 class NetcapIPSessionDescImpl implements IPSessionDesc
 {
@@ -51,13 +54,15 @@ class NetcapIPSessionDescImpl implements IPSessionDesc
         Endpoint client = side.client();
         Endpoint server = side.server();
 
+        LocalIntfManager lim = Argon.getInstance().getIntfManager();
+
         this.clientAddr = client.host();
         this.clientPort = client.port();
-        this.clientIntf = IntfConverter.toArgon( session.clientSide().interfaceId());
+        this.clientIntf = lim.toArgon( session.clientSide().interfaceId());
 
         this.serverAddr = server.host();
         this.serverPort = server.port();
-        this.serverIntf = IntfConverter.toArgon( session.serverSide().interfaceId());
+        this.serverIntf = lim.toArgon( session.serverSide().interfaceId());
     }
 
     /**

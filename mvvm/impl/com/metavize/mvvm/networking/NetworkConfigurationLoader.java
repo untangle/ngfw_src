@@ -32,7 +32,6 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmState;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.ArgonException;
-import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
@@ -138,19 +137,11 @@ class NetworkConfigurationLoader
         loadDhcp( basic );
         loadDnsServers( basic );
 
-        IntfConverter ic = IntfConverter.getInstance();
-
         Netcap netcap = Netcap.getInstance();
 
         String external;
 
-        try  {
-            external = ic.argonIntfToString( IntfConstants.EXTERNAL_INTF );
-        } catch ( ArgonException e ) {
-            logger.error( "Nothing is known about the external interface ", e );
-            throw new NetworkException( "Unable to load the basic network settings, " +
-                                        "nothing is known about the external interface" );
-        }
+        external = MvvmContextFactory.context().intfManager().getExternal().getName();
 
         netcap.updateAddress();
 

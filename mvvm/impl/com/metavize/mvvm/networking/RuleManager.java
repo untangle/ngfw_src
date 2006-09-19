@@ -24,10 +24,10 @@ import com.metavize.jnetcap.Netcap;
 import com.metavize.jnetcap.JNetcapException;
 import com.metavize.jnetcap.PortRange;
 
-import com.metavize.mvvm.IntfConstants;
-
-import com.metavize.mvvm.argon.IntfConverter;
 import com.metavize.mvvm.ArgonException;
+import com.metavize.mvvm.IntfConstants;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.localapi.LocalIntfManager;
 
 import com.metavize.mvvm.tran.IPaddr;
 
@@ -169,7 +169,7 @@ public class RuleManager
         
         String servicesInterfaceList = "";
         
-        IntfConverter ic = IntfConverter.getInstance();
+        LocalIntfManager lim = MvvmContextFactory.context().intfManager();
 
         for ( InterfaceInternal intf : interfaceList ) {
             if ( serviceSpace != null && serviceSpace.equals( intf.getNetworkSpace())) {
@@ -196,7 +196,7 @@ public class RuleManager
             
             try {
                 if ( intf.isPingable()) {
-                    byte netcapIntf = ic.toNetcap( intf.getArgonIntf());
+                    byte netcapIntf = lim.toNetcap( intf.getArgonIntf());
                     pingAntisubscribeList = pingAntisubscribeList + " " + netcapIntf;
                 }
             } catch ( Exception e ) {
@@ -254,18 +254,13 @@ public class RuleManager
                 sb.append( SERVICES_INTERFACE_LIST + "=\"" + this.servicesInterfaceList + "\"\n" );
             }
 
-            IntfConverter ic = IntfConverter.getInstance();
+            LocalIntfManager lim = MvvmContextFactory.context().intfManager();
             
             /* Setup a rule for stealing ARPs */
             if ( !this.hasCompletedSetup ) {
                 String internal = "eth1";
                 
-                try {
-                    internal = ic.argonIntfToString( IntfConstants.INTERNAL_INTF );
-                } catch ( ArgonException e ) {
-                    logger.error( "Error retrieving internal interface, show must go on, using eth1", e );
-                    internal = "eth1";
-                }
+                internal = lim.getInternal().getName();
 
                 sb.append( SETUP_MODE_FLAG + "=true\n" );
                 sb.append( SETUP_ADDRESS_FLAG + "=" + NetworkUtil.SETUP_ADDRESS + "\n" );

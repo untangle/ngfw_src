@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.metavize.jnetcap.NetcapSession;
+import com.metavize.mvvm.localapi.LocalIntfManager;
 import com.metavize.mvvm.networking.IPNetwork;
 import com.metavize.mvvm.networking.NetworkSettingsListener;
 import com.metavize.mvvm.networking.internal.InterfaceInternal;
@@ -90,9 +91,9 @@ class NatMatcher
 
     boolean isMatch( NetcapSession netcapSession )
     {
-        IntfConverter ic = IntfConverter.getInstance();
+        LocalIntfManager lim = Argon.getInstance().getIntfManager();
 
-        byte clientIntf = ic.toArgon( netcapSession.clientSide().interfaceId());
+        byte clientIntf = lim.toArgon( netcapSession.clientSide().interfaceId());
         InetAddress clientAddr = netcapSession.clientSide().client().host();
 
         return this.intfMatcher.isMatch( clientIntf ) && this.ipMatcher.isMatch( clientAddr );

@@ -13,12 +13,13 @@ package com.metavize.mvvm.argon;
 
 import java.net.InetAddress;
 
+import org.apache.log4j.Logger;
+
 import com.metavize.jnetcap.Endpoint;
 import com.metavize.jnetcap.Endpoints;
 
-
+import com.metavize.mvvm.localapi.LocalIntfManager;
 import com.metavize.mvvm.tran.PipelineEndpoints;
-import org.apache.log4j.Logger;
 
 public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl implements IPNewSessionRequest
 {
@@ -58,8 +59,10 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
         /* Get the server and client from the client end of the endpoint from the netcap session */
         clientAddr = client.host();
         clientPort = client.port();
-        clientIntf = IntfConverter.toArgon( clientSide.interfaceId());
-        serverIntf = IntfConverter.toArgon( serverSide.interfaceId());
+
+        LocalIntfManager lim = Argon.getInstance().getIntfManager();
+        clientIntf = lim.toArgon( clientSide.interfaceId());
+        serverIntf = lim.toArgon( serverSide.interfaceId());
         this.originalServerIntf = originalServerIntf;
         this.pipelineEndpoints = pe;
 
@@ -145,7 +148,6 @@ public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl impl
 
     public void serverIntf( byte intf )
     {
-        IntfConverter.validateArgonIntf( intf );
         serverIntf = intf;
     }
 

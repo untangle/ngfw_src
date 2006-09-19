@@ -9,12 +9,11 @@
  * $Id: IntfConverter.java 7128 2006-09-06 17:32:14Z rbscott $
  */
 
-package com.metavize.mvvm.argon;
-
+package com.metavize.mvvm.localapi;
 
 /** ArgonInterface:
  * Contains information about a physical interfaces. */
-final class ArgonInterface
+public final class ArgonInterface
 {
     /* Physical name of the interface */
     private final String name;
@@ -33,7 +32,7 @@ final class ArgonInterface
      * In order to avoid the pain of typecasting everywhere, netcap and argon are 
      * should be bytes, but are typecast inside of the constructor 
      */
-    ArgonInterface( String name, int argon, int netcap )
+    public ArgonInterface( String name, int argon, int netcap )
     {
         this.name = name;
         this.netcap = (byte)netcap;
@@ -41,7 +40,7 @@ final class ArgonInterface
         this.string =  "'" + this.name + "' " + this.argon + "/" + this.netcap;
     }
 
-    ArgonInterface( String name, int argon )
+    public ArgonInterface( String name, int argon )
     {
         this( name, argon, (byte)(argon + 1 ));
     }
