@@ -231,6 +231,9 @@ Browser.prototype._makeDirActionMenu = function()
     var actionMenu = new DwtMenu(this._detailPanel, DwtMenu.POPUP_STYLE);
 
     var i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
+    i.setText("Open");
+    i.addSelectionListener(new AjxListener(this, this._openDirListener));
+    i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
     i.setText("Delete");
     i.addSelectionListener(new AjxListener(this, this._deleteButtonListener));
     i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
@@ -412,6 +415,17 @@ Browser.prototype._saveAsListener = function(ev)
     if (0 < sel.length) {
         var item = sel[0]; // XXX first item only
         window.location.href = "secure/get/" + item.getReqUrl() + "?mode=save";
+    }
+}
+
+Browser.prototype._openDirListener = function(ev)
+{
+    var sel = this._detailPanel.getSelection();
+    if (0 < sel.length) {
+        var item = sel[0]; // XXX first item only
+        if (item.isDirectory()) {
+            this.chdir(item);
+        }
     }
 }
 
