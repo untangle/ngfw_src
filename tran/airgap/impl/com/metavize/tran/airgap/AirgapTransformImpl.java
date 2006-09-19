@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.metavize.mvvm.ArgonManager;
+import com.metavize.mvvm.localapi.LocalShieldManager;
 import com.metavize.mvvm.IntfEnum;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingManager;
@@ -80,10 +80,10 @@ public class AirgapTransformImpl extends AbstractTransform
         getTransformContext().runTransaction(tw);
 
         if ( getRunState() == TransformState.RUNNING ) {
-            ArgonManager argonManager = MvvmContextFactory.context().argonManager();
+            LocalShieldManager lsm = MvvmContextFactory.context().localShieldManager();
 
             try {
-                argonManager.setShieldNodeSettings( this.settings.getShieldNodeRuleList());
+                lsm.setShieldNodeSettings( this.settings.getShieldNodeRuleList());
             } catch ( Exception e ) {
                 logger.error( "Error setting shield node rules", e );
             }
@@ -190,10 +190,10 @@ public class AirgapTransformImpl extends AbstractTransform
     protected void postStart() throws TransformStartException
     {
         validateSettings();
-        ArgonManager argonManager = MvvmContextFactory.context().argonManager();
+        LocalShieldManager lsm = MvvmContextFactory.context().localShieldManager();
 
         try {
-            argonManager.setShieldNodeSettings( this.settings.getShieldNodeRuleList());
+            lsm.setShieldNodeSettings( this.settings.getShieldNodeRuleList());
         } catch ( Exception e ) {
             throw new TransformStartException( e );
         }
@@ -201,11 +201,11 @@ public class AirgapTransformImpl extends AbstractTransform
 
     protected void postStop() throws TransformStopException
     {
-        ArgonManager argonManager = MvvmContextFactory.context().argonManager();
+        LocalShieldManager lsm = MvvmContextFactory.context().localShieldManager();
 
         try {
             /* Deconfigure all of the nodes */
-            argonManager.setShieldNodeSettings( this.emptyList );
+            lsm.setShieldNodeSettings( this.emptyList );
         } catch ( Exception e ) {
             throw new TransformStopException( e );
         }
