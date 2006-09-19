@@ -169,7 +169,10 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
 		    newElem.setClearPassword( new String(newPasswd) );
             }
 	    newElem.setReadOnly( (Boolean) rowVector.elementAt(8) );
-            newElem.setEmail( (String) rowVector.elementAt(9) );
+	    String email = (String) rowVector.elementAt(9);
+	    if( (email!=null) && (email.length()==0) )
+		email = null;
+            newElem.setEmail(email);
             allRows.add(newElem);
         }
         
@@ -203,7 +206,7 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
 	    originalMPasswordField.setGeneratesChangeEvent(false);
             tempRow.add( originalMPasswordField );
             tempRow.add( user.isReadOnly() );
-            tempRow.add( user.getEmail() );
+            tempRow.add( user.getEmail()==null?"":user.getEmail() );
             tempRow.add( user );
             allRows.add( tempRow );
         }
