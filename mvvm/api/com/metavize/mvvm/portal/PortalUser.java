@@ -99,7 +99,7 @@ public class PortalUser implements Serializable
     // accessors --------------------------------------------------------------
 
     @Id
-    @Column(name="settings_id")
+    @Column(name="id")
     @GeneratedValue
     protected Long getId()
     {
