@@ -51,12 +51,10 @@ class Jars
   Postgres   = [ Jars.downloadTarget('postgres-jdbc-7.4_215/pg74.215.jdbc3.jar')]
   Velocity   = [ Jars.downloadTarget('velocity-1.4/velocity-1.4.jar') ]
 
+  Jnlp       = [ ThirdpartyJar.get("#{$BuildEnv.javahome}/sample/jnlp/servlet/jnlp.jar") ]
+
   ## Jars required to run/compile unit tests
   Junit      = [ Jars.downloadTarget('junit4.1/junit-4.1.jar')]
-
-
-
-  Jnlp       = [ ThirdpartyJar.get("#{$BuildEnv.javahome}/sample/jnlp/servlet/jnlp.jar") ]
 
   ## Groups used for compiling
   # This is available to everything?
@@ -65,4 +63,13 @@ class Jars
 
   # Jars for compiling the GUI, and GUI transform components
   Gui        = Jars.makeGroup(Kunstoff, JFreeChartGui, Netbeans, Jnlp)
+
+  # Jars for that are required to run reporting
+  Commons    = %w( commons-beanutils-1.7.0/commons-beanutils.jar
+                   hibernate-3.0/lib/commons-collections-2.1.1.jar
+                   commons-digester-1.7/commons-digester-1.7.jar
+                   hibernate-3.0/lib/commons-logging-1.0.4.jar ).map { |f| downloadTarget(f) }
+  Itext      = downloadTarget( "itext-1.3/itext-1.3.jar" )
+
+  Reporting   = Jars.makeGroup(Ant, Commons, Itext, Jasper, JFreeChart, Log4j, Postgres )
 end
