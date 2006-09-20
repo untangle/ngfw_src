@@ -4,7 +4,7 @@
     },
 
     bookmarkProperties: [ new BookmarkProperty('size', 'Size', ['640x480', '800x600', '1024x768', '1280x1024'], '800x600'),
-                          new BookmarkProperty('host', 'Host'),
+                          new BookmarkProperty('host', 'Host', null, null, true),
                           new BookmarkProperty('command', 'Command (optional)'),
                           new BookmarkProperty('console', 'Console', ['true', 'false'], 'false') ],
 
@@ -32,7 +32,7 @@
         if (obj.console) {
             tip += "<br><b>console:</b> " + obj.console;
         }
-	tip += "</html>";
+    tip += "</html>";
         return tip;
     },
 

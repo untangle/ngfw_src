@@ -27,14 +27,23 @@ AddBookmarkPanel.prototype.getBookmark = function()
     var app = this._appField.getValue();
     var fn = app.getBookmarkFunction();
 
-    var target;
-    if (fn) {
-        target = fn(this._properties);
+    if (!this._fieldsValid()) {
+        return null;
     } else {
-        target = this._targetField.getValue();
-    }
+        var target;
+        if (fn) {
+            target = fn(this._properties);
+        } else {
+            target = this._targetField.getValue();
+        }
 
-    return new Bookmark(null, this._nameField.getValue(), app.name, target);
+        if (target) {
+            return new Bookmark(null, this._nameField.getValue(), app.name,
+                                target);
+        } else {
+            return null;
+        }
+    }
 };
 
 AddBookmarkPanel.prototype.focus = function()
@@ -115,10 +124,12 @@ AddBookmarkPanel.prototype._showDefaultFields = function()
 
     this._nameField = new DwtInputField({ parent: this });
     this._nameField.reparentHtmlElement(nameFieldId);
+    this._nameField.setRequired(true);
     this._fields.push(this._nameField);
 
     this._targetField = new DwtInputField({ parent: this });
     this._targetField.reparentHtmlElement(targetFieldId);
+    this._targetField.setRequired(true);
     this._fields.push(this._targetField);
 };
 
@@ -172,4 +183,18 @@ AddBookmarkPanel.prototype._showPropFields = function(props)
         field.reparentHtmlElement(label);
         this._fields.push(field);
     }
+};
+
+AddBookmarkPanel.prototype._fieldsValid = function()
+{
+    for (f in this._properties) {
+        var prop = this._properties[f];
+        if (prop._validator) {
+            if (!prop.isValid()) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 };

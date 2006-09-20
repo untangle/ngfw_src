@@ -380,15 +380,17 @@ Portal.prototype._addBookmarkButtonListener = function(ev)
 
     var cb = function() {
         var bm = dialog.getBookmark();
-        var url = "secure/bookmark?command=add&name=" + escape(bm.name)
-        + "&app=" + escape(bm.app) + "&target=" + escape(bm.target);
+        if (bm) {
+            var url = "secure/bookmark?command=add&name=" + escape(bm.name)
+                + "&app=" + escape(bm.app) + "&target=" + escape(bm.target);
 
-        var cb = function(obj, results) {
-            this.refresh();
-            dialog.popdown();
+            var cb = function(obj, results) {
+                this.refresh();
+                dialog.popdown();
+            }
+
+            AjxRpc.invoke(null, url, null, new AjxCallback(this, cb, {}), true);
         }
-
-        AjxRpc.invoke(null, url, null, new AjxCallback(this, cb, {}), true);
     }
 
     var l = new AjxListener(this, cb);
