@@ -19,6 +19,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.metavize.jnetcap.Netcap;
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MvvmContextFactory;
@@ -40,10 +44,6 @@ import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.metavize.mvvm.tran.script.ScriptRunner;
 import com.metavize.mvvm.util.DataLoader;
 import com.metavize.mvvm.util.DataSaver;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-
 
 /* XXX This shouldn't be public */
 public class NetworkManagerImpl implements LocalNetworkManager
@@ -1048,12 +1048,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         DataSaver<DynamicDNSSettings> saver =
             new DynamicDnsSettingsDataSaver( MvvmContextFactory.context(), newSettings );
-
-        /* Have to reuse ids in order to avoid settings proliferation.
-         * reusing ids doesn't seem to work (or at least it didn't for ovpn.  have
-         * fortunately, hibernate does have a delete method
-         * to delete then save. */
-        // if ( this.ddnsSettings != null ) newSettings.setId( this.ddnsSettings.getId());
 
         newSettings = saver.saveData( newSettings );
         if ( newSettings == null ) {

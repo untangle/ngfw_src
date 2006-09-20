@@ -26,11 +26,12 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.Type;
+
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
-import org.hibernate.annotations.IndexColumn;
-import org.hibernate.annotations.Type;
 
 /**
  * Settings for the network spaces.
