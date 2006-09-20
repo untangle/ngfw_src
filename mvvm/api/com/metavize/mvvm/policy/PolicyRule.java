@@ -90,7 +90,7 @@ public abstract class PolicyRule extends Rule
      * @return Policy for this rule
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="policy_id", nullable=false)
+    @JoinColumn(name="policy_id")
     public Policy getPolicy()
     {
         return policy;
