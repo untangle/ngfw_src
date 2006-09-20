@@ -539,6 +539,7 @@ Browser.prototype._popdownAndRefreshCbFn = function(obj, evt)
 
 Browser.prototype._authResource = function(obj, response)
 {
+    this._detailPanel.set(new AjxVector());
 };
 
 // shell ----------------------------------------------------------------------
