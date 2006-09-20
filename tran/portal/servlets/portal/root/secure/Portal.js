@@ -31,6 +31,8 @@ function Portal(shell) {
 
     l = new AjxListener(this, this._addBookmarkButtonListener);
     this._portalPanel.bookmarkPanel.addBookmarkButton.addSelectionListener(l);
+    l = new AjxListener(this, this._editBookmarkButtonListener);
+    this._portalPanel.bookmarkPanel.editBookmarkButton.addSelectionListener(l);
     l = new AjxListener(this, this._deleteButtonListener);
     this._portalPanel.bookmarkPanel.deleteBookmarkButton.addSelectionListener(l);
 
@@ -384,6 +386,45 @@ Portal.prototype._addBookmarkButtonListener = function(ev)
         if (bm) {
             var url = "secure/bookmark?command=add&name=" + escape(bm.name)
                 + "&app=" + escape(bm.app) + "&target=" + escape(bm.target);
+
+            var cb = function(obj, results) {
+                this.refresh();
+                dialog.popdown();
+            }
+
+            AjxRpc.invoke(null, url, null, new AjxCallback(this, cb, {}), true);
+        }
+    }
+
+    var l = new AjxListener(this, cb);
+    dialog.setButtonListener(DwtDialog.OK_BUTTON, l);
+    dialog.addListener(DwtEvent.ENTER, l);
+
+    dialog.popup();
+};
+
+Portal.prototype._editBookmarkButtonListener = function(ev)
+{
+    var apps = [ ];
+    for (var n in this._appMap) {
+        apps.push(this._appMap[n]);
+    }
+
+    var sel = this._portalPanel.bookmarkPanel.getSelection();
+    if (0 == sel.length) {
+        return;
+    }
+
+    var bm = sel[0];
+
+    var dialog = new AddBookmarkDialog(DwtShell.getShell(window), apps, bm);
+
+    var cb = function() {
+        var bm = dialog.getBookmark();
+        if (bm) {
+            var url = "secure/bookmark?command=edit&id=" + escape(bm.id)
+                + "&name=" + escape(bm.name) + "&app=" + escape(bm.app)
+                + "&target=" + escape(bm.target);
 
             var cb = function(obj, results) {
                 this.refresh();

@@ -20,6 +20,10 @@
         return s;
     },
 
+    propertiesFunction: function(bookmark) {
+        return bookmark.splitTarget();
+    },
+
     tooltipFunction: function(bookmark) {
         var obj = bookmark.splitTarget();
         var tip = "<html><b>Application: </b>Remote Desktop<br><b>host:</b> " + obj.host;

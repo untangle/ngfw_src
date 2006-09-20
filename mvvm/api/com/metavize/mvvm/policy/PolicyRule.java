@@ -39,7 +39,9 @@ public abstract class PolicyRule extends Rule
 
     protected PolicyRule() { }
 
-    protected PolicyRule(byte clientIntf, byte serverIntf, Policy policy, boolean inbound) {
+    protected PolicyRule(byte clientIntf, byte serverIntf, Policy policy,
+                         boolean inbound)
+    {
         this.clientIntf = clientIntf;
         this.serverIntf = serverIntf;
         this.policy = policy;

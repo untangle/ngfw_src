@@ -35,6 +35,7 @@ BookmarkPanel.prototype.setTitle = function(title)
 BookmarkPanel.prototype.enableAddBookmark = function(enabled)
 {
     this.addBookmarkButton.setEnabled(enabled);
+    this.editBookmarkButton.setEnabled(enabled);
     this.deleteBookmarkButton.setEnabled(enabled);
 };
 
@@ -64,14 +65,18 @@ BookmarkPanel.prototype._makeToolbar = function() {
     var toolbar = new DwtToolBar(this, "PortalToolBar", DwtControl.STATIC_STYLE, 2, 2, DwtToolBar.VERT_STYLE);
 
     var b = new DwtButton(toolbar,DwtLabel.ALIGN_CENTER,"DwtButton32");
-    //b.setText("New Bookmark");
     b.setImage("Add");
     b.setDisabledImage("AddDisabled");
     b.setToolTipContent("Add a new bookmark");
     this.addBookmarkButton = b;
 
+    b = new DwtButton(toolbar,DwtLabel.ALIGN_CENTER,"DwtButton32");
+    b.setText("Edit"); // XXX change to setImage
+    //b.setDisabledImage("AddDisabled");
+    b.setToolTipContent("Edit bookmark");
+    this.editBookmarkButton = b;
+
     b = new DwtButton(toolbar,DwtButton.ALIGN_CENTER,"DwtButton32");
-    //b.setText("Delete");
     b.setImage("Remove");
     b.setDisabledImage("RemoveDisabled");
     b.setToolTipContent("Remove selected bookmarks");

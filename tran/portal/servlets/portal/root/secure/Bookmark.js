@@ -23,7 +23,6 @@ Bookmark.prototype.splitTarget = function()
     var fields = this.target.split("&");
     for (var i = 0; i < fields.length; i++) {
         var p = fields[i].split("=");
-        DBG.println("SPLIT: " + p[0] + " = " + p[1]);
         obj[p[0]] = p[1];
     }
 

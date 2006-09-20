@@ -11,21 +11,30 @@ function BookmarkProperty(id, name, values, def, required, valFn)
     this.valFn = valFn;
 };
 
-BookmarkProperty.prototype.getField = function(parent)
+BookmarkProperty.prototype.getField = function(parent, val)
 {
     var f;
 
     if (null == this.values) {
         f = new DwtInputField({ parent: parent, validator: this.valFn });
+        if (val) {
+            f.setValue(val);
+        }
         f.setRequired(this.required);
     } else if (this.values instanceof Array) {
         f = new DwtSelect(parent, this.values);
-        if (this.def) {
+        if (val) {
+            f.setSelectedValue(val);
+        } else if (this.def) {
             f.setSelectedValue(this.def);
         }
     } else {
         f = new DwtInputField({ parent: parent, validator: this.valFn });
-        f.setValue(this.values);
+        if (val) {
+            f.setValue(val);
+        } else {
+            f.setValue(this.values);
+        }
         f.setRequired(this.required);
     }
 

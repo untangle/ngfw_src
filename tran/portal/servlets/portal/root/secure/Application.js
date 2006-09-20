@@ -30,6 +30,11 @@ Application.prototype.getBookmarkFunction = function()
     return this._appCode ? this._appCode.bookmarkFunction : null;
 };
 
+Application.prototype.getPropertiesFunction = function()
+{
+    return this._appCode ? this._appCode.propertiesFunction : null;
+};
+
 Application.prototype.getTooltipFunction = function()
 {
     return this._appCode ? this._appCode.tooltipFunction : null;

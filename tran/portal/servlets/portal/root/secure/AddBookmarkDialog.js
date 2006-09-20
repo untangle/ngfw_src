@@ -1,7 +1,7 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function AddBookmarkDialog(parent, apps)
+function AddBookmarkDialog(parent, apps, bm)
 {
     if (arguments.length == 0) {
         return;
@@ -11,7 +11,7 @@ function AddBookmarkDialog(parent, apps)
 
     DwtDialog.call(this, parent, className, "Add Bookmark");
 
-    this._panel = new AddBookmarkPanel(this, apps);
+    this._panel = new AddBookmarkPanel(this, apps, bm);
     this.addListener(DwtEvent.ONFOCUS, new AjxListener(this, this._focusListener));
 
     this.setView(this._panel);

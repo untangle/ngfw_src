@@ -1,11 +1,13 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function AddBookmarkPanel(parent, apps)
+function AddBookmarkPanel(parent, apps, bm)
 {
     if (0 == arguments.length) {
         return;
     }
+
+    this._bookmark = bm;
 
     DwtComposite.call(this, parent);
 
@@ -38,8 +40,8 @@ AddBookmarkPanel.prototype.getBookmark = function()
         }
 
         if (target) {
-            return new Bookmark(null, this._nameField.getValue(), app.name,
-                                target);
+            return new Bookmark(this._bookmark ? this._bookmark.id : null,
+                                this._nameField.getValue(), app.name, target);
         } else {
             return null;
         }
@@ -76,6 +78,17 @@ AddBookmarkPanel.prototype._init = function()
     var l = new AjxListener(this, this._showFields);
     this._appField.addChangeListener(l);
     this._appField.reparentHtmlElement(appFieldId);
+    if (this._bookmark) {
+        var appName = this._bookmark.app;
+        for (var i = 0; i < this._apps.length; i++) {
+            var app = this._apps[i].getValue();
+            if (app.name == appName) {
+                this._appField.setSelectedValue(app);
+                break;
+            }
+        }
+        this._appField.setEnabled(false);
+    }
 
     this.valuePanel = new DwtComposite(this);
 
@@ -131,6 +144,11 @@ AddBookmarkPanel.prototype._showDefaultFields = function()
     this._targetField.reparentHtmlElement(targetFieldId);
     this._targetField.setRequired(true);
     this._fields.push(this._targetField);
+
+    if (this._bookmark) {
+        this._nameField.setValue(this._bookmark.name);
+        this._targetField.setValue(this._bookmark.target);
+    }
 };
 
 AddBookmarkPanel.prototype._showPropFields = function(props)
@@ -138,6 +156,13 @@ AddBookmarkPanel.prototype._showPropFields = function(props)
     var nameFieldId = Dwt.getNextId();
 
     var fields = { };
+
+    var propValues;
+    if (this._bookmark) {
+        var app = this._appField.getValue();
+        var propFn = app.getPropertiesFunction();
+        propValues = propFn(this._bookmark);
+    }
 
     var html = new Array();
 
@@ -150,11 +175,16 @@ AddBookmarkPanel.prototype._showPropFields = function(props)
     html.push("'/></td>");
     html.push("</tr>");
 
-
     for (var f in props) {
         var prop = props[f];
         var label = prop.name;
-        var field = prop.getField(this);
+        var field;
+        if (this._bookmark) {
+            var val = propValues[prop.id];
+            field = prop.getField(this, val);
+        } else {
+            field = prop.getField(this);
+        }
         this._properties[prop.id] = field;
 
         var fieldId = Dwt.getNextId();
@@ -175,6 +205,9 @@ AddBookmarkPanel.prototype._showPropFields = function(props)
     this.valuePanel.getHtmlElement().innerHTML = html.join("");
 
     this._nameField = new DwtInputField({ parent: this });
+    if (this._bookmark) {
+        this._nameField.setValue(this._bookmark.name);
+    }
     this._nameField.reparentHtmlElement(nameFieldId);
 
     this._fields = new Array();
