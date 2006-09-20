@@ -364,6 +364,7 @@ Browser.prototype._loginCallback = function(obj, results)
     if ("success" == status) {
         obj.dialog.popdown();
         this._dirTree.repopulate(obj.item, principal);
+        this._detailPanel.refresh();
     } else {
         //alert("FAILURE");
     }
