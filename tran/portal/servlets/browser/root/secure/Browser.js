@@ -31,8 +31,8 @@ function Browser(shell, url)
     this._addressBar = this._makeAddressBar();
     this._addressBar.zShow(true);
 
-//     var dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE | Dwt.DND_DROP_COPY);
-//     dragSource.addDragListener(new AjxListener(this, this._treeDragListener));
+    //     var dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE | Dwt.DND_DROP_COPY);
+    //     dragSource.addDragListener(new AjxListener(this, this._treeDragListener));
     var dropTarget = new DwtDropTarget(CifsNode);
     dropTarget.addDropListener(new AjxListener(this, this._treeDropListener));
     this._dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE,
@@ -71,8 +71,8 @@ function Browser(shell, url)
     if (!cifsNode) {
         this._broadcastRoots();
     } else {
-//         var action = new AjxTimedAction(this, this._broadcastRoots, {});
-//         AjxTimedAction.scheduleAction(action, 2000);
+        //         var action = new AjxTimedAction(this, this._broadcastRoots, {});
+        //         AjxTimedAction.scheduleAction(action, 2000);
     }
 
     this.layout();
@@ -410,7 +410,7 @@ Browser.prototype._displayListener = function(ev)
     }
 }
 
-Browser.prototype._saveAsListener = function(ev)
+    Browser.prototype._saveAsListener = function(ev)
 {
     var sel = this._detailPanel.getSelection();
     if (0 < sel.length) {
@@ -419,7 +419,7 @@ Browser.prototype._saveAsListener = function(ev)
     }
 }
 
-Browser.prototype._openDirListener = function(ev)
+        Browser.prototype._openDirListener = function(ev)
 {
     var sel = this._detailPanel.getSelection();
     if (0 < sel.length) {
@@ -430,7 +430,7 @@ Browser.prototype._openDirListener = function(ev)
     }
 }
 
-Browser.prototype._deleteButtonListener = function(ev)
+            Browser.prototype._deleteButtonListener = function(ev)
 {
     var sel = this._detailPanel.getSelection();
     if (0 == sel.length) {

@@ -356,6 +356,7 @@ Portal.prototype._refreshPageInfoCallback = function(obj, results)
 
 Portal.prototype._homeButtonListener = function()
 {
+    this.refresh();
     this.showPortal();
 };
 
