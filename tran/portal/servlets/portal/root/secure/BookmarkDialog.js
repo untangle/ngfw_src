@@ -1,7 +1,49 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function AddBookmarkPanel(parent, apps, bm)
+// -----------------------------------------------------------------------------
+// BookmarkDialog
+// -----------------------------------------------------------------------------
+
+function BookmarkDialog(parent, apps, bm)
+{
+    if (arguments.length == 0) {
+        return;
+    }
+
+    var className = null; // XXX
+
+    DwtDialog.call(this, parent, className, "Add Bookmark");
+
+    this._panel = new BookmarkDialogPanel(this, apps, bm);
+    this.addListener(DwtEvent.ONFOCUS, new AjxListener(this, this._focusListener));
+
+    this.setView(this._panel);
+    this.setTabOrder(this._panel._fields);
+}
+
+BookmarkDialog.prototype = new DwtDialog();
+BookmarkDialog.prototype.constructor = BookmarkDialog;
+
+// public methods -------------------------------------------------------------
+
+BookmarkDialog.prototype.getBookmark = function()
+{
+    return this._panel.getBookmark();
+};
+
+// internal methods -----------------------------------------------------------
+
+BookmarkDialog.prototype._focusListener = function(ev)
+{
+    this._panel.focus();
+};
+
+// -----------------------------------------------------------------------------
+// BookmarkDialogPanel
+// -----------------------------------------------------------------------------
+
+function BookmarkDialogPanel(parent, apps, bm)
 {
     if (0 == arguments.length) {
         return;
@@ -19,12 +61,12 @@ function AddBookmarkPanel(parent, apps, bm)
     this._init();
 };
 
-AddBookmarkPanel.prototype = new DwtComposite();
-AddBookmarkPanel.prototype.constructor = AddBookmarkPanel;
+BookmarkDialogPanel.prototype = new DwtComposite();
+BookmarkDialogPanel.prototype.constructor = BookmarkDialogPanel;
 
-// public methods -------------------------------------------------------------
+// public methods --------------------------------------------------------------
 
-AddBookmarkPanel.prototype.getBookmark = function()
+BookmarkDialogPanel.prototype.getBookmark = function()
 {
     var app = this._appField.getValue();
     var fn = app.getBookmarkFunction();
@@ -48,14 +90,14 @@ AddBookmarkPanel.prototype.getBookmark = function()
     }
 };
 
-AddBookmarkPanel.prototype.focus = function()
+BookmarkDialogPanel.prototype.focus = function()
 {
     this._nameField.focus();
 };
 
 // private methods ------------------------------------------------------------
 
-AddBookmarkPanel.prototype._init = function()
+BookmarkDialogPanel.prototype._init = function()
 {
     var appFieldId = Dwt.getNextId();
 
@@ -95,7 +137,7 @@ AddBookmarkPanel.prototype._init = function()
     this._showFields();
 };
 
-AddBookmarkPanel.prototype._showFields = function()
+BookmarkDialogPanel.prototype._showFields = function()
 {
     this._properties = { };
 
@@ -108,7 +150,7 @@ AddBookmarkPanel.prototype._showFields = function()
     }
 };
 
-AddBookmarkPanel.prototype._showDefaultFields = function()
+BookmarkDialogPanel.prototype._showDefaultFields = function()
 {
     var nameFieldId = Dwt.getNextId();
     var targetFieldId = Dwt.getNextId();
@@ -151,7 +193,7 @@ AddBookmarkPanel.prototype._showDefaultFields = function()
     }
 };
 
-AddBookmarkPanel.prototype._showPropFields = function(props)
+BookmarkDialogPanel.prototype._showPropFields = function(props)
 {
     var nameFieldId = Dwt.getNextId();
 
@@ -218,7 +260,7 @@ AddBookmarkPanel.prototype._showPropFields = function(props)
     }
 };
 
-AddBookmarkPanel.prototype._fieldsValid = function()
+BookmarkDialogPanel.prototype._fieldsValid = function()
 {
     for (f in this._properties) {
         var prop = this._properties[f];

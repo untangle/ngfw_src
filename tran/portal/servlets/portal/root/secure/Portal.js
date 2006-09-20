@@ -379,7 +379,7 @@ Portal.prototype._addBookmarkButtonListener = function(ev)
     for (var n in this._appMap) {
         apps.push(this._appMap[n]);
     }
-    var dialog = new AddBookmarkDialog(DwtShell.getShell(window), apps);
+    var dialog = new BookmarkDialog(DwtShell.getShell(window), apps);
 
     var cb = function() {
         var bm = dialog.getBookmark();
@@ -417,7 +417,7 @@ Portal.prototype._editBookmarkButtonListener = function(ev)
 
     var bm = sel[0];
 
-    var dialog = new AddBookmarkDialog(DwtShell.getShell(window), apps, bm);
+    var dialog = new BookmarkDialog(DwtShell.getShell(window), apps, bm);
 
     var cb = function() {
         var bm = dialog.getBookmark();
