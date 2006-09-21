@@ -1,17 +1,19 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function Bookmark(id, name, app, target) {
+function Bookmark(id, name, app, target, type) {
     this.id = id;
     this.name = name;
     this.app = app;
     this.target = target;
+    this.type = type;
 };
 
 Bookmark.prototype = {
     toString: function() {
         return "Bookmark [id: " + this.id + " name: " + this.name
-        + " app: " + this.app + " target: " + this.target + "]";
+        + " app: " + this.app + " target: " + this.target +
+        + " type: " + this.type + "]";
     }
 };
 

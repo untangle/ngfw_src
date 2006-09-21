@@ -46,7 +46,8 @@ BookmarkList.prototype._setListingXml = function(dom)
             listing.add(new Bookmark(child.getAttribute("id"),
                                      child.getAttribute("name"),
                                      child.getAttribute("app"),
-                                     child.getAttribute("target")));
+                                     child.getAttribute("target"),
+                                     child.getAttribute("type")));
         }
     }
 

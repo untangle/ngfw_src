@@ -28,6 +28,7 @@ import com.metavize.mvvm.portal.Application;
 import com.metavize.mvvm.portal.Bookmark;
 import com.metavize.mvvm.portal.LocalApplicationManager;
 import com.metavize.mvvm.portal.LocalPortalManager;
+import com.metavize.mvvm.portal.PortalGroup;
 import com.metavize.mvvm.portal.PortalLogin;
 import com.metavize.mvvm.portal.PortalUser;
 import com.metavize.mvvm.util.XmlUtil;
@@ -68,8 +69,22 @@ public class BookmarkServlet extends HttpServlet
 
         try {
             if (command.equals("ls")) {
-                List<Bookmark> bms = portalManager.getAllBookmarks(pu);
-                emitBookmarks(resp.getWriter(), bms);
+                PrintWriter w = resp.getWriter();
+                w.println("<bookmarks>");
+
+                List<Bookmark> bms = pu.getBookmarks();
+                emitBookmarks(w, bms, "user");
+
+                PortalGroup userGroup = pu.getPortalGroup();
+                if (userGroup != null) {
+                    bms = userGroup.getBookmarks();
+                    emitBookmarks(w, bms, "group");
+                }
+
+                bms = portalManager.getPortalSettings().getGlobal()
+                    .getBookmarks();
+                emitBookmarks(w, bms, "global");
+                w.println("</bookmarks>");
             } else if (command.equals("add")) {
                 String name = req.getParameter("name");
                 String appName = req.getParameter("app");
@@ -112,9 +127,9 @@ public class BookmarkServlet extends HttpServlet
 
     // private methods --------------------------------------------------------
 
-    private void emitBookmarks(PrintWriter w, List<Bookmark> bookmarks)
+    private void emitBookmarks(PrintWriter w, List<Bookmark> bookmarks,
+                               String type)
     {
-        w.println("<bookmarks>");
         for (Bookmark bm : bookmarks) {
             String name = bm.getName();
             if (null == name) {
@@ -139,8 +154,9 @@ public class BookmarkServlet extends HttpServlet
             w.print(XmlUtil.escapeXml(appName));
             w.print("' target='");
             w.print(XmlUtil.escapeXml(target));
+            w.print("' type='");
+            w.print(XmlUtil.escapeXml(type));
             w.println("'/>");
         }
-        w.println("</bookmarks>");
     }
 }

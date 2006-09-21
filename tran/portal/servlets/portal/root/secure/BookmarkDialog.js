@@ -83,7 +83,8 @@ BookmarkDialogPanel.prototype.getBookmark = function()
 
         if (target) {
             return new Bookmark(this._bookmark ? this._bookmark.id : null,
-                                this._nameField.getValue(), app.name, target);
+                                this._nameField.getValue(), app.name, target,
+                                "user");
         } else {
             return null;
         }

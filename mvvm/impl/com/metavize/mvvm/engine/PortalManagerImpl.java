@@ -205,18 +205,18 @@ class PortalManagerImpl implements LocalPortalManager
     {
         List<Bookmark> result = new ArrayList<Bookmark>();
 
-        List userBookmarks = user.getBookmarks();
+        List<Bookmark> userBookmarks = user.getBookmarks();
         if (userBookmarks != null)
             result.addAll(userBookmarks);
 
         PortalGroup userGroup = user.getPortalGroup();
         if (userGroup != null) {
-            List groupBookmarks = userGroup.getBookmarks();
+            List<Bookmark> groupBookmarks = userGroup.getBookmarks();
             if (groupBookmarks != null)
                 result.addAll(groupBookmarks);
         }
 
-        List globalBookmarks = portalSettings.getGlobal().getBookmarks();
+        List<Bookmark> globalBookmarks = portalSettings.getGlobal().getBookmarks();
         if (globalBookmarks != null)
             result.addAll(globalBookmarks);
 
