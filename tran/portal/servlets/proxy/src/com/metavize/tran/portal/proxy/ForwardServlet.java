@@ -91,10 +91,11 @@ public class ForwardServlet extends HttpServlet
             return;
         }
         PortalHomeSettings phs = portalManager.getPortalHomeSettings(pu);
-        if (phs == null)
+        if (phs == null) {
             logger.warn("No portal home settings for " + pl);
-        else
-            idleTime = (int)(phs.getIdleTimeout() / 1000l);
+        } else {
+            idleTime = (int)(phs.getIdleTimeout() / 1000L);
+        }
 
         try {
             Bookmark target = null;
@@ -150,7 +151,13 @@ public class ForwardServlet extends HttpServlet
             resp.flushBuffer();        // Ensure response line/headers get there.
 
             Socket s = new Socket();
-            s.connect(isa, CONNECTION_TIMEOUT);
+            try {
+                s.connect(isa, CONNECTION_TIMEOUT);
+            } catch (SocketTimeoutException exn) {
+                logger.warn("socket timed out", exn);
+                resp.sendError(HttpServletResponse.SC_GATEWAY_TIMEOUT);
+                return;
+            }
 
             InputStream his =  req.getInputStream();
             OutputStream hos = resp.getOutputStream();
@@ -207,8 +214,9 @@ public class ForwardServlet extends HttpServlet
                         if (logger.isDebugEnabled())
                             logger.debug("" + Thread.currentThread().getName() + " got " + i);
                     } catch (SocketTimeoutException exn) {
-                        // This is expected with Tomcat sockets, just gives us a chance
-                        // to see if the session timeout has expired or whatever. XXX
+                        // This is expected with Tomcat sockets, just
+                        // gives us a chance to see if the session
+                        // timeout has expired or whatever. XXX
                         continue;
                     }
                     if (i < 0)
