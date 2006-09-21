@@ -168,9 +168,9 @@ Portal.prototype.maximizeApplication = function()
 
 Portal.prototype._refreshPageInfo = function()
 {
-    AjxRpc.invoke(null, "secure/portal?command=info", null,
-                  new AjxCallback(this, this._refreshPageInfoCallback,
-                                  new Object()), true);
+    MvRpc.invoke(null, "secure/portal?command=info", null, true,
+                 new AjxCallback(this, this._refreshPageInfoCallback, {}),
+                 MvRpc.reloadPageCallback);
 };
 
 // init -----------------------------------------------------------------------
@@ -239,9 +239,9 @@ Portal.prototype._initLayout = function()
 
     Portal.prototype._loadApps = function()
 {
-    AjxRpc.invoke(null, "secure/application?command=ls", null,
-                  new AjxCallback(this, this._refreshAppsCallback,
-                                  new Object()), true);
+    MvRpc.invoke(null, "secure/application?command=ls", null, true,
+                  new AjxCallback(this, this._refreshAppsCallback, {}),
+                  MvRpc.reloadPageCallback);
 };
 
 // util -----------------------------------------------------------------------
@@ -393,7 +393,9 @@ Portal.prototype._addBookmarkButtonListener = function(ev)
                 dialog.popdown();
             }
 
-            AjxRpc.invoke(null, url, null, new AjxCallback(this, cb, {}), true);
+            MvRpc.invoke(null, url, null, true,
+                         new AjxCallback(this, cb, {}),
+                         MvRpc.reloadPageCallback);
         }
     }
 
@@ -432,7 +434,9 @@ Portal.prototype._editBookmarkButtonListener = function(ev)
                 dialog.popdown();
             }
 
-            AjxRpc.invoke(null, url, null, new AjxCallback(this, cb, {}), true);
+            MvRpc.invoke(null, url, null, true,
+                         new AjxCallback(this, cb, {}),
+                         MvRpc.reloadPageCallback);
         }
     }
 
@@ -456,6 +460,7 @@ Portal.prototype._deleteButtonListener = function(ev)
         url += "&id=" + sel[i].id;
     }
 
-    AjxRpc.invoke(null, url, null, new AjxCallback(this, this.refresh, { }),
-                  true);
+    MvRpc.invoke(null, url, null, true,
+                 new AjxCallback(this, this.refresh, { }),
+                 MvRpc.reloadPageCallback);
 };
