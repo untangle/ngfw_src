@@ -39,12 +39,14 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
     private static final int CPU_GREAT_MHZ = 3000;
     private static final String CPU_REQUIRED = "("+CPU_MIN_MHZ+" MHz required)";
 
-    private static final int DISK_MIN_GIGS   = 20;
+    //private static final int DISK_MIN_GIGS   = 20;
+    private static final int DISK_MIN_GIGS   = 10;
     private static final int DISK_GOOD_GIGS  = 40;
     private static final int DISK_GREAT_GIGS = 80;
     private static final String DISK_REQUIRED = "("+DISK_MIN_GIGS+" GB required)";
 
-    private static final int NICS_MIN_COUNT   = 2;
+    //private static final int NICS_MIN_COUNT   = 2;
+    private static final int NICS_MIN_COUNT   = 1;
     private static final int NICS_GOOD_COUNT  = 2;
     private static final int NICS_GREAT_COUNT = 3;
     private static final String NICS_REQUIRED = "("+NICS_MIN_COUNT+" interfaces required)";
@@ -302,9 +304,9 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
                 memoryJProgressBar.setForeground(new java.awt.Color(68, 91, 255));
                 memoryJProgressBar.setValue(25);
                 memoryJProgressBar.setFocusable(false);
-                memoryJProgressBar.setMaximumSize(new java.awt.Dimension(480, 16));
-                memoryJProgressBar.setMinimumSize(new java.awt.Dimension(480, 16));
-                memoryJProgressBar.setPreferredSize(new java.awt.Dimension(480, 16));
+                memoryJProgressBar.setMaximumSize(new java.awt.Dimension(480, 20));
+                memoryJProgressBar.setMinimumSize(new java.awt.Dimension(480, 20));
+                memoryJProgressBar.setPreferredSize(new java.awt.Dimension(480, 20));
                 memoryJProgressBar.setRequestFocusEnabled(false);
                 memoryJProgressBar.setString("Memory Test");
                 memoryJProgressBar.setStringPainted(true);
@@ -355,9 +357,9 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
                 cpuJProgressBar.setForeground(new java.awt.Color(68, 91, 255));
                 cpuJProgressBar.setValue(25);
                 cpuJProgressBar.setFocusable(false);
-                cpuJProgressBar.setMaximumSize(new java.awt.Dimension(480, 16));
-                cpuJProgressBar.setMinimumSize(new java.awt.Dimension(480, 16));
-                cpuJProgressBar.setPreferredSize(new java.awt.Dimension(480, 16));
+                cpuJProgressBar.setMaximumSize(new java.awt.Dimension(480, 20));
+                cpuJProgressBar.setMinimumSize(new java.awt.Dimension(480, 20));
+                cpuJProgressBar.setPreferredSize(new java.awt.Dimension(480, 20));
                 cpuJProgressBar.setRequestFocusEnabled(false);
                 cpuJProgressBar.setString("CPU Test");
                 cpuJProgressBar.setStringPainted(true);
@@ -408,9 +410,9 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
                 diskJProgressBar.setForeground(new java.awt.Color(68, 91, 255));
                 diskJProgressBar.setValue(25);
                 diskJProgressBar.setFocusable(false);
-                diskJProgressBar.setMaximumSize(new java.awt.Dimension(480, 16));
-                diskJProgressBar.setMinimumSize(new java.awt.Dimension(480, 16));
-                diskJProgressBar.setPreferredSize(new java.awt.Dimension(480, 16));
+                diskJProgressBar.setMaximumSize(new java.awt.Dimension(480, 20));
+                diskJProgressBar.setMinimumSize(new java.awt.Dimension(480, 20));
+                diskJProgressBar.setPreferredSize(new java.awt.Dimension(480, 20));
                 diskJProgressBar.setRequestFocusEnabled(false);
                 diskJProgressBar.setString("Hard Disk Test");
                 diskJProgressBar.setStringPainted(true);
@@ -461,9 +463,9 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
                 nicJProgressBar.setForeground(new java.awt.Color(68, 91, 255));
                 nicJProgressBar.setValue(25);
                 nicJProgressBar.setFocusable(false);
-                nicJProgressBar.setMaximumSize(new java.awt.Dimension(480, 16));
-                nicJProgressBar.setMinimumSize(new java.awt.Dimension(480, 16));
-                nicJProgressBar.setPreferredSize(new java.awt.Dimension(480, 16));
+                nicJProgressBar.setMaximumSize(new java.awt.Dimension(480, 20));
+                nicJProgressBar.setMinimumSize(new java.awt.Dimension(480, 20));
+                nicJProgressBar.setPreferredSize(new java.awt.Dimension(480, 20));
                 nicJProgressBar.setRequestFocusEnabled(false);
                 nicJProgressBar.setString("Network Interface Test");
                 nicJProgressBar.setStringPainted(true);

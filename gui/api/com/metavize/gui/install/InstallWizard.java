@@ -15,7 +15,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.UIManager;
 import javax.swing.plaf.ColorUIResource;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
+
 
 import com.incors.plaf.kunststoff.*;
 import com.metavize.gui.widgets.dialogs.*;
@@ -38,7 +39,7 @@ public class InstallWizard extends MWizardJDialog {
     }
 
     private static String targetDisk;
-    public static void setTargetDisk(String xTargetDisk){ xTargetDisk = targetDisk; }
+    public static void setTargetDisk(String xTargetDisk){ targetDisk = xTargetDisk; }
     public static String getTargetDisk(){ return targetDisk; }
 
     protected void wizardFinishedNormal(){
@@ -46,18 +47,18 @@ public class InstallWizard extends MWizardJDialog {
 
 	if(args.length>0){
 	    String path = args[0];
-	    String output = "HD=\"" + getTargetDisk() + "\"";
+	    String output = "HD=\"" + getTargetDisk() + "\"" + "\n";
 	    try{
-		FileOutputStream os = new FileOutputStream(path);
-		os.write(output.getBytes());
-		os.close();
+            FileWriter fw = new FileWriter(path);
+            fw.write(output);
+            fw.close();
 	    }
 	    catch(Exception e){
-		e.printStackTrace();
-		System.exit(1);
+            e.printStackTrace();
+            System.exit(1);
 	    }
 	}
-
+    
 	System.exit(0);
     }
 
@@ -80,15 +81,29 @@ public class InstallWizard extends MWizardJDialog {
 
     public static void main(String[] args){
         try {
+	    com.incors.plaf.alloy.AlloyLookAndFeel.setProperty("alloy.licenseCode", "7#Metavize_Inc.#1f75cs6#2n7ryw");
+	    //com.incors.plaf.alloy.AlloyTheme theme = new com.incors.plaf.alloy.themes.glass.GlassTheme();
+	    com.incors.plaf.alloy.AlloyTheme theme =
+		com.incors.plaf.alloy.themes.custom.CustomThemeFactory.createTheme(new Color(152,152,171), // PROGRESS & SCROLL
+										   new Color(215,215,215), // BACKGROUND
+										   Color.ORANGE, // NO IDEA
+										   new Color(50,50,50), // RADIO / CHECKBOX
+										   //new Color(160,160,160), // MOUSEOVER
+										   new Color(68,91,255), // MOUSEOVER
+										   new Color(215,215,215)); // POPUPS
+	    javax.swing.LookAndFeel alloyLnF = new com.incors.plaf.alloy.AlloyLookAndFeel(theme);
+	    javax.swing.UIManager.setLookAndFeel(alloyLnF);
+        /*
             KunststoffLookAndFeel kunststoffLaf = new KunststoffLookAndFeel();
             kunststoffLaf.setCurrentTheme(new KunststoffTheme());
             UIManager.setLookAndFeel(kunststoffLaf);
+        */
         }
         catch (Exception e) {
 	    e.printStackTrace();
         }
-	UIManager.put("ProgressBar.selectionForeground", new ColorUIResource(Color.BLACK));
-	new InstallWizard(args).setVisible(true);
+        UIManager.put("ProgressBar.selectionForeground", new ColorUIResource(Color.BLACK));
+        new InstallWizard(args).setVisible(true);
     }
 }
 

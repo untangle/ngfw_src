@@ -35,7 +35,7 @@ class Jars
 
   ## GUIJars
   Alloy      = [ Jars.downloadTarget('alloylnf-1_4_4-1/alloy.jar') ]
-  Kunstoff   = [ Jars.downloadTarget('kunststoff-2_0_1/kunststoff-mv.jar') ]
+  ## Kunstoff   = [ Jars.downloadTarget('kunststoff-2_0_1/kunststoff-mv.jar') ]
   JFreeChartGui = [ 'jfreechart-gui/jfreechart-gui.jar' ].map { |p| Jars.downloadTarget(p) }
   JFreeChart = [ 'jfreechart-1.0.1.jar', 'jcommon-1.0.0.jar' ].map { |p| Jars.downloadTarget("jfreechart-1.0.1/#{p}") }
   Netbeans   = [ Jars.downloadTarget('netbeans-3.5/netbeans-3.5.jar') ]
@@ -63,7 +63,7 @@ class Jars
                               C3p0, Ant, JavaMailApi, TomcatEmb, Velocity)
 
   # Jars for compiling the GUI, and GUI transform components
-  Gui        = Jars.makeGroup(Alloy, Kunstoff, JFreeChartGui, Netbeans, Jnlp)
+  Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)
 
   # Jars for that are required to run reporting
   Commons    = %w( commons-beanutils-1.7.0/commons-beanutils.jar
