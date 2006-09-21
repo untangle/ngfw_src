@@ -39,14 +39,12 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
     private static final int CPU_GREAT_MHZ = 3000;
     private static final String CPU_REQUIRED = "("+CPU_MIN_MHZ+" MHz required)";
 
-    //private static final int DISK_MIN_GIGS   = 20;
-    private static final int DISK_MIN_GIGS   = 10;
+    private static final int DISK_MIN_GIGS   = 20;
     private static final int DISK_GOOD_GIGS  = 40;
     private static final int DISK_GREAT_GIGS = 80;
     private static final String DISK_REQUIRED = "("+DISK_MIN_GIGS+" GB required)";
 
-    //private static final int NICS_MIN_COUNT   = 2;
-    private static final int NICS_MIN_COUNT   = 1;
+    private static final int NICS_MIN_COUNT   = 2;
     private static final int NICS_GOOD_COUNT  = 2;
     private static final int NICS_GREAT_COUNT = 3;
     private static final String NICS_REQUIRED = "("+NICS_MIN_COUNT+" interfaces required)";
