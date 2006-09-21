@@ -293,6 +293,27 @@ public class SystemStatus
                 proc.destroy();
         }
 
+        proc = null;
+        try {
+            /**
+             * mii-tool
+             */
+            sb.append(SPACER);
+            proc = MvvmContextFactory.context().exec("/sbin/mii-tool");
+            input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            while ((line = input.readLine()) != null) {
+                sb.append(line+"\n");
+            }
+        }
+        catch (Exception e) {
+            logger.error("Exception: ", e);
+            sb.append("Exception on exec (/sbin/mii-tool): " + e.toString() + "\n");
+        }
+        finally {
+            if (proc != null)
+                proc.destroy();
+        }
+        
         return sb.toString();
     }
 
