@@ -9,5 +9,7 @@
                                   bookmark);
     },
 
-    iconUrl: "/browser/secure/icon.gif"
+    iconUrl: "/browser/secure/icon.gif",
+
+    targetExample: "\\\\server\\share"
 };

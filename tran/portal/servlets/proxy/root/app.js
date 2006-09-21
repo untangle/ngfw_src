@@ -10,5 +10,5 @@
 
     iconUrl: "/proxy/icon.gif",
 
-    targetExample: "hippiedippie"
+    targetExample: "http://intranet-server/"
 };
