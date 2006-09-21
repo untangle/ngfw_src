@@ -40,6 +40,11 @@ Application.prototype.getTooltipFunction = function()
     return this._appCode ? this._appCode.tooltipFunction : null;
 };
 
+Application.prototype.getTargetExample = function()
+{
+    return this._appCode ? this._appCode.targetExample : null;
+}
+
 Application.prototype.openBookmark = function()
 {
     return this._appCode ? this._appCode.openBookmark.apply(this, arguments) : null;

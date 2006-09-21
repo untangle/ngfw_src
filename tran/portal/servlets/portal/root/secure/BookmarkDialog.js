@@ -145,13 +145,13 @@ BookmarkDialogPanel.prototype._showFields = function()
     var app = this._appField.getValue();
     var props = app.getBookmarkProperties();
     if (props) {
-        this._showPropFields(props);
+        this._showPropFields(props, app);
     } else {
-        this._showDefaultFields();
+        this._showDefaultFields(app);
     }
 };
 
-BookmarkDialogPanel.prototype._showDefaultFields = function()
+BookmarkDialogPanel.prototype._showDefaultFields = function(app)
 {
     var nameFieldId = Dwt.getNextId();
     var targetFieldId = Dwt.getNextId();
@@ -172,6 +172,15 @@ BookmarkDialogPanel.prototype._showDefaultFields = function()
     html.push(targetFieldId);
     html.push("'/></td>");
     html.push("</tr>");
+
+    var targetExample = app.getTargetExample();
+    if (targetExample) {
+        html.push("<tr>");
+        html.push("<td><i>Example: ");
+        html.push(targetExample);
+        html.push("</td>")
+        html.push("</tr>");
+    }
 
     html.push("</table>");
     this.valuePanel.getHtmlElement().innerHTML = html.join("");
@@ -194,7 +203,7 @@ BookmarkDialogPanel.prototype._showDefaultFields = function()
     }
 };
 
-BookmarkDialogPanel.prototype._showPropFields = function(props)
+BookmarkDialogPanel.prototype._showPropFields = function(props, app)
 {
     var nameFieldId = Dwt.getNextId();
 
@@ -202,7 +211,6 @@ BookmarkDialogPanel.prototype._showPropFields = function(props)
 
     var propValues;
     if (this._bookmark) {
-        var app = this._appField.getValue();
         var propFn = app.getPropertiesFunction();
         propValues = propFn(this._bookmark);
     }

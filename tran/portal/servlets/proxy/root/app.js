@@ -8,5 +8,7 @@
         portal.showApplicationUrl('/proxy/' + o.proto + '/' + o.host + o.path, this, bookmark);
     },
 
-    iconUrl: "/proxy/icon.gif"
+    iconUrl: "/proxy/icon.gif",
+
+    targetExample: "hippiedippie"
 };
