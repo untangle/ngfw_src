@@ -34,6 +34,8 @@ BookmarkPanel.prototype.setTitle = function(title)
 
 BookmarkPanel.prototype.enableAddBookmark = function(enabled)
 {
+    this._addEnabled = enabled;
+
     this.addBookmarkButton.setEnabled(enabled);
     this.editBookmarkButton.setEnabled(enabled);
     this.deleteBookmarkButton.setEnabled(enabled);
@@ -131,4 +133,36 @@ BookmarkPanel.prototype._init = function()
     this._bookmarkList = new BookmarkList(this);
     this._bookmarkList.setScrollStyle(DwtControl.SCROLL);
     this._bookmarkList.reparentHtmlElement(listId);
+    var l = new AjxListener(this, this._listSelectionListener);
+    this._bookmarkList.addSelectionListener(l);
 }
+
+BookmarkPanel.prototype._listSelectionListener = function(ev)
+{
+    if (this._addEnabled) {
+        var sel = this._bookmarkList.getSelection();
+        if (0 == sel.length) {
+            this.editBookmarkButton.setEnabled(false);
+            this.deleteBookmarkButton.setEnabled(false);
+        } else if (1 == sel.length) {
+            var userSelection = this._isUserSelection(sel);
+            this.editBookmarkButton.setEnabled(userSelection);
+            this.deleteBookmarkButton.setEnabled(userSelection);
+        } else {
+            this.editBookmarkButton.setEnabled(false);
+            this.deleteBookmarkButton.setEnabled(this._isUserSelection(sel));
+        }
+    }
+};
+
+BookmarkPanel.prototype._isUserSelection = function(sel)
+{
+    for (var i = 0; i < sel.length; i++) {
+        if (sel[i].type != Bookmark.USER_TYPE) {
+            return false;
+        }
+    }
+
+    return true;
+};
+

@@ -17,6 +17,8 @@ Bookmark.prototype = {
     }
 };
 
+Bookmark.USER_TYPE = "user";
+
 // XXX naive implementation
 Bookmark.prototype.splitTarget = function()
 {
