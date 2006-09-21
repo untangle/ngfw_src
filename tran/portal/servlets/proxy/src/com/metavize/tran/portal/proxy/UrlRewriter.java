@@ -97,9 +97,18 @@ class UrlRewriter
             throw new ServletException("bad proto in uri: " + reqUri);
         }
 
+        String host;
+        String uri;
         j = reqUri.indexOf("/", i);
-        String host = reqUri.substring(i, j);
-        String uri = reqUri.substring(j);
+        if (0 > j) {
+            Logger.getLogger(UrlRewriter.class).warn("strange request uri: " + reqUri);
+            host = reqUri.substring(i);
+            uri = "/";
+        } else {
+            host = reqUri.substring(i, j);
+            uri = reqUri.substring(j);
+        }
+
         String queryString = req.getQueryString();
         String url = proto + "://" + host + uri
             + (null == queryString ? "" : "?" + queryString);

@@ -17,11 +17,10 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.networking.NetworkManagerImpl;
 import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.metavize.mvvm.security.Tid;
+import com.metavize.mvvm.tran.LocalTransformManager;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformContext;
-import com.metavize.mvvm.tran.LocalTransformManager;
 import org.apache.log4j.Logger;
-
 
 public class SystemStatus
 {
@@ -313,7 +312,7 @@ public class SystemStatus
             if (proc != null)
                 proc.destroy();
         }
-        
+
         return sb.toString();
     }
 
