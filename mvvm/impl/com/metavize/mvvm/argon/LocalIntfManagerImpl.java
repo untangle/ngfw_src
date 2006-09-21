@@ -165,6 +165,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
     {
         ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
 
+        logger.debug( "Registering the interface: [" + argon + ":" + name +"]" );
         this.intfConverter = this.intfConverter.registerIntf( new ArgonInterface( name, argon ));
 
         notifyDependents( prevIntfConverter );

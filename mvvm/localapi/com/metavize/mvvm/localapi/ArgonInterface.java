@@ -26,7 +26,6 @@ public final class ArgonInterface
 
     /* The string value */
     private final String string;
-    
 
     /**
      * In order to avoid the pain of typecasting everywhere, netcap and argon are 

@@ -84,6 +84,11 @@ public class RemoteNetworkManagerImpl implements NetworkManager
         lnm.updateAddress();
     }
 
+    public void pppoe( String args[] ) throws NetworkException
+    {
+        lnm.pppoe( args );
+    }
+
     /* Get the current dynamic dns settings */
     public DynamicDNSSettings getDynamicDnsSettings()
     {

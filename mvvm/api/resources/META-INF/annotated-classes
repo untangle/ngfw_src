@@ -10,6 +10,8 @@ com.metavize.mvvm.networking.IPNetworkRule
 com.metavize.mvvm.networking.Interface
 com.metavize.mvvm.networking.NetworkSpace
 com.metavize.mvvm.networking.NetworkSpacesSettingsImpl
+com.metavize.mvvm.networking.PPPoESettings
+com.metavize.mvvm.networking.PPPoEConnectionRule
 com.metavize.mvvm.networking.RedirectRule
 com.metavize.mvvm.networking.Route
 com.metavize.mvvm.networking.ServicesSettingsImpl

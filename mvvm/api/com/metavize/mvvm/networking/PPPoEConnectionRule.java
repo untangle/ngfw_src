@@ -11,6 +11,7 @@
 
 package com.metavize.mvvm.networking;
 
+import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,7 +34,7 @@ import com.metavize.mvvm.tran.ValidateException;
  */
 @Entity
 @Table(name="mvvm_pppoe_connection", schema="settings")
-public class PPPoEConnectionRule extends Rule implements Validatable
+public class PPPoEConnectionRule extends Rule implements Serializable, Validatable
 {
     private String username   = "pppoe";
     private String password   = "eoppp";
@@ -95,6 +96,11 @@ public class PPPoEConnectionRule extends Rule implements Validatable
     public void setKeepalive( boolean newValue )
     {
         this.keepalive = newValue;
+    }
+
+    public String toString()
+    {
+        return "[" + this.argonIntf + "," + "," + this.keepalive + "," + this.username + "]";
     }
 
     public void validate() throws ValidateException

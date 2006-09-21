@@ -176,6 +176,8 @@ final class ArgonInterfaceConverter
             }
         }
 
+        logger.info( "Registering the interface [" + newIntf + "]" );
+
         /* Add the new item to the list */
         newIntfList.add( newIntf );
         

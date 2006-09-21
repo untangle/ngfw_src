@@ -62,6 +62,9 @@ public interface NetworkManager
     /** Update the internal representation of the address */
     public void updateAddress() throws NetworkException;
 
+    /* Helper function for running some pppoe stuff */
+    public void pppoe( String args[] ) throws NetworkException;
+
     /* Get the current dynamic dns settings */
     public DynamicDNSSettings getDynamicDnsSettings();
 

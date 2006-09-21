@@ -67,6 +67,18 @@ public class PPPoESettingsInternal
         return settings;
     }
 
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "PPPoE Internal Settings[" + getIsEnabled() + "]\n" );
+        
+        for ( PPPoEConnectionInternal connection : getConnectionList()) sb.append( connection + "\n" );
+
+        sb.append( "PPPoE Internal Settings END" );
+
+        return sb.toString();
+    }
+
     public static PPPoESettingsInternal makeInstance( PPPoESettings settings )
         throws ValidateException
     {
@@ -74,8 +86,12 @@ public class PPPoESettingsInternal
         
         List<PPPoEConnectionInternal> connectionList = new LinkedList<PPPoEConnectionInternal>();
         
+        int index = 0;
+
         for ( PPPoEConnectionRule rule : settings.getConnectionList()) {
-            connectionList.add( PPPoEConnectionInternal.makeInstance( rule ));
+            /* Increment the index only on the connections that exist */
+            String deviceName = ( rule.isLive()) ? ( "ppp" + index++ ) : null;
+            connectionList.add( PPPoEConnectionInternal.makeInstance( rule, deviceName ));
         }
 
         return new PPPoESettingsInternal( settings, connectionList );

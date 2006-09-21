@@ -12,16 +12,24 @@
 package com.metavize.mvvm.networking;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.metavize.mvvm.networking.internal.PPPoESettingsInternal;
-
-import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.ArgonException;
+import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
+
+import com.metavize.mvvm.localapi.ArgonInterface;
+import com.metavize.mvvm.localapi.LocalIntfManager;
+
+import com.metavize.mvvm.networking.internal.PPPoEConnectionInternal;
+import com.metavize.mvvm.networking.internal.PPPoESettingsInternal;
 
 import com.metavize.mvvm.tran.ValidateException;
 import com.metavize.mvvm.util.DataLoader;
@@ -29,7 +37,14 @@ import com.metavize.mvvm.util.DataSaver;
 
 class PPPoEManagerImpl
 {
+    /* The current settings */
     private PPPoESettingsInternal settings;
+    
+    /* The list of interfaces that have presently been registered as a PPP interface */
+    private List<ArgonInterface> registeredIntfList = new LinkedList<ArgonInterface>();
+
+    /* The list of interfaces set at startup */
+    private List<ArgonInterface> startupIntfList = new LinkedList<ArgonInterface>();
 
     private final Logger logger = Logger.getLogger(getClass());
     
@@ -38,38 +53,136 @@ class PPPoEManagerImpl
     }
 
     /* ----------------- Public  ----------------- */
-    
+    public PPPoESettingsInternal getInternalSettings()
+    {
+        return this.settings;
+    }
+
+    public PPPoESettings getSettings()
+    {
+        if ( this.settings == null ) {
+            logger.warn( "null PPPoE Settings, returning new settings object" );
+            return new PPPoESettings();
+        }
+        return this.settings.toSettings();
+    }
+
+    public void setSettings( PPPoESettings newSettings ) throws PPPoEException
+    {
+        try {
+            saveSettings( PPPoESettingsInternal.makeInstance( newSettings ));
+        } catch ( ValidateException e ) {
+            throw new PPPoEException( "Error saving settings", e );
+        }
+    }
+        
     /* ----------------- Package ----------------- */
     void init()
     {
         try {
             this.settings = loadSettings();
-            if ( null == this.settings ) {
-                saveSettings( PPPoESettingsInternal.makeInstance( new PPPoESettings()));
-            }
+            if ( null == this.settings ) saveDefaults();
+
+            /* Save the list of interfaces from startup */
+            startupIntfList = MvvmContextFactory.context().intfManager().getIntfList();
+
         } catch ( ValidateException e ) {
             /* Loaded invalid settings, replacing with bogus replacements */
             logger.warn( "Invalid PPPoESettings in the database, using null", e );
             this.settings = null;
-            return;
         }
 
         /* Possibly register a listener */
+        try {
+            registerIntfs();
+        } catch ( PPPoEException e ) {
+            logger.warn( "Unable to register ppp interfaces at startup, disabling" );
+            resetIntfs();
+        }
     }
 
-    boolean isConnected()
+    void isConnected()
     {
-        return false;
     }
 
-    void connect()
+    /* This re-registers all of the interfaces as PPP devices */
+    synchronized void registerIntfs() throws PPPoEException
     {
-        throw new IllegalStateException( "this is not implemented." );
+        /* Unregister all of the active interfaces */
+        unregisterIntfs();
+
+        /* Don't need to do anything if the connection is not enabled */
+        if (( null == this.settings ) || !this.settings.getIsEnabled()) return;
+
+        LocalIntfManager lim = MvvmContextFactory.context().intfManager();
+        
+        List<ArgonInterface> registeredIntfList = new LinkedList<ArgonInterface>();
+        
+        for ( PPPoEConnectionInternal connection : this.settings.getConnectionList()) {
+            /* Skip all of the connections that are not active */
+            if ( !connection.isLive()) continue;
+            
+            /* Retrieve the current interface mapping */
+            try {
+                ArgonInterface intf = lim.getIntfByArgon( connection.getArgonIntf());
+                registeredIntfList.add( intf );
+            } catch ( ArgonException e ) {
+                logger.warn( "Unable to lookup an argon interface for: " + connection, e );
+                continue;
+            }
+
+            /* Register the device */
+            try {
+                lim.registerIntf( connection.getDeviceName(), connection.getArgonIntf());
+            } catch ( ArgonException e ) {
+                logger.warn( "Unable to register the interface for: " + connection, e );
+                /* Set the registered interface list before throwing the exception so
+                 * that unregister will replace all of the correct interfaces */
+                this.registeredIntfList = registeredIntfList;
+                throw new PPPoEException( "Unable to register the interface for: " + connection, e );
+            }
+        }
+        
+        this.registeredIntfList = registeredIntfList;
     }
 
-    void disconnect()
+    synchronized void unregisterIntfs()
     {
-        throw new IllegalStateException( "this is not implemented." );
+        if ( null == this.registeredIntfList ) {
+            logger.info( "there are no registered interfaces" );
+            return;
+        }
+
+        LocalIntfManager lim = MvvmContextFactory.context().intfManager();
+        
+        /* Iterate each of the cached entries and replace with their original values */
+        for ( ArgonInterface intf : this.registeredIntfList ) {
+            try {
+                lim.registerIntf( intf.getName(), intf.getArgon());
+            } catch ( ArgonException e ) {
+                logger.warn( "Unable to register the interface for: " + intf + " continuing.", e );
+            }
+        }
+
+        /* Set to null to avoid unregistering twice */
+        this.registeredIntfList = null;
+    }
+
+    /* This is for the ohh no situtation, just a way to get back to the interfaces at startup */
+    synchronized void resetIntfs()
+    {
+        LocalIntfManager lim = MvvmContextFactory.context().intfManager();
+
+        /* Iterate each of the cached entries and replace with their original values */
+        for ( ArgonInterface intf : this.startupIntfList ) {
+            try {
+                lim.registerIntf( intf.getName(), intf.getArgon());
+            } catch ( ArgonException e ) {
+                logger.error( "Unable to reset the interface for: " + intf + ", continuing.", e );
+            }
+        }
+        
+        this.registeredIntfList = null;
     }
 
     /* ----------------- Private ----------------- */
@@ -101,6 +214,12 @@ class PPPoEManagerImpl
         }
 
         this.settings = newSettings;
+    }
+
+    /* Save the initial default settings */
+    private void saveDefaults() throws ValidateException
+    {
+        saveSettings( PPPoESettingsInternal.makeInstance( new PPPoESettings()));
     }
 
     /* Data saver used to delete other instances of the object */

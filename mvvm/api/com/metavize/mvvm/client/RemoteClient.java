@@ -204,6 +204,8 @@ public class RemoteClient
             shieldReconfigure();
         } else if (args[0].equalsIgnoreCase("updateAddress")) {
             updateAddress();
+        } else if (args[0].equalsIgnoreCase("pppoe")) {
+            pppoe(args);
         } else if (args[0].equalsIgnoreCase("gc")) {
             doFullGC();
         } else if (args[0].equalsIgnoreCase("messageQueue")) {
@@ -877,6 +879,11 @@ public class RemoteClient
     private static void updateAddress() throws Exception
     {
         mc.networkManager().updateAddress();
+    }
+
+    private static void pppoe( String args[] ) throws Exception
+    {
+        mc.networkManager().pppoe( args );
     }
 
     // helper functions -------------------------------------------------------

@@ -84,10 +84,13 @@ public class NetworkManagerImpl implements LocalNetworkManager
     private boolean isInitialized = false;
 
     /* Manager for the iptables rules */
-    private RuleManager ruleManager;
+    private final RuleManager ruleManager;
 
     /* Manager for the DHCP/DNS server */
-    private DhcpManager dhcpManager;
+    private final DhcpManager dhcpManager;
+
+    /* Manager for PPPoE connections */
+    private final PPPoEManagerImpl pppoeManager;
 
     /* Converter to create the initial networking configuration object if
      * network spaces has never been executed before */
@@ -123,6 +126,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.ruleManager = RuleManager.getInstance();
         this.networkConfigurationLoader = NetworkConfigurationLoader.getInstance();
         this.dhcpManager  = new DhcpManager();
+        this.pppoeManager = new PPPoEManagerImpl();
     }
 
     /**
@@ -614,6 +618,81 @@ public class NetworkManagerImpl implements LocalNetworkManager
         }
     }
 
+    /** This is a helper function in place just to debug before the gui
+     * is written */
+    public void pppoe( String args[] ) throws NetworkException
+    {
+        if ( args.length == 1 ) {
+        }
+        else if ( args.length == 2 ) {
+            if ( "register".equalsIgnoreCase( args[1] )) {
+                this.pppoeManager.registerIntfs();
+                return;
+            } else if ( "unregister".equalsIgnoreCase( args[1] )) {
+                this.pppoeManager.unregisterIntfs();
+                return;
+            } else if ( "reset".equalsIgnoreCase( args[1] )) {
+                this.pppoeManager.resetIntfs();
+                return;
+            } else {
+            }
+        }
+        else if ( args.length == 3 ) {
+            byte argonIntf = Byte.valueOf( args[2] );
+            if ( "delete".equalsIgnoreCase( args[1] )) {
+                PPPoESettings pppoeSettings = this.pppoeManager.getSettings();
+                List<PPPoEConnectionRule> list = pppoeSettings.getConnectionList();
+                for ( Iterator<PPPoEConnectionRule> iter = list.iterator() ; iter.hasNext() ; ) {
+                    PPPoEConnectionRule rule = iter.next();
+                    if ( rule.getArgonIntf() == argonIntf ) iter.remove();
+                }
+                pppoeSettings.setConnectionList( list );
+
+                this.pppoeManager.setSettings( pppoeSettings );
+                return;
+            } else if ( "off".equalsIgnoreCase( args[1] )) {
+                PPPoESettings pppoeSettings = this.pppoeManager.getSettings();
+                List<PPPoEConnectionRule> list = pppoeSettings.getConnectionList();
+                for ( PPPoEConnectionRule rule : list ) {
+                    if ( rule.getArgonIntf() == argonIntf ) rule.setLive( false );
+                }
+                pppoeSettings.setConnectionList( list );
+                this.pppoeManager.setSettings( pppoeSettings );
+                return;
+            }
+        }
+        else if ( args.length == 6 ) {
+            if ( "mod".equalsIgnoreCase( args[1] )) {
+                byte argonIntf = Byte.valueOf( args[2] );
+                boolean isLive = Boolean.valueOf( args[3] );
+                String username = args[4];
+                String password = args[5];
+
+                PPPoESettings pppoeSettings = this.pppoeManager.getSettings();
+                List<PPPoEConnectionRule> list = pppoeSettings.getConnectionList();
+                for ( Iterator<PPPoEConnectionRule> iter = list.iterator() ; iter.hasNext() ; ) {
+                    PPPoEConnectionRule rule = iter.next();
+                    if ( rule.getArgonIntf() == argonIntf ) iter.remove();
+                }
+                PPPoEConnectionRule rule = new PPPoEConnectionRule();
+                rule.setArgonIntf( argonIntf );
+                rule.setLive( isLive );
+                rule.setUsername( username );
+                rule.setPassword( password );
+                list.add( rule );
+
+                pppoeSettings.setConnectionList( list );
+
+                this.pppoeManager.setSettings( pppoeSettings );
+                return;
+            }
+        }
+
+        logger.debug( "usage: " + args[0] + " <register|unregister|reset>" );
+        logger.debug( "usage: " + args[0] + " <off|delete> <argon interface>" );
+        logger.debug( "usage: " + args[0] + " <off|on> <argon interface> <username> <password>" );
+    }
+
     public void disableDhcpForwarding()
     {
         this.ruleManager.dhcpEnableForwarding( false );
@@ -793,8 +872,11 @@ public class NetworkManagerImpl implements LocalNetworkManager
             this.saveSettings = false;
             networkConfigurationLoader.disableSaveSettings();
         }
-
+        
         loadAllSettings();
+
+        /* Initialize the PPPoE Manager */
+        this.pppoeManager.init();
 
         /* Create new dynamic dns settings, only if they are not set */
         if ( this.ddnsSettings == null ) {

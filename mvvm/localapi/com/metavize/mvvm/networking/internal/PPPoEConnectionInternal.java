@@ -28,8 +28,11 @@ public class PPPoEConnectionInternal extends ImmutableRule
     private final String username;
     private final String password;
 
-    /* Index of the argon interface to run PPPoE on */
+    /** Index of the argon interface to run PPPoE on */
     private final byte argonIntf;
+    
+    /** This is the name of the ppp device (eg ppp0 or ppp1) */
+    private final String deviceName;
     
     /** This is most likely going to not be used.  Set to true to
      * automatically redial every minute, even if there is no traffic.
@@ -37,13 +40,14 @@ public class PPPoEConnectionInternal extends ImmutableRule
      * turning it off. */
     private final boolean keepalive;
 
-    private PPPoEConnectionInternal( PPPoEConnectionRule rule )
+    private PPPoEConnectionInternal( PPPoEConnectionRule rule, String deviceName )
     {
         super( rule );
         this.username    = rule.getUsername();
         this.password    = rule.getPassword();
         this.keepalive   = rule.getKeepalive();
         this.argonIntf   = rule.getArgonIntf();
+        this.deviceName  = deviceName;
     }
     
     public String getUsername()
@@ -61,9 +65,20 @@ public class PPPoEConnectionInternal extends ImmutableRule
         return this.argonIntf;
     }
 
+    public String getDeviceName()
+    {
+        return this.deviceName;
+    }
+
     public boolean getKeepalive()
     {
         return this.keepalive;
+    }
+
+    public String toString()
+    {
+        return "[" + this.argonIntf + "," + this.deviceName + "," + this.keepalive + 
+            "," + this.username + "]";
     }
     
     /* Return a new rule objects prepopulated with these values */
@@ -78,11 +93,17 @@ public class PPPoEConnectionInternal extends ImmutableRule
         return rule;
     }
     
-    public static PPPoEConnectionInternal makeInstance( PPPoEConnectionRule rule )
+    static PPPoEConnectionInternal makeInstance( PPPoEConnectionRule rule, String deviceName )
         throws ValidateException
     {
         rule.validate();
+        
+        deviceName = ( null == deviceName ) ? "" : deviceName.trim();
+        
+        if ( rule.isLive() && ( deviceName.length() == 0 )) {
+            throw new ValidateException( "null device name for enabled pppoe rule" + rule );
+        }
 
-        return new PPPoEConnectionInternal( rule );
+        return new PPPoEConnectionInternal( rule, deviceName );
     }
 }

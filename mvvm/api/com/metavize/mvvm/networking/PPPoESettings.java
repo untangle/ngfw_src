@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm.networking;
 
+import java.io.Serializable;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,7 +40,7 @@ import com.metavize.mvvm.tran.ValidateException;
  */
 @Entity
 @Table(name="mvvm_pppoe", schema="settings")
-public class PPPoESettings implements Validatable
+public class PPPoESettings implements Serializable, Validatable
 {
     private Long id;
 
@@ -65,7 +67,7 @@ public class PPPoESettings implements Validatable
         this.id = id;
     }
     
-    @Column(name="is_enabled")
+    @Column(name="live")
     public boolean getIsEnabled()
     {
         return this.isEnabled;
@@ -99,4 +101,16 @@ public class PPPoESettings implements Validatable
         
         for ( PPPoEConnectionRule connection : getConnectionList()) connection.validate();
    }
+
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "PPPoE Settings[" + getIsEnabled() + "]\n" );
+        
+        for ( PPPoEConnectionRule rule : getConnectionList()) sb.append( rule + "\n" );
+        
+        sb.append( "PPPoE Settings END" );
+
+        return sb.toString();
+    }
 }
