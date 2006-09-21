@@ -6,12 +6,18 @@
     bookmarkProperties: [ new BookmarkProperty('size', 'Size', ['640x480', '800x600', '1024x768', '1280x1024'], '800x600'),
                           new BookmarkProperty('host', 'Host', null, null, true),
                           new BookmarkProperty('command', 'Command (optional)'),
-                          new BookmarkProperty('console', 'Console', ['true', 'false'], 'false') ],
+                          new BookmarkProperty('console', 'View Mode',
+                                               [ 'Steal Actual Desktop',
+                                                 'Show New Desktop' ],
+                                               'Show New Desktop') ],
 
     bookmarkFunction: function(obj) {
         var s = '';
         for (var f in obj) {
             var v = obj[f].getValue();
+            if ('console' == f) {
+                v = new String('Steal Actual Desktop' == v);
+            }
             if (null != v && '' != v) {
                 s += '' == s ? '' : '&';
                 s += escape(f) + '=' + escape(v);
