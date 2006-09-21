@@ -27,8 +27,8 @@ import com.metavize.mvvm.addrbook.AddressBook;
 import com.metavize.mvvm.addrbook.AddressBookConfiguration;
 import com.metavize.mvvm.addrbook.AddressBookSettings;
 import com.metavize.mvvm.addrbook.UserEntry;
-import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.portal.Application;
 import com.metavize.mvvm.portal.Bookmark;
 import com.metavize.mvvm.portal.LocalPortalManager;
@@ -241,6 +241,27 @@ class PortalManagerImpl implements LocalPortalManager
         return result;
     }
 
+    public Bookmark editUserBookmark(final PortalUser user, Long id,
+                                     String name, Application application,
+                                     String target)
+    {
+        Bookmark result = user.editBookmark(id, name, application, target);
+
+        if (null != result) {
+            TransactionWork tw = new TransactionWork()
+                {
+                    public boolean doWork(Session s)
+                    {
+                        s.saveOrUpdate(user);
+                        return true;
+                    }
+                };
+            mvvmContext.runTransaction(tw);
+        }
+
+        return result;
+    }
+
     public void removeUserBookmark(final PortalUser user, Bookmark bookmark)
     {
         user.removeBookmark(bookmark);
@@ -383,7 +404,7 @@ class PortalManagerImpl implements LocalPortalManager
                 return null;
             }
         } catch (ServiceUnavailableException x) {
-            /* This occurs if the user puts in invalid authentication information for the 
+            /* This occurs if the user puts in invalid authentication information for the
              * active directory server */
             logger.warn("Unable to authenticate user", x);
             return null;

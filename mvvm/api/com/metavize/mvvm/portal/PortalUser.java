@@ -61,7 +61,6 @@ public class PortalUser implements Serializable
     /**
      * Constructor does not check that the uid or portal group is valid.
      *
-     * @param uid a <code>String</code> value
      * @param portalGroup a <code>PortalGroup</code> value
      */
     public PortalUser(String uid, PortalGroup portalGroup)
@@ -80,16 +79,34 @@ public class PortalUser implements Serializable
         return bm;
     }
 
+    public Bookmark editBookmark(Long id, String name, Application application,
+                                 String target)
+    {
+        Bookmark bookmark = null;
+
+        for (Bookmark bm : bookmarks) {
+            if (id.equals(bm.getId())) {
+                bookmark = bm;
+                bookmark.setName(name);
+                bookmark.setApplicationName(application.getName());
+                bookmark.setTarget(target);
+                break;
+            }
+        }
+
+        return bookmark;
+    }
+
     public void removeBookmark(Bookmark bookmark)
     {
         bookmarks.remove(bookmark);
     }
 
-    public void removeBookmarks(Set bookmarkIds)
+    public void removeBookmarks(Set<Long> bookmarkIds)
     {
-        for (Iterator i = bookmarks.iterator(); i.hasNext(); ) {
-            Bookmark bm = (Bookmark)i.next();
-            Long id = (Long)bm.getId();
+        for (Iterator<Bookmark> i = bookmarks.iterator(); i.hasNext(); ) {
+            Bookmark bm = i.next();
+            Long id = bm.getId();
             if (null != id && bookmarkIds.contains(id)) {
                 i.remove();
             }

@@ -28,8 +28,8 @@ import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
 import org.hibernate.annotations.Type;
 
 /**
- * User Policy Rules.  These are the policy rules that are created by the user.  All of
- * these run before any of the System policy rules.
+ * User Policy Rules.  These are the policy rules that are created by
+ * the user.  All of these run before any of the System policy rules.
  *
  * @author
  * @version 1.0
@@ -51,8 +51,9 @@ public class UserPolicyRule extends PolicyRule
 
     public UserPolicyRule() { }
 
-    public UserPolicyRule(byte clientIntf, byte serverIntf, Policy policy, boolean inbound,
-                          ProtocolMatcher protocol, IPMatcher clientAddr, IPMatcher serverAddr,
+    public UserPolicyRule(byte clientIntf, byte serverIntf, Policy policy,
+                          boolean inbound, ProtocolMatcher protocol,
+                          IPMatcher clientAddr, IPMatcher serverAddr,
                           PortMatcher clientPort, PortMatcher serverPort) {
         super(clientIntf, serverIntf, policy, inbound);
         this.protocol = protocol;

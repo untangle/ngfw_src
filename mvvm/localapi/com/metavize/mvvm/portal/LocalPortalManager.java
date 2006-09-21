@@ -11,12 +11,13 @@
 
 package com.metavize.mvvm.portal;
 
+import java.util.List;
+import java.util.Set;
+
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformStats;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Local interface to the PortalManager.
@@ -58,6 +59,9 @@ public interface LocalPortalManager
      */
     Bookmark addUserBookmark(PortalUser user, String name,
                              Application application, String target);
+
+    Bookmark editUserBookmark(PortalUser user, Long id, String name,
+                              Application application, String target);
 
     void removeUserBookmark(PortalUser user, Bookmark bookmark);
 

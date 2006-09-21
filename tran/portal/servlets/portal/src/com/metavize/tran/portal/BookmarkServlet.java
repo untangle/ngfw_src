@@ -78,11 +78,12 @@ public class BookmarkServlet extends HttpServlet
                 portalManager.addUserBookmark(pu, name, app, target);
             } else if (command.equals("edit")) {
                 String idStr = req.getParameter("id");
+                Long id = Long.valueOf(idStr);
                 String name = req.getParameter("name");
                 String appName = req.getParameter("app");
                 Application app = appManager.getApplication(appName);
                 String target = req.getParameter("target");
-                System.out.println("EDIT BOOKMARK: " + idStr);
+                portalManager.editUserBookmark(pu, id, name, app, target);
             } else if (command.equals("rm")) {
                 Set<Long> ids = new HashSet<Long>();
                 for (String idStr : req.getParameterValues("id")) {
