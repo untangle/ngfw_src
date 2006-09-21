@@ -71,8 +71,6 @@
               </Constraints>
             </Component>
             <Component class="javax.swing.JTextField" name="hostnameJTextField">
-              <Properties>
-              </Properties>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
               </AuxValues>
@@ -160,14 +158,14 @@
         <Container class="javax.swing.JPanel" name="staticIPJPanel">
           <Properties>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[400, 115]"/>
+              <Dimension value="[400, 125]"/>
             </Property>
             <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[400, 115]"/>
+              <Dimension value="[400, 125]"/>
             </Property>
             <Property name="opaque" type="boolean" value="false"/>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[400, 115]"/>
+              <Dimension value="[400, 125]"/>
             </Property>
           </Properties>
           <Constraints>

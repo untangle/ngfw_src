@@ -82,7 +82,7 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
 
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                messageJLabel.setText("<html><center> This test can take up to 40 seconds to perform.  This will<br> determine if DNS can be reached and if TCP connectivity works.<br> <br> </center></html>");
+                messageJLabel.setText("<html><center> This test can take up to 20 seconds to perform.  This will<br> determine if DNS can be reached and if TCP connectivity works.<br> <br> </center></html>");
                 messageJLabel.setDoubleBuffered(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -93,10 +93,9 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
                 getContentPane().add(messageJLabel, gridBagConstraints);
 
                 jProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
-                jProgressBar.setForeground(new java.awt.Color(68, 91, 255));
-                jProgressBar.setMaximumSize(new java.awt.Dimension(32767, 16));
-                jProgressBar.setMinimumSize(new java.awt.Dimension(10, 16));
-                jProgressBar.setPreferredSize(new java.awt.Dimension(148, 16));
+                jProgressBar.setMaximumSize(new java.awt.Dimension(32767, 20));
+                jProgressBar.setMinimumSize(new java.awt.Dimension(10, 20));
+                jProgressBar.setPreferredSize(new java.awt.Dimension(148, 20));
                 jProgressBar.setString("");
                 jProgressBar.setStringPainted(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -116,6 +115,7 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
                 proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 proceedJButton.setMaximumSize(new java.awt.Dimension(125, 25));
                 proceedJButton.setMinimumSize(new java.awt.Dimension(125, 25));
+                proceedJButton.setOpaque(false);
                 proceedJButton.setPreferredSize(new java.awt.Dimension(125, 25));
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

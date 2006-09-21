@@ -287,6 +287,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 controlsJToggleButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
                 controlsJToggleButton.setIconTextGap(0);
                 controlsJToggleButton.setMargin(new java.awt.Insets(0, 0, 1, 3));
+                controlsJToggleButton.setOpaque(false);
                 controlsJToggleButton.setSelectedIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/metavize/gui/transform/IconControlsOpen28x28.png")));
                 controlsJToggleButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -311,13 +312,12 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 add(organizationIconJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 51, 42, 42));
 
                 jProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
-                jProgressBar.setForeground(new java.awt.Color(68, 91, 255));
-                jProgressBar.setMaximumSize(new java.awt.Dimension(232, 16));
-                jProgressBar.setMinimumSize(new java.awt.Dimension(232, 16));
-                jProgressBar.setPreferredSize(new java.awt.Dimension(232, 16));
+                jProgressBar.setMaximumSize(new java.awt.Dimension(232, 20));
+                jProgressBar.setMinimumSize(new java.awt.Dimension(232, 20));
+                jProgressBar.setPreferredSize(new java.awt.Dimension(232, 20));
                 jProgressBar.setString("");
                 jProgressBar.setStringPainted(true);
-                add(jProgressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 39, -1, -1));
+                add(jProgressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 37, -1, -1));
 
                 messageTextJLabel.setFont(new java.awt.Font("Arial", 1, 12));
                 messageTextJLabel.setForeground(new java.awt.Color(68, 91, 255));

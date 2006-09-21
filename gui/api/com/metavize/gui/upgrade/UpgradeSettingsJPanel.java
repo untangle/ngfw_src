@@ -227,7 +227,7 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
                 timeJSpinner.setDoubleBuffered(true);
                 timeJSpinner.setOpaque(false);
                 timeJSpinner.setPreferredSize(null);
-                jPanel5.add(timeJSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(45, 200, 85, 30));
+                jPanel5.add(timeJSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(45, 200, 95, 30));
 
                 jScrollPane2.setViewportView(jPanel5);
 

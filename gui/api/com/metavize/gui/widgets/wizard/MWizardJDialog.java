@@ -269,6 +269,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
                 nextJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
                 nextJButton.setMaximumSize(new java.awt.Dimension(78, 25));
                 nextJButton.setMinimumSize(new java.awt.Dimension(78, 25));
+                nextJButton.setOpaque(false);
                 nextJButton.setPreferredSize(new java.awt.Dimension(78, 25));
                 nextJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -290,6 +291,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
                 previousJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
                 previousJButton.setMaximumSize(new java.awt.Dimension(120, 25));
                 previousJButton.setMinimumSize(new java.awt.Dimension(120, 25));
+                previousJButton.setOpaque(false);
                 previousJButton.setPreferredSize(new java.awt.Dimension(120, 25));
                 previousJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -309,6 +311,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
                 closeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 closeJButton.setMaximumSize(new java.awt.Dimension(140, 25));
                 closeJButton.setMinimumSize(new java.awt.Dimension(140, 25));
+                closeJButton.setOpaque(false);
                 closeJButton.setPreferredSize(new java.awt.Dimension(140, 25));
                 closeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

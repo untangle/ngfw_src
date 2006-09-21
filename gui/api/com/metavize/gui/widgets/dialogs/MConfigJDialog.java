@@ -90,7 +90,10 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         newJTabbedPane.setFocusable(false);
         newJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
 	newJTabbedPane.setRequestFocusEnabled(false);
-	addTab(name, icon, newJTabbedPane);
+	JPanel backJPanel = new JPanel();
+	backJPanel.setLayout(new BorderLayout());
+	backJPanel.add(newJTabbedPane);
+	addTab(name, icon, backJPanel);
 	return newJTabbedPane;
     }
     public JScrollPane addScrollableTab(JTabbedPane parentJTabbedPane, String name, Icon icon,
@@ -232,6 +235,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 closeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 closeJButton.setMaximumSize(new java.awt.Dimension(140, 25));
                 closeJButton.setMinimumSize(new java.awt.Dimension(140, 25));
+                closeJButton.setOpaque(false);
                 closeJButton.setPreferredSize(new java.awt.Dimension(140, 25));
                 closeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -255,6 +259,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 reloadJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
                 reloadJButton.setMaximumSize(new java.awt.Dimension(120, 25));
                 reloadJButton.setMinimumSize(new java.awt.Dimension(120, 25));
+                reloadJButton.setOpaque(false);
                 reloadJButton.setPreferredSize(new java.awt.Dimension(120, 25));
                 reloadJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -279,6 +284,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 saveJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
                 saveJButton.setMaximumSize(new java.awt.Dimension(78, 25));
                 saveJButton.setMinimumSize(new java.awt.Dimension(78, 25));
+                saveJButton.setOpaque(false);
                 saveJButton.setPreferredSize(new java.awt.Dimension(78, 25));
                 saveJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

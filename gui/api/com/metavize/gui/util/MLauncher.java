@@ -29,14 +29,23 @@ public class MLauncher {
 
         // SET LAF
         try {
-	    /*
-	    com.incors.plaf.alloy.AlloyLookAndFeel.setProperty("alloy.licenseCode", "2006/02/11#imnieves@gmail.com#ay1m62#13knm1");
-	    javax.swing.LookAndFeel alloyLnF = new com.incors.plaf.alloy.AlloyLookAndFeel();
+	    com.incors.plaf.alloy.AlloyLookAndFeel.setProperty("alloy.licenseCode", "7#Metavize_Inc.#1f75cs6#2n7ryw");
+	    //com.incors.plaf.alloy.AlloyTheme theme = new com.incors.plaf.alloy.themes.glass.GlassTheme();
+	    com.incors.plaf.alloy.AlloyTheme theme =
+		com.incors.plaf.alloy.themes.custom.CustomThemeFactory.createTheme(new Color(152,152,171), // PROGRESS & SCROLL
+										   new Color(215,215,215), // BACKGROUND
+										   Color.ORANGE, // NO IDEA
+										   new Color(50,50,50), // RADIO / CHECKBOX
+										   //new Color(160,160,160), // MOUSEOVER
+										   new Color(68,91,255), // MOUSEOVER
+										   new Color(215,215,215)); // POPUPS
+	    javax.swing.LookAndFeel alloyLnF = new com.incors.plaf.alloy.AlloyLookAndFeel(theme);
 	    javax.swing.UIManager.setLookAndFeel(alloyLnF);
-	    */
+	    /*
             com.incors.plaf.kunststoff.KunststoffLookAndFeel kunststoffLaf = new com.incors.plaf.kunststoff.KunststoffLookAndFeel();
             kunststoffLaf.setCurrentTheme(new com.incors.plaf.kunststoff.KunststoffTheme());
             UIManager.setLookAndFeel(kunststoffLaf);
+	    */
         }
         catch (Exception e) {
 	    System.err.println("Error starting LAF:");

@@ -70,7 +70,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
             serverJTextField.setEnabled(true);
             protocolJTextField.setEnabled(true);
             statusJProgressBar.setString(message);
-            statusJProgressBar.setValue(0);
+            statusJProgressBar.setValue(1);
             statusJProgressBar.setIndeterminate(false);
         }});
     }
@@ -78,7 +78,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
     public void setMessage(final String message){
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             statusJProgressBar.setString(message);
-            statusJProgressBar.setValue(0);
+            statusJProgressBar.setValue(1);
             statusJProgressBar.setIndeterminate(false);
         }});
     }
@@ -324,6 +324,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 acceptJButton.setFont(new java.awt.Font("Default", 0, 12));
                 acceptJButton.setText("Login");
                 acceptJButton.setDoubleBuffered(true);
+                acceptJButton.setOpaque(false);
                 acceptJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 acceptJButtonActionPerformed(evt);
@@ -350,11 +351,11 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 contentJPanel.add(inputJPanel, gridBagConstraints);
 
                 statusJProgressBar.setFont(new java.awt.Font("Default", 0, 12));
-                statusJProgressBar.setForeground(new java.awt.Color(68, 91, 255));
                 statusJProgressBar.setDoubleBuffered(true);
-                statusJProgressBar.setMaximumSize(new java.awt.Dimension(270, 16));
-                statusJProgressBar.setMinimumSize(new java.awt.Dimension(270, 16));
-                statusJProgressBar.setPreferredSize(new java.awt.Dimension(270, 16));
+                statusJProgressBar.setFocusable(false);
+                statusJProgressBar.setMaximumSize(new java.awt.Dimension(270, 20));
+                statusJProgressBar.setMinimumSize(new java.awt.Dimension(270, 20));
+                statusJProgressBar.setPreferredSize(new java.awt.Dimension(270, 20));
                 statusJProgressBar.setString("");
                 statusJProgressBar.setStringPainted(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -459,7 +460,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
         public void run() {
 	    setInputsEnabled(false);
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		statusJProgressBar.setValue(0);
+		statusJProgressBar.setValue(1);
 		statusJProgressBar.setIndeterminate(true);
 		statusJProgressBar.setString("Authenticating...");
 	    }});

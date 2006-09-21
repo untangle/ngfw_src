@@ -189,19 +189,16 @@ public class MMainJFrame extends javax.swing.JFrame {
                 storeJPanel.setFont(new java.awt.Font("Arial", 0, 11));
                 storeJPanel.setMaximumSize(new java.awt.Dimension(189, 32767));
                 storeJPanel.setMinimumSize(new java.awt.Dimension(189, 134));
-                storeJPanel.setOpaque(false);
                 storeJScrollPane.setBorder(null);
                 storeJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
                 storeJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
                 storeJScrollPane.setDoubleBuffered(true);
                 storeJScrollPane.setFocusable(false);
                 storeJScrollPane.setFont(new java.awt.Font("Arial", 0, 12));
-                storeJScrollPane.setOpaque(false);
                 storeJScrollPane.getViewport().setOpaque(false);
                 storeScrollJPanel.setLayout(new java.awt.GridBagLayout());
 
                 storeScrollJPanel.setFocusable(false);
-                storeScrollJPanel.setOpaque(false);
                 storeSpacerJPanel.setFocusable(false);
                 storeSpacerJPanel.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -228,7 +225,6 @@ public class MMainJFrame extends javax.swing.JFrame {
                 toolboxJPanel.setFocusable(false);
                 toolboxJPanel.setMaximumSize(new java.awt.Dimension(189, 32767));
                 toolboxJPanel.setMinimumSize(new java.awt.Dimension(189, 134));
-                toolboxJPanel.setOpaque(false);
                 toolboxJScrollPane.setBorder(null);
                 toolboxJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
                 toolboxJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -297,7 +293,6 @@ public class MMainJFrame extends javax.swing.JFrame {
                 configurationJPanel.setFocusable(false);
                 configurationJPanel.setMaximumSize(new java.awt.Dimension(189, 134));
                 configurationJPanel.setMinimumSize(new java.awt.Dimension(189, 134));
-                configurationJPanel.setOpaque(false);
                 configurationJPanel.setPreferredSize(new java.awt.Dimension(189, 134));
                 configurationJScrollPane.setBorder(null);
                 configurationJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -310,12 +305,11 @@ public class MMainJFrame extends javax.swing.JFrame {
                 networkJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 networkJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
                 networkJButton.setText("<html>Networking</html>");
-                networkJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
                 networkJButton.setDoubleBuffered(true);
                 networkJButton.setFocusPainted(false);
                 networkJButton.setFocusable(false);
                 networkJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                networkJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+                networkJButton.setMargin(new java.awt.Insets(3, 3, 3, 2));
                 networkJButton.setMaximumSize(new java.awt.Dimension(810, 370));
                 networkJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -333,12 +327,11 @@ public class MMainJFrame extends javax.swing.JFrame {
                 remoteJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 remoteJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
                 remoteJButton.setText("<html>Remote Admin</html>");
-                remoteJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
                 remoteJButton.setDoubleBuffered(true);
                 remoteJButton.setFocusPainted(false);
                 remoteJButton.setFocusable(false);
                 remoteJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                remoteJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+                remoteJButton.setMargin(new java.awt.Insets(3, 3, 3, 2));
                 remoteJButton.setMaximumSize(new java.awt.Dimension(810, 370));
                 remoteJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -356,12 +349,11 @@ public class MMainJFrame extends javax.swing.JFrame {
                 emailJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 emailJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
                 emailJButton.setText("<html>Email</html>");
-                emailJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
                 emailJButton.setDoubleBuffered(true);
                 emailJButton.setFocusPainted(false);
                 emailJButton.setFocusable(false);
                 emailJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                emailJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+                emailJButton.setMargin(new java.awt.Insets(3, 3, 3, 2));
                 emailJButton.setMaximumSize(new java.awt.Dimension(810, 370));
                 emailJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -379,12 +371,11 @@ public class MMainJFrame extends javax.swing.JFrame {
                 directoryJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 directoryJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
                 directoryJButton.setText("<html>User Directory</html>");
-                directoryJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
                 directoryJButton.setDoubleBuffered(true);
                 directoryJButton.setFocusPainted(false);
                 directoryJButton.setFocusable(false);
                 directoryJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                directoryJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+                directoryJButton.setMargin(new java.awt.Insets(3, 3, 3, 2));
                 directoryJButton.setMaximumSize(new java.awt.Dimension(810, 370));
                 directoryJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -402,12 +393,11 @@ public class MMainJFrame extends javax.swing.JFrame {
                 backupJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 backupJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
                 backupJButton.setText("<html>Backup/Restore</html>");
-                backupJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
                 backupJButton.setDoubleBuffered(true);
                 backupJButton.setFocusPainted(false);
                 backupJButton.setFocusable(false);
                 backupJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                backupJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+                backupJButton.setMargin(new java.awt.Insets(3, 3, 3, 2));
                 backupJButton.setMaximumSize(new java.awt.Dimension(810, 370));
                 backupJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -425,12 +415,11 @@ public class MMainJFrame extends javax.swing.JFrame {
                 maintenanceJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 maintenanceJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
                 maintenanceJButton.setText("<html>Support</html>");
-                maintenanceJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
                 maintenanceJButton.setDoubleBuffered(true);
                 maintenanceJButton.setFocusPainted(false);
                 maintenanceJButton.setFocusable(false);
                 maintenanceJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                maintenanceJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+                maintenanceJButton.setMargin(new java.awt.Insets(3, 3, 3, 2));
                 maintenanceJButton.setMaximumSize(new java.awt.Dimension(810, 370));
                 maintenanceJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -448,12 +437,11 @@ public class MMainJFrame extends javax.swing.JFrame {
                 aboutJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 aboutJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
                 aboutJButton.setText("<html>Setup Info</html>");
-                aboutJButton.setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(2, 2, 2, 0))));
                 aboutJButton.setDoubleBuffered(true);
                 aboutJButton.setFocusPainted(false);
                 aboutJButton.setFocusable(false);
                 aboutJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                aboutJButton.setMargin(new java.awt.Insets(1, 3, 4, 2));
+                aboutJButton.setMargin(new java.awt.Insets(3, 3, 3, 2));
                 aboutJButton.setMaximumSize(new java.awt.Dimension(810, 370));
                 aboutJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -509,6 +497,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 upgradeJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
                 upgradeJButton.setMaximumSize(new java.awt.Dimension(114, 42));
                 upgradeJButton.setMinimumSize(new java.awt.Dimension(114, 42));
+                upgradeJButton.setOpaque(false);
                 upgradeJButton.setPreferredSize(new java.awt.Dimension(114, 42));
                 upgradeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -532,6 +521,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 helpJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
                 helpJButton.setMaximumSize(new java.awt.Dimension(36, 42));
                 helpJButton.setMinimumSize(new java.awt.Dimension(36, 42));
+                helpJButton.setOpaque(false);
                 helpJButton.setPreferredSize(new java.awt.Dimension(36, 42));
                 helpJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

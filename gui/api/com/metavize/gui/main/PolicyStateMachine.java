@@ -852,11 +852,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 	    setName("MVCLIENT-StoreModelThread");
             storeProgressBar = new JProgressBar();
             storeProgressBar.setStringPainted(true);
-            storeProgressBar.setForeground(new java.awt.Color(68, 91, 255));
-            storeProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
-            storeProgressBar.setPreferredSize(new java.awt.Dimension(130, 16));
-            storeProgressBar.setMaximumSize(new java.awt.Dimension(130, 16));
-            storeProgressBar.setMinimumSize(new java.awt.Dimension(130, 16));
+	    storeProgressBar.setOpaque(true);
+            //storeProgressBar.setForeground(new java.awt.Color(68, 91, 255));
+            //storeProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
+            storeProgressBar.setPreferredSize(new java.awt.Dimension(130, 20));
+            storeProgressBar.setMaximumSize(new java.awt.Dimension(130, 20));
+            storeProgressBar.setMinimumSize(new java.awt.Dimension(130, 20));
             start();
         }
         public synchronized void updateStoreModel(){
@@ -912,7 +913,6 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 storeMap.clear();
                 storeJPanel.removeAll();
                 // CREATE PROGRESS BAR AND ADD IT
-                storeProgressBar.setValue(0);
                 storeProgressBar.setIndeterminate(true);
                 storeProgressBar.setString("Connecting...");
                 storeJPanel.add(storeProgressBar, storeProgressGridBagConstraints);
@@ -933,7 +933,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             if( !connectedToStore ){
                 // NO CONNECTION
                 SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                    storeProgressBar.setValue(0);
+                    storeProgressBar.setValue(1);
                     storeProgressBar.setIndeterminate(false);
                     storeProgressBar.setString("No Connection");
 		    if(firstRun){
@@ -946,7 +946,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 if( storeItemsAvailable.length == 0 ){
                     // CONNECTION, BUT NO ITEMS AVAILABLE
                     SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                        storeProgressBar.setValue(0);
+                        storeProgressBar.setValue(1);
                         storeProgressBar.setIndeterminate(false);
                         storeProgressBar.setString("No New Items");
 			if(firstRun){

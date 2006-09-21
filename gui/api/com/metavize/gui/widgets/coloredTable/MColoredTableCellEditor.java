@@ -68,6 +68,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	//this.setClickCountToStart(1);
 	
 	jButton = new JButton();
+	jButton.setOpaque(false);
 	jButton.setFont(new java.awt.Font("Default", 0, 12));
 	jButton.setFocusable(false);
 	jButton.addActionListener(this);

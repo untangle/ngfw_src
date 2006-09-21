@@ -90,8 +90,8 @@ public class MEditTableJPanel extends javax.swing.JPanel
         entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
         entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
 	entryJScrollPane.addComponentListener(this);
-        this.setOpaque(false);
-        contentJPanel.setOpaque(false);
+        this.setOpaque(true);
+        contentJPanel.setOpaque(true);
         detailJTextArea.setText("no selection...");        
             
         if(!showButtonJPanel){
@@ -275,6 +275,7 @@ public class MEditTableJPanel extends javax.swing.JPanel
                 addJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 addJButton.setMaximumSize(new java.awt.Dimension(32, 32));
                 addJButton.setMinimumSize(new java.awt.Dimension(32, 32));
+                addJButton.setOpaque(false);
                 addJButton.setPreferredSize(new java.awt.Dimension(32, 32));
                 addJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -301,6 +302,7 @@ public class MEditTableJPanel extends javax.swing.JPanel
                 removeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 removeJButton.setMaximumSize(new java.awt.Dimension(32, 32));
                 removeJButton.setMinimumSize(new java.awt.Dimension(32, 32));
+                removeJButton.setOpaque(false);
                 removeJButton.setPreferredSize(new java.awt.Dimension(32, 32));
                 removeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -327,6 +329,7 @@ public class MEditTableJPanel extends javax.swing.JPanel
                 fillJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 fillJButton.setMaximumSize(new java.awt.Dimension(32, 32));
                 fillJButton.setMinimumSize(new java.awt.Dimension(32, 32));
+                fillJButton.setOpaque(false);
                 fillJButton.setPreferredSize(new java.awt.Dimension(32, 32));
                 fillJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -347,10 +350,8 @@ public class MEditTableJPanel extends javax.swing.JPanel
                 detailJScrollPane.setDoubleBuffered(true);
                 detailJScrollPane.setFocusable(false);
                 detailJScrollPane.setMinimumSize(new java.awt.Dimension(31, 50));
-                detailJScrollPane.setOpaque(false);
                 detailJScrollPane.setPreferredSize(new java.awt.Dimension(104, 50));
                 detailJScrollPane.setRequestFocusEnabled(false);
-                detailJTextArea.setBackground(new java.awt.Color(240, 240, 240));
                 detailJTextArea.setEditable(false);
                 detailJTextArea.setLineWrap(true);
                 detailJTextArea.setWrapStyleWord(true);
@@ -359,7 +360,6 @@ public class MEditTableJPanel extends javax.swing.JPanel
                 detailJTextArea.setFocusable(false);
                 detailJTextArea.setMargin(new java.awt.Insets(2, 2, 2, 2));
                 detailJTextArea.setMinimumSize(new java.awt.Dimension(100, 50));
-                detailJTextArea.setOpaque(false);
                 detailJTextArea.setPreferredSize(null);
                 detailJTextArea.setRequestFocusEnabled(false);
                 detailJScrollPane.setViewportView(detailJTextArea);

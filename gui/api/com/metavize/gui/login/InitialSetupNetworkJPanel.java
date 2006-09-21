@@ -329,10 +329,10 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 
                 staticIPJPanel.setLayout(new java.awt.GridBagLayout());
 
-                staticIPJPanel.setMaximumSize(new java.awt.Dimension(400, 115));
-                staticIPJPanel.setMinimumSize(new java.awt.Dimension(400, 115));
+                staticIPJPanel.setMaximumSize(new java.awt.Dimension(400, 125));
+                staticIPJPanel.setMinimumSize(new java.awt.Dimension(400, 125));
                 staticIPJPanel.setOpaque(false);
-                staticIPJPanel.setPreferredSize(new java.awt.Dimension(400, 115));
+                staticIPJPanel.setPreferredSize(new java.awt.Dimension(400, 125));
                 dhcpIPaddrJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 dhcpIPaddrJLabel.setText("IP Address:");
                 gridBagConstraints = new java.awt.GridBagConstraints();

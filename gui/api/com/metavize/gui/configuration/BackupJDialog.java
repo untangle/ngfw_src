@@ -68,6 +68,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 buttonGroup1 = new javax.swing.ButtonGroup();
                 closeJButton = new javax.swing.JButton();
                 jTabbedPane = new javax.swing.JTabbedPane();
+                jPanel1 = new javax.swing.JPanel();
                 backupJTabbedPane = new javax.swing.JTabbedPane();
                 backupHardDiskJPanel = new javax.swing.JPanel();
                 contentJPanel = new javax.swing.JPanel();
@@ -85,6 +86,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 localBackupDisabledJLabel = new javax.swing.JLabel();
                 actionJPanel2 = new javax.swing.JPanel();
                 backupFileJButton = new javax.swing.JButton();
+                jPanel2 = new javax.swing.JPanel();
                 restoreJTabbedPane = new javax.swing.JTabbedPane();
                 restoreHDAndUSBJPanel = new javax.swing.JPanel();
                 contentJPanel2 = new javax.swing.JPanel();
@@ -110,6 +112,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 closeJButton.setFocusable(false);
                 closeJButton.setMaximumSize(new java.awt.Dimension(117, 25));
                 closeJButton.setMinimumSize(new java.awt.Dimension(117, 25));
+                closeJButton.setOpaque(false);
                 closeJButton.setPreferredSize(new java.awt.Dimension(117, 25));
                 closeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -127,6 +130,8 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 jTabbedPane.setDoubleBuffered(true);
                 jTabbedPane.setFocusable(false);
                 jTabbedPane.setFont(new java.awt.Font("Default", 0, 12));
+                jPanel1.setLayout(new java.awt.BorderLayout());
+
                 backupJTabbedPane.setBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(7, 13, 13, 13)));
                 backupJTabbedPane.setFocusable(false);
                 backupJTabbedPane.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -309,7 +314,11 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 
                 backupJTabbedPane.addTab("To Local File", backupLocalFileJPanel);
 
-                jTabbedPane.addTab("Backup", backupJTabbedPane);
+                jPanel1.add(backupJTabbedPane, java.awt.BorderLayout.CENTER);
+
+                jTabbedPane.addTab("Backup", jPanel1);
+
+                jPanel2.setLayout(new java.awt.BorderLayout());
 
                 restoreJTabbedPane.setBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(7, 13, 13, 13)));
                 restoreJTabbedPane.setFocusable(false);
@@ -405,7 +414,9 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 
                 restoreJTabbedPane.addTab("From Local File", restoreLocalFileJPanel);
 
-                jTabbedPane.addTab("Restore", restoreJTabbedPane);
+                jPanel2.add(restoreJTabbedPane, java.awt.BorderLayout.CENTER);
+
+                jTabbedPane.addTab("Restore", jPanel2);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -667,6 +678,8 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
         private javax.swing.JLabel jLabel3;
         private javax.swing.JLabel jLabel4;
         private javax.swing.JLabel jLabel5;
+        private javax.swing.JPanel jPanel1;
+        private javax.swing.JPanel jPanel2;
         private javax.swing.JTabbedPane jTabbedPane;
         private javax.swing.JLabel localBackupDisabledJLabel;
         private javax.swing.JLabel localRestoreDisabledJLabel;

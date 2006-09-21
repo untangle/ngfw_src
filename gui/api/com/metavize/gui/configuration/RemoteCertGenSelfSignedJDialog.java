@@ -178,10 +178,9 @@ public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implemen
                 getContentPane().add(hostnameJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 250, 200, -1));
 
                 jProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
-                jProgressBar.setForeground(new java.awt.Color(68, 91, 255));
-                jProgressBar.setMaximumSize(new java.awt.Dimension(32767, 16));
-                jProgressBar.setMinimumSize(new java.awt.Dimension(10, 16));
-                jProgressBar.setPreferredSize(new java.awt.Dimension(148, 16));
+                jProgressBar.setMaximumSize(new java.awt.Dimension(32767, 20));
+                jProgressBar.setMinimumSize(new java.awt.Dimension(10, 20));
+                jProgressBar.setPreferredSize(new java.awt.Dimension(148, 20));
                 jProgressBar.setString("");
                 jProgressBar.setStringPainted(true);
                 getContentPane().add(jProgressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 300, 320, -1));

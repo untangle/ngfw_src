@@ -158,7 +158,11 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
         newJTabbedPane.setFocusable(false);
         newJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
 	newJTabbedPane.setRequestFocusEnabled(false);
-	addTab(index, name, icon, newJTabbedPane);
+	JPanel backJPanel = new JPanel();
+	backJPanel.setOpaque(true);
+	backJPanel.setLayout(new BorderLayout());
+	backJPanel.add(newJTabbedPane);
+	addTab(index, name, icon, backJPanel);
 	return newJTabbedPane;
     }
     protected JScrollPane addScrollableTab(JTabbedPane parentJTabbedPane, String name, Icon icon,
@@ -343,6 +347,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 removeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 removeJButton.setMaximumSize(new java.awt.Dimension(130, 25));
                 removeJButton.setMinimumSize(new java.awt.Dimension(130, 25));
+                removeJButton.setOpaque(false);
                 removeJButton.setPreferredSize(new java.awt.Dimension(130, 25));
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -360,6 +365,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 expandJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 expandJButton.setMaximumSize(new java.awt.Dimension(140, 25));
                 expandJButton.setMinimumSize(new java.awt.Dimension(140, 25));
+                expandJButton.setOpaque(false);
                 expandJButton.setPreferredSize(new java.awt.Dimension(140, 25));
                 expandJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -384,6 +390,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 reloadJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 reloadJButton.setMaximumSize(new java.awt.Dimension(115, 25));
                 reloadJButton.setMinimumSize(new java.awt.Dimension(115, 25));
+                reloadJButton.setOpaque(false);
                 reloadJButton.setPreferredSize(new java.awt.Dimension(115, 25));
                 reloadJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -408,6 +415,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 saveJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 saveJButton.setMaximumSize(new java.awt.Dimension(115, 25));
                 saveJButton.setMinimumSize(new java.awt.Dimension(115, 25));
+                saveJButton.setOpaque(false);
                 saveJButton.setPreferredSize(new java.awt.Dimension(115, 25));
                 saveJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

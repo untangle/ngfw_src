@@ -101,6 +101,7 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
 	    renderJButton.setFont(new java.awt.Font("Dialog", 0, 12));
 	    renderJButton.setFocusable(false);
 	    renderJButton.setEnabled(true);
+	    renderJButton.setOpaque(false);
 	    renderJButtonJPanel = new JPanel();
 	    renderJButtonJPanel.setOpaque(false);
 	    renderJButtonJPanel.setLayout(new BorderLayout());

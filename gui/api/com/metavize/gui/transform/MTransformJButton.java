@@ -36,16 +36,19 @@ public class MTransformJButton extends JButton {
     private JLabel descriptionIconJLabel;
     private String toolTipString;
     private boolean isTrial = false;
+    private JPanel contentJPanel;
 
     private static Color COLOR_NAME_DISABLED = new Color(140,140,140);
 
     public MTransformJButton(MackageDesc mackageDesc) {
         this.mackageDesc = mackageDesc;
 
-	setFocusable(false);
-
         // INITIAL LAYOUT
-        this.setLayout(new GridBagLayout());
+	contentJPanel = new JPanel();
+	contentJPanel.setOpaque(false);
+	contentJPanel.setLayout(new GridBagLayout());
+	setLayout(new BorderLayout());
+	add(contentJPanel);
 
         // ORG ICON
         organizationIconJLabel = new JLabel();
@@ -64,7 +67,7 @@ public class MTransformJButton extends JButton {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.weightx = 0.5;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 4);
-        add(organizationIconJLabel, gridBagConstraints);
+        contentJPanel.add(organizationIconJLabel, gridBagConstraints);
 
         // DESC ICON
         descriptionIconJLabel = new JLabel();
@@ -83,7 +86,7 @@ public class MTransformJButton extends JButton {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 0.5;
         gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 2);
-        add(descriptionIconJLabel, gridBagConstraints);
+        contentJPanel.add(descriptionIconJLabel, gridBagConstraints);
 
         //DISPLAY NAME
         nameJLabel = new JLabel();
@@ -92,7 +95,7 @@ public class MTransformJButton extends JButton {
 	    tempName = mackageDesc.getDisplayName() + "<br>(30 Day Trial)";
 	else
 	    tempName = mackageDesc.getDisplayName();
-        nameJLabel.setText( "<html><b><center>" + Util.wrapString(tempName, 20) + "</center></b></html>");
+        nameJLabel.setText( "<html><b><center>" + Util.wrapString(tempName, 19) + "</center></b></html>");
         nameJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         nameJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         nameJLabel.setFocusable(false);
@@ -103,8 +106,7 @@ public class MTransformJButton extends JButton {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-        add(nameJLabel, gridBagConstraints);
-
+        contentJPanel.add(nameJLabel, gridBagConstraints);
 	try{ ((JComponent)nameJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
 	catch(Exception e){}
 
@@ -117,26 +119,35 @@ public class MTransformJButton extends JButton {
         statusJProgressBar.setOpaque(true);
         statusJProgressBar.setIndeterminate(false);
         statusJProgressBar.setValue(0);
-        statusJProgressBar.setForeground(new java.awt.Color(68, 91, 255));
+        //statusJProgressBar.setForeground(new java.awt.Color(68, 91, 255));
         statusJProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
-        statusJProgressBar.setPreferredSize(new java.awt.Dimension(130, 16));
-        statusJProgressBar.setMaximumSize(new java.awt.Dimension(130, 16));
-        statusJProgressBar.setMinimumSize(new java.awt.Dimension(130, 16));
+        statusJProgressBar.setPreferredSize(new java.awt.Dimension(130, 20));
+        statusJProgressBar.setMaximumSize(new java.awt.Dimension(130, 20));
+        statusJProgressBar.setMinimumSize(new java.awt.Dimension(130, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
-        add(statusJProgressBar, gridBagConstraints);
+        contentJPanel.add(statusJProgressBar, gridBagConstraints);
 
         // TOOLTIP
         toolTipString = Util.wrapString( mackageDesc.getLongDescription(), 80);
 
-        this.setMargin(new Insets(0,0,0,0));
-        this.setFocusPainted(false);
-        this.setContentAreaFilled(true);
-        this.setOpaque(true);
+        setMargin(new Insets(6,0,4,0));
+        setFocusPainted(false);
+	setFocusable(false);
+        setOpaque(false);
 
+    }
+
+    public Dimension getPreferredSize(){
+	Dimension d = contentJPanel.getPreferredSize();
+	Insets i = getMargin();
+	d.width = 140;
+	d.height += i.top;
+	d.height += i.bottom;
+	return d;
     }
 
     public MTransformJButton duplicate(){
