@@ -12,25 +12,23 @@
 package com.metavize.mvvm.networking;
 
 import java.io.Serializable;
-
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.JoinColumn;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.IndexColumn;
-import org.hibernate.annotations.Type;
-
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.Type;
 
 /**
  * Settings used for all of the PPPoE connections.
@@ -66,7 +64,7 @@ public class PPPoESettings implements Serializable, Validatable
     {
         this.id = id;
     }
-    
+
     @Column(name="live")
     public boolean getIsEnabled()
     {
@@ -77,8 +75,10 @@ public class PPPoESettings implements Serializable, Validatable
     {
         this.isEnabled = newValue;
     }
-    
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
     public List<PPPoEConnectionRule> getConnectionList()
@@ -90,15 +90,15 @@ public class PPPoESettings implements Serializable, Validatable
     public void setConnectionList( List<PPPoEConnectionRule> newValue )
     {
         if ( newValue == null ) newValue = new LinkedList<PPPoEConnectionRule>();
-        
+
         this.connectionList = newValue;
     }
-    
+
     public void validate() throws ValidateException
     {
         /* Nothing to validate if the field is non-empty */
         if ( !this.isEnabled ) return;
-        
+
         for ( PPPoEConnectionRule connection : getConnectionList()) connection.validate();
    }
 
@@ -106,9 +106,9 @@ public class PPPoESettings implements Serializable, Validatable
     {
         StringBuilder sb = new StringBuilder();
         sb.append( "PPPoE Settings[" + getIsEnabled() + "]\n" );
-        
+
         for ( PPPoEConnectionRule rule : getConnectionList()) sb.append( rule + "\n" );
-        
+
         sb.append( "PPPoE Settings END" );
 
         return sb.toString();

@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -26,7 +27,7 @@ import javax.persistence.Transient;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
-import javax.persistence.Entity;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
@@ -54,7 +55,9 @@ public class DhcpAbsoluteEvent extends LogEvent implements Serializable
      *
      * @return the list of the redirect rules.
      */
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinTable(name="tr_nat_evt_dhcp_abs_leases",
                joinColumns=@JoinColumn(name="event_id"),
                inverseJoinColumns=@JoinColumn(name="lease_id"))

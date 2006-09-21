@@ -29,6 +29,7 @@ import javax.persistence.Transient;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
@@ -375,7 +376,9 @@ public class VirusSettings implements Serializable
      *
      * @return the list of scanned mime types.
      */
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinTable(name="tr_virus_vs_mt",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
@@ -395,7 +398,9 @@ public class VirusSettings implements Serializable
      *
      * @return the set of scanned extensions.
      */
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinTable(name="tr_virus_vs_ext",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))

@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm.networking;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +21,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -27,6 +31,7 @@ import javax.persistence.Transient;
 
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Rule;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 
@@ -132,7 +137,9 @@ public class NetworkSpace extends Rule
      *
      * @return The list of networks in this network space.
      */
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="space_id")
     @IndexColumn(name="position")
     public List<IPNetworkRule> getNetworkList()

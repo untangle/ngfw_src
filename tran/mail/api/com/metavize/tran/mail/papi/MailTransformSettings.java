@@ -28,6 +28,7 @@ import javax.persistence.Transient;
 
 import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
 import com.metavize.tran.mail.papi.safelist.SafelistSettings;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
@@ -242,7 +243,9 @@ public class MailTransformSettings implements Serializable
      *
      * @return the list of Safelist settings
      */
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinTable(name="tr_mail_safelists",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="safels_id"))

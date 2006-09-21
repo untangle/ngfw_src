@@ -27,6 +27,7 @@ import javax.persistence.Transient;
 
 import com.metavize.tran.mail.papi.EmailAddressPairRule;
 import com.metavize.tran.mail.papi.EmailAddressRule;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
@@ -85,7 +86,9 @@ public class QuarantineSettings implements Serializable {
      * not supported.  Only glob.  <br>
      * @return a List of EmailAddressRule objects.
      */
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id", nullable=false)
     @IndexColumn(name="position")
     public List<EmailAddressRule> getAllowedAddressPatterns() {
@@ -121,7 +124,9 @@ public class QuarantineSettings implements Serializable {
      *
      * @return a List of EmailAddressPairRule objects.
      */
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id", nullable=false)
     @IndexColumn(name="position")
     public List<EmailAddressPairRule> getAddressRemaps() {

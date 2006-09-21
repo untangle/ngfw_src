@@ -31,6 +31,7 @@ import javax.persistence.Transient;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.Validatable;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
@@ -150,7 +151,9 @@ public class FirewallSettings implements Serializable, Validatable
      *
      * @return the list of the redirect rules.
      */
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinTable(name="tr_firewall_rules",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))

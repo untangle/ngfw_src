@@ -27,6 +27,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.metavize.mvvm.security.Tid;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
@@ -91,7 +92,9 @@ public class ProtoFilterSettings implements java.io.Serializable
      *
      * @return the list of Patterns
      */
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
     public List<ProtoFilterPattern> getPatterns() { return patterns; }

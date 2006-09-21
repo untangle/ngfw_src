@@ -25,6 +25,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
@@ -73,7 +74,9 @@ public class IPMaddrDirectory implements Serializable
      *
      * @return dictionary entries
      */
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinTable(name="ipmaddr_dir_entries",
                joinColumns=@JoinColumn(name="ipmaddr_dir_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))

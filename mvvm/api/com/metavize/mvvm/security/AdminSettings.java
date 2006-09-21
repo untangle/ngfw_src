@@ -27,6 +27,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.metavize.mvvm.Period;
+import org.hibernate.annotations.Cascade;
 
 /**
  * Mvvm administrator settings.
@@ -65,7 +66,9 @@ public class AdminSettings implements Serializable
      *
      * @return system users.
      */
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
+            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="admin_setting_id")
     public Set<User> getUsers()
     {
