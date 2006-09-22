@@ -373,7 +373,7 @@ Browser.prototype._loginCallback = function(obj, results)
         this._dirTree.repopulate(obj.item, principal);
         this._detailPanel.refresh();
     } else {
-        //alert("FAILURE");
+        obj.dialog.reportFailure("Bad Login");
     }
 };
 
