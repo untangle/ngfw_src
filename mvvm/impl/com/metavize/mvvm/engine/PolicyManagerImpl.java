@@ -477,13 +477,13 @@ class PolicyManagerImpl implements PolicyManagerPriv
                                 if (!foundForward) {
                                     logger.info("Adding new default inbound SystemPolicyRule for ci: " + firstIntf + ", si: " + secondIntf);
                                     SystemPolicyRule newInRule = new SystemPolicyRule(firstIntf, secondIntf, defaultPolicy, true);
-                                    s.saveOrUpdate(newInRule);
+                                    s.merge(newInRule);
                                     goodSys.add(newInRule);
                                 }
                                 if (!foundBackward) {
                                     logger.info("Adding new default outbound SystemPolicyRule for ci: " + secondIntf + ", si: " + firstIntf);
                                     SystemPolicyRule newOutRule = new SystemPolicyRule(secondIntf, firstIntf, defaultPolicy, false);
-                                    s.saveOrUpdate(newOutRule);
+                                    s.merge(newOutRule);
                                     goodSys.add(newOutRule);
                                 }
 
@@ -506,7 +506,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
                         // Get rid of the extra user rules.
                         existingUser.retainAll(goodUser);
                         uprs.setRules(existingUser);
-                        s.saveOrUpdate(uprs);
+                        s.merge(uprs);
 
                         // Finally, get rid of the extra system ones.
                         existingSys.removeAll(goodSys);
