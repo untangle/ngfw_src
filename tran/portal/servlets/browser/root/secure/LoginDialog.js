@@ -23,7 +23,7 @@ LoginDialog.prototype.constructor = LoginDialog;
 
 // public methods -------------------------------------------------------------
 
-LoginPanel.prototype.println = function()
+LoginDialog.prototype.println = function()
 {
   return "LoginDialog";
 };

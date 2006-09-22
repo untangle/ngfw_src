@@ -77,6 +77,10 @@ CifsNode.prototype = {
         return null == this.principal ? this.url : ("[" + this.principal + "]" + this.url);
     },
 
+    getFullPath: function() {
+        return this.url.replace(/\//g, "\\");
+    },
+
     isWorkGroup: function() {
         return this.type == CifsNode.WORKGROUP;
     },

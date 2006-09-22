@@ -233,12 +233,19 @@ Browser.prototype._makeDirActionMenu = function()
     var i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
     i.setText("Open");
     i.addSelectionListener(new AjxListener(this, this._openDirListener));
+
     i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
     i.setText("Delete");
     i.addSelectionListener(new AjxListener(this, this._deleteButtonListener));
+
     i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
-    i.setText("Rename");
+    i.setText("Rename...");
     i.addSelectionListener(new AjxListener(this, this._renameButtonListener));
+
+
+    i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
+    i.setText("Bookmark...");
+    i.addSelectionListener(new AjxListener(this, this._bookmarkButtonListener));
 
     return actionMenu;
 };
@@ -257,7 +264,7 @@ Browser.prototype._makeFileActionMenu = function()
     i.setText("Delete");
     i.addSelectionListener(new AjxListener(this, this._deleteButtonListener));
     i = new DwtMenuItem(actionMenu, DwtMenuItem.NO_STYLE);
-    i.setText("Rename");
+    i.setText("Rename...");
     i.addSelectionListener(new AjxListener(this, this._renameButtonListener));
 
     return actionMenu;
@@ -485,6 +492,23 @@ Browser.prototype._renameButtonListener = function(ev)
     dialog.popup();
 };
 
+Browser.prototype._bookmarkButtonListener = function(ev)
+{
+    var sel = this._detailPanel.getSelection();
+
+    var target = sel[0].getFullPath();
+
+    var dialog = new BookmarkDialog(this._shell, target);
+
+    var obj = { dialog: dialog, target: target };
+    var l = new AjxListener(this, this._bookmarkDialogListenerFn, obj);
+
+    dialog.setButtonListener(DwtDialog.OK_BUTTON, l);
+    dialog.addListener(DwtEvent.ENTER, l);
+
+    dialog.popup();
+};
+
 Browser.prototype._renameDialogListenerFn = function(obj, evt)
 {
     // XXX first selection only
@@ -528,6 +552,23 @@ Browser.prototype._mkdirDialogListenerFn = function(obj, evt)
 
         MvRpc.invoke(reqStr, url, Browser._POST_HEADERS, false, actionCb,
                      MvRpc.reloadPageCallback, this._authCallback);
+    }
+};
+
+Browser.prototype._bookmarkDialogListenerFn = function(obj, evt)
+{
+    var dialog = obj.dialog;
+
+    var name = dialog.getName();
+
+    if (name) {
+        var url = "/portal/secure/bookmark?command=add&name=" + escape(name)
+            + "&app=CIFS&target=" + escape(obj.target);
+        // XXX feedback from call
+        MvRpc.invoke(null, url, null, true,
+                     null,
+                     MvRpc.reloadPageCallback);
+        dialog.popdown();
     }
 };
 
