@@ -18,7 +18,6 @@ import javax.swing.plaf.ColorUIResource;
 import java.io.FileWriter;
 
 
-import com.incors.plaf.kunststoff.*;
 import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.widgets.wizard.*;
 

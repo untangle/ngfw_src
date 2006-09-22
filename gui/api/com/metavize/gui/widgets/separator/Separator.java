@@ -11,7 +11,6 @@
 
 package com.metavize.gui.widgets.separator;
 
-import com.incors.plaf.kunststoff.*;
 
 import javax.swing.border.*;
 import javax.swing.*;
