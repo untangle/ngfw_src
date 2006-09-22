@@ -92,12 +92,15 @@ class VirusHttpHandler extends HttpStateMachine
     protected RequestLineToken doRequestLine(RequestLineToken requestLine)
     {
         String path = requestLine.getRequestUri().getPath();
+        if (null == path) {
+            extension = "";
+        } else {
+            int i = path.lastIndexOf('.');
+            extension = (0 <= i && path.length() - 1 > i)
+                ? path.substring(i + 1) : null;
 
-        int i = path.lastIndexOf('.');
-        extension = (0 <= i && path.length() - 1 > i)
-            ? path.substring(i + 1) : null;
-
-        releaseRequest();
+            releaseRequest();
+        }
         return requestLine;
     }
 

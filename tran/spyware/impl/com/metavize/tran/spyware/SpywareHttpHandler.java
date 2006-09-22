@@ -109,9 +109,13 @@ public class SpywareHttpHandler extends HttpStateMachine
         logger.debug("got request line");
 
         String path = requestLine.getRequestUri().getPath();
-        int i = path.lastIndexOf('.');
-        extension = (0 <= i && path.length() - 1 > i)
-            ? path.substring(i + 1) : null;
+        if (null == path) {
+            extension = "";
+        } else {
+            int i = path.lastIndexOf('.');
+            extension = (0 <= i && path.length() - 1 > i)
+                ? path.substring(i + 1) : null;
+        }
 
         return requestLine;
     }
