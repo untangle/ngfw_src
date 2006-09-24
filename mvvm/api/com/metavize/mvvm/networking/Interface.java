@@ -135,16 +135,4 @@ public class Interface extends Rule
     {
         this.currentMedia = newValue;
     }
-
-    @Transient
-    public String getIntfName()
-    {
-        return this.intfName;
-    }
-
-    /* Should only be settable locally */
-    void setIntfName( String newValue )
-    {
-        this.intfName = newValue;
-    }
 }

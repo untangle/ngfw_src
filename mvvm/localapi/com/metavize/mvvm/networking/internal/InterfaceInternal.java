@@ -13,15 +13,19 @@ package com.metavize.mvvm.networking.internal;
 
 import com.metavize.mvvm.tran.ValidateException;
 
+import com.metavize.mvvm.ArgonException;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.localapi.ArgonInterface;
+import com.metavize.mvvm.localapi.LocalIntfManager;
+
 import com.metavize.mvvm.networking.Interface;
 import com.metavize.mvvm.networking.EthernetMedia;
 
 public class InterfaceInternal
 {
-    private final byte argonIntf;
     /* This is the user representation of the interface name (eg. Internal/External) */
     private final String name;
-    private final String intfName;
+    private final ArgonInterface argonIntf;
     private final NetworkSpaceInternal networkSpace;
     private final EthernetMedia ethernetMedia;
     private final boolean isPingable;
@@ -30,14 +34,13 @@ public class InterfaceInternal
     private String currentMedia = "";
 
     /* Done this way so validation can occur */
-    private InterfaceInternal( Interface intf, String intfName, NetworkSpaceInternal networkSpace )
+    private InterfaceInternal( Interface intf, ArgonInterface argonIntf, NetworkSpaceInternal networkSpace )
     {
         /* Set the network space, this can't be retrieved from the interface because 
          * the interface deals in NetworkSpace objects which are modifiable */
         this.networkSpace = networkSpace;
 
-        this.argonIntf = intf.getArgonIntf();
-        this.intfName  = intfName;
+        this.argonIntf = argonIntf;
         this.ethernetMedia = intf.getEthernetMedia();
         this.isPingable = intf.getIsPingable();
 
@@ -47,14 +50,9 @@ public class InterfaceInternal
         this.name = intf.getName();
     }
     
-    public byte getArgonIntf()
+    public ArgonInterface getArgonIntf()
     {
         return this.argonIntf;
-    }
-
-    public String getIntfName()
-    {
-        return this.intfName;
     }
     
     public String getName()
@@ -106,7 +104,7 @@ public class InterfaceInternal
      */
     public Interface toInterface()
     {
-        Interface i = new Interface( this.argonIntf, this.ethernetMedia, this.isPingable );
+        Interface i = new Interface( this.argonIntf.getArgon(), this.ethernetMedia, this.isPingable );
         i.setName( getName());
         i.setConnectionState( getConnectionState());
         i.setCurrentMedia( getCurrentMedia());
@@ -119,7 +117,6 @@ public class InterfaceInternal
         StringBuilder sb = new StringBuilder();
         sb.append( "argon intf:  " ).append( getArgonIntf());
         sb.append( "\nname:        " ).append( getName());
-        sb.append( "\nphy-name:    " ).append( getIntfName());
         sb.append( "\nspace-index: " ).append( getNetworkSpace().getIndex());
         sb.append( "\neth-media:   " ).append( getEthernetMedia());
         sb.append( "\nstatus:      " ).append( getConnectionState() + "/" + getCurrentMedia());
@@ -131,14 +128,16 @@ public class InterfaceInternal
         makeInterfaceInternal( Interface intf, NetworkSpaceInternal networkSpace )
         throws ValidateException
     {
-        /* unable to pass this in since the internal interfaces are
-         * generated from a network space */
-        String intfName = intf.getIntfName();
-        if ( intfName == null || intfName.length() == 0 ) {
-            throw new ValidateException( "Interface[" + intf.getArgonIntf() + "] must be assigned a name" );
+        ArgonInterface argonIntf = null;
+
+        try {
+            LocalIntfManager lim = MvvmContextFactory.context().intfManager();
+            argonIntf = lim.getIntfByArgon( intf.getArgonIntf());
+        } catch ( ArgonException e ) {
+            throw new ValidateException( "Invalid argon interface: " + argonIntf, e );
         }
 
-        return new InterfaceInternal( intf, intfName, networkSpace );
+        return new InterfaceInternal( intf, argonIntf, networkSpace );
     }
     
 }

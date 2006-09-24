@@ -81,7 +81,6 @@ class OpenVpnCaretaker implements Runnable
             } catch ( TransformException e ) {
                 logger.warn( "Error executing script: " + KEEP_ALIVE, e );
             }
-                                                
             
             /* Update the next time to check */
             nextEvent = new Date( System.currentTimeMillis() + SLEEP_TIME_MSEC );

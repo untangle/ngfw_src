@@ -26,7 +26,7 @@ import com.metavize.mvvm.ArgonException;
 public class InterfaceConverterTest
 {
     private static final ArgonInterface EXTERNAL     = new ArgonInterface( "eth0", 0, 1 );
-    private static final ArgonInterface EXTERNAL_PPP = new ArgonInterface( "ppp0", 0, 1 );
+    private static final ArgonInterface EXTERNAL_PPP = new ArgonInterface( "eth0", "ppp0", 0, 1 );
     private static final ArgonInterface INTERNAL     = new ArgonInterface( "eth1", 1, 2 );
     private static final ArgonInterface DMZ          = new ArgonInterface( "eth2", 2, 3 );
     private static final ArgonInterface VPN          = new ArgonInterface( "tun0", 3, 4 );
@@ -123,6 +123,11 @@ public class InterfaceConverterTest
         /* Verify that hasMatchingInterfaces returns false */
         Assert.assertTrue( newInstance.hasMatchingInterfaces( instance ));
         instance = newInstance;        
+    }
+
+    @Test public void registerSecondaryIntf() throws ArgonException
+    {
+        
     }
 
     /* exception testing, to verify that exceptions are thrown at the appropriate times */

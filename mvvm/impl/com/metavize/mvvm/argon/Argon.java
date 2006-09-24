@@ -76,8 +76,8 @@ public class Argon
     private final Logger logger = Logger.getLogger( this.getClass());
 
     /* Default device values */
-    String outside = "eth0";
-    String inside  = "eth1";
+    String external = "eth0";
+    String internal  = "eth1";
 
     /* If there is a DMZ interface, it is passed in using the system property */
     String dmz     = "";
@@ -121,12 +121,12 @@ public class Argon
     private void parseProperties()
     {
         String temp;
-        if (( temp = System.getProperty( "argon.inside" )) != null ) {
-            inside = temp;
+        if (( temp = System.getProperty( "argon.internal" )) != null ) {
+            internal = temp;
         }
 
-        if (( temp = System.getProperty( "argon.outside" )) != null ) {
-            outside = temp;
+        if (( temp = System.getProperty( "argon.external" )) != null ) {
+            external = temp;
         }
 
         if (( temp = System.getProperty( "argon.dmz" )) != null ) {
@@ -208,7 +208,7 @@ public class Argon
         Netcap.startScheduler();
 
         this.intfManager = new LocalIntfManagerImpl( policyManager );
-        this.intfManager.initializeIntfArray( inside, outside, dmz );
+        this.intfManager.initializeIntfArray( internal, external, dmz );
 
         /* Register the NatChecker */
         networkManager.registerListener( this.natChecker );

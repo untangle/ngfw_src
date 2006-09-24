@@ -81,7 +81,7 @@ class InterfaceTester
 
 
         for ( InterfaceInternal intf : settings.getEnabledList()) {
-            String intfName = intf.getIntfName();
+            String intfName = intf.getArgonIntf().getPhysicalName();
             String intfStatus = statusMap.get( intfName );
             intf.setConnectionState( UNKNOWN );
             intf.setCurrentMedia( UNKNOWN );
@@ -126,7 +126,7 @@ class InterfaceTester
         String args[] = new String[interfaceList.size()];
                 
         int c = 0;
-        for ( InterfaceInternal intf : interfaceList ) args[c++] = intf.getIntfName();
+        for ( InterfaceInternal intf : interfaceList ) args[c++] = intf.getArgonIntf().getPhysicalName();
 
         return args;
     }

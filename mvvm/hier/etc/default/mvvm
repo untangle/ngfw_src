@@ -24,18 +24,18 @@ MVVM_SESSION_LIMIT=""
 MVVM_ARGS=""
 
 ## For testing, uncomment and setup interfaces here, the values below should not be modified.
-#MVVM_INSIDE_INTF=""
-#MVVM_OUTSIDE_INTF=""
+#MVVM_INTERNAL_INTF=""
+#MVVM_EXTERNAL_INTF=""
 #MVVM_DMZ_INTF=""
 
 ## For testing uncomment if you want to generate /etc/network/interfaces files.
 # MVVM_ENABLE_NETWORK_CFG="anything"
 
-## Set inside and outside interface to a default if it is not set, for testing
+## Set internal and external interface to a default if it is not set, for testing
 ## modify the interface above, this setting will only change if the variable
 ## has not been set yet.
-MVVM_INSIDE_INTF=${MVVM_INSIDE_INTF:-"eth1"}
-MVVM_OUTSIDE_INTF=${MVVM_OUTSIDE_INTF:-"eth0"}
+MVVM_INTERNAL_INTF=${MVVM_INTERNAL_INTF:-"eth1"}
+MVVM_EXTERNAL_INTF=${MVVM_EXTERNAL_INTF:-"eth0"}
 
 if [ "x${USER}" = "x" -o "x${USER}" = "xroot" ]; then
         MVVM_NICENESS=0
@@ -43,7 +43,7 @@ else
         MVVM_NICENESS=0
 fi
 
-MVVM_ARGS="${MVVM_ARGS} -Dargon.inside=${MVVM_INSIDE_INTF} -Dargon.outside=${MVVM_OUTSIDE_INTF}"
+MVVM_ARGS="${MVVM_ARGS} -Dargon.internal=${MVVM_INTERNAL_INTF} -Dargon.external=${MVVM_EXTERNAL_INTF}"
 
 ## Check for a DMZ Interface if the default is not set, (just check for eth2)
 if [ -z "${MVVM_DMZ_INTF}" ] && [ -d "/sys/class/net/${DEFAULT_DMZ}" ]; then

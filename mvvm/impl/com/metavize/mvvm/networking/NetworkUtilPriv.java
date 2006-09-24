@@ -26,11 +26,11 @@ import java.util.Map;
 
 import com.metavize.jnetcap.InterfaceData;
 import com.metavize.jnetcap.Netcap;
+import com.metavize.mvvm.ArgonException;
 import com.metavize.mvvm.InterfaceAlias;
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
-import com.metavize.mvvm.ArgonException;
 import com.metavize.mvvm.localapi.LocalIntfManager;
 import com.metavize.mvvm.networking.internal.InterfaceInternal;
 import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
@@ -172,16 +172,6 @@ class NetworkUtilPriv extends NetworkUtil
 
                     if ( intfSpace.equals( networkSpace ) ||
                          ( intfSpace.getBusinessPapers() == networkSpace.getBusinessPapers())) {
-                        try {
-                            /* Set the name of the interface */
-                            intf.setIntfName( lim.argonIntfToString( intf.getArgonIntf()));
-                        } catch( ArgonException e ) {
-                            logger.error( "Unable to retrieve the interface name for: " +
-                                          intf.getArgonIntf(), e );
-                            throw new NetworkException( "Unable determine the interface name for intf: " +
-                                                        intf.getArgonIntf());
-                        }
-
                         /* If there are more than 1, it is a bridge anyway, so the primary interface
                          * doesn't matter */
                         primaryIntf = intf;
@@ -196,7 +186,13 @@ class NetworkUtilPriv extends NetworkUtil
                     throw new NetworkException( "Each enabled network space " + index +
                                                 " must be mapped to an interface" );
                 case 1:
-                    deviceName = primaryIntf.getIntfName();
+                    try { 
+                        /* XXXX Does the device name mean the phyiscal interface or the virtual
+                         * interface */
+                        deviceName = lim.argonIntfToString( primaryIntf.getArgonIntf());
+                    } catch ( ArgonException e ) {
+                        throw new NetworkException( "Invalid argonInterface: " + primaryIntf.getArgonIntf());
+                    }
                     break;
                 default:
                     /* Nothing to do */

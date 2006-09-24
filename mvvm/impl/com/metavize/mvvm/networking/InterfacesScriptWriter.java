@@ -14,6 +14,9 @@ package com.metavize.mvvm.networking;
 import java.util.List;
 
 import com.metavize.mvvm.ArgonException;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.localapi.ArgonInterface;
+import com.metavize.mvvm.localapi.LocalIntfManager;
 import com.metavize.mvvm.networking.internal.InterfaceInternal;
 import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
 import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
@@ -102,7 +105,9 @@ class InterfacesScriptWriter extends ScriptWriter
         IPNetwork primaryAddress = null;
 
         appendLine( "iface " + name + " inet manual" );
-
+        
+        LocalIntfManager lim = MvvmContextFactory.context().intfManager();
+        
         /* Insert the flush command for the first network space */
         if ( isFirst ) {
             appendCommands( "pre-up if [ -r " + FLUSH_CONFIG + " ]; then sh " + FLUSH_CONFIG + "; fi" );
@@ -114,14 +119,23 @@ class InterfacesScriptWriter extends ScriptWriter
 
             /* Build a list of all of the ports inside of the bridge */
             for ( InterfaceInternal intf : interfaceList ) {
-                String dev = intf.getIntfName();
-                appendCommands( "up brctl addif " + name + " " + dev,
-                                "up ifconfig " + dev + " 0.0.0.0 mtu " + mtu + " up" );
+                ArgonInterface argonIntf = intf.getArgonIntf();
+                String dev = argonIntf.getPhysicalName();
+                
+                boolean hasSecondaryIntf = argonIntf.hasSecondaryName();
+                                
+                if ( hasSecondaryIntf ) {
+                    /* Don't add the interface to the bridge, just bring the interface up */
+                    appendCommands( "up ifconfig " + dev + " 0.0.0.0 mtu " + mtu + " up" );
+                } else {
+                    appendCommands( "up brctl addif " + name + " " + dev,
+                                    "up ifconfig " + dev + " 0.0.0.0 mtu " + mtu + " up" );
+                }
 
                 EthernetMedia media = intf.getEthernetMedia();
-
+                
                 String check = "ethtool " + dev + " | ";
-
+                
                 if ( media.isAuto()) {
                     check += " grep -i -e 'auto-negotiation: on' | wc -l | grep -q 1 || ";
                     appendCommands( "up " + check + " ethtool -s " + dev + " autoneg on" );
@@ -137,6 +151,7 @@ class InterfacesScriptWriter extends ScriptWriter
         } else {
             if ( interfaceList.size() > 0 ) {
                 InterfaceInternal intf = interfaceList.get( 0 );
+               
                 EthernetMedia media = intf.getEthernetMedia();
                 if ( media.isAuto()) {
                     appendCommands( "up ethtool -s " + name + " autoneg on" );

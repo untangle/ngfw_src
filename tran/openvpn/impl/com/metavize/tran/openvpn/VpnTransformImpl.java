@@ -533,7 +533,7 @@ public class VpnTransformImpl extends AbstractTransform
         unDeployWebApp();
 
         try {
-            MvvmContextFactory.context().intfManager().deregisterIntf( IntfConstants.VPN_INTF );
+            MvvmContextFactory.context().intfManager().unregisterIntf( IntfConstants.VPN_INTF );
         } catch ( Exception e ) {
             /* There is nothing else to do but print out the message */
             logger.error( "Unable to deregister vpn interface", e );

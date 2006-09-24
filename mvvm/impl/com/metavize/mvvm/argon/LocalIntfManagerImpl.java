@@ -159,11 +159,16 @@ class LocalIntfManagerImpl implements LocalIntfManager
     {
         return this.intfConverter.getArgonIntfArray();
     }
-    
-    /* Register a replacement or custom interface.  EG. VPN or PPP0 */
+        
+    /* Register a custom interface.  EG. VPN */
     public synchronized void registerIntf( String name, byte argon ) throws ArgonException
     {
         ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
+        
+        /* Unable to replace internal and DMZ, those can only be replaced as secondary interfaces */
+        if ( argon == IntfConstants.EXTERNAL_INTF || argon == IntfConstants.INTERNAL_INTF ) {
+            throw new ArgonException( "Unable to re-register the internal or external interfaces: " + name );
+        }
 
         logger.debug( "Registering the interface: [" + argon + ":" + name +"]" );
         this.intfConverter = this.intfConverter.registerIntf( new ArgonInterface( name, argon ));
@@ -171,13 +176,50 @@ class LocalIntfManagerImpl implements LocalIntfManager
         notifyDependents( prevIntfConverter );
     }
 
-    /* Deregister a custom interface or DMZ. */
-    public synchronized void deregisterIntf( byte argon ) throws ArgonException
+    /* Register a secondary interface, this is an interface that replaces another interface,
+     * EG. if ETH0 -> PPP0, PPP0 is the secondary interface and ETH0 is the primary interface */
+    public synchronized void registerSecondaryIntf( String name, byte argon ) throws ArgonException
     {
         ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
-        this.intfConverter = this.intfConverter.deregisterIntf( argon );
+        
+        logger.debug( "Registering the secondary interface: [" + argon + ":" + name +"]" );
+        ArgonInterface intf = this.intfConverter.getIntfByArgon( argon );
+        this.intfConverter = this.intfConverter.registerIntf( intf.makeNewSecondaryIntf( name ));
+        notifyDependents( prevIntfConverter );
+    }
+
+    /* Unregister a custom interface or DMZ. */
+    public synchronized void unregisterIntf( byte argon ) throws ArgonException
+    {
+        ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
+        this.intfConverter = this.intfConverter.unregisterIntf( argon );
 
         notifyDependents( prevIntfConverter );
+    }
+
+    /* Unregister an individual secondary interface */
+    public synchronized void unregisterSecondaryIntf( byte argon ) throws ArgonException
+    {
+        ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
+        
+        logger.debug( "Unregistering the secondary interface: [" + argon + "]" );
+        ArgonInterface intf = this.intfConverter.getIntfByArgon( argon );
+        this.intfConverter = this.intfConverter.registerIntf( intf.makeNewSecondaryIntf( null ));
+        notifyDependents( prevIntfConverter );
+    }
+
+    /* This resets all of the secondary interfaces to their physical interfaces */
+    public synchronized void resetSecondaryIntfs()
+    {
+        ArgonInterfaceConverter prevIntfConverter = this.intfConverter;
+        
+        logger.debug( "Unregistering all secondary interfaces." );
+        try {
+            this.intfConverter = this.intfConverter.resetSecondaryIntfs();   
+            notifyDependents( prevIntfConverter );
+        } catch ( ArgonException e ) {
+            logger.error( "Error while resetting the secondary interfaces continuing.", e );
+        }
     }
 
     /* ----------------- Package ----------------- */
@@ -189,7 +231,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
     /* Initialize the interface converter */
     void initializeIntfArray( String internal, String external, String dmz ) throws ArgonException
     {
-        logger.debug( "Initializing array with: " + internal + " " + external + " " + dmz );
+        logger.debug( "Initializing array with: '" + internal + "','" + external + "','" + dmz );
 
         /* Create a new list for the interfaces */
         List<ArgonInterface> intfList = toInterfaceList( internal, external, dmz );

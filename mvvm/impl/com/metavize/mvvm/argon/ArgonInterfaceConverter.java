@@ -28,15 +28,6 @@ import com.metavize.mvvm.localapi.ArgonInterface;
 final class ArgonInterfaceConverter
 {
     private static Logger logger = Logger.getLogger( ArgonInterfaceConverter.class );
-
-    static final byte  OUTSIDE        = IntfConstants.EXTERNAL_INTF;
-    static final byte  NETCAP_OUTSIDE = OUTSIDE + 1;
-    static final byte  INSIDE         = IntfConstants.INTERNAL_INTF;
-    static final byte  NETCAP_INSIDE  = INSIDE + 1;
-    static final byte  DMZ            = IntfConstants.DMZ_INTF;
-    static final byte  NETCAP_DMZ     = DMZ + 1;
-    static final byte  VPN            = IntfConstants.VPN_INTF;
-    static final byte  NETCAP_VPN     = VPN + 1;
         
     private final ArgonInterface external;
     private final ArgonInterface internal;
@@ -185,17 +176,17 @@ final class ArgonInterfaceConverter
     }
 
     /* Remove an interface from the interface list */
-    ArgonInterfaceConverter deregisterIntf( byte argonIntf ) throws ArgonException
+    ArgonInterfaceConverter unregisterIntf( byte argonIntf ) throws ArgonException
     {
         if (( 0 > argonIntf ) || ( argonIntf > IntfConstants.MAX_INTF ) || 
             ( argonIntf < IntfConstants.DMZ_INTF )) {
-            throw new ArgonException( "Unable to deregister the argon interface: " + argonIntf );
+            throw new ArgonException( "Unable to unregister the argon interface: " + argonIntf );
         }
 
         ArgonInterface intf = this.argonToInterfaceMap.get( argonIntf );
 
         if ( intf == null ) {
-            logger.info( "Attempt to deregister an unregistered interface [" + argonIntf + "]" );
+            logger.info( "Attempt to unregister an unregistered interface [" + argonIntf + "]" );
             return this;
         }
         
@@ -204,6 +195,16 @@ final class ArgonInterfaceConverter
             logger.warn( "Error de-registering the interface [" + argonIntf + "] continuing" );
         }
         
+        return makeInstance( newIntfList );
+    }
+
+    /** Reset all of the secondary interfaces to null */
+    ArgonInterfaceConverter resetSecondaryIntfs() throws ArgonException
+    {
+        List<ArgonInterface> newIntfList = new LinkedList<ArgonInterface>();
+
+        for ( ArgonInterface intf : intfList ) newIntfList.add( intf.makeNewSecondaryIntf( null ));
+
         return makeInstance( newIntfList );
     }
 

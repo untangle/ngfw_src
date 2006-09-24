@@ -43,7 +43,7 @@ VPN_TAP_MARK="0x5"
 MARK_LOCAL_ADDRESS_BASE="0x00000010"
 
 ## This list must get longer when there are more interfaces
-INTERFACE_ORDER="${MVVM_OUTSIDE_INTF} ${MVVM_INSIDE_INTF} ${MVVM_DMZ_INTF}"
+INTERFACE_ORDER="${MVVM_EXTERNAL_INTF} ${MVVM_INTERNAL_INTF} ${MVVM_DMZ_INTF}"
 
 ## List of ICMP types to antisubscribe to.
 ANTISUBSCRIBES_ICMP="parameter-problem source-quench fragmentation-needed"
@@ -293,7 +293,7 @@ function markIntfVpn() {
     if [  -d "${SYSFS_INTERFACE_PATH}/${VPN_TUN_INTF}" ]; then
         l_interface=${VPN_TUN_INTF}
         l_matchType="-i"
-        l_addresses="`getActualAddresses ${l_interface}` `getActualAddresses ${MVVM_INSIDE_INTF}`"
+        l_addresses="`getActualAddresses ${l_interface}` `getActualAddresses ${MVVM_INTERNAL_INTF}`"
     fi
     
     if [ -d "${SYSFS_INTERFACE_PATH}/${VPN_TAP_INTF}" ]; then

@@ -133,7 +133,7 @@ class PPPoEManagerImpl
 
             /* Register the device */
             try {
-                lim.registerIntf( connection.getDeviceName(), connection.getArgonIntf());
+                lim.registerSecondaryIntf( connection.getDeviceName(), connection.getArgonIntf());
             } catch ( ArgonException e ) {
                 logger.warn( "Unable to register the interface for: " + connection, e );
                 /* Set the registered interface list before throwing the exception so
@@ -158,9 +158,10 @@ class PPPoEManagerImpl
         /* Iterate each of the cached entries and replace with their original values */
         for ( ArgonInterface intf : this.registeredIntfList ) {
             try {
-                lim.registerIntf( intf.getName(), intf.getArgon());
+                lim.unregisterSecondaryIntf( intf.getArgon());
             } catch ( ArgonException e ) {
                 logger.warn( "Unable to register the interface for: " + intf + " continuing.", e );
+                resetIntfs();
             }
         }
 
@@ -171,16 +172,7 @@ class PPPoEManagerImpl
     /* This is for the ohh no situtation, just a way to get back to the interfaces at startup */
     synchronized void resetIntfs()
     {
-        LocalIntfManager lim = MvvmContextFactory.context().intfManager();
-
-        /* Iterate each of the cached entries and replace with their original values */
-        for ( ArgonInterface intf : this.startupIntfList ) {
-            try {
-                lim.registerIntf( intf.getName(), intf.getArgon());
-            } catch ( ArgonException e ) {
-                logger.error( "Unable to reset the interface for: " + intf + ", continuing.", e );
-            }
-        }
+        MvvmContextFactory.context().intfManager().resetSecondaryIntfs();
         
         this.registeredIntfList = null;
     }
@@ -219,7 +211,9 @@ class PPPoEManagerImpl
     /* Save the initial default settings */
     private void saveDefaults() throws ValidateException
     {
-        saveSettings( PPPoESettingsInternal.makeInstance( new PPPoESettings()));
+        PPPoESettings settings = new PPPoESettings();
+        settings.setIsEnabled( true );
+        saveSettings( PPPoESettingsInternal.makeInstance( settings ));
     }
 
     /* Data saver used to delete other instances of the object */

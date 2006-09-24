@@ -59,7 +59,17 @@ public interface LocalIntfManager extends RemoteIntfManager
     /* Register a replacement or custom interface.  EG. VPN or PPP0 */
     public void registerIntf( String name, byte argon ) throws ArgonException;
 
-    /* Deregister a custom interface or DMZ. */
-    public void deregisterIntf( byte argon ) throws ArgonException;
+    /* Register a secondary interface, this is an interface that replaces another interface,
+     * EG. if ETH0 -> PPP0, PPP0 is the secondary interface and ETH0 is the primary interface */
+    public void registerSecondaryIntf( String name, byte argon ) throws ArgonException;
+
+    /* Unregister a custom interface or DMZ. */
+    public void unregisterIntf( byte argon ) throws ArgonException;
+
+    /* Unregister a secondary interface */
+    public void unregisterSecondaryIntf( byte argon ) throws ArgonException;
+
+    /* This clears all of the secondary interfaces  */
+    public void resetSecondaryIntfs();
 }
 

@@ -115,7 +115,7 @@ class NatMatcher
         byte intfArray[] = new byte[intfList.size()];
 
         int c = 0 ;
-        for ( InterfaceInternal intf : intfList ) intfArray[c++] = intf.getArgonIntf();
+        for ( InterfaceInternal intf : intfList ) intfArray[c++] = intf.getArgonIntf().getArgon();
 
         IntfMatcher intfMatcher;
         try {

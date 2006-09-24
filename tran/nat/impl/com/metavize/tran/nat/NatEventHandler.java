@@ -25,6 +25,9 @@ import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
 
+import com.metavize.mvvm.logging.LogEvent;
+import com.metavize.mvvm.localapi.ArgonInterface;
+
 import com.metavize.mvvm.networking.NetworkException;
 import com.metavize.mvvm.networking.IPNetwork;
 import com.metavize.mvvm.networking.RedirectRule;
@@ -33,7 +36,6 @@ import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.metavize.mvvm.networking.internal.InterfaceInternal;
 import com.metavize.mvvm.networking.internal.RedirectInternal;
 
-import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.tapi.AbstractEventHandler;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.IPSession;
@@ -683,7 +685,7 @@ class RequestIntfMatcher
         byte intfArray[] = new byte[interfaceList.size()];
         
         int c = 0;
-        for ( InterfaceInternal intf : interfaceList ) intfArray[c++] = intf.getArgonIntf();
+        for ( InterfaceInternal intf : interfaceList ) intfArray[c++] = intf.getArgonIntf().getArgon();
 
         IntfMatcher clientIntfMatcher, serverIntfMatcher;
 
@@ -707,7 +709,7 @@ class RequestIntfMatcher
         
         int c = 0;
         for ( InterfaceInternal intf : interfaceList ) {
-            serverIntfArray[c] = clientIntfArray[c++] = intf.getArgonIntf();
+            serverIntfArray[c] = clientIntfArray[c++] = intf.getArgonIntf().getArgon();
         }
         /* The client can be from the VPN interface (this is an inverse matcher) */
         clientIntfArray[c] = IntfConstants.VPN_INTF;
@@ -807,7 +809,7 @@ class NatMatcher
         
         int c = 0;
         for ( InterfaceInternal intf : interfaceList ) {
-            byte argonIntf = intf.getArgonIntf();
+            byte argonIntf = intf.getArgonIntf().getArgon();
             intfArray[c] = argonIntf;
             dstIntfArray[c+1] = argonIntf;
             
@@ -913,7 +915,7 @@ class DmzMatcher
         
         int c = 0;
         for ( InterfaceInternal intf : interfaceList ) {
-            byte argonIntf = intf.getArgonIntf();
+            byte argonIntf = intf.getArgonIntf().getArgon();
             
             /* Don't add the internal interface if the network space has all of the interface.
              * this is special cased to handle the situtation where dmz is enabled, but nat is

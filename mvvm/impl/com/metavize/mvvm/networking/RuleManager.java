@@ -27,9 +27,12 @@ import com.metavize.jnetcap.PortRange;
 import com.metavize.mvvm.ArgonException;
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.localapi.ArgonInterface;
 import com.metavize.mvvm.localapi.LocalIntfManager;
 
 import com.metavize.mvvm.tran.IPaddr;
+import com.metavize.mvvm.tran.TransformException;
+import com.metavize.mvvm.tran.script.ScriptRunner;
 
 import com.metavize.mvvm.networking.internal.InterfaceInternal;
 import com.metavize.mvvm.networking.internal.NetworkSpaceInternal;
@@ -107,37 +110,25 @@ public class RuleManager
             return;
         }
 
-        int ret = 0;
         try {
             writeConfig();
 
-            /* Call the rule generator */
-            Process p = Runtime.getRuntime().exec( "sh " + RULE_GENERATOR_SCRIPT );
-            
-            ret = p.waitFor();
+            ScriptRunner.getInstance().exec( RULE_GENERATOR_SCRIPT );
         } catch ( Exception e ) {
             logger.error( "Error while generating iptables rules", e );
             throw new NetworkException( "Unable to generate iptables rules", e );
-        }
-        
-        if ( ret != 0 ) throw new NetworkException( "Error while generating iptables rules: " + ret );
+        }        
     }
 
     synchronized void destroyIptablesRules() throws NetworkException
     {
-        int ret = 0;
         try {
             /* Call the rule generator */
-            /* XXXXXXX Make the scripts executable */
-            Process p = Runtime.getRuntime().exec( "sh " + RULE_DESTROYER_SCRIPT );
-            
-            ret = p.waitFor();
+            ScriptRunner.getInstance().exec( RULE_GENERATOR_SCRIPT );            
         } catch ( Exception e ) {
             logger.error( "Error while removing iptables rules", e );
             throw new NetworkException( "Unable to remove iptables rules", e );
-        }
-        
-        if ( ret != 0 ) throw new NetworkException( "Error while removing iptables rules: " + ret );
+        }        
     }
 
     void subscribeLocalInside( boolean subscribeLocalInside )
@@ -172,9 +163,9 @@ public class RuleManager
         LocalIntfManager lim = MvvmContextFactory.context().intfManager();
 
         for ( InterfaceInternal intf : interfaceList ) {
+            ArgonInterface argonIntf = intf.getArgonIntf();
             if ( serviceSpace != null && serviceSpace.equals( intf.getNetworkSpace())) {
-                byte argonIntf = intf.getArgonIntf();
-                switch( argonIntf ) {
+                switch( argonIntf.getArgon()) {
                 case IntfConstants.EXTERNAL_INTF:
                     /* Always ignore the external interface */
                     break;
@@ -185,22 +176,13 @@ public class RuleManager
                     
                     /* fallthrough */
                 default:
-                    try {
-                        /* All other interfaces are always added unconditionally */
-                        servicesInterfaceList += " " + intf.getIntfName();
-                    } catch ( Exception e ) {
-                        logger.warn( "Error converting argon[" + argonIntf + "] interface, ignoring" );
-                    }
+                    /* All other interfaces are always added unconditionally */
+                    servicesInterfaceList += " " + argonIntf.getName();
                 }
             }
             
-            try {
-                if ( intf.isPingable()) {
-                    byte netcapIntf = lim.toNetcap( intf.getArgonIntf());
-                    pingAntisubscribeList = pingAntisubscribeList + " " + netcapIntf;
-                }
-            } catch ( Exception e ) {
-                logger.error( "Invalid argon interface: ", e );
+            if ( intf.isPingable()) {
+                pingAntisubscribeList = pingAntisubscribeList + " " + argonIntf.getNetcap();
             }
         }
         
@@ -270,6 +252,15 @@ public class RuleManager
 
                 /* Steal port 53 for DHCP */
                 sb.append( SETUP_UDP_PORTS_FLAG + "=53\n" );
+            }
+
+            /* Setup all of the values for the interfaces */
+            /* XXX When we want to use custom interfaces we should just redefine INTERFACE_ORDER */
+            for ( ArgonInterface intf : lim.getIntfList()) {
+                if ( intf.hasSecondaryName()) {
+                    String argonName = IntfConstants.toName( intf.getArgon()).toUpperCase();
+                    sb.append( "MVVM_" + argonName + "_INTF=" + intf.getSecondaryName() + "\n" );
+                }
             }
 
             /* Add the flag to redirect traffic from 443, to the special internal open port */
