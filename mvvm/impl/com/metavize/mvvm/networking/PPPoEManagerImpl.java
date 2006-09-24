@@ -58,6 +58,7 @@ class PPPoEManagerImpl
         return this.settings;
     }
 
+    /* Retrieve the global settings, this is used to modify all of the PPPoE Connections */
     public PPPoESettings getSettings()
     {
         if ( this.settings == null ) {
@@ -74,6 +75,54 @@ class PPPoEManagerImpl
         } catch ( ValidateException e ) {
             throw new PPPoEException( "Error saving settings", e );
         }
+    }
+
+    /* Retrieve the PPPoE configuration for the external interface */
+    public PPPoEConnectionRule getExternalSettings()
+    {
+        /* This returns the first external interface connection, or an empty connection rule
+         * if there isn't one */
+
+        for ( PPPoEConnectionInternal connection : this.settings.getConnectionList()) {
+            if ( connection.getArgonIntf() == IntfConstants.EXTERNAL_INTF ) {
+                return connection.toRule();
+            }
+        }
+
+        PPPoEConnectionRule rule = new PPPoEConnectionRule();
+        rule.setLive( false );
+        rule.setArgonIntf( IntfConstants.EXTERNAL_INTF );
+        return rule;
+    }
+
+    public void setExternalSettings( PPPoEConnectionRule newValue ) throws PPPoEException
+    {
+        PPPoESettings newSettings = getSettings();
+
+        /* First remove all instances that point to external */
+        List<PPPoEConnectionRule> connectionList = newSettings.getConnectionList();
+        for ( Iterator<PPPoEConnectionRule> iter = connectionList.iterator() ; iter.hasNext() ; ) {
+            PPPoEConnectionRule rule = iter.next();
+            
+            if ( rule.getArgonIntf() == IntfConstants.EXTERNAL_INTF ) iter.remove();
+        }
+
+        /* Next if the setting is not null, add it to the list */
+        if ( newValue != null ) {
+            /* Verify that the argon interface is set properly */
+            if ( newValue.getArgonIntf() != IntfConstants.EXTERNAL_INTF ) {
+                logger.warn( "external connection doesn't use external interface[" + 
+                             newValue.getArgonIntf() +   "], setting to external" );
+                newValue.setArgonIntf( IntfConstants.EXTERNAL_INTF );
+            }
+            connectionList.add( newValue );
+        }
+
+        /* Update the connection list */
+        newSettings.setConnectionList( connectionList );
+
+        /* Actually save the settings */
+        setSettings( newSettings );
     }
         
     /* ----------------- Package ----------------- */

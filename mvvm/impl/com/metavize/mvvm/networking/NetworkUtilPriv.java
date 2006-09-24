@@ -606,6 +606,10 @@ class NetworkUtilPriv extends NetworkUtil
         configuration.setIsOutsideQuarantineEnabled( remoteSettings.getIsOutsideQuarantineEnabled());
         configuration.setIsOutsideReportingEnabled( remoteSettings.getIsOutsideReportingEnabled());
 
+        /* Grab the PPPoE Settings for the external interface */
+        PPPoEManagerImpl pppoe = NetworkManagerImpl.getInstance().getPPPoEManager();
+        configuration.setPPPoESettings( pppoe.getExternalSettings());
+
         return configuration;
     }
 

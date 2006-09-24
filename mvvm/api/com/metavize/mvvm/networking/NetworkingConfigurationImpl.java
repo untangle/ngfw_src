@@ -23,6 +23,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 
 import com.metavize.mvvm.InterfaceAlias;
+import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.NetworkingConfiguration;
 
 import com.metavize.mvvm.tran.AddressValidator;
@@ -128,6 +129,9 @@ public class NetworkingConfigurationImpl
     private boolean isOutsideAdministrationEnabled;
     private boolean isOutsideQuarantineEnabled;
     private boolean isOutsideReportingEnabled;
+
+    /* These are the PPPoE Settings for the external interface */
+    private PPPoEConnectionRule pppoeSettings = getDefaultPPPoESettings();
 
     public NetworkingConfigurationImpl()
     {
@@ -420,8 +424,7 @@ public class NetworkingConfigurationImpl
      */
     public void outsideNetwork( IPaddr network )
     {
-        if ( network == null ) network = NetworkUtil.DEF_OUTSIDE_NETWORK;
-            
+        if ( network == null ) network = NetworkUtil.DEF_OUTSIDE_NETWORK;            
 
         this.outsideNetwork = network;
     }
@@ -499,7 +502,20 @@ public class NetworkingConfigurationImpl
         this.isOutsideReportingEnabled = newValue;
     }
 
+    /* Get the settings PPPoE settings for the external interface. */
+    public PPPoEConnectionRule getPPPoESettings()
+    {
+        if ( null == this.pppoeSettings ) this.pppoeSettings = getDefaultPPPoESettings();
+        return this.pppoeSettings;
+    }
     
+    /* Set the settings PPPoE settings for the external interface. */
+    public void setPPPoESettings( PPPoEConnectionRule newValue )
+    {
+        if ( null == newValue ) newValue = getDefaultPPPoESettings();
+        this.pppoeSettings = newValue;
+    }
+
     public void validate() throws ValidateException
     {
         /* Check for collisions in the alias list */
@@ -711,4 +727,11 @@ public class NetworkingConfigurationImpl
         return sb.toString();
     }
 
+    private PPPoEConnectionRule getDefaultPPPoESettings()
+    {
+        PPPoEConnectionRule rule = new PPPoEConnectionRule();
+        rule.setArgonIntf( IntfConstants.EXTERNAL_INTF );
+        rule.setLive( false );
+        return rule;
+    }
 }

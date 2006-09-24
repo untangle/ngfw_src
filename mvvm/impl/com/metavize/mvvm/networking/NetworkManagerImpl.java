@@ -167,6 +167,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
     public synchronized void setNetworkingConfiguration( NetworkingConfiguration configuration )
         throws NetworkException, ValidateException
     {
+        this.pppoeManager.setExternalSettings( configuration.getPPPoESettings());
+        
         setNetworkSettings( NetworkUtilPriv.getPrivInstance().
                             toInternal( configuration, this.networkSettings, true ));
         setRemoteSettings( configuration );
@@ -225,6 +227,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
 
         if ( logger.isDebugEnabled()) logger.debug( "Loading the new network settings: " + newSettings );
+
+        /* Register the PPPoE settings */
+        this.pppoeManager.registerIntfs();
 
         /* Write the settings */
         writeConfiguration( newSettings );
@@ -862,7 +867,13 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.intfEnumListeners.remove( intfEnumListener );
     }
 
-    /**** private methods ***/
+    /* ----------------- Package ----------------- */
+    PPPoEManagerImpl getPPPoEManager()
+    {
+        return this.pppoeManager;
+    }
+
+    /* ----------------- Private ----------------- */
     private void initPriv() throws NetworkException, ValidateException
     {
         String disableSaveSettings = System.getProperty( "bunnicula.devel.nonetworking" );

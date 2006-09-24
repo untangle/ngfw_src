@@ -12,8 +12,10 @@
 package com.metavize.mvvm.networking;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,11 +26,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.metavize.mvvm.tran.Validatable;
-import com.metavize.mvvm.tran.ValidateException;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
+
+import com.metavize.mvvm.tran.Validatable;
+import com.metavize.mvvm.tran.ValidateException;
 
 /**
  * Settings used for all of the PPPoE connections.
@@ -99,7 +102,17 @@ public class PPPoESettings implements Serializable, Validatable
         /* Nothing to validate if the field is non-empty */
         if ( !this.isEnabled ) return;
 
-        for ( PPPoEConnectionRule connection : getConnectionList()) connection.validate();
+        /* Used to verify there are not two enabled PPPoE Connections for the same interface */
+        Set<Byte> argonIntfSet = new HashSet<Byte>();
+
+        for ( PPPoEConnectionRule connection : getConnectionList()) {
+            connection.validate();
+ 
+            if ( connection.isLive() && !argonIntfSet.add( connection.getArgonIntf())) {
+                throw new ValidateException( "The interface: " + connection.getArgonIntf() + 
+                                             " is in two connections" );
+            }
+        }
    }
 
     public String toString()

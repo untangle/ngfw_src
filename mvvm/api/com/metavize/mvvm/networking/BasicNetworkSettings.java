@@ -69,4 +69,10 @@ public interface BasicNetworkSettings
 
     /* Set the list of aliases */
     public void setAliasList( List<InterfaceAlias> newValue );
+
+    /* Get the settings PPPoE settings for the external interface. */
+    public PPPoEConnectionRule getPPPoESettings();
+    
+    /* Set the settings PPPoE settings for the external interface. */
+    public void setPPPoESettings( PPPoEConnectionRule newValue );
 }
