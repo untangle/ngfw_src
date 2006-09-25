@@ -51,6 +51,7 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
         // create actual table model
         quarantineAllTableModel = new QuarantineAllTableModel();
         setTableModel( quarantineAllTableModel );
+        // account address - sort by ascending order
 	quarantineAllTableModel.setSortingStatus(2, quarantineAllTableModel.ASCENDING);
     }
 
@@ -288,7 +289,7 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
 		    Util.handleExceptionNoRestart("Error purging inbox", e);
 		    MOneButtonJDialog.factory(QuarantineAllUsersJPanel.this.getTopLevelAncestor(), "",
 					      "An account could not be purged.",
-					      "Quarantine Purge Warning", "");		    
+					      "Quarantine Purge Warning", "");
 		}
 	    }
 	    // DO REFRESH
@@ -322,9 +323,7 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
     private javax.swing.JButton purgeJButton;
     private javax.swing.JButton releaseJButton;
     // End of variables declaration//GEN-END:variables
-
 }
-
 
 
 class QuarantineAllTableModel extends MSortedTableModel<MailTransformCompoundSettings> {
@@ -347,7 +346,6 @@ class QuarantineAllTableModel extends MSortedTableModel<MailTransformCompoundSet
     }
 
 
-   
     public void generateSettings(MailTransformCompoundSettings mailTransformCompoundSettings,
 				 Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
 
@@ -368,6 +366,7 @@ class QuarantineAllTableModel extends MSortedTableModel<MailTransformCompoundSet
             tempRow.add( inbox.getFormattedTotalSz() );
             allRows.add( tempRow );
         }
+
         return allRows;
     }
 }

@@ -16,8 +16,7 @@ import java.util.Arrays;
 
 
 /**
- * Tag which is used to iterate over the contents
- * of a Safelist
+ * Tag which is used to iterate over the contents of a Safelist
  * <br><br>
  * It then sets-up an OddEvenTag and a MessageTag for each iteration.
  */
@@ -52,10 +51,15 @@ public final class SafelistListTag
   }
 
   /**
-   * Returns null if there are no such messages
+   * Returns null if there are no safelist entries
+   * - sort string entries, within list, according to natural, ascending order
    */
   static String[] getCurrentList(ServletRequest request) {
-    return (String[]) request.getAttribute(SL_KEY);
+      Object allSLEntries = request.getAttribute(SL_KEY);
+      if (null != allSLEntries) {
+          Arrays.sort((String[]) allSLEntries);
+      }
+      return (String[]) allSLEntries;
   }
 
   static boolean hasCurrentList(ServletRequest request) {
