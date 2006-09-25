@@ -54,6 +54,19 @@ function mailReports()
     cat "@PREFIX@/tmp/${t_arguments}" | xargs @USR_BIN@/mail-reports
 }
 
+## Parameters:
+## <estat> : exit status
+## <src> : source of error
+function exitOnMvvmError()
+{
+    local t_estat=$1
+    local t_src=$2
+    if [ $t_estat != 0 ]; then
+        echo $t_src "error, exit status:" $t_estat
+        exit $t_estat
+    fi
+}
+
 JAVA_HOME=${JAVA_HOME:-/opt/java}
 
 # Need bootstrap for logging stuff...  XXX
@@ -79,16 +92,22 @@ rm -rf $REPORT_DIR/current
 # Just in case left over (we use a jsp now)
 rm -f $REPORT_DIR/index.html
 
+# can't use shell to assign default value for unset parameter because
+# when an exception occurs in mcli,
+# parameter becomes set with non-null value
 is_reporting_enabled=$(@USR_BIN@/mcli isReportingEnabled)
+exitOnMvvmError $? mvvm
 
 # Only generate today's reports if the reporting transform is running
 if [ $is_reporting_enabled == 'true' ]; then
     mars=$(@USR_BIN@/mcli instances | grep running | awk '{print $2}' | uniq | sed 's|^\(.*\)$|@MVVM_TOOLBOX@/\1-impl.jar|')
+    exitOnMvvmError $? mvvm
 
     # Build the DHCP Merged Address Map (needed for running start-reports scripts)
     $JAVA_HOME/bin/java -Xmx512m \
         -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
         com.metavize.mvvm.reporting.Reporter -o $REPORT_DIR -d 32 -m "$@"
+    exitOnMvvmError $? reporter
 
     # Build pre-joined reports tables
     for c in @MVVM_SCHEMA@/*/start-reports.sql; do
@@ -100,6 +119,7 @@ if [ $is_reporting_enabled == 'true' ]; then
     $JAVA_HOME/bin/java -Xmx512m \
         -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
         com.metavize.mvvm.reporting.Reporter -o $REPORT_DIR -d 32 "$@" $mars
+    exitOnMvvmError $? reporter
     # note that Reporter has just created settings.env
 
     if [ -h $REPORT_DIR/current ]; then
@@ -164,4 +184,6 @@ if [ $is_reporting_enabled == 'true' ]; then
     done
 
     echo "VACUUM ANALYZE;" | psql -U metavize mvvm
+else
+    echo "reporting is disabled"
 fi
