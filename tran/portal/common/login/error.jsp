@@ -1,4 +1,4 @@
-<%@ page language="java" %>
+<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.portal.*" %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
@@ -9,6 +9,16 @@
 String scheme = request.getScheme();
 String cp = (String)request.getContextPath();
 String host=request.getHeader("host");
+
+PortalGlobal pg = MvvmContextFactory.context().portalManager().getPortalSettings().getGlobal();
+String title = pg.getLoginPageTitle();
+if (null == title) {
+    title = "Remote Access Portal";
+}
+String text = pg.getLoginPageText();
+if (null == text) {
+    text = "Welcome to the Metavize Remote Access Portal";
+}
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -38,9 +48,10 @@ String host=request.getHeader("host");
       <br/>
       <br/>
       <span style="font-weight: bold;">
-      Remote Access Portal
+      <%=title%>
       </span>
       <br/>
+      <%=text%>
       <br/>
       <center>
 
