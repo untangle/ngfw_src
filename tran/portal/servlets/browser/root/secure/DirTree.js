@@ -30,6 +30,11 @@ DirTree.prototype.addRoot = function(n)
    root.setText(n.label);
    root.setImage(n.getIconName());
    root.setData(Browser.CIFS_NODE, n);
+   if (!root._initialized) {
+       root._initialize();
+   }
+   Dwt.setCursor(root._textCell, "wait");
+   Dwt.setCursor(root._imageCell, "wait");
 
    this._populate(root);
 }
@@ -37,6 +42,11 @@ DirTree.prototype.addRoot = function(n)
 DirTree.prototype.addWorkGroup = function(n)
 {
    var root = new DwtTreeItem(this);
+   if (!root._initialized) {
+       root._initialize();
+   }
+   Dwt.setCursor(root._textCell, "wait");
+   Dwt.setCursor(root._imageCell, "wait");
    root.setText(n.label);
    root.setImage("WorkGroup");
    root.setData(Browser.CIFS_NODE, n);
@@ -216,6 +226,12 @@ DirTree.prototype._populateCallback = function(obj, results)
 
          var tn = new DwtTreeItem(obj.parent, null, n.label, n.getIconName());
          tn.setData(Browser.CIFS_NODE, n);
+         if (!tn._initialized) {
+             tn._initialize();
+         }
+         Dwt.setCursor(tn._textCell, "wait");
+         Dwt.setCursor(tn._imageCell, "wait");
+         var e = tn.getHtmlElement();
          if (this._dragSource) {
             tn.setDragSource(this._dragSource);
          }
@@ -223,6 +239,16 @@ DirTree.prototype._populateCallback = function(obj, results)
             tn.setDropTarget(this._dropTarget);
          }
       }
+   }
+
+   var tc = p._textCell;
+   if (tc) {
+       Dwt.setCursor(tc, "auto");
+   }
+
+   var ic = p._imageCell;
+   if (ic) {
+       Dwt.setCursor(ic, "auto");
    }
 
    for (var i in current) {
@@ -241,6 +267,16 @@ DirTree.prototype._populateAuthCallback = function(obj, results)
    var pcn = p.getData(Browser.CIFS_NODE);
    pcn.authorized = false;
    p.setImage(pcn.getIconName());
+
+   var tc = p._textCell;
+   if (tc) {
+       Dwt.setCursor(tc, "auto");
+   }
+
+   var ic = p._imageCell;
+   if (ic) {
+       Dwt.setCursor(ic, "auto");
+   }
 }
 
 DirTree.prototype._treeListener = function(evt)
