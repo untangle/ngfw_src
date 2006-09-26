@@ -14,17 +14,6 @@
 (setq prj-dir (file-name-directory jde-loading-project-file))
 (jde-set-variables
  ;; TODO base on dir listing, include webapps
- '(jde-sourcepath
-   (append
-    '("./mvvm/main" "./mvvm/bootstrap" "./util"
-      "./mvvm/webapps/store/src"
-      "./tran/portal/webapps/browser/src"
-      "./tran/portal/webapps/portal/src"
-      "./tran/portal/webapps/vnc/src"
-      "./tran/portal/webapps/proxy/src")
-    (mapcar (lambda (a) (concat "./tran/" a "/main")) transforms)
-    (mapcar (lambda (a) (concat "./tran/" a "/main")) casings)
-    (mapcar (lambda (a) (concat "./" a "/src/")) jni-projects)))
  '(jde-make-program "rake")
  '(jde-compile-option-directory ".")
  '(jde-make-working-directory ".")
@@ -50,7 +39,7 @@
               "junit3.8.1/junit.jar"
               "logging-log4j-1.2.9/dist/lib/log4j-1.2.9.jar"
               "bcel-5.1/bcel-5.1.jar"))
-    ;; XXX i think jde relavitizes the path names w/ respect to the
-    ;; current directory, which causes this to fail
-    ;;(directory-files (concat prj-dir "./staging/grabbag") t ".*\.jar")
-)))
+    (mapcar
+     (lambda (a)
+       (concat "./staging/grabbag/" a))
+     (directory-files (concat prj-dir "./staging/grabbag") nil ".*\.jar")))))
