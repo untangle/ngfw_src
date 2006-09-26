@@ -10,7 +10,6 @@
  */
 package com.metavize.tran.mail.web.euv;
 
-import org.apache.log4j.Logger;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,6 +23,7 @@ import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.tran.mail.papi.MailTransform;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
 import com.metavize.tran.mail.papi.safelist.SafelistEndUserView;
+import org.apache.log4j.Logger;
 
 /**
  * Not really a "servlet" so much as a container used
@@ -116,7 +116,7 @@ public class QuarantineEnduserServlet
      */
     private void initRemoteRefs() {
         try {
-            MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().systemLogin(0);
+            MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
             Tid tid = ctx.transformManager().transformInstances("mail-casing").get(0);
             TransformContext tc = ctx.transformManager().transformContext(tid);
             MailTransform mt = (MailTransform) tc.transform();

@@ -14,7 +14,7 @@ import java.io.Serializable;
 
 /**
  * Interface for the end-user interface
- * to the Quarantine system.  
+ * to the Quarantine system.
  */
 public interface QuarantineUserView
   extends QuarantineManipulation {
@@ -55,7 +55,7 @@ public interface QuarantineUserView
    *
    * @exception InboxAlreadyRemappedException If this is a group alias and someone
    *            else already created the remap (we follow "first one wins" semantics).
-   * 
+   *
    */
   public void remapSelfService(String from, String to)
     throws QuarantineUserActionFailedException, InboxAlreadyRemappedException;
@@ -93,6 +93,6 @@ public interface QuarantineUserView
    */
   public String[] getMappedFrom(String account)
     throws QuarantineUserActionFailedException;
-     
+
 
 }

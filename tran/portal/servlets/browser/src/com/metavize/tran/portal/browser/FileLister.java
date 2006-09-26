@@ -27,14 +27,12 @@ import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.portal.PortalLogin;
 import com.metavize.mvvm.util.XmlUtil;
-
 import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileFilter;
 import jcifs.smb.SmbFileFilter;
 import jcifs.util.transport.TransportException;
-
 import org.apache.log4j.Logger;
 
 public class FileLister extends HttpServlet
@@ -77,11 +75,11 @@ public class FileLister extends HttpServlet
             Throwable throwable = se.getRootCause();
             /* XXX this is nasty, should be done with a proper try/catch */
             logger.debug( "Caught an exception: ", se );
-            
+
             /* XXX This is gnar gnar XXX */
             while ( true ) {
                 if ( throwable == null ) break;
-                
+
                 logger.debug( "Cause: ", throwable );
 
                 /* XXX Should fix the SmbException to use the new initCause function in throwable */
@@ -92,8 +90,8 @@ public class FileLister extends HttpServlet
                     if ( throwable.getCause() == null ) break;
                     throwable = throwable.getCause();
                 }
-            } 
-            
+            }
+
             if ( throwable instanceof TransportException ||
                  throwable instanceof UnknownHostException ) {
                 logger.info( "Error listing directory: ", throwable );
@@ -109,7 +107,7 @@ public class FileLister extends HttpServlet
                 /* Rethrow the servlet exception */
                 throw se;
             }
-        }        
+        }
     }
 
     protected void runDoGet(HttpServletRequest req, HttpServletResponse resp)
@@ -193,6 +191,7 @@ public class FileLister extends HttpServlet
         try {
             files = dir.listFiles();
         } catch (SmbAuthException exn) {
+            exn.printStackTrace();
             os.println("<auth-error type='listFiles' url='" + p + "'/>");
             return;
         } catch (SmbException exn) {
@@ -200,19 +199,19 @@ public class FileLister extends HttpServlet
             throw new ServletException("could not list directory", exn);
         }
 
-	Arrays.sort(files, new Comparator<SmbFile>() {
-			public int compare(SmbFile o1, SmbFile o2) {
-			    String o1Name = o1.getName();
-			    String o2Name = o2.getName();
-			    if (o1Name == null && o2Name == null)
-				return 0;
-			    if (o1Name == null)
-				return -1;
-			    if (o2Name == null)
-				return 1;
-			    return o1Name.compareTo(o2Name);
-			}
-		});
+    Arrays.sort(files, new Comparator<SmbFile>() {
+            public int compare(SmbFile o1, SmbFile o2) {
+                String o1Name = o1.getName();
+                String o2Name = o2.getName();
+                if (o1Name == null && o2Name == null)
+                return 0;
+                if (o1Name == null)
+                return -1;
+                if (o2Name == null)
+                return 1;
+                return o1Name.compareTo(o2Name);
+            }
+        });
 
         os.println("<root path='" + p + "'>");
 

@@ -6,7 +6,7 @@ mail = Package["mail-casing"]
 
 deps = Jars::Base + [Package["mvvm"]["api"]]
 
-jt = JarTarget.buildTarget(mail, deps, "api", "tran/mail/api")
+jt = mail["localapi"]
 
 deps = %w(
          ).map { |f| Jars.downloadTarget(f) } << jt

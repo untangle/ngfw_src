@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -18,27 +18,29 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 import com.metavize.mvvm.CronJob;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.Period;
+import com.metavize.tran.mail.MailTransformImpl;
+import com.metavize.tran.mail.impl.GlobEmailAddressList;
+import com.metavize.tran.mail.impl.GlobEmailAddressMapper;
 import com.metavize.tran.mail.impl.quarantine.store.InboxIndexImpl;
 import com.metavize.tran.mail.impl.quarantine.store.QuarantinePruningObserver;
 import com.metavize.tran.mail.impl.quarantine.store.QuarantineStore;
-import com.metavize.tran.mail.impl.GlobEmailAddressList;
-import com.metavize.tran.mail.impl.GlobEmailAddressMapper;
-import com.metavize.tran.mail.MailTransformImpl;
+import com.metavize.tran.mail.papi.EmailAddressPairRule;
+import com.metavize.tran.mail.papi.EmailAddressRule;
 import com.metavize.tran.mail.papi.MailTransformSettings;
 import com.metavize.tran.mail.papi.quarantine.BadTokenException;
 import com.metavize.tran.mail.papi.quarantine.Inbox;
+import com.metavize.tran.mail.papi.quarantine.InboxAlreadyRemappedException;
 import com.metavize.tran.mail.papi.quarantine.InboxIndex;
 import com.metavize.tran.mail.papi.quarantine.InboxRecord;
 import com.metavize.tran.mail.papi.quarantine.MailSummary;
 import com.metavize.tran.mail.papi.quarantine.NoSuchInboxException;
-import com.metavize.tran.mail.papi.quarantine.InboxAlreadyRemappedException;
 import com.metavize.tran.mail.papi.quarantine.QuarantineEjectionHandler;
 import com.metavize.tran.mail.papi.quarantine.QuarantineMaintenenceView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineManipulation;
@@ -46,8 +48,6 @@ import com.metavize.tran.mail.papi.quarantine.QuarantineSettings;
 import com.metavize.tran.mail.papi.quarantine.QuarantineTransformView;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserActionFailedException;
 import com.metavize.tran.mail.papi.quarantine.QuarantineUserView;
-import com.metavize.tran.mail.papi.EmailAddressPairRule;
-import com.metavize.tran.mail.papi.EmailAddressRule;
 import com.metavize.tran.mime.EmailAddress;
 import com.metavize.tran.mime.MIMEMessage;
 import com.metavize.tran.util.ByteBufferInputStream;
@@ -88,7 +88,7 @@ public class Quarantine
     m_quarantineForList = new GlobEmailAddressList(
       java.util.Arrays.asList(new String[] {"*"}));
 
-    m_addressAliases = new GlobEmailAddressMapper(new 
+    m_addressAliases = new GlobEmailAddressMapper(new
       ArrayList<Pair<String, String>>());
   }
 
@@ -98,7 +98,7 @@ public class Quarantine
    * talk to the Quarantine).
    */
   public void setSettings(MailTransformImpl impl,
-    QuarantineSettings settings) {
+                          QuarantineSettings settings) {
     m_impl = impl;
     m_settings = settings;
 
@@ -286,7 +286,7 @@ public class Quarantine
     //to "foo" and not "fred".
     Map<String, List<String>> recipientGroupings =
       new HashMap<String, List<String>>();
-      
+
     for(EmailAddress eAddr : recipients) {
       //Skip null address
       if(eAddr == null || eAddr.isNullAddress()) {
@@ -317,9 +317,9 @@ public class Quarantine
     boolean allSuccess = true;
 
     for(Map.Entry<String, List<String>> entry : recipientGroupings.entrySet()) {
-    
+
       String inboxAddress = entry.getKey();
-      
+
       //Get recipients as an array
       String[] recipientsForThisInbox = (String[])
         entry.getValue().toArray(new String[entry.getValue().size()]);
@@ -337,7 +337,7 @@ public class Quarantine
       }
       else {
         outcomeList.add(new Pair<String, String>(inboxAddress, result.b));
-      }      
+      }
     }
 
     //Rollback
@@ -351,7 +351,7 @@ public class Quarantine
     }
     return true;
 
-/*    
+/*
     //Perform any remapping
     ArrayList<String> sRecipients = new ArrayList<String>();
     for(EmailAddress eAddr : recipients) {
@@ -406,7 +406,7 @@ public class Quarantine
       }
       return true;
     }
-*/    
+*/
   }
 
 
@@ -523,7 +523,7 @@ public class Quarantine
 
   public void remapSelfService(String from, String to)
     throws QuarantineUserActionFailedException, InboxAlreadyRemappedException {
-    
+
     String existingMapping = m_addressAliases.getAddressMapping(from);
     if(existingMapping != null) {
       throw new InboxAlreadyRemappedException(from, existingMapping);
@@ -570,9 +570,9 @@ public class Quarantine
 
   public String getMappedTo(String account)
     throws QuarantineUserActionFailedException {
-    
+
     return m_addressAliases.getAddressMapping(account);
-    
+
   }
 
   public String[] getMappedFrom(String account)
@@ -658,7 +658,7 @@ public class Quarantine
       EmailAddressRule wrapper = (EmailAddressRule) o;
       ret.add(wrapper.getAddress());
     }
-    return ret;  
+    return ret;
   }
 
   private List toEmailAddressPairRuleList(List<Pair<String, String>> typedList) {
@@ -678,7 +678,7 @@ public class Quarantine
       EmailAddressPairRule eaPair = (EmailAddressPairRule) o;
       ret.add(new Pair<String, String>(eaPair.getAddress1(), eaPair.getAddress2()));
     }
-    return ret;  
+    return ret;
   }
 
   //------------- Inner Class --------------------
@@ -734,8 +734,8 @@ public class Quarantine
               list.add(wrapper2);
 
               qs.setAllowedAddressPatterns(list);
-              setMailTransformSettings(settings);                  
-                
+              setMailTransformSettings(settings);
+
 
 //              MailTransformSettings settings = getMailTransformSettings();
 //              com.metavize.tran.mail.papi.quarantine.QuarantineSettings qs =
@@ -753,12 +753,12 @@ public class Quarantine
 //              qs.setAddressRemaps(list);
 //              setMailTransformSettings(settings);
               System.out.println("********* Done.");
-                
+
             }
             catch(Exception ex) {
               ex.printStackTrace();
             }
           }
-        }).start();        
-        
+        }).start();
+
 */

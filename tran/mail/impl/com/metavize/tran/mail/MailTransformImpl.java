@@ -16,6 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
+import com.metavize.mvvm.portal.Application;
+import com.metavize.mvvm.portal.LocalApplicationManager;
+import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.CasingPipeSpec;
 import com.metavize.mvvm.tapi.Fitting;
@@ -53,6 +57,8 @@ import org.hibernate.Session;
 public class MailTransformImpl extends AbstractTransform
     implements MailTransform, MailExport
 {
+    private static final String QUARANTINE_JS_URL = "/quarantine/app.js";
+
     private final Logger logger = Logger.getLogger(MailTransformImpl.class);
 
     private final CasingPipeSpec SMTP_PIPE_SPEC = new CasingPipeSpec
@@ -67,6 +73,8 @@ public class MailTransformImpl extends AbstractTransform
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[]
         { SMTP_PIPE_SPEC, POP_PIPE_SPEC, IMAP_PIPE_SPEC };
+
+    private Application quarantineApp;
 
     private MailTransformSettings settings;
     private static Quarantine s_quarantine;//This will never be null for *instances* of
@@ -129,6 +137,25 @@ public class MailTransformImpl extends AbstractTransform
         }
     }
 
+    private void registerApps() {
+        MvvmLocalContext mctx = MvvmContextFactory.context();
+        LocalPortalManager lpm = mctx.portalManager();
+        LocalApplicationManager lam = lpm.applicationManager();
+        quarantineApp = lam.registerApplication("Quarantine",
+                                                "Email Quarantine",
+                                                "Access to email quarantine.",
+                                                null, null, 0,
+                                                QUARANTINE_JS_URL);
+    }
+
+    private void deregisterApps() {
+        MvvmLocalContext mctx = MvvmContextFactory.context();
+        LocalPortalManager lpm = mctx.portalManager();
+        LocalApplicationManager lam = lpm.applicationManager();
+        lam.deregisterApplication(quarantineApp);
+    }
+
+
     // MailTransform methods --------------------------------------------------
 
     public MailTransformSettings getMailTransformSettings()
@@ -139,16 +166,16 @@ public class MailTransformImpl extends AbstractTransform
     public void setMailTransformSettings(final MailTransformSettings settings)
     {
         TransactionWork tw = new TransactionWork()
-        {
-            public boolean doWork(Session s)
             {
-                s.saveOrUpdate(settings);
-                MailTransformImpl.this.settings = settings;
-                return true;
-            }
+                public boolean doWork(Session s)
+                {
+                    s.saveOrUpdate(settings);
+                    MailTransformImpl.this.settings = settings;
+                    return true;
+                }
 
-            public Object getResult() { return null; }
-        };
+                public Object getResult() { return null; }
+            };
         getTransformContext().runTransaction(tw);
 
         reconfigure();
@@ -158,11 +185,11 @@ public class MailTransformImpl extends AbstractTransform
     }
 
     public QuarantineUserView getQuarantineUserView() {
-      return m_quv;
+        return m_quv;
     }
 
     public QuarantineMaintenenceView getQuarantineMaintenenceView() {
-      return m_qmv;
+        return m_qmv;
     }
 
     public SafelistEndUserView getSafelistEndUserView() {
@@ -181,7 +208,7 @@ public class MailTransformImpl extends AbstractTransform
     }
 
     public QuarantineTransformView getQuarantineTransformView() {
-      return m_qtv;
+        return m_qtv;
     }
 
     public SafelistTransformView getSafelistTransformView() {
@@ -205,75 +232,76 @@ public class MailTransformImpl extends AbstractTransform
 
     @Override
     protected void preDestroy() throws TransformException {
-      super.preDestroy();
-      logger.debug("preDestroy()");
-      unDeployWebAppIfRequired(logger);
-      s_quarantine.close();
+        super.preDestroy();
+        deregisterApps();
+        logger.debug("preDestroy()");
+        unDeployWebAppIfRequired(logger);
+        s_quarantine.close();
     }
 
     protected void postInit(String[] args)
     {
         logger.debug("postInit()");
         TransactionWork tw = new TransactionWork()
-        {
-            public boolean doWork(Session s)
             {
-                Query q = s.createQuery
-                    ("from MailTransformSettings ms");
-                settings = (MailTransformSettings)q.uniqueResult();
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery
+                        ("from MailTransformSettings ms");
+                    settings = (MailTransformSettings)q.uniqueResult();
 
-                boolean shouldSave = false;
+                    boolean shouldSave = false;
 
-                if (null == settings) {
-                    settings = new MailTransformSettings();
-                    //Set the defaults
-                    settings.setSmtpEnabled(true);
-                    settings.setPopEnabled(true);
-                    settings.setImapEnabled(true);
-                    settings.setSmtpInboundTimeout(1000*30);
-                    settings.setSmtpOutboundTimeout(1000*30);
-                    settings.setPopInboundTimeout(1000*30);
-                    settings.setPopOutboundTimeout(1000*30);
-                    settings.setImapInboundTimeout(1000*30);
-                    settings.setImapOutboundTimeout(1000*30);
-                    shouldSave = true;
+                    if (null == settings) {
+                        settings = new MailTransformSettings();
+                        //Set the defaults
+                        settings.setSmtpEnabled(true);
+                        settings.setPopEnabled(true);
+                        settings.setImapEnabled(true);
+                        settings.setSmtpInboundTimeout(1000*30);
+                        settings.setSmtpOutboundTimeout(1000*30);
+                        settings.setPopInboundTimeout(1000*30);
+                        settings.setPopOutboundTimeout(1000*30);
+                        settings.setImapInboundTimeout(1000*30);
+                        settings.setImapOutboundTimeout(1000*30);
+                        shouldSave = true;
+                    }
+
+                    if(settings.getQuarantineSettings() == null) {
+                        QuarantineSettings qs = new QuarantineSettings();
+
+                        qs.setMaxQuarantineTotalSz(10 * 1000000000L);//10Gig
+                        qs.setDigestHourOfDay(6);//6 am
+                        qs.setDigestMinuteOfDay(0);//6 am
+                        byte[] secretKey = new byte[4];
+                        new java.util.Random().nextBytes(secretKey);
+                        qs.setSecretKey(secretKey);
+                        qs.setMaxMailIntern(QuarantineSettings.WEEK * 2);
+                        qs.setMaxIdleInbox(QuarantineSettings.WEEK * 4);
+
+                        settings.setQuarantineSettings(qs);
+                        shouldSave = true;
+                    }
+
+                    if(settings.getSafelistSettings() == null) {
+                        ArrayList<SafelistSettings> ss = new ArrayList();
+
+                        //TODO Set defaults here - DEFAULT TO WHAT?????
+
+                        settings.setSafelistSettings(ss);
+                        shouldSave = true;
+                    }
+
+                    if(true == shouldSave) {
+                        s.save(settings);
+                    }
+
+                    reconfigure();
+                    return true;
                 }
 
-                if(settings.getQuarantineSettings() == null) {
-                    QuarantineSettings qs = new QuarantineSettings();
-
-                    qs.setMaxQuarantineTotalSz(10 * 1000000000L);//10Gig
-                    qs.setDigestHourOfDay(6);//6 am
-                    qs.setDigestMinuteOfDay(0);//6 am
-                    byte[] secretKey = new byte[4];
-                    new java.util.Random().nextBytes(secretKey);
-                    qs.setSecretKey(secretKey);
-                    qs.setMaxMailIntern(QuarantineSettings.WEEK * 2);
-                    qs.setMaxIdleInbox(QuarantineSettings.WEEK * 4);
-
-                    settings.setQuarantineSettings(qs);
-                    shouldSave = true;
-                }
-
-                if(settings.getSafelistSettings() == null) {
-                    ArrayList<SafelistSettings> ss = new ArrayList();
-
-                    //TODO Set defaults here - DEFAULT TO WHAT?????
-
-                    settings.setSafelistSettings(ss);
-                    shouldSave = true;
-                }
-
-                if(true == shouldSave) {
-                    s.save(settings);
-                }
-
-                reconfigure();
-                return true;
-            }
-
-            public Object getResult() { return null; }
-        };
+                public Object getResult() { return null; }
+            };
         getTransformContext().runTransaction(tw);
 
         logger.debug("Initialize SafeList/Quarantine...");
@@ -288,6 +316,7 @@ public class MailTransformImpl extends AbstractTransform
 
         deployWebAppIfRequired(logger);
         s_quarantine.open();
+        registerApps();
     }
 
     // AbstractTransform methods ----------------------------------------------
@@ -311,181 +340,181 @@ public class MailTransformImpl extends AbstractTransform
     }
 
 
-  //================================================================
-  //Hacks to work around issues w/ the implicit RMI proxy stuff
+    //================================================================
+    //Hacks to work around issues w/ the implicit RMI proxy stuff
 
-  abstract class QuarantineManipulationWrapper {
+    abstract class QuarantineManipulationWrapper {
 
-    public InboxIndex purge(String account,
-      String...doomedMails)
-      throws NoSuchInboxException, QuarantineUserActionFailedException {
-      return s_quarantine.purge(account, doomedMails);
+        public InboxIndex purge(String account,
+                                String...doomedMails)
+            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            return s_quarantine.purge(account, doomedMails);
+        }
+
+        public InboxIndex rescue(String account,
+                                 String...rescuedMails)
+            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            return s_quarantine.rescue(account, rescuedMails);
+        }
+
+        public InboxIndex getInboxIndex(String account)
+            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            return s_quarantine.getInboxIndex(account);
+        }
+
+        public void test() {
+            //Nothing to do
+        }
     }
 
-    public InboxIndex rescue(String account,
-      String...rescuedMails)
-      throws NoSuchInboxException, QuarantineUserActionFailedException {
-      return s_quarantine.rescue(account, rescuedMails);
+    class QuarantineUserViewWrapper
+        extends QuarantineManipulationWrapper
+        implements QuarantineUserView {
+
+        public String getAccountFromToken(String token)
+            throws BadTokenException {
+            return s_quarantine.getAccountFromToken(token);
+        }
+
+        public boolean requestDigestEmail(String account)
+            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            return s_quarantine.requestDigestEmail(account);
+        }
+
+        public void remapSelfService(String from, String to)
+            throws QuarantineUserActionFailedException, InboxAlreadyRemappedException {
+            s_quarantine.remapSelfService(from, to);
+        }
+
+        public boolean unmapSelfService(String inboxName, String aliasToRemove)
+            throws QuarantineUserActionFailedException {
+            return s_quarantine.unmapSelfService(inboxName, aliasToRemove);
+        }
+
+        public String getMappedTo(String account)
+            throws QuarantineUserActionFailedException {
+            return s_quarantine.getMappedTo(account);
+        }
+
+        public String[] getMappedFrom(String account)
+            throws QuarantineUserActionFailedException {
+            return s_quarantine.getMappedFrom(account);
+        }
     }
 
-    public InboxIndex getInboxIndex(String account)
-      throws NoSuchInboxException, QuarantineUserActionFailedException {
-      return s_quarantine.getInboxIndex(account);
+    class QuarantineMaintenenceViewWrapper
+        extends QuarantineManipulationWrapper
+        implements QuarantineMaintenenceView {
+
+        public long getInboxesTotalSize()
+            throws QuarantineUserActionFailedException {
+            return s_quarantine.getInboxesTotalSize();
+        }
+
+        public String getFormattedInboxesTotalSize(boolean inMB) {
+            return s_quarantine.getFormattedInboxesTotalSize(inMB);
+        }
+
+        public List<Inbox> listInboxes()
+            throws QuarantineUserActionFailedException {
+            return s_quarantine.listInboxes();
+        }
+
+        public void deleteInbox(String account)
+            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            s_quarantine.deleteInbox(account);
+        }
+
+        public void rescueInbox(String account)
+            throws NoSuchInboxException, QuarantineUserActionFailedException {
+            s_quarantine.rescueInbox(account);
+        }
     }
 
-    public void test() {
-      //Nothing to do
-    }
-  }
-
-  class QuarantineUserViewWrapper
-    extends QuarantineManipulationWrapper
-    implements QuarantineUserView {
-
-    public String getAccountFromToken(String token)
-      throws BadTokenException {
-      return s_quarantine.getAccountFromToken(token);
+    class QuarantineTransformViewWrapper
+        implements QuarantineTransformView {
+        public boolean quarantineMail(File file,
+                                      MailSummary summary,
+                                      EmailAddress...recipients) {
+            return s_quarantine.quarantineMail(file, summary, recipients);
+        }
     }
 
-    public boolean requestDigestEmail(String account)
-      throws NoSuchInboxException, QuarantineUserActionFailedException {
-      return s_quarantine.requestDigestEmail(account);
+    class SafelistTransformViewWrapper
+        implements SafelistTransformView {
+        public boolean isSafelisted(EmailAddress envelopeSender,
+                                    EmailAddress mimeFrom,
+                                    List<EmailAddress> recipients) {
+            return s_safelistMngr.isSafelisted(envelopeSender, mimeFrom, recipients);
+        }
     }
 
-    public void remapSelfService(String from, String to)
-      throws QuarantineUserActionFailedException, InboxAlreadyRemappedException {
-      s_quarantine.remapSelfService(from, to);
+    abstract class SafelistManipulationWrapper
+        implements SafelistManipulation {
+
+        public String[] addToSafelist(String safelistOwnerAddress,
+                                      String toAdd)
+            throws NoSuchSafelistException, SafelistActionFailedException {
+            return s_safelistMngr.addToSafelist(safelistOwnerAddress, toAdd);
+        }
+
+        public String[] removeFromSafelist(String safelistOwnerAddress,
+                                           String toRemove)
+            throws NoSuchSafelistException, SafelistActionFailedException {
+            return s_safelistMngr.removeFromSafelist(safelistOwnerAddress, toRemove);
+        }
+
+        public String[] replaceSafelist(String safelistOwnerAddress,
+                                        String...listContents)
+            throws NoSuchSafelistException, SafelistActionFailedException {
+            return s_safelistMngr.replaceSafelist(safelistOwnerAddress, listContents);
+        }
+
+        public String[] getSafelistContents(String safelistOwnerAddress)
+            throws NoSuchSafelistException, SafelistActionFailedException {
+            return s_safelistMngr.getSafelistContents(safelistOwnerAddress);
+        }
+
+        public int getSafelistCnt(String safelistOwnerAddress)
+            throws NoSuchSafelistException, SafelistActionFailedException {
+            return s_safelistMngr.getSafelistCnt(safelistOwnerAddress);
+        }
+
+        public boolean hasOrCanHaveSafelist(String address) {
+            return s_safelistMngr.hasOrCanHaveSafelist(address);
+        }
+
+        public void test() {
+        }
     }
 
-    public boolean unmapSelfService(String inboxName, String aliasToRemove)
-      throws QuarantineUserActionFailedException {
-      return s_quarantine.unmapSelfService(inboxName, aliasToRemove);
+    class SafelistEndUserViewWrapper
+        extends SafelistManipulationWrapper
+        implements SafelistEndUserView {
     }
 
-    public String getMappedTo(String account)
-      throws QuarantineUserActionFailedException {
-      return s_quarantine.getMappedTo(account);
+    class SafelistAdminViewWrapper
+        extends SafelistManipulationWrapper
+        implements SafelistAdminView {
+
+        public List<String> listSafelists()
+            throws SafelistActionFailedException {
+            return s_safelistMngr.listSafelists();
+        }
+
+        public void deleteSafelist(String safelistOwnerAddress)
+            throws SafelistActionFailedException {
+            s_safelistMngr.deleteSafelist(safelistOwnerAddress);
+        }
+
+        public void createSafelist(String newListOwnerAddress)
+            throws SafelistActionFailedException {
+            s_safelistMngr.createSafelist(newListOwnerAddress);
+        }
+
+        public boolean safelistExists(String safelistOwnerAddress)
+            throws SafelistActionFailedException {
+            return s_safelistMngr.safelistExists(safelistOwnerAddress);
+        }
     }
-
-    public String[] getMappedFrom(String account)
-      throws QuarantineUserActionFailedException {
-      return s_quarantine.getMappedFrom(account);
-    }
-  }
-
-  class QuarantineMaintenenceViewWrapper
-    extends QuarantineManipulationWrapper
-    implements QuarantineMaintenenceView {
-
-    public long getInboxesTotalSize()
-      throws QuarantineUserActionFailedException {
-      return s_quarantine.getInboxesTotalSize();
-    }
-
-    public String getFormattedInboxesTotalSize(boolean inMB) {
-      return s_quarantine.getFormattedInboxesTotalSize(inMB);
-    }
-
-    public List<Inbox> listInboxes()
-      throws QuarantineUserActionFailedException {
-      return s_quarantine.listInboxes();
-    }
-
-    public void deleteInbox(String account)
-      throws NoSuchInboxException, QuarantineUserActionFailedException {
-      s_quarantine.deleteInbox(account);
-    }
-
-    public void rescueInbox(String account)
-      throws NoSuchInboxException, QuarantineUserActionFailedException {
-      s_quarantine.rescueInbox(account);
-    }
-  }
-
-  class QuarantineTransformViewWrapper
-    implements QuarantineTransformView {
-    public boolean quarantineMail(File file,
-      MailSummary summary,
-      EmailAddress...recipients) {
-      return s_quarantine.quarantineMail(file, summary, recipients);
-    }
-  }
-
-  class SafelistTransformViewWrapper
-    implements SafelistTransformView {
-    public boolean isSafelisted(EmailAddress envelopeSender,
-      EmailAddress mimeFrom,
-      List<EmailAddress> recipients) {
-      return s_safelistMngr.isSafelisted(envelopeSender, mimeFrom, recipients);
-    }
-  }
-
-  abstract class SafelistManipulationWrapper
-    implements SafelistManipulation {
-
-    public String[] addToSafelist(String safelistOwnerAddress,
-      String toAdd)
-      throws NoSuchSafelistException, SafelistActionFailedException {
-      return s_safelistMngr.addToSafelist(safelistOwnerAddress, toAdd);
-    }
-
-    public String[] removeFromSafelist(String safelistOwnerAddress,
-      String toRemove)
-      throws NoSuchSafelistException, SafelistActionFailedException {
-      return s_safelistMngr.removeFromSafelist(safelistOwnerAddress, toRemove);
-    }
-
-    public String[] replaceSafelist(String safelistOwnerAddress,
-      String...listContents)
-      throws NoSuchSafelistException, SafelistActionFailedException {
-      return s_safelistMngr.replaceSafelist(safelistOwnerAddress, listContents);
-    }
-
-    public String[] getSafelistContents(String safelistOwnerAddress)
-      throws NoSuchSafelistException, SafelistActionFailedException {
-      return s_safelistMngr.getSafelistContents(safelistOwnerAddress);
-    }
-
-    public int getSafelistCnt(String safelistOwnerAddress)
-      throws NoSuchSafelistException, SafelistActionFailedException {
-      return s_safelistMngr.getSafelistCnt(safelistOwnerAddress);
-    }
-
-    public boolean hasOrCanHaveSafelist(String address) {
-      return s_safelistMngr.hasOrCanHaveSafelist(address);
-    }
-
-    public void test() {
-    }
-  }
-
-  class SafelistEndUserViewWrapper
-    extends SafelistManipulationWrapper
-    implements SafelistEndUserView {
-  }
-
-  class SafelistAdminViewWrapper
-    extends SafelistManipulationWrapper
-    implements SafelistAdminView {
-
-    public List<String> listSafelists()
-      throws SafelistActionFailedException {
-      return s_safelistMngr.listSafelists();
-    }
-
-    public void deleteSafelist(String safelistOwnerAddress)
-      throws SafelistActionFailedException {
-      s_safelistMngr.deleteSafelist(safelistOwnerAddress);
-    }
-
-    public void createSafelist(String newListOwnerAddress)
-      throws SafelistActionFailedException {
-      s_safelistMngr.createSafelist(newListOwnerAddress);
-    }
-
-    public boolean safelistExists(String safelistOwnerAddress)
-      throws SafelistActionFailedException {
-      return s_safelistMngr.safelistExists(safelistOwnerAddress);
-    }
-  }
 }

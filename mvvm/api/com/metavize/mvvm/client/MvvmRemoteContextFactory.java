@@ -239,7 +239,7 @@ public class MvvmRemoteContextFactory
      * @exception FailedLoginException if an error occurs
      * @exception MvvmConnectException if an error occurs
      */
-    public MvvmRemoteContext systemLogin(int timeout)
+    public MvvmRemoteContext systemLogin(int timeout, ClassLoader cl)
         throws FailedLoginException, MvvmConnectException
     {
         URL url;
@@ -250,7 +250,7 @@ public class MvvmRemoteContextFactory
         }
 
         synchronized (this) {
-            MvvmLogin ml = mvvmLogin(url, timeout, null);
+            MvvmLogin ml = mvvmLogin(url, timeout, cl);
             remoteContext = ml.systemLogin(SYSTEM_USER, SYSTEM_PASSWORD);
             if (null != remoteContext) {
                 InvocationHandler ih = Proxy.getInvocationHandler(remoteContext);
@@ -259,6 +259,12 @@ public class MvvmRemoteContextFactory
         }
 
         return remoteContext;
+    }
+
+    public MvvmRemoteContext systemLogin(int timeout)
+        throws FailedLoginException, MvvmConnectException
+    {
+        return systemLogin(timeout, null);
     }
 
     public void setTimeout(int timeout)
