@@ -15,6 +15,7 @@ import java.net.InetAddress;
 import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -29,7 +30,6 @@ import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.SyslogBuilder;
 import com.metavize.mvvm.logging.SyslogPriority;
 import com.metavize.mvvm.policy.Policy;
-import javax.persistence.Entity;
 import org.hibernate.annotations.Type;
 
 /**
@@ -381,7 +381,7 @@ public class PipelineEndpoints extends LogEvent
      *
      * @return Policy for this pipeline
      */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="policy_id")
     public Policy getPolicy()
     {

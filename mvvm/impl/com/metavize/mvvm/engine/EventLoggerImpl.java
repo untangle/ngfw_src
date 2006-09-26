@@ -347,7 +347,7 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
                         for (Iterator<LogEvent> i = logQueue.iterator();
                              i.hasNext(); ) {
                             LogEvent e = i.next();
-                            s.saveOrUpdate(e);
+                            s.merge(e);
                             i.remove();
                         }
 
