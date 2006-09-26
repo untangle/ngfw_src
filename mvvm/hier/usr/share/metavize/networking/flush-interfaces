@@ -88,6 +88,9 @@ function flushRoutingTables()
 
 echo "flushing interfaces" `date`
 
+## Destroy all instances of ppp.
+poff -a
+
 ## Destroy all of the current bridges
 if [ -n "`areBridgesUnconfigured`" ]; then
     deleteAllBridges

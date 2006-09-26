@@ -11,13 +11,17 @@
 
 package com.metavize.mvvm.tran.script;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
+
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Logger;
 
+import com.metavize.mvvm.MvvmContextFactory;
 
 /* XXX This should probably be abstracted, up to a script writer and then have a
  * class that is a shell script writer
@@ -153,6 +157,15 @@ public class ScriptWriter
 
     public void writeFile( String fileName )
     {
+        writeFile( fileName, null );
+    }
+
+    /**
+     * Write out the file to filename, if permissions are non-null, then call chmod with permission
+     * after writing the file
+     */
+    public void writeFile( String fileName, String permissions )
+    {
         BufferedWriter out = null;
 
         /* Open up the interfaces file */
@@ -171,6 +184,34 @@ public class ScriptWriter
             if ( out != null ) out.close();
         } catch ( Exception ex ) {
             logger.error( "Unable to close file", ex );
+        }
+
+        
+        if ( permissions != null ) setPermissions( fileName, permissions );
+    }
+
+    /* ----------------- Private ----------------- */
+    /* Modify the file permissions of a file */
+    private void setPermissions( String fileName, String permissions )
+    {
+        if ( permissions == null ) return;
+
+        try {
+            Process p = MvvmContextFactory.context().
+                exec( new String[] { "/bin/chmod", permissions, fileName } );
+
+            /* Read out standard error and input */
+            String line;
+            BufferedReader output = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            while (( line = output.readLine()) != null );
+            output = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            while (( line = output.readLine()) != null );
+
+            if ( p.waitFor() != 0 ) {
+                logger.warn( "Unable to change permissions of " + fileName + " to [" + permissions + "]" );
+            }
+        } catch ( Exception e ) {
+            logger.warn( "Unable to change permissions of " + fileName + " to [" + permissions + "]", e );
         }
     }
 

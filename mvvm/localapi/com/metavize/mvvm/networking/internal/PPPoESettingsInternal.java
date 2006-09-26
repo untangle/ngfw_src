@@ -86,11 +86,10 @@ public class PPPoESettingsInternal
         
         List<PPPoEConnectionInternal> connectionList = new LinkedList<PPPoEConnectionInternal>();
         
-        int index = 0;
-
         for ( PPPoEConnectionRule rule : settings.getConnectionList()) {
-            /* Increment the index only on the connections that exist */
-            String deviceName = ( rule.isLive()) ? ( "ppp" + index++ ) : null;
+            /* Use the argon interface as the suffix for the device
+             * name, they do not have to be sequential. */
+            String deviceName = ( rule.isLive()) ? ( "ppp" + rule.getArgonIntf() ) : null;
             connectionList.add( PPPoEConnectionInternal.makeInstance( rule, deviceName ));
         }
 

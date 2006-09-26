@@ -289,7 +289,7 @@ function areBridgesUnconfigured() {
         
         ## Dump all of the interfaces, excluding the interfaces that are not
         ## interesting
-        find ${SYSFS_INTERFACE_PATH} -maxdepth 1 -mindepth 1 | grep -v '\(lo\|dummy\|tun\|br\|tap\)'
+        find ${SYSFS_INTERFACE_PATH} -maxdepth 1 -mindepth 1 | grep -v '\(lo\|dummy\|tun\|br\|tap\|ppp\)'
         
         ## Remove the prefixes and jibberish
     } |  sed -e "s|${SYSFS_INTERFACE_PATH}/||g" -e 's|/brif/| |' | sort |

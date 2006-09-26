@@ -81,7 +81,11 @@ class InterfacesScriptWriter extends ScriptWriter
 
             if ( !this.settings.getIsEnabled()) break;
         }
-
+        
+        /* Add the PPPoE Settings, this is kind of a hack right now, should be genericized.
+         * XXX should this occur before or after the routing table is updated. */
+        NetworkManagerImpl.getInstance().getPPPoEManager().addInterfaceConfig( this );
+        
         /* Add this after the last interface, done this way so there isn't a space
          * in between the interface and the final commands */
         addRoutingTable();
@@ -264,7 +268,7 @@ class InterfacesScriptWriter extends ScriptWriter
     }
 
     /* A helper to append commands that can't fail */
-    private void appendCommands( String ... commandArray )
+    void appendCommands( String ... commandArray )
     {
         for ( String command : commandArray ) appendLine( "\t" + command + " || true" );
     }

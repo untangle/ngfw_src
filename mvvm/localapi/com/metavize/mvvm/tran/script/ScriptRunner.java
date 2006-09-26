@@ -13,6 +13,7 @@ package com.metavize.mvvm.tran.script;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.IOException;
 
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tran.TransformException;
@@ -60,6 +61,9 @@ public class ScriptRunner
             BufferedReader scriptOutput = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line;
             while (( line = scriptOutput.readLine()) != null ) sb.append( line ).append( "\n" );
+
+            flushErrorStream( p, scriptName );
+
             code = p.waitFor();
 
             if ( code != 0 ) throw new ScriptException( scriptName, code );
@@ -74,11 +78,26 @@ public class ScriptRunner
 
     protected String scriptCommand()
     {
-        return "sh";
+        return SCRIPT_COMMAND;
     }
 
     public static ScriptRunner getInstance()
     {
         return INSTANCE;
+    }
+
+    /* Flush out the error stream, and print it out as a warning */
+    private void flushErrorStream( Process p, String scriptName ) throws IOException
+    {
+        BufferedReader scriptError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+        boolean isFirst = true;
+        String line;
+        while (( line = scriptError.readLine()) != null ) {
+            if ( isFirst ) logger.warn( "[" + scriptName + "] start error output from script." );
+            logger.warn( "  " + line );
+            isFirst = false;
+        }
+        /* cap of the error message only if there was any error output */
+        if ( !isFirst ) logger.warn( "[" + scriptName + "] end of error output from script." );
     }
 }

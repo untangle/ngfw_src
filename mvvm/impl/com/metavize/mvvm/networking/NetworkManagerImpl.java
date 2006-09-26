@@ -979,6 +979,12 @@ public class NetworkManagerImpl implements LocalNetworkManager
         } catch ( ArgonException e ) {
             logger.error( "Unable to write network settings" );
         }
+
+        try {
+            this.pppoeManager.writeConfigFiles();
+        } catch ( PPPoEException e ) {
+            logger.error( "Unable to write the PPPoE Settings", e );
+        }
     }
 
     private void writeEtcFiles( NetworkSpacesInternalSettings newSettings )

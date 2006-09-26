@@ -32,19 +32,25 @@ import com.metavize.mvvm.networking.internal.PPPoEConnectionInternal;
 import com.metavize.mvvm.networking.internal.PPPoESettingsInternal;
 
 import com.metavize.mvvm.tran.ValidateException;
+import com.metavize.mvvm.tran.script.ScriptWriter;
+import static com.metavize.mvvm.tran.script.ScriptWriter.COMMENT;
+import static com.metavize.mvvm.tran.script.ScriptWriter.METAVIZE_HEADER;
+
 import com.metavize.mvvm.util.DataLoader;
 import com.metavize.mvvm.util.DataSaver;
 
 class PPPoEManagerImpl
 {
+    /* This is the prefix where the peers file should be placed */
+    private static final String CONNECTION_NAME_PREFIX = "connection-";
+    private static final String PEERS_FILE_PREFIX = "/etc/ppp/peers/" + CONNECTION_NAME_PREFIX;
+    private static final String PAP_SECRETS_FILE = "/etc/ppp/pap-secrets";
+    
     /* The current settings */
     private PPPoESettingsInternal settings;
     
     /* The list of interfaces that have presently been registered as a PPP interface */
     private List<ArgonInterface> registeredIntfList = new LinkedList<ArgonInterface>();
-
-    /* The list of interfaces set at startup */
-    private List<ArgonInterface> startupIntfList = new LinkedList<ArgonInterface>();
 
     private final Logger logger = Logger.getLogger(getClass());
     
@@ -132,9 +138,6 @@ class PPPoEManagerImpl
             this.settings = loadSettings();
             if ( null == this.settings ) saveDefaults();
 
-            /* Save the list of interfaces from startup */
-            startupIntfList = MvvmContextFactory.context().intfManager().getIntfList();
-
         } catch ( ValidateException e ) {
             /* Loaded invalid settings, replacing with bogus replacements */
             logger.warn( "Invalid PPPoESettings in the database, using null", e );
@@ -148,6 +151,32 @@ class PPPoEManagerImpl
             logger.warn( "Unable to register ppp interfaces at startup, disabling" );
             resetIntfs();
         }
+    }
+    
+    /* Write all the config files */
+    void writeConfigFiles() throws PPPoEException
+    {
+        if ( !this.settings.getIsEnabled()) return;
+        
+        /* Write out all of the peers files */
+        for ( PPPoEConnectionInternal connection : this.settings.getConnectionList()) {
+            if ( !connection.isLive()) continue;
+            PPPoEPeerWriter peer = new PPPoEPeerWriter( connection );
+            try {
+                peer.addConnection();
+                peer.writeFile( PEERS_FILE_PREFIX + connection.getArgonIntf());
+            } catch ( ArgonException e ) {
+                throw new PPPoEException( "Unable to write configuration file for [" + connection + "]", e );
+                
+            }
+        }
+        
+        /* Write out the username/password information, and properly set the permissions */
+        PPPoEPapSecretsWriter secrets = new PPPoEPapSecretsWriter( this.settings );
+        secrets.addSettings();
+        secrets.writeFile( PAP_SECRETS_FILE, "600" );
+        
+        
     }
 
     void isConnected()
@@ -226,6 +255,22 @@ class PPPoEManagerImpl
         this.registeredIntfList = null;
     }
 
+    /* Append the necessary values to the /etc/network/interfaces file */
+    void addInterfaceConfig( InterfacesScriptWriter w )
+    {
+        /* need to kill all running instances of ppp */
+        w.appendCommands( "up poff -a" );
+
+        /* Nothing to do if the settings are not enabled */
+        if ( !this.settings.getIsEnabled()) return;
+        
+        for ( PPPoEConnectionInternal connection : this.settings.getConnectionList()) {
+            /* Ignore the connections that are not active */
+            if ( !connection.isLive()) continue;
+            w.appendCommands( "up pon " + CONNECTION_NAME_PREFIX + connection.getArgonIntf());
+        }
+    }
+
     /* ----------------- Private ----------------- */
     /* Load the settings from the database */
     private PPPoESettingsInternal loadSettings() throws ValidateException
@@ -282,6 +327,84 @@ class PPPoEManagerImpl
                 s.delete( settings );
             }
         }
+    }
+
+    /* These are done this way so it would be easy to break them into their own files when
+     * this gets too large */
+    private static class PPPoEPeerWriter extends ScriptWriter
+    {
+        private static final String PEERS_HEADER =
+            COMMENT + METAVIZE_HEADER + "\n" +
+            COMMENT + " PPP configuration file.\n\n" +
+            "noipdefault\n" +
+            "hide-password\n" +
+            "noauth\n" +
+            "persist\n" +
+            "usepeerdns\n";
+        
+        private final PPPoEConnectionInternal connection;
+
+        PPPoEPeerWriter( PPPoEConnectionInternal connection )
+        {
+            super();
+            this.connection = connection;
+        }
+
+        void addConnection() throws ArgonException
+        {
+            /* If this is the external interface, replace the default route */
+            byte argonIndex = connection.getArgonIntf();
+            ArgonInterface ai = MvvmContextFactory.context().intfManager().getIntfByArgon( argonIndex );
+            
+            /* Only update the default route if this is the final interface */
+            if ( argonIndex == IntfConstants.EXTERNAL_INTF ) {
+                appendLine( "defaultroute" );
+                appendLine( "replacedefaultroute" );
+            }
+
+            appendLine( "plugin rp-pppoe.so " + ai.getPhysicalName());
+            appendLine( "unit " + argonIndex );
+            appendLine( "user \"" + connection.getUsername() + "\"" );
+        }
+
+        @Override
+        protected String header()
+        {
+            return PEERS_HEADER;
+        }
+    }
+
+    /* These are done this way so it would be easy to break them into their own files when
+     * this gets too large */
+    private static class PPPoEPapSecretsWriter extends ScriptWriter
+    {
+        private static final String PAP_HEADER =
+            COMMENT + METAVIZE_HEADER + "\n" +
+            COMMENT + " PAP configuration file.\n\n";
+        
+        private final PPPoESettingsInternal settings;
+        
+        PPPoEPapSecretsWriter( PPPoESettingsInternal settings )
+        {
+            super();
+            this.settings = settings;
+        }
+        
+        void addSettings()
+        {
+            /* Add the username and password for each user */
+            for ( PPPoEConnectionInternal connection : this.settings.getConnectionList()) {
+                if ( !connection.isLive()) continue ;
+                appendLine( "\"" + connection.getUsername() + "\" * \"" + connection.getPassword() + "\"" );
+            }
+        }
+
+        @Override
+        protected String header()
+        {
+            return PAP_HEADER;
+        }
+
     }
 }
 
