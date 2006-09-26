@@ -3,5 +3,5 @@
         portal.showApplicationUrl('/quarantine/manageuser?tkn=PU', this);
     },
 
-    iconUrl: "/quarantine/icon.gif"
+    iconUrl: "/quarantine/images/icon.gif"
 };
