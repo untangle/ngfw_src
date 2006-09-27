@@ -74,35 +74,33 @@ public class FileLister extends HttpServlet
         } catch (ServletException se) {
             Throwable throwable = se.getRootCause();
             /* XXX this is nasty, should be done with a proper try/catch */
-            logger.debug( "Caught an exception: ", se );
+            logger.debug("Caught an exception: ", se);
 
             /* XXX This is gnar gnar XXX */
-            while ( true ) {
-                if ( throwable == null ) break;
+            while (true) {
+                if (throwable == null) break;
 
-                logger.debug( "Cause: ", throwable );
+                logger.debug("Cause: ", throwable);
 
-                /* XXX Should fix the SmbException to use the new initCause function in throwable */
-                if ( throwable instanceof SmbException ) {
-                    if (((SmbException)throwable).getRootCause() == null ) break;
+                /* XXX Should fix the SmbException to use the new
+                 * initCause function in throwable */
+                if (throwable instanceof SmbException) {
+                    if (((SmbException)throwable).getRootCause() == null) {
+                        break;
+                    }
                     throwable = ((SmbException)throwable).getRootCause();
                 } else {
-                    if ( throwable.getCause() == null ) break;
+                    if (throwable.getCause() == null) {
+                        break;
+                    }
                     throwable = throwable.getCause();
                 }
             }
 
-            if ( throwable instanceof TransportException ||
-                 throwable instanceof UnknownHostException ) {
-                logger.info( "Error listing directory: ", throwable );
-
-                /* Unable to send an error because the listing has already began */
-                // try {
-                // resp.sendError(resp.SC_INTERNAL_SERVER_ERROR);
-                // } catch (IOException e) {
-                // throw new ServletException(e);
-                // }
-
+            if (throwable instanceof TransportException
+                || throwable instanceof UnknownHostException) {
+                // XXX send warning to user (listing may have already begun)
+                logger.info("Error listing directory: ", throwable);
             } else {
                 /* Rethrow the servlet exception */
                 throw se;

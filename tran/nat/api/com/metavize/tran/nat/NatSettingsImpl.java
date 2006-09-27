@@ -138,7 +138,7 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
      *
      * @return tid for these settings
      */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
     public Tid getTid()
     {
