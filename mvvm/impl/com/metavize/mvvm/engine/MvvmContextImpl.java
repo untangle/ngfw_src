@@ -21,6 +21,7 @@ import com.metavize.mvvm.CronJob;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.MvvmState;
 import com.metavize.mvvm.Period;
+import com.metavize.mvvm.api.RemoteIntfManager;
 import com.metavize.mvvm.api.RemoteShieldManager;
 import com.metavize.mvvm.localapi.LocalShieldManager;
 import com.metavize.mvvm.localapi.LocalIntfManager;
@@ -62,6 +63,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private MvvmState state;
     private AdminManagerImpl adminManager;
     private ArgonManagerImpl argonManager;
+    private RemoteIntfManagerImpl remoteIntfManager;
     private LocalShieldManager localShieldManager;
     private RemoteShieldManager remoteShieldManager;
     private HttpInvoker httpInvoker;
@@ -71,7 +73,6 @@ public class MvvmContextImpl extends MvvmContextBase
     private PolicyManagerImpl policyManager;
     private MPipeManagerImpl mPipeManager;
     private MailSenderImpl mailSender;
-    private NetworkingManagerImpl networkingManager;
     private NetworkManagerImpl networkManager;
     private RemoteNetworkManagerImpl remoteNetworkManager;
     private ReportingManagerImpl reportingManager;
@@ -178,11 +179,6 @@ public class MvvmContextImpl extends MvvmContextBase
         return adminManager;
     }
 
-    public NetworkingManagerImpl networkingManager()
-    {
-        return networkingManager;
-    }
-
     public NetworkManagerImpl networkManager()
     {
         return networkManager;
@@ -208,7 +204,23 @@ public class MvvmContextImpl extends MvvmContextBase
         return argonManager;
     }
 
-    public LocalIntfManager intfManager()
+    public RemoteIntfManager remoteIntfManager()
+    {
+        /* This doesn't have to be synchronized, because it doesn't matter if two are created */
+        if (remoteIntfManager == null) {
+            // Create the remote interface manager
+            LocalIntfManager lim = argonManager.getIntfManager();
+            if (null == lim) {
+                logger.warn("ArgonManager.getIntfManager() is not initialized");
+                return null;
+            }
+            remoteIntfManager = new RemoteIntfManagerImpl(lim);
+        }
+        
+        return remoteIntfManager;
+    }
+
+    public LocalIntfManager localIntfManager()
     {
         return argonManager.getIntfManager();
     }
@@ -498,10 +510,6 @@ public class MvvmContextImpl extends MvvmContextBase
         transformManager = TransformManagerImpl.manager();
         remoteTransformManager = new RemoteTransformManagerImpl(transformManager);
 
-        // Retrieve the networking configuration manager
-        // XXXXXXXXXXXXXXXX This is deprecated
-        networkingManager = NetworkingManagerImpl.getInstance();
-
         // Retrieve the reporting configuration manager
         reportingManager = ReportingManagerImpl.reportingManager();
 
@@ -510,7 +518,7 @@ public class MvvmContextImpl extends MvvmContextBase
 
         // Retrieve the argon manager
         argonManager = ArgonManagerImpl.getInstance();
-
+        
         // Create the shield managers
         localShieldManager = new LocalShieldManagerImpl();
         remoteShieldManager = new RemoteShieldManagerImpl(localShieldManager); 
@@ -528,7 +536,8 @@ public class MvvmContextImpl extends MvvmContextBase
             policyManager.reconfigure(interfaces);
             // this is done by the policy manager, but leave it here
             // just in case.
-            networkingManager.buildIntfEnum();
+            // XXXX no longer needed.
+            // networkingManager.buildIntfEnum();
         }
 
         this.heapMonitor = new HeapMonitor();

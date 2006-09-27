@@ -46,7 +46,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 	public void run(){
 	    InitialSetupWizard.getInfiniteProgressJComponent().startLater("Auto-Detecting Usage...");
             try{
-                NetworkingConfiguration nc = Util.getNetworkingManager().get();
+                NetworkingConfiguration nc = Util.getNetworkManager().getNetworkingConfiguration();
 		publicAddress = nc.host();
 		final boolean isPrivateNetwork = NetworkUtil.getInstance().isPrivateNetwork(nc.host(),nc.netmask());
 		SwingUtilities.invokeLater( new Runnable(){ public void run(){

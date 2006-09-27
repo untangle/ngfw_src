@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.FileInputStream;
 
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -27,11 +28,14 @@ import com.metavize.jnetcap.JNetcapException;
 
 import com.metavize.mvvm.ArgonException;
 import com.metavize.mvvm.IntfConstants;
+import com.metavize.mvvm.IntfEnum;
+
+import com.metavize.mvvm.engine.PolicyManagerPriv;
 
 import com.metavize.mvvm.localapi.ArgonInterface;
 import com.metavize.mvvm.localapi.LocalIntfManager;
 
-import com.metavize.mvvm.engine.PolicyManagerPriv;
+import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
 
 /* Manager for controlling argon -> netcap interface matching */
 class LocalIntfManagerImpl implements LocalIntfManager
@@ -57,6 +61,9 @@ class LocalIntfManagerImpl implements LocalIntfManager
     
     private final PolicyManagerPriv policyManager;
     private final Logger logger = Logger.getLogger( this.getClass());
+
+    /* Converter from all of the interface indexes to their display name(eg. external) */
+    private IntfEnum intfEnum;
 
     /**
      * Convert an interface using the argon standard (0 = outside, 1 = inside, 2 = DMZ 1, etc)
@@ -222,6 +229,12 @@ class LocalIntfManagerImpl implements LocalIntfManager
         }
     }
 
+    /* Retrieve the current interface enumeration */
+    public IntfEnum getIntfEnum()
+    {
+        return this.intfEnum;
+    }
+
     /* ----------------- Package ----------------- */
     LocalIntfManagerImpl( PolicyManagerPriv policyManager )
     {
@@ -261,10 +274,16 @@ class LocalIntfManagerImpl implements LocalIntfManager
             throw new ArgonException( "Unable to configure interface array", e );
         }
 
+        /* Update the interface enumeration */
+        updateIntfEnum();
+
         /* If there are new interfaces, then notify the policy manager */
         if ( !this.intfConverter.hasMatchingInterfaces( prevIntfConverter )) {
-            this.policyManager.reconfigure( this.intfConverter.getArgonIntfArray());
+            this.policyManager.reconfigure( getArgonIntfArray());
         }
+
+        /* Update the interface matcher factory, this should be a listener */
+        IntfMatcherFactory.getInstance().updateEnumeration( this.intfEnum );
     }
 
     /* Write the list of custom transform interfaces to a file */
@@ -347,6 +366,34 @@ class LocalIntfManagerImpl implements LocalIntfManager
         }
     }
 
+    /* Update the interface enumeration */
+    private void updateIntfEnum()
+    {
+        byte[] argonIntfArray = getArgonIntfArray();
+        
+        Arrays.sort( argonIntfArray );
+        
+        String[] intfNameArray = new String[argonIntfArray.length];
+        
+        for ( int c = 0; c < argonIntfArray.length ; c++ ) {
+            String name = "unknown";
+            byte intf = argonIntfArray[c];
+            switch ( intf ) {
+            case IntfConstants.EXTERNAL_INTF: name = IntfConstants.EXTERNAL; break;
+            case IntfConstants.INTERNAL_INTF: name = IntfConstants.INTERNAL; break;
+            case IntfConstants.DMZ_INTF:      name = IntfConstants.DMZ;      break;
+            case IntfConstants.VPN_INTF:      name = IntfConstants.VPN;      break;
+            default:
+                logger.error( "Unknown interface: " + intf + " using unknown" );
+                continue;
+            }
+
+            intfNameArray[c] = name;
+        }
+
+        this.intfEnum = new IntfEnum( argonIntfArray, intfNameArray );        
+    }
+
     /* Convert the arguments into a list of ArgonInterfaces */
     private List<ArgonInterface> toInterfaceList( String internal, String external, String dmz )
     {
@@ -357,5 +404,5 @@ class LocalIntfManagerImpl implements LocalIntfManager
         if ( null != dmz ) list.add( new ArgonInterface( dmz.trim(), IntfConstants.DMZ_INTF ));
 
         return list;
-    }   
+    }
 }

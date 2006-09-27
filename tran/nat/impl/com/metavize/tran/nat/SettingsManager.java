@@ -141,7 +141,7 @@ class SettingsManager
             
             interfaceList = new LinkedList<Interface>();
 
-            byte argonIntfArray[] = MvvmContextFactory.context().intfManager().getArgonIntfArray();
+            byte argonIntfArray[] = MvvmContextFactory.context().localIntfManager().getArgonIntfArray();
                 
             Arrays.sort( argonIntfArray );
             for ( byte argonIntf : argonIntfArray ) {

@@ -11,7 +11,10 @@
 
 package com.metavize.mvvm.api;
 
+import com.metavize.mvvm.IntfEnum;
+
 public interface RemoteIntfManager
 {
-    
+    /* Retrieve the current interface enumeration */
+    public IntfEnum getIntfEnum();
 }

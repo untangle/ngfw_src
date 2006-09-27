@@ -215,7 +215,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         FirewallSettings settings = new FirewallSettings( this.getTid());
 
         /* Need this to lookup the local IP address */
-        NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
+        NetworkingConfiguration netConfig = MvvmContextFactory.context().networkManager().getNetworkingConfiguration();
 
         try {
             IPMatcherFactory ipmf = IPMatcherFactory.getInstance();

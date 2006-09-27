@@ -77,10 +77,6 @@ public interface NetworkManager
 
     public void subscribeLocalOutside( boolean newValue );
     
-    /* Retrieve a mapping of all of the interfaces, this presently lives in the
-     * networking manager*/
-    // public IntfEnum getIntfEnum();
-
     /* Renew the DHCP address and return a new network settings with the updated address */
     public NetworkingConfiguration renewDhcpLease() throws NetworkException;
     

@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.metavize.mvvm.api.RemoteShieldManager;
+import com.metavize.mvvm.api.RemoteIntfManager;
 import com.metavize.mvvm.localapi.LocalShieldManager;
 import com.metavize.mvvm.localapi.LocalIntfManager;
 import com.metavize.mvvm.addrbook.AddressBook;
@@ -93,9 +94,9 @@ public interface MvvmLocalContext
 
     ArgonManager argonManager();
 
-    LocalIntfManager intfManager();
+    RemoteIntfManager remoteIntfManager();
 
-    NetworkingManager networkingManager();
+    LocalIntfManager localIntfManager();
 
     // XXX has stuff for local use, should probably be renamed w/o 'Impl'
     LocalNetworkManager networkManager();

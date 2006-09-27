@@ -160,7 +160,7 @@ public class RuleManager
         
         String servicesInterfaceList = "";
         
-        LocalIntfManager lim = MvvmContextFactory.context().intfManager();
+        LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
 
         for ( InterfaceInternal intf : interfaceList ) {
             ArgonInterface argonIntf = intf.getArgonIntf();
@@ -236,7 +236,7 @@ public class RuleManager
                 sb.append( SERVICES_INTERFACE_LIST + "=\"" + this.servicesInterfaceList + "\"\n" );
             }
 
-            LocalIntfManager lim = MvvmContextFactory.context().intfManager();
+            LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
             
             /* Setup a rule for stealing ARPs */
             if ( !this.hasCompletedSetup ) {

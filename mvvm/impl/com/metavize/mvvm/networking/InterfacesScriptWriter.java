@@ -110,7 +110,7 @@ class InterfacesScriptWriter extends ScriptWriter
 
         appendLine( "iface " + name + " inet manual" );
         
-        LocalIntfManager lim = MvvmContextFactory.context().intfManager();
+        LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
         
         /* Insert the flush command for the first network space */
         if ( isFirst ) {

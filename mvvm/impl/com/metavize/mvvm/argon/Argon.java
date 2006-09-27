@@ -125,11 +125,26 @@ public class Argon
             internal = temp;
         }
 
+        if (( temp = System.getenv( "MVVM_INTERNAL_INTF" )) != null ) {
+            if ( !temp.equals( internal )) logger.warn( "argon.internal,environ mismatch" );
+            internal = temp;
+        }
+
         if (( temp = System.getProperty( "argon.external" )) != null ) {
             external = temp;
         }
 
+        if (( temp = System.getenv( "MVVM_EXTERNAL_INTF" )) != null ) {
+            if ( !temp.equals( external )) logger.warn( "argon.external,environ mismatch" );
+            external = temp;
+        }
+
         if (( temp = System.getProperty( "argon.dmz" )) != null ) {
+            dmz = temp;
+        }
+
+        if (( temp = System.getenv( "MVVM_DMZ_INTF" )) != null ) {
+            if ( !temp.equals( external )) logger.warn( "argon.dmz,environ mismatch" );
             dmz = temp;
         }
 

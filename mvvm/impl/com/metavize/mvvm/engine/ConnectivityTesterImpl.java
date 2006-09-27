@@ -66,7 +66,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
      */
     public Status getStatus()
     {
-        NetworkingConfiguration netConfig = MvvmContextFactory.context().networkingManager().get();
+        NetworkingConfiguration netConfig = MvvmContextFactory.context().networkManager().getNetworkingConfiguration();
 
         InetAddress dnsPrimary   = netConfig.dns1().getAddr();
         InetAddress dnsSecondary = ( netConfig.dns2().isEmpty()) ? null : netConfig.dns2().getAddr();

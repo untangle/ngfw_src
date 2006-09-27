@@ -415,9 +415,6 @@ class PolicyManagerImpl implements PolicyManagerPriv
     // we create the missing system policy rules given this sorting.
     public void reconfigure(final byte[] interfaces)
     {
-        /* Reconfigure the networking interfaces */
-        NetworkingManagerImpl.getInstance().buildIntfEnum();
-
         // For now do nothing
         if (allPolicies.size() == 0)
             // Always

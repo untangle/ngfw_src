@@ -42,7 +42,7 @@ public class RemoteCompoundSettings implements CompoundSettings {
     public CertInfo getCurrentCertInfo(){ return certInfo; }
 
     public void save() throws Exception {
-	Util.getNetworkingManager().set(networkingConfiguration);
+	Util.getNetworkManager().setNetworkingConfiguration(networkingConfiguration);
 	Util.getAdminManager().getSnmpManager().setSnmpSettings(snmpSettings);
 	Util.getAdminManager().setAdminSettings(adminSettings);
 	Util.getLoggingManager().setLoggingSettings(loggingSettings);
@@ -50,7 +50,7 @@ public class RemoteCompoundSettings implements CompoundSettings {
     }
 
     public void refresh() throws Exception {
-	networkingConfiguration = Util.getNetworkingManager().get();
+	networkingConfiguration = Util.getNetworkManager().getNetworkingConfiguration();
 	snmpSettings = Util.getAdminManager().getSnmpManager().getSnmpSettings();
 	adminSettings = Util.getAdminManager().getAdminSettings();
 	loggingSettings = Util.getLoggingManager().getLoggingSettings();

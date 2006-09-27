@@ -93,11 +93,11 @@ public class ScriptRunner
         boolean isFirst = true;
         String line;
         while (( line = scriptError.readLine()) != null ) {
-            if ( isFirst ) logger.warn( "[" + scriptName + "] start error output from script." );
-            logger.warn( "  " + line );
+            if ( isFirst ) logger.info( "[" + scriptName + "] start error output from script." );
+            logger.info( "  " + line );
             isFirst = false;
         }
         /* cap of the error message only if there was any error output */
-        if ( !isFirst ) logger.warn( "[" + scriptName + "] end of error output from script." );
+        if ( !isFirst ) logger.info( "[" + scriptName + "] end of error output from script." );
     }
 }

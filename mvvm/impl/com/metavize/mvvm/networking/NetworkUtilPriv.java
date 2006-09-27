@@ -145,7 +145,7 @@ class NetworkUtilPriv extends NetworkUtil
         /* Boolean to indicate whether or not the user has completed setup */
         boolean hasCompletedSetup = networkSettings.getHasCompletedSetup();
 
-        LocalIntfManager lim = MvvmContextFactory.context().intfManager();
+        LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
 
         int index = SPACE_INDEX_BASE;
 
@@ -307,7 +307,7 @@ class NetworkUtilPriv extends NetworkUtil
     NetworkSpacesInternalSettings toInternal( NetworkingConfiguration configuration )
         throws NetworkException, ValidateException
     {
-        LocalIntfManager lim = MvvmContextFactory.context().intfManager();
+        LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
 
         NetworkSpacesSettings newSettings = new NetworkSpacesSettingsImpl();
 
@@ -446,7 +446,7 @@ class NetworkUtilPriv extends NetworkUtil
             new DhcpStatus( NetworkUtil.BOGUS_DHCP_ADDRESS, NetworkUtil.BOGUS_DHCP_NETMASK );
 
         try {
-            LocalIntfManager lim = MvvmContextFactory.context().intfManager();
+            LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
 
             /* XXX Right now the only space that supports DHCP is the external space,
              * need to update for when there are others */
@@ -805,7 +805,7 @@ class NetworkUtilPriv extends NetworkUtil
 
     byte[] getArgonIntfArray()
     {
-        return MvvmContextFactory.context().intfManager().getArgonIntfArray();
+        return MvvmContextFactory.context().localIntfManager().getArgonIntfArray();
     }
 
     /* Get the hostname of the box from the /etc/hostname file */

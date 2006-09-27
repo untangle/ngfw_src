@@ -33,13 +33,13 @@ public class NetworkCompoundSettings implements CompoundSettings {
     public DynamicDNSSettings getDynamicDNSSettings(){ return dynamicDNSSettings; }
 
     public void save() throws Exception {
-	Util.getNetworkingManager().set(networkingConfiguration);
+	Util.getNetworkManager().setNetworkingConfiguration(networkingConfiguration);
 	Util.getNetworkManager().setDynamicDnsSettings(dynamicDNSSettings);
 	Util.getNetworkManager().setRemoteSettings(remoteSettings);
     }
 
     public void refresh() throws Exception {
-	networkingConfiguration = Util.getNetworkingManager().get();
+	networkingConfiguration = Util.getNetworkManager().getNetworkingConfiguration();
 	dynamicDNSSettings = Util.getNetworkManager().getDynamicDnsSettings();
 	remoteSettings = Util.getNetworkManager().getRemoteSettings();
     }

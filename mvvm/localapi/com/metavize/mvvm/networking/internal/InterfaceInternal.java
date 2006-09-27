@@ -131,7 +131,7 @@ public class InterfaceInternal
         ArgonInterface argonIntf = null;
 
         try {
-            LocalIntfManager lim = MvvmContextFactory.context().intfManager();
+            LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
             argonIntf = lim.getIntfByArgon( intf.getArgonIntf());
         } catch ( ArgonException e ) {
             throw new ValidateException( "Invalid argon interface: " + argonIntf, e );

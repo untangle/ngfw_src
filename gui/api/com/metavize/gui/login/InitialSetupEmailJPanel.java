@@ -17,7 +17,6 @@ import com.metavize.gui.util.Util;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.MailSender;
-import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.client.MvvmRemoteContextFactory;
 import com.metavize.gui.configuration.EmailConnectivityTestJDialog;

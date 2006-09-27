@@ -46,6 +46,7 @@ import com.metavize.gui.pipeline.MRackJPanel;
 import com.metavize.gui.transform.CompoundSettings;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.mvvm.*;
+import com.metavize.mvvm.api.RemoteIntfManager;
 import com.metavize.mvvm.addrbook.*;
 import com.metavize.mvvm.client.*;
 import com.metavize.mvvm.logging.*;
@@ -143,13 +144,13 @@ public class Util {
     private static TransformManager transformManager;
     private static AdminManager adminManager;
     private static StatsCache statsCache;
-    private static NetworkingManager networkingManager;
     private static NetworkManager networkManager;
     private static PolicyManager policyManager;
     private static LoggingManager loggingManager;
     private static AppServerManager appServerManager;
     private static AddressBook addressBook;
     private static RemotePortalManager remotePortalManager;
+    private static RemoteIntfManager remoteIntfManager;
 
     public static void setMvvmContext(MvvmRemoteContext mvvmContextX){
         mvvmContext = mvvmContextX;
@@ -157,25 +158,25 @@ public class Util {
             toolboxManager = mvvmContext.toolboxManager();
             transformManager = mvvmContext.transformManager();
             adminManager = mvvmContext.adminManager();
-            networkingManager = mvvmContext.networkingManager();
             networkManager = mvvmContext.networkManager();
             policyManager = mvvmContext.policyManager();
             loggingManager = mvvmContext.loggingManager();
             appServerManager = mvvmContext.appServerManager();
             addressBook = mvvmContext.appAddressBook();
-        remotePortalManager = mvvmContext.portalManager();
+            remotePortalManager = mvvmContext.portalManager();
+            remoteIntfManager = mvvmContext.intfManager();
         }
         else{
             toolboxManager = null;
             transformManager = null;
             adminManager = null;
-            networkingManager = null;
             networkManager = null;
             policyManager = null;
             loggingManager = null;
             appServerManager = null;
             addressBook = null;
-        remotePortalManager = null;
+            remotePortalManager = null;
+            remoteIntfManager = null;
         }
     }
 
@@ -184,7 +185,7 @@ public class Util {
     public static TransformManager getTransformManager(){ return transformManager; }
     public static AdminManager getAdminManager(){ return adminManager; }
     public static StatsCache getStatsCache(){ return statsCache; }
-    public static NetworkingManager getNetworkingManager(){ return networkingManager; }
+    public static RemoteIntfManager getIntfManager(){ return remoteIntfManager; }
     public static NetworkManager getNetworkManager(){ return networkManager; }
     public static PolicyManager getPolicyManager(){ return policyManager; }
     public static LoggingManager getLoggingManager(){ return loggingManager; }

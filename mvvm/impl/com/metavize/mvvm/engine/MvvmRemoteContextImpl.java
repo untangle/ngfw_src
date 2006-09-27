@@ -17,9 +17,9 @@ import com.metavize.mvvm.AppServerManager;
 import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.ConnectivityTester;
 import com.metavize.mvvm.NetworkManager;
-import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.ReportingManager;
 import com.metavize.mvvm.addrbook.AddressBook;
+import com.metavize.mvvm.api.RemoteIntfManager;
 import com.metavize.mvvm.api.RemoteShieldManager;
 import com.metavize.mvvm.client.MvvmRemoteContext;
 import com.metavize.mvvm.logging.LoggingManager;
@@ -72,9 +72,9 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
         return context.argonManager();
     }
 
-    public NetworkingManager networkingManager()
+    public RemoteIntfManager intfManager()
     {
-        return context.networkingManager();
+        return context.remoteIntfManager();
     }
 
     public NetworkManager networkManager()
@@ -82,7 +82,6 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
         return context.remoteNetworkManager();
     }
 
-    /* Argon manager performs double duty */
     public RemoteShieldManager shieldManager()
     {
         return context.remoteShieldManager();

@@ -42,7 +42,7 @@ public class ShieldMonitor implements ShieldEventListener
                      " limited: " + limited + " dropped: " + dropped + " rejected: " + rejected  );
 
         try {
-            clientIntf = MvvmContextFactory.context().intfManager().toArgon( clientIntf );
+            clientIntf = MvvmContextFactory.context().localIntfManager().toArgon( clientIntf );
 
             eventLogger.log( new ShieldRejectionEvent( ip, clientIntf, reputation, mode, limited, dropped,
                                                         rejected ));

@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm.localapi;
 
+import com.metavize.mvvm.IntfConstants;
+
 /** ArgonInterface:
  * Contains information about a physical interfaces. */
 public final class ArgonInterface
@@ -97,6 +99,22 @@ public final class ArgonInterface
     public String toString()
     {
         return this.string;
+    }
+    
+    /** Get how "outside" or trustworty an interface is.  This is
+     * useful for sorting inside the policy manager which determines
+     * policies by comparing whether an interface is more inside of
+     * another interface */
+    public int getTrustworthiness()
+    {
+        switch ( this.argon ) {
+        case IntfConstants.EXTERNAL_INTF: return 0;     /* External interface is the least trustworthy */
+        case IntfConstants.DMZ_INTF:      return 1;     /* DMZ is the second least trustworthy */
+        case IntfConstants.INTERNAL_INTF: return 100;   /* Internal interface is the most trustworthy */
+        default:
+            /* The index determines the trustworthiness of all other interfaces */
+            return this.argon;
+        }
     }
 
     /** Return a new argon interface with a modified secondary interface */

@@ -119,7 +119,8 @@ public class LogMailer implements Runnable
                 if (now - MIN_MESSAGE_PERIOD < lastSendTime)
                     Thread.sleep(MIN_MESSAGE_PERIOD  - (now - lastSendTime));
                 if (MvvmContextFactory.state() == MvvmState.RUNNING &&
-                    MvvmContextFactory.context().networkingManager().get().isExceptionReportingEnabled()) {
+                    MvvmContextFactory.context().networkManager().
+                    getNetworkingConfiguration().isExceptionReportingEnabled()) {
                     sendMessage(triggerer);
                 }
                 lastSendTime = System.currentTimeMillis();
@@ -195,7 +196,7 @@ public class LogMailer implements Runnable
 
     private void doSend(String subjectBase, String bodyBase,
                         List<MimeBodyPart> parts) {
-        NetworkingConfiguration netConf = MvvmContextFactory.context().networkingManager().get();
+        NetworkingConfiguration netConf = MvvmContextFactory.context().networkManager().getNetworkingConfiguration();
         String host = netConf.host().toString();
 
         String bodyText = sysstat.systemStatus();

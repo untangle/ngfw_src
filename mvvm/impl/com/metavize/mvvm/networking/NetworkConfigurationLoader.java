@@ -141,7 +141,7 @@ class NetworkConfigurationLoader
 
         String external;
 
-        external = MvvmContextFactory.context().intfManager().getExternal().getName();
+        external = MvvmContextFactory.context().localIntfManager().getExternal().getName();
 
         netcap.updateAddress();
 

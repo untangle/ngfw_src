@@ -32,7 +32,7 @@ public class PolicyCompoundSettings implements CompoundSettings {
 
     public void refresh() throws Exception {
 	policyConfiguration = Util.getPolicyManager().getPolicyConfiguration();
-	intfEnum = Util.getNetworkingManager().getIntfEnum();
+	intfEnum = Util.getIntfManager().getIntfEnum();
     }
 
     public void validate() throws Exception {

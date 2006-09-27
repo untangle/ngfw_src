@@ -83,7 +83,7 @@ class RedirectTableModel extends MSortedTableModel<Object>{
     
     public TableColumnModel getTableColumnModel(){
         IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
-        IntfEnum intfEnum = Util.getNetworkingManager().getIntfEnum();
+        IntfEnum intfEnum = Util.getIntfManager().getIntfEnum();
 
         /* XXXXX This is not where this code should be executed */
         imf.updateEnumeration( intfEnum );

@@ -13,6 +13,7 @@ package com.metavize.mvvm.argon;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
@@ -208,10 +209,16 @@ final class ArgonInterfaceConverter
         return makeInstance( newIntfList );
     }
 
+    /** Update the interface enumeration */
+    
+
     /* Make a new interface converter from a list of interfaces */
     static ArgonInterfaceConverter makeInstance( List<ArgonInterface> intfList )
         throws ArgonException
     {
+        /* Sort the interface list */
+        intfList = sortIntfList( intfList );
+
         Map<Byte,ArgonInterface> argon  = new HashMap<Byte,ArgonInterface>();
         Map<Byte,ArgonInterface> netcap = new HashMap<Byte,ArgonInterface>();
         Map<String,ArgonInterface> name = new HashMap<String,ArgonInterface>();
@@ -240,5 +247,21 @@ final class ArgonInterfaceConverter
         if ( external == null ) throw new ArgonException( "The external interface is not set" );
         
         return new ArgonInterfaceConverter( external, internal, dmz, argon, netcap, name, intfList );
+    }
+
+    /* A sort function which returns a new list of the interfaces
+     * sorted from most outside to most inside */
+    private static List<ArgonInterface> sortIntfList( List<ArgonInterface> intfList )
+    {
+        List<ArgonInterface> sortedIntfList = new LinkedList<ArgonInterface>( intfList );
+
+        Collections.sort( sortedIntfList, new Comparator<ArgonInterface>() {
+                public int compare(  ArgonInterface a, ArgonInterface b )
+                {
+                    return ( a.getTrustworthiness() - b.getTrustworthiness());
+                }
+            } );
+
+        return sortedIntfList;
     }
 }

@@ -17,7 +17,6 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.gui.util.Util;
 import com.metavize.gui.widgets.dialogs.*;
-import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.networking.*;
 import com.metavize.mvvm.MailSender;
@@ -172,7 +171,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 	if( !validateOnly ){
 	    InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving External Address...");
             try{
-                NetworkingConfiguration networkingConfiguration = Util.getNetworkingManager().get();
+                NetworkingConfiguration networkingConfiguration = Util.getNetworkManager().getNetworkingConfiguration();
                 networkingConfiguration.isDhcpEnabled( isDhcpEnabled );
                 if( !isDhcpEnabled ){
                     networkingConfiguration.host( host );

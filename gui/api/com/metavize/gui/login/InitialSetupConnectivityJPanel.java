@@ -15,7 +15,6 @@ import com.metavize.gui.widgets.wizard.*;
 import java.util.Arrays;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.gui.util.Util;
-import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.gui.configuration.NetworkConnectivityTestJDialog;
 

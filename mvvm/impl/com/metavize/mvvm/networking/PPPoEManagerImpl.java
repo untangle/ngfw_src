@@ -192,7 +192,7 @@ class PPPoEManagerImpl
         /* Don't need to do anything if the connection is not enabled */
         if (( null == this.settings ) || !this.settings.getIsEnabled()) return;
 
-        LocalIntfManager lim = MvvmContextFactory.context().intfManager();
+        LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
         
         List<ArgonInterface> registeredIntfList = new LinkedList<ArgonInterface>();
         
@@ -231,7 +231,7 @@ class PPPoEManagerImpl
             return;
         }
 
-        LocalIntfManager lim = MvvmContextFactory.context().intfManager();
+        LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
         
         /* Iterate each of the cached entries and replace with their original values */
         for ( ArgonInterface intf : this.registeredIntfList ) {
@@ -250,7 +250,7 @@ class PPPoEManagerImpl
     /* This is for the ohh no situtation, just a way to get back to the interfaces at startup */
     synchronized void resetIntfs()
     {
-        MvvmContextFactory.context().intfManager().resetSecondaryIntfs();
+        MvvmContextFactory.context().localIntfManager().resetSecondaryIntfs();
         
         this.registeredIntfList = null;
     }
@@ -354,7 +354,7 @@ class PPPoEManagerImpl
         {
             /* If this is the external interface, replace the default route */
             byte argonIndex = connection.getArgonIntf();
-            ArgonInterface ai = MvvmContextFactory.context().intfManager().getIntfByArgon( argonIndex );
+            ArgonInterface ai = MvvmContextFactory.context().localIntfManager().getIntfByArgon( argonIndex );
             
             /* Only update the default route if this is the final interface */
             if ( argonIndex == IntfConstants.EXTERNAL_INTF ) {

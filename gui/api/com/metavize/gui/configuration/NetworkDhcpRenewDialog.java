@@ -14,7 +14,6 @@ package com.metavize.gui.configuration;
 import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.util.Util;
 
-import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.NetworkingConfiguration;
 
 import javax.swing.*;
@@ -56,7 +55,7 @@ final public class NetworkDhcpRenewDialog extends MOneButtonProgressJDialog {
         }
         public void run(){
             try{
-                NetworkDhcpRenewDialog.this.networkingConfiguration = Util.getNetworkingManager().renewDhcpLease();
+                NetworkDhcpRenewDialog.this.networkingConfiguration = Util.getNetworkManager().renewDhcpLease();
                 Thread.currentThread().sleep(2000l);
                 SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                     NetworkDhcpRenewDialog.this.jProgressBar.setIndeterminate(false);

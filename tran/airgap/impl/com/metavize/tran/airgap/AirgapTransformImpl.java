@@ -22,7 +22,6 @@ import java.util.List;
 import com.metavize.mvvm.localapi.LocalShieldManager;
 import com.metavize.mvvm.IntfEnum;
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.NetworkingManager;
 import com.metavize.mvvm.shield.ShieldNodeSettings;
 import com.metavize.mvvm.tapi.AbstractTransform;
 import com.metavize.mvvm.tapi.PipeSpec;
@@ -143,8 +142,7 @@ public class AirgapTransformImpl extends AbstractTransform
             {
                 public boolean doWork(Session s) throws SQLException
                 {
-                    NetworkingManager networkingManager = MvvmContextFactory.context().networkingManager();
-                    IntfEnum intfEnum = networkingManager.getIntfEnum();
+                    IntfEnum intfEnum = MvvmContextFactory.context().localIntfManager().getIntfEnum();
 
                     Connection c = s.connection();
                     PreparedStatement ps = c.prepareStatement( SHIELD_REJECTION_EVENT_QUERY );
