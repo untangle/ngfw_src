@@ -73,7 +73,7 @@ public class TransformPreferences implements Serializable
      *
      * @return tid for this instance.
      */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="tid", nullable=false)
     public Tid getTid()
     {
