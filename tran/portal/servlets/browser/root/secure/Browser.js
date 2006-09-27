@@ -32,8 +32,6 @@ function Browser(shell, url)
     this._addressBar = this._makeAddressBar();
     this._addressBar.zShow(true);
 
-    //     var dragSource = new DwtDragSource(Dwt.DND_DROP_MOVE | Dwt.DND_DROP_COPY);
-    //     dragSource.addDragListener(new AjxListener(this, this._treeDragListener));
     var dropTarget = new DwtDropTarget(CifsNode);
     dropTarget.addDropListener(new AjxListener(this, this._treeDropListener));
     this._dirTree = new DirTree(this, null, DwtControl.ABSOLUTE_STYLE,
