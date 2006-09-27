@@ -22,7 +22,8 @@ function Browser(shell, url)
 
     DwtComposite.call(this, this._shell, "Browser", DwtComposite.RELATIVE_STYLE);
 
-    this._authCallback = new AjxCallback(this, this._authResource, { });
+    this._listerAuthCallback = new AjxCallback(this, this._listerAuthFn, { });
+    this._msgAuthCallback = new AjxCallback(this, this._msgAuthFn, { });
     this._refreshCallback = new AjxCallback(this, this.refresh, { });
 
     this._toolbar = this._makeToolbar();
@@ -55,7 +56,7 @@ function Browser(shell, url)
     dragSource.addDragListener(new AjxListener(this, this._detailDragListener));
     dropTarget = new DwtDropTarget(CifsNode);
     dropTarget.addDropListener(new AjxListener(this, this._detailDropListener));
-    this._detailPanel = new DetailPanel(this, this._authCallback);
+    this._detailPanel = new DetailPanel(this, this._listerAuthCallback);
     this._detailPanel.setUI();
     this._detailPanel.zShow(true);
     this._detailPanel.addSelectionListener(new AjxListener(this, this._detailSelectionListener));
@@ -115,7 +116,7 @@ Browser.prototype.mv = function(src, dest)
     // XXX handle error
     MvRpc.invoke(reqStr, "secure/exec", Browser._POST_HEADERS, false,
                  this._refreshCallback, MvRpc.reloadPageCallback,
-                 this._authCallback);
+                 this._msgAuthCallback);
 };
 
 Browser.prototype.cp = function(src, dest)
@@ -125,7 +126,7 @@ Browser.prototype.cp = function(src, dest)
     // XXX handle error
     MvRpc.invoke(reqStr, "secure/exec", BROWSER._POST_HEADERS, false,
                  this._refreshCallback, MvRpc.reloadPageCallback,
-                 this._authCallback);
+                 this._msgAuthCallback);
 };
 
 Browser.prototype.refresh = function()
@@ -274,7 +275,7 @@ Browser.prototype._broadcastRoots = function()
 {
     var actionCb = new AjxCallback(this, this._broadcastRootsCbFn, new Object());
     MvRpc.invoke(null, "secure/ls?url=//", null, true,
-                 actionCb, MvRpc.reloadPageCallback, this._authCallback);
+                 actionCb, MvRpc.reloadPageCallback, this._msgAuthCallback);
 };
 
 Browser.prototype._broadcastRootsCbFn = function(obj, results)
@@ -359,7 +360,7 @@ Browser.prototype._authenticateDialogListener = function(obj, evt)
     var obj = { dialog: d, item: obj.item }
     var actionCb = new AjxCallback(this, this._loginCallback, obj);
     MvRpc.invoke(reqStr, "secure/login", Browser._POST_HEADERS, false,
-                 actionCb, MvRpc.reloadPageCallback, this._authCallback);
+                 actionCb, MvRpc.reloadPageCallback, null);
 };
 
 Browser.prototype._loginCallback = function(obj, results)
@@ -435,9 +436,9 @@ Browser.prototype._displayListener = function(ev)
             this.chdir(item);
         }
     }
-}
+};
 
-            Browser.prototype._deleteButtonListener = function(ev)
+Browser.prototype._deleteButtonListener = function(ev)
 {
     var sel = this._detailPanel.getSelection();
     if (0 == sel.length) {
@@ -465,7 +466,7 @@ Browser.prototype._displayListener = function(ev)
 
         MvRpc.invoke(reqStr, "secure/exec", Browser._POST_HEADERS, false,
                      this._refreshCallback, MvRpc.reloadPageCallback,
-                     this._authCallback);
+                     this._msgAuthCallback);
     }
 
     var cb = new AjxListener(this, fn, {});
@@ -522,7 +523,7 @@ Browser.prototype._renameDialogListenerFn = function(obj, evt)
         var actionCb = new AjxCallback(this, this._popdownAndRefreshCbFn, obj)
 
             MvRpc.invoke(reqStr, "secure/exec", Browser._POST_HEADERS, false,
-                         actionCb, MvRpc.reloadPageCallback, this._authCallback);
+                         actionCb, MvRpc.reloadPageCallback, this._msgAuthCallback);
     }
 };
 
@@ -551,7 +552,7 @@ Browser.prototype._mkdirDialogListenerFn = function(obj, evt)
         var actionCb = new AjxCallback(this, this._popdownAndRefreshCbFn, obj);
 
         MvRpc.invoke(reqStr, url, Browser._POST_HEADERS, false, actionCb,
-                     MvRpc.reloadPageCallback, this._authCallback);
+                     MvRpc.reloadPageCallback, this._msgAuthCallback);
     }
 };
 
@@ -578,9 +579,18 @@ Browser.prototype._popdownAndRefreshCbFn = function(obj, evt)
     this.refresh();
 };
 
-Browser.prototype._authResource = function(obj, response)
+Browser.prototype._listerAuthFn = function(obj, response)
 {
     this._detailPanel.set(new AjxVector());
+};
+
+Browser.prototype._msgAuthFn = function(obj, response)
+{
+    var authError = response.xml.getElementsByTagName("auth-error")[0];
+    var msg = authError.getAttribute("msg");
+    var dialog = new DwtMessageDialog(this._shell);
+    dialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE, "Error");
+    dialog.popup();
 };
 
 // shell ----------------------------------------------------------------------

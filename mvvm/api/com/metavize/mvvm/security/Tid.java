@@ -86,7 +86,7 @@ public class Tid implements Principal, Serializable, Comparable{
      *
      * @return Policy for this Tid
      */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="policy_id")
     public Policy getPolicy()
     {

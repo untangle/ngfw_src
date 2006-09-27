@@ -65,11 +65,9 @@ function LoginPanel(parent, domain)
         return;
     }
 
-    this.domain = domain;
-
     DwtComposite.call(this, parent);
 
-    this._init();
+    this._init(domain);
 };
 
 LoginPanel.prototype = new DwtComposite();
@@ -84,7 +82,7 @@ LoginPanel.prototype.println = function()
 
 LoginPanel.prototype.getDomain = function()
 {
-    return this.domain;
+    return this._domainField.getValue();
 };
 
 LoginPanel.prototype.getUser = function()
@@ -109,21 +107,29 @@ LoginPanel.prototype.focus = function()
 
 // private methods ------------------------------------------------------------
 
-LoginPanel.prototype._init = function()
+LoginPanel.prototype._init = function(domain)
 {
     this._msgId = Dwt.getNextId();
+    var domainFieldId = Dwt.getNextId();
     var userFieldId = Dwt.getNextId();
     var passwordFieldId = Dwt.getNextId();
 
     var html = [];
-    html.push("Authenticate for domain: ");
-    html.push(this.domain);
+    html.push("Authenticate");
     html.push("<div id='");
     html.push(this._msgId);
     html.push("'></div>");
     html.push("<br/>");
 
     html.push("<table border=0>");
+
+    html.push("<tr>");
+    html.push("<td>Domain:</td>");
+    html.push("<td><div id='");
+    html.push(domainFieldId);
+    html.push("'/></td>");
+    html.push("</tr>");
+
     html.push("<tr>");
     html.push("<td>Username:</td>");
     html.push("<td><div id='");
@@ -142,6 +148,11 @@ LoginPanel.prototype._init = function()
     this.getHtmlElement().innerHTML = html.join("");
 
     this._fields = new Array();
+
+    this._domainField = new DwtInputField({ parent: this });
+    this._domainField.reparentHtmlElement(domainFieldId);
+    this._domainField.setValue(domain);
+    this._fields.push(this._domainField);
 
     this._userField = new DwtInputField({ parent: this });
     this._userField.reparentHtmlElement(userFieldId);
