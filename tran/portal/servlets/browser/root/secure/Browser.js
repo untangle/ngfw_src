@@ -335,6 +335,7 @@ Browser.prototype._dirSelectionListener = function(evt)
         var o = { dialog: d, item: item };
         var l = new AjxListener(this, this._authenticateDialogListener, o);
         d.setButtonListener(DwtDialog.OK_BUTTON, l);
+        d.addListener(DwtEvent.ENTER, l);
         d.popup();
     } else {
         item.setExpanded(!evt.item.getExpanded());
@@ -469,6 +470,7 @@ Browser.prototype._deleteButtonListener = function(ev)
 
     var cb = new AjxListener(this, fn, {});
     dialog.setButtonListener(DwtDialog.OK_BUTTON, cb)
+    dialog.addListener(DwtEvent.ENTER, l);
 
     dialog.popup();
 };
