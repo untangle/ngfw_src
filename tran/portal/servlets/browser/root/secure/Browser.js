@@ -122,7 +122,7 @@ Browser.prototype.cp = function(src, dest)
     var reqStr = Browser._mkSrcDestCommand("cp", src, dest)
 
     // XXX handle error
-    MvRpc.invoke(reqStr, "secure/exec", BROWSER._POST_HEADERS, false,
+    MvRpc.invoke(reqStr, "secure/exec", Browser._POST_HEADERS, false,
                  this._refreshCallback, MvRpc.reloadPageCallback,
                  this._msgAuthCallback);
 };

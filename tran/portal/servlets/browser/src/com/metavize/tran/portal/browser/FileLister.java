@@ -65,6 +65,7 @@ public class FileLister extends HttpServlet
     private Logger logger;
 
     // HttpServlet methods ----------------------------------------------------
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
