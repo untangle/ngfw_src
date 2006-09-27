@@ -53,6 +53,9 @@ public class NetworkingConfigurationImpl
 
     /* Post configuration script is empty */
     public static final String DEF_POST_CONFIGURATION = "";
+
+    /* Default custom rules are empty */
+    public static final String DEF_CUSTOM_RULES = "";
     
     /**
      * True if DHCP is enabled
@@ -125,6 +128,9 @@ public class NetworkingConfigurationImpl
 
     /* This is a script that gets executed after the bridge configuration runs */
     private String postConfigurationScript = DEF_POST_CONFIGURATION;
+
+    /* This is a script that is executed after the rule generator */
+    private String customRulesScript = DEF_CUSTOM_RULES;
 
     private boolean isOutsideAdministrationEnabled;
     private boolean isOutsideQuarantineEnabled;
@@ -342,6 +348,20 @@ public class NetworkingConfigurationImpl
     {
         if ( script == null ) script = DEF_POST_CONFIGURATION;
         this.postConfigurationScript = script;
+    }
+
+    /* Get the post configuration script */
+    public String getCustomRules()
+    {
+        if ( this.customRulesScript == null ) this.customRulesScript = DEF_CUSTOM_RULES;
+        return this.customRulesScript;
+    }
+    
+    /* XXXX This should be validated */
+    public void setCustomRules( String newValue )
+    {
+        if ( newValue == null ) newValue = DEF_CUSTOM_RULES;
+        this.customRulesScript = newValue;
     }
 
     public boolean isSshEnabled()
@@ -590,17 +610,21 @@ public class NetworkingConfigurationImpl
             return false;
         }
 
-        if (false == curNC.host().equals(newNC.host())) {
+        if (!curNC.host().equals(newNC.host())) {
             return false;
         }
 
-        if (false == curNC.netmask().equals(newNC.netmask())) {
+        if (!curNC.netmask().equals(newNC.netmask())) {
             return false;
         }
 
-        if ( false == curNC.getPostConfigurationScript().equals(newNC.getPostConfigurationScript())) {
+        if (!curNC.getPostConfigurationScript().equals(newNC.getPostConfigurationScript())) {
             return false;
         }
+
+        if (!curNC.getCustomRules().equals(newNC.getCustomRules())) {
+            return false;
+        }        
 
         if ( curNC.httpsPort() != newNC.httpsPort()) {
             return false;
@@ -712,6 +736,7 @@ public class NetworkingConfigurationImpl
         sb.append( "\ndns 2:       " + dns2());
         sb.append( "\n aliases:    " + getAliasList());
         sb.append( "\nscript:      " + getPostConfigurationScript());
+        sb.append( "\ncustomrules: " + getCustomRules());
         sb.append( "\nssh:         " + isSshEnabled());
         sb.append( "\nexceptions:  " + isExceptionReportingEnabled());
         sb.append( "\ntcp window:  " + isTcpWindowScalingEnabled());

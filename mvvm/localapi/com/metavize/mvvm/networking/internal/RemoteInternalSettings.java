@@ -53,6 +53,7 @@ public class RemoteInternalSettings
     
     /* This is a script that gets executed after the bridge configuration runs */
     private final String postConfigurationScript;
+    private final String customRulesScript;
     
     /* These are the values that are stored in the database */
     private final HostName hostname;
@@ -86,6 +87,7 @@ public class RemoteInternalSettings
         this.outsideNetwork = remote.outsideNetwork();
         this.outsideNetmask = remote.outsideNetmask();
         this.postConfigurationScript = remote.getPostConfigurationScript();
+        this.customRulesScript = remote.getCustomRules();
         this.hostname       = remote.getHostname();
         this.isHostnamePublic = remote.getIsHostnamePublic();
         this.isPublicAddressEnabled = remote.getIsPublicAddressEnabled();
@@ -104,6 +106,12 @@ public class RemoteInternalSettings
     public String getPostConfigurationScript()
     {
         return this.postConfigurationScript;
+    }
+
+    /* Set the post configuration script */
+    public String getCustomRules()
+    {
+        return this.customRulesScript;
     }
     
     public boolean isSshEnabled()
@@ -234,6 +242,7 @@ public class RemoteInternalSettings
         rs.outsideNetwork( outsideNetwork());
         rs.outsideNetmask( outsideNetmask());
         rs.setPostConfigurationScript( getPostConfigurationScript());
+        rs.setCustomRules( getCustomRules());
         rs.setHostname( getHostname());
         rs.setIsHostnamePublic( getIsHostnamePublic());
         rs.setIsPublicAddressEnabled( getIsPublicAddressEnabled());
@@ -251,7 +260,8 @@ public class RemoteInternalSettings
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append( "script:      " + getPostConfigurationScript());               
+        sb.append( "script:      " + getPostConfigurationScript());
+        sb.append( "\ncustomrules: " + getCustomRules());
         sb.append( "\nssh:         " + isSshEnabled());
         sb.append( "\nexceptions:  " + isExceptionReportingEnabled());
         sb.append( "\ntcp window:  " + isTcpWindowScalingEnabled());

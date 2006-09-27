@@ -654,6 +654,18 @@ function setupMode()
     fi
 }
 
+## If necessary run the user defined custom rules.
+function runCustomRulesScript()
+{
+    ## If necessary run the custom rules script
+    if [ -n "${MVVM_CUSTOM_RULES}" ]; then 
+        ${MVVM_CUSTOM_RULES} ; 
+    else
+        ${LOG_DEBUG} "Custom rules script is disabled"
+    fi
+
+}
+
 ###############################################################
 ######### Start of script #####################################
 ###############################################################
@@ -680,5 +692,7 @@ uturnRules
 interceptRules
 
 setupMode
+
+runCustomRulesScript
 
 true

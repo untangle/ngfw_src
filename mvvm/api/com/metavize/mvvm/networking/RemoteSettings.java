@@ -22,6 +22,12 @@ public interface RemoteSettings
     
     /* Set the script to run once the box is configured */
     public void setPostConfigurationScript( String newValue );
+
+    /* Get the post configuration script */
+    public String getCustomRules();
+    
+    /* XXXX This should be validated */
+    public void setCustomRules( String newValue );
     
     /* Get whether or not ssh is enabled. */
     public boolean isSshEnabled();

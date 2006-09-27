@@ -35,6 +35,9 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
 
     /* Post configuration script is empty */
     public static final String DEF_POST_CONFIGURATION = "";
+
+    /* Default custom rules are empty */
+    public static final String DEF_CUSTOM_RULES = "";
     
     public static final int DEF_HTTPS_PORT = NetworkUtil.DEF_HTTPS_PORT;
 
@@ -74,6 +77,9 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     /* This is a script that gets executed after the bridge configuration runs */
     private String postConfigurationScript = DEF_POST_CONFIGURATION;
 
+    /* This is a script that is executed after the rule generator */
+    private String customRulesScript = DEF_CUSTOM_RULES;
+
     /** Parameters for how to handle certain web services outside of the local network. */
     private boolean isOutsideAdministrationEnabled;
     private boolean isOutsideQuarantineEnabled;
@@ -95,6 +101,20 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     {
         if ( newValue == null ) newValue = DEF_POST_CONFIGURATION;
         this.postConfigurationScript = newValue;
+    }
+
+    /* Get the post configuration script */
+    public String getCustomRules()
+    {
+        if ( this.customRulesScript == null ) this.customRulesScript = DEF_CUSTOM_RULES;
+        return this.customRulesScript;
+    }
+    
+    /* XXXX This should be validated */
+    public void setCustomRules( String newValue )
+    {
+        if ( newValue == null ) newValue = DEF_CUSTOM_RULES;
+        this.customRulesScript = newValue;
     }
 
     public boolean isSshEnabled()
@@ -343,11 +363,15 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
         RemoteSettings newNC = (RemoteSettings) newObject;
         RemoteSettings curNC = this;
 
-        if ( false == curNC.getPostConfigurationScript().equals(newNC.getPostConfigurationScript())) {
+        if (!curNC.getPostConfigurationScript().equals(newNC.getPostConfigurationScript())) {
             return false;
         }
 
-        if ( curNC.httpsPort() != newNC.httpsPort()) {
+        if (!curNC.getCustomRules().equals(newNC.getCustomRules())) {
+            return false;
+        }
+
+        if (curNC.httpsPort() != newNC.httpsPort()) {
             return false;
         }
 
@@ -375,11 +399,11 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
             return false;
         }
 
-        if (false == curNC.outsideNetwork().equals(newNC.outsideNetwork())) {
+        if (!curNC.outsideNetwork().equals(newNC.outsideNetwork())) {
             return false;
         }
 
-        if (false == curNC.outsideNetmask().equals(newNC.outsideNetmask())) {
+        if (!curNC.outsideNetmask().equals(newNC.outsideNetmask())) {
             return false;
         }
         
@@ -390,7 +414,7 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
         if (curNC.getIsOutsideQuarantineEnabled() != newNC.getIsOutsideQuarantineEnabled()) {
             return false;
         }
-
+        
         if (curNC.getIsOutsideReportingEnabled() != newNC.getIsOutsideReportingEnabled()) {
             return false;
         }
@@ -401,7 +425,8 @@ public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equival
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append( "script:      " + getPostConfigurationScript());               
+        sb.append( "script:      " + getPostConfigurationScript());
+        sb.append( "\nrules:       " + getCustomRules());
         sb.append( "\nssh:         " + isSshEnabled());
         sb.append( "\nexceptions:  " + isExceptionReportingEnabled());
         sb.append( "\ntcp window:  " + isTcpWindowScalingEnabled());

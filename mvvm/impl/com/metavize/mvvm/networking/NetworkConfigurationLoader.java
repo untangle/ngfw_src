@@ -77,9 +77,13 @@ class NetworkConfigurationLoader
     private static final String FLAG_OUT_MASK     = "MVVM_ALLOW_OUT_MASK";
     private static final String FLAG_EXCEPTION    = "MVVM_IS_EXCEPTION_REPORTING_EN";
     private static final String FLAG_POST_FUNC    = "MVVM_POST_CONF";
+    private static final String FLAG_CUSTOM_RULES_FUNC = "MVVM_CUSTOM_RULES";
     private static final String POST_FUNC_NAME    = "postConfigurationScript";
-    /* Functionm declaration for the post configuration function */
+    private static final String CUSTOM_RULES_NAME = "customRulesScript";
+    
+    /* Function declaration for the post configuration function */
     private static final String DECL_POST_CONF    = "function " + POST_FUNC_NAME + "() {";
+    private static final String DECL_CUSTOM_RULES = "function " + CUSTOM_RULES_NAME + "() {";
 
     private static final String FLAG_IS_HOSTNAME_PUBLIC = "MVVM_IS_HOSTNAME_EN";
     private static final String FLAG_HOSTNAME          = "MVVM_HOSTNAME";
@@ -262,7 +266,9 @@ class NetworkConfigurationLoader
                         /* Nothing to do here, this is just here to indicate that a
                          * post configuration function exists */
                     } else if ( str.equals( DECL_POST_CONF )) {
-                        parsePostConfigurationScript( remote, in );
+                        remote.setPostConfigurationScript( parseScript( remote, in ));
+                    } else if ( str.equals( DECL_CUSTOM_RULES )) {
+                        remote.setCustomRules( parseScript( remote, in ));
                     } else {
                         logger.info( "Unknown line: '" + str + "'" );
                     }
@@ -272,8 +278,7 @@ class NetworkConfigurationLoader
             }
             in.close();
         } catch ( FileNotFoundException ex ) {
-            logger.warn( "Could not read '" + FLAGS_CFG_FILE +
-                         "' because it doesn't exist" );
+            logger.warn( "Could not read '" + FLAGS_CFG_FILE + "' because it doesn't exist" );
         } catch ( Exception ex ) {
             logger.warn( "Error reading file: ", ex );
         }
@@ -315,7 +320,7 @@ class NetworkConfigurationLoader
     }
 
     /* Parse the input stream until it reaches the end of the function */
-    private void parsePostConfigurationScript( RemoteSettings remote, BufferedReader in )
+    private String parseScript( RemoteSettings remote, BufferedReader in )
         throws IOException
     {
         String command;
@@ -334,11 +339,10 @@ class NetworkConfigurationLoader
             sb.append( command + "\n" );
         }
 
-        if ( isComplete ) {
-            remote.setPostConfigurationScript( sb.toString().trim());
-        } else {
-            logger.warn( "Invalid post configuration script: " + sb.toString());
-        }
+        if ( isComplete ) return sb.toString().trim();
+        
+        logger.warn( "Invalid post configuration script: " + sb.toString());
+        return "";
     }
 
     private void loadHttpsProperties( RemoteSettings remote, boolean isOutsideAccessEnabled )
@@ -473,15 +477,26 @@ class NetworkConfigurationLoader
         }
 
         if ( remote.getPostConfigurationScript().length() > 0 ) {
-            sw.appendComment( "Script to be executed after the bridge configuration script is executed\n" );
+            sw.appendComment( "Script to be executed after /etc/network/interfaces is executed\n" );
             sw.appendLine( DECL_POST_CONF );
             /* The post configuration script should be an object, allowing it to
              * be prevalidated */
             sw.appendLine( remote.getPostConfigurationScript().toString().trim());
             sw.appendLine( "}" );
 
-            sw.appendComment( "Flag to indicate that there is a post configuuration script" );
+            sw.appendComment( "Flag to indicate that there is a post configuuration script." );
             sw.appendVariable( FLAG_POST_FUNC, POST_FUNC_NAME );
+        }
+
+        if ( remote.getCustomRules().length() > 0 ) {
+            sw.appendComment( "Script to be executed after the rule-generator is executed\n" );
+            sw.appendLine( DECL_CUSTOM_RULES );
+            /* The custom rules script should be an object, allowing it to be prevalidated */
+            sw.appendLine( remote.getCustomRules().toString().trim());
+            sw.appendLine( "}" );
+
+            sw.appendComment( "Flag to indicate that there is is a custom rules script." );
+            sw.appendVariable( FLAG_CUSTOM_RULES_FUNC, CUSTOM_RULES_NAME );
         }
 
         HostName hostname = remote.getHostname();
