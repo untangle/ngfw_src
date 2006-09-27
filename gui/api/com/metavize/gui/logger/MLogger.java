@@ -357,7 +357,7 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        setTitle("Metavize Logger by Ian");
+        setTitle("Untangle Networks Logger by Ian");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 exitForm(evt);

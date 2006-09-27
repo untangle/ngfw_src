@@ -138,7 +138,7 @@ public class MTwoButtonJDialog extends javax.swing.JDialog implements java.awt.e
 
         messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        messageJLabel.setText("<html><center>\nThis upgrade requires that the Metavize EdgeGuard Client be<br>\nautomatically shut down.  The Metavize EdgeGuard may also be<br>\nautomatically restarted.  You may log in again after a restart.<br>\n<br>\nWould you like to continue with this upgrade?\n</center></html>");
+        messageJLabel.setText("<html><center>\nThis upgrade requires that the Untangle Networks EdgeGuard Client be<br>\nautomatically shut down.  The Untangle Networks EdgeGuard may also be<br>\nautomatically restarted.  You may log in again after a restart.<br>\n<br>\nWould you like to continue with this upgrade?\n</center></html>");
         messageJLabel.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

@@ -268,7 +268,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                         action = "turned off";
                     MOneButtonJDialog.factory((Window)mTransformJPanel.getTopLevelAncestor(), displayName,
                                               displayName + " could not be " + action + "." +
-                                              "  Please contact Metavize for further support.", displayName + " Warning", "Warning");
+                                              "  Please contact Untangle Networks for further support.", displayName + " Warning", "Warning");
                 }
             }
         }

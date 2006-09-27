@@ -59,7 +59,7 @@
           <Font name="Dialog" size="12" style="0"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;center&gt;&#xa;You must now shut down the Metavize EdgeGuard Client.&lt;br&gt;&#xa;&lt;br&gt;&#xa;You can log in again after shutting down, after a brief period.&lt;br&gt;&#xa;&lt;/center&gt;&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;center&gt;&#xa;You must now shut down the Untangle Networks EdgeGuard Client.&lt;br&gt;&#xa;&lt;br&gt;&#xa;You can log in again after shutting down, after a brief period.&lt;br&gt;&#xa;&lt;/center&gt;&lt;/html&gt;"/>
         <Property name="doubleBuffered" type="boolean" value="true"/>
       </Properties>
       <AuxValues>

@@ -37,7 +37,7 @@ public class InitialSetupWelcomeJPanel extends MWizardPageJPanel {
                 contentJPanel.setOpaque(false);
                 jLabel1.setFont(new java.awt.Font("Dialog", 1, 18));
                 jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                jLabel1.setText("<html>Welcome to the<br>Metavize EdgeGuard Setup Wizard!</html>");
+                jLabel1.setText("<html>Welcome to the<br>Untangle Networks EdgeGuard Setup Wizard!</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;

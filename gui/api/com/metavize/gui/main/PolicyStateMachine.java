@@ -468,7 +468,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     MOneButtonJDialog.factory( Util.getMMainJFrame(), "",					       
 					       "A problem occurred while installing to the rack:<br>"
 					       + mTransformJButton.getDisplayName()
-					       + "<br>Please contact Metavize support.",
+					       + "<br>Please contact Untangle Networks support.",
 					       mTransformJButton.getDisplayName() + " Warning", "");
                     return;
                 }
@@ -521,7 +521,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
 					      "A problem occurred while removing from the rack:<br>"
 					      + mTransformJPanel.getMackageDesc().getDisplayName()
-					      + "<br>Please contact Metavize support.",
+					      + "<br>Please contact Untangle Networks support.",
 					      mTransformJPanel.getMackageDesc().getDisplayName() + " Warning", "");
                     return;
                 }
@@ -597,7 +597,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 		    MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
 					      "A problem occurred while removing from the toolbox:<br>"
 					      + mTransformJButton.getDisplayName()
-					      + "<br>Please contact Metavize support.",
+					      + "<br>Please contact Untangle Networks support.",
 					      mTransformJButton.getDisplayName() + " Warning", "");
 		    return;
 		}
@@ -796,7 +796,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 			    MOneButtonJDialog.factory(Util.getMMainJFrame(), "",						  
 						      "A problem occurred while purchasing:<br>"
 						      + mTransformJButton.getDisplayName()
-						      + "<br>Please try again or contact Metavize for assistance.",
+						      + "<br>Please try again or contact Untangle Networks for assistance.",
 						      mTransformJButton.getDisplayName() + " Warning", "");
 			}});
 		    }
@@ -1540,8 +1540,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 		Util.handleExceptionNoRestart("error launching browser for Store", f);
 		MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
 					  "A problem occurred while trying to access Store."
-					  + "<br>Please contact Metavize support.",
-					  "Metavize Store Warning", "");
+					  + "<br>Please contact Untangle Networks support.",
+					  "Untangle Networks Store Warning", "");
 	    }
 
         }

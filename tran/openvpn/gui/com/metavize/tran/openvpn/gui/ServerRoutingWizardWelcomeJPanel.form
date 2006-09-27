@@ -18,7 +18,7 @@
           <Font name="Dialog" size="18" style="1"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="&lt;html&gt;Welcome to the&lt;br&gt;Metavize OpenVPN Setup Wizard!&lt;/html&gt;"/>
+        <Property name="text" type="java.lang.String" value="&lt;html&gt;Welcome to the&lt;br&gt;Untangle Networks OpenVPN Setup Wizard!&lt;/html&gt;"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">

@@ -136,7 +136,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 getContentPane().setLayout(new java.awt.GridBagLayout());
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-                setTitle("Metavize EdgeGuard Client");
+                setTitle("Untangle Networks EdgeGuard Client");
                 setFocusCycleRoot(false);
                 setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/metavize/gui/icons/LogoNoText16x16.gif"))).getImage());
                 addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -586,7 +586,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 
     private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
         try{
-            URL newURL = new URL( "http://www.metavize.com/docs/" + Version.getVersion());
+            URL newURL = new URL( "http://www.untanglenetworks.com/docs/" + Version.getVersion());
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
         }
         catch(Exception f){
