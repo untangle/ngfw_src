@@ -11,6 +11,10 @@
 
 package com.metavize.tran.httpblocker;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
@@ -43,20 +47,10 @@ public class BlockTemplate implements Serializable
 {
     private static final long serialVersionUID = -2176543704833470091L;
 
-    // XXX someone, make this pretty
-    private static final String BLOCK_TEMPLATE
-        = "<HTML><HEAD>"
-        + "<TITLE>403 Forbidden</TITLE>"
-        + "</HEAD><BODY>"
-        + "<center><b>%s</b></center>"
-        + "<p>This site blocked because of inappropriate content</p>"
-        + "<p>Host: %s</p>"
-        + "<p>URI: %s</p>"
-        + "<p>Category: %s</p>"
-        + "<p>Please contact %s</p>"
-        + "<HR>"
-        + "<ADDRESS>Untangle Networks EdgeGuard</ADDRESS>"
-        + "</BODY></HTML>";
+    private static final String TEMPLATE_NAME
+        = "com/metavize/tran/httpblocker/blocktemplate.html";
+
+    private static String BLOCK_TEMPLATE;
 
     private Long id;
     private String header = "Untangle Networks Content Filter";
@@ -64,9 +58,6 @@ public class BlockTemplate implements Serializable
 
     // constructor ------------------------------------------------------------
 
-    /**
-     * Hibernate constructor.
-     */
     public BlockTemplate() { }
 
     public BlockTemplate(String header, String contact)
@@ -79,8 +70,33 @@ public class BlockTemplate implements Serializable
 
     public String render(String host, URI uri, String category)
     {
-        return String.format(BLOCK_TEMPLATE, header, host, uri, category,
-                             contact);
+        if (null == BLOCK_TEMPLATE) {
+            synchronized (BlockTemplate.class) {
+                if (null == BLOCK_TEMPLATE) {
+                    BLOCK_TEMPLATE = "";
+
+                    InputStream is = BlockTemplate.class.getClassLoader()
+                        .getResourceAsStream(TEMPLATE_NAME);
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
+                    String l;
+                    try {
+                        while (null != (l = br.readLine())) {
+                            BLOCK_TEMPLATE += l;
+                        }
+                    } catch (IOException exn) {
+                        BLOCK_TEMPLATE = null; // XXX try again next time
+                    }
+                }
+            }
+        }
+
+        if (null == BLOCK_TEMPLATE) {
+            return "Blocked Site: http://" + host + uri;
+        } else {
+            return String.format(BLOCK_TEMPLATE, header, host, uri, category,
+                                 contact);
+        }
     }
 
     // accessors --------------------------------------------------------------
