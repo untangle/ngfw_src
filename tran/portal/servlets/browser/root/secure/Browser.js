@@ -314,7 +314,11 @@ Browser.prototype._dirSelectionListener = function(evt)
 {
     switch (evt.detail) {
     case DwtTree.ITEM_SELECTED:
-    var n = evt.item.getData(Browser.CIFS_NODE);
+    var item = evt.item;
+    if (!item.getData(DirTree._POPULATED)) {
+        this._dirTree._populate(item);
+    }
+    var n = item.getData(Browser.CIFS_NODE);
     this.chdir(n, false);
     break;
 
@@ -338,6 +342,9 @@ Browser.prototype._dirSelectionListener = function(evt)
         d.addListener(DwtEvent.ENTER, l);
         d.popup();
     } else {
+        if (!item.getData(DirTree._POPULATED)) {
+            this._dirTree._populate(item);
+        }
         item.setExpanded(!evt.item.getExpanded());
     }
     break;
