@@ -68,7 +68,8 @@ public class BlockTemplate implements Serializable
 
     // business methods ------------------------------------------------------
 
-    public String render(String host, URI uri, String category)
+    public String render(String servletBase, String host, URI uri,
+                         String category)
     {
         if (null == BLOCK_TEMPLATE) {
             synchronized (BlockTemplate.class) {
@@ -82,7 +83,7 @@ public class BlockTemplate implements Serializable
                     String l;
                     try {
                         while (null != (l = br.readLine())) {
-                            BLOCK_TEMPLATE += l;
+                            BLOCK_TEMPLATE += l + "\n";
                         }
                     } catch (IOException exn) {
                         BLOCK_TEMPLATE = null; // XXX try again next time
@@ -94,8 +95,8 @@ public class BlockTemplate implements Serializable
         if (null == BLOCK_TEMPLATE) {
             return "Blocked Site: http://" + host + uri;
         } else {
-            return String.format(BLOCK_TEMPLATE, header, host, uri, category,
-                                 contact);
+            return String.format(BLOCK_TEMPLATE, servletBase, header, host, uri,
+                                 category, contact);
         }
     }
 

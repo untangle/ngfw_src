@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tran.IPMaddrRule;
 import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
@@ -78,7 +79,7 @@ class Blacklist
 
         BlacklistCache cache = BlacklistCache.cache();
 
-        for (BlacklistCategory cat : (List<BlacklistCategory>)settings.getBlacklistCategories()) {
+        for (BlacklistCategory cat : settings.getBlacklistCategories()) {
             String name = cat.getName();
             if (cat.getBlockUrls()) {
                 u.put(name, cache.getUrlBlacklist(name));
@@ -92,8 +93,8 @@ class Blacklist
         urls = u;
         domains = d;
 
-        blockedUrls = makeCustomList((List<StringRule>)settings.getBlockedUrls());
-        passedUrls = makeCustomList((List<StringRule>)settings.getPassedUrls());
+        blockedUrls = makeCustomList(settings.getBlockedUrls());
+        passedUrls = makeCustomList(settings.getPassedUrls());
     }
 
     void destroy()
@@ -168,7 +169,7 @@ class Blacklist
         }
 
         // Check Extensions
-        for (StringRule rule : (List<StringRule>)settings.getBlockedExtensions()) {
+        for (StringRule rule : settings.getBlockedExtensions()) {
             String exn = rule.getString().toLowerCase();
             if (rule.isLive() && path.endsWith(exn)) {
                 if (logger.isDebugEnabled()) {
@@ -180,7 +181,8 @@ class Blacklist
                 transform.log(hbe);
 
                 return settings.getBlockTemplate()
-                    .render(host, uri, "extension (" + exn + ")");
+                    .render(getServletBase(), host, uri,
+                            "extension (" + exn + ")");
             }
         }
 
@@ -198,7 +200,7 @@ class Blacklist
 
         String contentType = header.getValue("content-type");
 
-        for (MimeTypeRule rule : (List<MimeTypeRule>)settings.getBlockedMimeTypes()) {
+        for (MimeTypeRule rule : settings.getBlockedMimeTypes()) {
             MimeType mt = rule.getMimeType();
             if (rule.isLive() && mt.matches(contentType)) {
                 HttpBlockerEvent hbe = new HttpBlockerEvent
@@ -209,7 +211,8 @@ class Blacklist
                 URI uri = requestLine.getRequestUri().normalize();
 
                 return settings.getBlockTemplate()
-                    .render(host, uri, "Mime-Type (" + contentType + ")");
+                    .render(getServletBase(), host, uri,
+                            "Mime-Type (" + contentType + ")");
             }
         }
 
@@ -230,7 +233,7 @@ class Blacklist
      */
     private String passClient(InetAddress clientIp)
     {
-        for (IPMaddrRule rule : (List<IPMaddrRule>)settings.getPassedClients()) {
+        for (IPMaddrRule rule : settings.getPassedClients()) {
             if (rule.getIpMaddr().contains(clientIp) && rule.isLive()) {
                 return rule.getCategory();
             }
@@ -253,31 +256,32 @@ class Blacklist
                 (requestLine.getRequestLine(), Action.BLOCK, r, c);
             transform.log(hbe);
 
-            return settings.getBlockTemplate().render(host, uri, "not allowed");
+            return settings.getBlockTemplate().render(getServletBase(), host,
+                                                      uri, "not allowed");
         }
 
-	String dom = host;
-	while (null == category && null != dom) {
-	    String url = dom + uri.toString();
+        String dom = host;
+        while (null == category && null != dom) {
+            String url = dom + uri.toString();
 
-	    stringRule = findCategory(blockedUrls, url,
-				      settings.getBlockedUrls());
-	    category = null == stringRule ? null : stringRule.getCategory();
-	    if (null != category) {
-		reason = Reason.BLOCK_URL;
-	    } else {
+            stringRule = findCategory(blockedUrls, url,
+                                      settings.getBlockedUrls());
+            category = null == stringRule ? null : stringRule.getCategory();
+            if (null != category) {
+                reason = Reason.BLOCK_URL;
+            } else {
                 String[] categories = findCategories(urls, url);
-		category = mostSpecificCategory(categories);
+                category = mostSpecificCategory(categories);
 
-		if (null != category) {
-		    reason = Reason.BLOCK_CATEGORY;
-		}
-	    }
+                if (null != category) {
+                    reason = Reason.BLOCK_CATEGORY;
+                }
+            }
 
-	    if (null == category) {
-		dom = nextHost(dom);
-	    }
-	}
+            if (null == category) {
+                dom = nextHost(dom);
+            }
+        }
 
         if (null == category) {
             StringBuilder sb = new StringBuilder(host);
@@ -289,40 +293,41 @@ class Blacklist
             reason = null == category ? null : Reason.BLOCK_CATEGORY;
         }
 
-	if (null != category) {
-	    if (null == stringRule || stringRule.getLog()) {
-		HttpBlockerEvent hbe = new HttpBlockerEvent
-		    (requestLine.getRequestLine(), Action.BLOCK, reason, category);
-		transform.log(hbe);
-	    }
+        if (null != category) {
+            if (null == stringRule || stringRule.getLog()) {
+                HttpBlockerEvent hbe = new HttpBlockerEvent
+                    (requestLine.getRequestLine(), Action.BLOCK, reason, category);
+                transform.log(hbe);
+            }
 
-	    BlacklistCategory bc = settings.getBlacklistCategory(category);
-	    if (null == bc && null != stringRule && !stringRule.isLive()) {
-		return null;
-	    } else if (null != bc && bc.getLogOnly()) {
-		return null;
-	    } else {
-		return settings.getBlockTemplate().render(host, uri, category);
-	    }
-	}
+            BlacklistCategory bc = settings.getBlacklistCategory(category);
+            if (null == bc && null != stringRule && !stringRule.isLive()) {
+                return null;
+            } else if (null != bc && bc.getLogOnly()) {
+                return null;
+            } else {
+                return settings.getBlockTemplate().render(getServletBase(), host,
+                                                          uri, category);
+            }
+        }
 
-	return null;
+        return null;
     }
 
     private String mostSpecificCategory(String[] categories) {
-	String category = null;
-	if (categories != null)
-	    for (int i = 0; i < categories.length; i++) {
-		if (category == null) {
-		    category = categories[i];
-		} else {
-		    BlacklistCategory bc = settings.getBlacklistCategory(categories[i]);
-		    if (bc.getLogOnly())
-			continue;
-		    category = categories[i];
-		}
-	    }
-	return category;
+        String category = null;
+        if (categories != null)
+            for (int i = 0; i < categories.length; i++) {
+                if (category == null) {
+                    category = categories[i];
+                } else {
+                    BlacklistCategory bc = settings.getBlacklistCategory(categories[i]);
+                    if (bc.getLogOnly())
+                        continue;
+                    category = categories[i];
+                }
+            }
+        return category;
     }
 
     private StringRule findCategory(CharSequence[] strs, String val,
@@ -423,5 +428,12 @@ class Blacklist
         Collections.sort(strings);
 
         return strings.toArray(new String[strings.size()]);
+    }
+
+    private String getServletBase()
+    {
+        String hostname = MvvmContextFactory.context().networkManager()
+            .getPublicAddress();
+        return "http://" + hostname + "/httpblocker/";
     }
 }
