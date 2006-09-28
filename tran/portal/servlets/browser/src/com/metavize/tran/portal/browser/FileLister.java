@@ -42,8 +42,11 @@ public class FileLister extends HttpServlet
             public boolean accept(SmbFile f)
                 throws SmbException
             {
-                // XXX workgroups, servers?
-                return f.isDirectory();
+                // XXX non filesystem files?
+                return f.isDirectory()
+                    && SmbFile.TYPE_NAMED_PIPE != f.getType()
+                    && SmbFile.TYPE_PRINTER != f.getType()
+                    && SmbFile.TYPE_COMM != f.getType();
             }
         };
 
@@ -53,7 +56,9 @@ public class FileLister extends HttpServlet
                 throws SmbException
             {
                 // XXX non filesystem files?
-                return true;
+                return SmbFile.TYPE_NAMED_PIPE != f.getType()
+                    && SmbFile.TYPE_PRINTER != f.getType()
+                    && SmbFile.TYPE_COMM != f.getType();
             }
         };
 
@@ -188,7 +193,7 @@ public class FileLister extends HttpServlet
 
         SmbFile[] files;
         try {
-            files = dir.listFiles();
+            files = dir.listFiles(filter);
         } catch (SmbAuthException exn) {
             os.println("<auth-error type='listFiles' url='" + p + "'/>");
             return;
