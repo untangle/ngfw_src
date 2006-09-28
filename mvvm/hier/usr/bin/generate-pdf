@@ -219,7 +219,7 @@ function generateEmail()
     
     ## Generate the file list
     cat > ${t_arguments} <<EOF
--s "Metavize EdgeReport (${REPORT_TYPE})"
+-s "Untangle Networks EdgeReport (${REPORT_TYPE})"
 ${t_email}
 ${OUTPUT_FILE} 
 EOF

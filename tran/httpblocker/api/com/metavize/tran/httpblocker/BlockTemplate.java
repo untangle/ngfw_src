@@ -55,11 +55,11 @@ public class BlockTemplate implements Serializable
         + "<p>Category: %s</p>"
         + "<p>Please contact %s</p>"
         + "<HR>"
-        + "<ADDRESS>Metavize EdgeGuard</ADDRESS>"
+        + "<ADDRESS>Untangle Networks EdgeGuard</ADDRESS>"
         + "</BODY></HTML>";
 
     private Long id;
-    private String header = "Metavize Content Filter";
+    private String header = "Untangle Networks Content Filter";
     private String contact = "your network administrator";
 
     // constructor ------------------------------------------------------------

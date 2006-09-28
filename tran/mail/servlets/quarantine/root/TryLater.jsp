@@ -33,7 +33,7 @@
                         <img src="images/logo.gif"/>
                       </td>
                       <td class="logotext">
-                        &nbsp;&nbsp;Metavize EdgeGuard
+                        &nbsp;&nbsp;Untangle Networks EdgeGuard
                       </td>
                     </tr>
                   </table>
@@ -64,7 +64,7 @@
         </TD>
         <td class="smallLogo" height="100%">
           Powered by <br>
-          Metavize EdgeGuard
+          Untangle Networks EdgeGuard
         </td>
         <TD valign="bottom" align="right">
           <IMG SRC="images/br.gif" WIDTH="20" HEIGHT="20">

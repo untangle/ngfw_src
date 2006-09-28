@@ -53,7 +53,7 @@ public class ClientWizard extends MWizardJDialog {
     
     private void init(MTransformControlsJPanel mTransformControlsJPanel, VpnTransform vpnTransform){
 	this.mTransformControlsJPanel = mTransformControlsJPanel;
-        setTitle("Metavize OpenVPN Client Setup Wizard");
+        setTitle("Untangle Networks OpenVPN Client Setup Wizard");
         addWizardPageJPanel(new ClientWizardWelcomeJPanel(vpnTransform), "1. Welcome", false, true);
         addWizardPageJPanel(new ClientWizardServerJPanel(vpnTransform), "2. Download Configuration", false, true);
         addWizardPageJPanel(new ClientWizardCongratulationsJPanel(vpnTransform), "3. Congratulations", false, true);

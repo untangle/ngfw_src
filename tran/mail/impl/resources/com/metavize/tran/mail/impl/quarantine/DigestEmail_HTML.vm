@@ -96,7 +96,7 @@ Where "$record" will be replaced with the "current" record while iterating over 
 ##
 <html>
   <head>
-    <title>Metavize | Quarantine Digest for $user_email</title>
+    <title>Untangle Networks | Quarantine Digest for $user_email</title>
   <style>
 table.outertable {
   background:#FFFFFF;
@@ -528,8 +528,8 @@ hr {
           <tbody>
             <tr>
               <td valign="middle" width="96">
-                <a href="http://www.metavize.com">
-                  <img src="$image_root/logo_no_text_shiny_96x96.gif" border="0" alt="Metavize logo"/>
+                <a href="http://www.untanglenetworks.com">
+                  <img src="$image_root/logo_no_text_shiny_96x96.gif" border="0" alt="Untangle Networks logo"/>
                 </a>
               </td>
               
@@ -555,7 +555,7 @@ hr {
         <hr size="1" width="100%"/>
 
 		<!-- INTRO MESSAGE -->
-		  The emails listed below have been quarantined by Metavize EdgeGuard.
+		  The emails listed below have been quarantined by Untangle Networks EdgeGuard.
 		  These emails will be deleted automatically after 20 days.<br><br>
 		  To release a specific email from the quarantine and deliver the email to your inbox,
 		  click <code>Release</code>.
@@ -667,7 +667,7 @@ hr {
           #end
 
 		<br/>
-	<center>Powered by Metavize&reg; EdgeGuard&reg;</center>
+	<center>Powered by Untangle Networks&reg; EdgeGuard&reg;</center>
 
           <hr size="1" width="100%"/>
         </td>

@@ -18,7 +18,7 @@
 <head>
 
 <!-- HEADING -->
-  <title>Metavize | Quarantine Digest for <quarantine:currentAddress/></title>
+  <title>Untangle Networks | Quarantine Digest for <quarantine:currentAddress/></title>
     <script> 
       function CheckAll() {
         count = document.form1.elements.length;
@@ -133,8 +133,8 @@
           <tbody>
             <tr>
               <td valign="middle" width="96">
-                <a href="http://www.metavize.com">
-                  <img src="images/logo_no_text_shiny_96x96.gif" border="0" alt="Metavize logo"/>
+                <a href="http://www.untanglenetworks.com">
+                  <img src="images/logo_no_text_shiny_96x96.gif" border="0" alt="Untangle Networks logo"/>
                 </a>
               </td>
               
@@ -168,7 +168,7 @@
       
       <quarantine:isRemapped includeIfTrue="false">
         <!-- INTRO MESSAGE -->
-        The emails listed below have been quarantined by Metavize EdgeGuard.
+        The emails listed below have been quarantined by Untangle Networks EdgeGuard.
         These emails will be deleted automatically after 20 days.
         <br><br>
         To release any email from the quarantine and deliver the email to your inbox,
@@ -386,7 +386,7 @@
 	</center>
 
 		<br/>
-	<center>Powered by Metavize&reg; EdgeGuard&reg;</center>
+	<center>Powered by Untangle Networks&reg; EdgeGuard&reg;</center>
 
           <hr size="1" width="100%"/>
         </td>

@@ -240,13 +240,13 @@ public class RFC2253Name implements java.io.Serializable {
     newName.add("L", "San, Mateo");
     newName.add("CN", "foo", 0);
     newName.add("ST", "Cali", 0);
-    newName.add("OU", "Metavize");    
+    newName.add("OU", "Untangle");    
     newName.add("X", "blaaa", 0);
 
     System.out.println(newName.toRFC2253String());
 
     //Parse
-    RFC2253Name parseName = RFC2253Name.parse("L=San\\, Mateo, OU=Metavize, CN=foo, ST=Cali, X=blaaa");
+    RFC2253Name parseName = RFC2253Name.parse("L=San\\, Mateo, OU=Untangle, CN=foo, ST=Cali, X=blaaa");
     System.out.println("Second one's L = " + parseName.getValue("L"));
     System.out.println(parseName.toRFC2253String());
     

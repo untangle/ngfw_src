@@ -7,7 +7,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-<title>Metavize Portal</title>
+<title>Untangle Networks Portal</title>
 <style type="text/css">
 <!--
 @import url(/AjaxTk/img/dwtimgs.css);

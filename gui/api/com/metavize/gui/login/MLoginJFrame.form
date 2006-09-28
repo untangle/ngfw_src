@@ -4,7 +4,7 @@
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
     <Property name="title" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-      <Connection code="&quot;Metavize EdgeGuard &quot; + Version.getVersion()" type="code"/>
+      <Connection code="&quot;Untangle Networks EdgeGuard &quot; + Version.getVersion()" type="code"/>
     </Property>
     <Property name="iconImage" type="java.awt.Image" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
       <Connection code="(new javax.swing.ImageIcon( this.getClass().getResource(&quot;/com/metavize/gui/icons/LogoNoText16x16.gif&quot;))).getImage()" type="code"/>

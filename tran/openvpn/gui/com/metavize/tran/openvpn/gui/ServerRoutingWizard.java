@@ -54,7 +54,7 @@ public class ServerRoutingWizard extends MWizardJDialog {
 
     private void init(MTransformControlsJPanel mTransformControlsJPanel, VpnTransform vpnTransform){
 	this.mTransformControlsJPanel = mTransformControlsJPanel;
-        setTitle("Metavize OpenVPN Server Routing Setup Wizard");
+        setTitle("Untangle Networks OpenVPN Server Routing Setup Wizard");
         addWizardPageJPanel(new ServerRoutingWizardWelcomeJPanel(vpnTransform),         "1. Welcome", false, true);
         addWizardPageJPanel(new ServerRoutingWizardCertificateJPanel(vpnTransform),     "2. Generate Certificate", false, true);
         addWizardPageJPanel(new ServerRoutingWizardGroupsJPanel(vpnTransform),          "3. Add Address Pools", false, true);

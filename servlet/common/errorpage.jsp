@@ -15,7 +15,7 @@ if (( errorObject != null ) && ( errorObject instanceof String )) {
   <head>
     <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"/>
     <title>
-        Metavize EdgeGuard
+        Untangle Networks EdgeGuard
     </title>
   </head>
   <body LINK="#0000EE" VLINK="#0000EE" style="background-image: url(/images/DarkBackground1600x100.jpg);">
@@ -37,7 +37,7 @@ if (( errorObject != null ) && ( errorObject instanceof String )) {
                 <br/>
                 <br/>
                 <span style="font-weight: bold;">
-                  Metavize EdgeGuard
+                  Untangle Networks EdgeGuard
                 </span>
                 <br/>
                 <br/>

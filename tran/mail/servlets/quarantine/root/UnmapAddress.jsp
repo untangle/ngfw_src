@@ -19,7 +19,7 @@
 <head>
 
 <!-- HEADING -->
-  <title>Metavize | Aliases forwarding to <quarantine:currentAddress/></title>
+  <title>Untangle Networks | Aliases forwarding to <quarantine:currentAddress/></title>
     <script> 
       function CheckAll() {
         count = document.form1.elements.length;
@@ -61,8 +61,8 @@
           <tbody>
             <tr>
               <td valign="middle" width="96">
-                <a href="http://www.metavize.com">
-                  <img src="images/logo_no_text_shiny_96x96.gif" border="0" alt="Metavize logo"/>
+                <a href="http://www.untanglenetworks.com">
+                  <img src="images/logo_no_text_shiny_96x96.gif" border="0" alt="Untangle Networks logo"/>
                 </a>
               </td>
               
@@ -173,7 +173,7 @@
 
 		 
 		<br/>
-	<center>Powered by Metavize&reg; EdgeGuard&reg;</center>
+	<center>Powered by Untangle Networks&reg; EdgeGuard&reg;</center>
 
           <hr size="1" width="100%"/>
         </td>

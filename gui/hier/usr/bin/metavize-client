@@ -26,5 +26,5 @@ ${JAVA_HOME}/bin/javaws -updateVersions
 #echo "Attempting to clear Webstart cache"
 #${JAVA_HOME}/bin/javaws -Xclearcache
 
-echo "Webstarting Metavize Client.  Connecting to: http://$HOST/webstart/gui-local.jnlp"
+echo "Webstarting Untangle Networks Client.  Connecting to: http://$HOST/webstart/gui-local.jnlp"
 exec ${JAVA_HOME}/bin/javaws -Xnosplash http://$HOST/webstart/gui-local.jnlp

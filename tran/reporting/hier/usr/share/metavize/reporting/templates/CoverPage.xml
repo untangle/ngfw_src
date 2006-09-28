@@ -27,7 +27,7 @@
       <image source="${imageDirectory + 'images/pdf_cover_logo.png'}" width="200"/>
     </paragraph>
     
-    <paragraph font="title" halign="center" spacing-after="20">Metavize EdgeReport</paragraph>
+    <paragraph font="title" halign="center" spacing-after="20">Untangle Networks EdgeReport</paragraph>
     <paragraph font="subtitle" halign="center" line-spacing="1.0">
       ${period}<br/>
       ${type} Report

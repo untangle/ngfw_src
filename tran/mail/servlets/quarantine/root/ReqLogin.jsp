@@ -15,7 +15,7 @@
 <head>
 
 <!-- HEADING -->
-  <title>Metavize | Request Quarantine Digest Email</title>
+  <title>Untangle Networks | Request Quarantine Digest Email</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
   <link rel="stylesheet" href="styles/style.css" type="text/css"/>
 </head>
@@ -48,8 +48,8 @@
           <tbody>
             <tr>
               <td valign="middle" width="96">
-                <a href="http://www.metavize.com">
-                  <img src="images/logo_no_text_shiny_96x96.gif" border="0" alt="Metavize logo"/>
+                <a href="http://www.untanglenetworks.com">
+                  <img src="images/logo_no_text_shiny_96x96.gif" border="0" alt="Untangle Networks logo"/>
                 </a>
               </td>
               
@@ -131,7 +131,7 @@
             </form>
 
 		<br/>
-	<center>Powered by Metavize&reg; EdgeGuard&reg;</center>
+	<center>Powered by Untangle Networks&reg; EdgeGuard&reg;</center>
 
           <hr size="1" width="100%"/>
         </td>

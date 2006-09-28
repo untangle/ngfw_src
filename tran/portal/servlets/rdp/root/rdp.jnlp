@@ -114,12 +114,12 @@ if (targetstr == null) {
 %>
 
 <?xml version="1.0" encoding="utf-8"?>
-<!-- JNLP File for Metavize Application -->
+<!-- JNLP File for Untangle Networks Application -->
 <jnlp spec="1.0+" codebase="<%=cb%>" href="<%=href%>">
   <information>
     <title>Remote Desktop Client @ <%=host%>  </title>
-    <vendor>Metavize, Inc.</vendor>
-    <homepage href="http://www.metavize.com"/>
+    <vendor>Untangle Networks</vendor>
+    <homepage href="http://www.untanglenetworks.com"/>
     <description>Remote Desktop Client @ <%=host%>  </description>
     <description kind="short">The graphical client for remote desktop access via RDP.</description>
     <icon href="images/LogoNoText96x96.gif" kind="splash" width="96" height="96"/>

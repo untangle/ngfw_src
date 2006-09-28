@@ -54,7 +54,7 @@ class VirusHttpHandler extends HttpStateMachine
         + "<p>URI: %s</p>"
         + "<p>Please contact your network administrator</p>"
         + "<HR>"
-        + "<ADDRESS>Metavize EdgeGuard</ADDRESS>"
+        + "<ADDRESS>Untangle Networks EdgeGuard</ADDRESS>"
         + "</BODY></HTML>";
 
     private static final int SCAN_COUNTER  = Transform.GENERIC_0_COUNTER;

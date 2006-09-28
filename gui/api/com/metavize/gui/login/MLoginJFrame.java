@@ -48,7 +48,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
         }});
         resetLogin("Please enter your login and password.");
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-            if( Util.getServerCodeBase().getHost().equals("egdemo.metavize.com") ){
+            if( Util.getServerCodeBase().getHost().equals("egdemo.untanglenetworks.com") ){
                 loginJTextField.setText("egdemo");
                 passJPasswordField.setText("egdemo");
             }
@@ -144,7 +144,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 getContentPane().setLayout(new java.awt.GridBagLayout());
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-                setTitle("Metavize EdgeGuard " + Version.getVersion());
+                setTitle("Untangle Networks EdgeGuard " + Version.getVersion());
                 setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/metavize/gui/icons/LogoNoText16x16.gif"))).getImage());
                 setName("loginJFrame");
                 setResizable(false);
@@ -595,7 +595,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                         else
                             securedString = "  |  Connection: http (standard)";
 
-                        mMainJFrame.setTitle( "Metavize EdgeGuard " +
+                        mMainJFrame.setTitle( "Untangle Networks EdgeGuard " +
                                               Version.getVersion() + "  |  Login: " +
                                               loginJTextField.getText() + "  |  Server: " +
                                               Util.getServerCodeBase().getHost() + securedString );

@@ -413,7 +413,7 @@ public class ImapBodyScanner {
     "\r\n" + 
     "  <!-- HEADING -->\r\n" + 
     "  <head>\r\n" + 
-    "    <title>Metavize EdgeReport</title>\r\n" + 
+    "    <title>Untangle Networks EdgeReport</title>\r\n" + 
     "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\r\n" + 
     "\r\n" + 
     "\r\n" + 

@@ -564,7 +564,7 @@ public class RemoteClient
             if (password == null)
                 password = readPassword();
             if (addUser) {
-                users.add(new User(login, password, "[created by Metavize support]", false));
+                users.add(new User(login, password, "[created by Untangle Networks support]", false));
                 mc.adminManager().setAdminSettings(as);
                 System.out.println("Created new user with login: " + login);
             } else {

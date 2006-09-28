@@ -1,7 +1,7 @@
 Source: metavize-java
 Section: net
 Priority: optional
-Maintainer: Dirk Morris <dmorris@metavize.com>
+Maintainer: Dirk Morris <dmorris@untanglenetworks.com>
 Build-Depends: debhelper (>> 3.0.0)
 Standards-Version: 3.5.2
 
@@ -9,19 +9,19 @@ Package: ftp-casing
 Architecture: any
 Depends: mvvm
 XB-Display-Name: File Transfer
-XB-Website: http://www.metavize.com
+XB-Website: http://www.untanglenetworks.com
 XB-Is-Service: true
-Description: The Metavize File Transfer/FTP Decoder
- The Metavize File Transfer/FTP Decoder
+Description: The Untangle Networks File Transfer/FTP Decoder
+ The Untangle Networks File Transfer/FTP Decoder
 
 Package: http-casing
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Web
-XB-Website: http://www.metavize.com
+XB-Website: http://www.untanglenetworks.com
 XB-Is-Service: true
-Description: The Metavize Web/HTTP Decoder
- The Metavize Web/HTTP Decoder
+Description: The Untangle Networks Web/HTTP Decoder
+ The Untangle Networks Web/HTTP Decoder
 
 Package: mail-casing
 Architecture: any
@@ -30,16 +30,16 @@ Replaces: email-transform
 Provides: email-transform
 Depends: mvvm
 XB-Display-Name: Email
-XB-Website: http://www.metavize.com
+XB-Website: http://www.untanglenetworks.com
 XB-Is-Service: true
-Description: The Metavize Email Decoder
- The Metavize Email Decoder
+Description: The Untangle Networks Email Decoder
+ The Untangle Networks Email Decoder
 
 Package: airgap-transform
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Attack Shield
-XB-Website: http://www.metavize.com/attackshield.html
+XB-Website: http://www.untanglenetworks.com/attackshield.html
 XB-View-Position: 1010
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -143,14 +143,14 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  FOZQpQiJxRPB/uif9lTkHh8l3OVBhq6xsyXQZCqNVKoHdjK1teO8zkSuNnHn52axVkyy44wF
  jP5/n47IHTnb+aVRzChGFcieTBYZDm8iFwJtMEo9mv5bf//NdiRq+Es9wwm3yLXAooahnnuZ
  QdxsLPxXDxw5/j7RBinaTy/EXwisAmjbSWR6+zAwlMNjj38ieCD2fwIMANZG+Ft4BQz8AAAA
-Description: The Metavize Attack Shield Software Appliance
- The Metavize Attack Shield Software Appliance
+Description: The Untangle Networks Attack Shield Software Appliance
+ The Untangle Networks Attack Shield Software Appliance
 
 Package: spyware-transform
 Architecture: any
 Depends: mvvm, http-casing
 XB-Display-Name: Spyware Blocker
-XB-Website: http://www.metavize.com/spyware.html
+XB-Website: http://www.untanglenetworks.com/spyware.html
 XB-View-Position: 20
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -230,14 +230,14 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  IgWqMjYrOOHvOAJkMSxsqyn4gHedmazBrqiqgfBwxU6jaj76SDWsX69qOa2q2FilgoNVcVaW+Y9k
  73LcRSZkLGKH/REnyfG0lONnPR/5uuRksvDJPrb/abw/B5zrN+guuOXxZRNDd9Zq1QnYEOXj71ey
  +PfGcHg3h7iLr16RWb+Q1R/2aQ8mqjheqF8wvO3WUPf+R4ABACEcfkAFMtTiAAAAAElFTkSuQmCC
-Description: The Metavize Spyware Blocker Software Appliance
- The Metavize Spyware Blocker Software Appliance
+Description: The Untangle Networks Spyware Blocker Software Appliance
+ The Untangle Networks Spyware Blocker Software Appliance
 
 Package: httpblocker-transform
 Architecture: any
 Depends: mvvm, http-casing, urlblacklist.com-mv
 XB-Display-Name: Web Content Control
-XB-Website: http://www.metavize.com/webcontrol.html
+XB-Website: http://www.untanglenetworks.com/webcontrol.html
 XB-View-Position: 30
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0RVh0
@@ -328,14 +328,14 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  hv5ibZAOJB+Ky44vFgGhHLnryrk0ZtNIVGdIWXk5HptioXw44eddESL+/vgzcoWKcn5hoPbA
  +1nH0ufnBbLGWduFUqXpn6ZVni9WNfB/TqKdLXQoddk5/ipGzKowLKETWaMN5ivbxR/E/ifA
  ACBNCbEqfhTsAAAAAElFTkSuQmCC
-Description: The Metavize Web Content Control Software Appliance
- The Metavize Web Content Control Software Appliance
+Description: The Untangle Networks Web Content Control Software Appliance
+ The Untangle Networks Web Content Control Software Appliance
 
 Package: hauri-transform
 Architecture: any
 Depends: mvvm, virus-base, hauri-mv, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Hauri AntiVirus Scanner
-XB-Website: http://www.metavize.com/hauri_antivirus.html
+XB-Website: http://www..com/hauri_antivirus.html
 XB-View-Position: 60
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
@@ -449,7 +449,7 @@ Package: kav-transform
 Architecture: any
 Depends: mvvm, virus-base, kav-mv, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Kaspersky AntiVirus Scanner
-XB-Website: http://www.metavize.com/kaspersky_antivirus.html
+XB-Website: http://www.untanglenetworks.com/kaspersky_antivirus.html
 XB-View-Position: 50
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
@@ -530,7 +530,7 @@ Package: clam-transform
 Architecture: any
 Depends: mvvm, virus-base, clamav-mv, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Clam AntiVirus Scanner
-XB-Website: http://www.metavize.com/clam_antivirus.html
+XB-Website: http://www.untanglenetworks.com/clam_antivirus.html
 XB-View-Position: 70
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
@@ -637,7 +637,7 @@ Architecture: any
 Depends: mvvm
 Conflicts: protoanalyzer-transform
 XB-Display-Name: Rogue Protocol Control
-XB-Website: http://www.metavize.com/protocolcontrol.html
+XB-Website: http://www.untanglenetworks.com/protocolcontrol.html
 XB-View-Position: 80
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -751,14 +751,14 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  9r+JrLqHcb1/5G+RYmXTPJWlGb3b6BYmf2bKnUk5+TGE7vzZn3kmWHTz5s1//icarfhpzE82
  2tifbwr1VLtn9G935xN+znHG/arjXPYPRVt53HzZvynJzzTaKFBpwLTxwIsWGlcGHRei85f/
  /qR+EPs/AQYALpz0b9lClG4AAAAASUVORK5CYII=
-Description: The Metavize Rogue Protocol Control Software Appliance
- The Metavize Rogue Protocol Control Software Appliance
+Description: The Untangle Networks Rogue Protocol Control Software Appliance
+ The Untangle Networks Rogue Protocol Control Software Appliance
 
 Package: nat-transform
 Architecture: any
 Depends: mvvm, dnsmasq, ftp-casing
 XB-Display-Name: Router
-XB-Website: http://www.metavize.com/networksharing.html
+XB-Website: http://www.untanglenetworks.com/networksharing.html
 XB-View-Position: 1000
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -845,14 +845,14 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  jV2HqI3cgHe4BtKqxdZ9QVriCq0JdRBkKKPzYVf2kmdOIz57AnivI8PHQYmKIjd+r4u0YpKU
  zYu28/m48eumeSM2sZU0C0mzhm1HVVVisRiaplFeXv71g9wrRRzHIZVKkUqlBkfjLq5wOcej
  +/fvv9Ix0wA4V/LlOA7/GQCfi3hGQX94NwAAAABJRU5ErkJggg==
-Description: The Metavize Router Software Appliance
- The Metavize Router Software Appliance
+Description: The Untangle Networks Router Software Appliance
+ The Untangle Networks Router Software Appliance
 
 Package: firewall-transform
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Firewall
-XB-Website: http://www.metavize.com/firewall.html
+XB-Website: http://www.untanglenetworks.com/firewall.html
 XB-View-Position: 90
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -932,14 +932,14 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  m7e0hNP8YP8oT741ya5ry/na+jRz3Z2MjOZ5vs3n+dY803LhsPu+z/DwMEEQUFpaOr/IBTDN
  zc2FabY4d/MK1zzQlDRpVyz53X379hnAfCLf07SOhrSOXtye9ILVeHNzM//v50Axw74c1xjD
  fwYAMCLoUqhkh6IAAAAASUVORK5CYII=
-Description: The Metavize Firewall Software Appliance
- The Metavize Firewall Software Appliance
+Description: The Untangle Networks Firewall Software Appliance
+ The Untangle Networks Firewall Software Appliance
 
 Package: spamassassin-transform
 Architecture: any
 Depends: mvvm, spam-base, spamc-mv, mail-casing
 XB-Display-Name: SpamGuard
-XB-Website: http://www.metavize.com/spam.html
+XB-Website: http://www.untanglenetworks.com/spam.html
 XB-View-Position: 15
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1047,14 +1047,14 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  BKrSAH7zsCoUU01hotVpyZBWzBOosKrYaJBp4U5Si82nbJpKvekm4RPXjyQ/EqKRY1dQLbrv
  7ecbjiWKg52kQksZPHS58yyBNmiZiJP+/Re/svPTyfv0y81tv46IkqxIuSdiaPf5D4YGWh7D
  zpbjLtD367cmAc5kRUrTokJw339vj/xB7P8FGACNK2N4xeErDQAAAABJRU5ErkJggg==
-Description: The Metavize SpamGuard Software Appliance
- The Metavize SpamGuard Software Appliance
+Description: The Untangle Networks SpamGuard Software Appliance
+ The Untangle Networks SpamGuard Software Appliance
 
 Package: clamphish-transform
 Architecture: any
 Depends: mvvm, spam-base, clamav-mv, mail-casing
 XB-Display-Name: PhishNet
-XB-Website: http://www.metavize.com/phishnet.html
+XB-Website: http://www.untanglenetworks.com/phishnet.html
 XB-View-Position: 17
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1176,14 +1176,14 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  DeWOUVGQk46vEDn3QiJzP5Tv3KHYlomQGTTF/tsucwQoIgfY0ME3uUu7PogA9qxsZpUgB1QR
  k2CFwI0uw5UGmqYjhJgEO3kPJb3c0CFdxgf60NxeIoGxv9v3NzTIj0BpAdTEYcMHgTVS/M8A
  nY2oOxX/HXgAAAAASUVORK5CYII=
-Description: The Metavize PhishNet Software Appliance
- The Metavize PhishNet Software Appliance
+Description: The Untangle Networks PhishNet Software Appliance
+ The Untangle Networks PhishNet Software Appliance
 
 Package: test-transform
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Test
-XB-Website: http://www.metavize.com
+XB-Website: http://www.untanglenetworks.com
 XB-View-Position: 2002
 XB-Is-Core: true
 XB-Org-Icon:  iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1318,14 +1318,14 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  UhAZBl3DaQTw0iWdXVc7lkAjQGksA4QWaHlhZqV8gW2qC4GEAtPVhB44LkThhQ4wQBj6QjYj
  E9ORyFBgWpqgJbAcTRReOMoIhCGIDAGhxnAgkGBYAkMYpG2HrmyCrkSaf79yEVc/9Kj4/wMA
  IXmY0MNCBksAAAAASUVORK5CYII=
-Description: The Metavize Test Software Appliance
- The Metavize Test Software Appliance
+Description: The Untangle Networks Test Software Appliance
+ The Untangle Networks Test Software Appliance
 
 Package: openvpn-transform
 Architecture: any
 Depends: mvvm, openvpn, nsis, nsis-mv, sysutils, zip, openssl
 XB-Display-Name: OpenVPN
-XB-Website: http://www.metavize.com/openvpn.html
+XB-Website: http://www.untanglenetworks.com/openvpn.html
 XB-View-Position: 1003
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1422,14 +1422,14 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  Caeu66EVuwXf7u74v1Lzbo7Z7tgN5MRAzJVlGVmW14E6jhPuxoKX27a9pZALYBgGxWIR0zRJ
  p9MbC7m3s67neaFcbRjGLbJ4cIQI3Na9vwzq41aZ3W2cWq1GrVa7VRr/dUfwokDY+r8et1j0
  xIkT/LaPNzYtgL8l0/d9/mcAXb1X7pR/ZiwAAAAASUVORK5CYII=
-Description: The Metavize OpenVPN Software Appliance
- The Metavize OpenVPN Software Appliance
+Description: The Untangle Networks OpenVPN Software Appliance
+ The Untangle Networks OpenVPN Software Appliance
 
 Package: portal-transform
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Remote Access Portal
-XB-Website: http://www.metavize.com/openvpn.html
+XB-Website: http://www.untanglenetworks.com/openvpn.html
 XB-View-Position: 990
 Description: Remote Access Portal
  The Remote Access Portal.
@@ -1538,7 +1538,7 @@ Package: ids-transform
 Architecture: any
 Depends: mvvm, http-casing, snort-rules-current
 XB-Display-Name: Intrusion Prevention
-XB-Website: http://www.metavize.com/ips.html
+XB-Website: http://www.untanglenetworks.com/ips.html
 XB-View-Position: 75
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1637,14 +1637,14 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  gsfHQOjn+g6B3IjyCiLKankOYogxYlRxroN4C9+u6Nol3m0Ivh3SMIYO77MjbVPK5v9f/vAv
  dt1hz+oW0X4R2L/+xQ72f/+aKQFxz7/f+fpfFP00yKQAP7JF/ft5GLHDLCq9/aj7R7+mbO3J
  3QCjv/Lrm/0vGAYPf3Cgs7LEXqJSDBdeyxQVZw9vy/8MAIKemQqNP8+BAAAAAElFTkSuQmCC
-Description: The Metavize Intrusion Prevention Software Appliance
- The Metavize Intrusion Prevention Software Appliance
+Description: The Untangle Networks Intrusion Prevention Software Appliance
+ The Untangle Networks Intrusion Prevention Software Appliance
 
 Package: reporting-transform
 Architecture: any
 Depends: mvvm
 XB-Display-Name: EdgeReport
-XB-Website: http://www.metavize.com/reports.html
+XB-Website: http://www.untanglenetworks.com/reports.html
 XB-View-Position: 1020
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1723,14 +1723,14 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  WwQ0GApTDRXBYDC023HOZtKqibu2sozMdlB1LaRE+9F05hSRpEQlyMjQIQzRdKfG6kArlTJF
  Gwe/++1vGj/fcKBvrfF6FVHvq8rfvQzlN83+/j9Ov3D2DdYAKX9oYI1fKPoxJMDBwSCGhg9j
  9KkxvPWjn6ofxP4nwAB2T5Rklk6b3gAAAABJRU5ErkJggg==
-Description: The Metavize Report Generator
- The Metavize Report Generator
+Description: The Untangle Networks Report Generator
+ The Untangle Networks Report Generator
 
 Package: boxbackup-transform
 Architecture: any
 Depends: mvvm, curl
 XB-Display-Name: 24-Hour Replacement
-XB-Website: http://www.metavize.com/boxbackup.html
+XB-Website: http://www.untanglenetworks.com/boxbackup.html
 XB-View-Position: 1015
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1850,24 +1850,24 @@ Package: virus-base
 Architecture: any
 Depends: mvvm
 XB-Display-Name: AntiVirus Base
-XB-Website: http://www.metavize.com
-Description: The Metavize AntiVirus Base
- The Metavize Base AntiVirus Scanner
+XB-Website: http://www.untanglenetworks.com
+Description: The Untangle Networks AntiVirus Base
+ The Untangle Networks Base AntiVirus Scanner
 
 Package: spam-base
 Architecture: any
 Depends: mvvm
 XB-Display-Name: AntiSpam Base
-XB-Website: http://www.metavize.com
-Description: The Metavize SpamGuard Base
- The Metavize Base SpamGuard Scanner
+XB-Website: http://www.untanglenetworks.com
+Description: The Untangle Networks SpamGuard Base
+ The Untangle Networks Base SpamGuard Scanner
 
 Package: metavize-client
 Architecture: any
 Depends: mvvm
 Conflicts: metavize-gui
-XB-Display-Name: Metavize Client
-XB-Website: http://www.metavize.com
+XB-Display-Name: Untangle Networks Client
+XB-Website: http://www.untanglenetworks.com
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
@@ -1928,16 +1928,16 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMg
  Rn8jUL2jDkb0Yh8fPPOvznpAoloLKep19N9/1ORUg8xUZ98P+tZvdm/5WQNVNVXnEPeADytp
  qeI2NTVV5rnD3YvTGFJGFIie2kybsf7rTv7Gs/NrHv4jv4mJCcoq9ceyNmt2bXSr+sK1/2fC
  8fFxQUGBTa+YTKarqyt2YDQa1b8XvsYI+rvZxM+Vb07/kf0SvX2q/d/bXwIMAJ+e3tKQEpgP
-Description: The Metavize Client
- The Metavize Client GUI
+Description: The Untangle Networks Client
+ The Untangle Networks Client GUI
 
 Package: libmvvm-thirdparty
 Architecture: any
 Depends: jre-mv
 Conflicts: mvvm (<< 3.0.0-39)
 Replaces: mvvm (<< 3.0.0-39)
-XB-Display-Name: Metavize Server Thirdparty Libraries
-XB-Website: http://www.metavize.com
+XB-Display-Name: Untangle Networks Server Thirdparty Libraries
+XB-Website: http://www.untanglenetworks.com
 Description: The third party libraries needed for the EdgeGuard
  The third party libraries needed for EdgeGuard
 
@@ -1946,8 +1946,8 @@ Architecture: any
 Depends: jre-mv, libmvvm-thirdparty, sudo, iptables (= 1.2.11-10-mv1), restore-mv, libxml2, kernel-mv, pump-mv, ntp-simple, snmpd, snmp, sg3-utils, ddclient, slapd, ldap-utils, db4.2-util, ujac-to-pdf, at, ebtables, atop, mime-support
 Pre-Depends: postgresql-mv
 Conflicts: xenon, xenon-dbg
-XB-Display-Name: Metavize Server
-XB-Website: http://www.metavize.com
+XB-Display-Name: Untangle Networks Server
+XB-Website: http://www.untanglenetworks.com
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
@@ -2008,5 +2008,5 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMg
  Rn8jUL2jDkb0Yh8fPPOvznpAoloLKep19N9/1ORUg8xUZ98P+tZvdm/5WQNVNVXnEPeADytp
  qeI2NTVV5rnD3YvTGFJGFIie2kybsf7rTv7Gs/NrHv4jv4mJCcoq9ceyNmt2bXSr+sK1/2fC
  8fFxQUGBTa+YTKarqyt2YDQa1b8XvsYI+rvZxM+Vb07/kf0SvX2q/d/bXwIMAJ+e3tKQEpgP
-Description: The Metavize Virtual Machine
- The Metavize Virtual Machine needed for EdgeGuard
+Description: The Untangle Networks Virtual Machine
+ The Untangle Networks Virtual Machine needed for EdgeGuard

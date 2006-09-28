@@ -25,11 +25,11 @@ MackageDesc[] mds = mvvm.toolboxManager().installed();
 <!-- JNLP File for Metavize Application -->
 <jnlp spec="1.0+" codebase="<%=cb%>" href="<%=href%>">
   <information>
-    <title>Metavize EdgeGuard @ <%=host%>  </title>
-    <vendor>Metavize, Inc.</vendor>
-    <homepage href="http://www.metavize.com"/>
-    <description>Metavize EdgeGuard @ <%=host%>  </description>
-    <description kind="short">The graphical client for configuring, controlling, and monitoring the Metavize EdgeGuard.</description>
+    <title>Untangle Networks EdgeGuard @ <%=host%>  </title>
+    <vendor>Untangle Networks</vendor>
+    <homepage href="http://www.untanglenetworks.com"/>
+    <description>Untangle Networks EdgeGuard @ <%=host%>  </description>
+    <description kind="short">The graphical client for configuring, controlling, and monitoring the Untangle Networks EdgeGuard.</description>
     <icon href="images/LogoNoText96x96.gif" kind="splash" width="96" height="96"/>
     <icon href="images/LogoNoText32x32.gif" width="32" height="32"/>
     <icon href="images/LogoNoText64x64.gif" width="64" height="64"/>

@@ -96,11 +96,11 @@ if (!( isIndex || isDownload)) isIndex = true;
                 <br/>
                 <br/>
                 <span style="font-weight: bold;">
-                  Metavize EdgeGuard
+                  Untangle Networks EdgeGuard
                 </span>
                 <br/>
                 <br/>
-                <% if ( host.equalsIgnoreCase( "egdemo.metavize.com" )  && !isDownload ) { %>
+                <% if ( host.equalsIgnoreCase( "egdemo.untanglenetworks.com" )  && !isDownload ) { %>
                   <b>Login: egdemo</b>
                   <br/>
                   <b>Password: egdemo</b>

@@ -25,7 +25,7 @@ public class ClamPhishTransform extends SpamImpl
       "[PHISH] $MIMEMessage:SUBJECT$";
     private static final String OUT_MOD_BODY_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$\r\n" +
-        "was determined by Metavize EdgeGuard to be PHISH (a fraudulent email\r\n" +
+        "was determined by Untangle Networks EdgeGuard to be PHISH (a fraudulent email\r\n" +
         "intended to steal information).  The kind of PHISH that was found was\r\n" +
         "$SPAMReport:FULL$";
   
@@ -34,7 +34,7 @@ public class ClamPhishTransform extends SpamImpl
 
     private static final String OUT_MOD_BODY_SMTP_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
-        "was determined by Metavize EdgeGuard to be PHISH (a fraudulent email\r\n" +
+        "was determined by Untangle Networks EdgeGuard to be PHISH (a fraudulent email\r\n" +
         "intended to steal information).  The kind of PHISH that was found was\r\n" +
         "$SPAMReport:FULL$";
 
@@ -48,7 +48,7 @@ public class ClamPhishTransform extends SpamImpl
     private static final String OUT_NOTIFY_BODY_TEMPLATE =
         "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
         "was received by $SMTPTransaction:TO$.  The message was determined\r\n" +
-        "by Metavize EdgeGuard to be PHISH (a fraudulent email intended\r\n" +
+        "by Untangle Networks EdgeGuard to be PHISH (a fraudulent email intended\r\n" +
         "to steal information).  The kind of PHISH that was found was\r\n" +
         "$SPAMReport:FULL$";
   
