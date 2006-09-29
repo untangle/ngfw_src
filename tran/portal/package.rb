@@ -1,20 +1,20 @@
 # -*-ruby-*-
 
-portal = Package["portal-transform"]
+portal = Package['portal-transform']
 
-TransformBuilder.makeTransform( "portal" )
+TransformBuilder.makeTransform( 'portal' )
 
 deps = %w(
            jcifs_1.2.9/jcifs-1.2.9.jar
            commons-fileupload-1.1/commons-fileupload-1.1.jar
          ).map { |f| Jars.downloadTarget(f) }
 
-ServletBuilder.new(portal, "com.metavize.tran.portal.browser.jsp",
-                   "tran/portal/servlets/browser", deps, [],
+ServletBuilder.new(portal, 'com.metavize.tran.portal.browser.jsp',
+                   'tran/portal/servlets/browser', deps, [],
                    [$BuildEnv.servletcommon, 'tran/portal/common'])
 
-ServletBuilder.new(portal, "com.metavize.tran.portal.portal.jsp",
-                   "tran/portal/servlets/portal", [], [],
+ServletBuilder.new(portal, 'com.metavize.tran.portal.portal.jsp',
+                   'tran/portal/servlets/portal', [], [],
                    [$BuildEnv.servletcommon, 'tran/portal/common'])
 
 deps = %w(
@@ -24,19 +24,19 @@ deps = %w(
            htmlparser1_6_20060319/htmlparser1_6/lib/htmlparser.jar
          ).map { |f| Jars.downloadTarget(f) }
 
-ServletBuilder.new(portal, "com.metavize.tran.portal.proxy.jsp",
-                   "tran/portal/servlets/proxy", deps, [],
+ServletBuilder.new(portal, 'com.metavize.tran.portal.proxy.jsp',
+                   'tran/portal/servlets/proxy', deps, [],
                    [$BuildEnv.servletcommon, 'tran/portal/common'])
 
-ServletBuilder.new(portal, "com.metavize.tran.portal.rdp.jsp",
-                   "tran/portal/servlets/rdp", [], [],
+ServletBuilder.new(portal, 'com.metavize.tran.portal.rdp.jsp',
+                   'tran/portal/servlets/rdp', [], [],
                    [$BuildEnv.servletcommon, 'tran/portal/common'])
 
 portal_web = "#{portal.distDirectory}/usr/share/metavize/web/vnc"
 deps = %w( tightvnc-1.2.9/classes/VncViewer.jar ).map { |f| Jars.downloadTarget(f) }
-jt = JarTarget.buildTarget(portal, deps, "invoker", "tran/portal/servlets/vnc/invoker")
-$InstallTarget.installJars(jt, portal_web, "VncInvoker.jar")
-$InstallTarget.installJars(Jars.downloadTarget("tightvnc-1.2.9/classes/VncViewer.jar"), portal_web)
+jt = JarTarget.buildTarget(portal, deps, 'invoker', 'tran/portal/servlets/vnc/invoker')
+$InstallTarget.installJars(jt, portal_web, 'VncInvoker.jar')
+$InstallTarget.installJars(Jars.downloadTarget('tightvnc-1.2.9/classes/VncViewer.jar'), portal_web)
 
-ServletBuilder.new(portal, "com.metavize.tran.portal.vnc.jsp",
-                   "tran/portal/servlets/vnc")
+ServletBuilder.new(portal, 'com.metavize.tran.portal.vnc.jsp',
+                   'tran/portal/servlets/vnc')

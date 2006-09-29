@@ -14,7 +14,9 @@ package com.metavize.tran.httpblocker;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.metavize.mvvm.AppServerManager;
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
@@ -29,8 +31,10 @@ import com.metavize.mvvm.tran.MimeType;
 import com.metavize.mvvm.tran.MimeTypeRule;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.util.OutsideValve;
 import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.token.TokenAdaptor;
+import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -383,6 +387,8 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         }
         blacklist.configure(settings);
         reconfigure();
+
+        deployWebAppIfRequired(logger);
     }
 
     protected void preStart()
@@ -397,7 +403,47 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
     protected void postDestroy()
     {
+        unDeployWebAppIfRequired(logger);
         blacklist.destroy();
+    }
+
+    // private methods --------------------------------------------------------
+
+    private void deployWebAppIfRequired(Logger logger) {
+        MvvmLocalContext mctx = MvvmContextFactory.context();
+        AppServerManager asm = mctx.appServerManager();
+
+        Valve v = new OutsideValve()
+            {
+                /* Unified way to determine which parameter to check */
+                protected boolean isOutsideAccessAllowed()
+                {
+                    return false;
+                }
+
+                /* Unified way to determine which parameter to check */
+                protected String errorMessage()
+                {
+                    return "Off-site access prohibited";
+                }
+            };
+
+        if (asm.loadInsecureApp("/httpblocker", "httpblocker", v)) {
+            logger.debug("Deployed HttpBlocker WebApp");
+        } else {
+            logger.error("Unable to deploy HttpBlocker WebApp");
+        }
+    }
+
+    private void unDeployWebAppIfRequired(Logger logger) {
+        MvvmLocalContext mctx = MvvmContextFactory.context();
+        AppServerManager asm = mctx.appServerManager();
+
+        if (asm.unloadWebApp("/httpblocker")) {
+            logger.debug("Unloaded HttpBlocker WebApp");
+        } else {
+            logger.warn("Unable to unload HttpBlocker WebApp");
+        }
     }
 
     // XXX soon to be deprecated ----------------------------------------------

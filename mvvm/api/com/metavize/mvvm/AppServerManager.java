@@ -13,6 +13,7 @@ package com.metavize.mvvm;
 
 import com.metavize.mvvm.security.CertInfo;
 import com.metavize.mvvm.security.RFC2253Name;
+import org.apache.catalina.Valve;
 
 /**
  * Abstraction to the application server used for external web
@@ -67,6 +68,8 @@ public interface AppServerManager
      * directory of edgeguard w/ the app.
      */
     boolean loadInsecureApp(String urlBase, String rootDir);
+
+    boolean loadInsecureApp(String urlBase, String rootDir, Valve valve);
 
     /**
      * Load the quarantine app.  This is hack, designed this way to not force
