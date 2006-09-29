@@ -14,7 +14,7 @@ package com.metavize.tran.httpblocker;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.metavize.mvvm.AppServerManager;
+import com.metavize.mvvm.LocalAppServerManager;
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.logging.EventLogger;
@@ -411,7 +411,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
     private void deployWebAppIfRequired(Logger logger) {
         MvvmLocalContext mctx = MvvmContextFactory.context();
-        AppServerManager asm = mctx.appServerManager();
+        LocalAppServerManager asm = mctx.appServerManager();
 
         Valve v = new OutsideValve()
             {
@@ -437,7 +437,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
     private void unDeployWebAppIfRequired(Logger logger) {
         MvvmLocalContext mctx = MvvmContextFactory.context();
-        AppServerManager asm = mctx.appServerManager();
+        LocalAppServerManager asm = mctx.appServerManager();
 
         if (asm.unloadWebApp("/httpblocker")) {
             logger.debug("Unloaded HttpBlocker WebApp");

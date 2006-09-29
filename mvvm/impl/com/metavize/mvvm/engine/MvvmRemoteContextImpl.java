@@ -13,10 +13,10 @@ package com.metavize.mvvm.engine;
 
 import java.io.IOException;
 
-import com.metavize.mvvm.AppServerManager;
 import com.metavize.mvvm.ArgonManager;
 import com.metavize.mvvm.ConnectivityTester;
 import com.metavize.mvvm.NetworkManager;
+import com.metavize.mvvm.RemoteAppServerManager;
 import com.metavize.mvvm.ReportingManager;
 import com.metavize.mvvm.addrbook.AddressBook;
 import com.metavize.mvvm.api.RemoteIntfManager;
@@ -97,9 +97,9 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
         return context.getConnectivityTester();
     }
 
-    public AppServerManager appServerManager()
+    public RemoteAppServerManager appServerManager()
     {
-        return context.appServerManager();
+        return context.remoteAppServerManager();
     }
 
     public AddressBook appAddressBook()

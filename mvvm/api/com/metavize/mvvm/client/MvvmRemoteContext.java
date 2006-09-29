@@ -13,13 +13,13 @@ package com.metavize.mvvm.client;
 
 import java.io.IOException;
 
-import com.metavize.mvvm.AppServerManager;
 import com.metavize.mvvm.ConnectivityTester;
 import com.metavize.mvvm.NetworkManager;
-import com.metavize.mvvm.api.RemoteIntfManager;
-import com.metavize.mvvm.api.RemoteShieldManager;
+import com.metavize.mvvm.RemoteAppServerManager;
 import com.metavize.mvvm.ReportingManager;
 import com.metavize.mvvm.addrbook.AddressBook;
+import com.metavize.mvvm.api.RemoteIntfManager;
+import com.metavize.mvvm.api.RemoteShieldManager;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.policy.PolicyManager;
 import com.metavize.mvvm.portal.RemotePortalManager;
@@ -86,7 +86,7 @@ public interface MvvmRemoteContext
     NetworkManager networkManager();
 
     /** Get the <code>RemoteShieldManager</code> singleton.
-     * 
+     *
      * @return the ShieldManager.
      */
     RemoteShieldManager shieldManager();
@@ -110,7 +110,7 @@ public interface MvvmRemoteContext
      *
      * @return the singleton
      */
-    AppServerManager appServerManager();
+    RemoteAppServerManager appServerManager();
 
     /**
      * Get the RemotePortalManager singleton for this instance

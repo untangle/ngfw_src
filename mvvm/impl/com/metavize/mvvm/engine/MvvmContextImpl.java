@@ -18,17 +18,19 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 
 import com.metavize.mvvm.CronJob;
+import com.metavize.mvvm.LocalAppServerManager;
 import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.MvvmState;
 import com.metavize.mvvm.Period;
+import com.metavize.mvvm.RemoteAppServerManager;
 import com.metavize.mvvm.api.RemoteIntfManager;
 import com.metavize.mvvm.api.RemoteShieldManager;
-import com.metavize.mvvm.localapi.LocalShieldManager;
-import com.metavize.mvvm.localapi.LocalIntfManager;
 import com.metavize.mvvm.argon.Argon;
 import com.metavize.mvvm.argon.ArgonManagerImpl;
 import com.metavize.mvvm.client.MvvmRemoteContext;
 import com.metavize.mvvm.engine.addrbook.AddressBookImpl;
+import com.metavize.mvvm.localapi.LocalIntfManager;
+import com.metavize.mvvm.localapi.LocalShieldManager;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.networking.NetworkManagerImpl;
@@ -84,6 +86,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private MvvmRemoteContext remoteContext;
     private CronManager cronManager;
     private AppServerManagerImpl appServerManager;
+    private RemoteAppServerManagerImpl remoteAppServerManager;
     private AddressBookImpl addressBookImpl;
     private PortalManagerImpl portalManager;
     private RemotePortalManagerImpl remotePortalManager;
@@ -120,7 +123,6 @@ public class MvvmContextImpl extends MvvmContextBase
 
     // singletons -------------------------------------------------------------
 
-
     public AddressBookImpl appAddressBook() {
         return addressBookImpl;
     }
@@ -129,7 +131,7 @@ public class MvvmContextImpl extends MvvmContextBase
         return portalManager;
     }
 
-    public RemotePortalManagerImpl remotePortalManager()
+    RemotePortalManagerImpl remotePortalManager()
     {
         return remotePortalManager;
     }
@@ -137,6 +139,11 @@ public class MvvmContextImpl extends MvvmContextBase
     public AppServerManagerImpl appServerManager()
     {
         return appServerManager;
+    }
+
+    RemoteAppServerManagerImpl remoteAppServerManager()
+    {
+        return remoteAppServerManager;
     }
 
     public ToolboxManagerImpl toolboxManager()
@@ -184,7 +191,7 @@ public class MvvmContextImpl extends MvvmContextBase
         return networkManager;
     }
 
-    public RemoteNetworkManagerImpl remoteNetworkManager()
+    RemoteNetworkManagerImpl remoteNetworkManager()
     {
         return remoteNetworkManager;
     }
@@ -204,7 +211,7 @@ public class MvvmContextImpl extends MvvmContextBase
         return argonManager;
     }
 
-    public RemoteIntfManager remoteIntfManager()
+    RemoteIntfManager remoteIntfManager()
     {
         /* This doesn't have to be synchronized, because it doesn't matter if two are created */
         if (remoteIntfManager == null) {
@@ -216,7 +223,7 @@ public class MvvmContextImpl extends MvvmContextBase
             }
             remoteIntfManager = new RemoteIntfManagerImpl(lim);
         }
-        
+
         return remoteIntfManager;
     }
 
@@ -230,11 +237,10 @@ public class MvvmContextImpl extends MvvmContextBase
         return localShieldManager;
     }
 
-    public RemoteShieldManager remoteShieldManager()
+    RemoteShieldManager remoteShieldManager()
     {
         return this.remoteShieldManager;
     }
-
 
     public MPipeManagerImpl mPipeManager()
     {
@@ -518,12 +524,13 @@ public class MvvmContextImpl extends MvvmContextBase
 
         // Retrieve the argon manager
         argonManager = ArgonManagerImpl.getInstance();
-        
+
         // Create the shield managers
         localShieldManager = new LocalShieldManagerImpl();
-        remoteShieldManager = new RemoteShieldManagerImpl(localShieldManager); 
+        remoteShieldManager = new RemoteShieldManagerImpl(localShieldManager);
 
         appServerManager = new AppServerManagerImpl(this);
+        remoteAppServerManager = new RemoteAppServerManagerImpl(appServerManager);
 
         // start vectoring:
         String argonFake = System.getProperty(ARGON_FAKE_KEY);

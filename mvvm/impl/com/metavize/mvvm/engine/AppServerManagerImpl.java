@@ -15,7 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
-import com.metavize.mvvm.AppServerManager;
+import com.metavize.mvvm.LocalAppServerManager;
 import com.metavize.mvvm.networking.NetworkUtil;
 import com.metavize.mvvm.networking.RemoteSettingsListener;
 import com.metavize.mvvm.networking.internal.RemoteInternalSettings;
@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
  * TODO A work in progress (currently a disorganized mess of crap taken
  * from the old "main" and "TomcatManager" code.
  */
-class AppServerManagerImpl implements AppServerManager
+class AppServerManagerImpl implements LocalAppServerManager
 {
     private static final String KS_STORE_PASS = "changeit";
 

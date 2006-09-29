@@ -14,11 +14,11 @@ package com.metavize.mvvm;
 import java.io.File;
 import java.io.IOException;
 
-import com.metavize.mvvm.api.RemoteShieldManager;
-import com.metavize.mvvm.api.RemoteIntfManager;
-import com.metavize.mvvm.localapi.LocalShieldManager;
-import com.metavize.mvvm.localapi.LocalIntfManager;
 import com.metavize.mvvm.addrbook.AddressBook;
+import com.metavize.mvvm.api.RemoteIntfManager;
+import com.metavize.mvvm.api.RemoteShieldManager;
+import com.metavize.mvvm.localapi.LocalIntfManager;
+import com.metavize.mvvm.localapi.LocalShieldManager;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.logging.SyslogManager;
@@ -94,25 +94,17 @@ public interface MvvmLocalContext
 
     ArgonManager argonManager();
 
-    RemoteIntfManager remoteIntfManager();
-
     LocalIntfManager localIntfManager();
 
     // XXX has stuff for local use, should probably be renamed w/o 'Impl'
     LocalNetworkManager networkManager();
 
     /** Get the <code>LocalShieldManager</code> singleton.
-         * 
+         *
      * @return the ShieldManager.
      */
     LocalShieldManager localShieldManager();
-    
-    /** Get the <code>RemoteShieldManager</code> singleton.
-     * 
-     * @return the ShieldManager.
-     */
-    RemoteShieldManager remoteShieldManager();
-    
+
     ReportingManager reportingManager();
 
     ConnectivityTester getConnectivityTester();
@@ -124,7 +116,7 @@ public interface MvvmLocalContext
      *
      * @return the singleton
      */
-    AppServerManager appServerManager();
+    LocalAppServerManager appServerManager();
 
     /**
      * Get the AddressBook singleton for this instance

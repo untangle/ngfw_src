@@ -13,7 +13,6 @@ package com.metavize.mvvm;
 
 import com.metavize.mvvm.security.CertInfo;
 import com.metavize.mvvm.security.RFC2253Name;
-import org.apache.catalina.Valve;
 
 /**
  * Abstraction to the application server used for external web
@@ -23,67 +22,8 @@ import org.apache.catalina.Valve;
  * com.metavize.mvvm.MvvmLocalContext#appServerManager
  * MvvmLocalContext}.
  */
-public interface AppServerManager
+public interface RemoteAppServerManager
 {
-    /**
-     * Change the port to-which the external interface is bound
-     */
-    void rebindExternalHttpsPort(int port) throws Exception;
-
-    /**
-     * Load a portal web app. This app will use the PortalRealm for
-     * authentication. The web app's files are already assumed to be
-     * unpackaged into the root web apps directory of the edgeguard
-     * deployment
-     *
-     * @param urlBase the base URL
-     * (i.e. "http://edgeguard/<i>urlBase</i>/foo").
-     * @param rootDir the name of the root directory under the "web"
-     * directory of edgeguard w/ the app.
-     */
-    boolean loadPortalApp(String urlBase, String rootDir);
-
-    /**
-     * Load a portal web app. This app will use the MvvmRealm for
-     * authentication. The web app's files are already assumed to be
-     * unpackaged into the root web apps directory of the edgeguard
-     * deployment
-     *
-     * @param urlBase the base URL
-     * (i.e. "http://edgeguard/<i>urlBase</i>/foo").
-     * @param rootDir the name of the root directory under the "web"
-     * directory of edgeguard w/ the app.
-     */
-    boolean loadSystemApp(String urlBase, String rootDir);
-
-    /**
-     * Load a portal web app. This app will not use
-     * authentication. The web app's files are already assumed to be
-     * unpackaged into the root web apps directory of the edgeguard
-     * deployment
-     *
-     * @param urlBase the base URL
-     * (i.e. "http://edgeguard/<i>urlBase</i>/foo").
-     * @param rootDir the name of the root directory under the "web"
-     * directory of edgeguard w/ the app.
-     */
-    boolean loadInsecureApp(String urlBase, String rootDir);
-
-    boolean loadInsecureApp(String urlBase, String rootDir, Valve valve);
-
-    /**
-     * Load the quarantine app.  This is hack, designed this way to not force
-     * the valve object into the mvvm-client.jar */
-    boolean loadQuarantineApp(String urlBase, String rootDir);
-
-    boolean unloadWebApp(String urlBase);
-
-    void resetRootWelcome();
-
-    void setRootWelcome(String welcome);
-
-    String getRootWelcome();
-
     /**
      * Regenerate the self-signed certificate for this instance. The
      * key algorithm and strength are determined by the
