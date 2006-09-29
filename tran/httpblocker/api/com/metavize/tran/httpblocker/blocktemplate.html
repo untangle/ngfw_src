@@ -4,13 +4,21 @@
     <title>403 Forbidden</title>
   </head>
   <body>
+    <script language="JavaScript">
+      tid="FOO";
+    </script>
+
+    <script language="JavaScript">
+      alert("TID IN PG: " + tid);
+    </script>
+
     <center><b>%s</b></center>
     <p>This site blocked because of inappropriate content</p>
     <p>Host: %s</p>
     <p>URI: %s</p>
     <p>Category: %s</p>
 
-    <iframe src="buttons.html" frameborder="0"/>
+    <iframe src="buttons.html" frameborder="1"/>
 
     <p>Please contact %s</p>
     <hr>
