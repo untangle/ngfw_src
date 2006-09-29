@@ -3,8 +3,6 @@
 
 function unblockSite(forAll)
 {
-    alert("TID: " + window.tid);
-
     var req = false;
 
     if (window.XMLHttpRequest) {
