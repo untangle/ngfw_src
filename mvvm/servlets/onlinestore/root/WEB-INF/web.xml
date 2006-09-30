@@ -19,8 +19,6 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
 
   <display-name>Store</display-name>
 
-
-
   <servlet>
     <servlet-name>Proxy</servlet-name>
     <servlet-class>

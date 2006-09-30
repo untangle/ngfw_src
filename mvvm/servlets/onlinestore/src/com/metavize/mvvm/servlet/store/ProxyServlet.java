@@ -43,7 +43,6 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpState;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.StatusLine;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
@@ -57,7 +56,6 @@ public class ProxyServlet extends HttpServlet
     private static final String BASE_URL;
     private static final Map<Character, Integer> OCCURANCE;
 
-    private static final String HTTP_CLIENT = "httpClient";
     private static final String INST_COOKIE = "instCookie";
 
     static {
@@ -77,11 +75,15 @@ public class ProxyServlet extends HttpServlet
         OCCURANCE = Collections.unmodifiableMap(m);
     }
 
+    private final HttpClientCache clientCache;
     private final Logger logger = Logger.getLogger(getClass());
 
     // constructors -----------------------------------------------------------
 
-    public ProxyServlet() { }
+    public ProxyServlet()
+    {
+        clientCache = new HttpClientCache(COOKIE_DOMAIN);
+    }
 
     // HttpServlet methods ----------------------------------------------------
 
@@ -118,24 +120,8 @@ public class ProxyServlet extends HttpServlet
 
         HttpSession s = req.getSession();
 
-        HttpClient httpClient = (HttpClient)s.getAttribute(HTTP_CLIENT);
-        HttpState state;
-        if (null == httpClient) {
-            synchronized (s) {
-                httpClient = (HttpClient)s.getAttribute(HTTP_CLIENT);
-                if (null == httpClient) {
-                    httpClient = new HttpClient(new MultiThreadedHttpConnectionManager());
-                    state = httpClient.getState();
-                    String boxKey = ctx.getActivationKey();
-                    state.addCookie(new Cookie(COOKIE_DOMAIN, "boxkey", boxKey, "/", -1, false));
-                    s.setAttribute(HTTP_CLIENT, httpClient);
-                } else {
-                    state = httpClient.getState();
-                }
-            }
-        } else {
-            state = httpClient.getState();
-        }
+        HttpClient httpClient = clientCache.getClient(req, resp);
+        HttpState state = httpClient.getState();
 
         ToolboxManager tool = ctx.toolboxManager();
         tool.installed();
@@ -340,7 +326,8 @@ public class ProxyServlet extends HttpServlet
             if (name.equalsIgnoreCase("content-type")) {
                 resp.setContentType(value);
             } else if (name.equalsIgnoreCase("transfer-encoding")
-                       || name.equalsIgnoreCase("content-length")) {
+                       || name.equalsIgnoreCase("content-length")
+                       || name.equalsIgnoreCase("set-cookie")) {
                 // don't forward
             } else if (name.equalsIgnoreCase("location")
                        || name.equalsIgnoreCase("content-location")) {
