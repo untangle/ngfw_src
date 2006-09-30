@@ -62,8 +62,7 @@ public class Quarantine
   implements QuarantineTransformView,
     QuarantineMaintenenceView, QuarantineUserView {
 
-  private static final long ONE_DAY =
-    1000*60*60*24;
+  private static final long ONE_DAY = (1000L * 60L * 60L * 24L);
 
   private final Logger m_logger =
     Logger.getLogger(Quarantine.class);

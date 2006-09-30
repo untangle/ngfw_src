@@ -79,6 +79,7 @@ public class MailTransformImpl extends AbstractTransform
     private MailTransformSettings settings;
     private static Quarantine s_quarantine;//This will never be null for *instances* of
                                            //MailTransformImpl
+    private static final long ONE_GB = (1024L * 1024L * 1024L);
 
     //HAck instances for RMI issues
     private QuarantineUserViewWrapper m_quv = new QuarantineUserViewWrapper();
@@ -200,6 +201,23 @@ public class MailTransformImpl extends AbstractTransform
         return m_sav;
     }
 
+    // TODO - need to hook into HDD manager
+    public long getMinAllocatedStoreSize(boolean inGB) {
+        if (false == inGB) {
+            return ONE_GB;
+        }
+        return ONE_GB / ONE_GB;
+    }
+
+    // TODO - need to hook into HDD manager
+    // max is arbitrarily set to 30 GB
+    public long getMaxAllocatedStoreSize(boolean inGB) {
+        if (false == inGB) {
+            return (30 * ONE_GB);
+        }
+        return 30 * (ONE_GB / ONE_GB);
+    }
+
     // MailExport methods -----------------------------------------------------
 
     public MailTransformSettings getExportSettings()
@@ -270,7 +288,7 @@ public class MailTransformImpl extends AbstractTransform
                     if(settings.getQuarantineSettings() == null) {
                         QuarantineSettings qs = new QuarantineSettings();
 
-                        qs.setMaxQuarantineTotalSz(10 * 1000000000L);//10Gig
+                        qs.setMaxQuarantineTotalSz(10 * ONE_GB);//10GB
                         qs.setDigestHourOfDay(6);//6 am
                         qs.setDigestMinuteOfDay(0);//6 am
                         byte[] secretKey = new byte[4];
