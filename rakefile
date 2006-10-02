@@ -27,6 +27,10 @@ $InstallTarget = InstallTarget.new(Package['install'], [Package['mvvm'], Package
 
 # See rake-util.rb, we check the arguments for "pkgs"
 task :pkgs => Package['install'] do
+  FileList['./debian/**/etc/init.d/*'].each do |f|
+    FileUtils.cp(f, "./debian/#{File.basename(f)}.init")
+  end
+
   Kernel.system(*%w(fakeroot ./debian/rules binary))
 end
 
