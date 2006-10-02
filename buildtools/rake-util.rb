@@ -4,7 +4,7 @@ require "tempfile"
 require "ftools"
 
 # XXX check if "prod" is an argument
-ProdBuild = ARGV.find {|n| "prod" == n } ? true : false;
+DevelBuild = !ARGV.find {|n| "prod" == n } ? true : false;
 
 ## This is overly complicated
 class DebugLevel
@@ -79,13 +79,13 @@ class BuildEnv
 
   def initialize()
     ## Prefix is the value used in substitutions
-    @prefix = ProdBuild ? '/' : "#{Dir.pwd}/dist";
+    @prefix = DevelBuild ? "#{Dir.pwd}/dist" : '/';
 
     ## Devel is the development environment
     @devel   =  "#{Dir.pwd}/dist"
 
     ## This is the staging ground for debian packages
-    @deb    = "#{Dir.pwd}/deb"
+    @deb    = "#{Dir.pwd}/debian"
 
     ## This is the staging area for compilation
     @staging = "#{Dir.pwd}/staging"
@@ -105,7 +105,7 @@ class BuildEnv
 
     ## Flag indicating whether or not this is a development or
     ## package/production build.
-    @isDevel = !ProdBuild
+    @isDevel = DevelBuild
 
     @buildtools = "#{Dir.pwd}/buildtools"
   end
