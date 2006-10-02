@@ -63,7 +63,7 @@ class RedirectVirtualTableModel extends MSortedTableModel<Object>{
     private static final int  C2_MW = 75;   /* redirect */
     private static final int  C3_MW = 55;   /* log */
     private static final int  C4_MW = 100;  /* traffic type */
-    private static final int  C5_MW = 175;  /* destination address */
+    private static final int  C5_MW = 190;  /* destination address */
     private static final int  C6_MW = 110;  /* destination port */
     private static final int  C7_MW = 130;  /* redirect to new address */
     private static final int  C8_MW = 110;  /* redirect to new port */
@@ -74,14 +74,14 @@ class RedirectVirtualTableModel extends MSortedTableModel<Object>{
     private com.metavize.tran.nat.gui.MTransformControlsJPanel mTransformControlsJPanel;
    
     public RedirectVirtualTableModel(com.metavize.tran.nat.gui.MTransformControlsJPanel mTransformControlsJPanel){
-	this.mTransformControlsJPanel = mTransformControlsJPanel;
+        this.mTransformControlsJPanel = mTransformControlsJPanel;
     }
 
     private DefaultComboBoxModel interfaceModel = new DefaultComboBoxModel();
     private void updateInterfaceModel(){
-	interfaceModel.removeAllElements();
-	for( IPDBMatcher ipDBMatcher : mTransformControlsJPanel.getLocalMatcherList() )
-	    interfaceModel.addElement( ipDBMatcher );
+        interfaceModel.removeAllElements();
+        for( IPDBMatcher ipDBMatcher : mTransformControlsJPanel.getLocalMatcherList() )
+            interfaceModel.addElement( ipDBMatcher );
     }
 
     protected boolean getSortable(){ return false; }
@@ -108,7 +108,7 @@ class RedirectVirtualTableModel extends MSortedTableModel<Object>{
     
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         List elemList = new ArrayList(tableVector.size());
-	RedirectRule newElem = null;
+        RedirectRule newElem = null;
         int rowIndex = 0;
 
         for( Vector rowVector : tableVector ){
@@ -126,8 +126,8 @@ class RedirectVirtualTableModel extends MSortedTableModel<Object>{
             catch(Exception e){ throw new Exception("Invalid \"redirect port\" in row: " + rowIndex); }
             newElem.setCategory( (String) rowVector.elementAt(9) );                
             newElem.setDescription( (String) rowVector.elementAt(10) );
-	    newElem.setDstRedirect( true );  // For now, all redirects are destination redirects
-	    newElem.setLocalRedirect( true );
+            newElem.setDstRedirect( true );  // For now, all redirects are destination redirects
+            newElem.setLocalRedirect( true );
             elemList.add(newElem);
         }
         
@@ -141,29 +141,29 @@ class RedirectVirtualTableModel extends MSortedTableModel<Object>{
     
     public Vector<Vector> generateRows(Object settings) {
         NatCommonSettings natSettings = (NatCommonSettings) settings;
-	List<RedirectRule> redirectList = (List<RedirectRule>) natSettings.getLocalRedirectList();
+        List<RedirectRule> redirectList = (List<RedirectRule>) natSettings.getLocalRedirectList();
         Vector<Vector> allRows = new Vector<Vector>(redirectList.size());
-	Vector tempRow = null;
+        Vector tempRow = null;
         int rowIndex = 0;
 
-	updateInterfaceModel();
+        updateInterfaceModel();
 
         for( RedirectRule redirectRule : redirectList ){
-	    rowIndex++;
-	    tempRow = new Vector(12);
-	    tempRow.add( super.ROW_SAVED );
-	    tempRow.add( rowIndex );
-	    tempRow.add( redirectRule.isLive() );
-	    tempRow.add( redirectRule.getLog() );
-	    tempRow.add( super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), redirectRule.getProtocol().toString() ) );
-	    tempRow.add( super.generateComboBoxModel( mTransformControlsJPanel.getLocalMatcherList(), redirectRule.getDstAddress())  );
-	    tempRow.add( redirectRule.getDstPort().toString() );
-	    tempRow.add( redirectRule.getRedirectAddressString().toString() );
-	    tempRow.add( redirectRule.getRedirectPortString() );
-	    tempRow.add( redirectRule.getCategory() );
-	    tempRow.add( redirectRule.getDescription() );
-	    tempRow.add( redirectRule );
-	    allRows.add( tempRow );
+            rowIndex++;
+            tempRow = new Vector(12);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            tempRow.add( redirectRule.isLive() );
+            tempRow.add( redirectRule.getLog() );
+            tempRow.add( super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), redirectRule.getProtocol().toString() ) );
+            tempRow.add( super.generateComboBoxModel( mTransformControlsJPanel.getLocalMatcherList(), redirectRule.getDstAddress())  );
+            tempRow.add( redirectRule.getDstPort().toString() );
+            tempRow.add( redirectRule.getRedirectAddressString().toString() );
+            tempRow.add( redirectRule.getRedirectPortString() );
+            tempRow.add( redirectRule.getCategory() );
+            tempRow.add( redirectRule.getDescription() );
+            tempRow.add( redirectRule );
+            allRows.add( tempRow );
         }
 
         return allRows;
