@@ -13,7 +13,7 @@ ARGV.each do |arg|
     $DevelBuild = false
 
     task arg.to_sym => :pkgs do
-      Kernel.system("./buildtools/release.sh", $releaseName)
+      Kernel.system("./buildtools/release.sh", releaseName)
     end
   end
 end
