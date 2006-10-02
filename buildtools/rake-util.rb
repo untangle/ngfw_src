@@ -3,8 +3,20 @@
 require "tempfile"
 require "ftools"
 
-# XXX check if "prod" is an argument
-DevelBuild = !ARGV.find {|n| "prod" == n } ? true : false;
+$DevelBuild = true
+ARGV.each do |arg|
+  if "pkgs" == arg then
+    $DevelBuild = false
+  elsif arg =~ /release_?(.+)?/
+    # XXX release the hoonds!
+    releaseName = $1 || ENV["USER"]
+    $DevelBuild = false
+
+    task arg.to_sym => :pkgs do
+      Kernel.system("./buildtools/release.sh", $releaseName)
+    end
+  end
+end
 
 ## This is overly complicated
 class DebugLevel
@@ -79,7 +91,7 @@ class BuildEnv
 
   def initialize()
     ## Prefix is the value used in substitutions
-    @prefix = DevelBuild ? "#{Dir.pwd}/dist" : '/';
+    @prefix = $DevelBuild ? "#{Dir.pwd}/dist" : '/';
 
     ## Devel is the development environment
     @devel   =  "#{Dir.pwd}/dist"
@@ -105,7 +117,7 @@ class BuildEnv
 
     ## Flag indicating whether or not this is a development or
     ## package/production build.
-    @isDevel = DevelBuild
+    @isDevel = $DevelBuild
 
     @buildtools = "#{Dir.pwd}/buildtools"
   end
