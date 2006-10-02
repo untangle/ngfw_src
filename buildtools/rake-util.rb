@@ -3,6 +3,9 @@
 require "tempfile"
 require "ftools"
 
+# XXX check if "prod" is an argument
+ProdBuild = ARGV.find {|n| "prod" == n } ? true : false;
+
 ## This is overly complicated
 class DebugLevel
   include Comparable
@@ -76,7 +79,7 @@ class BuildEnv
 
   def initialize()
     ## Prefix is the value used in substitutions
-    @prefix = "#{Dir.pwd}/dist"
+    @prefix = ProdBuild ? '/' : "#{Dir.pwd}/dist";
 
     ## Devel is the development environment
     @devel   =  "#{Dir.pwd}/dist"
@@ -102,7 +105,7 @@ class BuildEnv
 
     ## Flag indicating whether or not this is a development or
     ## package/production build.
-    @isDevel = true
+    @isDevel = !ProdBuild
 
     @buildtools = "#{Dir.pwd}/buildtools"
   end
