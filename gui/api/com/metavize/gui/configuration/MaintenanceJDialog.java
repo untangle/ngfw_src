@@ -86,4 +86,10 @@ public class MaintenanceJDialog extends MConfigJDialog {
     }
 
 
+    protected boolean shouldSave(){
+        NetworkSaveSettingsProceedJDialog networkSaveSettingsProceedJDialog = new NetworkSaveSettingsProceedJDialog(this);
+        return networkSaveSettingsProceedJDialog.isProceeding();	
+    }
+
+
 }

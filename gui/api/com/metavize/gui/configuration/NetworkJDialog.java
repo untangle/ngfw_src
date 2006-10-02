@@ -36,31 +36,31 @@ public class NetworkJDialog extends MConfigJDialog {
     public NetworkJDialog( Frame parentFrame ) {
 	super(parentFrame);
         setTitle(NAME_NETWORKING_CONFIG);
-	compoundSettings = new NetworkCompoundSettings();
+        compoundSettings = new NetworkCompoundSettings();
     }
 
     protected Dimension getMinSize(){
-	return new Dimension(640, 600);
+        return new Dimension(640, 600);
     }
     
     protected void generateGui(){        
         // NETWORK SETTINGS //////
         NetworkIPJPanel ipJPanel = new NetworkIPJPanel(this);
-	addScrollableTab(null, NAME_NETWORK_SETTINGS, null, ipJPanel, false, true);
-	addSavable(NAME_NETWORK_SETTINGS, ipJPanel);
-	addRefreshable(NAME_NETWORK_SETTINGS, ipJPanel);
+        addScrollableTab(null, NAME_NETWORK_SETTINGS, null, ipJPanel, false, true);
+        addSavable(NAME_NETWORK_SETTINGS, ipJPanel);
+        addRefreshable(NAME_NETWORK_SETTINGS, ipJPanel);
         	
         // ALIASES /////
         NetworkAliasJPanel aliasJPanel = new NetworkAliasJPanel();
-	addTab(NAME_ALIAS_PANEL, null, aliasJPanel );
-	addSavable(NAME_ALIAS_PANEL, aliasJPanel );
-	addRefreshable(NAME_ALIAS_PANEL, aliasJPanel );
+        addTab(NAME_ALIAS_PANEL, null, aliasJPanel );
+        addSavable(NAME_ALIAS_PANEL, aliasJPanel );
+        addRefreshable(NAME_ALIAS_PANEL, aliasJPanel );
 
-	// HOSTNAME //////
+        // HOSTNAME //////
         NetworkHostnameJPanel hostnameJPanel = new NetworkHostnameJPanel();
-	addScrollableTab(null, NAME_HOSTNAME, null, hostnameJPanel, false, true);
-	addSavable(NAME_HOSTNAME, hostnameJPanel);
-	addRefreshable(NAME_HOSTNAME, hostnameJPanel);
+        addScrollableTab(null, NAME_HOSTNAME, null, hostnameJPanel, false, true);
+        addSavable(NAME_HOSTNAME, hostnameJPanel);
+        addRefreshable(NAME_HOSTNAME, hostnameJPanel);
     }   
 
     protected boolean shouldSave(){
@@ -69,12 +69,12 @@ public class NetworkJDialog extends MConfigJDialog {
     }
 
     protected void saveAll() throws Exception {
-	int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
-	MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
-	super.saveAll();
-	MvvmRemoteContextFactory.factory().setTimeout(previousTimeout);
-	// UPDATE STORE
-	Util.getPolicyStateMachine().updateStoreModel();
+        int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
+        MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
+        super.saveAll();
+        MvvmRemoteContextFactory.factory().setTimeout(previousTimeout);
+        // UPDATE STORE
+        Util.getPolicyStateMachine().updateStoreModel();
     }
 
 }
