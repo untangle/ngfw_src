@@ -26,17 +26,14 @@ configure-stamp:
 	@dh_testdir
 	@touch configure-stamp
 
+# Assumes rake has already been run and the files are in the right
+# places, mostly
 build-arch: configure-stamp  build-arch-stamp
 build-arch-stamp:
 	@dh_testdir
 
 	@echo -e "==> make\n"
 	@rm -f ./debian/tmp/stamp*
-#	@make build_dist="`mkdir ./debian/tmp &>/dev/null ; cd ./debian/tmp &>/dev/null ; pwd`"  build_prefix="" PRODUCTION=1 all
-
-	@for i in `ls ./debian/tmp/etc/init.d/` ; do \
-	  cp ./debian/tmp/etc/init.d/$$i ./debian/$$i.init ; \
-	done
 
 	@for i in `cat debian/control | grep Package | awk '{print $$2}'` ; do \
 	  mkdir -p ./debian/tmp/usr/share/doc/$i ; \
@@ -60,7 +57,8 @@ clean:
 	@rm -f ./debian/*.init
 	@dh_clean
 
-# distclean is too agressive to run in developer trees, so only run for 'make release'
+# distclean is too agressive to run in developer trees, so only run
+# for 'make release'
 distclean:
 	@dh_testdir
 	@dh_testroot
