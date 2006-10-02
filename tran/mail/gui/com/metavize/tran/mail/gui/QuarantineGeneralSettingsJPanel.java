@@ -79,34 +79,40 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoun
 	
         // MAX HOLDING TIME
         tempRowVector = tableVector.elementAt(0);
-	int maxHoldingDays = (Integer) ((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue();
+        int maxHoldingDays = (Integer) ((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue();
         
-	// SENDING TIME
+        // SENDING TIME
         tempRowVector = tableVector.elementAt(1);
-	Date sendingTime = (Date) ((SpinnerDateModel)tempRowVector.elementAt(3)).getValue();
-	Calendar tempCalendar = new GregorianCalendar();
-	tempCalendar.setTime(sendingTime);
-	int sendingHour = tempCalendar.get(Calendar.HOUR_OF_DAY);
-	int sendingMinute = tempCalendar.get(Calendar.MINUTE);
+        Date sendingTime = (Date) ((SpinnerDateModel)tempRowVector.elementAt(3)).getValue();
+        Calendar tempCalendar = new GregorianCalendar();
+        tempCalendar.setTime(sendingTime);
+        int sendingHour = tempCalendar.get(Calendar.HOUR_OF_DAY);
+        int sendingMinute = tempCalendar.get(Calendar.MINUTE);
 
-	// SAVE SETTINGS //////////
-	if( !validateOnly ){
-	    QuarantineSettings quarantineSettings = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getQuarantineSettings();
+        // MAX STORAGE SPACE
+        tempRowVector = tableVector.elementAt(2);
+        long totalSize = (Long) tempRowVector.elementAt(3);
 
-	    quarantineSettings.setMaxMailIntern( ((long)maxHoldingDays) * 1440l * 60 * 1000l );
-	    quarantineSettings.setDigestHourOfDay( sendingHour );
-	    quarantineSettings.setDigestMinuteOfDay( sendingMinute );
-	}
+
+        // SAVE SETTINGS //////////
+        if( !validateOnly ){
+            QuarantineSettings quarantineSettings = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getQuarantineSettings();
+            
+            quarantineSettings.setMaxMailIntern( ((long)maxHoldingDays) * 1440l * 60 * 1000l );
+            quarantineSettings.setDigestHourOfDay( sendingHour );
+            quarantineSettings.setDigestMinuteOfDay( sendingMinute );
+            quarantineSettings.setMaxQuarantineTotalSz( totalSize );
+        }
     }
     
     public Vector<Vector> generateRows(EmailCompoundSettings emailCompoundSettings){
-	QuarantineSettings quarantineSettings = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getQuarantineSettings();
+        QuarantineSettings quarantineSettings = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getQuarantineSettings();
         Vector<Vector> allRows = new Vector<Vector>(3);
-	int rowIndex = 0;
+        int rowIndex = 0;
         Vector tempRow;
 
         // MAX HOLDING TIME
-	rowIndex++;
+        rowIndex++;
         tempRow = new Vector(5);
         tempRow.add( super.ROW_SAVED );
         tempRow.add( rowIndex );
@@ -115,20 +121,33 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoun
         tempRow.add( "The number of days a quarantined email will be held, before it is automatically purged. (min=1, max=60)" );
         allRows.add( tempRow );
 
-	// SENDING TIME
-	rowIndex++;
+        // SENDING TIME
+        rowIndex++;
         tempRow = new Vector(5);
         tempRow.add( super.ROW_SAVED );
         tempRow.add( rowIndex );
         tempRow.add( "Digest Sending Time" );
-	Calendar calendar = new GregorianCalendar();
-	calendar.set(Calendar.HOUR_OF_DAY, quarantineSettings.getDigestHourOfDay());
-	calendar.set(Calendar.MINUTE, quarantineSettings.getDigestMinuteOfDay());
-	SpinnerDateModel dateModel = new SpinnerDateModel(calendar.getTime(), null, null, Calendar.MINUTE);
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(Calendar.HOUR_OF_DAY, quarantineSettings.getDigestHourOfDay());
+        calendar.set(Calendar.MINUTE, quarantineSettings.getDigestMinuteOfDay());
+        SpinnerDateModel dateModel = new SpinnerDateModel(calendar.getTime(), null, null, Calendar.MINUTE);
         tempRow.add( dateModel );
         tempRow.add( "The time, each day, that a digest email will be sent to inform people that some of their email has been quarantined." );
         allRows.add( tempRow );
 	
+        // MAX SPACE
+        rowIndex++;
+        tempRow = new Vector(5);
+        tempRow.add( super.ROW_SAVED );
+        tempRow.add( rowIndex );
+        tempRow.add( "Maximum Quarantine Space (MB)" );
+        //int min = quarantineSettings.getMaxQuarantineMinGigs();
+        //int max = quarantineSettings.getMaxQuarantineMaxGigs();
+        //tempRow.add( new SpinnerNumberModel( quarantineSettings.getMaxQuarantineTotalSz(), min, max, 1) );
+        tempRow.add( new SpinnerNumberModel( quarantineSettings.getMaxQuarantineTotalSz()/1024l/1024l, 10, 100000, 1) );
+        tempRow.add( "This is the maximum amount of disk space (in MB) that will be used to quarantine emails." );
+        allRows.add( tempRow );
+
         return allRows;
     }
 }
