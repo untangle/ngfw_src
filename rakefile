@@ -17,6 +17,7 @@ task :default => :devel
 task :clean do
   FileUtils.rm_rf($BuildEnv.devel) if File.exist?($BuildEnv.devel)
   FileUtils.rm_rf($BuildEnv.staging) if File.exist?($BuildEnv.staging)
+  FileUtils.rm_rf(FileList['debian/*.version'].map { |f| f =~ /(.*)\.version$/; $1 })
   ## Clear the stamp hashes
   Rake::StampHash.instance.clear
 end
