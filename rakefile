@@ -25,8 +25,8 @@ end
 task :devel => [Package['install']]
 $InstallTarget = InstallTarget.new(Package['install'], [Package['mvvm'], Package['gui'], Package['tran']], 'install')
 
-# See rake-util.rb, we check the arguements for "prod"
-task :prod => Package['install'] do
+# See rake-util.rb, we check the arguments for "pkgs"
+task :pkgs => Package['install'] do
   Kernel.system(*%w(fakeroot ./debian/rules binary))
 end
 
