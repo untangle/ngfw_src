@@ -1,10 +1,11 @@
 # -*-ruby-*-
 
 jnetcap = Package['jnetcap']
+mvvm    = Package['mvvm']
 
 ## jnetcap
 j = JarTarget.buildTarget(jnetcap, Jars::Base, "impl", "jnetcap/impl" )
-$InstallTarget.installJars(j, "#{jnetcap.distDirectory}/usr/share/metavize/lib")
+$InstallTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib")
 
 headerClasses = [ "com.metavize.jnetcap.Netcap",
                   "com.metavize.jnetcap.IPTraffic",

@@ -2,11 +2,12 @@
 
 jvector = Package["jvector"]
 jnetcap = Package["jnetcap"]
+mvvm    = Package["mvvm"]
 
 ## jvector
 deps = Jars::Base + [jnetcap["impl"]]
 j = JarTarget.buildTarget(jvector, deps, "impl", "jvector/impl")
-$InstallTarget.installJars(j, "#{jnetcap.distDirectory}/usr/share/metavize/lib")
+$InstallTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib")
 
 headerClasses = [ "com.metavize.jvector.OutgoingSocketQueue",
                   "com.metavize.jvector.IncomingSocketQueue",
