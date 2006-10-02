@@ -1,7 +1,7 @@
 # -*-ruby-*-
 
 mvvm = Package['mvvm']
-gui = Package['gui']
+gui = Package['metavize-client']
 
 class MiniInstallTarget < InstallTarget
   def to_s
@@ -9,8 +9,7 @@ class MiniInstallTarget < InstallTarget
   end
 end
 
-mini = MiniInstallTarget.new(Package['gui-temp'], [Package['gui']], 'install')
-
+mini = MiniInstallTarget.new(Package['gui-temp'], [Package['metavize-client']], 'install')
 
 ## Api
 deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [mvvm['api']]

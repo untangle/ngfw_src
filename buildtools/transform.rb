@@ -28,7 +28,7 @@ class TransformBuilder
   def TransformBuilder.makePackage(name, suffix, depsImpl = [], depsGui = [],
                                    depsLocalApi = [], baseTransforms = [])
     mvvm = Package['mvvm']
-    gui  = Package['gui']
+    gui  = Package['metavize-client']
     transform = Package["#{name}-#{suffix}"]
     Package['tran'].registerTarget(name, transform)
 
@@ -111,6 +111,6 @@ class TransformBuilder
   ## Helper to retrieve the standard dependencies for a GUI jar
   def TransformBuilder.baseJarsGui
     Jars::Base + Jars::Gui + Jars::TomcatEmb +
-      [Package['mvvm']['api'], Package['gui']['api']]
+      [Package['mvvm']['api'], Package['metavize-client']['api']]
   end
 end
