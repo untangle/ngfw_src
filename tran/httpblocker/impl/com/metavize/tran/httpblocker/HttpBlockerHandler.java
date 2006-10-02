@@ -13,6 +13,7 @@ package com.metavize.tran.httpblocker;
 
 import java.nio.ByteBuffer;
 
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tran.Transform;
 import com.metavize.tran.http.HttpStateMachine;
@@ -130,27 +131,35 @@ public class HttpBlockerHandler extends HttpStateMachine
 
     private Token[] generateResponse(String replacement, boolean persistent)
     {
+        String hostname = MvvmContextFactory.context().networkManager()
+            .getPublicAddress();
+        String blockPageUrl = "http://" + hostname
+            + "/httpblocker/blockpage.jsp?nonce=foo";
+
+        String blockMessage = "Forwarding to: " + blockPageUrl;
+
         Token response[] = new Token[4];
 
         // XXX make canned responses in constructor
         // XXX Do template replacement
-        ByteBuffer buf = ByteBuffer.allocate(replacement.length());
-        buf.put(replacement.getBytes()).flip();
+        ByteBuffer buf = ByteBuffer.allocate(blockMessage.length());
+        buf.put(blockMessage.getBytes()).flip();
 
-        StatusLine sl = new StatusLine("HTTP/1.1", 403, "Forbidden");
+        StatusLine sl = new StatusLine("HTTP/1.1", 307, "Temporary Redirect");
         response[0] = sl;
 
         Header h = new Header();
-        h.addField("Content-Length", Integer.toString(buf.remaining()));
-        h.addField("Content-Type", "text/html");
+        h.addField("Location", blockPageUrl);
+        h.addField("Content-Type", "text/plain");
+        h.addField("Content-Length", Integer.toString(blockMessage.length()));
         h.addField("Connection", persistent ? "Keep-Alive" : "Close");
         response[1] = h;
 
-        Chunk c = new Chunk(buf);
-        response[2] = c;
+        response[2] = new Chunk(buf);
 
         response[3] = EndMarker.MARKER;
 
+        System.out.println("SENT IT OUT!");
         return response;
     }
 }
