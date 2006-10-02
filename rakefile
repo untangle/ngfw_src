@@ -25,7 +25,9 @@ task :devel => [Package['install']]
 $InstallTarget = InstallTarget.new(Package['install'], [Package['mvvm'], Package['gui'], Package['tran']], 'install')
 
 # See rake-util.rb, we check the arguements for "prod"
-task :prod => Package['install']
+task :prod => Package['install'] do
+  # invoke debian stuff here...
+end
 
 task Package['mvvm'] => [:structure]
 
