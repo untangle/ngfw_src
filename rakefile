@@ -26,7 +26,7 @@ $InstallTarget = InstallTarget.new(Package['install'], [Package['mvvm'], Package
 
 # See rake-util.rb, we check the arguements for "prod"
 task :prod => Package['install'] do
-  # invoke debian stuff here...
+  Kernel.system(*%w(fakeroot ./debian/rules binary))
 end
 
 task Package['mvvm'] => [:structure]

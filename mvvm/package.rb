@@ -189,7 +189,7 @@ mv_ca = 'mvvm/resources/mv-ca.pem'
 file mvvm_cacerts => [ java_cacerts, mv_ca ] do
   ensureDirectory(File.dirname(mvvm_cacerts))
   FileUtils.cp(java_cacerts, mvvm_cacerts)
-  FileUtils.chmod(666, mvvm_cacerts)
+  FileUtils.chmod(0666, mvvm_cacerts)
   Kernel.system("#{$BuildEnv.javahome}/bin/keytool", '-import', '-noprompt',
                 '-keystore', mvvm_cacerts, '-storepass', 'changeit', '-file',
                 mv_ca, '-alias', 'metavizeprivateca')

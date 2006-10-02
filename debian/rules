@@ -1,12 +1,12 @@
 #!/usr/bin/make -f
-# Sample debian/rules that uses debhelper. 
-# GNU copyright 1997 by Joey Hess.
+# Sample debian/rules that uses debhelper.
+# GNU copyright 1997, 2006 by Joey Hess.
 #
 # This version is for a hypothetical package that builds an
 # architecture-dependant package, as well as an architecture-independent
 # package.
 
-# Uncomment this to turn on verbose mode. 
+# Uncomment this to turn on verbose mode.
 # export DH_VERBOSE=1
 
 # This is the debhelper compatibility version to use.
@@ -32,7 +32,7 @@ build-arch-stamp:
 
 	@echo -e "==> make\n"
 	@rm -f ./debian/tmp/stamp*
-	@make build_dist="`mkdir ./debian/tmp &>/dev/null ; cd ./debian/tmp &>/dev/null ; pwd`"  build_prefix="" PRODUCTION=1 all
+#	@make build_dist="`mkdir ./debian/tmp &>/dev/null ; cd ./debian/tmp &>/dev/null ; pwd`"  build_prefix="" PRODUCTION=1 all
 
 	@for i in `ls ./debian/tmp/etc/init.d/` ; do \
 	  cp ./debian/tmp/etc/init.d/$$i ./debian/$$i.init ; \
@@ -76,34 +76,34 @@ install: build
 
 binary-arch: build install
 	dh_testdir
-	dh_testroot 
-	dh_movefiles
-#	dh_installdebconf 
+	dh_testroot
+#	dh_movefiles
+#	dh_installdebconf
 	dh_shlibdeps
-	dh_installdocs 
-#	dh_installexamples 
-#	dh_installmenu 
-	dh_installlogrotate 
-#	dh_installemacsen 
-#	dh_installpam 
-#	dh_installmime 
+	dh_installdocs
+#	dh_installexamples
+#	dh_installmenu
+	dh_installlogrotate
+#	dh_installemacsen
+#	dh_installpam
+#	dh_installmime
 	dh_installinit -n
-#	dh_installcron 
-#	dh_installman 
-#	dh_installinfo 
-#	dh_undocumented 
-	dh_installchangelogs  
+#	dh_installcron
+#	dh_installman
+#	dh_installinfo
+#	dh_undocumented
+	dh_installchangelogs
 	dh_strip
-#	dh_link 
-	dh_compress 
-#	dh_fixperms 
-	dh_installdeb 
-#	dh_perl 
+#	dh_link
+	dh_compress
+#	dh_fixperms
+	dh_installdeb
+#	dh_perl
 #	dh_gencontrol
 	for i in `cat debian/control | grep Package | awk '{print $$2}'` ; do \
 	  dh_gencontrol -p$$i -u-is -u-v"`cat ../VERSION``cat debian/$$i.version`" ; \
 	done
-	dh_md5sums 
+	dh_md5sums
 	dh_builddeb --destdir=../ 2>&1 | egrep -v "(user-defined|ignoring)"
 
 binary-indep: build install
