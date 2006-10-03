@@ -57,7 +57,7 @@ public class HttpBlockerHandler extends HttpStateMachine
     {
         transform.incrementCount(SCAN, 1);
 
-        String c2sReplacement = transform.getBlacklist()
+        BlockDetails c2sReplacement = transform.getBlacklist()
             .checkRequest(getSession().clientAddr(), getRequestLine(),
                           requestHeader);
         if (logger.isDebugEnabled()) {
@@ -96,7 +96,7 @@ public class HttpBlockerHandler extends HttpStateMachine
         if (100 == getStatusLine().getStatusCode()) {
             releaseResponse();
         } else {
-            String s2cReplacement = transform.getBlacklist()
+            BlockDetails s2cReplacement = transform.getBlacklist()
                 .checkResponse(getSession().clientAddr(), getResponseRequest(),
                                responseHeader);
             if (logger.isDebugEnabled()) {
@@ -129,21 +129,15 @@ public class HttpBlockerHandler extends HttpStateMachine
 
     // private methods --------------------------------------------------------
 
-    private Token[] generateResponse(String replacement, boolean persistent)
+    private Token[] generateResponse(BlockDetails details, boolean persistent)
     {
         String hostname = MvvmContextFactory.context().networkManager()
             .getPublicAddress();
         String blockPageUrl = "http://" + hostname
-            + "/httpblocker/blockpage.jsp?nonce=foo";
-
-        String blockMessage = "Forwarding to: " + blockPageUrl;
+            + "/httpblocker/blockpage.jsp?nonce=" + details.getNonce()
+            + "&tid=" + transform.getTid();
 
         Token response[] = new Token[4];
-
-        // XXX make canned responses in constructor
-        // XXX Do template replacement
-        ByteBuffer buf = ByteBuffer.allocate(blockMessage.length());
-        buf.put(blockMessage.getBytes()).flip();
 
         StatusLine sl = new StatusLine("HTTP/1.1", 307, "Temporary Redirect");
         response[0] = sl;
@@ -151,15 +145,14 @@ public class HttpBlockerHandler extends HttpStateMachine
         Header h = new Header();
         h.addField("Location", blockPageUrl);
         h.addField("Content-Type", "text/plain");
-        h.addField("Content-Length", Integer.toString(blockMessage.length()));
+        h.addField("Content-Length", "0");
         h.addField("Connection", persistent ? "Keep-Alive" : "Close");
         response[1] = h;
 
-        response[2] = new Chunk(buf);
+        response[2] = Chunk.EMPTY;
 
         response[3] = EndMarker.MARKER;
 
-        System.out.println("SENT IT OUT!");
         return response;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -18,6 +18,8 @@ public interface HttpBlocker extends Transform
 {
     HttpBlockerSettings getHttpBlockerSettings();
     void setHttpBlockerSettings(HttpBlockerSettings settings);
+    BlockDetails getDetails(String nonce);
+    BlockDetails removeDetails(String nonce);
 
     EventManager<HttpBlockerEvent> getEventManager();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,6 +12,7 @@
 package com.metavize.tran.httpblocker;
 
 import java.lang.ref.WeakReference;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -19,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import com.metavize.tran.util.AsciiString;
 import org.apache.log4j.Logger;
@@ -38,6 +40,11 @@ class BlacklistCache
         = new HashMap<String, WeakReference<CharSequence[]>>();
     private final Map<String, WeakReference<CharSequence[]>>domains
         = new HashMap<String, WeakReference<CharSequence[]>>();
+
+    private final Map<String, BlockDetails> nonces
+        = new HashMap<String, BlockDetails>();
+
+    private final Random random = new Random();
 
     private final Logger logger = Logger.getLogger(BlacklistCache.class);
 
@@ -86,6 +93,31 @@ class BlacklistCache
         }
 
         return blacklist;
+    }
+
+    BlockDetails saveDetails(HttpBlockerSettings settings, String host,
+                             URI uri, String reason)
+    {
+        String nonce = Long.toHexString(random.nextLong());
+        BlockDetails d = new BlockDetails(nonce, settings, host, uri, reason);
+        synchronized (this) {
+            nonces.put(nonce, d);
+        }
+        return d;
+    }
+
+    BlockDetails getDetails(String nonce)
+    {
+        synchronized (this) {
+            return nonces.get(nonce);
+        }
+    }
+
+    BlockDetails removeDetails(String nonce)
+    {
+        synchronized (this) {
+            return nonces.remove(nonce);
+        }
     }
 
     // private methods --------------------------------------------------------

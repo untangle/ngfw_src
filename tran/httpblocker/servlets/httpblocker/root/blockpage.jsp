@@ -1,14 +1,22 @@
-<%@ page language="java" import="com.metavize.mvvm.portal.PortalLogin"%>
+<%@ page language="java" import="com.metavize.mvvm.client.*, com.metavize.mvvm.tran.*, com.metavize.mvvm.security.*, com.metavize.tran.httpblocker.*"%>
 
 <%
-String nonce = request.getParameter("nonce");
-System.out.println("NONCE: " + nonce);
+MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
+TransformManager tman = ctx.transformManager();
 
-String greeting = "<<GREETING>>";
-String contact = "<<CONTACT>>";
-String host = "<<HOST>>";
-String uri = "<<URI>>";
-String category = "<<CATEGORY>>";
+String nonce = request.getParameter("nonce");
+String tidStr = request.getParameter("tid");
+Tid tid = new Tid(Long.parseLong(tidStr));
+
+TransformContext tctx = tman.transformContext(tid);
+HttpBlocker tran = (HttpBlocker)tctx.transform();
+BlockDetails bd = tran.getDetails(nonce);
+
+String header = bd.getHeader();
+String contact = bd.getContact();
+String host = bd.getHost();
+String uri = bd.getUri().toString();
+String reason = bd.getReason();
 %>
 
 <html>
@@ -17,11 +25,11 @@ String category = "<<CATEGORY>>";
 <script type="text/javascript" src="httpblocker.js"></script>
 </head>
 <body>
-<center><b><%=greeting%></b></center>
+<center><b><%=header%></b></center>
 <p>This site blocked because of inappropriate content</p>
 <p>Host: <%=host%></p>
 <p>URI: <%=uri%></p>
-<p>Category: <%=category%></p>
+<p>Category: <%=reason%></p>
 
 <table>
   <tr>
@@ -42,3 +50,7 @@ String category = "<<CATEGORY>>";
 <address>Untangle Networks EdgeGuard</address>
 </body>
 </html>
+
+<%
+MvvmRemoteContextFactory.factory().logout();
+%>

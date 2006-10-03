@@ -47,9 +47,6 @@ public class BlockTemplate implements Serializable
 {
     private static final long serialVersionUID = -2176543704833470091L;
 
-    private static final String TEMPLATE_NAME
-        = "com/metavize/tran/httpblocker/blocktemplate.html";
-
     private static String BLOCK_TEMPLATE;
 
     private Long id;
@@ -64,40 +61,6 @@ public class BlockTemplate implements Serializable
     {
         this.header = header;
         this.contact = contact;
-    }
-
-    // business methods ------------------------------------------------------
-
-    public String render(String servletBase, String host, URI uri,
-                         String category)
-    {
-        if (null == BLOCK_TEMPLATE) {
-            synchronized (BlockTemplate.class) {
-                if (null == BLOCK_TEMPLATE) {
-                    BLOCK_TEMPLATE = "";
-
-                    InputStream is = BlockTemplate.class.getClassLoader()
-                        .getResourceAsStream(TEMPLATE_NAME);
-                    InputStreamReader isr = new InputStreamReader(is);
-                    BufferedReader br = new BufferedReader(isr);
-                    String l;
-                    try {
-                        while (null != (l = br.readLine())) {
-                            BLOCK_TEMPLATE += l + "\n";
-                        }
-                    } catch (IOException exn) {
-                        BLOCK_TEMPLATE = null; // XXX try again next time
-                    }
-                }
-            }
-        }
-
-        if (null == BLOCK_TEMPLATE) {
-            return "Blocked Site: http://" + host + uri;
-        } else {
-            return String.format(BLOCK_TEMPLATE, servletBase, header, host, uri,
-                                 category, contact);
-        }
     }
 
     // accessors --------------------------------------------------------------

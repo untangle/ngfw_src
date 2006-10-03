@@ -105,16 +105,14 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         return eventLogger;
     }
 
-    /**
-     * Causes the blacklist to populate its arrays.
-     */
-    private void reconfigure()
+    public BlockDetails getDetails(String nonce)
     {
-        MvvmContextFactory.context().newThread(new Runnable() {
-                public void run() {
-                    blacklist.reconfigure();
-                }
-            }).start();
+        return BlacklistCache.cache().getDetails(nonce);
+    }
+
+    public BlockDetails removeDetails(String nonce)
+    {
+        return BlacklistCache.cache().removeDetails(nonce);
     }
 
     // Transform methods ------------------------------------------------------
@@ -308,8 +306,21 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         setHttpBlockerSettings(settings);
     }
 
-    // This is broken out since we added categories in 3.1, and since the list can't be
-    // modified by the user it's quite safe to do this here.
+    /**
+     * Causes the blacklist to populate its arrays.
+     */
+    private void reconfigure()
+    {
+        MvvmContextFactory.context().newThread(new Runnable() {
+                public void run() {
+                    blacklist.reconfigure();
+                }
+            }).start();
+    }
+
+    // This is broken out since we added categories in 3.1, and since
+    // the list can't be modified by the user it's quite safe to do
+    // this here.
     private void updateToCurrentCategories(HttpBlockerSettings settings)
     {
         List curCategories = settings.getBlacklistCategories();
