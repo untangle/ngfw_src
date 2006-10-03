@@ -1,5 +1,8 @@
 # -*-ruby-*-
 
+## Building downloads
+Kernel.system( "make -C ../downloads" )
+
 ## This is how you define where the stamp file will go
 module Rake
   StampFile = 'taskstamps.txt'
@@ -41,9 +44,6 @@ task :structure do
     ensureDirectory(t)
   end
 end
-
-## Building downloads
-Kernel.system( "make -C ../downloads" )
 
 ## Require all of the sub packages.
 ## Done manually because order matters.
