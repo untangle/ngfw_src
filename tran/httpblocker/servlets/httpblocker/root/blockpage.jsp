@@ -17,18 +17,27 @@ String contact = bd.getContact();
 String host = bd.getHost();
 String uri = bd.getUri().toString();
 String reason = bd.getReason();
+String url = bd.getUrl().toString();
 %>
 
 <html>
 <head>
 <title>403 Forbidden</title>
+
+<script language="JavaScript">
+nonce = '<%=nonce%>';
+tid = '<%=tidStr%>';
+url = '<%=url%>';
+</script>
+
 <script type="text/javascript" src="httpblocker.js"></script>
+
 </head>
 <body>
 <center><b><%=header%></b></center>
 <p>This site blocked because of inappropriate content</p>
 <p>Host: <%=host%></p>
-<p>URI: <%=uri%></p>
+<p>URL: <%=url%></p>
 <p>Category: <%=reason%></p>
 
 <table>

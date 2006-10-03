@@ -76,8 +76,8 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
     public HttpBlockerSettings getHttpBlockerSettings()
     {
-    if( settings == null )
-        logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+        if( settings == null )
+            logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
         return settings;
     }
 
@@ -97,7 +97,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         getTransformContext().runTransaction(tw);
 
         blacklist.configure(settings);
-    reconfigure();
+        reconfigure();
     }
 
     public EventManager<HttpBlockerEvent> getEventManager()
@@ -110,9 +110,25 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         return BlacklistCache.cache().getDetails(nonce);
     }
 
-    public BlockDetails removeDetails(String nonce)
+    public boolean unblockSite(String nonce, boolean global)
     {
-        return BlacklistCache.cache().removeDetails(nonce);
+        BlockDetails bd = BlacklistCache.cache().removeDetails(nonce);
+        if (null == bd) {
+            return false;
+        }
+
+        String site = bd.getRuleSite();
+
+        if (global) {
+            StringRule rule = new StringRule(site, site,
+                                             "passed by user request", true);
+            settings.getPassedUrls().add(rule);
+            setHttpBlockerSettings(settings);
+        } else {
+            System.out.println("NOT IMPLEMENTED YET!");
+        }
+
+        return true;
     }
 
     // Transform methods ------------------------------------------------------
@@ -133,8 +149,8 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
         List s = new ArrayList();
 
-    // this third column is more of a description than a category, the way the client is using it
-    // the second column is being used as the "category"
+        // this third column is more of a description than a category, the way the client is using it
+        // the second column is being used as the "category"
         s.add(new StringRule("exe", "executable", "an executable file format" , false));
         s.add(new StringRule("ocx", "executable", "an executable file format", false));
         s.add(new StringRule("dll", "executable", "an executable file format", false));

@@ -12,7 +12,9 @@
 package com.metavize.tran.httpblocker;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 
 public class BlockDetails implements Serializable
 {
@@ -52,9 +54,27 @@ public class BlockDetails implements Serializable
         return host;
     }
 
+    public String getRuleSite()
+    {
+        if (host.startsWith("www.") && 4 < host.length()) {
+            return host.substring(4);
+        } else {
+            return host;
+        }
+    }
+
     public URI getUri()
     {
         return uri;
+    }
+
+    public URL getUrl()
+    {
+        try {
+            return uri.resolve("http://" + host).toURL();
+        } catch (MalformedURLException exn) {
+            throw new RuntimeException(exn);
+        }
     }
 
     public String getReason()

@@ -1,7 +1,7 @@
 // Copyright (c) 2006 Metavize Inc.
 // All rights reserved.
 
-function unblockSite(forAll)
+function unblockSite(global)
 {
     var req = false;
 
@@ -22,13 +22,13 @@ function unblockSite(forAll)
 
     req.onreadystatechange = function() {
         if (req.readyState == 4) {
-            window.location.reload();
+            window.location.href = url;
         }
     };
 
     var hostname = window.location.hostname;
     req.open('POST', "unblock", true);
     req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    req.send("site=" + hostname + "&global=" + forAll);
+    req.send("nonce=" + nonce + "&tid=" + tid + "&global=" + global);
 };
 
