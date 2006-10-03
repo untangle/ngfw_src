@@ -40,7 +40,7 @@ public class QuarantineGeneralSettingsJPanel extends MEditTableJPanel {
         super.setTableTitle("General Settings");
         super.setDetailsTitle("rule notes");
         super.setAddRemoveEnabled(false);
-	super.setFillJButtonEnabled(false);
+        super.setFillJButtonEnabled(false);
         
         // create actual table model
         QuarantineGeneralSettingsTableModel tableModel = new QuarantineGeneralSettingsTableModel();
@@ -91,7 +91,7 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoun
 
         // MAX STORAGE SPACE
         tempRowVector = tableVector.elementAt(2);
-        long totalSize = (Long) tempRowVector.elementAt(3);
+        int totalSize = (Integer) ((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue();
 
 
         // SAVE SETTINGS //////////
@@ -101,7 +101,7 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoun
             quarantineSettings.setMaxMailIntern( ((long)maxHoldingDays) * 1440l * 60 * 1000l );
             quarantineSettings.setDigestHourOfDay( sendingHour );
             quarantineSettings.setDigestMinuteOfDay( sendingMinute );
-            quarantineSettings.setMaxQuarantineTotalSz( totalSize );
+            quarantineSettings.setMaxQuarantineTotalSz( ((long) totalSize)*1024l*1024l );
         }
     }
     
@@ -144,7 +144,7 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoun
         //int min = quarantineSettings.getMaxQuarantineMinGigs();
         //int max = quarantineSettings.getMaxQuarantineMaxGigs();
         //tempRow.add( new SpinnerNumberModel( quarantineSettings.getMaxQuarantineTotalSz(), min, max, 1) );
-        tempRow.add( new SpinnerNumberModel( quarantineSettings.getMaxQuarantineTotalSz()/1024l/1024l, 10, 100000, 1) );
+        tempRow.add( new SpinnerNumberModel( (int)(quarantineSettings.getMaxQuarantineTotalSz()/1024l/1024l), 10, 100000, 1) );
         tempRow.add( "This is the maximum amount of disk space (in MB) that will be used to quarantine emails." );
         allRows.add( tempRow );
 
