@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.tapi.TCPSession;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.tran.http.HttpStateMachine;
@@ -60,7 +61,6 @@ public class SpywareHttpHandler extends HttpStateMachine
             0x01, 0x00, 0x3b
         };
 
-    // XXX, someone,, make, this, pretty,
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>"
         + "<TITLE>403 Forbidden</TITLE>"
@@ -68,13 +68,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         + "<script id='metavizeDetect' type='text/javascript'>\n"
         + "var e = document.getElementById(\"metavizeDetect\")\n"
         + "if (window == window.top && e.parentNode.tagName == \"BODY\") {\n"
-        + "  document.writeln(\"<center><b>Untangle Networks Spyware Blocker</b></center>\")\n"
-        + "  document.writeln(\"<p>This site blocked because it may be a spyware site.</p>\")\n"
-        + "  document.writeln(\"<p>Host: %s</p>\")\n"
-        + "  document.writeln(\"<p>URI: %s</p>\")\n"
-        + "  document.writeln(\"<p>Please contact your network administrator.</p>\")\n"
-        + "  document.writeln(\"<HR>\")\n"
-        + "  document.writeln(\"<ADDRESS>Untangle Networks EdgeGuard</ADDRESS>\")\n"
+        + "  window.location.href = '%s';"
         + "}\n"
         + "</script>"
         + "</BODY></HTML>";
@@ -253,7 +247,14 @@ public class SpywareHttpHandler extends HttpStateMachine
 
     private ByteBuffer generateHtml(String host, String uri)
     {
-        String replacement = String.format(BLOCK_TEMPLATE, host, uri);
+        String nonce = "asdf";
+        String tidStr = transform.getTid().toString();
+        String hostname = MvvmContextFactory.context().networkManager()
+            .getPublicAddress();
+        String url = "http://" + hostname + "/spyware/blockpage.jsp?nonce="
+            + nonce + "&tid=" + tidStr;
+
+        String replacement = String.format(BLOCK_TEMPLATE, url);
 
         // XXX make canned responses in constructor
         // XXX Do template replacement

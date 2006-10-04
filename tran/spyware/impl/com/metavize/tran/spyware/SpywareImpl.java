@@ -28,6 +28,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import com.metavize.mvvm.LocalAppServerManager;
+import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.logging.EventManager;
@@ -41,8 +44,10 @@ import com.metavize.mvvm.tran.IPMaddr;
 import com.metavize.mvvm.tran.IPMaddrRule;
 import com.metavize.mvvm.tran.StringRule;
 import com.metavize.mvvm.tran.TransformContext;
+import com.metavize.mvvm.util.OutsideValve;
 import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.tran.token.TokenAdaptor;
+import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -115,8 +120,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     public SpywareSettings getSpywareSettings()
     {
-	if( settings == null )
-	    logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+    if( settings == null )
+        logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
         return settings;
     }
 
@@ -237,6 +242,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         getTransformContext().runTransaction(tw);
 
         reconfigure();
+
+        deployWebAppIfRequired(logger);
     }
 
     @Override
@@ -251,6 +258,12 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     {
         eventLogger.stop();
         statisticManager.stop();
+    }
+
+    @Override
+    protected void postDestroy()
+    {
+        unDeployWebAppIfRequired(logger);
     }
 
     // package private methods ------------------------------------------------
@@ -578,13 +591,50 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
     }
 
-    public int latestVer(String diffBase)
+    private int latestVer(String diffBase)
     {
         for (int i = 0; ; i++) {
             URL u = getClass().getClassLoader().getResource(diffBase + i);
             if (null == u) {
                 return i;
             }
+        }
+    }
+
+    private void deployWebAppIfRequired(Logger logger) {
+        MvvmLocalContext mctx = MvvmContextFactory.context();
+        LocalAppServerManager asm = mctx.appServerManager();
+
+        Valve v = new OutsideValve()
+            {
+                /* Unified way to determine which parameter to check */
+                protected boolean isOutsideAccessAllowed()
+                {
+                    return false;
+                }
+
+                /* Unified way to determine which parameter to check */
+                protected String errorMessage()
+                {
+                    return "Off-site access prohibited";
+                }
+            };
+
+        if (asm.loadInsecureApp("/spyware", "spyware", v)) {
+            logger.debug("Deployed Spyware WebApp");
+        } else {
+            logger.error("Unable to deploy Spyware WebApp");
+        }
+    }
+
+    private void unDeployWebAppIfRequired(Logger logger) {
+        MvvmLocalContext mctx = MvvmContextFactory.context();
+        LocalAppServerManager asm = mctx.appServerManager();
+
+        if (asm.unloadWebApp("/spyware")) {
+            logger.debug("Unloaded Spyware WebApp");
+        } else {
+            logger.warn("Unable to unload Spyware WebApp");
         }
     }
 

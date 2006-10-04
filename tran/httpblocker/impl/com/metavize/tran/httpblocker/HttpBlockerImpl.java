@@ -321,6 +321,57 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
         setHttpBlockerSettings(settings);
     }
+    @Override
+    protected void postInit(String[] args)
+    {
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery
+                        ("from HttpBlockerSettings hbs where hbs.tid = :tid");
+                    q.setParameter("tid", getTid());
+                    settings = (HttpBlockerSettings)q.uniqueResult();
+
+                    updateToCurrentCategories(settings);
+
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("IN POSTINIT SET BLACKLIST " + settings);
+        }
+        blacklist.configure(settings);
+        reconfigure();
+
+        deployWebAppIfRequired(logger);
+    }
+
+    @Override
+    protected void preStart()
+    {
+        eventLogger.start();
+    }
+
+    @Override
+    protected void postStop()
+    {
+        eventLogger.stop();
+    }
+
+    @Override
+    protected void postDestroy()
+    {
+        unDeployWebAppIfRequired(logger);
+        blacklist.destroy();
+    }
+
+    // private methods --------------------------------------------------------
+
 
     /**
      * Causes the blacklist to populate its arrays.
@@ -388,53 +439,6 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
             settings.addBlacklistCategory(bc);
         }
     }
-
-    protected void postInit(String[] args)
-    {
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s)
-                {
-                    Query q = s.createQuery
-                        ("from HttpBlockerSettings hbs where hbs.tid = :tid");
-                    q.setParameter("tid", getTid());
-                    settings = (HttpBlockerSettings)q.uniqueResult();
-
-                    updateToCurrentCategories(settings);
-
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getTransformContext().runTransaction(tw);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("IN POSTINIT SET BLACKLIST " + settings);
-        }
-        blacklist.configure(settings);
-        reconfigure();
-
-        deployWebAppIfRequired(logger);
-    }
-
-    protected void preStart()
-    {
-        eventLogger.start();
-    }
-
-    protected void postStop()
-    {
-        eventLogger.stop();
-    }
-
-    protected void postDestroy()
-    {
-        unDeployWebAppIfRequired(logger);
-        blacklist.destroy();
-    }
-
-    // private methods --------------------------------------------------------
 
     private void deployWebAppIfRequired(Logger logger) {
         MvvmLocalContext mctx = MvvmContextFactory.context();
