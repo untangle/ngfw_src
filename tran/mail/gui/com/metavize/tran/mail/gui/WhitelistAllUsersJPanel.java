@@ -274,22 +274,22 @@ class WhitelistAllUsersTableModel extends MSortedTableModel<MailTransformCompoun
         int[] counts = mailTransformCompoundSettings.getSafelistCounts();
         
         Vector<Vector> allRows = new Vector<Vector>(safelists.size());
-	Vector tempRow = null;
+        Vector tempRow = null;
         int rowIndex = 0;
-
-	for( String safelist : safelists ){
-	    if( safelist.equalsIgnoreCase("GLOBAL") )
-		continue;
-	    rowIndex++;
+        int countIndex = 0;
+        for( String safelist : safelists ){
+            countIndex++;
+            if( safelist.equalsIgnoreCase("GLOBAL") )
+                continue;
+            rowIndex++;
             tempRow = new Vector(4);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( safelist );
-            tempRow.add( counts[rowIndex-1] );
-	    allRows.add( tempRow );
+            tempRow.add( counts[countIndex-1] );
+            allRows.add( tempRow );
         }
         return allRows;
-
     }
 
 
