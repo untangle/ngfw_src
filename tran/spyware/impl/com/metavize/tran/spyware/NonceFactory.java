@@ -15,12 +15,16 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 class NonceFactory
 {
     private static final NonceFactory FACTORY = new NonceFactory();
 
     private Map<String, BlockDetails> nonces = new HashMap<String, BlockDetails>();
+    private Timer timer = null;
+
     private Random random = new Random();
 
     static NonceFactory factory()
@@ -40,6 +44,11 @@ class NonceFactory
             BlockDetails bd = new BlockDetails(nonce, host, uri, clientAddr);
 
             nonces.put(nonce, bd);
+            if (null == timer) {
+                timer = new Timer();
+            }
+
+            timer.schedule(new PurgeTask(nonce), 600000);
         }
 
         return nonce;
@@ -54,8 +63,37 @@ class NonceFactory
 
     BlockDetails removeBlockDetails(String nonce)
     {
+        BlockDetails bd;
+
         synchronized (this) {
-            return nonces.remove(nonce);
+            bd = nonces.remove(nonce);
+            if (0 == nonces.size()) {
+                timer.cancel();
+                timer = null;
+            }
+        }
+
+        return bd;
+    }
+
+    private class PurgeTask extends TimerTask
+    {
+        private final String nonce;
+
+        PurgeTask(String nonce)
+        {
+            this.nonce = nonce;
+        }
+
+        public void run()
+        {
+            synchronized (NonceFactory.this) {
+                nonces.remove(nonce);
+                if (0 == nonces.size()) {
+                    timer.cancel();
+                    timer = null;
+                }
+            }
         }
     }
 }
