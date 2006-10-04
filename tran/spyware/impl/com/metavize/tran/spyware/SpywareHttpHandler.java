@@ -11,6 +11,7 @@
 
 package com.metavize.tran.spyware;
 
+import java.net.InetAddress;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -124,7 +125,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         String host = requestHeader.getValue("host");
         URI uri = requestLine.getRequestUri();
 
-        if (transform.isWhitelistDomain(host)) {
+        if (transform.isWhitelistedDomain(host, session.clientAddr())) {
             transform.statisticManager.incrPass(); // pass URL
             getSession().release();
             releaseRequest();
@@ -247,7 +248,8 @@ public class SpywareHttpHandler extends HttpStateMachine
 
     private ByteBuffer generateHtml(String host, String uri)
     {
-        String nonce = NonceFactory.factory().generateNonce(host, uri);
+        InetAddress addr = session.clientAddr();
+        String nonce = NonceFactory.factory().generateNonce(host, uri, addr);
 
         String tidStr = transform.getTid().toString();
         String hostname = MvvmContextFactory.context().networkManager()

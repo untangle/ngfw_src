@@ -11,6 +11,7 @@
 
 package com.metavize.tran.spyware;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -29,14 +30,14 @@ class NonceFactory
 
     private NonceFactory() { }
 
-    String generateNonce(String host, String uri)
+    String generateNonce(String host, String uri, InetAddress clientAddr)
     {
         String nonce;
 
         synchronized (this) {
             while (nonces.containsKey(nonce = Long.toHexString(random.nextLong())));
 
-            BlockDetails bd = new BlockDetails(nonce, host, uri);
+            BlockDetails bd = new BlockDetails(nonce, host, uri, clientAddr);
 
             nonces.put(nonce, bd);
         }

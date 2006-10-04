@@ -31,4 +31,3 @@ function unblockSite(global)
     req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     req.send("nonce=" + nonce + "&tid=" + tid + "&global=" + global);
 };
-

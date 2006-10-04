@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -88,6 +89,10 @@ public class SpywareImpl extends AbstractTransform implements Spyware
                            Fitting.OCTET_STREAM, Affinity.SERVER, 0) };
 
     private volatile SpywareSettings settings;
+
+    private final Map<InetAddress, Set<String>> hostWhitelists
+        = new HashMap<InetAddress, Set<String>>();
+
     private volatile Map<String, StringRule> activeXRules;
     private volatile Map<String, StringRule> cookieRules;
     private volatile Set<String> domainWhitelist;
@@ -150,18 +155,34 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     public boolean unblockSite(String nonce, boolean global)
     {
-        if (global) {
-            BlockDetails bd = NonceFactory.factory().removeBlockDetails(nonce);
+        BlockDetails bd = NonceFactory.factory().removeBlockDetails(nonce);
+
+        if (null == bd) {
+            return false;
+        } else if (global) {
             String site = bd.getWhitelistHost();
             StringRule sr = new StringRule(site, site, "user whitelisted",
                                            "whitelisted by user", true);
             settings.getDomainWhitelist().add(sr);
             setSpywareSettings(settings);
-        } else {
-            System.out.println("IMPLEMENT UNBLOCK NONGLOBAL: " + nonce);
-        }
 
-        return true;
+            return true;
+        } else {
+            String site = bd.getWhitelistHost();
+
+            InetAddress addr = bd.getClientAddress();
+
+            synchronized (this) {
+                Set<String> wl = hostWhitelists.get(addr);
+                if (null == wl) {
+                    wl = new HashSet<String>();
+                    hostWhitelists.put(addr, wl);
+                }
+                wl.add(site);
+            }
+
+            return true;
+        }
     }
 
     public EventManager<SpywareEvent> getEventManager()
@@ -255,16 +276,24 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         return match;
     }
 
-    boolean isWhitelistDomain(String domain)
+    boolean isWhitelistedDomain(String domain, InetAddress clientAddr)
     {
-        boolean match = false;
+        if (null == domain) {
+            return false;
+        } else {
+            domain = domain.toLowerCase();
 
-        domain = null == domain ? null : domain.toLowerCase();
-        for (String d = domain; !match && null != d; d = nextHost(d)) {
-            match = domainWhitelist.contains(d);
+            if (findMatch(domainWhitelist, domain)) {
+                return true;
+            } else {
+                Set<String> l = hostWhitelists.get(clientAddr);
+                if (null == l) {
+                    return false;
+                } else {
+                    return findMatch(l, domain);
+                }
+            }
         }
-
-        return match;
     }
 
     boolean isBlockedCookie(String domain)
@@ -302,6 +331,17 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     }
 
     // private methods --------------------------------------------------------
+
+    private boolean findMatch(Set<String> rules, String domain)
+    {
+        for (String d = domain; null != d; d = nextHost(d)) {
+            if (rules.contains(d)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private String nextHost(String host)
     {
