@@ -316,7 +316,7 @@ public class SpywareSettings implements Serializable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+               org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinTable(name="tr_spyware_wl",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))

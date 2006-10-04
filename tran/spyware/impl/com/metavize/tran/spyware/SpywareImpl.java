@@ -136,7 +136,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(settings);
+                    s.merge(settings);
                     SpywareImpl.this.settings = settings;
                     return true;
                 }
