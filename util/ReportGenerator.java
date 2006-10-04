@@ -60,63 +60,54 @@ public class ReportGenerator
         TypeAliases.put("Timestamp", "java.sql.Timestamp");
     }
         
-    private File templateSrcDir;
+    private final boolean isVerbose;
+    private final File templateSrcDir;
+    private final String outputDirName;
+    private final String fileArray[];
 
     public static void main(String[] args)
     {
-        boolean verbose = false;
-        String rpdFileName = null;
-        String templateSrcDirName = DEFAULT_TEMPLATE_SRC_DIR;;
-        String outputDirName = null;
+        ReportGenerator rg = parseArgs( args );
+        
+        rg.generateAllFiles();
 
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].equals("-v")) {
-                verbose = true;
-            } else if (args[i].equals("-t")) {
-                templateSrcDirName = args[++i];
-            } else if (args[i].equals("-o")) {
-                outputDirName = args[++i];
-            } else if (args[i].endsWith(RPD_SUFFIX)) {
-                if (rpdFileName == null)
-                    rpdFileName = args[i];
-                else
-                    dieUsage();
-            } else {
-                dieUsage();
-            }
-        }
-        if (rpdFileName == null)
-            dieUsage();
-
-        try {
-            File templateSrcDir = new File(templateSrcDirName);
-            if (!templateSrcDir.isDirectory())
-                throw new IllegalArgumentException("Template dir " + templateSrcDir.getAbsolutePath() + " does not exist");
-            ReportGenerator rg = new ReportGenerator(templateSrcDir);
-            String jrxmlFileName;
-            File jrxmlFile;
-            if (outputDirName == null) {
-                jrxmlFileName = rpdFileName.substring(0, rpdFileName.length() - 4) + JRXML_SUFFIX;
-                jrxmlFile = new File(jrxmlFileName);
-            } else {
-                File rpdFile = new File(rpdFileName);
-                String rpdSimple = rpdFile.getName();
-                String jrxmlSimple = rpdSimple.substring(0, rpdSimple.length() - 4) + JRXML_SUFFIX;
-                jrxmlFile = new File(outputDirName, jrxmlSimple);
-                jrxmlFileName = jrxmlFile.toString();
-            }
-            jrxmlFile.delete();
-            rg.generate(rpdFileName, jrxmlFileName);
-        } catch (Exception x) {
-            System.out.println("Unable to process " + rpdFileName + ": " + x.getMessage());
-            x.printStackTrace(System.out);
-            System.exit(1);
-        }
         System.exit(0);
     }
 
-    private ReportGenerator(File templateSrcDir) {
+    private ReportGenerator(boolean isVerbose, File templateSrcDir, String outputDirName, String fileArray[] )
+    {
+        this.isVerbose      = isVerbose;
         this.templateSrcDir = templateSrcDir;
+        this.outputDirName  = outputDirName;
+        this.fileArray      = fileArray;
+    }
+
+    private void generateAllFiles()
+    {
+        if (!this.templateSrcDir.isDirectory())
+            throw new IllegalArgumentException("Template dir " + templateSrcDir.getAbsolutePath() + " does not exist");
+        for ( String rpdFileName : fileArray ) {
+            try {
+                String jrxmlFileName;
+                File jrxmlFile;
+                if (outputDirName == null) {
+                    jrxmlFileName = rpdFileName.substring(0, rpdFileName.length() - 4) + JRXML_SUFFIX;
+                    jrxmlFile = new File(jrxmlFileName);
+                } else {
+                    File rpdFile = new File(rpdFileName);
+                    String rpdSimple = rpdFile.getName();
+                    String jrxmlSimple = rpdSimple.substring(0, rpdSimple.length() - 4) + JRXML_SUFFIX;
+                    jrxmlFile = new File(outputDirName, jrxmlSimple);
+                    jrxmlFileName = jrxmlFile.toString();
+                }
+                jrxmlFile.delete();
+                generate(rpdFileName, jrxmlFileName);
+            } catch (Exception x) {
+                System.out.println("Unable to process " + rpdFileName + ": " + x.getMessage());
+                x.printStackTrace(System.out);
+                System.exit(1);
+            }
+        }
     }
 
     private void generate(String rpdFileName, String jrxmlFileName)
@@ -305,10 +296,40 @@ public class ReportGenerator
         return sb.toString();
     }
 
+    private static ReportGenerator parseArgs( String args[] )
+    {
+        boolean verbose = false;
+        String templateSrcDirName = DEFAULT_TEMPLATE_SRC_DIR;
+        String outputDirName = null;
+
+        int i;
+        for ( i =0 ; i < args.length ; i++ ) {
+            String arg = args[i];
+            
+            if ( !arg.startsWith( "-" )) break;
+            
+            if ( arg.equals("-v")) {
+                verbose = true;
+            } else if (arg.equals("-t")) {
+                templateSrcDirName = args[++i];
+            } else if (arg.equals("-o")) {
+                outputDirName = args[++i];
+            }
+        }
+
+        int numFiles = args.length - i;
+
+        if ( numFiles == 0 ) dieUsage();
+
+        String fileArray[] = new String[numFiles];
+        System.arraycopy( args, i, fileArray, 0, numFiles );
+        
+        return new ReportGenerator( verbose, new File( templateSrcDirName ), outputDirName, fileArray );
+    }
 
     private static void dieUsage()
     {
-        System.out.println("Usage: ReportGenerator [ -v ] [ -t templateSrcDir ] [ -o outputDir ] reporttemplate.rpd");
+        System.out.println("Usage: ReportGenerator [ -v ] [ -t templateSrcDir ] [ -o outputDir ] <reporttemplate.rpd> <reporttemplate.rpd>*");
         System.out.println();
         System.exit(1);
     }
