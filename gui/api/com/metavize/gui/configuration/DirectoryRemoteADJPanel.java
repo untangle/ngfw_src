@@ -343,7 +343,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 20, 5, 0);
+                gridBagConstraints.insets = new java.awt.Insets(0, 114, 5, 0);
                 enableRemoteJPanel.add(restrictIPJPanel, gridBagConstraints);
 
                 jSeparator2.setForeground(new java.awt.Color(200, 200, 200));
@@ -355,7 +355,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 restrictIPJPanel1.setLayout(new java.awt.GridBagLayout());
 
                 baseJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                baseJLabel.setText("Domain:");
+                baseJLabel.setText("Active Directory Domain:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -378,7 +378,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 restrictIPJPanel1.add(baseJTextField, gridBagConstraints);
 
                 orgJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                orgJLabel.setText("Organization:");
+                orgJLabel.setText("Active Directory Organization:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;

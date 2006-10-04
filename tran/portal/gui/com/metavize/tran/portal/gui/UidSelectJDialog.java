@@ -15,11 +15,13 @@ import com.metavize.gui.util.*;
 import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.mvvm.addrbook.UserEntry;
+import com.metavize.mvvm.addrbook.RepositoryType;
 import com.metavize.gui.configuration.DirectoryCompoundSettings;
 import com.metavize.gui.configuration.DirectoryJDialog;
 
 import java.util.TreeMap;
 import java.util.List;
+import java.util.Vector;
 import java.awt.Container;
 import java.awt.Frame;
 import java.awt.Dialog;
@@ -226,10 +228,27 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 	}
 	public void run(){
 	    try{
-		final List<UserEntry> allUserEntries = Util.getAddressBook().getUserEntries();
-		SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		    updateUidModel(allUserEntries);
-		}});
+            final List<UserEntry> allUserEntries = new Vector<UserEntry>();
+            try{
+                allUserEntries.addAll( Util.getAddressBook().getUserEntries(RepositoryType.MS_ACTIVE_DIRECTORY) );
+            }
+            catch(Exception f){
+                Util.handleExceptionNoRestart("Error doing refresh", f);
+                MOneButtonJDialog.factory(UidSelectJDialog.this, "Portal", "There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again.",
+                                          "Portal Warning", "Portal Warning");
+            }
+
+            try{
+                allUserEntries.addAll( Util.getAddressBook().getUserEntries(RepositoryType.LOCAL_DIRECTORY) );
+            }
+            catch(Exception f){
+                Util.handleExceptionNoRestart("Error doing refresh", f);
+                MOneButtonJDialog.factory(UidSelectJDialog.this, "Portal", "There was a problem refreshing LDAP Directory users.  Please check your LDAP Directory settings and try again.",
+                                          "Portal Warning", "Portal Warning");
+            }
+            SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                updateUidModel(allUserEntries);
+            }});
 	    }
 	    catch(Exception e){
 		try{ Util.handleExceptionWithRestart("Error doing refresh", e); }
