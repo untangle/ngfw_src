@@ -41,7 +41,8 @@ public class ClamScannerLauncher extends VirusScannerLauncher
                                                         "GZip.ExceededFileSize",
                                                         "BZip.ExceededFileSize",
                                                         "MSCAB.ExceededFileSize",
-                                                        "Archive.ExceededRecursionLimit" };
+                                                        "Archive.ExceededRecursionLimit",
+                                                        "PE.UPX.ExceededFileSize"};
 
     /**
      * Create a Launcher for the give file
