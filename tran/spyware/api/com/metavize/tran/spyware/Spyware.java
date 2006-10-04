@@ -25,7 +25,7 @@ public interface Spyware extends Transform
     void setSpywareSettings(SpywareSettings settings);
 
     BlockDetails getBlockDetails(String nonce);
-    boolean unblock(String nonce);
+    boolean unblockSite(String nonce, boolean global);
 
     EventManager<SpywareEvent> getEventManager();
 }

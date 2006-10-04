@@ -40,29 +40,28 @@ public class UnblockerServlet extends HttpServlet
         String nonce = req.getParameter("nonce");
         String tidStr = req.getParameter("tid");
         boolean global = Boolean.parseBoolean(req.getParameter("global"));
-        System.out.println("NONCE: "+ nonce);
 
-//         try {
-//             MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
-//             TransformManager tman = ctx.transformManager();
-//             Tid tid = new Tid(Long.parseLong(tidStr));
-//             TransformContext tctx = tman.transformContext(tid);
-//             HttpBlocker tran = (HttpBlocker)tctx.transform();
+        try {
+            MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
+            TransformManager tman = ctx.transformManager();
+            Tid tid = new Tid(Long.parseLong(tidStr));
+            TransformContext tctx = tman.transformContext(tid);
+            Spyware tran = (Spyware)tctx.transform();
 
-//             if (tran.unblockSite(nonce, global)) {
-//                 resp.getOutputStream().println("<success/>");
-//             } else {
-//                 resp.getOutputStream().println("<failure/>");
-//             }
-//         } catch (FailedLoginException exn) {
-//             throw new ServletException(exn);
-//         } catch (MvvmConnectException exn) {
-//             throw new ServletException(exn);
-//         } catch (IOException exn) {
-//             throw new ServletException(exn);
-//         } finally {
-//             MvvmRemoteContextFactory.factory().logout();
-//         }
+            if (tran.unblockSite(nonce, global)) {
+                resp.getOutputStream().println("<success/>");
+            } else {
+                resp.getOutputStream().println("<failure/>");
+            }
+        } catch (FailedLoginException exn) {
+            throw new ServletException(exn);
+        } catch (MvvmConnectException exn) {
+            throw new ServletException(exn);
+        } catch (IOException exn) {
+            throw new ServletException(exn);
+        } finally {
+            MvvmRemoteContextFactory.factory().logout();
+        }
     }
 }
 

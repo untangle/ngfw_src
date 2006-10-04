@@ -50,4 +50,11 @@ class NonceFactory
             return nonces.get(nonce);
         }
     }
+
+    BlockDetails removeBlockDetails(String nonce)
+    {
+        synchronized (this) {
+            return nonces.remove(nonce);
+        }
+    }
 }

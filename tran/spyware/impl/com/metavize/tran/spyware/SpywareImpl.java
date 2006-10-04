@@ -148,9 +148,18 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         return NonceFactory.factory().getBlockDetails(nonce);
     }
 
-    public boolean unblock(String nonce)
+    public boolean unblockSite(String nonce, boolean global)
     {
-        System.out.println("IMPLEMENT UNBLOCK: " + nonce);
+        if (global) {
+            BlockDetails bd = NonceFactory.factory().removeBlockDetails(nonce);
+            String site = bd.getWhitelistHost();
+            StringRule sr = new StringRule(site, site, "user whitelisted",
+                                           "whitelisted by user", true);
+            settings.getDomainWhitelist().add(sr);
+            setSpywareSettings(settings);
+        } else {
+            System.out.println("IMPLEMENT UNBLOCK NONGLOBAL: " + nonce);
+        }
 
         return true;
     }

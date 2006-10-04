@@ -36,6 +36,15 @@ public class BlockDetails implements Serializable
         return host;
     }
 
+    public String getWhitelistHost()
+    {
+        if (host.startsWith("www.") && 4 < host.length()) {
+            return host.substring(4);
+        } else {
+            return host;
+        }
+    }
+
     public String getUrl()
     {
         return "http://" + host + uri;
