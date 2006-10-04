@@ -3,6 +3,16 @@
 
 function unblockSite(global)
 {
+    var e = document.getElementById("unblockNowButton");
+    if (e) {
+        e.disabled = true;
+    }
+
+    e = document.getElementById("unblockGlobalButton");
+    if (e) {
+        e.disabled = true;
+    }
+
     var req = false;
 
     if (window.XMLHttpRequest) {

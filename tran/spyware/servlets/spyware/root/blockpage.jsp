@@ -39,12 +39,12 @@ url = '<%=url%>';
 <table>
   <tr>
     <td>
-      <input type="button" value="Unblock For Now"
+      <input id="unblockNowButton" type="button" value="Unblock For Now"
       onclick="unblockSite(false)"/>
     </td>
 
     <td>
-      <input type="button" value="Unblock Permanently"
+      <input id="unblockGlobalButton" type="button" value="Unblock Permanently"
       onclick="unblockSite(true)"/>
     </td>
   </tr>
