@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.metavize.tran.httpblocker;
+package com.metavize.tran.spyware;
 
 import java.io.IOException;
 import javax.security.auth.login.FailedLoginException;
@@ -40,6 +40,7 @@ public class UnblockerServlet extends HttpServlet
         String nonce = req.getParameter("nonce");
         String tidStr = req.getParameter("tid");
         boolean global = Boolean.parseBoolean(req.getParameter("global"));
+        System.out.println("NONCE: "+ nonce);
 
 //         try {
 //             MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());

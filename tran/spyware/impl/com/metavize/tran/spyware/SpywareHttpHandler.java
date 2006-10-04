@@ -247,7 +247,8 @@ public class SpywareHttpHandler extends HttpStateMachine
 
     private ByteBuffer generateHtml(String host, String uri)
     {
-        String nonce = "asdf";
+        String nonce = NonceFactory.factory().generateNonce(host, uri);
+
         String tidStr = transform.getTid().toString();
         String hostname = MvvmContextFactory.context().networkManager()
             .getPublicAddress();
@@ -256,8 +257,6 @@ public class SpywareHttpHandler extends HttpStateMachine
 
         String replacement = String.format(BLOCK_TEMPLATE, url);
 
-        // XXX make canned responses in constructor
-        // XXX Do template replacement
         ByteBuffer buf = ByteBuffer.allocate(replacement.length());
         buf.put(replacement.getBytes()).flip();
 

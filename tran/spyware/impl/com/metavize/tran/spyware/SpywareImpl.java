@@ -143,59 +143,21 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         reconfigure();
     }
 
+    public BlockDetails getBlockDetails(String nonce)
+    {
+        return NonceFactory.factory().getBlockDetails(nonce);
+    }
+
+    public boolean unblock(String nonce)
+    {
+        System.out.println("IMPLEMENT UNBLOCK: " + nonce);
+
+        return true;
+    }
+
     public EventManager<SpywareEvent> getEventManager()
     {
         return eventLogger;
-    }
-
-    // XXX avoid
-    private void reconfigure()
-    {
-        logger.info("Reconfigure.");
-        if (this.settings.getSpywareEnabled()) {
-            streamHandler.subnetList(this.settings.getSubnetRules());
-        }
-
-        List<StringRule> l = (List<StringRule>)settings.getActiveXRules();
-        if (null != l) {
-            Map<String, StringRule> s = new HashMap<String, StringRule>();
-            for (StringRule sr : l) {
-                s.put(sr.getString(), sr);
-            }
-            activeXRules = s;
-        } else {
-            activeXRules = null;
-        }
-
-        l = (List<StringRule>)settings.getCookieRules();
-        if (null != l) {
-            Map<String, StringRule> s = new HashMap<String, StringRule>();
-            for (StringRule sr : l) {
-                s.put(sr.getString(), sr);
-            }
-            cookieRules = s;
-        } else {
-            cookieRules = null;
-        }
-
-        Set<String> s = new HashSet<String>();
-        l = (List<StringRule>)settings.getDomainWhitelist();
-        for (StringRule sr : l) {
-            if (sr.isLive()) {
-                String str = sr.getString().toLowerCase();
-                if (str.startsWith("http://")) {
-                    try {
-                        URL url = new URL(str);
-                        s.add(url.getHost());
-                    } catch (MalformedURLException exn) {
-                        logger.warn("skipping non-url: " + s, exn);
-                    }
-                } else {
-                    s.add(str);
-                }
-            }
-        }
-        domainWhitelist = s;
     }
 
     // Transform methods ------------------------------------------------------
@@ -636,6 +598,56 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         } else {
             logger.warn("Unable to unload Spyware WebApp");
         }
+    }
+
+    // XXX avoid
+    private void reconfigure()
+    {
+        logger.info("Reconfigure.");
+        if (this.settings.getSpywareEnabled()) {
+            streamHandler.subnetList(this.settings.getSubnetRules());
+        }
+
+        List<StringRule> l = (List<StringRule>)settings.getActiveXRules();
+        if (null != l) {
+            Map<String, StringRule> s = new HashMap<String, StringRule>();
+            for (StringRule sr : l) {
+                s.put(sr.getString(), sr);
+            }
+            activeXRules = s;
+        } else {
+            activeXRules = null;
+        }
+
+        l = (List<StringRule>)settings.getCookieRules();
+        if (null != l) {
+            Map<String, StringRule> s = new HashMap<String, StringRule>();
+            for (StringRule sr : l) {
+                s.put(sr.getString(), sr);
+            }
+            cookieRules = s;
+        } else {
+            cookieRules = null;
+        }
+
+        Set<String> s = new HashSet<String>();
+        l = (List<StringRule>)settings.getDomainWhitelist();
+        for (StringRule sr : l) {
+            if (sr.isLive()) {
+                String str = sr.getString().toLowerCase();
+                if (str.startsWith("http://")) {
+                    try {
+                        URL url = new URL(str);
+                        s.add(url.getHost());
+                    } catch (MalformedURLException exn) {
+                        logger.warn("skipping non-url: " + s, exn);
+                    }
+                } else {
+                    s.add(str);
+                }
+            }
+        }
+        domainWhitelist = s;
     }
 
     // XXX soon to be deprecated ----------------------------------------------

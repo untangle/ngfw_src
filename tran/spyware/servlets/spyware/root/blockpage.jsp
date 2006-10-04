@@ -2,20 +2,19 @@
 
 <%
 MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
-//TransformManager tman = ctx.transformManager();
-//
+TransformManager tman = ctx.transformManager();
+
 String nonce = request.getParameter("nonce");
 String tidStr = request.getParameter("tid");
 Tid tid = new Tid(Long.parseLong(tidStr));
-//
-//TransformContext tctx = tman.transformContext(tid);
-//Spyware tran = (HttpBlocker)tctx.transform();
-//BlockDetails bd = tran.getDetails(nonce);
-//
+
+TransformContext tctx = tman.transformContext(tid);
+Spyware tran = (Spyware)tctx.transform();
+BlockDetails bd = tran.getBlockDetails(nonce);
+
 String header = "Untangle Networks Spyware Blocker";
-String host = "XXX HOST REPLACE ME!!!!!!!";
-//String uri = bd.getUri().toString();
-String url = "XXX URL REPLACE ME!!!!!!!";
+String host = bd.getHost();
+String url = bd.getUrl();
 %>
 
 <html>
