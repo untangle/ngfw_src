@@ -458,7 +458,7 @@ public class SafelistManager
         {
             public boolean doWork(Session s)
             {
-                s.saveOrUpdate(mlSettings);
+                s.merge(mlSettings);
 
                 return true;
             }

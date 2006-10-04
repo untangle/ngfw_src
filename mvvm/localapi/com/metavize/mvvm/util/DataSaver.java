@@ -56,7 +56,7 @@ public class DataSaver<T>
                 public boolean doWork( Session s )
                 {
                     preSave( s );
-                    s.saveOrUpdate( newData );
+                    s.merge( newData );
                     postSave( s );
                     DataSaver.this.data = (T)newData;
                     return true;

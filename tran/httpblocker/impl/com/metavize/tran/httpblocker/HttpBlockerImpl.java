@@ -87,7 +87,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(settings);
+                    s.merge(settings);
                     HttpBlockerImpl.this.settings = settings;
                     return true;
                 }

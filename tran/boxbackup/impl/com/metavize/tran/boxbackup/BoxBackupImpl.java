@@ -65,7 +65,7 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(settings);
+                    s.merge(settings);
                     BoxBackupImpl.this.settings = settings;
                     return true;
                 }

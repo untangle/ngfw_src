@@ -69,7 +69,7 @@ public class AirgapTransformImpl extends AbstractTransform
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(settings);
+                    s.merge(settings);
                     AirgapTransformImpl.this.settings = settings;
                     return true;
                 }

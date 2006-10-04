@@ -198,7 +198,7 @@ public abstract class VirusTransformImpl extends AbstractTransform
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(settings);
+                    s.merge(settings);
                     VirusTransformImpl.this.settings = settings;
 
                     virusReconfigure();
@@ -489,7 +489,7 @@ public abstract class VirusTransformImpl extends AbstractTransform
                     }
                     ensureTemplateSettings(settings);
                     if (changed) {
-                        s.saveOrUpdate(settings);
+                        s.merge(settings);
                     }
                     return true;
                 }

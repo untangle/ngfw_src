@@ -426,7 +426,7 @@ class ToolboxManagerImpl implements ToolboxManager
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(us);
+                    s.merge(us);
                     return true;
                 }
 
@@ -537,7 +537,7 @@ class ToolboxManagerImpl implements ToolboxManager
             {
                 public boolean doWork(org.hibernate.Session s)
                 {
-                    s.saveOrUpdate(ms);
+                    s.merge(ms);
                     return true;
                 }
             };

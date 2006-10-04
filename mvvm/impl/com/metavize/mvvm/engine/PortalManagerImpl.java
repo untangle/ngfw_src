@@ -167,7 +167,7 @@ class PortalManagerImpl implements LocalPortalManager
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(settings);
+                    s.merge(settings);
                     return true;
                 }
             };
@@ -232,7 +232,7 @@ class PortalManagerImpl implements LocalPortalManager
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(user);
+                    s.merge(user);
                     return true;
                 }
             };
@@ -252,7 +252,7 @@ class PortalManagerImpl implements LocalPortalManager
                 {
                     public boolean doWork(Session s)
                     {
-                        s.saveOrUpdate(user);
+                        s.merge(user);
                         return true;
                     }
                 };
@@ -270,7 +270,7 @@ class PortalManagerImpl implements LocalPortalManager
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(user);
+                    s.merge(user);
                     return true;
                 }
             };
@@ -285,7 +285,7 @@ class PortalManagerImpl implements LocalPortalManager
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(user);
+                    s.merge(user);
                     return true;
                 }
             };

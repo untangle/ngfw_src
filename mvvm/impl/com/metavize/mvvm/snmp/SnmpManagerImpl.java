@@ -93,7 +93,7 @@ public class SnmpManagerImpl
   public void setSnmpSettings(final SnmpSettings settings) {
     TransactionWork tw = new TransactionWork() {
       public boolean doWork(Session s) {
-        s.saveOrUpdate(settings);
+        s.merge(settings);
         return true;
       }
 

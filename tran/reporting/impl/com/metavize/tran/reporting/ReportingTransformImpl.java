@@ -31,7 +31,7 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(settings);
+                    s.merge(settings);
                     ReportingTransformImpl.this.settings = settings;
                     return true;
                 }

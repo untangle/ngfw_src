@@ -165,7 +165,7 @@ class TransformContextImpl implements TransformContext
                                     public boolean doWork(Session s)
                                     {
                                         persistentState.setTargetState(ts);
-                                        s.saveOrUpdate(persistentState);
+                                        s.merge(persistentState);
                                         return true;
                                     }
 
@@ -364,10 +364,10 @@ class TransformContextImpl implements TransformContext
 
             if (!toolboxManager.isEnabled(mackageName)) {
                 persistentState.setTargetState(TransformState.DISABLED);
-                s.saveOrUpdate(persistentState);
+                s.merge(persistentState);
             } else if (TransformState.DISABLED == persistentState.getTargetState()) {
                 persistentState.setTargetState(TransformState.INITIALIZED);
-                s.saveOrUpdate(persistentState);
+                s.merge(persistentState);
             }
 
             q = s.createQuery

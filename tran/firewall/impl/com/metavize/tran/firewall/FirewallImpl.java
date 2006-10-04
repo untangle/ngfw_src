@@ -90,7 +90,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(settings);
+                    s.merge(settings);
                     FirewallImpl.this.settings = settings;
                     return true;
                 }

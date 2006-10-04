@@ -86,7 +86,7 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(settings);
+                    s.merge(settings);
                     IDSTransformImpl.this.settings = settings;
                     return true;
                 }

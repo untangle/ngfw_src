@@ -90,7 +90,7 @@ public class SafelistSettings implements Serializable
     // at org.hibernate.event.def.DefaultSaveOrUpdateEventListener.entityIsTransient(DefaultSaveOrUpdateEventListener.java:166)
     // at org.hibernate.event.def.DefaultSaveOrUpdateEventListener.performSaveOrUpdate(DefaultSaveOrUpdateEventListener.java:96)
     // at org.hibernate.event.def.DefaultSaveOrUpdateEventListener.onSaveOrUpdate(DefaultSaveOrUpdateEventListener.java:69)
-    // at org.hibernate.impl.SessionImpl.saveOrUpdate(SessionImpl.java:468)
+    // at org.hibernate.impl.SessionImpl.merge(SessionImpl.java:468)
     //
     // --> this error text implies that
     //     all cascade actually means delete-save-update cascade and

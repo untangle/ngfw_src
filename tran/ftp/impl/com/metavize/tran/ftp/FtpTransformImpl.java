@@ -53,7 +53,7 @@ public class FtpTransformImpl extends AbstractTransform
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(settings);
+                    s.merge(settings);
                     FtpTransformImpl.this.settings = settings;
                     return true;
                 }

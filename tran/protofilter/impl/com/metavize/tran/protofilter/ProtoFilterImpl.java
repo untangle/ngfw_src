@@ -76,7 +76,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(settings);
+                    s.merge(settings);
                     ProtoFilterImpl.this.cachedSettings = settings;
                     return true;
                 }

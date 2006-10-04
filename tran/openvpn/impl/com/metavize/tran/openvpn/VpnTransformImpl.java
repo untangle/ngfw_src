@@ -132,7 +132,7 @@ public class VpnTransformImpl extends AbstractTransform
             {
                 public boolean doWork( Session s )
                 {
-                    s.saveOrUpdate( newSettings );
+                    s.merge( newSettings );
                     VpnTransformImpl.this.settings = newSettings;
                     return true;
                 }
@@ -266,7 +266,7 @@ public class VpnTransformImpl extends AbstractTransform
             {
                 public boolean doWork( Session s )
                 {
-                    s.saveOrUpdate( client );
+                    s.merge( client );
                     return true;
                 }
             };
@@ -362,7 +362,7 @@ public class VpnTransformImpl extends AbstractTransform
             {
                 public boolean doWork( Session s )
                 {
-                    s.saveOrUpdate( client );
+                    s.merge( client );
                     return true;
                 }
             };

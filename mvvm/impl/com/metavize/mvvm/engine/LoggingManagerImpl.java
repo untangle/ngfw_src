@@ -77,7 +77,7 @@ class LoggingManagerImpl implements LoggingManager
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(loggingSettings);
+                    s.merge(loggingSettings);
                     return true;
                 }
             };

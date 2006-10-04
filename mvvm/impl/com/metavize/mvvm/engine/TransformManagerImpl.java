@@ -715,7 +715,7 @@ class TransformManagerImpl implements LocalTransformManager
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(transformManagerState);
+                    s.merge(transformManagerState);
                     s.save(tid);
                     return true;
                 }

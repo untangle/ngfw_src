@@ -251,7 +251,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(newSettings);
+                    s.merge(newSettings);
                     SpamImpl.this.zSpamSettings = newSettings;
 
                     return true;

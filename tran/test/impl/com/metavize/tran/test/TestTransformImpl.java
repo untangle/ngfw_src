@@ -71,7 +71,7 @@ public class TestTransformImpl extends AbstractTransform
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(settings);
+                    s.merge(settings);
                     TestTransformImpl.this.settings = settings;
                     return true;
                 }

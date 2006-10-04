@@ -140,7 +140,7 @@ public class AddressBookImpl implements AddressBook {
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(m_settings);
+                    s.merge(m_settings);
                     return true;
                 }
 

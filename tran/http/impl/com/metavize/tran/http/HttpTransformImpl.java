@@ -57,7 +57,7 @@ public class HttpTransformImpl extends AbstractTransform
             {
                 public boolean doWork(Session s)
                 {
-                    s.saveOrUpdate(settings);
+                    s.merge(settings);
                     HttpTransformImpl.this.settings = settings;
                     return true;
                 }

@@ -220,7 +220,7 @@ class MailSenderImpl implements MailSender
             {
                 public boolean doWork(org.hibernate.Session s)
                 {
-                    s.saveOrUpdate(settings);
+                    s.merge(settings);
                     return true;
                 }
 

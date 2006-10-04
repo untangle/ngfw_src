@@ -208,7 +208,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
                 {
                     public boolean doWork(Session s)
                     {
-                        s.saveOrUpdate(p);
+                        s.merge(p);
                         return true;
                     }
 
@@ -254,7 +254,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
                                 rule.setPolicy(p);
                                 rule.setInbound(inbound);
                                 rule.setDescription(description);
-                                s.saveOrUpdate(rule);
+                                s.merge(rule);
                                 return true;
                             }
 
@@ -281,7 +281,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
                         urs.clear();
                         urs.addAll(rules);
                         userRules = (UserPolicyRule[])rules.toArray(new UserPolicyRule[] { });
-                        s.saveOrUpdate(userRuleSet);
+                        s.merge(userRuleSet);
                         return true;
                     }
 
