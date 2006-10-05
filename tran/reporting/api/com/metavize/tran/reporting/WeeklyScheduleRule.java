@@ -76,6 +76,5 @@ public class WeeklyScheduleRule implements Serializable
     public void setDay(int day)
     {
         this.day = day;
-        return;
     }
 }

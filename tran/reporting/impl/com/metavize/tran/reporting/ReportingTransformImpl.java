@@ -27,12 +27,14 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
 
     public void setReportingSettings(final ReportingSettings settings)
     {
+        ReportingTransformImpl.this.settings = settings;
+
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
                 {
-                    s.merge(settings);
-                    ReportingTransformImpl.this.settings = settings;
+                    Schedule sched = settings.getSchedule();
+                    s.saveOrUpdate(settings);
                     return true;
                 }
 
@@ -73,12 +75,14 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
                         Schedule sched = settings.getSchedule();
                         if (null == sched) {
                             // create and save schedule on initial conversion
+                            System.out.println("ADDED NEW SCHED");
                             settings.setSchedule(new Schedule());
                             bSave = true;
                         }
                     }
 
                     if (true == bSave) {
+                        System.out.println("MERGING");
                         s.merge(settings);
                     }
 
@@ -108,6 +112,7 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
 
     public void initializeSettings()
     {
+        System.out.println("INITIALIZE SETTINGS");
         setReportingSettings(initSettings());
     }
 
