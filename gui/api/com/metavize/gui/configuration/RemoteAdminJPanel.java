@@ -59,24 +59,23 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min  rsz    edit   remv   desc   typ               def
         addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, false, false, String.class,     null, sc.TITLE_STATUS );
-	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, false, false, Integer.class,    null, sc.TITLE_INDEX );
+        addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, false, false, Integer.class,    null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  85, true,  true,  false, false, String.class,     sc.EMPTY_NAME,  sc.TITLE_NAME );
         addTableColumn( tableColumnModel,  3,  85, true,  true,  false, false, String.class,     "[no login]", "login");
         addTableColumn( tableColumnModel,  4,  85, true,  false, true,  false, MPasswordField.class, PasswordUtil.encrypt("12345678"), sc.html("original<br>password"));
         addTableColumn( tableColumnModel,  5, 260, true,  true,  false, false, MPasswordField.class, "",     sc.html("set new password<br>(for new accounts or to change password)"));
         addTableColumn( tableColumnModel,  6, 260, true,  true,  false, false, MPasswordField.class, "",     sc.html("confirm new password<br>(for new accounts or to change password)"));
-        addTableColumn( tableColumnModel,  7, 250, true,  true,  false, false, MPasswordField.class, "12345678",     sc.html("<b>original user's password</b><br>(required to change or remove account)"));
-        addTableColumn( tableColumnModel,  8,  85, false, true,  false, false, Boolean.class,     "false", sc.html("read-only<br>access"));
-        addTableColumn( tableColumnModel,  9,  85, true,  true,  false, false, String.class,     "[no email]", sc.html("email<br>address"));
-        addTableColumn( tableColumnModel, 10,  10, false, false, true,  false, User.class,    null, "");
+        addTableColumn( tableColumnModel,  7,  85, false, true,  false, false, Boolean.class,     "false", sc.html("read-only<br>access"));
+        addTableColumn( tableColumnModel,  8,  85, true,  true,  false, false, String.class,     "[no email]", sc.html("email<br>address"));
+        addTableColumn( tableColumnModel,  9,  10, false, false, true,  false, User.class,    null, "");
         return tableColumnModel;
     }
 
 
     public void prevalidate(RemoteCompoundSettings remoteCompoundSettings, Vector<Vector> tableVector) throws Exception {
-	Hashtable loginHashtable = new Hashtable();
-	boolean oneValidAccount = false;
-	boolean oneWritableAccount = false;
+        Hashtable loginHashtable = new Hashtable();
+        boolean oneValidAccount = false;
+        boolean oneWritableAccount = false;
         int rowIndex = 0;
 
         // go through all the rows and perform some tests
@@ -85,54 +84,47 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
             byte[] origPasswd = ((MPasswordField)tempUser.elementAt(4)).getByteArray();
             char[] newPasswd = ((MPasswordField)tempUser.elementAt(5)).getPassword();
             char[] newConfPasswd  = ((MPasswordField)tempUser.elementAt(6)).getPassword();
-            char[] proceedPasswd  = ((MPasswordField)tempUser.elementAt(7)).getPassword();
-	    boolean readOnly = (Boolean) tempUser.elementAt(8);
+            boolean readOnly = (Boolean) tempUser.elementAt(7);
             String loginName = (String) tempUser.elementAt(3);
-	    String state = (String) tempUser.elementAt(0);
+            String state = (String) tempUser.elementAt(0);
 
-	    // verify that the login name is at least one character long
+            // verify that the login name is at least one character long
             if( loginName.length() < 1 ){
-		throw new Exception("The login name in row: " + rowIndex + "cannot be blank.");
-	    }
+                throw new Exception("The login name in row: " + rowIndex + "cannot be blank.");
+            }
 
             // verify that the login name is not duplicated
             if( loginHashtable.containsKey(loginName) ){
-		throw new Exception("The login name: \"" + loginName + "\" in row: " + rowIndex + " already exists.");
+                throw new Exception("The login name: \"" + loginName + "\" in row: " + rowIndex + " already exists.");
             }
-	    else{
-		loginHashtable.put(loginName, loginName);
-	    }
+            else{
+                loginHashtable.put(loginName, loginName);
+            }
             
-	    // verify that the new password is of the proper length
+            // verify that the new password is of the proper length
             if( (newPasswd.length > 0) && (newPasswd.length < MIN_PASSWD_LENGTH) ){
-		throw new Exception("The \"new\" and//or \"new confirm\" passwords for: \"" + loginName + "\" in row: " + rowIndex + " are shorter than the minimum " + MIN_PASSWD_LENGTH + " characters.");
+                throw new Exception("The \"new\" and/or \"new confirm\" passwords for: \"" + loginName + "\" in row: " + rowIndex + " are shorter than the minimum " + MIN_PASSWD_LENGTH + " characters.");
             }
 
             // verify that the new and new confirm passwords are the same
             if( !java.util.Arrays.equals(newPasswd, newConfPasswd) ){
-		throw new Exception("The \"new\" and \"new confirm\" passwords are not the same for: \"" + loginName + "\" in row: " + rowIndex + ".");
+                throw new Exception("The \"new\" and \"new confirm\" passwords are not the same for: \"" + loginName + "\" in row: " + rowIndex + ".");
             }
 
 	    
-	    if( ROW_REMOVE.equals(state) ){
-
-	    }
-	    else{
-		// record if the row was not removed, that way we know we had at least one valid account
+            if( ROW_REMOVE.equals(state) ){
+                
+            }
+            else{
+                // record if the row was not removed, that way we know we had at least one valid account
                 oneValidAccount = true;
-		if( !readOnly )
-		    oneWritableAccount = true;
-	    }
-
-            // verify that all of the original and proceed passwords are the same for any non-saved (changed) row
-            if( !((String)tempUser.elementAt(0)).equals(super.ROW_SAVED)
-		&&  !PasswordUtil.check( String.valueOf(proceedPasswd), origPasswd )){
-		throw new Exception("The \"original\" password is not correct for: \"" + loginName + "\" in row: " + rowIndex + ".");
+                if( !readOnly )
+                    oneWritableAccount = true;
             }
 
             // verify that if this is a new row, a new password has been chosen
             if( ((String)tempUser.elementAt(0)).equals(super.ROW_ADD) && (newPasswd.length == 0) ){
-		throw new Exception("The \"new\" password has not been set for: \"" + loginName + "\" in row: " + rowIndex + ".");
+                throw new Exception("The \"new\" password has not been set for: \"" + loginName + "\" in row: " + rowIndex + ".");
             }
 
         }
@@ -154,24 +146,24 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
 	int rowIndex = 0;
         for( Vector rowVector : tableVector ){
 	    rowIndex++;
-            newElem = (User) rowVector.elementAt(10);
+            newElem = (User) rowVector.elementAt(9);
             byte[] origPasswd = ((MPasswordField)rowVector.elementAt(4)).getByteArray();
             char[] newPasswd = ((MPasswordField)rowVector.elementAt(5)).getPassword();            
 
             if( ((String)rowVector.elementAt(0)).equals(super.ROW_REMOVE) ){
-		// THIS IS HERE FOR SAFETY
+                // THIS IS HERE FOR SAFETY
                 continue; // those removed and of a strange state are never even added            
             }
             else{
-		newElem.setName( (String) rowVector.elementAt(2) );
-		newElem.setLogin( (String) rowVector.elementAt(3) );
-		if( newPasswd.length > 0 )
-		    newElem.setClearPassword( new String(newPasswd) );
+                newElem.setName( (String) rowVector.elementAt(2) );
+                newElem.setLogin( (String) rowVector.elementAt(3) );
+                if( newPasswd.length > 0 )
+                    newElem.setClearPassword( new String(newPasswd) );
             }
-	    newElem.setReadOnly( (Boolean) rowVector.elementAt(8) );
-	    String email = (String) rowVector.elementAt(9);
-	    if( (email!=null) && (email.length()==0) )
-		email = null;
+            newElem.setReadOnly( (Boolean) rowVector.elementAt(7) );
+            String email = (String) rowVector.elementAt(8);
+            if( (email!=null) && (email.length()==0) )
+                email = null;
             newElem.setEmail(email);
             allRows.add(newElem);
         }
@@ -185,15 +177,15 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
     }
 
     public Vector<Vector> generateRows(RemoteCompoundSettings remoteCompoundSettings) {
-	AdminSettings adminSettings = remoteCompoundSettings.getAdminSettings();
-	Set<User> users = (Set<User>) adminSettings.getUsers(); 
+        AdminSettings adminSettings = remoteCompoundSettings.getAdminSettings();
+        Set<User> users = (Set<User>) adminSettings.getUsers(); 
         Vector<Vector> allRows = new Vector<Vector>(users.size());
-	Vector tempRow = null;
+        Vector tempRow = null;
         int rowIndex = 0;
 
-	for( User user : users ){
-	    rowIndex++;
-            tempRow = new Vector(10);
+        for( User user : users ){
+            rowIndex++;
+            tempRow = new Vector(9);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( user.getName() );
@@ -202,9 +194,8 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
             tempRow.add( tempMPasswordField );
             tempRow.add( new MPasswordField() );
             tempRow.add( new MPasswordField() );
-	    MPasswordField originalMPasswordField = new MPasswordField();
-	    originalMPasswordField.setGeneratesChangeEvent(false);
-            tempRow.add( originalMPasswordField );
+            MPasswordField originalMPasswordField = new MPasswordField();
+            originalMPasswordField.setGeneratesChangeEvent(false);
             tempRow.add( user.isReadOnly() );
             tempRow.add( user.getEmail()==null?"":user.getEmail() );
             tempRow.add( user );
