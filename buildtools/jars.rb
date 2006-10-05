@@ -73,4 +73,7 @@ class Jars
   Itext      = downloadTarget( "itext-1.3/itext-1.3.jar" )
 
   Reporting   = Jars.makeGroup(Ant, Commons, Itext, Jasper, JFreeChart, Log4j, Postgres )
+
+  # A jar used to build one of the buildutil classes
+  Becl        = downloadTarget('bcel-5.1/bcel-5.1.jar')
 end

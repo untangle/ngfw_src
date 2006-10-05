@@ -55,6 +55,7 @@ class TransformBuilder
 
     ## Build the IMPL jar.
     deps = baseJarsImpl + depsImpl
+
     ## Make the IMPL dependent on the localapi if a jar exists.
     directories= ["tran/#{name}/impl"]
     if (localApiJar.nil?)
@@ -67,7 +68,13 @@ class TransformBuilder
 
     baseTransforms.each { |bt| directories << "tran/#{bt}/impl" }
 
-    jt = JarTarget.buildTarget(transform, deps, 'impl', directories)
+    ## The IMPL jar depends on the reports
+    deps << JasperTarget.buildTarget( transform, 
+                                      "#{$BuildEnv.staging}/#{transform.name}-impl/reports",
+                                      directories )
+
+    jt = JarTarget.buildTarget(transform, deps, "impl", directories)
+
     $InstallTarget.installJars(jt, "#{transform.distDirectory}/usr/share/metavize/toolbox")
 
     ## Only create the GUI api if there are files for the GUI

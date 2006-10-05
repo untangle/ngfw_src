@@ -9,8 +9,15 @@
  * $Id$
  */
 
-import java.io.*;
-import java.util.*;
+package com.metavize.buildutil;
+
+import java.io.File;
+import java.io.FileInputStream;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.tools.ant.util.FileUtils;
 import org.apache.tools.ant.types.FilterSet;
 import org.apache.tools.ant.types.FilterSetCollection;

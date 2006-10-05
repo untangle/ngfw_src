@@ -3,4 +3,4 @@ REPORT_NAME=AttackShieldMaster
 REPORT_TITLE=Attack Shield - Summary
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
-SUBREPORT_1=com/metavize/tran/airgap/reports/AirgapViolators.jasper
+SUBREPORT_1=reports/AirgapViolators.jasper

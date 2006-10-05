@@ -70,7 +70,7 @@ function exitOnMvvmError()
 JAVA_HOME=${JAVA_HOME:-/opt/java}
 
 # Need bootstrap for logging stuff...  XXX
-CLASSPATH="@MVVM_LIB@/mvvm-bootstrap.jar:@MVVM_LIB@/mvvm-reporting.jar:@MVVM_LIB@/mvvm-impl.jar:@MVVM_LIB@/mvvm-api.jar:@MVVM_WEB@/webstart/gui-api.jar"
+CLASSPATH="@MVVM_LIB@/mvvm-bootstrap.jar:@MVVM_LIB@/mvvm-reporting.jar:@MVVM_LIB@/mvvm-impl.jar:@MVVM_LIB@/mvvm-api.jar:@MVVM_WEB@/webstart/metavize-client-api.jar:@MVVM_WEB@/webstart/metavize-client-impl.jar"
 for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
@@ -100,7 +100,7 @@ exitOnMvvmError $? mvvm
 
 # Only generate today's reports if the reporting transform is running
 if [ $is_reporting_enabled == 'true' ]; then
-    mars=$(@USR_BIN@/mcli instances | grep running | awk '{print $2}' | uniq | sed 's|^\(.*\)$|@MVVM_TOOLBOX@/\1-impl.jar|')
+    mars=$(@USR_BIN@/mcli instances | grep -i running | awk '{print $2}' | uniq | sed 's|^\(.*\)$|@MVVM_TOOLBOX@/\1-impl.jar|')
     exitOnMvvmError $? mvvm
 
     # Build the DHCP Merged Address Map (needed for running start-reports scripts)

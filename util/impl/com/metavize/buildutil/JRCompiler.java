@@ -9,6 +9,8 @@
  * $Id$
  */
 
+package com.metavize.buildutil;
+
 import java.io.File;
 
 import java.util.Arrays;
@@ -120,7 +122,7 @@ public class JRCompiler
     {
         InvalidSuffixException( String file )
         {
-            super( "The filename: " + file + " has needs the JRXML(" + SUFFIX_JRXML + ") suffix " );
+            super( "The filename: " + file + " needs the JRXML(" + SUFFIX_JRXML + ") suffix " );
         }
     }
 }

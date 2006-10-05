@@ -3,5 +3,5 @@ REPORT_NAME=OpenVPNMaster
 REPORT_TITLE=OpenVPN - Summary
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
-SUBREPORT_1=com/metavize/tran/openvpn/reports/VpnClientsLoggedIn.jasper
-SUBREPORT_2=com/metavize/tran/openvpn/reports/VpnClientsDistributed.jasper
+SUBREPORT_1=reports/VpnClientsLoggedIn.jasper
+SUBREPORT_2=reports/VpnClientsDistributed.jasper

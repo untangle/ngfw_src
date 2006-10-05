@@ -12,8 +12,9 @@ require 'buildtools/stamp-task.rb'
 
 require 'buildtools/rake-util.rb'
 require 'buildtools/c-compiler.rb'
-require 'buildtools/transform.rb'
 require 'buildtools/jars.rb'
+require 'buildtools/jasper.rb'
+require 'buildtools/transform.rb'
 
 task :default => :devel
 
@@ -49,6 +50,7 @@ end
 ## Done manually because order matters.
 ## XXX Could create a new helper method that sets a prefix directory before
 ## calling require and then unsets it afterwards.
+require 'util/package.rb'
 require 'libmvutil/package.rb'
 require 'libnetcap/package.rb'
 require 'libvector/package.rb'

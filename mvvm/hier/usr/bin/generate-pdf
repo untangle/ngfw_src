@@ -235,7 +235,7 @@ EOF
 cd @MVVM_REPORTS@/current
 
 ## Get the transform list, and reorder so the reporting transform is at the top.
-orderedTransformList=`@USR_BIN@/mcli instances | grep running | awk '{ print $2 }' | uniq | sed -e '/reporting-transform/d' -e '1ireporting-transform' -e "s|^\(.*\)$|${REPORT_BASE}/\1|"`
+orderedTransformList=`@USR_BIN@/mcli instances | grep -i running | awk '{ print $2 }' | uniq | sed -e '/reporting-transform/d' -e '1ireporting-transform' -e "s|^\(.*\)$|${REPORT_BASE}/\1|"`
 
 ## User string for the report type, Daily, Weekly, Monthly
 reportType=`echo ${REPORT_TYPE} | tr "dmw" "DMW"`

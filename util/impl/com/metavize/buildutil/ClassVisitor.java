@@ -9,6 +9,8 @@
  * $Id$
  */
 
+package com.metavize.buildutil;
+
 import static org.apache.bcel.Constants.*;
 
 import java.util.ArrayList;
