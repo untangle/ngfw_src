@@ -168,7 +168,7 @@ public class SystemStats
     public static int getNumNICs()
     {
         try {
-            String[] args = {"/bin/sh","-c","/sbin/ifconfig | egrep '^eth' | wc -l "};
+            String[] args = {"/bin/sh","-c","/sbin/ifconfig -a | egrep '^eth' | wc -l "};
             Process proc = Runtime.getRuntime().exec(args);
             BufferedReader input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             try {
