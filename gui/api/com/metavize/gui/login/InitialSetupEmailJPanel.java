@@ -141,8 +141,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 		    }
 		    catch(Exception f){
 			Util.handleExceptionNoRestart("Normal termination:",f);
-		    }
-		    
+		    }		    
 		    InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
 		}
 		catch(Exception e){

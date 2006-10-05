@@ -11,7 +11,7 @@
 
 package com.metavize.gui.configuration;
 
-import com.metavize.gui.widgets.dialogs.MConfigJDialog;
+import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 
@@ -36,7 +36,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 
     public NetworkIPJPanel(MConfigJDialog mConfigJDialog) {
         initComponents();
-	this.mConfigJDialog = mConfigJDialog;
+        this.mConfigJDialog = mConfigJDialog;
     }
 
     public void doSave(NetworkCompoundSettings networkCompoundSettings, boolean validateOnly) throws Exception {
@@ -514,15 +514,24 @@ public class NetworkIPJPanel extends javax.swing.JPanel
     }//GEN-LAST:event_connectivityTestJButtonActionPerformed
 
     private void renewDhcpLeaseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renewDhcpLeaseJButtonActionPerformed
-	if( Util.getIsDemo() )
-	    return;
-        NetworkDhcpRenewDialog dhcpLeaseRenewDialog = new NetworkDhcpRenewDialog((JDialog)this.getTopLevelAncestor());
-        NetworkingConfiguration newNetworkingConfiguration = dhcpLeaseRenewDialog.getNetworkingConfiguration();
-        if( newNetworkingConfiguration != null){
-            mConfigJDialog.refreshGui();
-	    // UPDATE STORE
-	    Util.getPolicyStateMachine().updateStoreModel();
-	}
+        if( Util.getIsDemo() )
+            return;
+        MTwoButtonJDialog warning = MTwoButtonJDialog.factory((Window)this.getTopLevelAncestor(), "Networking Config",
+                                                              "Renewing your DHCP lease may cause you to get disconnected from EdgeGuard.<br>"
+                                                              + "You can login again if you get disconnected.",
+                                                              "Networking Config Warning", "Warning");
+        warning.setVisible(true);
+        if( warning.isProceeding() ){
+            NetworkDhcpRenewDialog dhcpLeaseRenewDialog = new NetworkDhcpRenewDialog((JDialog)this.getTopLevelAncestor());
+            NetworkingConfiguration newNetworkingConfiguration = dhcpLeaseRenewDialog.getNetworkingConfiguration();
+            if( newNetworkingConfiguration != null){
+                mConfigJDialog.refreshGui();
+                // UPDATE STORE
+                Util.getPolicyStateMachine().updateStoreModel();
+            }
+        }
+        else
+            return;
     }//GEN-LAST:event_renewDhcpLeaseJButtonActionPerformed
 
     private void dhcpDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dhcpDisabledRadioButtonActionPerformed
