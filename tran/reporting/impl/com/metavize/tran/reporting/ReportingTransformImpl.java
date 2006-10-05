@@ -79,7 +79,7 @@ public class ReportingTransformImpl extends AbstractTransform implements Reporti
                     }
 
                     if (true == bSave) {
-                        s.save(settings);
+                        s.merge(settings);
                     }
 
                     return true;
