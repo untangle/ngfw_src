@@ -9,11 +9,14 @@ function PortalPanel(parent)
 
     DwtComposite.call(this, parent, "PortalPanel", DwtControl.STATIC_STYLE);
 
+    this.bookmarkPanel = new BookmarkPanel(this);
+    this.applicationPanel = new ApplicationPanel(this);
+
     this._init();
 
-    // XXX
-    l = new AjxListener(this, this._listActionListener);
-    this.bookmarkPanel.addActionListener(l);
+
+    this._showApplicationPanel = true;
+    this._showBookmarkPanel = true;
 
     this.refresh();
 };
@@ -31,13 +34,13 @@ PortalPanel.prototype.setMotd = function(motd)
 
 PortalPanel.prototype.showApplicationPanel = function(show)
 {
-    this.showApplicationPanel = show;
+    this._showApplicationPanel = show;
     this._init();
 };
 
 PortalPanel.prototype.showBookmarkPanel = function(show)
 {
-    this.showBookmarkPanel = show;
+    this._showBookmarkPanel = show;
     this._init();
 };
 
@@ -66,10 +69,10 @@ PortalPanel.prototype._init = function()
     this._bookmarkPanelId = this._bookmarkPanelId || Dwt.getNextId();
 
     var colspan = 0;
-    if (this.showApplicationPanel) {
+    if (this._showApplicationPanel) {
         colspan++;
     }
-    if (this.showBookmarkPanel) {
+    if (this._showBookmarkPanel) {
         colspan++;
     }
 
@@ -117,7 +120,7 @@ PortalPanel.prototype._init = function()
             + (2 == colspan ? "width: 50%;" : "width: 100%;")
             + "' ";
 
-        if (this.showBookmarkPanel) {
+        if (this._showBookmarkPanel) {
             html.push("<td" + tdStyle + ">");
             html.push("<div style='height: 100%;' id='");
             html.push(this._bookmarkPanelId);
@@ -125,7 +128,7 @@ PortalPanel.prototype._init = function()
             html.push("</td>");
         }
 
-        if (this.showApplicationPanel) {
+        if (this._showApplicationPanel) {
             html.push("<td" + tdStyle + ">");
             html.push("<div style='height: 100%;' id='");
             html.push(this._applicationPanelId);
@@ -146,15 +149,16 @@ PortalPanel.prototype._init = function()
     this._welcomePanel.setVisible(true);
     this._welcomePanel.zShow(true);
 
-    if (this.showBookmarkPanel) {
-        this.bookmarkPanel = this.bookmarkPanel || new BookmarkPanel(this);
+    if (this._showBookmarkPanel) {
         this.bookmarkPanel.reparentHtmlElement(this._bookmarkPanelId);
         this.bookmarkPanel.setVisible(true);
         this.bookmarkPanel.zShow(true);
+
+        l = new AjxListener(this, this._listActionListener);
+        this.bookmarkPanel.addActionListener(l);
     }
 
-    if (this.showApplicationPanel) {
-        this.applicationPanel = this.applicationPanel || new ApplicationPanel(this);
+    if (this._showApplicationPanel) {
         this.applicationPanel.reparentHtmlElement(this._applicationPanelId);
         this.applicationPanel.setVisible(true);
         this.applicationPanel.zShow(true);

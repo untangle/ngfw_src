@@ -93,9 +93,9 @@ public class WebProxy extends HttpServlet
                 doIt(req, resp, method, rewriter);
             }
         } catch (UnknownHostException exn) {
-            sendError(resp, HttpServletResponse.SC_BAD_REQUEST);
+            sendError(resp, HttpServletResponse.SC_NOT_FOUND);
         } catch (URIException exn) {
-            sendError(resp, HttpServletResponse.SC_BAD_REQUEST);
+            sendError(resp, HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
