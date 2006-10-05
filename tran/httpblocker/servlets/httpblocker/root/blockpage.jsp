@@ -30,8 +30,6 @@ tid = '<%=tidStr%>';
 url = '<%=url%>';
 </script>
 
-<script type="text/javascript" src="httpblocker.js"></script>
-
 </head>
 <body>
 <center><b><%=header%></b></center>
@@ -39,20 +37,6 @@ url = '<%=url%>';
 <p>Host: <%=host%></p>
 <p>URL: <%=url%></p>
 <p>Category: <%=reason%></p>
-
-<table>
-  <tr>
-    <td>
-      <input type="button" value="Unblock For Now"
-      onclick="unblockSite(false)"/>
-    </td>
-
-    <td>
-      <input type="button" value="Unblock Permanently"
-      onclick="unblockSite(true)"/>
-    </td>
-  </tr>
-</table>
 
 <p>Please contact <%=contact%></p>
 <hr>

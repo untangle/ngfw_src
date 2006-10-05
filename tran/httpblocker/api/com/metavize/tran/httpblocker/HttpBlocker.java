@@ -19,7 +19,6 @@ public interface HttpBlocker extends Transform
     HttpBlockerSettings getHttpBlockerSettings();
     void setHttpBlockerSettings(HttpBlockerSettings settings);
     BlockDetails getDetails(String nonce);
-    boolean unblockSite(String nonce, boolean global);
 
     EventManager<HttpBlockerEvent> getEventManager();
 }

@@ -21,6 +21,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.metavize.tran.util.AsciiString;
 import org.apache.log4j.Logger;
@@ -47,6 +49,8 @@ class BlacklistCache
     private final Random random = new Random();
 
     private final Logger logger = Logger.getLogger(BlacklistCache.class);
+
+    private Timer timer = null;
 
     // constructors -----------------------------------------------------------
 
@@ -102,6 +106,12 @@ class BlacklistCache
         BlockDetails d = new BlockDetails(nonce, settings, host, uri, reason);
         synchronized (this) {
             nonces.put(nonce, d);
+
+            if (null == timer) {
+                timer = new Timer(true);
+            }
+
+            timer.schedule(new PurgeTask(nonce), 600000);
         }
         return d;
     }
@@ -110,13 +120,6 @@ class BlacklistCache
     {
         synchronized (this) {
             return nonces.get(nonce);
-        }
-    }
-
-    BlockDetails removeDetails(String nonce)
-    {
-        synchronized (this) {
-            return nonces.remove(nonce);
         }
     }
 
@@ -169,5 +172,29 @@ class BlacklistCache
         }
 
         return a;
+    }
+
+    // private classes --------------------------------------------------------
+
+    private class PurgeTask extends TimerTask
+    {
+        private final String nonce;
+
+        PurgeTask(String nonce)
+        {
+            this.nonce = nonce;
+        }
+
+        public void run()
+        {
+            synchronized (BlacklistCache.this) {
+                timer.cancel();
+                nonces.remove(nonce);
+                if (0 == nonces.size()) {
+                    timer.cancel();
+                    timer = null;
+                }
+            }
+        }
     }
 }

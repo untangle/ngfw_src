@@ -45,7 +45,7 @@ class NonceFactory
 
             nonces.put(nonce, bd);
             if (null == timer) {
-                timer = new Timer();
+                timer = new Timer(true);
             }
 
             timer.schedule(new PurgeTask(nonce), 600000);

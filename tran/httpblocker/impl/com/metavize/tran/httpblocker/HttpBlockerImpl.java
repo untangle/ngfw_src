@@ -110,27 +110,6 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         return BlacklistCache.cache().getDetails(nonce);
     }
 
-    public boolean unblockSite(String nonce, boolean global)
-    {
-        BlockDetails bd = BlacklistCache.cache().removeDetails(nonce);
-        if (null == bd) {
-            return false;
-        }
-
-        String site = bd.getRuleSite();
-
-        if (global) {
-            StringRule rule = new StringRule(site, site,
-                                             "passed by user request", true);
-            settings.getPassedUrls().add(rule);
-            setHttpBlockerSettings(settings);
-        } else {
-            System.out.println("NOT IMPLEMENTED YET!");
-        }
-
-        return true;
-    }
-
     // Transform methods ------------------------------------------------------
 
     @Override
