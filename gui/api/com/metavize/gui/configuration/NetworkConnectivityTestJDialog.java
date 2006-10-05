@@ -223,24 +223,24 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
             final String result;
             if( status.isDnsWorking() ){
                 if( status.isTcpWorking() ){
-                    result = "Success!  Internet and DNS are both working.";
+                    result = "Success!  Internet and DNS are both contactable.";
                 }
                 else{
-                    result = "Warning!  Internet connectivity is not working.";
+                    result = "Warning!  DNS is contactable, but the Internet cannot be contacted.";
                 }
             }
             else{
                 if( status.isTcpWorking() ){
-                    result = "Warning!  Internet connectivity is working, DNS cannot be contacted.";
+                    result = "Warning!  The Internet is contactable, but DNS cannot be contacted.";
                 }
                 else{
-                    result = "Warning!  DNS and internet cannot be contacted.";
+                    result = "Warning!  The Internet and DNS cannot be contacted.";
                 }
             }
             
 	    
             SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                NetworkConnectivityTestJDialog.this.jProgressBar.setValue(0);
+                NetworkConnectivityTestJDialog.this.jProgressBar.setValue(1);
                 NetworkConnectivityTestJDialog.this.jProgressBar.setString(result);
             }});
         }
