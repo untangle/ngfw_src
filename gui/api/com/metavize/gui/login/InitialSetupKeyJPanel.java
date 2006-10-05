@@ -14,7 +14,7 @@ package com.metavize.gui.login;
 import java.net.URL;
 
 import com.metavize.gui.widgets.wizard.*;
-import com.metavize.gui.util.Util;
+import com.metavize.gui.util.*;
 import com.metavize.mvvm.client.*;
 import javax.swing.SwingUtilities;
 import java.awt.Color;
@@ -68,6 +68,8 @@ public class InitialSetupKeyJPanel extends MWizardPageJPanel {
 													Util.isSecureViaHttps() );
 		    
 		    Util.setMvvmContext(mvvmContext);
+            KeepAliveThread keepAliveThread = new KeepAliveThread(mvvmContext);
+            InitialSetupWizard.setKeepAliveThread(keepAliveThread);
 		    InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
 		}
 	    }

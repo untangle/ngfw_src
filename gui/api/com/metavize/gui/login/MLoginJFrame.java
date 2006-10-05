@@ -479,8 +479,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                                                                                                          new String(passJPasswordField.getPassword()),
                                                                                                          0, Util.getClassLoader(),
                                                                                                          Util.isSecureViaHttps(), useForce );
-                    Util.setMvvmContext(mvvmContext);
-                    Util.getStatsCache().start();
+
                     // VERSION MISMATCH ///////
                     String version = Util.getMvvmContext().version();
                     if( !version.equals("-1") ){
@@ -489,6 +488,12 @@ public class MLoginJFrame extends javax.swing.JFrame {
                             return;
                         }
                     }
+                    
+
+                    Util.setMvvmContext(mvvmContext);
+                    Util.getStatsCache().start();    
+                    KeepAliveThread keepAliveThread = new KeepAliveThread(mvvmContext);
+                    Util.addShutdownable("KeepAliveThread", keepAliveThread);
 
                     // EGDEMO ////////////////
                     if( loginJTextField.getText().equals("egdemo") )
