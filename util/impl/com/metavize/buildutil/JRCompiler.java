@@ -57,7 +57,11 @@ public class JRCompiler
     
     public void compile( String src ) throws JRException, InvalidSuffixException
     {
+        /* Make sure to use the correct compiler */
+        System.setProperty( "jasper.reports.compiler.class",
+                            "net.sf.jasperreports.engine.design.JRJdk13Compiler" );
         src = src.trim();
+        
         File destination = getDestination( src );
         File parent = new File( destination.getParent());
         

@@ -28,7 +28,7 @@ class JasperCompiler
   
   private
   def JasperCompiler.classpath
-    [ Jars::Reporting + [ Package['buildutil']['impl'].filename ]].flatten.join(":")
+    [ Jars::Reporting + Jars::JDKTools + [ Package['buildutil']['impl'].filename ]].flatten.join(":")
   end
 end
 
