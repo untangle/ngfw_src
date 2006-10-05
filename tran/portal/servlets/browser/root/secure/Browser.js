@@ -97,6 +97,8 @@ Browser.prototype.chdir = function(cifsNode, expandTree, expandDetail)
     this._cwd = cifsNode;
 
     this._addressField.setValue(cifsNode.url.replace(/\//g, "\\"));
+    document.title = "Network File Browser (" + this._addressField.getValue() + ")";
+
 
     if (undefined == expandTree || expandTree) {
         this._dirTree.chdir(cifsNode);
