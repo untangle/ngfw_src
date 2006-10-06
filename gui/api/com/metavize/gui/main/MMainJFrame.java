@@ -513,7 +513,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 controlsJPanel.add(upgradeJButton, gridBagConstraints);
 
                 helpJButton.setFont(new java.awt.Font("Default", 0, 12));
-                helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/IconHelp32x32.png")));
+                helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/IconHelpBlue32x32.png")));
                 helpJButton.setText("<html>Upgrade<br></html>");
                 helpJButton.setDoubleBuffered(true);
                 helpJButton.setFocusPainted(false);
