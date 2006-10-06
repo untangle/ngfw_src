@@ -32,26 +32,34 @@ public class MaintenanceSecretJPanel extends javax.swing.JPanel
 
     public void doSave(MaintenanceCompoundSettings maintenanceCompoundSettings, boolean validateOnly) throws Exception {
 
-	// SCRIPT ///
-	String script = scriptJTextArea.getText();
-	scriptJTextArea.setBackground( Color.WHITE );
+        // SCRIPT ///
+        String script = script1JTextArea.getText();
+        script1JTextArea.setBackground( Color.WHITE );
 	
+        // CUSTOM RULES ///
+        String rules = script2JTextArea.getText();
+        script2JTextArea.setBackground( Color.WHITE );
 
-	// SAVE SETTINGS ////////////
-	if( !validateOnly ){
-	    RemoteSettings remoteSettings = maintenanceCompoundSettings.getRemoteSettings();
+        // SAVE SETTINGS ////////////
+        if( !validateOnly ){
+            RemoteSettings remoteSettings = maintenanceCompoundSettings.getRemoteSettings();
             remoteSettings.setPostConfigurationScript( script );
+            remoteSettings.setCustomRules( rules );
         }
-
     }
 
     public void doRefresh(MaintenanceCompoundSettings maintenanceCompoundSettings){
-	RemoteSettings remoteSettings = maintenanceCompoundSettings.getRemoteSettings();
+        RemoteSettings remoteSettings = maintenanceCompoundSettings.getRemoteSettings();
 	
-	// SCRIPT //
-	scriptJTextArea.setBackground( Color.WHITE );
-	String script = remoteSettings.getPostConfigurationScript();
-	scriptJTextArea.setText( script );	
+        // SCRIPT //
+        script1JTextArea.setBackground( Color.WHITE );
+        String script1 = remoteSettings.getPostConfigurationScript();
+        script1JTextArea.setText( script1 );
+
+        // CUSTOM RULES //
+        script2JTextArea.setBackground( Color.WHITE );
+        String rules = remoteSettings.getCustomRules();
+        script2JTextArea.setText( rules );
     }
     
     
@@ -63,7 +71,9 @@ public class MaintenanceSecretJPanel extends javax.swing.JPanel
                 externalRemoteJPanel = new javax.swing.JPanel();
                 jLabel1 = new javax.swing.JLabel();
                 jScrollPane1 = new javax.swing.JScrollPane();
-                scriptJTextArea = new javax.swing.JTextArea();
+                script1JTextArea = new javax.swing.JTextArea();
+                jScrollPane2 = new javax.swing.JScrollPane();
+                script2JTextArea = new javax.swing.JTextArea();
 
                 setLayout(new java.awt.GridBagLayout());
 
@@ -85,23 +95,32 @@ public class MaintenanceSecretJPanel extends javax.swing.JPanel
                 gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
                 externalRemoteJPanel.add(jLabel1, gridBagConstraints);
 
-                jScrollPane1.setViewportView(scriptJTextArea);
+                jScrollPane1.setViewportView(script1JTextArea);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
+                externalRemoteJPanel.add(jScrollPane1, gridBagConstraints);
+
+                jScrollPane2.setViewportView(script2JTextArea);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
+                externalRemoteJPanel.add(jScrollPane2, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
-                externalRemoteJPanel.add(jScrollPane1, gridBagConstraints);
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
                 add(externalRemoteJPanel, gridBagConstraints);
 
         }//GEN-END:initComponents
@@ -112,7 +131,9 @@ public class MaintenanceSecretJPanel extends javax.swing.JPanel
         private javax.swing.JPanel externalRemoteJPanel;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JScrollPane jScrollPane1;
-        private javax.swing.JTextArea scriptJTextArea;
+        private javax.swing.JScrollPane jScrollPane2;
+        private javax.swing.JTextArea script1JTextArea;
+        private javax.swing.JTextArea script2JTextArea;
         private javax.swing.ButtonGroup snmpButtonGroup;
         private javax.swing.ButtonGroup trapButtonGroup;
         // End of variables declaration//GEN-END:variables
