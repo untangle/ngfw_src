@@ -611,7 +611,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 		MOneButtonJDialog.factory(BackupJDialog.this, "",
 					  failedString,
 					  "Restore Failure Warning", "");
-		RestartDialog.factory(BackupJDialog.this);
             }
             finally{
 		infiniteProgressJComponent.stopLater(MIN_PROGRESS_MILLIS);
