@@ -31,6 +31,8 @@ public class TableModelClientToSite extends MSortedTableModel<Object>{
 
     private static final String EXCEPTION_CANNOT_CHANGE_NAME = "You cannot change an account name after its key has been distributed.";
 
+    private static final String UNSET_STRING = "unassigned";
+
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -39,8 +41,8 @@ public class TableModelClientToSite extends MSortedTableModel<Object>{
     private static final int C3_MW = 150;  /* name */
     private static final int C4_MW = 150; /* group */
     private static final int C5_MW = 150; /* action */
-    private static final int C6_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW), 120); /* description */
-
+    private static final int C6_MW = 150; /* virtual address */    
+    private static final int C7_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW), 120); /* description */
     
     private DefaultComboBoxModel groupModel = new DefaultComboBoxModel();
 
@@ -60,8 +62,9 @@ public class TableModelClientToSite extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, String.class,  sc.EMPTY_NAME, sc.html("client name") );
         addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, false, ComboBoxModel.class,  groupModel, sc.html("address<br>pool"));
         addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, KeyButtonRunnable.class,  "false", sc.html("secure key<br>distribution"));
-        addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
-        addTableColumn( tableColumnModel,  7, 10,    false, false, true,  false, VpnClient.class, null, "");
+        addTableColumn( tableColumnModel,  6, C6_MW, false, false, false, false, IPaddrString.class, UNSET_STRING, sc.html("virtual address"));
+        addTableColumn( tableColumnModel,  7, C7_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  8, 10,    false, false, true,  false, VpnClient.class, null, "");
         return tableColumnModel;
     }
 
@@ -85,7 +88,7 @@ public class TableModelClientToSite extends MSortedTableModel<Object>{
 	
 	for( Vector rowVector : tableVector ){
 	    rowIndex++;
-            newElem = (VpnClient) rowVector.elementAt(7);
+            newElem = (VpnClient) rowVector.elementAt(8);
 	    newElem.setLive( (Boolean) rowVector.elementAt(2) );
 	    
 	    String rowState = (String) rowVector.elementAt( getStateModelIndex() );
@@ -96,7 +99,8 @@ public class TableModelClientToSite extends MSortedTableModel<Object>{
 	    newElem.setName( (String) rowVector.elementAt(3) );
 
 	    newElem.setGroup( (VpnGroup) ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem() );
-	    newElem.setDescription( (String) rowVector.elementAt(6) );
+            /* rbs: do not modify the client address */
+	    newElem.setDescription( (String) rowVector.elementAt(7) );
 	    elemList.add(newElem);
         }
 	
@@ -130,6 +134,7 @@ public class TableModelClientToSite extends MSortedTableModel<Object>{
 	    KeyButtonRunnable keyButtonRunnable = new KeyButtonRunnable("true");
 	    keyButtonRunnable.setVpnClient( vpnClient );
 	    tempRow.add( keyButtonRunnable  );
+            tempRow.add( getClientAddress( vpnClient ));
 	    tempRow.add( vpnClient.getDescription() );
 	    tempRow.add( vpnClient );
 	    allRows.add(tempRow);
@@ -137,4 +142,16 @@ public class TableModelClientToSite extends MSortedTableModel<Object>{
 
         return allRows;
     }
+
+    IPaddrString getClientAddress( VpnClient vpnClient )
+    {
+        IPaddr clientAddress = vpnClient.getAddress();
+        IPaddrString ipaddrString = new IPaddrString( UNSET_STRING );
+        if ( clientAddress != null && !clientAddress.isEmpty()) {
+            ipaddrString = new IPaddrString( clientAddress );
+        }
+
+        return ipaddrString;
+    }
 }
+
