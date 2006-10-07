@@ -13,6 +13,8 @@ package com.metavize.mvvm.tran.firewall;
 
 import java.net.InetAddress;
 
+import org.apache.log4j.Logger;
+
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.ArgonException;
 import com.metavize.mvvm.IntfConstants;
@@ -20,7 +22,7 @@ import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcher;
-import org.apache.log4j.Logger;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcher;
 
 public class InterfaceAddressRedirect extends InterfaceRedirect
 {

@@ -25,8 +25,9 @@ import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.policy.*;
 import com.metavize.mvvm.tran.firewall.*;
-import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 
 public class PolicyCustomJPanel extends MEditTableJPanel {
 
@@ -71,8 +72,9 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     private static final String OUTBOUND_STRING = " (outbound)";
 
 
-    private ComboBoxModel protocolModel = super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(),
-								       ProtocolMatcher.getProtocolDefault() );
+    private ComboBoxModel protocolModel = 
+        super.generateComboBoxModel( ProtocolMatcherFactory.getProtocolEnumeration(),
+                                     ProtocolMatcherFactory.getProtocolDefault());
     private DefaultComboBoxModel interfaceModel = new DefaultComboBoxModel();
     private DefaultComboBoxModel policyModel = new DefaultComboBoxModel();
     private IntfEnum intfEnum;
@@ -138,7 +140,7 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
             if( newElem.getClientIntf() == newElem.getServerIntf() )
 		throw new Exception("In row: " + rowIndex + ". The \"client interface\" cannot match the \"server interface\"");
             
-	    try{ newElem.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString()) ); }
+	    try{ newElem.setProtocol( ProtocolMatcherFactory.parse(((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString()) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"protocol\" in row: " + rowIndex); }	   
 	    try{ newElem.setClientAddr( ipmf.parse((String) rowVector.elementAt(6)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"client address\" in row: " + rowIndex); }
@@ -195,7 +197,7 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 						     intfEnum.getIntfName(newElem.getClientIntf())) );
 	    tempRow.add( super.generateComboBoxModel(intfEnum.getIntfNames(),
 						     intfEnum.getIntfName(newElem.getServerIntf())) );
-	    tempRow.add( super.generateComboBoxModel(ProtocolMatcher.getProtocolEnumeration(),
+	    tempRow.add( super.generateComboBoxModel(ProtocolMatcherFactory.getProtocolEnumeration(),
 						     newElem.getProtocol()) );
 	    tempRow.add( newElem.getClientAddr().toString() );
 	    tempRow.add( newElem.getServerAddr().toString() );

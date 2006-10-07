@@ -18,6 +18,7 @@ import javax.persistence.Transient;
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolDBMatcher;
 import org.hibernate.annotations.Type;
 
 /**
@@ -49,7 +50,7 @@ public abstract class TrafficDirectionRule extends TrafficRule
       */
      public TrafficDirectionRule() { }
 
-     public TrafficDirectionRule( boolean       isLive,     ProtocolMatcher protocol,
+     public TrafficDirectionRule( boolean       isLive,     ProtocolDBMatcher protocol,
                                   boolean       inbound,    boolean         outbound,
                                   IPDBMatcher   srcAddress, IPDBMatcher     dstAddress,
                                   PortDBMatcher srcPort,    PortDBMatcher   dstPort )

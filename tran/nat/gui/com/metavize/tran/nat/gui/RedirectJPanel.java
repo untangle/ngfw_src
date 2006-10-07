@@ -19,11 +19,13 @@ import com.metavize.gui.util.*;
 import com.metavize.mvvm.networking.RedirectRule;
 
 import com.metavize.mvvm.tran.*;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
+
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
 import com.metavize.mvvm.tran.firewall.intf.IntfDBMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 import com.metavize.tran.nat.*;
 
 /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX This shouldn't be necessary */
@@ -76,7 +78,7 @@ class RedirectTableModel extends MSortedTableModel<Object>{
     private final int C14_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW + C10_MW + C11_MW + C12_MW + C13_MW), 120); /* description */
 
     
-    private ComboBoxModel protocolModel = super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), ProtocolMatcher.getProtocolDefault() );
+    private ComboBoxModel protocolModel = super.generateComboBoxModel( ProtocolMatcherFactory.getProtocolEnumeration(), ProtocolMatcherFactory.getProtocolDefault() );
         
 
     protected boolean getSortable(){ return false; }
@@ -122,7 +124,7 @@ class RedirectTableModel extends MSortedTableModel<Object>{
             newElem = (RedirectRule) rowVector.elementAt(15);
             newElem.setLive( (Boolean) rowVector.elementAt(2) );
             newElem.setLog( (Boolean) rowVector.elementAt(3) );
-            newElem.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString()) );
+            newElem.setProtocol( ProtocolMatcherFactory.parse(((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString()) );
             newElem.setSrcIntf( (IntfDBMatcher) ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem());
             newElem.setDstIntf( (IntfDBMatcher) ((ComboBoxModel) rowVector.elementAt(6)).getSelectedItem());
             try{ newElem.setSrcAddress( IPMatcherFactory.parse((String) rowVector.elementAt(7)) ); }
@@ -169,7 +171,7 @@ class RedirectTableModel extends MSortedTableModel<Object>{
 	    tempRow.add( rowIndex );
 	    tempRow.add( redirectRule.isLive() );
 	    tempRow.add( redirectRule.getLog() );
-	    tempRow.add( super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), redirectRule.getProtocol().toString() ) );
+	    tempRow.add( super.generateComboBoxModel( ProtocolMatcherFactory.getProtocolEnumeration(), redirectRule.getProtocol().toString() ) );
             tempRow.add( super.generateComboBoxModel( intfEnumeration, redirectRule.getSrcIntf() ));
 	    tempRow.add( super.generateComboBoxModel( intfEnumeration, redirectRule.getDstIntf() ));
 	    tempRow.add( redirectRule.getSrcAddress().toString() );

@@ -1,0 +1,99 @@
+/*
+ * Copyright (c) 2004, 2005 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
+package com.metavize.mvvm.tran.firewall.protocol;
+
+import com.metavize.mvvm.tapi.Protocol;
+
+import com.metavize.mvvm.tran.ParseException;
+import com.metavize.mvvm.tran.firewall.Parser;
+import com.metavize.mvvm.tran.firewall.ParsingConstants;
+
+/**
+ * The class <code>ProtocolMatcher</code> represents a class for filtering on the Protocol of a
+ * session.
+ *
+ * @author <a href="mailto:rbscott@metavize.com">rbscott</a>
+ * @version 1.0
+ */
+public final class ProtocolSimpleMatcher extends ProtocolDBMatcher
+{
+    // XXX private static final long serialVersionUID = 6026959848409522258L;
+    private static final ProtocolDBMatcher MATCHER_ALL = new ProtocolSimpleMatcher( true );
+    private static final ProtocolDBMatcher MATCHER_NOTHING = new ProtocolSimpleMatcher( false );
+
+
+    private final boolean isAll;
+    
+    private ProtocolSimpleMatcher( boolean isAll )
+    {
+        this.isAll = isAll;
+    }
+
+    public boolean isMatch( Protocol protocol )
+    {
+        return this.isAll;
+    }
+
+    public String toDatabaseString()
+    {
+        return toString();
+    }
+
+    public String toString()
+    {
+        if ( isAll ) return ParsingConstants.MARKER_ANY;
+        return ParsingConstants.MARKER_NOTHING;
+    }
+    
+    public static ProtocolDBMatcher getAllMatcher()
+    {
+        return MATCHER_ALL;
+    }
+
+    public static ProtocolDBMatcher getNilMatcher()
+    {
+        return MATCHER_NOTHING;
+    }
+
+    static final Parser<ProtocolDBMatcher> PARSER = new Parser<ProtocolDBMatcher>() 
+    {
+        public int priority()
+        {
+            return 0;
+        }
+        
+        public boolean isParseable( String value )
+        {
+            return ( value.equalsIgnoreCase( ParsingConstants.MARKER_ANY ) ||
+                     value.equalsIgnoreCase( ParsingConstants.MARKER_WILDCARD ) ||
+                     value.equalsIgnoreCase( ParsingConstants.MARKER_ALL ) ||
+                     value.equalsIgnoreCase( ParsingConstants.MARKER_NOTHING ));
+        }
+        
+        public ProtocolDBMatcher parse( String value ) throws ParseException
+        {
+            if ( !isParseable( value )) {
+                throw new ParseException( "Invalid protocol simple matcher '" + value + "'" );
+            }
+            
+            if ( value.equalsIgnoreCase( ParsingConstants.MARKER_ANY ) || 
+                 value.equalsIgnoreCase( ParsingConstants.MARKER_WILDCARD ) ||
+                 value.equalsIgnoreCase( ParsingConstants.MARKER_ALL )) {
+                     return MATCHER_ALL;
+                 } else if ( value.equalsIgnoreCase( ParsingConstants.MARKER_NOTHING )) {
+                     return MATCHER_NOTHING;
+                 }
+            
+            throw new ParseException( "Invalid protocol simple matcher '" + value + "'" );
+        }
+    };
+}

@@ -16,7 +16,7 @@ import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
 import com.metavize.mvvm.tran.firewall.intf.IntfDBMatcher;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolDBMatcher;
 
 public class RedirectInternal
 {
@@ -27,7 +27,7 @@ public class RedirectInternal
     private final String category;
     private final String description;
 
-    private final ProtocolMatcher protocol;
+    private final ProtocolDBMatcher protocol;
     private final IntfDBMatcher srcIntf;
     private final IntfDBMatcher dstIntf;
     private final IPDBMatcher srcAddress;
@@ -43,7 +43,7 @@ public class RedirectInternal
 
     public RedirectInternal( boolean       isEnabled, boolean isLoggingEnabled,
                              String name, String category, String description,
-                             ProtocolMatcher protocol,
+                             ProtocolDBMatcher protocol,
                              IntfDBMatcher srcIntf,    IntfDBMatcher     dstIntf,
                              IPDBMatcher   srcAddress, IPDBMatcher       dstAddress,
                              PortDBMatcher srcPort,    PortDBMatcher     dstPort,
@@ -104,7 +104,7 @@ public class RedirectInternal
         return this.category;
     }
 
-    public ProtocolMatcher getProtocol()
+    public ProtocolDBMatcher getProtocol()
     {
         return this.protocol;
     }

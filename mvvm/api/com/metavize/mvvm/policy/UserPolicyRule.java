@@ -21,7 +21,8 @@ import javax.persistence.Transient;
 
 import com.metavize.mvvm.api.IPSessionDesc;
 import com.metavize.mvvm.tran.ParseException;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
@@ -82,7 +83,7 @@ public class UserPolicyRule extends PolicyRule
     {
         PortMatcher pingMatcher = PortMatcherFactory.getInstance().getPingMatcher();
 
-        if ( this.protocol.equals( ProtocolMatcher.MATCHER_PING )) {
+        if ( this.protocol.equals( ProtocolMatcherFactory.getInstance().getPingMatcher())) {
             this.clientPort = pingMatcher;
             this.serverPort = pingMatcher;
         } else if ( this.clientPort.equals( pingMatcher ) || this.serverPort.equals( pingMatcher )) {

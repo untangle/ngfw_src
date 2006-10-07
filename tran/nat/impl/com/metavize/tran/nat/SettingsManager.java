@@ -58,7 +58,8 @@ import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
 import com.metavize.mvvm.tran.firewall.port.PortMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 
 class SettingsManager
 {
@@ -400,8 +401,9 @@ class SettingsManager
             IntfMatcherFactory imf  = IntfMatcherFactory.getInstance();
             IPMatcherFactory   ipmf = IPMatcherFactory.getInstance();
             PortMatcherFactory pmf  = PortMatcherFactory.getInstance();
+            ProtocolMatcherFactory prmf = ProtocolMatcherFactory.getInstance();
             
-            RedirectRule dmz = new RedirectRule( true, ProtocolMatcher.MATCHER_ALL,
+            RedirectRule dmz = new RedirectRule( true, prmf.getTCPAndUDPMatcher(),
                                                  imf.getExternalMatcher(), imf.getAllMatcher(),
                                                  ipmf.getAllMatcher(), ipmf.getLocalMatcher(),
                                                  pmf.getAllMatcher(), pmf.getAllMatcher(),
@@ -488,6 +490,7 @@ class SettingsManager
         IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
         IPMatcherFactory ipmf  = IPMatcherFactory.getInstance();
         PortMatcherFactory pmf = PortMatcherFactory.getInstance();
+        ProtocolMatcherFactory  prmf = ProtocolMatcherFactory.getInstance();
 
         try {
             settings.setNatEnabled( true );
@@ -503,7 +506,7 @@ class SettingsManager
             
             // A few port forwards
             // 21 to 21
-            RedirectRule tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_TCP,
+            RedirectRule tmp = new RedirectRule( false, prmf.getTCPMatcher(),
                                                  imf.getExternalMatcher(), imf.getAllMatcher(),
                                                  ipmf.getAllMatcher(), ipmf.getLocalMatcher(),
                                                  pmf.getAllMatcher(), pmf.makeSingleMatcher( 21 ),
@@ -512,7 +515,7 @@ class SettingsManager
             redirectList.add( tmp );
 
             // 25 to 25
-            tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_TCP,
+            tmp = new RedirectRule( false, prmf.getTCPMatcher(),
                                     imf.getExternalMatcher(), imf.getAllMatcher(),
                                     ipmf.getAllMatcher(), ipmf.getLocalMatcher(),
                                     pmf.getAllMatcher(), pmf.makeSingleMatcher( 25 ),
@@ -521,7 +524,7 @@ class SettingsManager
             redirectList.add( tmp );
             
             // 80 to 80
-            tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_TCP,
+            tmp = new RedirectRule( false, prmf.getTCPMatcher(),
                                     imf.getExternalMatcher(), imf.getAllMatcher(),
                                     ipmf.getAllMatcher(), ipmf.getLocalMatcher(),
                                     pmf.getAllMatcher(), pmf.makeSingleMatcher( 80 ),
@@ -530,7 +533,7 @@ class SettingsManager
             redirectList.add( tmp );
 
             // 443 to 443
-            tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_TCP,
+            tmp = new RedirectRule( false, prmf.getTCPMatcher(),
                                     imf.getExternalMatcher(), imf.getAllMatcher(),
                                     ipmf.getAllMatcher(), ipmf.getLocalMatcher(),
                                     pmf.getAllMatcher(), pmf.makeSingleMatcher( 443 ),
@@ -539,7 +542,7 @@ class SettingsManager
             redirectList.add( tmp );
             
             // 8080 to 80
-            tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_TCP,
+            tmp = new RedirectRule( false, prmf.getTCPMatcher(),
                                     imf.getExternalMatcher(), imf.getAllMatcher(),
                                     ipmf.getAllMatcher(), ipmf.getLocalMatcher(),
                                     pmf.getAllMatcher(), pmf.makeSingleMatcher( 8080 ),
@@ -550,7 +553,7 @@ class SettingsManager
             
             for ( RedirectRule redirect : redirectList ) redirect.setLocalRedirect( true );
 
-            tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
+            tmp = new RedirectRule( false, prmf.getTCPAndUDPMatcher(),
                                     imf.getExternalMatcher(), imf.getAllMatcher(),
                                     ipmf.getAllMatcher(), ipmf.getAllMatcher(),
                                     pmf.getAllMatcher(), pmf.makeRangeMatcher( 6000, 10000 ),
@@ -558,7 +561,7 @@ class SettingsManager
             tmp.setDescription( "Redirect incoming traffic from ports 6000-10000 to port 6000" );
             redirectList.add( tmp );
 
-            tmp = new RedirectRule( false, ProtocolMatcher.MATCHER_ALL,
+            tmp = new RedirectRule( false, prmf.getTCPAndUDPMatcher(),
                                     imf.getInternalMatcher(), imf.getAllMatcher(),
                                     ipmf.getAllMatcher(), ipmf.parse( "1.2.3.4" ),
                                     pmf.getAllMatcher(), pmf.getAllMatcher(),

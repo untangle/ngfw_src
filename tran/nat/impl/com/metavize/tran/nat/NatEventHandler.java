@@ -61,7 +61,9 @@ import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
 import com.metavize.mvvm.tran.firewall.InterfaceAddressRedirect;
 import com.metavize.mvvm.tran.firewall.InterfaceRedirect;
 import com.metavize.mvvm.tran.firewall.InterfaceStaticRedirect;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
+
 import org.apache.log4j.Logger;
 
 /* Import all of the constants from NatConstants (1.5 feature) */
@@ -791,6 +793,7 @@ class NatMatcher
         IntfMatcherFactory intfMatcherFactory = IntfMatcherFactory.getInstance();
         IPMatcherFactory imf = IPMatcherFactory.getInstance();
         PortMatcherFactory pmf = PortMatcherFactory.getInstance();
+        ProtocolMatcherFactory  prmf = ProtocolMatcherFactory.getInstance();
 
         IPMatcher clientIPMatcher = imf.makeSubnetMatcher( network.getNetwork(), network.getNetmask());
         
@@ -833,7 +836,7 @@ class NatMatcher
         }
 
         // System.out.println( "client: " + clientIPMatcher + " server: " + serverIntfMatcher );
-        RedirectMatcher matcher = new RedirectMatcher( true, false,  ProtocolMatcher.MATCHER_ALL,
+        RedirectMatcher matcher = new RedirectMatcher( true, false, prmf.getTCPAndUDPMatcher(),
                                                        clientIntfMatcher, serverIntfMatcher,
                                                        clientIPMatcher, imf.getAllMatcher(),
                                                        pmf.getAllMatcher(), pmf.getAllMatcher(),
@@ -844,7 +847,7 @@ class NatMatcher
         /* build the interface redirect for nat traffic that is coming back (eg for FTP */
         /* This just redirects it to the first interface in the nat space, this way it gets through */
         InterfaceRedirect redirect =
-            new InterfaceStaticRedirect( ProtocolMatcher.MATCHER_ALL,
+            new InterfaceStaticRedirect( prmf.getTCPAndUDPMatcher(),
                                          serverIntfMatcher, intfMatcherFactory.getAllMatcher(),
                                          imf.getAllMatcher(), imf.makeSingleMatcher( natAddress ),
                                          pmf.getAllMatcher(), pmf.getAllMatcher(),
@@ -904,6 +907,7 @@ class DmzMatcher
         IntfMatcherFactory intfMatcherFactory = IntfMatcherFactory.getInstance();
         IPMatcherFactory imf = IPMatcherFactory.getInstance();
         PortMatcherFactory pmf = PortMatcherFactory.getInstance();
+        ProtocolMatcherFactory prmf = ProtocolMatcherFactory.getInstance();
 
         IPMatcher serverIPMatcher = imf.makeSingleMatcher( space.getPrimaryAddress().getNetwork().getAddr());
 
@@ -950,7 +954,7 @@ class DmzMatcher
         }
                 
         RedirectMatcher matcher = new RedirectMatcher( true, space.getIsDmzHostLoggingEnabled(),
-                                                       ProtocolMatcher.MATCHER_ALL,
+                                                       prmf.getTCPAndUDPMatcher(),
                                                        clientIntfMatcher, serverIntfMatcher,
                                                        imf.getAllMatcher(), serverIPMatcher,
                                                        pmf.getAllMatcher(), pmf.getAllMatcher(),
@@ -958,7 +962,7 @@ class DmzMatcher
 
         /* build the interface redirect for dmz traffic */
         InterfaceRedirect redirect =
-            new InterfaceAddressRedirect( ProtocolMatcher.MATCHER_ALL,
+            new InterfaceAddressRedirect( prmf.getTCPAndUDPMatcher(),
                                           clientIntfMatcher, serverIntfMatcher,
                                           imf.getAllMatcher(), serverIPMatcher,
                                           pmf.getAllMatcher(), pmf.getAllMatcher(),

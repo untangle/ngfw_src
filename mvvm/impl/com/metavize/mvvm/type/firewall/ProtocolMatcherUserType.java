@@ -13,7 +13,8 @@ package com.metavize.mvvm.type.firewall;
 
 import com.metavize.mvvm.type.StringBasedUserType;
 
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 
 public class ProtocolMatcherUserType extends StringBasedUserType
 {
@@ -29,6 +30,6 @@ public class ProtocolMatcherUserType extends StringBasedUserType
 
     public Object createUserType( String val ) throws Exception
     {
-        return ProtocolMatcher.parse( val );
+        return ProtocolMatcherFactory.parse( val );
     }
 }

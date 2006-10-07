@@ -17,11 +17,13 @@ package com.metavize.tran.firewall;
 import org.apache.log4j.Logger;
 import com.metavize.mvvm.tran.firewall.port.PortMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.metavize.mvvm.tran.firewall.DirectionMatcher;
 import com.metavize.mvvm.tran.firewall.TrafficDirectionMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
+
 
 /**
  * A class for matching redirects
@@ -88,7 +90,7 @@ class FirewallMatcher extends TrafficDirectionMatcher {
         PortMatcherFactory pmf = PortMatcherFactory.getInstance();
 
         MATCHER_DISABLED =
-            new FirewallMatcher( false, ProtocolMatcher.MATCHER_NIL,
+            new FirewallMatcher( false, ProtocolMatcherFactory.getInstance().getNilMatcher(),
                                  DirectionMatcher.getInstance( false, false ),
                                  ipmf.getNilMatcher(), ipmf.getNilMatcher(),
                                  pmf.getNilMatcher(), pmf.getNilMatcher(),

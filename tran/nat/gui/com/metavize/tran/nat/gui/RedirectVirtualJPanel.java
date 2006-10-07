@@ -19,12 +19,13 @@ import com.metavize.gui.util.*;
 import com.metavize.mvvm.networking.RedirectRule;
 
 import com.metavize.mvvm.tran.*;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
 import com.metavize.mvvm.tran.firewall.intf.IntfDBMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 import com.metavize.tran.nat.*;
 
 /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX This shouldn't be necessary */
@@ -70,7 +71,7 @@ class RedirectVirtualTableModel extends MSortedTableModel<Object>{
     private static final int  C9_MW = 120;  /* category */    
     private final int C10_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW), 120); /* description */
 
-    private ComboBoxModel protocolModel = super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), ProtocolMatcher.getProtocolDefault() );
+    private ComboBoxModel protocolModel = super.generateComboBoxModel( ProtocolMatcherFactory.getProtocolEnumeration(), ProtocolMatcherFactory.getProtocolDefault() );
     private com.metavize.tran.nat.gui.MTransformControlsJPanel mTransformControlsJPanel;
    
     public RedirectVirtualTableModel(com.metavize.tran.nat.gui.MTransformControlsJPanel mTransformControlsJPanel){
@@ -116,7 +117,7 @@ class RedirectVirtualTableModel extends MSortedTableModel<Object>{
             newElem = (RedirectRule) rowVector.elementAt(11);
             newElem.setLive( (Boolean) rowVector.elementAt(2) );
             newElem.setLog( (Boolean) rowVector.elementAt(3) );
-            newElem.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString()) );
+            newElem.setProtocol( ProtocolMatcherFactory.parse(((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem().toString()) );
             newElem.setDstAddress( (IPDBMatcher) ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem());
             try{ newElem.setDstPort( PortMatcherFactory.parse((String) rowVector.elementAt(6)) ); }
             catch(Exception e){ throw new Exception("Invalid \"destination port\" in row: " + rowIndex); }
@@ -155,7 +156,7 @@ class RedirectVirtualTableModel extends MSortedTableModel<Object>{
             tempRow.add( rowIndex );
             tempRow.add( redirectRule.isLive() );
             tempRow.add( redirectRule.getLog() );
-            tempRow.add( super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), redirectRule.getProtocol().toString() ) );
+            tempRow.add( super.generateComboBoxModel( ProtocolMatcherFactory.getProtocolEnumeration(), redirectRule.getProtocol().toString() ) );
             tempRow.add( super.generateComboBoxModel( mTransformControlsJPanel.getLocalMatcherList(), redirectRule.getDstAddress())  );
             tempRow.add( redirectRule.getDstPort().toString() );
             tempRow.add( redirectRule.getRedirectAddressString().toString() );

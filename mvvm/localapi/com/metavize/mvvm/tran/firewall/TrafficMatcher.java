@@ -13,13 +13,16 @@ package com.metavize.mvvm.tran.firewall;
 
 import java.net.InetAddress;
 
+ import org.apache.log4j.Logger;
+
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
 import com.metavize.mvvm.tapi.IPSessionDesc;
 import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
-import org.apache.log4j.Logger;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 
 /**
  * A class for matching Traffic
@@ -57,7 +60,7 @@ abstract class TrafficMatcher
         PortMatcher pingMatcher = PortMatcherFactory.getInstance().getPingMatcher();
 
         /* Ports are ignored for PING sessions */
-        if ( this.protocol.equals( ProtocolMatcher.MATCHER_PING )) {
+        if ( this.protocol.equals( ProtocolMatcherFactory.getInstance().getPingMatcher())) {
             this.srcPort       = pingMatcher;
             this.dstPort       = pingMatcher;
             this.isPingMatcher = true;

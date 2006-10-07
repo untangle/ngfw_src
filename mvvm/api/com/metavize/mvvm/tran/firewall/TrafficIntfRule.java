@@ -18,6 +18,7 @@ import com.metavize.mvvm.tran.firewall.intf.IntfDBMatcher;
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
 import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolDBMatcher;
 import org.hibernate.annotations.Type;
 
 /**
@@ -30,7 +31,7 @@ import org.hibernate.annotations.Type;
 @MappedSuperclass
 public abstract class TrafficIntfRule extends TrafficRule
 {
-    private static final long serialVersionUID = -3414932048560925028L;
+    // XXXX private static final long serialVersionUID = -3414932048560925028L;
 
     /* True if this matches source interface */
     private IntfDBMatcher srcIntf = IntfMatcherFactory.getInstance()
@@ -42,7 +43,7 @@ public abstract class TrafficIntfRule extends TrafficRule
 
     public TrafficIntfRule() { }
 
-    public TrafficIntfRule(boolean isLive, ProtocolMatcher protocol,
+    public TrafficIntfRule(boolean isLive, ProtocolDBMatcher protocol,
                            IntfDBMatcher srcIntf, IntfDBMatcher dstIntf,
                            IPDBMatcher srcAddress, IPDBMatcher dstAddress,
                            PortDBMatcher srcPort, PortDBMatcher dstPort)

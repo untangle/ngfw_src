@@ -20,6 +20,7 @@ import com.metavize.mvvm.tapi.Protocol;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcher;
 
 public abstract class InterfaceRedirect extends TrafficIntfMatcher
 {

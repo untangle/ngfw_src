@@ -17,14 +17,16 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
+
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ParseException;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolDBMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 import com.metavize.mvvm.tran.firewall.TrafficIntfRule;
 import com.metavize.mvvm.tran.firewall.intf.IntfDBMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
-import org.hibernate.annotations.Type;
 
 /**
  * Rule for matching based on IP addresses and subnets.
@@ -61,7 +63,7 @@ public class RedirectRule extends TrafficIntfRule
 
     public RedirectRule() { }
 
-    public RedirectRule( boolean       isLive,        ProtocolMatcher protocol,
+    public RedirectRule( boolean       isLive,        ProtocolDBMatcher protocol,
                          IntfDBMatcher srcIntf,       IntfDBMatcher  dstIntf,
                          IPDBMatcher   srcAddress,    IPDBMatcher    dstAddress,
                          PortDBMatcher srcPort,       PortDBMatcher  dstPort,
@@ -84,7 +86,7 @@ public class RedirectRule extends TrafficIntfRule
     {
         super.fixPing();
 
-        if ( getProtocol().equals( ProtocolMatcher.MATCHER_PING )) {
+        if ( getProtocol().equals( ProtocolMatcherFactory.getInstance().getPingMatcher())) {
             /* Indicate to use the redirect port for ping */
             this.redirectPort = -1;
         } else {

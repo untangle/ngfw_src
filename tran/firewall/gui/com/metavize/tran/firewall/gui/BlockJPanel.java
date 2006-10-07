@@ -25,6 +25,7 @@ import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.tran.firewall.*;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 import com.metavize.tran.firewall.*;
 
 public class BlockJPanel extends MEditTableJPanel{
@@ -64,7 +65,7 @@ class BlockTableModel extends MSortedTableModel<Object>{
     private final int C12_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW + C10_MW + C11_MW), 120); /* description */
 
 
-    private ComboBoxModel protocolModel = super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), ProtocolMatcher.getProtocolDefault() );
+    private ComboBoxModel protocolModel = super.generateComboBoxModel( ProtocolMatcherFactory.getProtocolEnumeration(), ProtocolMatcherFactory.getProtocolDefault() );
     private ComboBoxModel directionModel = super.generateComboBoxModel( TrafficDirectionRule.getDirectionEnumeration(), TrafficDirectionRule.getDirectionDefault() );
     private ComboBoxModel actionModel = super.generateComboBoxModel( FirewallRule.getActionEnumeration(), FirewallRule.getActionDefault() );
 
@@ -104,7 +105,7 @@ class BlockTableModel extends MSortedTableModel<Object>{
             newElem.setLive( (Boolean) rowVector.elementAt(2) );
             newElem.setAction( ((ComboBoxModel) rowVector.elementAt(3)).getSelectedItem().toString() );
             newElem.setLog( (Boolean) rowVector.elementAt(4) );
-        newElem.setProtocol( ProtocolMatcher.parse(((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString()) );
+        newElem.setProtocol( ProtocolMatcherFactory.parse(((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem().toString()) );
             newElem.setDirection( ((ComboBoxModel) rowVector.elementAt(6)).getSelectedItem().toString() );
             try{ newElem.setSrcAddress( IPMatcherFactory.parse((String) rowVector.elementAt(7)) ); }
             catch(Exception e){ throw new Exception("Invalid \"source address\" in row: " + rowIndex); }
@@ -143,10 +144,10 @@ class BlockTableModel extends MSortedTableModel<Object>{
         tempRow.add( firewallRule.isLive() );
         tempRow.add( super.generateComboBoxModel( FirewallRule.getActionEnumeration(), firewallRule.getAction().toString() ) );
         tempRow.add( firewallRule.getLog() );
-        System.out.println("PROTO ENUM: " + ProtocolMatcher.getProtocolEnumeration());
+        System.out.println("PROTO ENUM: " + ProtocolMatcherFactory.getProtocolEnumeration());
         System.out.println("FR RULE: " + firewallRule);
         System.out.println("FR PROTO: " + firewallRule.getProtocol());
-        tempRow.add( super.generateComboBoxModel( ProtocolMatcher.getProtocolEnumeration(), firewallRule.getProtocol().toString() ) );
+        tempRow.add( super.generateComboBoxModel( ProtocolMatcherFactory.getProtocolEnumeration(), firewallRule.getProtocol().toString() ) );
         tempRow.add( super.generateComboBoxModel( TrafficDirectionRule.getDirectionEnumeration(), firewallRule.getDirection().toString() ) );
         tempRow.add( firewallRule.getSrcAddress().toString() );
         tempRow.add( firewallRule.getDstAddress().toString() );

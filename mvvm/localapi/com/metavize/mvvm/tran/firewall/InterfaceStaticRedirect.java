@@ -11,6 +11,8 @@
 
 package com.metavize.mvvm.tran.firewall;
 
+import org.apache.log4j.Logger;
+
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.intf.IntfSimpleMatcher;
@@ -18,7 +20,8 @@ import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPSimpleMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortSimpleMatcher;
-import org.apache.log4j.Logger;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 
 public class InterfaceStaticRedirect extends InterfaceRedirect
 {
@@ -27,7 +30,7 @@ public class InterfaceStaticRedirect extends InterfaceRedirect
 
    /* Null matcher, these are automatically removed before adds */
     private static final InterfaceRedirect NIL_REDIRECT =
-        new InterfaceStaticRedirect( ProtocolMatcher.MATCHER_NIL,
+        new InterfaceStaticRedirect( ProtocolMatcherFactory.getInstance().getNilMatcher(),
                                      IntfSimpleMatcher.getNilMatcher(), IntfSimpleMatcher.getNilMatcher(),
                                      IPSimpleMatcher.getNilMatcher(), IPSimpleMatcher.getNilMatcher(),
                                      PortSimpleMatcher.getNilMatcher(), PortSimpleMatcher.getNilMatcher(),

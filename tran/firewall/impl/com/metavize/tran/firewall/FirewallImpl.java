@@ -15,6 +15,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 import com.metavize.mvvm.MvvmContextFactory;
 import com.metavize.mvvm.NetworkingConfiguration;
 import com.metavize.mvvm.localapi.SessionMatcher;
@@ -31,15 +35,13 @@ import com.metavize.mvvm.tapi.SoloPipeSpec;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformException;
 import com.metavize.mvvm.tran.TransformStartException;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.metavize.mvvm.tran.firewall.port.PortMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 import com.metavize.mvvm.util.TransactionWork;
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 public class FirewallImpl extends AbstractTransform implements Firewall
 {
@@ -220,6 +222,8 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         try {
             IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
             PortMatcherFactory pmf = PortMatcherFactory.getInstance();
+            ProtocolMatcherFactory prmf = ProtocolMatcherFactory.getInstance();
+            
 
             /* A few sample settings */
             settings.setQuickExit( true );
@@ -228,7 +232,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
             List<FirewallRule> firewallList = new LinkedList<FirewallRule>();
 
-            FirewallRule tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_ALL,
+            FirewallRule tmp = new FirewallRule( false, prmf.getTCPAndUDPMatcher(),
                                                  false, true,
                                                  ipmf.getAllMatcher(), ipmf.getAllMatcher(),
                                                  pmf.getAllMatcher(), pmf.makeSingleMatcher( 21 ),
@@ -238,7 +242,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
             firewallList.add( tmp );
 
             /* Block all traffic TCP traffic from the network 1.2.3.4/255.255.255.0 */
-            tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_TCP,
+            tmp = new FirewallRule( false, prmf.getTCPMatcher(),
                                     true, true,
                                     ipmf.parse( "1.2.3.0/255.255.255.0" ), ipmf.getAllMatcher(),
                                     pmf.getAllMatcher(), pmf.getAllMatcher(),
@@ -246,7 +250,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
             tmp.setDescription( "Block all TCP traffic from 1.2.3.0 netmask 255.255.255.0" );
             firewallList.add( tmp );
 
-            tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_ALL,
+            tmp = new FirewallRule( false, prmf.getTCPAndUDPMatcher(),
                                     true, true,
                                     ipmf.getAllMatcher(), ipmf.parse( "1.2.3.1 - 1.2.3.10" ),
                                     pmf.makeRangeMatcher( 1000, 5000 ), pmf.getAllMatcher(),
@@ -255,7 +259,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
             tmp.setDescription( "Accept and log all traffic to the range 1.2.3.1 - 1.2.3.10 from ports 1000-5000" );
             firewallList.add( tmp );
 
-            tmp = new FirewallRule( false, ProtocolMatcher.MATCHER_PING,
+            tmp = new FirewallRule( false, prmf.getPingMatcher(),
                                     true, true,
                                     ipmf.getAllMatcher(), ipmf.parse( "1.2.3.1" ),
                                     pmf.getPingMatcher(), pmf.getPingMatcher(),

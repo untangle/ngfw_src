@@ -25,10 +25,11 @@ import javax.persistence.Transient;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.Validatable;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
+
 import com.metavize.mvvm.tran.firewall.TrafficDirectionRule;
 import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolDBMatcher;
 
 /**
  * Rule for matching based on IP addresses and subnets.
@@ -53,7 +54,7 @@ public class FirewallRule extends TrafficDirectionRule
 
     public FirewallRule() { }
 
-    public FirewallRule( boolean       isLive,     ProtocolMatcher protocol,
+    public FirewallRule( boolean       isLive,     ProtocolDBMatcher protocol,
                          boolean       inbound,    boolean outbound,
                          IPDBMatcher   srcAddress, IPDBMatcher       dstAddress,
                          PortDBMatcher srcPort,    PortDBMatcher     dstPort,

@@ -15,13 +15,16 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
+import org.hibernate.annotations.Type;
+
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.Rule;
 import com.metavize.mvvm.tran.firewall.ip.IPDBMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortDBMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
-import org.hibernate.annotations.Type;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolDBMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 
 /**
  * Rule for matching based on IP addresses and subnets.
@@ -34,7 +37,7 @@ abstract class TrafficRule extends Rule
 {
     private static final long serialVersionUID = 3300082570569262876L;
 
-    private ProtocolMatcher protocol;
+    private ProtocolDBMatcher protocol;
 
     private IPDBMatcher   srcAddress;
     private IPDBMatcher   dstAddress;
@@ -46,7 +49,7 @@ abstract class TrafficRule extends Rule
 
     public TrafficRule() { }
 
-    public TrafficRule( boolean       isLive,     ProtocolMatcher protocol,
+    public TrafficRule( boolean       isLive,     ProtocolDBMatcher protocol,
                         IPDBMatcher   srcAddress, IPDBMatcher     dstAddress,
                         PortDBMatcher srcPort,    PortDBMatcher   dstPort )
     {
@@ -64,7 +67,7 @@ abstract class TrafficRule extends Rule
     public void fixPing() throws ParseException
     {
         PortDBMatcher pingMatcher = PortMatcherFactory.getInstance().getPingMatcher();
-        if ( this.protocol.equals( ProtocolMatcher.MATCHER_PING )) {
+        if ( this.protocol.equals( ProtocolMatcherFactory.getInstance().getPingMatcher())) {
             this.srcPort = pingMatcher;
             this.dstPort = pingMatcher;
         } else if ( this.srcPort.equals( pingMatcher ) || this.dstPort.equals( pingMatcher )) {
@@ -79,12 +82,12 @@ abstract class TrafficRule extends Rule
      */
     @Column(name="protocol_matcher")
     @Type(type="com.metavize.mvvm.type.firewall.ProtocolMatcherUserType")
-    public ProtocolMatcher getProtocol()
+    public ProtocolDBMatcher getProtocol()
     {
         return protocol;
     }
 
-    public void setProtocol( ProtocolMatcher protocol )
+    public void setProtocol( ProtocolDBMatcher protocol )
     {
         this.protocol = protocol;
     }

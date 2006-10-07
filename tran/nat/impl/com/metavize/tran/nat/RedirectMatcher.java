@@ -13,10 +13,11 @@ package com.metavize.tran.nat;
 
 import java.net.InetAddress;
 
+import org.apache.log4j.Logger;
+
 import com.metavize.mvvm.networking.RedirectRule;
 import com.metavize.mvvm.networking.internal.RedirectInternal;
 import com.metavize.mvvm.tapi.IPNewSessionRequest;
-import com.metavize.mvvm.tran.firewall.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.TrafficIntfMatcher;
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
 import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
@@ -24,7 +25,8 @@ import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.metavize.mvvm.tran.firewall.port.PortMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
-import org.apache.log4j.Logger;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcher;
+import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 
 /**
  * A class for matching redirects
@@ -209,7 +211,7 @@ class RedirectMatcher extends TrafficIntfMatcher {
         PortMatcherFactory pmf = PortMatcherFactory.getInstance();
 
         MATCHER_DISABLED =
-            new RedirectMatcher( false, false, ProtocolMatcher.MATCHER_NIL,
+            new RedirectMatcher( false, false, ProtocolMatcherFactory.getInstance().getNilMatcher(),
                                  imf.getNilMatcher(), imf.getNilMatcher(),
                                  ipmf.getNilMatcher(), ipmf.getNilMatcher(),
                                  pmf.getNilMatcher(), pmf.getNilMatcher(),
