@@ -36,15 +36,13 @@ abstract class TrafficMatcher
     private final boolean isEnabled;
 
     /* Package protected so the InterfaceRedirect has access to these variables */
-    final ProtocolMatcher protocol;
+    private final ProtocolMatcher protocol;
 
-    final IPMatcher   srcAddress;
-    final IPMatcher   dstAddress;
+    private final IPMatcher   srcAddress;
+    private final IPMatcher   dstAddress;
 
-    final PortMatcher srcPort;
-    final PortMatcher dstPort;
-
-    protected final boolean isPingMatcher;
+    private final PortMatcher srcPort;
+    private final PortMatcher dstPort;
 
     // XXX For the future
     // TimeMatcher time;
@@ -57,18 +55,10 @@ abstract class TrafficMatcher
         this.srcAddress = srcAddress;
         this.dstAddress = dstAddress;
 
-        PortMatcher pingMatcher = PortMatcherFactory.getInstance().getPingMatcher();
-
         /* Ports are ignored for PING sessions */
-        if ( this.protocol.equals( ProtocolMatcherFactory.getInstance().getPingMatcher())) {
-            this.srcPort       = pingMatcher;
-            this.dstPort       = pingMatcher;
-            this.isPingMatcher = true;
-        } else {
-            this.srcPort       = srcPort;
-            this.dstPort       = dstPort;
-            this.isPingMatcher = false;
-        }
+        /* XXX ICMP Hack moved to the matching algorithm, before it was inside of the port matchers */
+        this.srcPort       = srcPort;
+        this.dstPort       = dstPort;
     }
 
     protected TrafficMatcher( TrafficRule rule )
@@ -86,9 +76,8 @@ abstract class TrafficMatcher
     {
         boolean isMatch =
             isEnabled &&
-            isMatchProtocol( protocol ) &&
+            isMatchProtocol( protocol, request.clientPort(), request.serverPort()) &&
             isMatchAddress( request.clientAddr(), request.serverAddr()) &&
-            isMatchPort( request.clientPort(), request.serverPort()) &&
             isTimeMatch();
 
         if ( isMatch && logger.isDebugEnabled())
@@ -101,9 +90,8 @@ abstract class TrafficMatcher
     protected boolean isMatch( IPSessionDesc session, Protocol protocol )
     {
         return ( isEnabled &&
-                 isMatchProtocol( protocol ) &&
+                 isMatchProtocol( protocol, session.clientPort(), session.serverPort()) &&
                  isMatchAddress( session.clientAddr(), session.serverAddr()) &&
-                 isMatchPort( session.clientPort(), session.serverPort()) &&
                  isTimeMatch());
     }
 
@@ -111,16 +99,19 @@ abstract class TrafficMatcher
                                int srcPort, int dstPort )
     {
         return ( isEnabled &&
-                 isMatchProtocol( protocol ) &&
+                 isMatchProtocol( protocol, srcPort, dstPort ) &&
                  isMatchAddress( srcAddress, dstAddress) &&
-                 isMatchPort( srcPort, dstPort ) &&
                  isTimeMatch());
     }
 
 
-    public boolean isMatchProtocol( Protocol protocol )
+    public boolean isMatchProtocol( Protocol protocol, int srcPort, int dstPort )
     {
-        return this.protocol.isMatch( protocol );
+        /* XXX ICMP Hack */
+        if (( srcPort == 0 ) && ( dstPort == 0 ) && this.protocol.isMatch( Protocol.ICMP )) return true;
+
+        /* Otherwise the port and protocol must match */
+        return ( this.protocol.isMatch( protocol ) && isMatchPort( srcPort, dstPort ));
     }
 
     public boolean isMatchAddress( InetAddress src, InetAddress dst )

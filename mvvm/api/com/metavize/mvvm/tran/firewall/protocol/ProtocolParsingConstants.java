@@ -17,4 +17,5 @@ public final class ProtocolParsingConstants
     public static final String MARKER_UDP         = "UDP";
     public static final String MARKER_TCP_AND_UDP = "TCP & UDP";
     public static final String MARKER_PING        = "PING";
+    public static final String MARKER_ANY         = "ANY";
 }

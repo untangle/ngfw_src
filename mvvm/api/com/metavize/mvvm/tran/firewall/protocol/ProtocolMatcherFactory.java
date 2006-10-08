@@ -20,6 +20,7 @@ import static com.metavize.mvvm.tran.firewall.protocol.ProtocolParsingConstants.
 import static com.metavize.mvvm.tran.firewall.protocol.ProtocolParsingConstants.MARKER_UDP;
 import static com.metavize.mvvm.tran.firewall.protocol.ProtocolParsingConstants.MARKER_PING;
 import static com.metavize.mvvm.tran.firewall.protocol.ProtocolParsingConstants.MARKER_TCP_AND_UDP;
+import static com.metavize.mvvm.tran.firewall.protocol.ProtocolParsingConstants.MARKER_ANY;
 
 public class ProtocolMatcherFactory
 {
@@ -27,7 +28,9 @@ public class ProtocolMatcherFactory
 
     private final ParsingFactory<ProtocolDBMatcher> factory;
 
-    private static final String[] ENUMERATION = { MARKER_TCP_AND_UDP, MARKER_UDP, MARKER_TCP, MARKER_PING };
+    private static final String[] ENUMERATION = { 
+        MARKER_TCP_AND_UDP, MARKER_UDP, MARKER_TCP, MARKER_PING, MARKER_ANY
+    };
 
     private ProtocolMatcherFactory()
     {

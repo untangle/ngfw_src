@@ -83,11 +83,8 @@ class RedirectMatcher extends TrafficIntfMatcher {
         this.isDstRedirect   = isDstRedirect;
         this.redirectAddress = redirectAddress;
 
-        if ( this.isPingMatcher ) {
-            this.redirectPort = -1;
-        } else {
-            this.redirectPort = redirectPort;
-        }
+        /* XXX Possible ICMP hack since ICMP sessions can't be redirected */
+        this.redirectPort = redirectPort;
 
         this.ruleIndex = ruleIndex;
     }
@@ -151,7 +148,10 @@ class RedirectMatcher extends TrafficIntfMatcher {
                 request.serverAddr( redirectAddress );
             }
 
-            if ( redirectPort > 0 ) {
+            /* If the redirect port is greater than zero, and this is not an Ping session, then
+             * redirect it */
+            /* XXXXX ICMP HACK */
+            if (( redirectPort > 0 ) && ( request.serverPort() != 0 ) && ( request.clientPort() != 0 )) {
                 request.serverPort( redirectPort );
             }
         } else {
@@ -160,7 +160,10 @@ class RedirectMatcher extends TrafficIntfMatcher {
                 request.clientAddr( redirectAddress );
             }
 
-            if ( redirectPort > 0 ) {
+            /* If the redirect port is greater than zero, and this is not an Ping session, then
+             * redirect it */
+            /* XXXXX ICMP HACK */
+            if (( redirectPort > 0 ) && ( request.serverPort() != 0 ) && ( request.clientPort() != 0 )) {
                 request.clientPort( redirectPort );
             }
         }
@@ -183,10 +186,6 @@ class RedirectMatcher extends TrafficIntfMatcher {
 
     static RedirectMatcher makeLocalRedirect( RedirectRule rule, int ruleIndex )
     {
-        IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
-        IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
-        PortMatcherFactory pmf = PortMatcherFactory.getInstance();
-
         IntfMatcher intfAllMatcher = IntfMatcherFactory.getInstance().getAllMatcher();
         IPMatcher   ipAllMatcher   = IPMatcherFactory.getInstance().getAllMatcher();
         PortMatcher portAllMatcher = PortMatcherFactory.getInstance().getAllMatcher();

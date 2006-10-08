@@ -16,29 +16,24 @@ import java.util.Map;
 
 public class Protocol
 {
-    public static final Protocol TCP = new Protocol("TCP", 6);
-    public static final Protocol UDP = new Protocol("UDP", 17);
+    private static final Map<String,Protocol> NAME_TO_PROTOCOL_MAP = new HashMap<String,Protocol>();
+    private static final Map<Integer,Protocol> ID_TO_PROTOCOL_MAP = new HashMap<Integer,Protocol>();
 
-    private static final Map INSTANCES = new HashMap();
-
-    static {
-        INSTANCES.put(TCP.toString(), TCP);
-        INSTANCES.put(UDP.toString(), UDP);
-        INSTANCES.put(TCP.getId(), TCP);
-        INSTANCES.put(UDP.getId(), UDP);
-    }
+    public static final Protocol TCP  = makeInstance("TCP", 6);
+    public static final Protocol UDP  = makeInstance("UDP", 17);
+    public static final Protocol ICMP = makeInstance("ICMP", 1);
 
     private final String name;
     private final int id;
 
     public static Protocol getInstance(String name)
     {
-        return (Protocol)INSTANCES.get(name);
+        return NAME_TO_PROTOCOL_MAP.get(name);
     }
 
     public static Protocol getInstance(int id)
     {
-        return (Protocol)INSTANCES.get(id);
+        return ID_TO_PROTOCOL_MAP.get(id);
     }
 
     private Protocol(String name, int id)
@@ -71,7 +66,7 @@ public class Protocol
 
     public int hashCode()
     {
-        return id;
+        return ( 17 * 37 ) + id;
     }
 
     // serialization helpers --------------------------------------------------
@@ -80,4 +75,13 @@ public class Protocol
     {
         return getInstance(name);
     }
+
+    private static Protocol makeInstance( String name, int id )
+    {
+        Protocol protocol = new Protocol( name, id );
+        NAME_TO_PROTOCOL_MAP.put( name, protocol );
+        ID_TO_PROTOCOL_MAP.put( id, protocol );
+        return protocol;
+    }
+                                          
 }

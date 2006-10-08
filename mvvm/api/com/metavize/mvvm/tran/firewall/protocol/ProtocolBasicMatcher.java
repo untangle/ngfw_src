@@ -73,6 +73,9 @@ public final class ProtocolBasicMatcher extends ProtocolDBMatcher
         /* Right now Ping is a UDP session. [XXX ICMP HACK] */
         if (( protocol == Protocol.UDP ) && this.ping ) return true;
 
+        /* The Traffic Matcher uses ICMP as the protocol */
+        if (( protocol == Protocol.ICMP ) && this.ping ) return true;
+
         return false;
     }
 

@@ -24,7 +24,7 @@ import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcher;
 
 public abstract class TrafficDirectionMatcher extends TrafficMatcher 
 {
-    final DirectionMatcher direction;
+    private final DirectionMatcher direction;
 
     public TrafficDirectionMatcher( boolean     isEnabled,  ProtocolMatcher protocol, 
                                     DirectionMatcher direction,

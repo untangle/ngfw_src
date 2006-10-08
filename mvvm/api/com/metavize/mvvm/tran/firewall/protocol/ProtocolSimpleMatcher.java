@@ -30,7 +30,6 @@ public final class ProtocolSimpleMatcher extends ProtocolDBMatcher
     private static final ProtocolDBMatcher MATCHER_ALL = new ProtocolSimpleMatcher( true );
     private static final ProtocolDBMatcher MATCHER_NOTHING = new ProtocolSimpleMatcher( false );
 
-
     private final boolean isAll;
     
     private ProtocolSimpleMatcher( boolean isAll )
@@ -50,8 +49,8 @@ public final class ProtocolSimpleMatcher extends ProtocolDBMatcher
 
     public String toString()
     {
-        if ( isAll ) return ParsingConstants.MARKER_ANY;
-        return ParsingConstants.MARKER_NOTHING;
+        String name = ( isAll ) ? ProtocolParsingConstants.MARKER_ANY : ParsingConstants.MARKER_NOTHING;
+        return name.toUpperCase();
     }
     
     public static ProtocolDBMatcher getAllMatcher()
@@ -76,7 +75,8 @@ public final class ProtocolSimpleMatcher extends ProtocolDBMatcher
             return ( value.equalsIgnoreCase( ParsingConstants.MARKER_ANY ) ||
                      value.equalsIgnoreCase( ParsingConstants.MARKER_WILDCARD ) ||
                      value.equalsIgnoreCase( ParsingConstants.MARKER_ALL ) ||
-                     value.equalsIgnoreCase( ParsingConstants.MARKER_NOTHING ));
+                     value.equalsIgnoreCase( ParsingConstants.MARKER_NOTHING ) ||
+                     value.equalsIgnoreCase( ProtocolParsingConstants.MARKER_ANY ));
         }
         
         public ProtocolDBMatcher parse( String value ) throws ParseException
