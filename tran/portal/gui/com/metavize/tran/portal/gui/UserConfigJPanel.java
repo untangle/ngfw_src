@@ -44,7 +44,7 @@ public class UserConfigJPanel extends MEditTableJPanel{
         // create actual table model
         UserConfigTableModel userConfigTableModel = new UserConfigTableModel(mTransformControlsJPanel, this);
         this.setTableModel( userConfigTableModel );
-	userConfigTableModel.setSortingStatus(3, UserConfigTableModel.ASCENDING);
+        //userConfigTableModel.setSortingStatus(3, UserConfigTableModel.ASCENDING);
     }
 
 }

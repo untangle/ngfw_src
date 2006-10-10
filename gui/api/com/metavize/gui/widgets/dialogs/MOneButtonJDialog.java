@@ -31,7 +31,7 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
     }
 
     public static MOneButtonJDialog factory(Container topLevelContainer, String applianceName, String warning, String title, String subtitle){
-	return factory( (Window)topLevelContainer, applianceName, warning, title, subtitle);
+        return factory( (Window)topLevelContainer, applianceName, warning, title, subtitle);
     }
 
     public static MOneButtonJDialog factory(Window topLevelWindow, String applianceName, String warning, String title, String subtitle){
@@ -65,7 +65,7 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
     private void init(Window window){
         initComponents();
         addWindowListener(this);
-	setBounds( Util.generateCenteredBounds(window, this.getWidth(), this.getHeight()) );
+        setBounds( Util.generateCenteredBounds(window, this.getWidth(), this.getHeight()) );
     }
 
     private void initComponents() {//GEN-BEGIN:initComponents
