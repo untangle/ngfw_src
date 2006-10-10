@@ -17,6 +17,7 @@ import com.metavize.gui.transform.*;
 import com.metavize.gui.pipeline.MPipelineJPanel;
 import com.metavize.gui.widgets.editTable.*;
 import com.metavize.gui.util.*;
+import com.metavize.gui.widgets.dialogs.*;
 
 import java.awt.*;
 import javax.swing.*;
@@ -37,24 +38,37 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     public void generateGui(){
 	// RULE LIST /////
 	IDSConfigJPanel idsConfigJPanel = new IDSConfigJPanel();
-        addTab(NAME_RULE_LIST, null, idsConfigJPanel);
+    addTab(NAME_RULE_LIST, null, idsConfigJPanel);
 	addSavable(NAME_RULE_LIST, idsConfigJPanel);
 	addRefreshable(NAME_RULE_LIST, idsConfigJPanel);
 	idsConfigJPanel.setSettingsChangedListener(this);
 
 	// VARIABLE LIST /////
 	IDSVariableJPanel idsVariableJPanel = new IDSVariableJPanel();
-        addTab(NAME_VARIABLE_LIST, null, idsVariableJPanel);
+    addTab(NAME_VARIABLE_LIST, null, idsVariableJPanel);
 	addSavable(NAME_VARIABLE_LIST, idsVariableJPanel);
 	addRefreshable(NAME_VARIABLE_LIST, idsVariableJPanel);
 	idsVariableJPanel.setSettingsChangedListener(this);
 
-        // EVENT LOG ///////
-        LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
-        addTab(NAME_LOG, null, logJPanel);
+    // EVENT LOG ///////
+    LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
+    addTab(NAME_LOG, null, logJPanel);
 	addShutdownable(NAME_LOG, logJPanel);
     }
+
+
+    private boolean shownOnce = false;
     
+    public void settingsChanged(Object source){
+        if(!shownOnce){
+            MOneButtonJDialog.factory( (Window)this.getTopLevelAncestor(), "Intrusion Prevention",
+                                       "You should only change these rules if you are certain you "
+                                       + "know what you are doing, or are instructed to do so.",
+                                       "Intrusion Prevention Warning", "Warning");
+            shownOnce = true;
+        }
+        super.settingsChanged(source);
+    }
 }
 
 
