@@ -52,7 +52,7 @@ if (null == text) {
       </span>
       <br/>
       <%=text%>
-      <br/>
+      <br/><br/>
       <center>
       <table border="0">
         <tr>

@@ -72,17 +72,17 @@ BookmarkPanel.prototype._makeToolbar = function() {
     b.setToolTipContent("Add a new bookmark");
     this.addBookmarkButton = b;
 
-    b = new DwtButton(toolbar,DwtLabel.ALIGN_CENTER,"DwtButton32");
-    b.setText("Edit"); // XXX change to setImage
-    //b.setDisabledImage("AddDisabled");
-    b.setToolTipContent("Edit bookmark");
-    this.editBookmarkButton = b;
-
     b = new DwtButton(toolbar,DwtButton.ALIGN_CENTER,"DwtButton32");
     b.setImage("Remove");
     b.setDisabledImage("RemoveDisabled");
     b.setToolTipContent("Remove selected bookmarks");
     this.deleteBookmarkButton = b;
+
+    b = new DwtButton(toolbar,DwtLabel.ALIGN_CENTER,"DwtButton32");
+    b.setText("Edit"); // XXX change to setImage
+    //b.setDisabledImage("AddDisabled");
+    b.setToolTipContent("Edit bookmark");
+    this.editBookmarkButton = b;
 
     return toolbar;
 };
