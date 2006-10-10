@@ -9,24 +9,27 @@
  * $Id$
  */
 
-package com.metavize.mvvm.tran.firewall.port;
+package com.metavize.mvvm.tran.firewall.user;
+
+import java.util.Collections;
+import java.util.List;
 
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.firewall.Parser;
 import com.metavize.mvvm.tran.firewall.ParsingConstants;
 
-public final class PortSimpleMatcher
+public final class UserSimpleMatcher
 {
-    private static final PortDBMatcher ALL_MATCHER     = new PortDBMatcher()
+    private static final UserDBMatcher ALL_MATCHER     = new UserDBMatcher()
         {
-            public boolean isMatch( int port )
+            public boolean isMatch( String user )
             {
                 return true;
             }
 
-            public String toDatabaseString()
+            public List<String> toDatabaseList()
             {
-                return toString();
+                return Collections.nCopies( 1, toString());
             }
             
             public String toString()
@@ -35,16 +38,16 @@ public final class PortSimpleMatcher
             }
         };
 
-    private static final PortDBMatcher NOTHING_MATCHER     = new PortDBMatcher()
+    private static final UserDBMatcher NOTHING_MATCHER     = new UserDBMatcher()
         {
-            public boolean isMatch( int port )
+            public boolean isMatch( String user )
             {
                 return false;
             }
 
-            public String toDatabaseString()
+            public List<String> toDatabaseList()
             {
-                return toString();
+                return Collections.nCopies( 1, toString());
             }
             
             public String toString()
@@ -53,41 +56,56 @@ public final class PortSimpleMatcher
             }
         };
 
-    private static final PortDBMatcher PING_MATCHER     = new PortDBMatcher()
+    private static final UserDBMatcher KNOWN_MATCHER     = new UserDBMatcher()
         {
-            public boolean isMatch( int port )
+            public boolean isMatch( String user )
             {
-                return ( port == 0 );
+                /******** This has to look up inside of the user manager *****/
+                return true;
             }
 
-            public String toDatabaseString()
+            public List<String> toDatabaseList()
             {
-                return toString();
+                return Collections.nCopies( 1, toString());
             }
             
             public String toString()
             {
-                return ParsingConstants.MARKER_NA;
+                return UserMatcherConstants.MARKER_KNOWN;
+            }
+        };
+
+    private static final UserDBMatcher UNKNOWN_MATCHER     = new UserDBMatcher()
+        {
+            public boolean isMatch( String user )
+            {
+                /******** This has to look up inside of the user manager *****/
+                return true;
+            }
+
+            public List<String> toDatabaseList()
+            {
+                return Collections.nCopies( 1, toString());
+            }
+            
+            public String toString()
+            {
+                return UserMatcherConstants.MARKER_UNKNOWN;
             }
         };
         
-    public static PortDBMatcher getAllMatcher()
+    public static UserDBMatcher getAllMatcher()
     {
         return ALL_MATCHER;
     }
 
-    public static PortDBMatcher getNilMatcher()
+    public static UserDBMatcher getNilMatcher()
     {
         return NOTHING_MATCHER;
     }
 
-    public static PortDBMatcher getPingMatcher()
-    {
-        return PING_MATCHER;
-    }
-
     /* This is just for matching a list of interfaces */
-    static final Parser<PortDBMatcher> PARSER = new Parser<PortDBMatcher>() 
+    static final Parser<UserDBMatcher> PARSER = new Parser<UserDBMatcher>() 
     {
         public int priority()
         {
@@ -99,14 +117,13 @@ public final class PortSimpleMatcher
             return ( value.equalsIgnoreCase( ParsingConstants.MARKER_ANY ) ||
                      value.equalsIgnoreCase( ParsingConstants.MARKER_WILDCARD ) ||
                      value.equalsIgnoreCase( ParsingConstants.MARKER_ALL ) ||
-                     value.equalsIgnoreCase( ParsingConstants.MARKER_NOTHING ) ||
-                     value.equalsIgnoreCase( ParsingConstants.MARKER_NA ));            
+                     value.equalsIgnoreCase( ParsingConstants.MARKER_NOTHING ));
         }
         
-        public PortDBMatcher parse( String value ) throws ParseException
+        public UserDBMatcher parse( String value ) throws ParseException
         {
             if ( !isParseable( value )) {
-                throw new ParseException( "Invalid port simple matcher '" + value + "'" );
+                throw new ParseException( "Invalid user simple matcher '" + value + "'" );
             }
             
             if ( value.equalsIgnoreCase( ParsingConstants.MARKER_ANY ) || 
@@ -115,11 +132,9 @@ public final class PortSimpleMatcher
                      return ALL_MATCHER;
                  } else if ( value.equalsIgnoreCase( ParsingConstants.MARKER_NOTHING )) {
                      return NOTHING_MATCHER;
-                 } else if ( value.equalsIgnoreCase( ParsingConstants.MARKER_NA )) {
-                     return PING_MATCHER;
                  }
             
-            throw new ParseException( "Invalid port simple matcher '" + value + "'" );
+            throw new ParseException( "Invalid user simple matcher '" + value + "'" );
         }
     };
 }
