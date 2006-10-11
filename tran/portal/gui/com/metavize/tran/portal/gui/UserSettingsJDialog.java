@@ -52,39 +52,52 @@ public class UserSettingsJDialog extends MConfigJDialog implements SettingsChang
     }
 
     public UserSettingsJDialog(Dialog topLevelDialog, PortalUser portalUser, MTransformControlsJPanel mTransformControlsJPanel){
-	super(topLevelDialog);
-	init(portalUser, mTransformControlsJPanel);
+        super(topLevelDialog);
+        init(portalUser, mTransformControlsJPanel);
     }
 
     public UserSettingsJDialog(Frame topLevelFrame, PortalUser portalUser, MTransformControlsJPanel mTransformControlsJPanel){
-	super(topLevelFrame);
-	init(portalUser, mTransformControlsJPanel);
+        super(topLevelFrame);
+        init(portalUser, mTransformControlsJPanel);
     }
 
     private void init(PortalUser portalUser, MTransformControlsJPanel mTransformControlsJPanel){
-	this.portalUser = portalUser;
-	this.mTransformControlsJPanel = mTransformControlsJPanel;
-	saveJButton.setText("<html><b>Change</b> Settings</html>");
+        this.portalUser = portalUser;
+        this.mTransformControlsJPanel = mTransformControlsJPanel;
+        applications = new Vector<Application>();
+        //saveJButton.setText("<html><b>Change</b> Settings</html>");
     }
     
     protected Dimension getMinSize(){
-	return new Dimension(640, 610);
+        return new Dimension(640, 610);
     }
 
     protected void saveAll() throws Exception {
-	super.saveAll();
-	if( settingsChanged )
-	    mTransformControlsJPanel.setSaveSettingsHintVisible(true);	    
+        super.saveAll();
+        setVisible(false);
+        mTransformControlsJPanel.saveGui();
+
+        /*
+        if( settingsChanged )
+            mTransformControlsJPanel.setSaveSettingsHintVisible(true);	    
+        */
     }
 
+    private boolean firstRefresh = true;
     protected void refreshAll() throws Exception {
-	applications = Util.getMvvmContext().portalManager().applicationManager().getApplications();
-	super.refreshAll();
-	settingsChanged = false;
+        applications.clear();
+        applications.addAll(Util.getMvvmContext().portalManager().applicationManager().getApplications());
+        super.refreshAll();
+        if( !firstRefresh ){
+            setVisible(false);
+            mTransformControlsJPanel.refreshGui();
+        }
+        firstRefresh = false;
+        //settingsChanged = false;
     }
 
     public void settingsChanged(Object source){
-	settingsChanged = true;
+        settingsChanged = true;
     }
 
     protected void generateGui(){

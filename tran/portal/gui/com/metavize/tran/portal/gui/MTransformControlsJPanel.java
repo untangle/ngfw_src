@@ -44,8 +44,6 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     private static final String NAME_STATUS             = "Active Users";
     private static final String NAME_LOG                = "Event Log";
 
-    private List<UserEntry> localUserEntries;
-    List<UserEntry> getLocalUserEntries(){ return localUserEntries; }
 
     private List<Application> applications;
     private List<PortalLogin> loginList;
@@ -58,14 +56,14 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
 	// USERS ///////////
 	UserConfigJPanel userConfigJPanel = new UserConfigJPanel(this);
-        addTab(NAME_USERS, null, userConfigJPanel);
-	addSavable(NAME_USERS, userConfigJPanel);
+    addTab(NAME_USERS, null, userConfigJPanel);
+    addSavable(NAME_USERS, userConfigJPanel);
 	addRefreshable(NAME_USERS, userConfigJPanel);
 	userConfigJPanel.setSettingsChangedListener(this);
 
 	// GROUPS ///////////  THIS MUST BE AFTER USERS FOR PREVALIDATION REASONS
 	GroupConfigJPanel groupConfigJPanel = new GroupConfigJPanel(this);
-        addTab(NAME_GROUPS, null, groupConfigJPanel);
+    addTab(NAME_GROUPS, null, groupConfigJPanel);
 	addSavable(NAME_GROUPS, groupConfigJPanel);
 	addRefreshable(NAME_GROUPS, groupConfigJPanel);
 	groupConfigJPanel.setSettingsChangedListener(this);
@@ -94,29 +92,26 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	addRefreshable(NAME_SETTINGS_HOME, globalHomeSettingsJPanel);
 	globalHomeSettingsJPanel.setSettingsChangedListener(this);
 
-        // STATUS ////////
+    // STATUS ////////
 	KickUserJPanel kickUserJPanel = new KickUserJPanel(this);
-        addTab(NAME_STATUS, null, kickUserJPanel);
+    addTab(NAME_STATUS, null, kickUserJPanel);
 	addSavable(NAME_STATUS, kickUserJPanel);
 	addRefreshable(NAME_STATUS, kickUserJPanel);
 
  	// EVENT LOG ///////
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
-        addTab(NAME_LOG, null, logJPanel);
-        addShutdownable(NAME_LOG, logJPanel);
+    addTab(NAME_LOG, null, logJPanel);
+    addShutdownable(NAME_LOG, logJPanel);
     }
 
     List<PortalLogin> getLoginList(){
-	return loginList;
+        return loginList;
     }
 
     public void refreshAll() throws Exception {
-	applications = Util.getRemotePortalManager().applicationManager().getApplications();
-	loginList = Util.getRemotePortalManager().getActiveLogins();
-	super.refreshAll();
-	localUserEntries = Util.getAddressBook().getLocalUserEntries();
+        applications = Util.getRemotePortalManager().applicationManager().getApplications();
+        loginList = Util.getRemotePortalManager().getActiveLogins();
+        super.refreshAll();
     }
 
 }
-
-

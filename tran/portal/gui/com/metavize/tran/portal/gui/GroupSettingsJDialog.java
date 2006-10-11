@@ -61,29 +61,39 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
     }
 
     private void init(PortalGroup portalGroup, MTransformControlsJPanel mTransformControlsJPanel){
-	this.portalGroup = portalGroup;
-	saveJButton.setText("<html><b>Change</b> Settings</html>");
-	this.mTransformControlsJPanel = mTransformControlsJPanel;
+        this.portalGroup = portalGroup;
+        this.mTransformControlsJPanel = mTransformControlsJPanel;
+        //saveJButton.setText("<html><b>Change</b> Settings</html>");
+        applications = new Vector<Application>();
     }
     
     protected Dimension getMinSize(){
-	return new Dimension(640, 610);
+        return new Dimension(640, 610);
     }
 
     protected void saveAll() throws Exception {
-	super.saveAll();
-	if( settingsChanged )
-	    mTransformControlsJPanel.setSaveSettingsHintVisible(true);	    
+        super.saveAll();
+        setVisible(false);
+        mTransformControlsJPanel.saveGui();
+        //if( settingsChanged )
+        //    mTransformControlsJPanel.setSaveSettingsHintVisible(true);	    
     }
 
+    private boolean firstRefresh = true;
     protected void refreshAll() throws Exception {
-	applications = Util.getMvvmContext().portalManager().applicationManager().getApplications();
-	super.refreshAll();
-	settingsChanged = false;
+        applications.clear();
+        applications.addAll(Util.getMvvmContext().portalManager().applicationManager().getApplications());
+        super.refreshAll();
+        if(!firstRefresh){
+            setVisible(false);
+            mTransformControlsJPanel.refreshGui();
+        }
+        firstRefresh = false;
+        //settingsChanged = false;
     }
 
     public void settingsChanged(Object source){
-	settingsChanged = true;
+        settingsChanged = true;
     }
 
     protected void generateGui(){

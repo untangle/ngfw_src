@@ -249,6 +249,13 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 	setSaveSettingsHintVisible(false);
     }
 
+    public void saveGui(){
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            saveJButton.doClick();
+        }});
+    }
+    
+
 
     public void refreshGui(){
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){

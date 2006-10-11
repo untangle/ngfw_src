@@ -101,13 +101,13 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
     }
 
     protected void wireUpNewRow(Vector rowVector){
-	PortalUser portalUser = (PortalUser) rowVector.elementAt(7);
-	SettingsButtonRunnable settingsButtonRunnable = (SettingsButtonRunnable) rowVector.elementAt(5);
-	settingsButtonRunnable.setPortalUser(portalUser);
-	settingsButtonRunnable.setUserType(true);
-	settingsButtonRunnable.setMTransformControlsJPanel(mTransformControlsJPanel);
-	UidButtonRunnable uidButtonRunnable = (UidButtonRunnable) rowVector.elementAt(3);
-	uidButtonRunnable.setMTransformControlsJPanel(mTransformControlsJPanel);
+        PortalUser portalUser = (PortalUser) rowVector.elementAt(7);
+        SettingsButtonRunnable settingsButtonRunnable = (SettingsButtonRunnable) rowVector.elementAt(5);
+        settingsButtonRunnable.setPortalUser(portalUser);
+        settingsButtonRunnable.setUserType(true);
+        settingsButtonRunnable.setMTransformControlsJPanel(mTransformControlsJPanel);
+        UidButtonRunnable uidButtonRunnable = (UidButtonRunnable) rowVector.elementAt(3);
+        uidButtonRunnable.setMTransformControlsJPanel(mTransformControlsJPanel);
     }
 
 
@@ -135,55 +135,54 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
         
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
         List elemList = new ArrayList(tableVector.size());
-	PortalUser newElem = null;
+        PortalUser newElem = null;
 
-	for( Vector rowVector : tableVector ){
-	    newElem = (PortalUser) rowVector.elementAt(7);
+        for( Vector rowVector : tableVector ){
+            newElem = (PortalUser) rowVector.elementAt(7);
             newElem.setLive( (Boolean) rowVector.elementAt(2) );
             newElem.setUid( ((UidButtonRunnable) rowVector.elementAt(3)).getUid() );
-	    PortalGroupWrapper portalGroupWrapper = (PortalGroupWrapper) ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem();
+            PortalGroupWrapper portalGroupWrapper = (PortalGroupWrapper) ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem();
             newElem.setPortalGroup( portalGroupWrapper.getPortalGroup() );
             newElem.setDescription( (String) rowVector.elementAt(6) );
             elemList.add(newElem);
         }
 
-	// SAVE SETTINGS ////////
-	if( !validateOnly ){
-	    PortalSettings portalSettings = (PortalSettings) settings;
-	    portalSettings.setUsers(elemList);
-	}
-
+        // SAVE SETTINGS ////////
+        if( !validateOnly ){
+            PortalSettings portalSettings = (PortalSettings) settings;
+            portalSettings.setUsers(elemList);
+        }
     }
     
     public Vector<Vector> generateRows(Object settings){
-	PortalSettings portalSettings = (PortalSettings) settings;
-	List<PortalUser> users = (List<PortalUser>) portalSettings.getUsers();
+        PortalSettings portalSettings = (PortalSettings) settings;
+        List<PortalUser> users = (List<PortalUser>) portalSettings.getUsers();
         Vector<Vector> allRows = new Vector<Vector>(users.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
+        Vector tempRow = null;
+        int rowIndex = 0;
 
-	updateGroupModel((List<PortalGroup>)portalSettings.getGroups());
-	//updateUidModel(mTransformControlsJPanel.getLocalUserEntries());
+        updateGroupModel((List<PortalGroup>)portalSettings.getGroups());
+        //updateUidModel(mTransformControlsJPanel.getLocalUserEntries());
 
-	for( PortalUser newElem : users ){
-	    rowIndex++;
+        for( PortalUser newElem : users ){
+            rowIndex++;
             tempRow = new Vector(8);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( newElem.isLive() );
-	    UidButtonRunnable uidButtonRunnable = new UidButtonRunnable("true");
-	    uidButtonRunnable.setUid( newElem.getUid() );
-	    tempRow.add( uidButtonRunnable );
-	    ComboBoxModel comboBoxModel = copyComboBoxModel(groupModel);
-	    comboBoxModel.setSelectedItem(new PortalGroupWrapper(newElem.getPortalGroup()));
-	    tempRow.add( comboBoxModel );
-	    SettingsButtonRunnable settingsButtonRunnable = new SettingsButtonRunnable("true");
-	    settingsButtonRunnable.setPortalUser(newElem);
-	    settingsButtonRunnable.setUserType(true);
-	    settingsButtonRunnable.setMTransformControlsJPanel(mTransformControlsJPanel);
-	    tempRow.add( settingsButtonRunnable );
+            UidButtonRunnable uidButtonRunnable = new UidButtonRunnable("true");
+            uidButtonRunnable.setUid( newElem.getUid() );
+            tempRow.add( uidButtonRunnable );
+            ComboBoxModel comboBoxModel = copyComboBoxModel(groupModel);
+            comboBoxModel.setSelectedItem(new PortalGroupWrapper(newElem.getPortalGroup()));
+            tempRow.add( comboBoxModel );
+            SettingsButtonRunnable settingsButtonRunnable = new SettingsButtonRunnable("true");
+            settingsButtonRunnable.setPortalUser(newElem);
+            settingsButtonRunnable.setUserType(true);
+            settingsButtonRunnable.setMTransformControlsJPanel(mTransformControlsJPanel);
+            tempRow.add( settingsButtonRunnable );
             tempRow.add( newElem.getDescription() );
-	    tempRow.add( newElem );
+            tempRow.add( newElem );
             allRows.add( tempRow );
         }
         return allRows;

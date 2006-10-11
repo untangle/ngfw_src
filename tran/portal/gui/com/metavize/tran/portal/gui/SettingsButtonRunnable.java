@@ -54,15 +54,18 @@ public class SettingsButtonRunnable implements ButtonRunnable {
 	if( isUserType ){
 	    UserSettingsJDialog userSettingsJDialog = UserSettingsJDialog.factory(topLevelWindow, portalUser, mTransformControlsJPanel);
 	    userSettingsJDialog.setVisible(true);
-	    valueChanged = userSettingsJDialog.getSettingsSaved();
+	    //valueChanged = userSettingsJDialog.getSettingsSaved();
 	}
 	else{
 	    GroupSettingsJDialog groupSettingsJDialog = GroupSettingsJDialog.factory(topLevelWindow, portalGroup, mTransformControlsJPanel); 
 	    groupSettingsJDialog.setVisible(true);
-	    valueChanged = groupSettingsJDialog.getSettingsSaved();
+	    //valueChanged = groupSettingsJDialog.getSettingsSaved();
 	}
+
+    /*
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    cellEditor.stopCellEditing();
 	}});
+    */
     }
 }
