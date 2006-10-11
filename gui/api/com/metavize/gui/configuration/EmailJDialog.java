@@ -46,24 +46,21 @@ public class EmailJDialog extends MConfigJDialog {
     private EmailCompoundSettings emailCompoundSettings;
 
     public EmailJDialog( Frame parentFrame ) {
-	super(parentFrame);
+        super(parentFrame);
         setTitle(NAME_EMAIL_CONFIG);
-	compoundSettings = new EmailCompoundSettings();
-	emailCompoundSettings = (EmailCompoundSettings) compoundSettings;
-	INSTANCE = this;
+        compoundSettings = new EmailCompoundSettings();
+        emailCompoundSettings = (EmailCompoundSettings) compoundSettings;
+        INSTANCE = this;
     }
 
     protected Dimension getMinSize(){
-	return new Dimension(640, 550);
-    }
-
-    private static EmailJDialog INSTANCE;
-    public static EmailJDialog instance(){ return INSTANCE; }
-    public static void reassignInfiniteProgressJComponent(){
-	INSTANCE.setGlassPane(MConfigJDialog.infiniteProgressJComponent);
+        return new Dimension(640, 550);
     }
 
     
+    private static EmailJDialog INSTANCE;
+    public static EmailJDialog instance(){ return INSTANCE; }
+
     protected void generateGui(){
         // OUTGOING SERVER /////
         EmailOutgoingJPanel emailOutgoingJPanel = new EmailOutgoingJPanel();

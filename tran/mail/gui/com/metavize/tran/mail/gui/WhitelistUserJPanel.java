@@ -181,7 +181,7 @@ public class WhitelistUserJPanel extends javax.swing.JPanel
 	    this.account = account;
 	    this.emails = emails;
 	    setDaemon(true);
-	    MConfigJDialog.getInfiniteProgressJComponent().start("Removing...");
+	    ((MConfigJDialog)WhitelistUserJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().start("Removing...");
 	    start();
 	}
 	public void run(){
@@ -198,11 +198,11 @@ public class WhitelistUserJPanel extends javax.swing.JPanel
 					  "Safelist Remove Address Warning","");
 	    }
 	    // DO REFRESH
-	    MConfigJDialog.getInfiniteProgressJComponent().setTextLater("Refreshing...");
+	    ((MConfigJDialog)WhitelistUserJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Refreshing...");
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		whitelistUserTableModel.doRefresh(mailTransformCompoundSettings);
 	    }});
-	    MConfigJDialog.getInfiniteProgressJComponent().stopLater(1500l);
+	    ((MConfigJDialog)WhitelistUserJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().stopLater(1500l);
         }
     }
     

@@ -45,8 +45,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     protected void addShutdownable(String name, Shutdownable shutdownable){ shutdownableMap.put(name, shutdownable); }
     protected CompoundSettings compoundSettings;
     public CompoundSettings getCompoundSettings(){ return compoundSettings; }
-    protected static InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
-    public static InfiniteProgressJComponent getInfiniteProgressJComponent(){ return infiniteProgressJComponent; }
+    protected InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
+    public InfiniteProgressJComponent getInfiniteProgressJComponent(){ return infiniteProgressJComponent; }
     private static final long MIN_PROGRESS_MILLIS = 1000;
     ///////////////////////////////
 
@@ -61,15 +61,15 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     }
     
     private void init(Window parentWindow){
-	getRootPane().setDoubleBuffered(true);
-	RepaintManager.currentManager(this).setDoubleBufferingEnabled(true);
+        getRootPane().setDoubleBuffered(true);
+        RepaintManager.currentManager(this).setDoubleBufferingEnabled(true);
         initComponents();
         setBounds( Util.generateCenteredBounds( parentWindow.getBounds(), getMinSize().width, getMinSize().height) );
         addWindowListener(this);
-	setGlassPane(infiniteProgressJComponent);
+        setGlassPane(infiniteProgressJComponent);
         addComponentListener( new ComponentAdapter() { public void componentResized(ComponentEvent evt) {
-	    dialogResized();
-	}});
+            dialogResized();
+        }});
     }
 
     public void setVisible(boolean isVisible){

@@ -198,22 +198,22 @@ public class UpgradeProcessJPanel extends JPanel
     private class PerformUpgradeThread extends Thread {
         public PerformUpgradeThread(){
             super("MVCLIENT-PerformUpgradeThread");
-	    setDaemon(true);
+            setDaemon(true);
             this.setContextClassLoader(Util.getClassLoader());
-	    MConfigJDialog.getInfiniteProgressJComponent().setProgressBarVisible(true);
-	    MConfigJDialog.getInfiniteProgressJComponent().start("Upgrading...");
+            ((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setProgressBarVisible(true);
+            ((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().start("Upgrading...");
             this.start();
         }
         public void run() {
             try{
                 // DISABLE ALL GRAPHS SO NO EXCEPTIONS ARE CAUSED
-		Util.getPolicyStateMachine().stopAllGraphs();
+                Util.getPolicyStateMachine().stopAllGraphs();
                 Util.getStatsCache().doShutdown();
 
                 // DO THE DOWNLOAD AND INSTALL
                 long key = Util.getToolboxManager().upgrade();
                 com.metavize.gui.util.Visitor visitor =
-		    new com.metavize.gui.util.Visitor(MConfigJDialog.getInfiniteProgressJComponent().getProgressBar());
+                    new com.metavize.gui.util.Visitor(((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().getProgressBar());
                 while (true) {
                     java.util.List<InstallProgress> lip = Util.getToolboxManager().getProgress(key);
                     for (InstallProgress ip : lip) {
@@ -230,8 +230,8 @@ public class UpgradeProcessJPanel extends JPanel
 
                 if( visitor.isSuccessful() ){
                     // LET THE USER KNOW WERE FINISHED NORMALLY
-		    MConfigJDialog.getInfiniteProgressJComponent().setTextLater("Upgrade Success");
-		    MOneButtonJDialog.factory(UpgradeProcessJPanel.this.getTopLevelAncestor(), "",
+                    ((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Upgrade Success");
+                    MOneButtonJDialog.factory(UpgradeProcessJPanel.this.getTopLevelAncestor(), "",
 					      "The updates have successfully downloaded.  The client will now exit while the upgrade is performed.",
 					      "Upgrade Success", "");
                 }
@@ -241,8 +241,8 @@ public class UpgradeProcessJPanel extends JPanel
             }
             catch(Exception e){
                 Util.handleExceptionNoRestart("Termination of upgrade:", e);
-		MConfigJDialog.getInfiniteProgressJComponent().setTextLater("Upgrade Failure");
-		MOneButtonJDialog.factory(UpgradeProcessJPanel.this.getTopLevelAncestor(), "",
+                ((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Upgrade Failure");
+                MOneButtonJDialog.factory(UpgradeProcessJPanel.this.getTopLevelAncestor(), "",
 					  "The upgrade procedure did not finish properly.  " +
 					  "Please contact Untangle Networks technical support.",
 					  "Upgrade Failure Warning", "");
