@@ -88,7 +88,8 @@ public class InitialSetupWizard extends MWizardJDialog {
             else if( currentPage == 4 ){ // PASSWORD NOT SET
                 MOneButtonJDialog.factory(this, "", MESSAGE_NO_PASSWORD, MESSAGE_DIALOG_TITLE, "");
             }
-            initialSetupInterfaceJPanel.finishedAbnormal();
+            if( Util.getIsCD() )
+                initialSetupInterfaceJPanel.finishedAbnormal();
             cleanupConnection();
             super.wizardFinishedAbnormal(currentPage);
         }
