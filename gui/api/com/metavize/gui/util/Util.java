@@ -128,6 +128,11 @@ public class Util {
     public static boolean getShutdownInitiated(){ return shutdownInitiated; }
     public static void setShutdownInitiated(boolean x){ shutdownInitiated = x; }
 
+    // LOOK AND FEEL //////////////
+    private static LookAndFeel lookAndFeel;
+    public static LookAndFeel getLookAndFeel(){ return lookAndFeel; }
+    public static void setLookAndFeel(LookAndFeel x){ lookAndFeel = x; }
+
     // LOGIN //////////////////////
     public static final int LOGIN_RETRY_COUNT = 6;
     public static final long LOGIN_RETRY_SLEEP = 3000l;

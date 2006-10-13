@@ -27,66 +27,75 @@ public class MLauncher {
 
     public static void main(final String args[]) {
 
-        // SET LAF
-        try {
-	    com.incors.plaf.alloy.AlloyLookAndFeel.setProperty("alloy.licenseCode", "7#Metavize_Inc.#1f75cs6#2n7ryw");
-	    //com.incors.plaf.alloy.AlloyTheme theme = new com.incors.plaf.alloy.themes.glass.GlassTheme();
-	    com.incors.plaf.alloy.AlloyTheme theme =
-		com.incors.plaf.alloy.themes.custom.CustomThemeFactory.createTheme(new Color(152,152,171), // PROGRESS & SCROLL
-										   new Color(215,215,215), // BACKGROUND
-										   Color.ORANGE, // NO IDEA
-										   new Color(50,50,50), // RADIO / CHECKBOX
-										   //new Color(160,160,160), // MOUSEOVER
-										   new Color(68,91,255), // MOUSEOVER
-										   new Color(215,215,215)); // POPUPS
-	    javax.swing.LookAndFeel alloyLnF = new com.incors.plaf.alloy.AlloyLookAndFeel(theme);
-	    javax.swing.UIManager.setLookAndFeel(alloyLnF);
-	    /*
-            com.incors.plaf.kunststoff.KunststoffLookAndFeel kunststoffLaf = new com.incors.plaf.kunststoff.KunststoffLookAndFeel();
-            kunststoffLaf.setCurrentTheme(new com.incors.plaf.kunststoff.KunststoffTheme());
-            UIManager.setLookAndFeel(kunststoffLaf);
-	    */
-        }
-        catch (Exception e) {
-	    System.err.println("Error starting LAF:");
-	    e.printStackTrace();
-        }
-
-        // SET CLASS LOADER
-        MURLClassLoader mUrlClassLoader = new MURLClassLoader( Thread.currentThread().getContextClassLoader() );
-        UIManager.getLookAndFeelDefaults().put("ClassLoader", mUrlClassLoader);
+        // SET CLASS LOADER NORMAL WAYS
+        final MURLClassLoader mUrlClassLoader = new MURLClassLoader( MLauncher.class.getClassLoader() );
         Thread.currentThread().setContextClassLoader(mUrlClassLoader);
 
-	// SET CLASSLOADER
-	Util.initialize();
+        // SET CLASS LOADER AGGRESSIVELY IN CASE SWING STARTED EARLY
+        try{
+            EventQueue eq = Toolkit.getDefaultToolkit().getSystemEventQueue();
+            eq.invokeAndWait( new Runnable(){ public void run(){
+                Thread.currentThread().setContextClassLoader(mUrlClassLoader);
+            }});
+        }
+        catch(Exception e){
+            System.err.println("Error setting class loader:");
+            e.printStackTrace();
+        }
+
+        // PROPERTY CHANGE LISTENER WORKAROUND FOR ALTERNATE LOOK AND FEEL BUG
+        UIManager.addPropertyChangeListener(new LAFPropertyChangeListener());
+
+        // SET LAF
+        try {
+            com.incors.plaf.alloy.AlloyLookAndFeel.setProperty("alloy.licenseCode", "7#Metavize_Inc.#1f75cs6#2n7ryw");
+            com.incors.plaf.alloy.AlloyTheme theme =
+                com.incors.plaf.alloy.themes.custom.CustomThemeFactory.createTheme(new Color(152,152,171), // PROGRESS & SCROLL
+                                                                                   new Color(215,215,215), // BACKGROUND
+                                                                                   Color.ORANGE, // NO IDEA
+                                                                                   new Color(50,50,50), // RADIO / CHECKBOX
+                                                                                   new Color(68,91,255), // MOUSEOVER
+                                                                                   new Color(215,215,215)); // POPUPS
+            javax.swing.LookAndFeel alloyLnF = new com.incors.plaf.alloy.AlloyLookAndFeel(theme);
+            Util.setLookAndFeel(alloyLnF);
+            UIManager.setLookAndFeel(alloyLnF);            
+            UIManager.getLookAndFeelDefaults().put("ClassLoader", mUrlClassLoader);
+        }
+        catch (Exception e) {
+            System.err.println("Error starting LAF:");
+            e.printStackTrace();
+        }
+
+
+        // SET CLASSLOADER
+        Util.initialize();
         Util.setClassLoader( mUrlClassLoader );
 	
         // SET THE REPAINT OPTIONS
         //RepaintManager.setCurrentManager( new DebugRepaintManager() );
-	try{
-	    Toolkit.getDefaultToolkit().setDynamicLayout(true);
-	}
-	catch(Exception e){
-	    System.err.println("Error setting dynamic layout:");
-	    e.printStackTrace();
-	}
+        try{
+            Toolkit.getDefaultToolkit().setDynamicLayout(true);
+        }
+        catch(Exception e){
+            System.err.println("Error setting dynamic layout:");
+            e.printStackTrace();
+        }
 
         // SHUTDOWN HOOK
         Runtime.getRuntime().addShutdownHook( new ShutdownHookThread() );
 
         // FULL PERMISSIONS POLICY
-        Policy.setPolicy( 
-			 new Policy(){
-			     public PermissionCollection getPermissions(CodeSource codeSource){
-				 Permissions permissions = new Permissions();
-				 permissions.add(new AllPermission());
-				 return permissions;
-			     }
-			     public void refresh(){}
-			 }
-			 );
+        Policy.setPolicy( new Policy(){
+                public PermissionCollection getPermissions(CodeSource codeSource){
+                    Permissions permissions = new Permissions();
+                    permissions.add(new AllPermission());
+                    return permissions;
+                }
+                public void refresh(){
+                }
+            } );
 
-	// ARGS
+        // ARGS
         for( String arg : args )
             if( arg.equals("local") ){
                 Util.setLocal(true);
@@ -106,17 +115,17 @@ public class MLauncher {
                 SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                     InitialSetupWizard initialSetupWizard = new InitialSetupWizard();
                     initialSetupWizard.setVisible(true);
-		    MLauncher.isRegistered = initialSetupWizard.isRegistered();
-		}});
+                    MLauncher.isRegistered = initialSetupWizard.isRegistered();
+                }});
 	    }
 	    catch(Exception e){ Util.handleExceptionNoRestart("unable to show setup wizard", e); }
         }
 
         // LOGIN
-	if( isActivated || (!isActivated && isRegistered && InitialSetupRoutingJPanel.getNatEnabled() && !InitialSetupRoutingJPanel.getNatChanged()) )
-	    new MLoginJFrame(args);
-	else
-	    Util.exit(0);
+        if( isActivated || (!isActivated && isRegistered && InitialSetupRoutingJPanel.getNatEnabled() && !InitialSetupRoutingJPanel.getNatChanged()) )
+            new MLoginJFrame(args);
+        else
+            Util.exit(0);
 
     }
 
@@ -124,11 +133,56 @@ public class MLauncher {
     static private class ShutdownHookThread extends Thread {
         public ShutdownHookThread(){
             super("MVCLIENT-ShutdownHookThread");
-	    setDaemon(true);
+            setDaemon(true);
         }
         public void run(){
-	    try{ MvvmRemoteContextFactory.factory().logout(); }
-	    catch(Exception e){ Util.handleExceptionNoRestart("Error logging out", e); }
+            try{ MvvmRemoteContextFactory.factory().logout(); }
+            catch(Exception e){ Util.handleExceptionNoRestart("Error logging out", e); }
         }
     }
+
+
+    static private class WatchDogThread extends Thread {
+        public WatchDogThread(){
+            setDaemon(true);
+            start();
+        }
+        public void run(){
+            try{
+                while(true){
+                    System.out.println("LAF name: " + UIManager.getLookAndFeel().getName());
+                    System.out.println("LAF ClassLoader: " + UIManager.getLookAndFeelDefaults().get("ClassLoader"));
+                    EventQueue eq = Toolkit.getDefaultToolkit().getSystemEventQueue();
+                    eq.invokeAndWait( new Runnable(){ public void run(){
+                        System.out.println("EDT name: " + Thread.currentThread().getName());
+                        System.out.println("EDT ClassLoader: " + Thread.currentThread().getContextClassLoader());
+                    }});
+                    System.out.println("-----------------" );
+                    sleep(5000l);
+                }
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    static private class LAFPropertyChangeListener implements java.beans.PropertyChangeListener {
+        public LAFPropertyChangeListener(){
+        }
+        public void propertyChange(java.beans.PropertyChangeEvent evt){
+            if( evt.getPropertyName().equals("lookAndFeel") ){
+                if( !evt.getNewValue().equals(Util.getLookAndFeel()) ){
+                    try{ UIManager.setLookAndFeel(Util.getLookAndFeel()); }
+                    catch(Exception e){
+                        System.out.println("Error resetting LAF");
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
 }
+
