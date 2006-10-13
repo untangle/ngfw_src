@@ -19,6 +19,8 @@
     <import value="java.util.*"/>
     <import value="net.sf.jasperreports.engine.*"/>
     <import value="net.sf.jasperreports.engine.data.*"/>
+    <parameter name="userName" class="java.lang.String">
+    </parameter>
     <parameter name="startTime" class="java.sql.Timestamp">
     </parameter>
     <parameter name="endTime" class="java.sql.Timestamp">
@@ -85,6 +87,9 @@
 
             <subreport>
                 <reportElement key="subreport-1" positionType="Float" mode="Opaque" x="0" y="106" width="276" height="120"/>
+                <subreportParameter name="userName">
+                    <subreportParameterExpression><![CDATA[$P{userName}]]></subreportParameterExpression>
+                </subreportParameter>
                 <subreportParameter name="startTime">
                     <subreportParameterExpression><![CDATA[$P{startTime}]]></subreportParameterExpression>
                 </subreportParameter>
@@ -97,6 +102,9 @@
             </subreport>
             <subreport>
                 <reportElement key="subreport-2" positionType="Float" mode="Opaque" x="0" y="237" width="276" height="120"/>
+                <subreportParameter name="userName">
+                    <subreportParameterExpression><![CDATA[$P{userName}]]></subreportParameterExpression>
+                </subreportParameter>
                 <subreportParameter name="startTime">
                     <subreportParameterExpression><![CDATA[$P{startTime}]]></subreportParameterExpression>
                 </subreportParameter>

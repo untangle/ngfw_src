@@ -112,21 +112,21 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         PreparedStatement stmt;
         ResultSet rs;
 
-        sql = "SELECT date_trunc('minute', time_stamp),"
+        sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
              + "      SUM(pass),"
              + "      SUM(cookie),"
              + "      SUM(activeX),"
              + "      SUM(url),"
              + "      SUM(subnet_access)"
              + " FROM tr_spyware_statistic_evt"
-             + " WHERE time_stamp <= ? AND time_stamp > ?"
-             + " GROUP BY time_stamp"
-             + " ORDER BY time_stamp";
+             + " WHERE time_stamp >= ? AND time_stamp < ?"
+             + " GROUP BY trunc_ts"
+             + " ORDER BY trunc_ts";
 
         bindIdx = 1;
         stmt = con.prepareStatement(sql);
-        stmt.setTimestamp(bindIdx++, endTimestamp);
         stmt.setTimestamp(bindIdx++, startTimestamp);
+        stmt.setTimestamp(bindIdx++, endTimestamp);
 
         rs = stmt.executeQuery();
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;

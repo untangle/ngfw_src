@@ -134,10 +134,11 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
         String sql = "SELECT client_intf, DATE_TRUNC('minute', create_date) AS cd, DATE_TRUNC('minute', raze_date) AS rd,"
             + " SUM(c2p_bytes), SUM(p2s_bytes), SUM(s2p_bytes), SUM(p2c_bytes)"
-            + " FROM pl_endp endp JOIN pl_stats stats ON (endp.event_id = stats.pl_endp_id) WHERE ";
+            + " FROM pl_endp endp JOIN pl_stats stats ON (endp.event_id = stats.pl_endp_id)"
+            + " WHERE";
         if (!doIncomingSessions || !doOutgoingSessions)
-            sql += "client_intf = ? AND ";
-        sql += "create_date <= ? AND raze_date >= ?"
+            sql += " client_intf = ? AND";
+        sql += " create_date >= ? AND raze_date < ?"
             + " GROUP BY cd, rd, client_intf"
             + " ORDER BY cd, rd";
 
@@ -147,8 +148,8 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             stmt.setShort(sidx++, (short)0);
         else if (!doIncomingSessions && doOutgoingSessions)
             stmt.setShort(sidx++, (short)1);
-        stmt.setTimestamp(sidx++, endTimestamp);
         stmt.setTimestamp(sidx++, startTimestamp);
+        stmt.setTimestamp(sidx++, endTimestamp);
         ResultSet rs = stmt.executeQuery();
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;
         totalProcessTime = System.currentTimeMillis();

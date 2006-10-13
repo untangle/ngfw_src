@@ -110,18 +110,18 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         PreparedStatement stmt;
         ResultSet rs;
 
-        sql = "SELECT DATE_TRUNC('minute', start_time),"
+        sql = "SELECT DATE_TRUNC('minute', start_time) AS trunc_ts,"
                 + " SUM(rx_bytes),"
                 + " SUM(tx_bytes)"
                 + " FROM tr_openvpn_statistic_evt"
-                + " WHERE start_time <= ? AND start_time > ?"
-                + " GROUP BY start_time"
-                + " ORDER BY start_time";
+                + " WHERE start_time >= ? AND start_time < ?"
+                + " GROUP BY trunc_ts"
+                + " ORDER BY trunc_ts";
 
         bindIdx = 1;
         stmt = con.prepareStatement(sql);
-        stmt.setTimestamp(bindIdx++, endTimestamp);
         stmt.setTimestamp(bindIdx++, startTimestamp);
+        stmt.setTimestamp(bindIdx++, endTimestamp);
 
         rs = stmt.executeQuery();
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;

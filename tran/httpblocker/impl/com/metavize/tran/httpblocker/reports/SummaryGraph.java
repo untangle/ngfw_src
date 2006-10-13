@@ -111,17 +111,17 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         PreparedStatement stmt;
         ResultSet rs;
 
-        sql = "SELECT date_trunc('minute', time_stamp) as time_stamp,"
-            + " count(*)" 
-            + " FROM tr_http_evt_req where"
-            + " time_stamp <= ? AND time_stamp >= ?"
-            + " GROUP BY time_stamp"
-            + " ORDER BY time_stamp";
+        sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
+            + " COUNT(*)" 
+            + " FROM tr_http_evt_req"
+            + " WHERE time_stamp >= ? AND time_stamp < ?"
+            + " GROUP BY trunc_ts"
+            + " ORDER BY trunc_ts";
 
         sidx = 1;
         stmt = con.prepareStatement(sql);
-        stmt.setTimestamp(sidx++, endTimestamp);
         stmt.setTimestamp(sidx++, startTimestamp);
+        stmt.setTimestamp(sidx++, endTimestamp);
         rs = stmt.executeQuery();
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;
         totalProcessTime = System.currentTimeMillis();
@@ -148,17 +148,17 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         }
         try { stmt.close(); } catch (SQLException x) { }
 
-        sql = "SELECT date_trunc('minute', time_stamp) as time_stamp,"
-            + " count(*)" 
-            + " FROM tr_httpblk_evt_blk where"
-            + " time_stamp <= ? AND time_stamp >= ?"
-            + " GROUP BY time_stamp"
-            + " ORDER BY time_stamp";
+        sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
+            + " COUNT(*)" 
+            + " FROM tr_httpblk_evt_blk"
+            + " WHERE time_stamp >= ? AND time_stamp < ?"
+            + " GROUP BY trunc_ts"
+            + " ORDER BY trunc_ts";
 
         sidx = 1;
         stmt = con.prepareStatement(sql);
-        stmt.setTimestamp(sidx++, endTimestamp);
         stmt.setTimestamp(sidx++, startTimestamp);
+        stmt.setTimestamp(sidx++, endTimestamp);
         rs = stmt.executeQuery();
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;
         totalProcessTime = System.currentTimeMillis();

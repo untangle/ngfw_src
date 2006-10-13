@@ -116,17 +116,17 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         VirusScanner scanner = (VirusScanner) extraParams.get("scanner");
         String virusVendor = scanner.getVendorName();
 
-        sql = "SELECT date_trunc('minute', time_stamp) as time_stamp,"
-            + " count(case clean when false then 1 else null end), count(*)"
-            + " FROM tr_virus_evt_http where"
-            + " time_stamp <= ? AND time_stamp >= ? AND vendor_name = ?"
-            + " GROUP BY time_stamp"
-            + " ORDER BY time_stamp";
+        sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
+            + " COUNT(CASE clean WHEN false THEN 1 ELSE null END), COUNT(*)"
+            + " FROM tr_virus_evt_http"
+            + " WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?"
+            + " GROUP BY trunc_ts"
+            + " ORDER BY trunc_ts";
 
         sidx = 1;
         stmt = con.prepareStatement(sql);
-        stmt.setTimestamp(sidx++, endTimestamp);
         stmt.setTimestamp(sidx++, startTimestamp);
+        stmt.setTimestamp(sidx++, endTimestamp);
         stmt.setString(sidx++, virusVendor);
         rs = stmt.executeQuery();
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;
@@ -162,17 +162,17 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         }
         try { stmt.close(); } catch (SQLException x) { }
 
-        sql = "SELECT date_trunc('minute', time_stamp) as time_stamp,"
-            + " count(case clean when false then 1 else null end), count(*)"
-            + " FROM tr_virus_evt where"
-            + " time_stamp <= ? AND time_stamp >= ? AND vendor_name = ?"
-            + " GROUP BY time_stamp"
-            + " ORDER BY time_stamp";
+        sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
+            + " COUNT(CASE clean WHEN false THEN 1 ELSE null END), COUNT(*)"
+            + " FROM tr_virus_evt"
+            + " WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?"
+            + " GROUP BY trunc_ts"
+            + " ORDER BY trunc_ts";
 
         sidx = 1;
         stmt = con.prepareStatement(sql);
-        stmt.setTimestamp(sidx++, endTimestamp);
         stmt.setTimestamp(sidx++, startTimestamp);
+        stmt.setTimestamp(sidx++, endTimestamp);
         stmt.setString(sidx++, virusVendor);
         rs = stmt.executeQuery();
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;
@@ -199,17 +199,17 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         }
         try { stmt.close(); } catch (SQLException x) { }
 
-        sql = "SELECT date_trunc('minute', time_stamp) as time_stamp,"
-            + " count(case clean when false then 1 else null end), count(*)"
-            + " FROM tr_virus_evt_mail where"
-            + " time_stamp <= ? AND time_stamp >= ? AND vendor_name = ?"
-            + " GROUP BY time_stamp"
-            + " ORDER BY time_stamp";
+        sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
+            + " COUNT(CASE clean WHEN false THEN 1 ELSE null END), COUNT(*)"
+            + " FROM tr_virus_evt_mail"
+            + " WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?"
+            + " GROUP BY trunc_ts"
+            + " ORDER BY trunc_ts";
 
         sidx = 1;
         stmt = con.prepareStatement(sql);
-        stmt.setTimestamp(sidx++, endTimestamp);
         stmt.setTimestamp(sidx++, startTimestamp);
+        stmt.setTimestamp(sidx++, endTimestamp);
         stmt.setString(sidx++, virusVendor);
         rs = stmt.executeQuery();
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;
@@ -236,17 +236,17 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         }
         try { stmt.close(); } catch (SQLException x) { }
 
-        sql = "SELECT date_trunc('minute', time_stamp) as time_stamp,"
-            + " count(case clean when false then 1 else null end), count(*)"
-            + " FROM tr_virus_evt_smtp where"
-            + " time_stamp <= ? AND time_stamp >= ? AND vendor_name = ?"
-            + " GROUP BY time_stamp"
-            + " ORDER BY time_stamp";
+        sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
+            + " COUNT(CASE clean WHEN false THEN 1 ELSE null END), COUNT(*)"
+            + " FROM tr_virus_evt_smtp"
+            + " WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?"
+            + " GROUP BY trunc_ts"
+            + " ORDER BY trunc_ts";
 
         sidx = 1;
         stmt = con.prepareStatement(sql);
-        stmt.setTimestamp(sidx++, endTimestamp);
         stmt.setTimestamp(sidx++, startTimestamp);
+        stmt.setTimestamp(sidx++, endTimestamp);
         stmt.setString(sidx++, virusVendor);
         rs = stmt.executeQuery();
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;

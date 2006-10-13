@@ -119,15 +119,15 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             + "          COUNT(CASE is_spam WHEN true THEN 1 ELSE null END) AS spam_ct,"
             + "          COUNT(CASE is_spam WHEN false THEN 1 ELSE null END) AS clean_ct"
             + "        FROM tr_spam_evt"
-            + "        WHERE time_stamp <= ? AND time_stamp > ? AND vendor_name='SpamAssassin'"
+            + "        WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name='SpamAssassin'"
             + "        GROUP BY trunc_ts"
             + "        ORDER BY trunc_ts) AS foo"
             + "  GROUP BY trunc_ts";
 
         bindIdx = 1;
         stmt = con.prepareStatement(sql);
-        stmt.setTimestamp(bindIdx++, endTimestamp);
         stmt.setTimestamp(bindIdx++, startTimestamp);
+        stmt.setTimestamp(bindIdx++, endTimestamp);
 
         rs = stmt.executeQuery();
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;
@@ -168,15 +168,15 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             + "          COUNT(CASE is_spam WHEN true THEN 1 ELSE null END) AS spam_ct,"
             + "          COUNT(CASE is_spam WHEN false THEN 1 ELSE null END) AS clean_ct"
             + "        FROM tr_spam_evt_smtp"
-            + "        WHERE time_stamp <= ? AND time_stamp > ? AND vendor_name='SpamAssassin'"
+            + "        WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name='SpamAssassin'"
             + "        GROUP BY trunc_ts"
             + "        ORDER BY trunc_ts) AS foo"
             + "  GROUP BY trunc_ts";
 
         bindIdx = 1;
         stmt = con.prepareStatement(sql);
-        stmt.setTimestamp(bindIdx++, endTimestamp);
         stmt.setTimestamp(bindIdx++, startTimestamp);
+        stmt.setTimestamp(bindIdx++, endTimestamp);
 
         rs = stmt.executeQuery();
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;

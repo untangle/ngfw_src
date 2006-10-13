@@ -43,6 +43,12 @@ public class Util {
     static final int TERA =  3;
     static final int PETA =  4;
     static final int EXA  =  5;
+    static final long KILOB = 1024l;
+    static final long MEGAB = KILOB * KILOB;
+    static final long GIGAB = KILOB * MEGAB;
+    static final long TERAB = KILOB * GIGAB;
+    static final long PETAB = KILOB * TERAB;
+    static final long EXAB = KILOB * PETAB;
     ///////////////////////////////
 
 
@@ -73,24 +79,24 @@ public class Util {
 
 	String returnString;
 
-	if(number < 1000l)
+	if(number < KILOB)
 	    returnString = new String(  Long.toString(number) + (suffix.length()==0?"":" " + suffix) );
-	else if(number < 1000000l){
+	else if(number < MEGAB){
 	    if( suffix.length() == 0 )
-		returnString = Long.toString(number/1000l) + "," + String.format("%1$03d", number%1000l);
+		returnString = Long.toString(number/KILOB) + "," + String.format("%1$03d", number%KILOB);
 	    else
-		returnString = new String(  Long.toString(number/1000l) + "." + String.format("%1$03d", number%1000l) + " K" + suffix );
+		returnString = new String(  Long.toString(number/KILOB) + "." + String.format("%1$03d", number%KILOB) + " K" + suffix );
 	}
-	else if(number < 1000000000l)
-	    returnString = new String(  Long.toString(number/1000000l) + "." + String.format("%1$03d", (number%1000000l)/1000l) + " M" + suffix );
-	else if(number < 1000000000000l)
-	    returnString = new String(  Long.toString(number/1000000000l) + "." + String.format("%1$03d", (number%1000000000l)/1000000l) + " G" + suffix );
-	else if(number < 1000000000000000l)
-	    returnString = new String(  Long.toString(number/1000000000000l) + "." + String.format("%1$03d", (number%1000000000000l)/1000000000l) + " T" + suffix );
-	else if(number < 1000000000000000000l)
-	    returnString = new String(  Long.toString(number/1000000000000000l) + "." + String.format("%1$03d", (number%1000000000000000l)/1000000000000l) + " P" + suffix );
+	else if(number < GIGAB)
+	    returnString = new String(  Long.toString(number/MEGAB) + "." + String.format("%1$03d", (number%MEGAB)/KILOB) + " M" + suffix );
+	else if(number < TERAB)
+	    returnString = new String(  Long.toString(number/GIGAB) + "." + String.format("%1$03d", (number%GIGAB)/MEGAB) + " G" + suffix );
+	else if(number < PETAB)
+	    returnString = new String(  Long.toString(number/TERAB) + "." + String.format("%1$03d", (number%TERAB)/GIGAB) + " T" + suffix );
+	else if(number < EXAB)
+	    returnString = new String(  Long.toString(number/PETAB) + "." + String.format("%1$03d", (number%PETAB)/TERAB) + " P" + suffix );
 	else
-	    returnString = new String(  Long.toString(number/1000000000000000000l) + "." + String.format("%1$03d", (number%1000000000000000000l)/1000000000000000l) + " P" + suffix );
+	    returnString = new String(  Long.toString(number/EXAB) + "." + String.format("%1$03d", (number%EXAB)/PETAB) + " E" + suffix );
 
 	
 	return returnString;

@@ -7,6 +7,8 @@
     <import value="java.util.*"/>
     <import value="net.sf.jasperreports.engine.*"/>
     <import value="net.sf.jasperreports.engine.data.*"/>
+    <parameter name="userName" class="java.lang.String">
+    </parameter>
     <parameter name="startTime" class="java.sql.Timestamp">
     </parameter>
     <parameter name="endTime" class="java.sql.Timestamp">

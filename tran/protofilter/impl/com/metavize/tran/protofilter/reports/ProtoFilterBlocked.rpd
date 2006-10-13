@@ -20,37 +20,36 @@ FIELD_7.type=Long
 
 QUERY=\
 SELECT protocol, count, size, top_count, all_count, top_size, all_size \
-  FROM (SELECT protocol, COUNT(protocol), \
-        SUM(s2p_bytes + p2s_bytes) AS size \
+  FROM (SELECT evt.protocol, COUNT(*), \
+        SUM(session.s2p_bytes + session.p2s_bytes) AS size \
           FROM tr_protofilter_evt AS evt \
-                 JOIN pl_stats stats \
-                   USING (pl_endp_id) \
-          WHERE blocked \
+            JOIN reports.sessions session USING (pl_endp_id) \
+          WHERE evt.blocked \
             AND evt.time_stamp >= $P{startTime} \
             AND evt.time_stamp < $P{endTime} \
-          GROUP BY protocol \
+          GROUP BY evt.protocol \
           ORDER BY size DESC \
           LIMIT @REPORT_MAX_LENGTH@) AS foo, \
        (SELECT SUM(count) AS top_count, SUM(size) AS top_size \
-          FROM (SELECT COUNT(protocol), SUM(s2p_bytes + p2s_bytes) AS size \
+          FROM (SELECT COUNT(*), \
+                SUM(session.s2p_bytes + session.p2s_bytes) AS size \
                   FROM tr_protofilter_evt AS evt \
-                         JOIN pl_stats stats \
-                           USING (pl_endp_id) \
-                  WHERE blocked \
+                    JOIN reports.sessions session USING (pl_endp_id) \
+                  WHERE evt.blocked \
                     AND evt.time_stamp >= $P{startTime} \
                     AND evt.time_stamp < $P{endTime} \
-                  GROUP BY protocol \
+                  GROUP BY evt.protocol \
                   ORDER BY size DESC \
                   LIMIT @REPORT_MAX_LENGTH@) AS foo2) AS foo3, \
        (SELECT SUM(count) AS all_count, SUM(size) AS all_size \
-          FROM (SELECT COUNT(protocol), SUM(s2p_bytes + p2s_bytes) AS size \
+          FROM (SELECT COUNT(*), \
+                SUM(session.s2p_bytes + session.p2s_bytes) AS size \
                   FROM tr_protofilter_evt AS evt \
-                         JOIN pl_stats stats \
-                           USING (pl_endp_id) \
-                  WHERE blocked \
+                    JOIN reports.sessions session USING (pl_endp_id) \
+                  WHERE evt.blocked \
                     AND evt.time_stamp >= $P{startTime} \
                     AND evt.time_stamp < $P{endTime} \
-                  GROUP BY protocol \
+                  GROUP BY evt.protocol \
                   ORDER BY size DESC) AS foo4) AS foo5 \
   ORDER BY size DESC
 

@@ -53,11 +53,11 @@ for df in `find * -type d`; do
     # note that index-reports uses content of transform name file to create anchor point on index html page
     TNAME=`cat name`
 
-    for hf in `find *.html -type f | grep -v "sum-\(daily\|weekly\|monthly\)\.html"`; do
+    for hf in `find *.html -type f | grep -iv "sum-\(daily\|weekly\|monthly\)\.html" | grep -iv "userSummary--\(daily\|weekly\|monthly\)\.html"`; do
       # note that update-reports chooses names of index html page files
-      echo $hf | grep monthly &> /dev/null
+      echo $hf | grep -i monthly &> /dev/null
       if [ $? -eq 1 ]; then
-        echo $hf | grep weekly &> /dev/null
+        echo $hf | grep -i weekly &> /dev/null
         if [ $? -eq 1 ]; then
           AHREFVAL=../index.html#$TNAME
         else

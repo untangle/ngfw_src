@@ -1,0 +1,6 @@
+TEMPLATE=MasterOfOneChild
+REPORT_NAME=ActivityMaster
+REPORT_TITLE=Activity - Summary
+EXTRA_PARAM_1.name=reportTitlePrefix
+EXTRA_PARAM_1.type=java.lang.String
+SUBREPORT_1=reports/ClientActivity.jasper

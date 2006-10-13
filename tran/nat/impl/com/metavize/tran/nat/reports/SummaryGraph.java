@@ -105,17 +105,17 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
         totalQueryTime = System.currentTimeMillis();
 
-        String sql = "SELECT date_trunc('minute', time_stamp) as time_stamp,"
-            + " sum(nat_sessions), sum(tcp_incoming + tcp_outgoing + udp_incoming + udp_outgoing + icmp_incoming + icmp_outgoing), sum(dmz_sessions)" 
-            + " FROM tr_nat_statistic_evt where"
-            + " time_stamp <= ? AND time_stamp >= ?"
-            + " GROUP BY time_stamp"
-            + " ORDER BY time_stamp";
+        String sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
+            + " SUM(nat_sessions), SUM(tcp_incoming + tcp_outgoing + udp_incoming + udp_outgoing + icmp_incoming + icmp_outgoing), SUM(dmz_sessions)" 
+            + " FROM tr_nat_statistic_evt"
+            + " WHERE time_stamp >= ? AND time_stamp < ?"
+            + " GROUP BY trunc_ts"
+            + " ORDER BY trunc_ts";
 
         int sidx = 1;
         PreparedStatement stmt = con.prepareStatement(sql);
-        stmt.setTimestamp(sidx++, endTimestamp);
         stmt.setTimestamp(sidx++, startTimestamp);
+        stmt.setTimestamp(sidx++, endTimestamp);
         ResultSet rs = stmt.executeQuery();
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;
         totalProcessTime = System.currentTimeMillis();

@@ -113,19 +113,19 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         ResultSet rs;
 
         sql = "SELECT trunc_ts, SUM(clam_ct), SUM(clean_ct)"
-            + "  FROM (SELECT date_trunc('minute', time_stamp) AS trunc_ts,"
+            + "  FROM (SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
             + "          COUNT(CASE is_spam WHEN true THEN 1 ELSE null END) AS clam_ct,"
             + "          COUNT(CASE is_spam WHEN false THEN 1 ELSE null END) AS clean_ct"
             + "        FROM tr_spam_evt"
-            + "        WHERE time_stamp <= ? AND time_stamp > ? AND vendor_name='Clam'"
+            + "        WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name='Clam'"
             + "        GROUP BY trunc_ts"
             + "        ORDER BY trunc_ts) AS foo"
             + "  GROUP BY trunc_ts";
 
         bindIdx = 1;
         stmt = con.prepareStatement(sql);
-        stmt.setTimestamp(bindIdx++, endTimestamp);
         stmt.setTimestamp(bindIdx++, startTimestamp);
+        stmt.setTimestamp(bindIdx++, endTimestamp);
 
         rs = stmt.executeQuery();
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;
@@ -166,15 +166,15 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             + "          COUNT(CASE is_spam WHEN true THEN 1 ELSE null END) AS clam_ct,"
             + "          COUNT(CASE is_spam WHEN false THEN 1 ELSE null END) AS clean_ct"
             + "        FROM tr_spam_evt_smtp"
-            + "        WHERE time_stamp <= ? AND time_stamp > ? AND vendor_name='Clam'"
+            + "        WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name='Clam'"
             + "        GROUP BY trunc_ts"
             + "        ORDER BY trunc_ts) AS foo"
             + "  GROUP BY trunc_ts";
 
         bindIdx = 1;
         stmt = con.prepareStatement(sql);
-        stmt.setTimestamp(bindIdx++, endTimestamp);
         stmt.setTimestamp(bindIdx++, startTimestamp);
+        stmt.setTimestamp(bindIdx++, endTimestamp);
 
         rs = stmt.executeQuery();
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;

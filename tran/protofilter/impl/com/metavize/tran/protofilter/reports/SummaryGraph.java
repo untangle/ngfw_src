@@ -106,17 +106,17 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
         totalQueryTime = System.currentTimeMillis();
 
-        String sql = "SELECT date_trunc('minute', time_stamp) as time_stamp,"
-            + " count(case blocked when true then 1 else null end), count(*)"
-            + " FROM tr_protofilter_evt WHERE"
-            + " time_stamp <= ? AND time_stamp >= ?"
-            + " GROUP BY time_stamp"
-            + " ORDER BY time_stamp";
+        String sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
+            + " COUNT(CASE blocked WHEN true THEN 1 ELSE null END), COUNT(*)"
+            + " FROM tr_protofilter_evt"
+            + " WHERE time_stamp >= ? AND time_stamp < ?"
+            + " GROUP BY trunc_ts"
+            + " ORDER BY trunc_ts";
 
         int sidx = 1;
         PreparedStatement stmt = con.prepareStatement(sql);
-        stmt.setTimestamp(sidx++, endTimestamp);
         stmt.setTimestamp(sidx++, startTimestamp);
+        stmt.setTimestamp(sidx++, endTimestamp);
         ResultSet rs = stmt.executeQuery();
         totalQueryTime = System.currentTimeMillis() - totalQueryTime;
         totalProcessTime = System.currentTimeMillis();

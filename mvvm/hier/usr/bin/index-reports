@@ -8,6 +8,18 @@ mail_reports_arguments_daily=@PREFIX@/tmp/mail_reports_arguments_daily.txt
 mail_reports_arguments_weekly=@PREFIX@/tmp/mail_reports_arguments_weekly.txt
 mail_reports_arguments_monthly=@PREFIX@/tmp/mail_reports_arguments_monthly.txt
 
+## Parameters:
+## <estat> : exit status
+## <src> : source of error
+function exitOnMvvmError()
+{
+    local t_estat=$1
+    local t_src=$2
+    if [ $t_estat != 0 ]; then
+        echo $t_src "error, exit status:" $t_estat
+        exit $t_estat
+    fi
+}
 
 if [ "$generate_email_index" != false ]; then
 web_base=http://untanglenetworks.com/mail_blast
@@ -19,6 +31,7 @@ cd @MVVM_REPORTS@/current
 
 
 ordered_tran_list=`@USR_BIN@/mcli instances | grep -i running | awk '{print $2}' | uniq | sed 's|^\(.*\)$|@MVVM_REPORTS@/current/\1|'`
+exitOnMvvmError $? mvvm
 
 
 # generate email argument list
@@ -36,7 +49,6 @@ if [ "$generate_email_index" != false ]; then
 
     echo "--> mail_reports_arguments: $mail_reports_arguments"
 fi
-
 
 
 if [ "$generate_email_index" != false ]; then
@@ -250,7 +262,7 @@ EOF
 
 if [ "$generate_email_index" = false ]; then
 cat >> $main_index <<EOF
-    > <a href="../archive">View Archived Reports</a>
+    <a href="../archive">View Archived Reports</a>
 EOF
 fi
 
@@ -390,7 +402,6 @@ fi
 
 generate_report_menu ()
 {
-
 cat >> $main_index <<EOF
                 <!-- Full Single file Reports -->
                 <table width="95%" border="1" bordercolor="bbbbbb" cellspacing="0" cellpadding="5">
@@ -476,7 +487,6 @@ echo "generating menu entry: $tran_name"
 
 generate_summaries ()
 {
-
 cat >> $main_index <<EOF
               <!-- SUMMARY AREA -->
 EOF
@@ -501,7 +511,6 @@ EOF
 
 generate_summary_entry ()
 {
-
 # true allows you to print only non EdgeGuard Appliance appliances, false allows you to print only EdgeGuard Appliance
 tran_dir=$1
 ls $tran_dir/name >/dev/null 2>&1 || return
@@ -525,19 +534,10 @@ rel_dir=$(echo $1 | sed -e 's/^\(.*\/current\/\)//')
 # generate email argument list
 if [ "$generate_email_index" = true ]; then
     if [ "$period" = daily ]; then
-    #find $rel_dir/images/* -type f >> $mail_reports_arguments
-    #find $rel_dir/ -type f -name "summary*daily.html" >> $mail_reports_arguments
-    #find $rel_dir/ -type d -name "summary*daily.html_files" -exec find {} -type f \; >> $mail_reports_arguments
 	find $rel_dir/*daily.pdf -type f >> $mail_reports_arguments
     elif [ "$period" = weekly ]; then
-    #find $rel_dir/images/* -type f >> $mail_reports_arguments
-    #find $rel_dir/ -type f -name "summary*weekly.html" >> $mail_reports_arguments
-    #find $rel_dir/ -type d -name "summary*weekly.html_files" -exec find {} -type f \; >> $mail_reports_arguments
 	find $rel_dir/*weekly.pdf -type f >> $mail_reports_arguments
     elif [ "$period" = monthly ]; then
-    #find $rel_dir/images/* -type f >> $mail_reports_arguments
-    #find $rel_dir/ -type f -name "summary*monthly.html" >> $mail_reports_arguments
-    #find $rel_dir/ -type d -name "summary*monthly.html_files" -exec find {} -type f \; >> $mail_reports_arguments
 	find $rel_dir/*monthly.pdf -type f >> $mail_reports_arguments
     fi
 fi
@@ -610,7 +610,7 @@ echo "generating summary index : $tran_name : $2"
 
 generate_vital_statistics ()
 {
-    cat >>$main_index <<EOF
+cat >>$main_index <<EOF
 <!-- VITAL STATISTICS -->
 <table width="100%" style="padding: 0px 0px 0px 15px" cellspacing="0">
 EOF
@@ -644,7 +644,7 @@ generate_visual_summary ()
         base_name=$(echo $line | cut -d: -f2)
         graph_name=$(echo $line | cut -d: -f3-)
         if [ xsummaryGraph = "x$base_name" ] ; then
-            cat >>$main_index <<EOF
+cat >>$main_index <<EOF
 <!-- VISUAL SUMMARY -->
 <center>
 <img src="$rel_dir/$graph_name--${period}.png" width="600" height="200" alt="Visual Summary may take some additional time to load.  If it does not load, it may not viewable from this email client.  Please use your browser to view reports directly from EdgeGuard."/>
@@ -667,7 +667,7 @@ generate_detailed_reports ()
     #tran_name=$(cat $tran_dir/name)
     rel_dir=$(echo $1 | sed -e 's/^\(.*\/current\/\)//')
 
-    cat >>$main_index <<EOF
+cat >>$main_index <<EOF
 <!-- DETAILED REPORTS -->
 <table width="100%" style="padding: 0px 0px 0px 15px" cellspacing="0">
 <tr>
@@ -705,46 +705,54 @@ cat $tran_dir/report-files | while read line; do
 	else
             color="eeeeee"
         fi
-        cat >>$main_index <<EOF
+
+if [ xuserSummary = "x$base_name" ] ; then
+    generate_user_summary $rel_dir $rep_name
+    display_name="User Summary"
+    base_tmp=$rep_name
+else
+    display_name=$rep_name
+    base_tmp=$base_name
+fi
+
+cat >>$main_index <<EOF
 <tr bgcolor=$color>
-<td width="*">&nbsp;$rep_name: </td>
+<td width="*">&nbsp;$display_name: </td>
 EOF
 
 if [ "$generate_email_index" = true ]; then
     if [ "$period" = daily ]; then
 cat >> $main_index <<EOF
-<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--daily.pdf">PDF</a>)&nbsp;</td>
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_tmp--daily.pdf">PDF</a>)&nbsp;</td>
 EOF
     fi
     if [ "$period" = weekly ]; then
 cat >> $main_index <<EOF
-<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--weekly.pdf">PDF</a>)&nbsp;</td>
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_tmp--weekly.pdf">PDF</a>)&nbsp;</td>
 EOF
     fi
     if [ "$period" = monthly ]; then
 cat >> $main_index <<EOF
-<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--monthly.pdf">PDF</a>)&nbsp;</td>
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_tmp--monthly.pdf">PDF</a>)&nbsp;</td>
 EOF
     fi
 else
     if [ "$period" = daily ]; then
 cat >> $main_index <<EOF
-<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--daily.html">HTML</a> | <a href="$rel_dir/$base_name--daily.pdf">PDF</a>)&nbsp;</td>
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_tmp--daily.html">HTML</a> | <a href="$rel_dir/$base_tmp--daily.pdf">PDF</a>)&nbsp;</td>
 EOF
     fi
     if [ "$period" = weekly ]; then
 cat >> $main_index <<EOF
-<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--weekly.html">HTML</a> | <a href="$rel_dir/$base_name--weekly.pdf">PDF</a>)&nbsp;</td>
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_tmp--weekly.html">HTML</a> | <a href="$rel_dir/$base_tmp--weekly.pdf">PDF</a>)&nbsp;</td>
 EOF
     fi
     if [ "$period" = monthly ]; then
 cat >> $main_index <<EOF
-<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_name--monthly.html">HTML</a> | <a href="$rel_dir/$base_name--monthly.pdf">PDF</a>)&nbsp;</td>
+<td width="375px" align="right" colspan="3">(<a href="$rel_dir/$base_tmp--monthly.html">HTML</a> | <a href="$rel_dir/$base_tmp--monthly.pdf">PDF</a>)&nbsp;</td>
 EOF
     fi
 fi
-
-
 
 alternate=$((alternate+1))
     fi
@@ -755,6 +763,22 @@ cat >>$main_index <<EOF
 <!-- END DETAILED REPORTS -->
 EOF
 
+}
+
+generate_user_summary ()
+{
+tran_dir=$1
+rep_base=$2
+# generate the web viewable page
+    if [ $MV_EG_DAILY_REPORT == 'y' ]; then
+        @USR_BIN@/usersummary-reports $tran_dir $rep_base daily $generate_email_index
+    fi
+    if [ $MV_EG_WEEKLY_REPORT == 'y' ]; then
+        @USR_BIN@/usersummary-reports $tran_dir $rep_base weekly $generate_email_index
+    fi
+    if [ $MV_EG_MONTHLY_REPORT == 'y' ]; then
+        @USR_BIN@/usersummary-reports $tran_dir $rep_base monthly $generate_email_index
+    fi
 }
 
 generate_page

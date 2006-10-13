@@ -19,6 +19,8 @@
     <import value="java.util.*"/>
     <import value="net.sf.jasperreports.engine.*"/>
     <import value="net.sf.jasperreports.engine.data.*"/>
+    <parameter name="userName" class="java.lang.String">
+    </parameter>
     <parameter name="startTime" class="java.sql.Timestamp">
     </parameter>
     <parameter name="endTime" class="java.sql.Timestamp">
@@ -83,7 +85,10 @@
             </line>
 
             <subreport>
-                <reportElement key="subreport-2" positionType="Float" mode="Opaque" x="0" y="106" width="276" height="45"/>
+                <reportElement key="subreport-1" positionType="Float" mode="Opaque" x="0" y="106" width="276" height="45"/>
+                <subreportParameter name="userName">
+                    <subreportParameterExpression><![CDATA[$P{userName}]]></subreportParameterExpression>
+                </subreportParameter>
                 <subreportParameter name="startTime">
                     <subreportParameterExpression><![CDATA[$P{startTime}]]></subreportParameterExpression>
                 </subreportParameter>
@@ -95,7 +100,10 @@
                 <subreportExpression class="java.lang.String"><![CDATA["@SUBREPORT_1@"]]></subreportExpression>
             </subreport>
             <subreport>
-                <reportElement key="subreport-1" positionType="Float" mode="Opaque" x="297" y="106" width="276" height="45"/>
+                <reportElement key="subreport-2" positionType="Float" mode="Opaque" x="297" y="106" width="276" height="45"/>
+                <subreportParameter name="userName">
+                    <subreportParameterExpression><![CDATA[$P{userName}]]></subreportParameterExpression>
+                </subreportParameter>
                 <subreportParameter name="startTime">
                     <subreportParameterExpression><![CDATA[$P{startTime}]]></subreportParameterExpression>
                 </subreportParameter>
@@ -107,7 +115,10 @@
                 <subreportExpression class="java.lang.String"><![CDATA["@SUBREPORT_2@"]]></subreportExpression>
             </subreport>
             <subreport>
-                <reportElement key="subreport-2" positionType="Float" mode="Opaque" x="0" y="162" width="276" height="45"/>
+                <reportElement key="subreport-3" positionType="Float" mode="Opaque" x="0" y="162" width="276" height="45"/>
+                <subreportParameter name="userName">
+                    <subreportParameterExpression><![CDATA[$P{userName}]]></subreportParameterExpression>
+                </subreportParameter>
                 <subreportParameter name="startTime">
                     <subreportParameterExpression><![CDATA[$P{startTime}]]></subreportParameterExpression>
                 </subreportParameter>

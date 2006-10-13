@@ -166,7 +166,7 @@ public class TranReporter {
                     ReportGraph reportGraph;
                     String name = tok.nextToken();
                     reportGraph = (ReportGraph) reportClass.newInstance();
-            reportGraph.setExtraParams(extraParams);
+                    reportGraph.setExtraParams(extraParams);
 
                     if (true == settings.getDaily()) {
                         logger.debug("Found daily graph: " + className);
@@ -187,7 +187,26 @@ public class TranReporter {
                     }
                 } catch (Exception x) {
                     logger.error("Unable to generate summary graph", x);
-            x.printStackTrace();
+                    x.printStackTrace();
+                }
+            }
+            else if (type.equalsIgnoreCase("userSummary")) {
+                String resource = resourceOrClassname;
+                if (!tok.hasMoreTokens()) { continue; }
+                String reportName = tok.nextToken();
+                String reportFile = new File(tranDir, reportName).getCanonicalPath();
+
+                String[] userNames = { "jdi", "dmorris", "cng", "amread" }; //XXXX
+                if (true == settings.getDaily()) {
+                    processUserReports(resource, conn, userNames, reportFile, "--daily", Util.lastday, Util.midnight);
+                }
+
+                if (true == settings.getWeekly()) {
+                    processUserReports(resource, conn, userNames, reportFile, "--weekly", Util.lastweek, Util.midnight);
+                }
+
+                if (true == settings.getMonthly()) {
+                    processUserReports(resource, conn, userNames, reportFile, "--monthly", Util.lastmonth, Util.midnight);
                 }
             }
             else {
@@ -283,6 +302,84 @@ public class TranReporter {
         bw.close();
     }
 
+    private void processUserReports(String resource, Connection conn, String[] userNames, String baseTag, String periodTag, Timestamp startTime, Timestamp endTime)
+        throws Exception
+    {
+        logger.debug("From: " + startTime + " To: " + endTime);
+
+        // startTime, endTime, and userName parameters need to be defined
+        // in template files whenever a report references these parameters
+
+        Map<String, Object> baseParams = new HashMap<String, Object>();
+        baseParams.put("startTime", startTime);
+        baseParams.put("endTime", endTime);
+
+        Object paramValue;
+        for (String paramName : extraParams.keySet()) {
+            paramValue = extraParams.get(paramName);
+            baseParams.put(paramName, paramValue);
+        }
+
+        /* to override default of 500 max rows per report,
+         * add a parameter line like this to report-files:
+         *
+         * REPORT_MAX_COUNT:parameter:5000
+         *
+         * (where REPORT_MAX_COUNT is basis of JRParameter.REPORT_MAX_COUNT and
+         *  for this report, a max of 5000 rows instead of 500 rows)
+         *
+         * (JRParameter.REPORT_MAX_COUNT is a constant JasperReport string)
+         */
+        paramValue = extraParams.get(JRParameter.REPORT_MAX_COUNT);
+        int maxRows;
+        if (null == paramValue) {
+            // use default max rows per report
+            maxRows = Util.MAX_ROWS_PER_REPORT;
+        } else {
+            // override default max rows per report
+            maxRows = Integer.valueOf((String) paramValue).intValue();
+        }
+        logger.debug("max rows per report: " + maxRows);
+        // if key is already present, replace its original value
+        // else if not key is not present, add it and its value
+        baseParams.put(JRParameter.REPORT_MAX_COUNT, maxRows);
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        String baseName;
+        for (String userName : userNames) {
+            baseName = baseTag + "--" + userName + periodTag;
+
+            params.putAll(baseParams);
+            // JasperReports automatically adds quotes to this literal value
+            params.put("userName", userName);
+
+            InputStream jasperIs = ucl.getResourceAsStream(resource);
+            if (null == jasperIs) {
+                logger.warn("No such resource: " + resource);
+                return;
+            }
+
+            logger.debug("Filling report");
+            JasperPrint print = JasperFillManager.fillReport(jasperIs, params, conn);
+
+            // PDF
+            String pdfFile = baseName + ".pdf";
+            logger.debug("Exporting report to: " + pdfFile);
+            JasperExportManager.exportReportToPdfFile(print, pdfFile);
+
+            // HTML
+            String htmlFile = baseName + ".html";
+            logger.debug("Exporting report to: " + htmlFile);
+            JRHtmlExporter exporter = new JRHtmlExporter();
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
+            exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, htmlFile);
+            exporter.exportReport();
+            // Was: JasperExportManager.exportReportToHtmlFile(print, htmlFile);
+
+            params.clear(); // reset for next user report
+        }
+    }
+
     private void processReport(String resource, Connection conn, String base, String imagesDir, Timestamp startTime, Timestamp endTime)
         throws Exception
     {
@@ -294,7 +391,7 @@ public class TranReporter {
             return;
         }
 
-        Map params = new HashMap();
+        Map<String, Object> params = new HashMap<String, Object>();
         Object paramValue;
         params.put("startTime", startTime);
         params.put("endTime", endTime);
@@ -310,6 +407,8 @@ public class TranReporter {
          *
          * (where REPORT_MAX_COUNT is basis of JRParameter.REPORT_MAX_COUNT and
          *  for this report, a max of 5000 rows instead of 500 rows)
+         *
+         * (JRParameter.REPORT_MAX_COUNT is a constant JasperReport string)
          */
         paramValue = extraParams.get(JRParameter.REPORT_MAX_COUNT);
         int maxRows;
@@ -356,7 +455,7 @@ public class TranReporter {
         JFreeChart jFreeChart = reportGraph.doInternal(conn, scriptlet);
         logger.debug("Exporting report to: " + fileName);
         //ChartUtilities.saveChartAsJPEG(new File(fileName), CHART_QUALITY, jFreeChart, CHART_WIDTH, CHART_HEIGHT);
-    ChartUtilities.saveChartAsPNG(new File(fileName), jFreeChart, CHART_WIDTH, CHART_HEIGHT, null, false, CHART_COMPRESSION_PNG);
+        ChartUtilities.saveChartAsPNG(new File(fileName), jFreeChart, CHART_WIDTH, CHART_HEIGHT, null, false, CHART_COMPRESSION_PNG);
     }
 
     private class FakeScriptlet extends JRDefaultScriptlet
@@ -373,8 +472,9 @@ public class TranReporter {
             if (ourParams != null) {
                 found = ourParams.get(paramName);
             }
-            if (found != null)
+            if (found != null) {
                 return found;
+            }
             // return super.getParameterValue(paramName);
             return null;
         }

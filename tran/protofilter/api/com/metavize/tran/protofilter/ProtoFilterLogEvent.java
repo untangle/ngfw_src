@@ -29,7 +29,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-@Table(name="tr_virus_evt_mail", schema="events")
+@Table(name="tr_protofilter_evt", schema="events")
 public class ProtoFilterLogEvent extends PipelineEvent
 {
     private String protocol;
