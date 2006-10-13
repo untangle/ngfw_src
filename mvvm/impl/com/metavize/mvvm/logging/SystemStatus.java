@@ -182,6 +182,28 @@ public class SystemStatus
                 proc.destroy();
         }
 
+        proc = null;
+        try {
+            /**
+             * mvvm uptime
+             */
+            sb.append(SPACER);
+            proc = MvvmContextFactory.context().exec("/usr/bin/mvuptime");
+            input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            while ((line = input.readLine()) != null) {
+                sb.append("MVVM uptime: "+line+"\n");
+            }
+        }
+        catch (Exception e) {
+            logger.error("Exception: ", e);
+            sb.append("Exception on exec (/usr/bin/mvuptime): " + e.toString() + "\n");
+        }
+        finally {
+            if (proc != null)
+                proc.destroy();
+        }
+
+        
         try {
             /**
              * /proc/loadavg
