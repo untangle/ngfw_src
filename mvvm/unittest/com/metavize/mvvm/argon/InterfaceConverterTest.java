@@ -23,18 +23,20 @@ import org.junit.Test;
 import com.metavize.mvvm.IntfConstants;
 import com.metavize.mvvm.ArgonException;
 
+import com.metavize.mvvm.localapi.ArgonInterface;
+
 public class InterfaceConverterTest
 {
-    private static final ArgonInterface EXTERNAL     = new ArgonInterface( "eth0", 0, 1 );
-    private static final ArgonInterface EXTERNAL_PPP = new ArgonInterface( "eth0", "ppp0", 0, 1 );
-    private static final ArgonInterface INTERNAL     = new ArgonInterface( "eth1", 1, 2 );
-    private static final ArgonInterface DMZ          = new ArgonInterface( "eth2", 2, 3 );
-    private static final ArgonInterface VPN          = new ArgonInterface( "tun0", 3, 4 );
-    private static final ArgonInterface TRANSFORM    = new ArgonInterface( "dummy0", 4, 5 );
+    private static final ArgonInterface EXTERNAL     = new ArgonInterface( "eth0", (byte)0, (byte)1 );
+    private static final ArgonInterface EXTERNAL_PPP = new ArgonInterface( "eth0", "ppp0", (byte)0, (byte)1 );
+    private static final ArgonInterface INTERNAL     = new ArgonInterface( "eth1", (byte)1, (byte)2 );
+    private static final ArgonInterface DMZ          = new ArgonInterface( "eth2", (byte)2, (byte)3 );
+    private static final ArgonInterface VPN          = new ArgonInterface( "tun0", (byte)3, (byte)4 );
+    private static final ArgonInterface TRANSFORM    = new ArgonInterface( "dummy0", (byte)4, (byte)5 );
 
-    private static final ArgonInterface SAME_ARGON   = new ArgonInterface( "foobar", 7, 1 );
-    private static final ArgonInterface SAME_NETCAP  = new ArgonInterface( "foobar", 1, 7 );
-    private static final ArgonInterface SAME_NAME    = new ArgonInterface( "eth1", 8, 7 );
+    private static final ArgonInterface SAME_ARGON   = new ArgonInterface( "foobar", (byte)7, (byte)1 );
+    private static final ArgonInterface SAME_NETCAP  = new ArgonInterface( "foobar", (byte)1, (byte)7 );
+    private static final ArgonInterface SAME_NAME    = new ArgonInterface( "eth1", (byte)8, (byte)7 );
 
     private static final List<ArgonInterface> BASIC = 
         Arrays.asList( new ArgonInterface[] { EXTERNAL, INTERNAL, DMZ } );
@@ -104,11 +106,11 @@ public class InterfaceConverterTest
         testBasics( newList, newInstance );
     }
 
-    @Test public void deregister() throws ArgonException
+    @Test public void unregister() throws ArgonException
     {
         ArgonInterfaceConverter instance = ArgonInterfaceConverter.makeInstance( FULL );
         
-        ArgonInterfaceConverter newInstance = instance.deregisterIntf( IntfConstants.VPN_INTF );
+        ArgonInterfaceConverter newInstance = instance.unregisterIntf( IntfConstants.VPN_INTF );
         /* Verify that the interface was removed */
         List<ArgonInterface> newList = new LinkedList<ArgonInterface>( FULL );
         newList.remove( VPN );
@@ -117,8 +119,8 @@ public class InterfaceConverterTest
         Assert.assertFalse( newInstance.hasMatchingInterfaces( instance ));
         instance = newInstance;
         
-        /* Deregister again, and verify nothing changes */
-        newInstance = instance.deregisterIntf( IntfConstants.VPN_INTF );
+        /* Unregister again, and verify nothing changes */
+        newInstance = instance.unregisterIntf( IntfConstants.VPN_INTF );
         testBasics( newList, newInstance );
         /* Verify that hasMatchingInterfaces returns false */
         Assert.assertTrue( newInstance.hasMatchingInterfaces( instance ));
@@ -131,14 +133,14 @@ public class InterfaceConverterTest
     }
 
     /* exception testing, to verify that exceptions are thrown at the appropriate times */
-    @Test(expected=ArgonException.class) public void deregisterInternal() throws ArgonException
+    @Test(expected=ArgonException.class) public void unregisterInternal() throws ArgonException
     {
-        ArgonInterfaceConverter.makeInstance( BASIC ).deregisterIntf( IntfConstants.INTERNAL_INTF );
+        ArgonInterfaceConverter.makeInstance( BASIC ).unregisterIntf( IntfConstants.INTERNAL_INTF );
     }
 
-    @Test(expected=ArgonException.class) public void deregisterExternal() throws ArgonException
+    @Test(expected=ArgonException.class) public void unregisterExternal() throws ArgonException
     {
-        ArgonInterfaceConverter.makeInstance( BASIC ).deregisterIntf( IntfConstants.EXTERNAL_INTF );
+        ArgonInterfaceConverter.makeInstance( BASIC ).unregisterIntf( IntfConstants.EXTERNAL_INTF );
     }
 
     @Test(expected=ArgonException.class) public void duplicateArgonInterface() throws ArgonException
@@ -183,10 +185,6 @@ public class InterfaceConverterTest
 
             case IntfConstants.DMZ_INTF:
                 Assert.assertEquals( instance.getDmz(), intf );
-                break;
-
-            case IntfConstants.VPN_INTF:
-                Assert.assertEquals( instance.getVpn(), intf );
                 break;
                 
             default:

@@ -6,7 +6,7 @@
  * Metavize Inc. ("Confidential Information").  You shall
  * not disclose such Confidential Information.
  *
- * $Id: IntfConverter.java 7128 2006-09-06 17:32:14Z rbscott $
+ * $Id: ArgonInterface.java 7128 2006-09-06 17:32:14Z rbscott $
  */
 
 package com.metavize.mvvm.localapi;
@@ -138,8 +138,8 @@ public final class ArgonInterface
         int result = 17;
         if ( this.physicalName != null ) result = ( 37 * result ) + this.physicalName.hashCode();
         if ( this.secondaryName != null ) result = ( 37 * result ) + this.secondaryName.hashCode();
-        result = ( 37 * result ) + (251 + netcap);
-        result = ( 37 * result ) + (257 + argon);
+        result = ( 37 * result ) + ( 263 + netcap );
+        result = ( 37 * result ) + ( 257 + argon );
         return result;
     }
 }

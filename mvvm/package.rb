@@ -207,4 +207,3 @@ deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
   [ mvvm['bootstrap'], mvvm['api'], mvvm['localapi'], mvvm['impl'], jnetcap['impl'], jvector['impl']]
 
 JarTarget.buildTarget(Package["unittest"], deps, 'mvvm', 'mvvm/unittest')
-# JarTarget.buildTarget(Package["mvvm"], deps, 'unittest', 'mvvm/unittest')

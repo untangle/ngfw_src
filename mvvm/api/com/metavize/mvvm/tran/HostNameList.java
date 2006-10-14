@@ -12,12 +12,17 @@
 package com.metavize.mvvm.tran;
 
 import java.io.Serializable;
+
+
+        
+import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Iterator;
 
 /** This list prevents duplicates. */
-public class HostNameList implements Serializable {
+public class HostNameList implements Serializable
+{
     private final List hostNameList;
 
     private HostNameList( List hostNameList )
@@ -100,6 +105,12 @@ public class HostNameList implements Serializable {
         for ( Iterator iter = tmp.iterator() ; iter.hasNext() ; ) {
             add((HostName)iter.next());
         }
+    }
+
+    /** Retrieve the internal list of hostnames, the returned list is immutable */
+    public List<HostName> getHostNameList()
+    {
+        return Collections.unmodifiableList( this.hostNameList );
     }
     
     public static HostNameList parse( String input ) throws ParseException

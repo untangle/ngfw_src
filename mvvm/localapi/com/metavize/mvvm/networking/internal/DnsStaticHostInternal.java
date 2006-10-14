@@ -14,7 +14,6 @@ package com.metavize.mvvm.networking.internal;
 import java.util.Date;
 
 import com.metavize.mvvm.tran.Rule;
-import com.metavize.mvvm.tran.IPNullAddr;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.HostNameList;
 
