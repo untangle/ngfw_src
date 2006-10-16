@@ -36,9 +36,8 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
     }
 
     public void generateGui(){
-	// BLOCK LISTS ///////////
+        // BLOCK LISTS ///////////
         JTabbedPane blockJTabbedPane = addTabbedPane(NAME_BLOCK, null);
-        addTab(NAME_BLOCK, null, blockJTabbedPane);
 
 	// BLOCKED CATEGORIES /////////
 	BlockedCategoriesConfigJPanel blockedCategoriesConfigJPanel = new BlockedCategoriesConfigJPanel();
@@ -70,7 +69,6 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 
 	// PASS LISTS /////
         JTabbedPane passJTabbedPane = addTabbedPane(NAME_PASS, null);
-        addTab(NAME_PASS, null, passJTabbedPane);
 
 	// PASSED URLS /////////
 	PassedURLsConfigJPanel passedURLsConfigJPanel = new PassedURLsConfigJPanel();
