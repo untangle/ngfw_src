@@ -20,6 +20,8 @@ import com.metavize.mvvm.tran.firewall.ParsingConstants;
 
 public final class UserSingleMatcher extends UserDBMatcher
 {
+    private static final long serialVersionUID = 8513194248419629420L;
+
     private final String user;
 
     private UserSingleMatcher( String user )

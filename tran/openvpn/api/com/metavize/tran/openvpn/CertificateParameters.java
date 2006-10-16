@@ -18,7 +18,7 @@ import com.metavize.mvvm.tran.ValidateException;
 
 public class CertificateParameters implements Serializable, Validatable
 {
-    // XXX SERIALVER private static final long serialVersionUID = 1032713361795879615L;
+    private static final long serialVersionUID = 1032713361795879615L;
     
     private String organization;
     private String domain;

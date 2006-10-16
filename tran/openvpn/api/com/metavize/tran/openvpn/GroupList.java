@@ -24,8 +24,8 @@ import com.metavize.mvvm.tran.ValidateException;
 
 public class GroupList implements Serializable, Validatable
 {
-    // XXX SERIALVER private static final long serialVersionUID = 1032713361795879615L;
-    
+    private static final long serialVersionUID = 7274774518899345543L;
+
     List<VpnGroup> groupList;
 
     public GroupList()

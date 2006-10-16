@@ -11,8 +11,6 @@
 
 package com.metavize.mvvm.tran;
 
-import java.io.Serializable;
-
 /**
  * Rule for matching based on IP addresses and subnets.
  *
@@ -21,7 +19,6 @@ import java.io.Serializable;
  */
 public abstract class ImmutableRule
 {
-    // XXXXXXX serialver private static final long serialVersionUID = -7861114769604834397L;
     private final String name;
     private final String category;
     private final String description;

@@ -34,7 +34,7 @@ import static com.metavize.mvvm.tran.firewall.protocol.ProtocolParsingConstants.
  */
 public final class ProtocolBasicMatcher extends ProtocolDBMatcher
 {
-    // XXX private static final long serialVersionUID = 6026959848409522258L;
+    private static final long serialVersionUID = 2396418065775379605L;
 
     private static final Map<String,ProtocolBasicMatcher> nameToMatcherMap = 
         new HashMap<String,ProtocolBasicMatcher>();

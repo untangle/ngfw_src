@@ -46,7 +46,7 @@ import org.hibernate.annotations.Type;
 @Table(name="tr_openvpn_settings", schema="settings")
 public class VpnSettings implements Serializable, Validatable
 {
-    static public final long serialVersionUID = -7623287947661641339L;
+    private static final long serialVersionUID = 1900466626555001143L;
 
     static private final int KEY_SIZE_ENUMERATION[] = new int[]
         {
@@ -79,6 +79,10 @@ public class VpnSettings implements Serializable, Validatable
     private List<VpnGroup> groupList;
     private List<VpnClient> clientList;
     private List<VpnSite> siteList;
+    
+    private boolean isDnsOverrideEnabled = false;
+    private IPaddr dns1;
+    private IPaddr dns2;
 
     /* This is the port to put into config files */
     private int publicPort = DEFAULT_PUBLIC_PORT;
@@ -121,6 +125,13 @@ public class VpnSettings implements Serializable, Validatable
 
         ExportList validateExportList = new ExportList( this.exportedAddressList );
         validateExportList.validate();
+
+        /* If DNS override is enabled, either DNS 1 or DNS 2 must be set */
+        if ( this.isDnsOverrideEnabled ) {
+            if ( getDnsServerList().isEmpty()) {
+                throw new ValidateException( "A DNS server is required when overriding DNS list." );
+            }
+        }
 
         /* XXX Check for overlap in all of the settings */
     }
@@ -257,14 +268,66 @@ public class VpnSettings implements Serializable, Validatable
     }
 
     /**
+     * True if DNS override is enabled.
+     * This determines if the user specified DNS servers should be used as opposed to the
+     * default ones from the MVVM.
+     * @return whether or not to override DNS 
+     */
+    @Column(name="is_dns_override", nullable=false)
+    public boolean getIsDnsOverrideEnabled()
+    {
+        return this.isDnsOverrideEnabled;
+    }
+
+    public void setIsDnsOverrideEnabled( boolean newValue )
+    {
+        this.isDnsOverrideEnabled = newValue;
+    }
+
+    @Column(name="dns_1")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
+    public IPaddr getDns1()
+    {
+        return this.dns1;
+    }
+
+    public void setDns1( IPaddr newValue )
+    {
+        this.dns1 = newValue;
+    }
+
+    @Column(name="dns_2")
+    @Type(type="com.metavize.mvvm.type.IPaddrUserType")
+    public IPaddr getDns2()
+    {
+        return this.dns2;
+    }
+
+    public void setDns2( IPaddr newValue )
+    {
+        this.dns2 = newValue;
+    }
+
+    @Transient
+    public List<IPaddr> getDnsServerList()
+    {
+        List<IPaddr> dnsServerList = new LinkedList<IPaddr>();
+        
+        if (( this.dns1 != null ) && ( !this.dns1.isEmpty())) dnsServerList.add( this.dns1 );
+        if (( this.dns2 != null ) && ( !this.dns2.isEmpty())) dnsServerList.add( this.dns2 );
+
+        return dnsServerList;
+    }
+
+    /**
      * @return a new list containing all of the clients and the
      * sites. A VpnSite is a subclass of a VpnClient.
      */
     @Transient
-    public List getCompleteClientList()
+    public List<VpnClient> getCompleteClientList()
     {
         /* ??? Is there a better way to do this */
-        List completeList = new LinkedList();
+        List<VpnClient> completeList = new LinkedList<VpnClient>();
         completeList.addAll( getClientList());
         completeList.addAll( getSiteList());
         return completeList;

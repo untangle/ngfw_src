@@ -77,7 +77,7 @@ public class ServerRoutingWizardClientsJPanel extends MWizardPageJPanel {
 		newElem.setLive( (Boolean) rowVector.elementAt(2) );
 		newElem.setName( (String) rowVector.elementAt(3) );
 		newElem.setGroup( (VpnGroup) ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem() );
-		newElem.setDescription( (String) rowVector.elementAt(6) );
+		newElem.setDescription( (String) rowVector.elementAt(7) );
 		elemList.add(newElem);
 	    }
 	}});

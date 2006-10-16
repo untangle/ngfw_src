@@ -22,7 +22,7 @@ import java.net.UnknownHostException;
 
 public class IPaddr implements Comparable, Serializable
 {
-    // XXXXXX private static final long serialVersionUID = -741858749430271001L;
+    private static final long serialVersionUID = -5766577991152349680L;
 
     static final String CIDR_STRINGS[] = 
     {

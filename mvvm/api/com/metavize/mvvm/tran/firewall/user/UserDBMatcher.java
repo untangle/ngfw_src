@@ -17,6 +17,8 @@ import java.io.Serializable;
 
 public abstract class UserDBMatcher implements UserMatcher, Serializable
 {
+    private static final long serialVersionUID = -6040354037968024420L;
+
     /** Package protected so that only classes in the package can add to the list
      * of database saveable user matchers */
     UserDBMatcher()

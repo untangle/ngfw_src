@@ -118,38 +118,31 @@ public class VpnTransformImpl extends AbstractTransform
             /* Update the status/generate all of the certificates for clients */
             this.certificateManager.updateCertificateStatus( newSettings );
         }
-
-        TransactionWork deletePreviousTW = new TransactionWork()
-            {
-                public boolean doWork( Session s )
-                {
-                    s.delete( oldSettings );
-                    return true;
-                }
-            };
-
+        
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork( Session s )
                 {
+                    /* Delete all of the old settings */
+                    Query q = null;
+                    Long newSettingsId = newSettings.getId();
+                    if ( newSettingsId == null ) {
+                        q = s.createQuery( "from VpnSettings ts where ts.tid = :tid" );
+                    } else {
+                        q = s.createQuery( "from VpnSettings ts where ts.tid = :tid and ts.id != :id" );
+                        q.setParameter( "id", newSettingsId );
+                    }
+
+                    q.setParameter( "tid", getTid());
+                    
+                    for ( Object o : q.list()) s.delete((VpnSettings)o );
+                    
+                    /* Save the new settings */
                     s.merge( newSettings );
                     VpnTransformImpl.this.settings = newSettings;
                     return true;
                 }
             };
-
-        /* If necessary, delete the old settings */
-        // logger.debug( "Old settings: '" + oldSettings.getId() + " : newSettings " + newSettings.getId());
-
-        Long newSettingsId = newSettings.getId();
-        Long oldSettingsId = ( oldSettings == null ) ? null : oldSettings.getId();
-
-        if ( oldSettings != null && oldSettingsId != null && !oldSettingsId.equals( newSettingsId )) {
-            logger.debug( "Deleting old instance" );
-            getTransformContext().runTransaction( deletePreviousTW );
-        }
-
-        //logger.debug( "Old settings: '" + oldSettings.getId() + " : newSettings " + newSettings.getId());
 
         getTransformContext().runTransaction( tw );
 

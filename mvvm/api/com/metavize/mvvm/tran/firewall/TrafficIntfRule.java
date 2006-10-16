@@ -31,7 +31,7 @@ import org.hibernate.annotations.Type;
 @MappedSuperclass
 public abstract class TrafficIntfRule extends TrafficRule
 {
-    // XXXX private static final long serialVersionUID = -3414932048560925028L;
+    private static final long serialVersionUID = 679729134715419983L;
 
     /* True if this matches source interface */
     private IntfDBMatcher srcIntf = IntfMatcherFactory.getInstance()

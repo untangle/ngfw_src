@@ -21,7 +21,7 @@ import com.metavize.mvvm.tran.ValidateException;
 
 public class ExportList implements Serializable, Validatable
 { 
-    // XXX SERIALVER private static final long serialVersionUID = 1032713361795879615L;
+    private static final long serialVersionUID = -6370773131855832786L;
     
     List<ServerSiteNetwork> exportList;
 

@@ -406,6 +406,8 @@ class OpenVpnManager
             if(client.getGroup().isUseDNS()) {
               List<IPaddr> dnsServers = sis.getDnsServerList();
 
+              if ( settings.getIsDnsOverrideEnabled()) dnsServers = settings.getDnsServerList();
+
               for(IPaddr addr : dnsServers) {
                   sw.appendVariable( "push", "\"dhcp-option DNS " + addr.toString() + "\"");
               }
