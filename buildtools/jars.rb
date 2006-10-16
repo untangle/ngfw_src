@@ -60,7 +60,7 @@ class Jars
   ## Groups used for compiling
   # This is available to everything?
   Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres, Activation, Jcifs,
-                              C3p0, Ant, JavaMailApi, TomcatEmb, Velocity)
+                              C3p0, Ant, JavaMailApi, JavaMail, TomcatEmb, Velocity)
 
   # Jars for compiling the GUI, and GUI transform components
   Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)
