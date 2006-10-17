@@ -76,7 +76,14 @@ public class FileGetter extends HttpServlet
         try {
             os = resp.getOutputStream();
 
-            if (f.isDirectory()) {
+            boolean isDir;
+            try {
+                isDir = f.isDirectory();
+            } catch (NullPointerException exn) { // XXX bug in jcifs
+                isDir = false;
+            }
+
+            if (isDir) {
                 // XXX
                 throw new ServletException("not a file: " + f);
             } else {

@@ -43,7 +43,14 @@ public class FileLister extends HttpServlet
                 throws SmbException
             {
                 // XXX non filesystem files?
-                return f.isDirectory()
+                boolean isDir;
+                try {
+                    isDir = f.isDirectory();
+                } catch (NullPointerException exn) { // XXX bug in jcifs
+                    isDir = false;
+                }
+
+                return isDir
                     && SmbFile.TYPE_NAMED_PIPE != f.getType()
                     && SmbFile.TYPE_PRINTER != f.getType()
                     && SmbFile.TYPE_COMM != f.getType();
@@ -150,7 +157,14 @@ public class FileLister extends HttpServlet
         try {
             os = resp.getWriter();
 
-            if (f.isDirectory()) {
+            boolean isDir;
+            try {
+                isDir = f.isDirectory();
+            } catch (NullPointerException exn) { // XXX bug in jcifs
+                isDir = false;
+            }
+
+            if (isDir) {
                 listDirectory(f, filter, os);
             } else {
                 logger.warn("not a directory: " + url);
@@ -221,7 +235,14 @@ public class FileLister extends HttpServlet
 
         try {
             for (SmbFile f : files) {
-                String tag = f.isDirectory() ? "dir" : "file";
+                boolean isDir;
+                try {
+                    isDir = f.isDirectory();
+                } catch (NullPointerException exn) { // XXX bug in jcifs
+                    isDir = false;
+                }
+
+                String tag = isDir ? "dir" : "file";
                 String name = XmlUtil.escapeXml(f.getName());
                 long ctime = f.createTime();
                 long mtime = f.lastModified();
@@ -229,14 +250,14 @@ public class FileLister extends HttpServlet
                 boolean readable = f.canRead();
                 boolean writable = f.canWrite();
                 boolean hidden = f.isHidden();
-                String contentType = f.isDirectory() ? ""
+                String contentType = isDir ? ""
                     : mimeMap.getContentType(name);
                 String principal = f.getPrincipal().toString();
 
                 String type;
                 switch (f.getType()) {
                 case SmbFile.TYPE_FILESYSTEM:
-                    if (f.isDirectory()) {
+                    if (isDir) {
                         type = "directory";
                     } else {
                         type = "file";
