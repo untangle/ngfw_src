@@ -687,13 +687,17 @@ public class SpywareImpl extends AbstractTransform implements Spyware
                 if (str.startsWith("http://")) {
                     try {
                         URL url = new URL(str);
-                        s.add(url.getHost());
+                        str = url.getHost();
                     } catch (MalformedURLException exn) {
                         logger.warn("skipping non-url: " + s, exn);
                     }
-                } else {
-                    s.add(str);
                 }
+
+                if (str.startsWith("www.")) {
+                    str = str.substring("www.".length());
+                }
+
+                s.add(str);
             }
         }
         domainWhitelist = s;
