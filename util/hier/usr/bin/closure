@@ -4,6 +4,6 @@ JAVA_HOME=${JAVA_HOME:-/opt/java}
 
 export JAVA_HOME
 
-CLASSPATH="../../downloads/output/bcel-5.1/bcel-5.1.jar:./output/util"
+CLASSPATH="@THIRDPARTY_MVVM_LIB@/bcel-5.1.jar:@MVVM_LIB@/buildutil-impl.jar"
 
-$JAVA_HOME/bin/java -cp "$CLASSPATH" Closure $@
+$JAVA_HOME/bin/java -cp "$CLASSPATH" com.metavize.buildutil.Closure $@
