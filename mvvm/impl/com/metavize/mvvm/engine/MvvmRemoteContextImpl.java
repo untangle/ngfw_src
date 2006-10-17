@@ -23,6 +23,7 @@ import com.metavize.mvvm.api.RemoteIntfManager;
 import com.metavize.mvvm.api.RemoteShieldManager;
 import com.metavize.mvvm.client.MvvmRemoteContext;
 import com.metavize.mvvm.logging.LoggingManager;
+import com.metavize.mvvm.networking.ping.PingManager;
 import com.metavize.mvvm.policy.PolicyManager;
 import com.metavize.mvvm.portal.RemotePortalManager;
 import com.metavize.mvvm.security.AdminManager;
@@ -80,6 +81,11 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
     public NetworkManager networkManager()
     {
         return context.remoteNetworkManager();
+    }
+
+    public PingManager pingManager()
+    {
+        return context.pingManager();
     }
 
     public RemoteShieldManager shieldManager()

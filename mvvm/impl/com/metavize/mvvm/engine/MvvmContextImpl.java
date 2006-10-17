@@ -35,6 +35,7 @@ import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.networking.NetworkManagerImpl;
 import com.metavize.mvvm.networking.RemoteNetworkManagerImpl;
+import com.metavize.mvvm.networking.ping.PingManagerImpl;
 import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.tran.TransformContext;
@@ -76,6 +77,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private MPipeManagerImpl mPipeManager;
     private MailSenderImpl mailSender;
     private NetworkManagerImpl networkManager;
+    private PingManagerImpl pingManager;
     private RemoteNetworkManagerImpl remoteNetworkManager;
     private ReportingManagerImpl reportingManager;
     private ConnectivityTesterImpl connectivityTester;
@@ -189,6 +191,11 @@ public class MvvmContextImpl extends MvvmContextBase
     public NetworkManagerImpl networkManager()
     {
         return networkManager;
+    }
+
+    public PingManagerImpl pingManager()
+    {
+        return pingManager;
     }
 
     RemoteNetworkManagerImpl remoteNetworkManager()
@@ -505,6 +512,8 @@ public class MvvmContextImpl extends MvvmContextBase
         // manager should exist.
         networkManager = NetworkManagerImpl.getInstance();
         remoteNetworkManager = new RemoteNetworkManagerImpl(networkManager);
+
+        pingManager = PingManagerImpl.getInstance();
 
         //Start AddressBookImpl
         addressBookImpl = AddressBookImpl.getInstance();

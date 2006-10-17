@@ -21,6 +21,7 @@ import com.metavize.mvvm.addrbook.AddressBook;
 import com.metavize.mvvm.api.RemoteIntfManager;
 import com.metavize.mvvm.api.RemoteShieldManager;
 import com.metavize.mvvm.logging.LoggingManager;
+import com.metavize.mvvm.networking.ping.PingManager;
 import com.metavize.mvvm.policy.PolicyManager;
 import com.metavize.mvvm.portal.RemotePortalManager;
 import com.metavize.mvvm.security.AdminManager;
@@ -78,6 +79,13 @@ public interface MvvmRemoteContext
      */
     RemoteIntfManager intfManager();
 
+    /**
+     * Get the <code>PingManager</code> singleton.
+     *
+     * @return the PingManager.
+     */
+    PingManager pingManager();
+    
     /**
      * Get the <code>NetworkManager</code> singleton.
      *

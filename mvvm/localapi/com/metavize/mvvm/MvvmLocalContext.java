@@ -23,6 +23,7 @@ import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.LoggingManager;
 import com.metavize.mvvm.logging.SyslogManager;
 import com.metavize.mvvm.networking.LocalNetworkManager;
+import com.metavize.mvvm.networking.ping.PingManager;
 import com.metavize.mvvm.policy.PolicyManager;
 import com.metavize.mvvm.portal.LocalPortalManager;
 import com.metavize.mvvm.security.AdminManager;
@@ -98,6 +99,8 @@ public interface MvvmLocalContext
 
     // XXX has stuff for local use, should probably be renamed w/o 'Impl'
     LocalNetworkManager networkManager();
+
+    PingManager pingManager();
 
     /** Get the <code>LocalShieldManager</code> singleton.
          *
