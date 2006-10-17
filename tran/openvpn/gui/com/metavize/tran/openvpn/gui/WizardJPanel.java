@@ -102,7 +102,7 @@ public class WizardJPanel extends javax.swing.JPanel implements Refreshable<Obje
                 gridBagConstraints.ipadx = 175;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 50, 200, 50);
+                gridBagConstraints.insets = new java.awt.Insets(0, 50, 175, 50);
                 add(statusJPanel, gridBagConstraints);
 
                 clientJPanel.setLayout(new java.awt.GridBagLayout());

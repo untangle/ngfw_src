@@ -30,6 +30,9 @@ import javax.swing.JSpinner;
 public class ServerAdvancedJPanel extends javax.swing.JPanel
     implements Savable<Object>, Refreshable<Object> {
 
+    private static final String EXCEPTION_INVALID_PRIMARY_DNS = "You must enter a valid IP address for the Primary Address";
+    private static final String EXCEPTION_INVALID_SECONDARY_DNS = "You must enter a valid IP address for the Secondary Address";
+
     // SETTINGS CHANGE NOTIFICATION /////////
     private SettingsChangedListener settingsChangedListener;
     public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
@@ -46,22 +49,57 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
     public void doSave(Object settings, boolean validateOnly) throws Exception {
 
         // PORT //
-	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
-	int port = 0;
-	try{ portJSpinner.commitEdit(); }
-	catch(Exception e){ 
-	    ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
-	    throw new Exception(Util.EXCEPTION_PORT_RANGE);
-	}
+        ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+        int port = 0;
+        try{ portJSpinner.commitEdit(); }
+        catch(Exception e){ 
+            ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+            throw new Exception(Util.EXCEPTION_PORT_RANGE);
+        }
         port = (Integer) portJSpinner.getValue();
+
+        // OVERRIDE //
+        boolean overrideEnabled = overrideEnabledJRadioButton.isSelected();
+        IPaddr primaryOverrideIPaddr = null;
+        IPaddr secondaryOverrideIPaddr = null;
+        primaryDNSIPaddrJTextField.setBackground( Color.WHITE );
+        secondaryDNSIPaddrJTextField.setBackground( Color.WHITE );
+        if( overrideEnabled ){
+            try{
+                primaryOverrideIPaddr = IPaddr.parse( primaryDNSIPaddrJTextField.getText() );
+            }
+            catch(Exception e){
+                primaryDNSIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                throw new Exception(EXCEPTION_INVALID_PRIMARY_DNS);
+            }
+            if( secondaryDNSIPaddrJTextField.getText().trim().length() > 0 ){
+                try{
+                    secondaryOverrideIPaddr = IPaddr.parse( secondaryDNSIPaddrJTextField.getText() );
+                }
+                catch(Exception e){
+                    secondaryDNSIPaddrJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                    throw new Exception(EXCEPTION_INVALID_SECONDARY_DNS);
+                }
+            }
+        }
 		
-	// SAVE SETTINGS ////////////
-	if( !validateOnly ){
-	    VpnSettings vpnSettings = (VpnSettings) settings;
-		vpnSettings.setPublicPort( port );
-    }
+        // SAVE SETTINGS ////////////
+        if( !validateOnly ){
+            VpnSettings vpnSettings = (VpnSettings) settings;
+            vpnSettings.setPublicPort( port );
+            vpnSettings.setIsDnsOverrideEnabled( overrideEnabled );
+            if( overrideEnabled ){
+                vpnSettings.setDns1( primaryOverrideIPaddr );
+                vpnSettings.setDns2( secondaryOverrideIPaddr );
+            }
+        }
 	}
+
+
     int portCurrent;
+    boolean overrideEnabledCurrent;
+    String overridePrimaryCurrent;
+    String overrideSecondaryCurrent;
 
     public void doRefresh(Object settings){
 		VpnSettings vpnSettings = (VpnSettings) settings;
@@ -69,27 +107,59 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
         // PORT //
         portCurrent = vpnSettings.getPublicPort();
         portJSpinner.setValue(portCurrent);
-	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(portCurrent));
-	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+        ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(portCurrent));
+        ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+
+        // OVERRIDE //
+        overrideEnabledCurrent = vpnSettings.getIsDnsOverrideEnabled();
+        setOverrideEnabledDependency(overrideEnabledCurrent);
+        if(overrideEnabledCurrent)
+            overrideEnabledJRadioButton.setSelected(true);
+        else
+            overrideDisabledJRadioButton.setSelected(true);
+
+        // OVERRIDE PRIMARY //
+        IPaddr overridePrimaryCurrentIPaddr = vpnSettings.getDns1();
+        overridePrimaryCurrent = overridePrimaryCurrentIPaddr!=null?overridePrimaryCurrentIPaddr.toString():"";
+        primaryDNSIPaddrJTextField.setBackground( Color.WHITE );
+        primaryDNSIPaddrJTextField.setText( overridePrimaryCurrent );
+        
+
+        // OVERRIDE SECONDARY //
+        IPaddr overrideSecondaryCurrentIPaddr = vpnSettings.getDns2();
+        overrideSecondaryCurrent = overrideSecondaryCurrentIPaddr!=null?overrideSecondaryCurrentIPaddr.toString():"";
+        secondaryDNSIPaddrJTextField.setBackground( Color.WHITE );
+        secondaryDNSIPaddrJTextField.setText( overrideSecondaryCurrent );
     }
     
     
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
 
-                dnsButtonGroup = new javax.swing.ButtonGroup();
+                overrideButtonGroup = new javax.swing.ButtonGroup();
                 portJPanel = new javax.swing.JPanel();
                 jLabel9 = new javax.swing.JLabel();
                 staticIPJPanel = new javax.swing.JPanel();
                 portJLabel = new javax.swing.JLabel();
                 portJSpinner = new javax.swing.JSpinner();
                 defaultJLabel = new javax.swing.JLabel();
+                dnsJPanel = new javax.swing.JPanel();
+                jTextArea2 = new javax.swing.JTextArea();
+                jPanel1 = new javax.swing.JPanel();
+                overrideEnabledJRadioButton = new javax.swing.JRadioButton();
+                overrideDisabledJRadioButton = new javax.swing.JRadioButton();
+                jLabel1 = new javax.swing.JLabel();
+                restrictIPJPanel = new javax.swing.JPanel();
+                primaryDNSJLabel = new javax.swing.JLabel();
+                primaryDNSIPaddrJTextField = new javax.swing.JTextField();
+                secondaryDNSJLabel = new javax.swing.JLabel();
+                secondaryDNSIPaddrJTextField = new javax.swing.JTextField();
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMaximumSize(new java.awt.Dimension(550, 250));
-                setMinimumSize(new java.awt.Dimension(550, 250));
-                setPreferredSize(new java.awt.Dimension(550, 250));
+                setMaximumSize(new java.awt.Dimension(515, 387));
+                setMinimumSize(new java.awt.Dimension(515, 387));
+                setPreferredSize(new java.awt.Dimension(515, 387));
                 portJPanel.setLayout(new java.awt.GridBagLayout());
 
                 portJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Server Port", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -150,26 +220,199 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
                 gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
                 add(portJPanel, gridBagConstraints);
 
+                dnsJPanel.setLayout(new java.awt.GridBagLayout());
+
+                dnsJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DNS Override", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                jTextArea2.setEditable(false);
+                jTextArea2.setLineWrap(true);
+                jTextArea2.setText("DNS Override allows you to specify up to two IP addresses of DNS servers which you would like to export to your VPN clients.  These addresses will be used instead of Untangle's own DNS settings.  This can be useful if you need to make an Active Directory server available to your VPN clients.");
+                jTextArea2.setWrapStyleWord(true);
+                jTextArea2.setOpaque(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
+                dnsJPanel.add(jTextArea2, gridBagConstraints);
+
+                jPanel1.setLayout(new java.awt.GridBagLayout());
+
+                overrideButtonGroup.add(overrideEnabledJRadioButton);
+                overrideEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                overrideEnabledJRadioButton.setText("Enabled");
+                overrideEnabledJRadioButton.setFocusPainted(false);
+                overrideEnabledJRadioButton.setFocusable(false);
+                overrideEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                overrideEnabledJRadioButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                jPanel1.add(overrideEnabledJRadioButton, gridBagConstraints);
+
+                overrideButtonGroup.add(overrideDisabledJRadioButton);
+                overrideDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                overrideDisabledJRadioButton.setText("Disabled");
+                overrideDisabledJRadioButton.setFocusPainted(false);
+                overrideDisabledJRadioButton.setFocusable(false);
+                overrideDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                overrideDisabledJRadioButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                jPanel1.add(overrideDisabledJRadioButton, gridBagConstraints);
+
+                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel1.setText("DNS Override");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.gridheight = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                jPanel1.add(jLabel1, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
+                dnsJPanel.add(jPanel1, gridBagConstraints);
+
+                restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
+
+                primaryDNSJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                primaryDNSJLabel.setText("Primary IP Address: ");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel.add(primaryDNSJLabel, gridBagConstraints);
+
+                primaryDNSIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+                primaryDNSIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+                primaryDNSIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
+                primaryDNSIPaddrJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                primaryDNSIPaddrJTextFieldCaretUpdate(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+                restrictIPJPanel.add(primaryDNSIPaddrJTextField, gridBagConstraints);
+
+                secondaryDNSJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                secondaryDNSJLabel.setText("Secondary IP Address: ");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel.add(secondaryDNSJLabel, gridBagConstraints);
+
+                secondaryDNSIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+                secondaryDNSIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+                secondaryDNSIPaddrJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
+                secondaryDNSIPaddrJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                secondaryDNSIPaddrJTextFieldCaretUpdate(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+                restrictIPJPanel.add(secondaryDNSIPaddrJTextField, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.ipadx = 25;
+                gridBagConstraints.insets = new java.awt.Insets(15, 0, 5, 0);
+                dnsJPanel.add(restrictIPJPanel, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+                add(dnsJPanel, gridBagConstraints);
+
         }//GEN-END:initComponents
+
+		private void secondaryDNSIPaddrJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_secondaryDNSIPaddrJTextFieldCaretUpdate
+            if( !secondaryDNSIPaddrJTextField.getText().trim().equals(overrideSecondaryCurrent) && (settingsChangedListener != null) )
+                settingsChangedListener.settingsChanged(this);
+		}//GEN-LAST:event_secondaryDNSIPaddrJTextFieldCaretUpdate
+
+		private void primaryDNSIPaddrJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_primaryDNSIPaddrJTextFieldCaretUpdate
+            if( !primaryDNSIPaddrJTextField.getText().trim().equals(overridePrimaryCurrent) && (settingsChangedListener != null) )
+                settingsChangedListener.settingsChanged(this);
+		}//GEN-LAST:event_primaryDNSIPaddrJTextFieldCaretUpdate
+
+		private void overrideDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_overrideDisabledJRadioButtonActionPerformed
+            this.setOverrideEnabledDependency(true);
+            if( overrideEnabledCurrent && (settingsChangedListener != null) )
+                settingsChangedListener.settingsChanged(this);
+		}//GEN-LAST:event_overrideDisabledJRadioButtonActionPerformed
+
+		private void overrideEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_overrideEnabledJRadioButtonActionPerformed
+            this.setOverrideEnabledDependency(true);
+            if( !overrideEnabledCurrent && (settingsChangedListener != null) )
+                settingsChangedListener.settingsChanged(this);
+		}//GEN-LAST:event_overrideEnabledJRadioButtonActionPerformed
 
 		private void portJSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_portJSpinnerStateChanged
 		if( !portJSpinner.getValue().equals(portCurrent) && (settingsChangedListener != null) )
 		    settingsChangedListener.settingsChanged(this);				// TODO add your handling code here:
 		}//GEN-LAST:event_portJSpinnerStateChanged
                                 
-
+    private void setOverrideEnabledDependency(boolean enabled){
+        primaryDNSJLabel.setEnabled( enabled );
+        primaryDNSIPaddrJTextField.setEnabled( enabled );
+        secondaryDNSJLabel.setEnabled( enabled );
+        secondaryDNSIPaddrJTextField.setEnabled( enabled );
+    }
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JLabel defaultJLabel;
-        private javax.swing.ButtonGroup dnsButtonGroup;
+        private javax.swing.JPanel dnsJPanel;
+        private javax.swing.JLabel jLabel1;
         private javax.swing.JLabel jLabel9;
+        private javax.swing.JPanel jPanel1;
+        private javax.swing.JTextArea jTextArea2;
+        private javax.swing.ButtonGroup overrideButtonGroup;
+        public javax.swing.JRadioButton overrideDisabledJRadioButton;
+        public javax.swing.JRadioButton overrideEnabledJRadioButton;
         private javax.swing.JLabel portJLabel;
         private javax.swing.JPanel portJPanel;
         private javax.swing.JSpinner portJSpinner;
+        public javax.swing.JTextField primaryDNSIPaddrJTextField;
+        private javax.swing.JLabel primaryDNSJLabel;
+        private javax.swing.JPanel restrictIPJPanel;
+        public javax.swing.JTextField secondaryDNSIPaddrJTextField;
+        private javax.swing.JLabel secondaryDNSJLabel;
         private javax.swing.JPanel staticIPJPanel;
         // End of variables declaration//GEN-END:variables
     

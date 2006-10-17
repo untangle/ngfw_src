@@ -112,7 +112,7 @@ public class MTransformControlsJPanel extends com.metavize.gui.transform.MTransf
 	    // DONE TO REARRANGE THE DISPLAY ORDER indepently of the SAVE/REFRESH ORDER
 	    JTabbedPane wizardJTabbedPane = addTabbedPane(SETUP_NAME, null);
 	    wizardJTabbedPane.addTab( WIZARD_NAME, null, wizardJPanel );
-	    wizardJTabbedPane.addTab( ADVANCED_NAME, null, serverAdvancedJPanel );
+	    addScrollableTab( wizardJTabbedPane, ADVANCED_NAME, null, serverAdvancedJPanel, false, true );
 	    addTab( EXPORTS_NAME, null, configExportsJPanel );
 	    JTabbedPane clientsAndSitesJTabbedPane = addTabbedPane(CLIENTS_AND_SITES_NAME, null);
 	    clientsAndSitesJTabbedPane.addTab( POOLS_NAME, null, configAddressGroupsJPanel );
