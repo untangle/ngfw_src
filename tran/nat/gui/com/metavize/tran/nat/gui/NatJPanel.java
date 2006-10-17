@@ -144,9 +144,9 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 externalRemoteJPanel = new javax.swing.JPanel();
                 jTextArea3 = new javax.swing.JTextArea();
                 restrictIPJPanel = new javax.swing.JPanel();
-                jLabel5 = new javax.swing.JLabel();
+                internalAddressJLabel = new javax.swing.JLabel();
                 internalAddressIPaddrJTextField = new javax.swing.JTextField();
-                jLabel8 = new javax.swing.JLabel();
+                internalSubnetJLabel = new javax.swing.JLabel();
                 internalSubnetIPaddrJTextField = new javax.swing.JTextField();
                 jLabel9 = new javax.swing.JLabel();
                 internalNetworkJLabel = new javax.swing.JLabel();
@@ -257,13 +257,13 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
 
                 restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
 
-                jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel5.setText("Internal IP Address: ");
+                internalAddressJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                internalAddressJLabel.setText("Internal IP Address: ");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                restrictIPJPanel.add(jLabel5, gridBagConstraints);
+                restrictIPJPanel.add(internalAddressJLabel, gridBagConstraints);
 
                 internalAddressIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
                 internalAddressIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
@@ -281,13 +281,13 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
                 restrictIPJPanel.add(internalAddressIPaddrJTextField, gridBagConstraints);
 
-                jLabel8.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel8.setText("Internal Subnet: ");
+                internalSubnetJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                internalSubnetJLabel.setText("Internal Subnet: ");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                restrictIPJPanel.add(jLabel8, gridBagConstraints);
+                restrictIPJPanel.add(internalSubnetJLabel, gridBagConstraints);
 
                 internalSubnetIPaddrJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
                 internalSubnetIPaddrJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
@@ -436,7 +436,9 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
     
     private void setNatEnabledDependency(boolean enabled){
         internalAddressIPaddrJTextField.setEnabled( enabled );
+        internalAddressJLabel.setEnabled( enabled );
         internalSubnetIPaddrJTextField.setEnabled( enabled );
+        internalSubnetJLabel.setEnabled( enabled );
     }
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -446,14 +448,14 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
         private javax.swing.JLabel externalMethodJLabel;
         private javax.swing.JPanel externalRemoteJPanel;
         public javax.swing.JTextField internalAddressIPaddrJTextField;
+        private javax.swing.JLabel internalAddressJLabel;
         private javax.swing.JLabel internalNetworkJLabel;
         private javax.swing.JPanel internalRemoteJPanel;
         public javax.swing.JTextField internalSubnetIPaddrJTextField;
+        private javax.swing.JLabel internalSubnetJLabel;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JLabel jLabel10;
-        private javax.swing.JLabel jLabel5;
         private javax.swing.JLabel jLabel6;
-        private javax.swing.JLabel jLabel8;
         private javax.swing.JLabel jLabel9;
         private javax.swing.JPanel jPanel1;
         private javax.swing.JTextArea jTextArea1;
