@@ -65,7 +65,8 @@ public class SystemStatus
 
         if (JITTER_THREAD) {
             jitter = new JitterThread(JITTER_THREAD_FREQ);
-            MvvmContextFactory.context().newThread(jitter).start();
+            Thread newThread = MvvmContextFactory.context().newThread(jitter, "Jitter Thread");
+            newThread.start();
         }
         else {
             jitter = null;
