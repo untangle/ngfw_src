@@ -32,7 +32,7 @@ DELETE FROM tr_nat_statistic_evt WHERE time_stamp < (:cutoff)::timestamp;
 DELETE FROM tr_nat_redirect_evt WHERE time_stamp < (:cutoff)::timestamp;
 
 -- Delete all of the old rules that are no longer used by settings
-DELETE FROM redirect_rule WHERE 
+DELETE FROM mvvm_redirect_rule WHERE 
         rule_id NOT IN ( SELECT rule_id FROM tr_nat_redirects );
 
 DROP INDEX tr_nat_statistic_evt_idx;

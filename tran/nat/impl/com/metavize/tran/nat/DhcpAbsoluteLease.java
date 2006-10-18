@@ -63,7 +63,7 @@ public class DhcpAbsoluteLease
     }
 
     @Id
-    @Column(name="settings_id")
+    @Column(name="event_id")
     @GeneratedValue
     protected Long getId()
     {
