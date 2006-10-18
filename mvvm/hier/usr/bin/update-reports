@@ -104,7 +104,14 @@ if [ $is_reporting_enabled == 'true' ]; then
     exitOnMvvmError $? mvvm
 
     # Build the DHCP Merged Address Map (needed for running start-reports scripts)
-    $JAVA_HOME/bin/java -Xmx512m \
+    MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)    
+    if [ MEM -gt 1000000 ] ; then
+      MAX_HEAP_SIZE=512m
+    else
+      MAX_HEAP_SIZE=200m
+    fi
+    
+    $JAVA_HOME/bin/java -Xmx${MAX_HEAP_SIZE} \
         -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
         com.metavize.mvvm.reporting.Reporter -o $REPORT_DIR -d 32 -m "$@"
     exitOnMvvmError $? reporter
@@ -116,7 +123,7 @@ if [ $is_reporting_enabled == 'true' ]; then
 
     echo "VACUUM ANALYZE;" | psql -U metavize mvvm
 
-    $JAVA_HOME/bin/java -Xmx512m \
+    $JAVA_HOME/bin/java -Xmx${MAX_HEAP_SIZE} \
         -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
         com.metavize.mvvm.reporting.Reporter -o $REPORT_DIR -d 32 "$@" $mars
     exitOnMvvmError $? reporter

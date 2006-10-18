@@ -105,25 +105,30 @@ restartPostgres() {
     
 # Return true (0) when we need to reap and restart the mvvm.
 needToRestart() {
+    MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
+
+    # FIXME
+    # < 1G => reboot at 384
+
     cheaphigh=`head -3 /proc/$pid/maps | tail -1 | awk '{ high=split($1, arr, "-"); print arr[2]; }'`
     if [ -z $cheaphigh ]; then
-# not fatal, process has probably just died, which we'll catch soon.
+        # not fatal, process has probably just died, which we'll catch soon.
         echo "*** no heap size ($cheaphigh) on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
     else
         bignibble=${cheaphigh:0:1}
         case $bignibble in
             0 | 1)
-# less than 384Meg native heap
+                # less than 384Meg native heap
                 ;;
             2)
-# 384Meg < native heap < 640Meg
-                if [ `date +%H` -eq 1 ]; then
+                # 384Meg < native heap < 640Meg
+	        if [ $MEM -lt 1000000 ] || [ `date +%H` -eq 1 ] ; then
                     echo "*** bunnicula heap soft limit on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
                     return 0;
-                fi
+		fi
                 ;;
             3 | 4 | 5 | 6 | 7 | 8 | 9)
-# native heap > 640Meg
+                # native heap > 640Meg
                 echo "*** bunnicula heap hard limit ($bignibble) on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
                 return 0;
                 ;;
@@ -133,7 +138,7 @@ needToRestart() {
         esac
     fi
 
-# gc failure (persistent heap full)
+    # gc failure (persistent heap full)
     cmfcount=`tail -50 $MVVM_GC_LOG | grep -ci "concurrent mode failure"`
     if [ $cmfcount -gt 2 ]; then
         echo "*** java heap cmf on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
@@ -143,6 +148,8 @@ needToRestart() {
 # extra nightime checks
     if [ `date +%H` -eq 1 ]; then
         # VSZ greater than 1.1 gigs reboot
+      # FIXME
+      # less than a gig -> 850000
         VIRT="`cat /proc/$pid/status | grep VmSize | awk '{print $2}'`"
         if [ $VIRT -gt 1050000 ] ; then
             echo "*** Virt Size too high ($VIRT) on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG

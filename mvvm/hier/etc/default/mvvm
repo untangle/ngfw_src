@@ -110,6 +110,14 @@ MVVM_ARGS="${MVVM_ARGS} -Dcom.metavize.mvvm.memmonitor.enabled=true"
 # JAVA_HOME=/usr/lib/j2se/1.4/jre
 JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
 
+# THe maximum heap size depends on the memory available
+MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
+if [ MEM -gt 1000000 ] ; then
+  MAX_HEAP_SIZE=320m
+else
+  MAX_HEAP_SIZE=200m  
+fi
+
 if [ "x$USE_THROUGHPUT_COLLECTOR" = "xyes" ] ; then
 # Goals: 20ms maximum pause time, 95% throughput, finally minimum footprint
     JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+UseParallelGC -XX:MaxGCPauseMillis=20 -XX:GCTimeRatio=19"
@@ -121,7 +129,7 @@ JAVA_OPTS_BEA="-Xgcpause -Xgcprio:pausetime"
 #  Minimum at 128m so we don't blow out smaller (512MB) machines
 #  Maximum at 320m so we leave a lot of space for stacks but still have enough for 10,000 sessions
 #  Stack size 96k which is small enough but still works
-JAVA_OPTS_COMMON="-verbose:gc -Xloggc:$MVVM_GC_LOG -Xms128m -Xmx320m -Xss96k -server"
+JAVA_OPTS_COMMON="-verbose:gc -Xloggc:$MVVM_GC_LOG -Xms128m -Xmx${MAX_HEAP_SIZE} -Xss96k -server"
 if [ "x" != "x@PREFIX@" ] ; then
     JAVA_OPTS_COMMON="-ea $JAVA_OPTS_COMMON"
 fi
