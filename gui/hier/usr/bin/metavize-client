@@ -26,5 +26,8 @@ ${JAVA_HOME}/bin/javaws -updateVersions
 #echo "Attempting to clear Webstart cache"
 #${JAVA_HOME}/bin/javaws -Xclearcache
 
+[ -f /etc/untangle-cdinstall ] && EXTRA_JAVAWS_ARGS="-userConfig cdinstall 1"
+
 echo "Webstarting Untangle Networks Client.  Connecting to: http://$HOST/webstart/gui-local.jnlp"
-exec ${JAVA_HOME}/bin/javaws -Xnosplash http://$HOST/webstart/gui-local.jnlp
+exec ${JAVA_HOME}/bin/javaws -Xnosplash ${EXTRA_JAVAWS_ARGS} http://$HOST/webstart/gui-local.jnlp
+
