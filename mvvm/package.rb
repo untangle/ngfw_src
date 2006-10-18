@@ -22,8 +22,8 @@ jts << JarTarget.buildTarget(mvvm, deps, 'reporting', 'mvvm/reporting')
 
 ## Implementation
 deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
-  Jars::Dom4j + Jars::Activation + Jars::Trove +
-  [ mvvm['bootstrap'], mvvm['api'], mvvm['localapi'], jnetcap['impl'], jvector['impl']]
+  Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::Jasper + Jars::JFreeChart +
+  [ mvvm['bootstrap'], mvvm['api'], mvvm['localapi'], mvvm['reporting'], jnetcap['impl'], jvector['impl']]
 
 jts << JarTarget.buildTarget(mvvm, deps, 'impl', 'mvvm/impl')
 

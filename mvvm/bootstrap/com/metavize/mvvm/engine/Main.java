@@ -177,9 +177,10 @@ public class Main
         URL mvvmImplJar = new URL("file://" + bunniculaLib + "/mvvm-impl.jar");
         URL mvvmApiJar = new URL("file://" + bunniculaLib + "/mvvm-api.jar");
         URL mvvmLocalApiJar = new URL("file://" + bunniculaLib + "/mvvm-localapi.jar");
+        URL mvvmReportingJar = new URL("file://" + bunniculaLib + "/mvvm-reporting.jar");
         URL jVectorJar = new URL("file://" + bunniculaLib + "/jvector-impl.jar");
         URL jNetcapJar = new URL("file://" + bunniculaLib + "/jnetcap-impl.jar");
-        URL[] urls = new URL[] { mvvmImplJar, mvvmApiJar, mvvmLocalApiJar,
+        URL[] urls = new URL[] { mvvmImplJar, mvvmApiJar, mvvmLocalApiJar, mvvmReportingJar,
                                  jVectorJar, jNetcapJar };
         ucl = new URLClassLoader(urls, getClass().getClassLoader());
 

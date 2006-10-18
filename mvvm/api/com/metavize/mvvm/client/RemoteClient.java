@@ -16,6 +16,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.StringBuilder;
 import java.net.InetAddress;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -188,6 +192,16 @@ public class RemoteClient
             isReportingEnabled();
         } else if (args[0].equalsIgnoreCase("areReportsAvailable")) {
             areReportsAvailable();
+        } else if (args[0].equalsIgnoreCase("startReports")) {
+            startReports();
+        } else if (args[0].equalsIgnoreCase("stopReports")) {
+            stopReports();
+        } else if (args[0].equalsIgnoreCase("isReportingRunning")) {
+            isReportingRunning();
+        } else if (args[0].equalsIgnoreCase("prepareReports")) {
+            String[] prepArgs = new String[args.length - 1];
+            System.arraycopy(args, 1, prepArgs, 0, prepArgs.length);
+            prepareReports(prepArgs);
         } else if (args[0].equalsIgnoreCase("resetLogs")) {
             resetLogs();
         } else if (args[0].equalsIgnoreCase("logError")) {
@@ -451,7 +465,7 @@ public class RemoteClient
         String pkg = pkgName(shortName);
 
         List<Tid> tids = tm.transformInstances();
-        for (Tid t : tm.transformInstances()) {
+        for (Tid t : tids) {
             TransformContext tctx = tm.transformContext(t);
             if (tctx == null) {
                 System.err.println("NULL Transform Context (tid:" + t + ")");
@@ -760,6 +774,61 @@ public class RemoteClient
         System.out.println(mc.reportingManager().isReportsAvailable());
     }
 
+    private static void isReportingRunning()
+    {
+        System.out.println(mc.reportingManager().isRunning());
+    }
+
+    private static void startReports()
+        throws Exception
+    {
+        System.out.println("Report generation starting");
+        mc.reportingManager().startReports();
+    }
+
+    private static void stopReports()
+        throws Exception
+    {
+        System.out.println("Report generation stopping");
+        mc.reportingManager().stopReports();
+    }
+
+    private static final SimpleDateFormat DAYDATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+
+    private static void prepareReports(String[] args)
+        throws Exception
+    {
+        String outputBaseDirName = "/tmp";
+        int daysToKeep = 90;
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        Date midnight = c.getTime();
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("-o")) {
+                outputBaseDirName = args[++i];
+            } else if (args[i].equals("-d")) {
+                daysToKeep = Integer.parseInt(args[++i]);
+                if (daysToKeep < 1)
+                    daysToKeep = 1;
+            } else if (args[i].equals("-n")) {
+                midnight = DAYDATE_FORMAT.parse(args[++i], new ParsePosition(0));
+                if (midnight == null) {
+                    System.out.println("Unable to parse date " + args[i]);
+                    System.exit(-1);
+                }
+            } else {
+                printUsage();
+                System.exit(-1);
+            }
+        }
+        System.out.println("Preparing for report generation to " + outputBaseDirName);
+        mc.reportingManager().prepareReports(outputBaseDirName, midnight, daysToKeep);
+    }
+
+
     /**
      * <code>resetLogs</code> re-reads all log configuration files
      * (jboss, mvvm, all tran instances).  This allows changing
@@ -978,6 +1047,10 @@ public class RemoteClient
         System.out.println("  reporting manager: ");
         System.out.println("    mcli isReportingEnabled");
         System.out.println("    mcli areReportsAvailable");
+        System.out.println("    mcli prepareReports [ args ]");
+        System.out.println("    mcli startReports");
+        System.out.println("    mcli stopReports");
+        System.out.println("    mcli isReportingRunning");
         System.out.println("  logging manager: ");
         System.out.println("    mcli userLogs tid");
         System.out.println("    mcli resetLogs");

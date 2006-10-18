@@ -83,7 +83,11 @@ fi
 for f in @THIRDPARTY_MVVM_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
+for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
+    CLASSPATH="$CLASSPATH:$f"
+done
 
+unset DISPLAY
 export PATH LD_LIBRARY_PATH CLASSPATH JAVA_HOME
 
 #

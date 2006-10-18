@@ -1,14 +1,31 @@
 #!/bin/sh
 
-if [ $* = 0 ]; then
-    echo "Usage: rollup-logs #days"
+if [ $# -lt 2 ]; then
+    echo "Usage: rollup-logs midnight #days"
     exit 1
 fi
 
-cutoff="now() - interval '$1 days'";
+cutoff="date '$1' - interval '$2 days'"
 
-echo "Purging all events older than $cutoff"
+echo "Purging all base events older than $cutoff"
 
 for c in @MVVM_SCHEMA@/*/rollup.sql; do
     psql -U metavize -v cutoff="$cutoff" -f $c mvvm
 done
+
+echo "Purging all report data older than $cutoff"
+
+daystoremove=`mktemp`
+psql -U metavize -X -v cutoff="$cutoff" --pset tuples_only mvvm > $daystoremove <<EOF
+  select day_name from reports.report_data_days where day_begin < :cutoff ;
+EOF
+for day in `cat $daystoremove`; do
+    echo "Purging report data for $day"
+    for c in @MVVM_SCHEMA@/*/report-remove-day.sql; do
+        psql -U metavize -v dayname="$1" -f $c mvvm
+    done
+    psql -U metavize -v dayname="'$1'" mvvm <<EOF
+delete from reports.report_data_days where day_name = :dayname ;
+EOF
+done
+rm $daystoremove
