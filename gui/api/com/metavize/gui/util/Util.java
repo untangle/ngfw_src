@@ -48,6 +48,7 @@ import com.metavize.gui.widgets.editTable.*;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.addrbook.*;
 import com.metavize.mvvm.api.RemoteIntfManager;
+import com.metavize.mvvm.networking.ping.PingManager;
 import com.metavize.mvvm.client.*;
 import com.metavize.mvvm.logging.*;
 import com.metavize.mvvm.policy.*;
@@ -156,6 +157,7 @@ public class Util {
     private static AddressBook addressBook;
     private static RemotePortalManager remotePortalManager;
     private static RemoteIntfManager remoteIntfManager;
+    private static PingManager pingManager;
 
     public static void setMvvmContext(MvvmRemoteContext mvvmContextX){
         mvvmContext = mvvmContextX;
@@ -170,6 +172,7 @@ public class Util {
             addressBook = mvvmContext.appAddressBook();
             remotePortalManager = mvvmContext.portalManager();
             remoteIntfManager = mvvmContext.intfManager();
+            pingManager = mvvmContext.pingManager();
         }
         else{
             toolboxManager = null;
@@ -182,6 +185,7 @@ public class Util {
             addressBook = null;
             remotePortalManager = null;
             remoteIntfManager = null;
+            pingManager = null;
         }
     }
 
@@ -197,6 +201,7 @@ public class Util {
     public static RemoteAppServerManager getAppServerManager(){ return appServerManager; }
     public static AddressBook getAddressBook(){ return addressBook; }
     public static RemotePortalManager getRemotePortalManager(){ return remotePortalManager; }
+    public static PingManager getPingManager(){ return pingManager; }
     ///////////////////////////////////
 
 

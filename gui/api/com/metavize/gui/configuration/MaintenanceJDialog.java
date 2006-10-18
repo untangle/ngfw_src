@@ -32,6 +32,7 @@ public class MaintenanceJDialog extends MConfigJDialog {
     private static final String NAME_PROTOCOL_OVERRIDE  = "Manual Protocol Override";
     private static final String NAME_NETWORK_INTERFACES = "Network Interfaces";
     private static final String NAME_SECRET_PANEL       = "Advanced Support";
+    private static final String NAME_PING_TEST          = "Ping Test";
 
     private static boolean showHiddenPanel;
     public static void setShowHiddenPanel(boolean showHiddenPanelX){ showHiddenPanel = showHiddenPanelX; }
@@ -75,6 +76,10 @@ public class MaintenanceJDialog extends MConfigJDialog {
 	addTab(NAME_NETWORK_INTERFACES, null, maintenanceInterfaceJPanel);
 	addSavable(NAME_NETWORK_INTERFACES, maintenanceInterfaceJPanel);
 	addRefreshable(NAME_NETWORK_INTERFACES, maintenanceInterfaceJPanel);
+
+    // PING TEST //
+    MaintenancePingJPanel maintenancePingJPanel = new MaintenancePingJPanel();
+    addTab(NAME_PING_TEST, null, maintenancePingJPanel);
 
 	// SECRET HIDDEN PANEL //////
 	if( showHiddenPanel ){
