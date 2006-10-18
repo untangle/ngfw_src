@@ -83,6 +83,8 @@ class PPPoEManagerImpl
         } catch ( ValidateException e ) {
             throw new PPPoEException( "Error saving settings", e );
         }
+
+        registerIntfs();
     }
 
     /* Retrieve the PPPoE configuration for the external interface */

@@ -228,9 +228,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         if ( logger.isDebugEnabled()) logger.debug( "Loading the new network settings: " + newSettings );
 
-        /* Register the PPPoE settings */
-        this.pppoeManager.registerIntfs();
-
         /* Write the settings */
         writeConfiguration( newSettings );
 
