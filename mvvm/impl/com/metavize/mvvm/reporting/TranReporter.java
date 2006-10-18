@@ -21,6 +21,7 @@ import com.metavize.mvvm.api.MvvmTransformHandler;
 import com.metavize.mvvm.reporting.summary.*;
 import com.metavize.mvvm.security.Tid;
 import com.metavize.mvvm.tran.Scanner;
+import com.metavize.mvvm.tran.TransformContext;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.*;
 import org.apache.log4j.Logger;
@@ -42,23 +43,21 @@ public class TranReporter {
     private static final String SUMMARY_FRAGMENT_WEEKLY = "sum-weekly.html";
     private static final String SUMMARY_FRAGMENT_MONTHLY = "sum-monthly.html";
 
+    private final TransformContext tctx;
     private final String tranName;
-    private final JarFile jf;
-    private final URLClassLoader ucl;
+    private final ClassLoader tcl;
     private final Settings settings;
     private final File tranDir;
 
     private Map<String,Object> extraParams = new HashMap<String,Object>();
 
-    TranReporter(File outputDir, String tranName, JarFile jf, URLClassLoader ucl, Settings settings)
+    TranReporter(File outputDir, TransformContext tctx, Settings settings)
     {
-        this.tranName = tranName;
-        // These next two are the same, just different forms.
-        this.jf = jf;
-        this.ucl = ucl;
+        this.tctx = tctx;
         this.settings = settings;
-
-        tranDir = new File(outputDir, tranName);
+        this.tranName = tctx.getTransformDesc().getName();
+        this.tranDir = new File(outputDir, tranName);
+        this.tcl = tctx.getClassLoader();
     }
 
     public void process(Connection conn) throws Exception
@@ -70,9 +69,9 @@ public class TranReporter {
         MvvmTransformHandler mth = new MvvmTransformHandler(null);
         Scanner scanner = null;
 
-        InputStream is = ucl.getResourceAsStream("META-INF/report-files");
+        InputStream is = tcl.getResourceAsStream("META-INF/report-files");
         if (null == is) {
-            logger.warn("No reports for: " + ucl.getURLs()[0]);
+            logger.warn("No reports for: " + tranName);
             return;
         } else {
             logger.info("Beginning generation for: " + tranName);
@@ -97,23 +96,56 @@ public class TranReporter {
                 extraParams.put(paramName, paramValue);
             }
             else if (type.equalsIgnoreCase("scanner")) {
-                ClassLoader cl = Thread.currentThread().getContextClassLoader();
                 try {
-                    Class scannerClass = cl.loadClass(resourceOrClassname);
+                    Class scannerClass = tcl.loadClass(resourceOrClassname);
                     scanner = (Scanner) scannerClass.newInstance();
                 } catch (Exception x) {
                     logger.warn("No such class: " + resourceOrClassname);
                 }
                 // Ugly Constants. XXXX
                 extraParams.put("scanner", scanner);
+
                 extraParams.put("virusVendor", scanner.getVendorName());
                 extraParams.put("spamVendor", scanner.getVendorName());
             }
         }
         is.close();
 
+        // Icons.  We have to be a bit tricky to get the name right.
+        String tname = tctx.getTransformDesc().getClassName().replace('.', '/');
+        String rdir = tname.substring(0, tname.lastIndexOf("/")) + "/gui/";
+        
+        is = tcl.getResourceAsStream(rdir + ICON_ORG);
+        if (is == null) {
+            logger.warn("No icon_org for: " + rdir + ICON_ORG);
+        } else {
+            imagesDir.mkdir();
+            FileOutputStream fos = new FileOutputStream(new File(imagesDir, ICON_ORG));
+            byte[] buf = new byte[256];
+            int count;
+            while ((count = is.read(buf)) > 0) {
+                fos.write(buf, 0, count);
+            }
+            fos.close();
+            is.close();
+        }
+        is = tcl.getResourceAsStream(rdir + ICON_DESC);
+        if (is == null) {
+            logger.warn("No icon_desc for: " + rdir + ICON_DESC);
+        } else {
+            imagesDir.mkdir();
+            FileOutputStream fos = new FileOutputStream(new File(imagesDir, ICON_DESC));
+            byte[] buf = new byte[256];
+            int count;
+            while ((count = is.read(buf)) > 0) {
+                fos.write(buf, 0, count);
+            }
+            fos.close();
+            is.close();
+        }
+
         // Now do everything else.
-        is = ucl.getResourceAsStream("META-INF/report-files");
+        is = tcl.getResourceAsStream("META-INF/report-files");
         br = new BufferedReader(new InputStreamReader(is));
         for (String line = br.readLine(); null != line; line = br.readLine()) {
             if (line.startsWith("#"))
@@ -128,9 +160,8 @@ public class TranReporter {
                 continue;
             } else if (type.equalsIgnoreCase("summarizer")) {
                 String className = resourceOrClassname;
-                ClassLoader cl = Thread.currentThread().getContextClassLoader();
                 try {
-                    Class reportClass = cl.loadClass(className);
+                    Class reportClass = tcl.loadClass(className);
                     ReportSummarizer reportSummarizer;
 
                     if (true == settings.getDaily()) {
@@ -159,10 +190,9 @@ public class TranReporter {
             }
             else if (type.equalsIgnoreCase("summaryGraph")) {
                 String className = resourceOrClassname;
-                ClassLoader cl = Thread.currentThread().getContextClassLoader();
                 String outputName = type;
                 try {
-                    Class reportClass = cl.loadClass(className);
+                    Class reportClass = tcl.loadClass(className);
                     ReportGraph reportGraph;
                     String name = tok.nextToken();
                     reportGraph = (ReportGraph) reportClass.newInstance();
@@ -230,7 +260,8 @@ public class TranReporter {
         }
         is.close();
 
-        // We can't use ucl.getResourceAsStream(ICON_ORG); since we don't know the path.
+        /*
+        // We can't use tcl.getResourceAsStream(ICON_ORG); since we don't know the path.
         for (Enumeration e = jf.entries(); e.hasMoreElements(); ) {
             JarEntry je = (JarEntry)e.nextElement();
             String name = je.getName();
@@ -259,8 +290,9 @@ public class TranReporter {
                 is.close();
             }
         }
+        */
 
-        is = ucl.getResourceAsStream("META-INF/mvvm-transform.xml");
+        is = tcl.getResourceAsStream("META-INF/mvvm-transform.xml");
         XMLReader xr = XMLReaderFactory.createXMLReader();
         xr.setContentHandler(mth);
         xr.parse(new InputSource(is));
@@ -277,7 +309,7 @@ public class TranReporter {
         pw.close();
 
         logger.debug("copying report-files");
-        is = ucl.getResourceAsStream("META-INF/report-files");
+        is = tcl.getResourceAsStream("META-INF/report-files");
         br = new BufferedReader(new InputStreamReader(is));
         fos = new FileOutputStream(new File(tranDir, "report-files"));
         pw = new PrintWriter(fos);
@@ -353,7 +385,7 @@ public class TranReporter {
             // JasperReports automatically adds quotes to this literal value
             params.put("userName", userName);
 
-            InputStream jasperIs = ucl.getResourceAsStream(resource);
+            InputStream jasperIs = tcl.getResourceAsStream(resource);
             if (null == jasperIs) {
                 logger.warn("No such resource: " + resource);
                 return;
@@ -385,7 +417,7 @@ public class TranReporter {
     {
         logger.debug("From: " + startTime + " To: " + endTime);
 
-        InputStream jasperIs = ucl.getResourceAsStream(resource);
+        InputStream jasperIs = tcl.getResourceAsStream(resource);
         if (null == jasperIs) {
             logger.warn("No such resource: " + resource);
             return;

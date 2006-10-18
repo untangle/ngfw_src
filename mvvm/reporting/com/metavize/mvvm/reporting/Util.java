@@ -12,9 +12,10 @@
 package com.metavize.mvvm.reporting;
 
 import java.text.DecimalFormat;
-import java.util.Calendar;
 import java.io.*;
 import java.sql.*;
+import java.util.Calendar;
+import java.util.Date;
 
 public class Util {
 
@@ -52,15 +53,10 @@ public class Util {
     ///////////////////////////////
 
 
-    static void init(boolean toMidnight) {
+    static void init(Date whichMidnight) {
 	// INITIALIZE TIME CONSTANTS
         Calendar c = Calendar.getInstance();
-        if (toMidnight) {
-            c.set(Calendar.HOUR_OF_DAY, 0);
-            c.set(Calendar.MINUTE, 0);
-            c.set(Calendar.SECOND, 0);
-            c.set(Calendar.MILLISECOND, 0);
-        }
+        c.setTime(whichMidnight);
         reportNow = (Calendar) c.clone();
 	midnight = new Timestamp(c.getTimeInMillis());
 	Calendar lastdayCalendar = (Calendar) c.clone();
