@@ -128,3 +128,13 @@ CREATE TABLE events.portal_app_launch_evt (
 CREATE INDEX pl_endp_sid_idx ON events.pl_endp (session_id);
 CREATE INDEX pl_endp_cdate_idx ON events.pl_endp (create_date);
 CREATE INDEX pl_stats_plepid_idx ON events.pl_stats (pl_endp_id);
+
+
+--------------------------------------------------------------------------------
+-- Reports
+
+CREATE SCHEMA reports;
+
+CREATE TABLE reports.report_data_days (
+        day_name text NOT NULL,
+        day_begin date NOT NULL);
