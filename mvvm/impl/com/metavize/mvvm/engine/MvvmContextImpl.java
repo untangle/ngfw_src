@@ -285,9 +285,22 @@ public class MvvmContextImpl extends MvvmContextBase
     }
 
 
+    /* For autonumbering anonymous threads. */
+    private static class ThreadNumber {
+        private static int threadInitNumber = 1;
+        public static synchronized int nextThreadNum() {
+            return threadInitNumber++;
+        }
+    }
+
     public Thread newThread(final Runnable runnable)
     {
-        return new Thread(new Runnable()
+        return newThread(runnable, "MVThread-" + ThreadNumber.nextThreadNum());
+    }
+
+    public Thread newThread(final Runnable runnable, final String name)
+    {
+        Runnable task = new Runnable()
             {
                 public void run()
                 {
@@ -309,7 +322,8 @@ public class MvvmContextImpl extends MvvmContextBase
                         }
                     }
                 }
-            });
+            };
+        return new Thread(task, name);
     }
 
     public Process exec(String cmd) throws IOException

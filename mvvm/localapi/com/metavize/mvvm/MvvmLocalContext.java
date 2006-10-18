@@ -198,6 +198,8 @@ public interface MvvmLocalContext
 
     Thread newThread(Runnable runnable);
 
+    Thread newThread(Runnable runnable, String name);
+
     EventLogger eventLogger();
 
     void waitForStartup();
