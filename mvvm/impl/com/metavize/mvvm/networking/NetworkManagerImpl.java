@@ -695,7 +695,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         logger.debug( "usage: " + args[0] + " <register|unregister|reset>" );
         logger.debug( "usage: " + args[0] + " <off|delete> <argon interface>" );
-        logger.debug( "usage: " + args[0] + " <off|on> <argon interface> <username> <password>" );
+        logger.debug( "usage: " + args[0] + " <argon interface> <true|false> <username> <password>" );
     }
 
     public void disableDhcpForwarding()
@@ -981,7 +981,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         }
 
         try {
-            this.pppoeManager.writeConfigFiles();
+            this.pppoeManager.writeConfigFiles( newSettings );
         } catch ( PPPoEException e ) {
             logger.error( "Unable to write the PPPoE Settings", e );
         }

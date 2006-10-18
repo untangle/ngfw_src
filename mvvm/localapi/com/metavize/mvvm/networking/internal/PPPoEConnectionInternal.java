@@ -28,6 +28,9 @@ public class PPPoEConnectionInternal extends ImmutableRule
     private final String username;
     private final String password;
 
+    /* additional (unanticipated) parameters for the PPP options file */
+    private final String secretField;
+
     /** Index of the argon interface to run PPPoE on */
     private final byte argonIntf;
     
@@ -47,6 +50,7 @@ public class PPPoEConnectionInternal extends ImmutableRule
         this.password    = rule.getPassword();
         this.keepalive   = rule.getKeepalive();
         this.argonIntf   = rule.getArgonIntf();
+        this.secretField = rule.getSecretField();
         this.deviceName  = deviceName;
     }
     
@@ -58,6 +62,11 @@ public class PPPoEConnectionInternal extends ImmutableRule
     public String getPassword()
     {
         return this.password;
+    }
+
+    public String getSecretField()
+    {
+        return this.secretField;
     }
 
     public byte getArgonIntf()
@@ -90,6 +99,7 @@ public class PPPoEConnectionInternal extends ImmutableRule
         rule.setPassword( getPassword());
         rule.setKeepalive( getKeepalive());
         rule.setArgonIntf( getArgonIntf());
+        rule.setSecretField( getSecretField());
         return rule;
     }
     

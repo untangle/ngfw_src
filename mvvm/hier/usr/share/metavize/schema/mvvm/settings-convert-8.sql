@@ -17,6 +17,7 @@ CREATE TABLE settings.mvvm_pppoe_connection (
     password          TEXT,
     intf              INT2,
     keepalive         BOOL,
+    secret_field      TEXT,
     PRIMARY KEY       (rule_id));
 
 -- com.metavize.mvvm.networking.PPPoESettings -- 4.1

@@ -1,0 +1,17 @@
+#!/bin/sh
+
+## Log all output to the MVVM logging
+exec >> @MVVM_LOG@/iptables.log 2>&1
+
+# These variables are for the use of the scripts run by run-parts
+# PPP_IFACE="$1"
+# PPP_TTY="$2"
+# PPP_SPEED="$3"
+# PPP_LOCAL="$4"
+# PPP_REMOTE="$5"
+# PPP_IPPARAM="$6"
+
+
+## Run mcli update address
+echo "[DEBUG] `date` running mcli update address"
+@USR_BIN@/mcli updateAddress

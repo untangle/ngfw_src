@@ -28,6 +28,8 @@ import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.localapi.ArgonInterface;
 import com.metavize.mvvm.localapi.LocalIntfManager;
 
+import com.metavize.mvvm.networking.internal.NetworkSpacesInternalSettings;
+import com.metavize.mvvm.networking.internal.InterfaceInternal;
 import com.metavize.mvvm.networking.internal.PPPoEConnectionInternal;
 import com.metavize.mvvm.networking.internal.PPPoESettingsInternal;
 
@@ -154,14 +156,23 @@ class PPPoEManagerImpl
     }
     
     /* Write all the config files */
-    void writeConfigFiles() throws PPPoEException
+    void writeConfigFiles( NetworkSpacesInternalSettings networkSettings ) throws PPPoEException
     {
         if ( !this.settings.getIsEnabled()) return;
+
+        /* determine if dns should be overriden */
+        boolean usePeerDns = false;
+        for ( InterfaceInternal intf : networkSettings.getInterfaceList()) {
+            /* if DHCP is enabled on the external space, then use peer dns */
+            if ( intf.getArgonIntf().getArgon() == IntfConstants.EXTERNAL_INTF ) {
+                if ( intf.getNetworkSpace().getIsDhcpEnabled()) usePeerDns = true;
+            }
+        }
         
         /* Write out all of the peers files */
         for ( PPPoEConnectionInternal connection : this.settings.getConnectionList()) {
             if ( !connection.isLive()) continue;
-            PPPoEPeerWriter peer = new PPPoEPeerWriter( connection );
+            PPPoEPeerWriter peer = new PPPoEPeerWriter( connection, usePeerDns );
             try {
                 peer.addConnection();
                 peer.writeFile( PEERS_FILE_PREFIX + connection.getArgonIntf());
@@ -175,8 +186,6 @@ class PPPoEManagerImpl
         PPPoEPapSecretsWriter secrets = new PPPoEPapSecretsWriter( this.settings );
         secrets.addSettings();
         secrets.writeFile( PAP_SECRETS_FILE, "600" );
-        
-        
     }
 
     void isConnected()
@@ -339,15 +348,17 @@ class PPPoEManagerImpl
             "noipdefault\n" +
             "hide-password\n" +
             "noauth\n" +
-            "persist\n" +
-            "usepeerdns\n";
+            "persist\n";
+
         
         private final PPPoEConnectionInternal connection;
+        private final boolean usePeerDns;
 
-        PPPoEPeerWriter( PPPoEConnectionInternal connection )
+        PPPoEPeerWriter( PPPoEConnectionInternal connection, boolean usePeerDns )
         {
             super();
             this.connection = connection;
+            this.usePeerDns = usePeerDns;
         }
 
         void addConnection() throws ArgonException
@@ -360,11 +371,20 @@ class PPPoEManagerImpl
             if ( argonIndex == IntfConstants.EXTERNAL_INTF ) {
                 appendLine( "defaultroute" );
                 appendLine( "replacedefaultroute" );
+
+                /* only append this on the external interface if use peer dns is enabled. */
+                if ( this.usePeerDns ) appendLine( "usepeerdns" );
             }
 
             appendLine( "plugin rp-pppoe.so " + ai.getPhysicalName());
             appendLine( "unit " + argonIndex );
             appendLine( "user \"" + connection.getUsername() + "\"" );
+            
+            
+            String secretField = connection.getSecretField().trim();
+            
+            /* append the secret field if necessary */
+            if ( secretField.length() > 0 ) appendLine( secretField );
         }
 
         @Override

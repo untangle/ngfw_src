@@ -39,6 +39,8 @@ public class PPPoEConnectionRule extends Rule implements Serializable, Validatab
     private String username   = "pppoe";
     private String password   = "eoppp";
 
+    private String secretField = "";
+
     /* Index of the argon interface to run PPPoE on */
     private byte argonIntf = IntfConstants.ARGON_UNKNOWN;
 
@@ -55,6 +57,7 @@ public class PPPoEConnectionRule extends Rule implements Serializable, Validatab
     @Column(name="username")
     public String getUsername()
     {
+        if ( this.username == null ) this.username = "";
         return this.username;
     }
     
@@ -67,6 +70,7 @@ public class PPPoEConnectionRule extends Rule implements Serializable, Validatab
     @Column(name="password")
     public String getPassword()
     {
+        if ( this.password == null ) this.password = "";
         return this.password;
     }
 
@@ -74,6 +78,19 @@ public class PPPoEConnectionRule extends Rule implements Serializable, Validatab
     {
         newValue = ( null == newValue ) ? "" : newValue;
         this.password = newValue.trim();
+    }
+
+    @Column(name="secret_field")
+    public String getSecretField()
+    {
+        if ( this.secretField == null ) this.secretField = "";
+        return this.secretField;
+    }
+
+    public void setSecretField( String newValue )
+    {
+        newValue = ( null == newValue ) ? "" : newValue;
+        this.secretField = newValue.trim();
     }
 
     @Column(name="intf")
