@@ -81,6 +81,10 @@ fi
 update-schema mvvm
 echo "UPDATE transform_persistent_state SET name = 'http-casing' WHERE name = 'http-transform';" | psql -U metavize mvvm
 
+# modify the jnlp local file if this is a cd install
+CDINSTALL_FILE=/usr/share/metavize/.cdinstall
+[ -f $CDINSTALL_FILE ] && perl -i -npe 's|<!-- (.*?cdinstall.*?) -->|$1|' /usr/share/metavize/web/webstart/gui-local.jnlp
+
 # start mvvm
 if [ -x "/etc/init.d/mvvm" ]; then
     update-rc.d mvvm defaults 50 > /dev/null
