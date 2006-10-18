@@ -38,6 +38,10 @@ public class MailTransformCompoundSettings implements CompoundSettings {
     // GENERAL SETTINGS //
     private Component generalSettingsComponent;
     public Component getGeneralSettingsComponent(){ return generalSettingsComponent; }
+    private long minStorageGigs;
+    public long getMinStorageGigs(){ return minStorageGigs; }
+    private long maxStorageGigs;
+    public long getMaxStorageGigs(){ return maxStorageGigs; }
 
     // QUARANTINE SETTINGS //
     private QuarantineSettings quarantineSettings;
@@ -122,6 +126,10 @@ public class MailTransformCompoundSettings implements CompoundSettings {
 	    mailTransform = (MailTransform) Util.getTransform("mail-casing");
 	mailTransformSettings = mailTransform.getMailTransformSettings();
 	quarantineSettings = mailTransformSettings.getQuarantineSettings();
+
+    // GENERAL SETTINGS //
+    minStorageGigs = mailTransform.getMinAllocatedStoreSize(true);
+    maxStorageGigs = mailTransform.getMaxAllocatedStoreSize(true);
 
 	if(quarantineMaintenanceView == null)
 	    quarantineMaintenanceView = mailTransform.getQuarantineMaintenenceView();

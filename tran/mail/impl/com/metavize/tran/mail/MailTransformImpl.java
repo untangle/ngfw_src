@@ -202,7 +202,7 @@ public class MailTransformImpl extends AbstractTransform
     }
 
     // TODO - need to hook into HDD manager
-    public long getMinAllocatedStoreSize(boolean inGB) {
+    public long getMinAllocatedStoreSize(boolean inGB) { // john wanted a XXX on this
         if (false == inGB) {
             return ONE_GB;
         }
@@ -211,7 +211,7 @@ public class MailTransformImpl extends AbstractTransform
 
     // TODO - need to hook into HDD manager
     // max is arbitrarily set to 30 GB
-    public long getMaxAllocatedStoreSize(boolean inGB) {
+    public long getMaxAllocatedStoreSize(boolean inGB) { // john wanted a XXX on this
         if (false == inGB) {
             return (30 * ONE_GB);
         }
