@@ -58,10 +58,8 @@ function launch() {
 DBG = new AjxDebug(AjxDebug.NONE, null, false);
 
 var shell = new DwtShell(null, false);
-shell.setVirtual(true);
 var portal = new Portal(shell);
-portal.zShow(true);
-portal.setVisible(true);
+portal.setZIndex(Dwt.Z_VIEW);
 }
 AjxCore.addOnloadListener(launch);
 </script>

@@ -8,7 +8,7 @@ function BookmarkPanel(parent)
         return;
     }
 
-    DwtComposite.call(this, parent, "BookmarkPanel", DwtControl.STATIC_STYLE);
+    DwtComposite.call(this, parent, "BookmarkPanel", DwtControl.RELATIVE_STYLE);
 
     this._init();
 };
@@ -64,7 +64,7 @@ BookmarkPanel.prototype.addActionListener = function(l)
 // private methods ------------------------------------------------------------
 
 BookmarkPanel.prototype._makeToolbar = function() {
-    var toolbar = new DwtToolBar(this, "PortalToolBar", DwtControl.STATIC_STYLE, 2, 2, DwtToolBar.VERT_STYLE);
+    var toolbar = new DwtToolBar(this, "PortalToolBar", DwtControl.RELATIVE_STYLE, 2, 2, DwtToolBar.VERT_STYLE);
 
     var b = new DwtButton(toolbar,DwtLabel.ALIGN_CENTER,"DwtButton32");
     b.setImage("Add");
