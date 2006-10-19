@@ -17,10 +17,11 @@ String host = bd.getHost();
 String url = bd.getUrl();
 %>
 
-<html>
-<head>
-<title>403 Forbidden</title>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <link href="/main.css" rel="stylesheet" type="text/css"/>
 
+<title>403 Forbidden</title>
 <script language="JavaScript">
 nonce = '<%=nonce%>';
 tid = '<%=tidStr%>';
@@ -29,30 +30,75 @@ url = '<%=url%>';
 
 <script type="text/javascript" src="spyware.js"></script>
 
-</head>
-<body>
-<center><b>Untangle Networks Spyware Blocker</b></center>
-<p>This site blocked because it may contain spyware.</p>
-<p>Host: <%=host%></p>
-<p>URL: <%=url%></p>
+  </head>
+
+  <body>
+    <table cellspacing="0" cellpadding="0" border="0" align="center" class="main">
+      <tbody>
+        <tr>
+          <td class="main-top">
+          </td>
+        </tr>
+        <tr>
+          <td class="main-middle">
 
 <table>
-  <tr>
-    <td>
-      <input id="unblockNowButton" type="button" value="Unblock For Now"
-      onclick="unblockSite(false)"/>
-    </td>
-
-    <td>
-      <input id="unblockGlobalButton" type="button" value="Unblock Permanently"
-      onclick="unblockSite(true)"/>
-    </td>
-  </tr>
+<tbody>
+<tr>
+  <td colspan=1 width="100px">
+<a href="http://www.untanglenetworks.com"><img src="/images/LogoNoText96x96.gif" border="0" alt="Untangle Networks logo"/></a>
+  </td>
+  <td colspan=1 align=left valign=center>
+    <span style="font-family: SansSerif; font-size: 18.0px;">
+<%=header%>
+    </span></td>
+</tr>
+</tbody>
 </table>
 
-<hr>
-<address>Untangle Networks EdgeGuard</address>
-</body>
+<table>
+<tbody>
+<tr>
+<td><hr></td>
+</tr>
+<tr>
+<td>This site blocked because it may contain spyware.</td>
+</tr>
+<tr>
+<td>Host: <%=host%></td>
+</tr>
+<tr>
+<td>URL: <%=url%></td>
+</tr>
+<tr>
+<td>
+      <input id="unblockNowButton" type="button" value="Unblock For Now"
+      onclick="unblockSite(false)"/>
+      <input id="unblockGlobalButton" type="button" value="Unblock Permanently"
+      onclick="unblockSite(true)"/>
+</td>
+</tr>
+</tbody>
+
+<tfoot>
+<tr>
+<td><hr></td>
+</tr>
+<tr>
+<td><address>Untangle Networks EdgeGuard</address></td>
+</tr>
+</tfoot>
+</table>
+
+          </td>
+        </tr>
+        <tr>
+          <td class="main-bottom">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
 </html>
 
 <%

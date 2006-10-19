@@ -212,7 +212,6 @@ function generateEmail()
     ## Generate the file (use the :-baz just in case EMAIL_TEMPLATE isn't set which causes
     ## sed to block
     sed -e "s|%%REPORT_TYPE%%|${reportType}|g" \
-        -e "s|%%FILE_LINK%%|${OUTPUT_FILE}|g" \
         -e "s|%%REPORT_PREPARED%%|${REPORT_PREPARED}|g" \
         ${EMAIL_TEMPLATE:-"baz"} \
         > ${t_email}

@@ -1,0 +1,38 @@
+body {
+ padding: 0px;
+ margin: 0px;
+ background: #FFFFFF url(/images/background/body.gif) repeat-x top left;
+ text-align: center;
+}
+
+table {
+    font: 10pt Sans-Serif;
+    text-align: left;
+    color: #606060;
+}
+
+table.main
+{
+ width: 904px;
+ padding: 20px 0px 20px 0px;
+}
+
+td.main-top
+{
+ background: url(/images/background/top.gif) no-repeat;
+ height: 23px;
+ width: 23px;
+}
+
+td.main-middle
+{
+ background: url(/images/background/middle.gif) repeat;
+ padding-left: 20px;
+ padding-right: 20px;
+}
+
+td.main-bottom
+{
+ background: url(/images/background/bottom.gif) repeat-x;
+ height: 23px;
+}

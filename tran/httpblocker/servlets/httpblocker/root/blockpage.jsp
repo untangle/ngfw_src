@@ -20,28 +20,84 @@ String reason = bd.getReason();
 String url = bd.getUrl().toString();
 %>
 
-<html>
-<head>
-<title>403 Forbidden</title>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <link href="/main.css" rel="stylesheet" type="text/css"/>
 
+<title>403 Forbidden</title>
 <script language="JavaScript">
 nonce = '<%=nonce%>';
 tid = '<%=tidStr%>';
 url = '<%=url%>';
 </script>
 
-</head>
-<body>
-<center><b><%=header%></b></center>
-<p>This site blocked because of inappropriate content</p>
-<p>Host: <%=host%></p>
-<p>URL: <%=url%></p>
-<p>Category: <%=reason%></p>
+  </head>
 
-<p>Please contact <%=contact%></p>
-<hr>
-<address>Untangle Networks EdgeGuard</address>
-</body>
+  <body>
+    <table cellspacing="0" cellpadding="0" border="0" align="center" class="main">
+      <tbody>
+        <tr>
+          <td class="main-top">
+          </td>
+        </tr>
+        <tr>
+          <td class="main-middle">
+
+<table>
+<tbody>
+<tr>
+  <td colspan=1 width="100px">
+<a href="http://www.untanglenetworks.com"><img src="/images/LogoNoText96x96.gif" border="0" alt="Untangle Networks logo"/></a>
+  </td>
+  <td colspan=1 align=left valign=center>
+    <span style="font-family: SansSerif; font-size: 18.0px;">
+<%=header%>
+    </span></td>
+</tr>
+</tbody>
+</table>
+
+<table>
+<tbody>
+<tr>
+<td><hr></td>
+</tr>
+<tr>
+<td>This site blocked because of inappropriate content.</td>
+</tr>
+<tr>
+<td>Host: <%=host%></td>
+</tr>
+<tr>
+<td>URL: <%=url%></td>
+</tr>
+<tr>
+<td>Category: <%=reason%></td>
+</tr>
+<tr>
+<td>Please contact <%=contact%>.</td>
+</tr>
+</tbody>
+
+<tfoot>
+<tr>
+<td><hr></td>
+</tr>
+<tr>
+<td><address>Untangle Networks EdgeGuard</address></td>
+</tr>
+</tfoot>
+</table>
+
+          </td>
+        </tr>
+        <tr>
+          <td class="main-bottom">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
 </html>
 
 <%
