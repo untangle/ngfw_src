@@ -154,6 +154,7 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
                 primaryDNSIPaddrJTextField = new javax.swing.JTextField();
                 secondaryDNSJLabel = new javax.swing.JLabel();
                 secondaryDNSIPaddrJTextField = new javax.swing.JTextField();
+                optionalJLabel = new javax.swing.JLabel();
 
                 setLayout(new java.awt.GridBagLayout());
 
@@ -343,6 +344,14 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
                 gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
                 restrictIPJPanel.add(secondaryDNSIPaddrJTextField, gridBagConstraints);
 
+                optionalJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                optionalJLabel.setText(" (optional)");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 2;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel.add(optionalJLabel, gridBagConstraints);
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 2;
@@ -402,6 +411,7 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
         private javax.swing.JLabel jLabel9;
         private javax.swing.JPanel jPanel1;
         private javax.swing.JTextArea jTextArea2;
+        private javax.swing.JLabel optionalJLabel;
         private javax.swing.ButtonGroup overrideButtonGroup;
         public javax.swing.JRadioButton overrideDisabledJRadioButton;
         public javax.swing.JRadioButton overrideEnabledJRadioButton;
