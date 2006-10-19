@@ -22,12 +22,14 @@ public class SessionGlobalState
 
     protected final int id;
     protected final short protocol;
+    protected String user;      // Not final since we can set it later
 
     protected final SideListener clientSideListener;
     protected final SideListener serverSideListener;
 
     protected final ArgonHook argonHook;
-    
+
+
     SessionGlobalState( NetcapSession netcapSession, SideListener clientSideListener, 
                         SideListener serverSideListener, ArgonHook argonHook )
     {
@@ -37,6 +39,7 @@ public class SessionGlobalState
 
         id = netcapSession.id();
         protocol = netcapSession.protocol();
+        user = null;
 
         this.clientSideListener = clientSideListener;
         this.serverSideListener = serverSideListener;
@@ -50,6 +53,16 @@ public class SessionGlobalState
     public short protocol()
     {
         return protocol;
+    }
+
+    public String user()
+    {
+        return user;
+    }
+
+    public void setUser(String user)
+    {
+        this.user = user;
     }
 
     public NetcapSession netcapSession()

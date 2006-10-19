@@ -146,6 +146,11 @@ public abstract class SessionImpl implements Session
         return isVectored;
     }
 
+    public String user()
+    {
+        return sessionGlobalState.user();
+    }
+
     /**
      * Number of bytes received from the client.
      */

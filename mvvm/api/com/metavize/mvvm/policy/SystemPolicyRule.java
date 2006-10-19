@@ -31,19 +31,59 @@ import com.metavize.mvvm.api.IPSessionDesc;
 @Table(name="system_policy_rule", schema="settings")
 public class SystemPolicyRule extends PolicyRule
 {
+    /* settings */
+    protected byte clientIntf;
+    protected byte serverIntf;
+
     // constructors -----------------------------------------------------------
 
     SystemPolicyRule() { }
 
     public SystemPolicyRule(byte clientIntf, byte serverIntf, Policy policy,
                             boolean inbound) {
-        super(clientIntf, serverIntf, policy, inbound);
+        super(true, policy, inbound);
+        this.clientIntf = clientIntf;
+        this.serverIntf = serverIntf;
     }
 
     @Transient
     public boolean isSameRow(SystemPolicyRule pr)
     {
         return getId().equals(pr.getId());
+    }
+
+    // accessors --------------------------------------------------------------
+
+    /**
+     * Returns the client interface
+     *
+     * @return the interface the client must be on to match this rule
+     */
+    @Column(name="client_intf", nullable=false)
+    public byte getClientIntf()
+    {
+        return clientIntf;
+    }
+
+    public void setClientIntf(byte clientIntf)
+    {
+        this.clientIntf = clientIntf;
+    }
+
+    /**
+     * Returns the server interface
+     *
+     * @return the interface the server must be on to match this rule
+     */
+    @Column(name="server_intf", nullable=false)
+    public byte getServerIntf()
+    {
+        return serverIntf;
+    }
+
+    public void setServerIntf(byte serverIntf)
+    {
+        this.serverIntf = serverIntf;
     }
 
     // PolicyRule methods -----------------------------------------------------

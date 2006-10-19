@@ -67,6 +67,10 @@
     <priority value="WARN"/>
   </category>
 
+  <category name="com.metavize.mvvm.reporting">
+    <priority value="DEBUG"/>
+  </category>
+
   <category name="com.metavize.mvvm.argon">
     <priority value="WARN"/>
   </category>

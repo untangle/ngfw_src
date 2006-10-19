@@ -13,7 +13,6 @@ package com.metavize.mvvm.portal;
 
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.sql.Timestamp;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Table;

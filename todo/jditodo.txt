@@ -1,3 +1,85 @@
+For policy 4.1
+--------------
+ensure that user separator cannot be in user name
+
+Note -- no equals() on matchers!
+
+bugs:
+    all interfaces selector
+    liveness
+    time base
+    user
+    bug in adding multiple
+
+
+for reports
+-----------
+new thread
+
+postgresql
+----------
+   -- 500ms logging
+   -- more transaction log segments
+
+benchmarking.
+
+clh database.  clock set back to Oct 5.  4.0.5 run begun at 20:06 Oct 5.  
+cartman.  2.6.18-ck1.  100 checkpoint segments, log min duration 500
+
+root@cartman:/usr/bin# time /usr/bin/update-reports >& ~/run-reports.out
+
+real    40m32.066s
+
+
+how come position in starts at 1?
+have to make sure idempotent -- run same report twice
+
+find new thread, fix.
+
+how did we get two reponses for the same request?
+On clh:
+
+mvvm=> select request_id from reports.foo except all (select distinct(request_id) from reports.foo);
+
+mvvm=> select * from tr_http_evt_req where request_id = 177146844
+mvvm-> ;
+ event_id  | request_id |       host        | content_length |       time_stamp 
+-----------+------------+-------------------+----------------+-------------------------
+ 177146843 |  177146844 | www.panasonic.com |              0 | 2006-10-04 08:23:16.079
+(1 row)
+
+mvvm=> select * from tr_http_evt_resp where request_id = 177146844
+mvvm-> ;
+ event_id  | request_id | content_type | content_length |       time_stamp 
+-----------+------------+--------------+----------------+-------------------------
+ 177146846 |  177146844 |              |              0 | 2006-10-04 08:23:16.17
+ 177146850 |  177146844 |              |              0 | 2006-10-04 08:23:20.785
+(2 rows)
+
+
+--
+
+needed for protofilter reports:
+
+SELECT evt.time_stamp, c_client_addr, c_server_addr, c_server_port, \
+       protocol, blocked, name \
+  FROM tr_protofilter_evt evt \
+         JOIN pl_endp endp \
+           ON endp.event_id = evt.pl_endp_id \
+         LEFT OUTER JOIN merged_address_map mam \
+           ON (endp.c_client_addr = mam.addr \
+             AND evt.time_stamp >= mam.start_time \
+             AND evt.time_stamp < mam.end_time) \
+
+name (merged addr map)
+
+s2p_bytes, p2s_bytes
+
+
+
+--------------------------------------------------------------------------------    
+    
+
 check what happens on exception in preStart
 
 check syslog messages

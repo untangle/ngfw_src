@@ -27,7 +27,7 @@ public interface PipelineFoundry
 {
     PipelineEndpoints createInitialEndpoints(IPSessionDesc start);
     void registerEndpoints(PipelineEndpoints pe);
-    void destroy(IPSessionDesc start, IPSessionDesc end, PipelineEndpoints pe);
+    void destroy(IPSessionDesc start, IPSessionDesc end, PipelineEndpoints pe, String uid);
 
     void registerMPipe(MPipe mPipe);
     void deregisterMPipe(MPipe mPipe);

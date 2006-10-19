@@ -17,15 +17,24 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import java.sql.Timestamp;
 
 import com.metavize.mvvm.api.IPSessionDesc;
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcher;
 import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
+import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
+import com.metavize.mvvm.tran.firewall.intf.IntfMatcherFactory;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcher;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
+import com.metavize.mvvm.tran.firewall.time.DayOfWeekMatcher;
+import com.metavize.mvvm.tran.firewall.time.DayOfWeekMatcherFactory;
+import com.metavize.mvvm.tran.firewall.user.UserMatcher;
+import com.metavize.mvvm.tran.firewall.user.UserMatcherFactory;
 import org.hibernate.annotations.Type;
 
 /**
@@ -42,53 +51,135 @@ public class UserPolicyRule extends PolicyRule
     /* settings */
     private ProtocolMatcher protocol;
 
+    /* True if this matches client interface */
+    private IntfMatcher clientIntf = IntfMatcherFactory.getInstance()
+        .getExternalMatcher();
+
+    /* True if this matches the server interface */
+    private IntfMatcher serverIntf = IntfMatcherFactory.getInstance()
+        .getInternalMatcher();
+
     private IPMatcher   clientAddr;
     private IPMatcher   serverAddr;
 
     private PortMatcher clientPort;
     private PortMatcher serverPort;
 
+    private Date   startTime;
+    private Date   endTime;
+
+    private DayOfWeekMatcher dayOfWeek = DayOfWeekMatcherFactory.getInstance()
+        .getAllMatcher();
+
+    private UserMatcher user = UserMatcherFactory.getInstance()
+        .getAllMatcher();
+
     // constructors -----------------------------------------------------------
 
     public UserPolicyRule() { }
 
-    public UserPolicyRule(byte clientIntf, byte serverIntf, Policy policy,
+    public UserPolicyRule(IntfMatcher clientIntf, IntfMatcher serverIntf, Policy policy,
                           boolean inbound, ProtocolMatcher protocol,
                           IPMatcher clientAddr, IPMatcher serverAddr,
-                          PortMatcher clientPort, PortMatcher serverPort) {
-        super(clientIntf, serverIntf, policy, inbound);
+                          PortMatcher clientPort, PortMatcher serverPort,
+                          Date startTime, Date endTime,
+                          DayOfWeekMatcher dayOfWeek, UserMatcher user,
+                          boolean live) {
+        super(live, policy, inbound);
+        this.clientIntf = clientIntf;
+        this.serverIntf = serverIntf;
         this.protocol = protocol;
         this.clientAddr = clientAddr;
         this.serverAddr = serverAddr;
         this.clientPort = clientPort;
         this.serverPort = serverPort;
+	if( startTime instanceof Timestamp )
+	    this.startTime = new Date(startTime.getTime());
+	else
+	    this.startTime = startTime;
+	if( endTime instanceof Timestamp )
+	    this.endTime = new Date(endTime.getTime());
+	else
+	    this.endTime = endTime;
+        this.dayOfWeek = dayOfWeek;
+        this.user = user;
     }
 
     // PolicyRule methods -----------------------------------------------------
 
     public boolean matches(IPSessionDesc sd)
     {
-        return clientIntf == sd.clientIntf()
-            && serverIntf == sd.serverIntf()
+        boolean temp = 
+            isLive()
+            && clientIntf.isMatch(sd.clientIntf())
+            && serverIntf.isMatch(sd.serverIntf())
+            && protocol.isMatch(sd.protocol())
             && clientAddr.isMatch(sd.clientAddr())
             && serverAddr.isMatch(sd.serverAddr())
             && clientPort.isMatch(sd.clientPort())
             && serverPort.isMatch(sd.serverPort());
+
+        if (temp == false)
+            return temp;
+
+        // Note that we assume we get back something from the database with meaningless
+        // fields other than time ones.
+        Calendar now = Calendar.getInstance();
+        Date dnow = now.getTime();
+        int nowhour = now.get(Calendar.HOUR_OF_DAY);
+        Calendar start = Calendar.getInstance();
+        start.setTime(startTime);
+        int starthour = start.get(Calendar.HOUR_OF_DAY);
+        if (nowhour < starthour ||
+            (nowhour == starthour && now.get(Calendar.MINUTE) < start.get(Calendar.MINUTE)))
+            return false;
+
+        // We're still good.  Check the end.
+        Calendar end = Calendar.getInstance();
+        end.setTime(endTime);
+        int endhour = end.get(Calendar.HOUR_OF_DAY);
+        if (nowhour > endhour ||
+            (nowhour == endhour && now.get(Calendar.MINUTE) > end.get(Calendar.MINUTE)))
+            return false;
+
+        return dayOfWeek.isMatch(dnow)
+            && user.isMatch(sd.user());
     }
 
     // accessors --------------------------------------------------------------
 
-    /* Hack that sets the ports to zero for Ping sessions */
-    public void fixPing() throws ParseException
+    /**
+     * source IntfMatcher
+     *
+     * @return the source IP matcher.
+     */
+    @Column(name="client_intf_matcher")
+    @Type(type="com.metavize.mvvm.type.firewall.IntfMatcherUserType")
+    public IntfMatcher getClientIntf()
     {
-        PortMatcher pingMatcher = PortMatcherFactory.getInstance().getPingMatcher();
+        return clientIntf;
+    }
 
-        if ( this.protocol.equals( ProtocolMatcherFactory.getInstance().getPingMatcher())) {
-            this.clientPort = pingMatcher;
-            this.serverPort = pingMatcher;
-        } else if ( this.clientPort.equals( pingMatcher ) || this.serverPort.equals( pingMatcher )) {
-            throw new ParseException( "Invalid port for a non-ping traffic type" );
-        }
+    public void setClientIntf( IntfMatcher clientIntf )
+    {
+        this.clientIntf = clientIntf;
+    }
+
+    /**
+     * destination IntfMatcher
+     *
+     * @return the destination IP matcher.
+     */
+    @Column(name="server_intf_matcher")
+    @Type(type="com.metavize.mvvm.type.firewall.IntfMatcherUserType")
+    public IntfMatcher getServerIntf()
+    {
+        return serverIntf;
+    }
+
+    public void setServerIntf( IntfMatcher serverIntf )
+    {
+        this.serverIntf = serverIntf;
     }
 
     /**
@@ -106,6 +197,74 @@ public class UserPolicyRule extends PolicyRule
     public void setProtocol( ProtocolMatcher protocol )
     {
         this.protocol = protocol;
+    }
+
+    /**
+     * User matcher
+     *
+     * @return the user matcher.
+     */
+    @Column(name="user_matcher")
+    @Type(type="com.metavize.mvvm.type.firewall.UserMatcherUserType")
+    public UserMatcher getUser()
+    {
+        return user;
+    }
+
+    public void setUser( UserMatcher user )
+    {
+        this.user = user;
+    }
+
+    /**
+     * Time the session may not start before
+     *
+     * @return the time of day that the session must start after
+     */
+    @Temporal(TemporalType.TIME)
+    @Column(name="start_time")
+    public Date getStartTime()
+    {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime)
+    {
+        this.startTime = startTime;
+    }
+
+    /**
+     * Time the session may not start after
+     *
+     * @return the time of day that the session must start before
+     */
+    @Temporal(TemporalType.TIME)
+    @Column(name="end_time")
+    public Date getEndTime()
+    {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime)
+    {
+        this.endTime = endTime;
+    }
+
+    /**
+     * Day of Week matcher
+     *
+     * @return the day of week matcher.
+     */
+    @Column(name="day_of_week_matcher")
+    @Type(type="com.metavize.mvvm.type.firewall.DayOfWeekMatcherUserType")
+    public DayOfWeekMatcher getDayOfWeek()
+    {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek( DayOfWeekMatcher dayOfWeek )
+    {
+        this.dayOfWeek = dayOfWeek;
     }
 
     /**
@@ -182,6 +341,19 @@ public class UserPolicyRule extends PolicyRule
         return getId().equals(pr.getId());
     }
 
+    /* Hack that sets the ports to zero for Ping sessions */
+    public void fixPing() throws ParseException
+    {
+        PortMatcher pingMatcher = PortMatcherFactory.getInstance().getPingMatcher();
+
+        if ( this.protocol.equals( ProtocolMatcherFactory.getInstance().getPingMatcher())) {
+            this.clientPort = pingMatcher;
+            this.serverPort = pingMatcher;
+        } else if ( this.clientPort.equals( pingMatcher ) || this.serverPort.equals( pingMatcher )) {
+            throw new ParseException( "Invalid port for a non-ping traffic type" );
+        }
+    }
+
     // Object methods ---------------------------------------------------------
 
     public boolean equals(Object o)
@@ -191,8 +363,8 @@ public class UserPolicyRule extends PolicyRule
         } else {
             UserPolicyRule pr = (UserPolicyRule)o;
             return ((policy == null ? pr.policy == null : policy.equals(pr.policy)) &&
-                    clientIntf == pr.clientIntf &&
-                    serverIntf == pr.serverIntf &&
+                    (clientIntf == null ? pr.clientIntf == null : clientIntf.equals(pr.clientIntf)) &&
+                    (serverIntf == null ? pr.serverIntf == null : serverIntf.equals(pr.serverIntf)) &&
                     inbound == pr.inbound &&
                     (protocol == null ? pr.protocol == null : protocol.equals(pr.protocol)) &&
                     (clientAddr == null ? pr.clientAddr == null : clientAddr.equals(pr.clientAddr)) &&
@@ -205,6 +377,6 @@ public class UserPolicyRule extends PolicyRule
     public int hashCode()
     {
         // Should be fixed to include other stuff, once those are fixed. XXX
-        return (null == policy ? 0 : policy.hashCode()) + clientIntf * 7 + serverIntf * 5;
+        return (null == policy ? 0 : policy.hashCode()) + clientIntf.toDatabaseString().hashCode() * 7 + serverIntf.toDatabaseString().hashCode() * 5;
     }
 }

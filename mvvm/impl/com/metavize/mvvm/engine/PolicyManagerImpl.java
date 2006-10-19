@@ -21,6 +21,7 @@ import com.metavize.mvvm.policy.PolicyManager;
 import com.metavize.mvvm.policy.SystemPolicyRule;
 import com.metavize.mvvm.policy.UserPolicyRule;
 import com.metavize.mvvm.policy.UserPolicyRuleSet;
+import com.metavize.mvvm.tran.firewall.intf.IntfMatcher;
 import com.metavize.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -487,10 +488,10 @@ class PolicyManagerImpl implements PolicyManagerPriv
                                 // Record good user rules.
                                 for (Object o : existingUser) {
                                     UserPolicyRule upr = (UserPolicyRule)o;
-                                    byte clientIntf = upr.getClientIntf();
-                                    byte serverIntf = upr.getServerIntf();
-                                    if ((clientIntf == firstIntf && serverIntf == secondIntf) ||
-                                        (clientIntf == secondIntf && serverIntf == firstIntf)) {
+                                    IntfMatcher clientIntf = upr.getClientIntf();
+                                    IntfMatcher serverIntf = upr.getServerIntf();
+                                    if ((clientIntf.isMatch(firstIntf) && serverIntf.isMatch(secondIntf)) ||
+                                        (clientIntf.isMatch(secondIntf) && serverIntf.isMatch(firstIntf))) {
                                         // Good to go.
                                         if (logger.isDebugEnabled())
                                             logger.debug("Found existing UserPolicyRule for ci: " + clientIntf + ", si: " + serverIntf);

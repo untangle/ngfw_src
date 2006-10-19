@@ -245,7 +245,7 @@ abstract class ArgonHook implements Runnable
         try {
             /* Let the pipeline foundry know */
             if (clientSide != null)
-                pipelineFoundry.destroy(clientSide, serverSide, endpoints);
+                pipelineFoundry.destroy(clientSide, serverSide, endpoints, sessionGlobalState.user());
 
             /* Remove the vector from the vectron table */
             /* You must remove the vector before razing, or else

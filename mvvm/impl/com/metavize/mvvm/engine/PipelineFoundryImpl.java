@@ -188,7 +188,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
     }
 
     public void destroy(IPSessionDesc start, IPSessionDesc end,
-                        PipelineEndpoints pe)
+                        PipelineEndpoints pe, String uid)
     {
         PipelineImpl pipeline = pipelines.remove(start.id());
 
@@ -199,7 +199,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         // Endpoints can be null, if the session was never properly set up at all
         // (unknown server interface for example)
         if (pe != null)
-            eventLogger.log(new PipelineStats(start, end, pe));
+            eventLogger.log(new PipelineStats(start, end, pe, uid));
 
         pipeline.destroy();
     }

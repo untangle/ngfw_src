@@ -47,7 +47,12 @@ abstract class NewSessionRequestImpl implements NewSessionRequest
         return sessionGlobalState.id();
     }
 
-        /**
+    public String user()
+    {
+        return sessionGlobalState.user();
+    }
+
+    /**
      * Number of bytes received from the client.
      */
     public long c2tBytes()

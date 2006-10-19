@@ -58,6 +58,7 @@ CREATE TABLE events.pl_stats (
     s2p_chunks int8,
     p2c_chunks int8,
     p2s_chunks int8,
+    uid        text,
     PRIMARY KEY (event_id));
 
 -- com.metavize.mvvm.shield.ShieldRejectionEvent

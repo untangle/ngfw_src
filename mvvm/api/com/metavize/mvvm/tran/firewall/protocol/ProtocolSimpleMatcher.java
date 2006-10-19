@@ -42,6 +42,11 @@ public final class ProtocolSimpleMatcher extends ProtocolDBMatcher
         return this.isAll;
     }
 
+    public boolean isMatch( short protocol )
+    {
+        return this.isAll;
+    }
+
     public String toDatabaseString()
     {
         return toString();

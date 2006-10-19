@@ -16,5 +16,9 @@ import com.metavize.mvvm.tapi.Protocol;
 public interface ProtocolMatcher
 {
     public boolean isMatch( Protocol protocol );
+
+    // This version useful for applying to IPSessionDesc
+    public boolean isMatch( short protocol );
+
     public String toDatabaseString();
 }

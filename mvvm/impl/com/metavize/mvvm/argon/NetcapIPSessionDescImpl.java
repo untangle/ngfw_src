@@ -73,6 +73,11 @@ class NetcapIPSessionDescImpl implements IPSessionDesc
         return sessionGlobalState.id();
     }
 
+    public String user()
+    {
+        return sessionGlobalState.user();
+    }
+
     /**
      * Returns the protocol for the session.</p>
      * @return a <code>byte</code> giving one of the protocols (see Netcap.IPPROTO_*)

@@ -134,8 +134,9 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
             newElem.setPolicy( policy );
 	    boolean isInbound = ((String) ((ComboBoxModel)rowVector.elementAt(2)).getSelectedItem()).contains(INBOUND_STRING);
             newElem.setInbound( isInbound );
-	    newElem.setClientIntf( intfEnum.getIntfNum((String)((ComboBoxModel)rowVector.elementAt(3)).getSelectedItem()) );
-	    newElem.setServerIntf( intfEnum.getIntfNum((String)((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem()) );
+            // FIXME XXX
+	    // newElem.setClientIntf( intfEnum.getIntfNum((String)((ComboBoxModel)rowVector.elementAt(3)).getSelectedItem()) );
+	    // newElem.setServerIntf( intfEnum.getIntfNum((String)((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem()) );
             
             if( newElem.getClientIntf() == newElem.getServerIntf() )
 		throw new Exception("In row: " + rowIndex + ". The \"client interface\" cannot match the \"server interface\"");
@@ -193,10 +194,11 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 		policyName = NULL_STRING;
 	    tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(),
 						     policyName) );
-	    tempRow.add( super.generateComboBoxModel(intfEnum.getIntfNames(),
-						     intfEnum.getIntfName(newElem.getClientIntf())) );
-	    tempRow.add( super.generateComboBoxModel(intfEnum.getIntfNames(),
-						     intfEnum.getIntfName(newElem.getServerIntf())) );
+            // FIXME XXX
+	    // tempRow.add( super.generateComboBoxModel(intfEnum.getIntfNames(),
+            // intfEnum.getIntfName(newElem.getClientIntf())) );
+	    // tempRow.add( super.generateComboBoxModel(intfEnum.getIntfNames(),
+            // intfEnum.getIntfName(newElem.getServerIntf())) );
 	    tempRow.add( super.generateComboBoxModel(ProtocolMatcherFactory.getProtocolEnumeration(),
 						     newElem.getProtocol()) );
 	    tempRow.add( newElem.getClientAddr().toString() );

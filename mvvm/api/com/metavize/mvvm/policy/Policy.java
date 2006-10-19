@@ -35,6 +35,7 @@ public class Policy implements Serializable
     private Long id;
     private boolean isDefault;
     private String name;
+    //    private boolean live;
     private String notes = NO_NOTES;
 
     // Constructors -----------------------------------------------------------

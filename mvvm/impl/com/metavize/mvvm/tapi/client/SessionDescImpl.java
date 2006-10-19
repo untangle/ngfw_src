@@ -21,6 +21,8 @@ abstract class SessionDescImpl implements SessionDesc, Serializable {
 
     protected int id;
 
+    protected String user;
+
     protected SessionStats stats;
 
     protected SessionDescImpl(int id, SessionStats stats)
@@ -32,6 +34,11 @@ abstract class SessionDescImpl implements SessionDesc, Serializable {
     public int id()
     {
         return id;
+    }
+
+    public String user()
+    {
+        return user;
     }
 
     public SessionStats stats()

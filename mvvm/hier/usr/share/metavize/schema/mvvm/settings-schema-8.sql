@@ -77,8 +77,8 @@ CREATE TABLE settings.user_policy_rule (
     server_ip_matcher text,
     client_port_matcher text,
     server_port_matcher text,
-    client_intf int2 NOT NULL,
-    server_intf int2 NOT NULL,
+    client_intf_matcher text,
+    server_intf_matcher text,
     policy_id int8,
     is_inbound bool NOT NULL,
     name text,
@@ -89,6 +89,10 @@ CREATE TABLE settings.user_policy_rule (
     log bool,
     set_id int8,
     position int4,
+    start_time time,
+    end_time time,
+    day_of_week_matcher text,
+    user_matcher text,
     PRIMARY KEY (rule_id));
 
 -- com.metavize.mvvm.policy.SystemPolicyRule

@@ -24,5 +24,6 @@ public abstract class ProtocolDBMatcher implements ProtocolMatcher, Serializable
     }
 
     public abstract boolean isMatch( Protocol protocol );
+    public abstract boolean isMatch( short protocol );
     public abstract String toDatabaseString();
 }

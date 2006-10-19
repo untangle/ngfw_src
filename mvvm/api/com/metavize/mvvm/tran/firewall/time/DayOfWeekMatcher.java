@@ -9,11 +9,14 @@
  * $Id$
  */
 
-package com.metavize.mvvm.tran.firewall.user;
+package com.metavize.mvvm.tran.firewall.time;
 
-public interface UserMatcher
+import java.util.Date;
+
+
+public interface DayOfWeekMatcher
 {
-    public boolean isMatch( String user );
+    public boolean isMatch( Date when );
 
     public String toDatabaseString();
 }

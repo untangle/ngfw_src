@@ -47,6 +47,11 @@ abstract class SessionImpl implements Session {
         return pSession.id();
     }
 
+    public String user()
+    {
+        return pSession.user();
+    }
+
     /*
     public ExtendedPreferences sessionNode()
     {

@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.metavize.mvvm.tran.firewall.user;
+package com.metavize.mvvm.tran.firewall.time;
 
-public interface UserMatcher
+public class DayOfWeekMatcherConstants
 {
-    public boolean isMatch( String user );
+    public static final String MARKER_SEPERATOR = ",";
 
-    public String toDatabaseString();
+    public static final String MARKER_ALL = "all";
 }

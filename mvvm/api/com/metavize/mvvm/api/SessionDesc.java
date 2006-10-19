@@ -62,5 +62,13 @@ public interface SessionDesc
      * Number of chunks transmitted to the client.
      */
     long t2cChunks();
+
+
+    /**
+     * User identified for the session.  May be null, which means
+     * that no user could be idenitifed for the session.
+     *
+     */
+    String user();
 }
 

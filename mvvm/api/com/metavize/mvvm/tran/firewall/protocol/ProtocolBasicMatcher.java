@@ -79,6 +79,21 @@ public final class ProtocolBasicMatcher extends ProtocolDBMatcher
         return false;
     }
 
+    public boolean isMatch( short protocol )
+    {
+        if (( protocol == Protocol.TCP.getId() ) && this.tcp ) return true;
+        
+        if (( protocol == Protocol.UDP.getId() ) && this.udp ) return true;
+        
+        /* Right now Ping is a UDP session. [XXX ICMP HACK] */
+        if (( protocol == Protocol.UDP.getId() ) && this.ping ) return true;
+
+        /* The Traffic Matcher uses ICMP as the protocol */
+        if (( protocol == Protocol.ICMP.getId() ) && this.ping ) return true;
+
+        return false;
+    }
+
     public String toDatabaseString()
     {
         return toString();

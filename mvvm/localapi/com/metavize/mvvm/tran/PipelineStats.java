@@ -51,12 +51,14 @@ public class PipelineStats extends PipelineEvent
     private long s2pChunks = 0;
     private long p2cChunks = 0;
 
+    private String uid;
+
     // constructors -----------------------------------------------------------
 
     public PipelineStats() { }
 
     public PipelineStats(IPSessionDesc begin, IPSessionDesc end,
-                         PipelineEndpoints pe)
+                         PipelineEndpoints pe, String uid)
     {
         super(pe);
 
@@ -71,6 +73,8 @@ public class PipelineStats extends PipelineEvent
         s2pBytes = end.s2tBytes();
         p2sChunks = end.t2sChunks();
         s2pChunks = end.s2tChunks();
+
+        this.uid = uid;
     }
 
     // accessors --------------------------------------------------------------
@@ -220,6 +224,21 @@ public class PipelineStats extends PipelineEvent
         this.p2sChunks = p2sChunks;
     }
 
+    /**
+     * Login used for session
+     *
+     * @return a <code>String</code> giving the uid for the user (null if unknown)
+     */
+    public String getUid()
+    {
+        return uid;
+    }
+
+    public void setUid(String uid)
+    {
+        this.uid = uid;
+    }
+
     // Syslog methods ---------------------------------------------------------
 
     public void appendSyslog(SyslogBuilder sb)
@@ -236,6 +255,7 @@ public class PipelineStats extends PipelineEvent
         sb.addField("p2sChunks", p2sChunks);
         sb.addField("s2pChunks", s2pChunks);
         sb.addField("p2cChunks", p2cChunks);
+        sb.addField("uid", uid);
     }
 
     // reuse default getSyslogId
