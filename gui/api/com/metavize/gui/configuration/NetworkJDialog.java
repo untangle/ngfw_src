@@ -31,7 +31,7 @@ public class NetworkJDialog extends MConfigJDialog {
     private static final String NAME_NETWORK_SETTINGS  = "External Address";
     private static final String NAME_ALIAS_PANEL       = "External Address Aliases";
     private static final String NAME_HOSTNAME          = "Hostname";
-
+    private static final String NAME_PPPOE             = "PPP Over Ethernet (PPPoE)";
 
     public NetworkJDialog( Frame parentFrame ) {
 	super(parentFrame);
@@ -61,6 +61,13 @@ public class NetworkJDialog extends MConfigJDialog {
         addScrollableTab(null, NAME_HOSTNAME, null, hostnameJPanel, false, true);
         addSavable(NAME_HOSTNAME, hostnameJPanel);
         addRefreshable(NAME_HOSTNAME, hostnameJPanel);
+
+        // PPPOE //
+        NetworkPPPOEJPanel pppoeJPanel = new NetworkPPPOEJPanel();
+        addScrollableTab(null, NAME_PPPOE, null, pppoeJPanel, false, true);
+        addSavable(NAME_PPPOE, pppoeJPanel);
+        addRefreshable(NAME_PPPOE, pppoeJPanel);
+        
     }   
 
     protected boolean shouldSave(){
