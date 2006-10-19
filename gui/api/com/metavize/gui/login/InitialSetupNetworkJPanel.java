@@ -32,16 +32,19 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
     private static final String EXCEPTION_DHCP_DNS_1 = "You have manually specified an invalid \"Primary DNS\".  Please correct this before proceeding.";
     private static final String EXCEPTION_DHCP_DNS_2 = "You have manually specified an invalid \"Secondary DNS\".  Please correct this before proceeding.";
     private static final String EXCEPTION_HOSTNAME = "You must specify a dotted hostname for your EdgeGuard.  Please correct this before proceeding.";
-    private static final String EMPTY_DNS2 = "";
+    private static final String EXCEPTION_PPPOE_NAME     = "You must specify a PPPoE Name.";
+    private static final String EXCEPTION_PPPOE_PASSWORD = "You must specify a PPPoE Password.";
+
 
     public InitialSetupNetworkJPanel() {
         initComponents();
         setDhcpEnabledDependency(dhcpEnabledRadioButton.isSelected());
+        setPPPOEEnabledDependency(pppoeEnabledJRadioButton.isSelected());
     }
 
     public void initialFocus(){
-	hostnameJTextField.setText( "edgeguard" + "." + MailSender.DEFAULT_LOCAL_DOMAIN );
-	hostnameJTextField.requestFocus();
+        hostnameJTextField.setText( "edgeguard" + "." + MailSender.DEFAULT_LOCAL_DOMAIN );
+        hostnameJTextField.requestFocus();
     }
 	
 	
@@ -59,6 +62,10 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
     String hostnameString;
     HostName hostname;
     Exception exception;
+
+    boolean isPPPOEEnabled;
+    String pppoeName;
+    String pppoePassword;
     
     MProgressJDialog mProgressJDialog;
     JProgressBar jProgressBar;
@@ -72,6 +79,8 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 	    dnsPrimaryJTextField.setBackground( Color.WHITE );
 	    dnsSecondaryJTextField.setBackground( Color.WHITE );
 	    hostnameJTextField.setBackground( Color.WHITE );
+        nameJTextField.setBackground( Color.WHITE );
+        passwordJPasswordField.setBackground( Color.WHITE );
 
 	    isDhcpEnabled = dhcpEnabledRadioButton.isSelected();
 	    hostString = dhcpIPaddrJTextField.getText();
@@ -80,6 +89,9 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 	    dns1String = dnsPrimaryJTextField.getText();
 	    dns2String = dnsSecondaryJTextField.getText();
 	    hostnameString = hostnameJTextField.getText();
+        isPPPOEEnabled = pppoeEnabledJRadioButton.isSelected();
+        pppoeName = nameJTextField.getText();
+        pppoePassword = new String(passwordJPasswordField.getPassword());
 
 	    exception = null;
 	    
@@ -161,6 +173,18 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 		    exception = new Exception(EXCEPTION_HOSTNAME);
 		    return;
 		}
+
+        if( isPPPOEEnabled ){
+            if( pppoeName.length() == 0 ){
+                exception = new Exception(EXCEPTION_PPPOE_NAME);
+                return;
+            }
+            if( pppoePassword.length() == 0){
+                exception = new Exception(EXCEPTION_PPPOE_PASSWORD);
+                return;
+            }
+        }
+
 	    
 	}});
 
@@ -169,7 +193,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving External Address...");
+	    InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Network Settings...");
             try{
                 NetworkingConfiguration networkingConfiguration = Util.getNetworkManager().getNetworkingConfiguration();
                 networkingConfiguration.isDhcpEnabled( isDhcpEnabled );
@@ -180,7 +204,14 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                     networkingConfiguration.dns1( dns1 );
                     networkingConfiguration.dns2( dns2 );
                 }
-		networkingConfiguration.hostname( hostname );
+                networkingConfiguration.hostname( hostname );
+                PPPoEConnectionRule connectionRule = networkingConfiguration.getPPPoESettings();
+                connectionRule.setLive( isPPPOEEnabled );
+                if( isPPPOEEnabled ){
+                    connectionRule.setUsername( pppoeName );
+                    connectionRule.setPassword( pppoePassword );
+                }
+                networkingConfiguration.setPPPoESettings( connectionRule );
 
 		boolean isPublic = NetworkUtil.getInstance().isHostnameLikelyPublic( hostname.toString() );
                 networkingConfiguration.setIsHostnamePublic(isPublic);
@@ -202,13 +233,16 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
 
-                buttonGroup1 = new javax.swing.ButtonGroup();
+                dhcpButtonGroup = new javax.swing.ButtonGroup();
+                pppoeButtonGroup = new javax.swing.ButtonGroup();
                 contentJPanel = new javax.swing.JPanel();
+                hostJPanel = new javax.swing.JPanel();
                 jLabel4 = new javax.swing.JLabel();
                 hostnameJPanel = new javax.swing.JPanel();
                 jLabel10 = new javax.swing.JLabel();
                 hostnameJTextField = new javax.swing.JTextField();
                 jSeparator1 = new javax.swing.JSeparator();
+                dhcpJPanel = new javax.swing.JPanel();
                 jLabel2 = new javax.swing.JLabel();
                 dhcpEnabledRadioButton = new javax.swing.JRadioButton();
                 dhcpDisabledRadioButton = new javax.swing.JRadioButton();
@@ -224,6 +258,16 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 dnsSecondaryJLabel = new javax.swing.JLabel();
                 dnsSecondaryJTextField = new javax.swing.JTextField();
                 optionalJLabel = new javax.swing.JLabel();
+                jSeparator2 = new javax.swing.JSeparator();
+                pppoeJPanel = new javax.swing.JPanel();
+                jLabel11 = new javax.swing.JLabel();
+                pppoeDisabledJRadioButton = new javax.swing.JRadioButton();
+                pppoeEnabledJRadioButton = new javax.swing.JRadioButton();
+                staticIPJPanel1 = new javax.swing.JPanel();
+                nameJLabel = new javax.swing.JLabel();
+                nameJTextField = new javax.swing.JTextField();
+                passwordJLabel = new javax.swing.JLabel();
+                passwordJPasswordField = new javax.swing.JPasswordField();
                 backgroundJPabel = new javax.swing.JLabel();
 
                 setLayout(new java.awt.GridBagLayout());
@@ -232,6 +276,9 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 contentJPanel.setLayout(new java.awt.GridBagLayout());
 
                 contentJPanel.setOpaque(false);
+                hostJPanel.setLayout(new java.awt.GridBagLayout());
+
+                hostJPanel.setOpaque(false);
                 jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel4.setText("<html>Please specify EdgeGuard's hostname on your network.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -240,7 +287,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
-                contentJPanel.add(jLabel4, gridBagConstraints);
+                hostJPanel.add(jLabel4, gridBagConstraints);
 
                 hostnameJPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -266,18 +313,28 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
-                contentJPanel.add(hostnameJPanel, gridBagConstraints);
+                gridBagConstraints.insets = new java.awt.Insets(5, 15, 0, 15);
+                hostJPanel.add(hostnameJPanel, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                contentJPanel.add(hostJPanel, gridBagConstraints);
 
                 jSeparator1.setForeground(new java.awt.Color(156, 156, 156));
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
                 gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                gridBagConstraints.insets = new java.awt.Insets(5, 15, 0, 15);
                 contentJPanel.add(jSeparator1, gridBagConstraints);
 
+                dhcpJPanel.setLayout(new java.awt.GridBagLayout());
+
+                dhcpJPanel.setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel2.setText("<html>How should EdgeGuard will get its external network settings?</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -285,10 +342,10 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
                 gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
-                contentJPanel.add(jLabel2, gridBagConstraints);
+                gridBagConstraints.insets = new java.awt.Insets(10, 15, 0, 15);
+                dhcpJPanel.add(jLabel2, gridBagConstraints);
 
-                buttonGroup1.add(dhcpEnabledRadioButton);
+                dhcpButtonGroup.add(dhcpEnabledRadioButton);
                 dhcpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dhcpEnabledRadioButton.setSelected(true);
                 dhcpEnabledRadioButton.setText("<html><b>Automatically</b> through DHCP. (Use this if unsure)</html>");
@@ -305,10 +362,10 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
                 gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
-                contentJPanel.add(dhcpEnabledRadioButton, gridBagConstraints);
+                gridBagConstraints.insets = new java.awt.Insets(5, 15, 0, 15);
+                dhcpJPanel.add(dhcpEnabledRadioButton, gridBagConstraints);
 
-                buttonGroup1.add(dhcpDisabledRadioButton);
+                dhcpButtonGroup.add(dhcpDisabledRadioButton);
                 dhcpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dhcpDisabledRadioButton.setText("<html><b>Manually</b> through the fields below.</html>");
                 dhcpDisabledRadioButton.setOpaque(false);
@@ -324,7 +381,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
-                contentJPanel.add(dhcpDisabledRadioButton, gridBagConstraints);
+                dhcpJPanel.add(dhcpDisabledRadioButton, gridBagConstraints);
 
                 staticIPJPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -426,26 +483,152 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 15);
-                contentJPanel.add(staticIPJPanel, gridBagConstraints);
+                dhcpJPanel.add(staticIPJPanel, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                contentJPanel.add(dhcpJPanel, gridBagConstraints);
+
+                jSeparator2.setForeground(new java.awt.Color(156, 156, 156));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 3;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(5, 15, 0, 15);
+                contentJPanel.add(jSeparator2, gridBagConstraints);
+
+                pppoeJPanel.setLayout(new java.awt.GridBagLayout());
+
+                pppoeJPanel.setOpaque(false);
+                jLabel11.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel11.setText("<html>You may need PPPoE to be enabled if your Internet Service Providers (ISPs) requires it.  In most cases, you should leave it disabled.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 15, 5, 15);
+                pppoeJPanel.add(jLabel11, gridBagConstraints);
+
+                pppoeButtonGroup.add(pppoeDisabledJRadioButton);
+                pppoeDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                pppoeDisabledJRadioButton.setSelected(true);
+                pppoeDisabledJRadioButton.setText("<html><b>Disable</b>  PPPoE.  (This is the default setting)</html>");
+                pppoeDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
+                pppoeDisabledJRadioButton.setFocusPainted(false);
+                pppoeDisabledJRadioButton.setFocusable(false);
+                pppoeDisabledJRadioButton.setOpaque(false);
+                pppoeDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                pppoeDisabledJRadioButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
+                pppoeJPanel.add(pppoeDisabledJRadioButton, gridBagConstraints);
+
+                pppoeButtonGroup.add(pppoeEnabledJRadioButton);
+                pppoeEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                pppoeEnabledJRadioButton.setText("<html><b>Enable</b> PPPoE.</html>");
+                pppoeEnabledJRadioButton.setFocusPainted(false);
+                pppoeEnabledJRadioButton.setFocusable(false);
+                pppoeEnabledJRadioButton.setOpaque(false);
+                pppoeEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                pppoeEnabledJRadioButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
+                pppoeJPanel.add(pppoeEnabledJRadioButton, gridBagConstraints);
+
+                staticIPJPanel1.setLayout(new java.awt.GridBagLayout());
+
+                staticIPJPanel1.setOpaque(false);
+                nameJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                nameJLabel.setText("Name: ");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                staticIPJPanel1.add(nameJLabel, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
+                staticIPJPanel1.add(nameJTextField, gridBagConstraints);
+
+                passwordJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                passwordJLabel.setText("Password: ");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                staticIPJPanel1.add(passwordJLabel, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                staticIPJPanel1.add(passwordJPasswordField, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.ipadx = 150;
+                gridBagConstraints.insets = new java.awt.Insets(5, 0, 10, 0);
+                pppoeJPanel.add(staticIPJPanel1, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 4;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weighty = 1.0;
+                contentJPanel.add(pppoeJPanel, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
                 add(contentJPanel, gridBagConstraints);
 
                 backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/login/ProductShot.png")));
+                backgroundJPabel.setEnabled(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
+                gridBagConstraints.gridy = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
                 gridBagConstraints.weightx = 1.0;
                 add(backgroundJPabel, gridBagConstraints);
 
         }//GEN-END:initComponents
+
+		private void pppoeEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pppoeEnabledJRadioButtonActionPerformed
+            setPPPOEEnabledDependency( true );
+		}//GEN-LAST:event_pppoeEnabledJRadioButtonActionPerformed
+
+		private void pppoeDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pppoeDisabledJRadioButtonActionPerformed
+            setPPPOEEnabledDependency( false );
+		}//GEN-LAST:event_pppoeDisabledJRadioButtonActionPerformed
 
     private void dhcpDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dhcpDisabledRadioButtonActionPerformed
         setDhcpEnabledDependency( false );
@@ -467,15 +650,22 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
         dnsSecondaryJLabel.setEnabled( !enabled );
 		optionalJLabel.setEnabled( !enabled );
     }
+    private void setPPPOEEnabledDependency(boolean enabled){
+        nameJLabel.setEnabled( enabled );
+		nameJTextField.setEnabled( enabled );
+        passwordJLabel.setEnabled( enabled );
+		passwordJPasswordField.setEnabled( enabled );
+    }
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JLabel backgroundJPabel;
-        private javax.swing.ButtonGroup buttonGroup1;
         private javax.swing.JPanel contentJPanel;
+        private javax.swing.ButtonGroup dhcpButtonGroup;
         public javax.swing.JRadioButton dhcpDisabledRadioButton;
         public javax.swing.JRadioButton dhcpEnabledRadioButton;
         private javax.swing.JLabel dhcpIPaddrJLabel;
         public javax.swing.JTextField dhcpIPaddrJTextField;
+        private javax.swing.JPanel dhcpJPanel;
         private javax.swing.JLabel dhcpNetmaskJLabel;
         public javax.swing.JTextField dhcpNetmaskJTextField;
         private javax.swing.JLabel dhcpRouteJLabel;
@@ -484,14 +674,26 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
         public javax.swing.JTextField dnsPrimaryJTextField;
         private javax.swing.JLabel dnsSecondaryJLabel;
         public javax.swing.JTextField dnsSecondaryJTextField;
+        private javax.swing.JPanel hostJPanel;
         private javax.swing.JPanel hostnameJPanel;
         public javax.swing.JTextField hostnameJTextField;
         private javax.swing.JLabel jLabel10;
+        private javax.swing.JLabel jLabel11;
         private javax.swing.JLabel jLabel2;
         private javax.swing.JLabel jLabel4;
         private javax.swing.JSeparator jSeparator1;
+        private javax.swing.JSeparator jSeparator2;
+        private javax.swing.JLabel nameJLabel;
+        public javax.swing.JTextField nameJTextField;
         private javax.swing.JLabel optionalJLabel;
+        private javax.swing.JLabel passwordJLabel;
+        private javax.swing.JPasswordField passwordJPasswordField;
+        private javax.swing.ButtonGroup pppoeButtonGroup;
+        public javax.swing.JRadioButton pppoeDisabledJRadioButton;
+        public javax.swing.JRadioButton pppoeEnabledJRadioButton;
+        private javax.swing.JPanel pppoeJPanel;
         private javax.swing.JPanel staticIPJPanel;
+        private javax.swing.JPanel staticIPJPanel1;
         // End of variables declaration//GEN-END:variables
     
 }

@@ -29,7 +29,6 @@ public class NetworkPPPOEJPanel extends javax.swing.JPanel
     private static final String EXCEPTION_NAME     = "You must specify a Name.";
     private static final String EXCEPTION_PASSWORD = "You must specify a Password.";
 
-
     public NetworkPPPOEJPanel() {
         initComponents();
     }
