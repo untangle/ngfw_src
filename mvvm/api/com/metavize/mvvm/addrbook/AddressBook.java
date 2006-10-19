@@ -67,6 +67,25 @@ public interface AddressBook
     boolean authenticate(String uid, /*char[]*/String pwd)
         throws ServiceUnavailableException;
 
+
+    /**
+     * Connectivity tester for AD
+     *
+     * @return a <code>Status</code> value
+     */
+    Status getStatus();
+
+    interface Status
+    {
+        boolean isLocalWorking();
+        
+        boolean isADWorking();
+
+        String localDetail();
+
+        String adDetail();
+    }
+
     /**
      * Authenticate the user associated with the email address using
      * the provided password.  This method uses all configured

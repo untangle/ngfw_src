@@ -181,6 +181,51 @@ public class AddressBookImpl implements AddressBook {
             false:m_localAdapter.authenticate(uid, pwd);
     }
 
+    private class ABStatus implements AddressBook.Status {
+        boolean isLocalWorking;
+        boolean isADWorking;
+        String localDetail;
+        String adDetail;
+        public boolean isLocalWorking() { return isLocalWorking; }
+        public boolean isADWorking() { return isADWorking; }
+        public String localDetail() { return localDetail; }
+        public String adDetail() { return adDetail; }
+    }
+        
+    public Status getStatus() {
+        ABStatus s = new ABStatus();
+        AddressBookConfiguration conf = m_settings.getAddressBookConfiguration();
+        if (conf == AddressBookConfiguration.NOT_CONFIGURED) {
+            s.isLocalWorking = false;
+            s.isADWorking = false;
+            s.localDetail = "unconfigured";
+            s.adDetail = "unconfigured";
+        } else {
+            if (conf == AddressBookConfiguration.LOCAL_ONLY) {
+                s.isADWorking = false;
+                s.adDetail = "unconfigured";
+            } else {
+                try {
+                    List<UserEntry> adRet = m_adAdapter.listAll();
+                    s.isADWorking = true;
+                    s.adDetail = "working, " + adRet.size() + " users found";
+                } catch (Exception x) {
+                    s.isADWorking = false;
+                    s.adDetail = x.getMessage();
+                }
+            }
+
+            try {
+                List<UserEntry> localRet = m_localAdapter.listAll();
+                s.isLocalWorking = true;
+                s.localDetail = "working, " + localRet.size() + " users found";
+            } catch (Exception x) {
+                s.isLocalWorking = false;
+                s.localDetail = x.getMessage();
+            }
+        }
+        return s;
+    }
 
 
     //====================================================
