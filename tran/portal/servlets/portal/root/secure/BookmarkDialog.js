@@ -274,7 +274,7 @@ BookmarkDialogPanel.prototype._fieldsValid = function()
     for (f in this._properties) {
         var prop = this._properties[f];
         if (prop._validator) {
-            if (!prop.isValid()) {
+            if (null == prop.isValid()) {
                 return false;
             }
         }
