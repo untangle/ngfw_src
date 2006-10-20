@@ -25,6 +25,7 @@ import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.policy.*;
 import com.metavize.mvvm.tran.firewall.*;
+import com.metavize.mvvm.tran.firewall.intf.*;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
 import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
@@ -76,7 +77,6 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     private ComboBoxModel protocolModel = 
         super.generateComboBoxModel( ProtocolMatcherFactory.getProtocolEnumeration(),
                                      ProtocolMatcherFactory.getProtocolDefault());
-    private DefaultComboBoxModel interfaceModel = new DefaultComboBoxModel();
     private DefaultComboBoxModel policyModel = new DefaultComboBoxModel();
     private IntfEnum intfEnum;
 
@@ -97,6 +97,11 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     }
 
     public TableColumnModel getTableColumnModel(){
+
+        IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
+        IntfEnum intfEnum = Util.getIntfManager().getIntfEnum();
+        imf.updateEnumeration(intfEnum);
+        ComboBoxModel interfaceModel = super.generateComboBoxModel( imf.getEnumeration(), imf.getDefault() );
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min     rsz    edit   remv   desc   typ            def
@@ -139,9 +144,8 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 	    boolean isInbound = ((String) ((ComboBoxModel)rowVector.elementAt(3)).getSelectedItem()).contains(INBOUND_STRING);
         newElem.setInbound( isInbound );
         
-        // XXX
-        // newElem.setClientIntf( intfEnum.getIntfNum((String)((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem()) );
-        // newElem.setServerIntf( intfEnum.getIntfNum((String)((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem()) );
+        newElem.setClientIntf( (IntfDBMatcher)((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
+        newElem.setServerIntf( (IntfDBMatcher)((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem() );
             
         if( newElem.getClientIntf() == newElem.getServerIntf() )
             throw new Exception("In row: " + rowIndex + ". The \"client interface\" cannot match the \"server interface\"");
@@ -169,20 +173,13 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 
     public Vector<Vector> generateRows(PolicyCompoundSettings policyCompoundSettings){
 
-	// UPDATE MODELS IF NECESSARY
-	if(intfEnum == null)
-	    intfEnum = policyCompoundSettings.getIntfEnum();
-	if(interfaceModel.getSize() == 0){
-	    for(String intfName : intfEnum.getIntfNames())
-		interfaceModel.addElement(intfName);
-	    interfaceModel.setSelectedItem(intfEnum.getIntfNames()[0]);
-	}
-
 	PolicyConfiguration policyConfiguration = policyCompoundSettings.getPolicyConfiguration();
 	List<UserPolicyRule> userPolicyRules = (List<UserPolicyRule>) policyConfiguration.getUserPolicyRules();
     Vector<Vector> allRows = new Vector<Vector>(userPolicyRules.size());
 	Vector tempRow = null;
 	int rowIndex = 0;
+
+    IntfDBMatcher intfEnumeration[] = IntfMatcherFactory.getInstance().getEnumeration();
 
 	updatePolicyNames( policyConfiguration.getPolicies() );
 	updatePolicyModel();
@@ -199,9 +196,8 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 	    else
             policyName = NULL_STRING;
 	    tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(), policyName) );
-        // XX
-        // tempRow.add( super.generateComboBoxModel(intfEnum.getIntfNames(), intfEnum.getIntfName(newElem.getClientIntf())) );
-        // tempRow.add( super.generateComboBoxModel(intfEnum.getIntfNames(), intfEnum.getIntfName(newElem.getServerIntf())) );
+        tempRow.add( super.generateComboBoxModel(intfEnumeration, newElem.getClientIntf()) );
+        tempRow.add( super.generateComboBoxModel(intfEnumeration, newElem.getServerIntf()) );
 	    tempRow.add( super.generateComboBoxModel(ProtocolMatcherFactory.getProtocolEnumeration(), newElem.getProtocol()) );
 	    tempRow.add( newElem.getClientAddr().toString() );
 	    tempRow.add( newElem.getServerAddr().toString() );
