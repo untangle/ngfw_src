@@ -38,8 +38,10 @@ $InstallTarget.installJars(%w(dist/properJavaRDP-1.1.jar log4j-1.2.9.jar java-ge
 portal_web = "#{portal.distDirectory}/usr/share/metavize/web/vnc"
 deps = %w( tightvnc-1.2.9/classes/VncViewer.jar ).map { |f| Jars.downloadTarget(f) }
 jt = JarTarget.buildTarget(portal, deps, 'invoker', 'tran/portal/servlets/vnc/invoker')
-$InstallTarget.installJars(jt, portal_web, 'VncInvoker.jar')
-$InstallTarget.installJars(Jars.downloadTarget('tightvnc-1.2.9/classes/VncViewer.jar'), portal_web)
+$InstallTarget.installJars(jt, portal_web, 'VncInvoker.jar', true)
+$InstallTarget.installJars(Jars.downloadTarget('tightvnc-1.2.9/classes/VncViewer.jar'), portal_web, nil, true)
 
 ServletBuilder.new(portal, 'com.metavize.tran.portal.vnc.jsp',
-                   'tran/portal/servlets/vnc')
+                   'tran/portal/servlets/vnc', [portal['gui']], [],
+                   [$BuildEnv.servletcommon, 'tran/portal/common'],
+                   false, %w(vnc.jnlp vnc.jsp))

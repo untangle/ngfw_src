@@ -42,6 +42,7 @@ import org.apache.log4j.Logger;
 public class ForwardServlet extends HttpServlet
 {
     public static final int CONNECTION_TIMEOUT = 5000;
+    private static final long TIMEOUT_MILLIS = 1200000L; // 20 min
 
     public static final String TARGET_HEADER = "Target";
 
@@ -206,21 +207,37 @@ public class ForwardServlet extends HttpServlet
             try {
                 byte[] buf = new byte[1024];
                 int i;
+
+                long lastTx = System.currentTimeMillis();
+
                 while (true) {
                     try {
-                        if (logger.isDebugEnabled())
-                            logger.debug("" + Thread.currentThread().getName() + " about to read");
+                        if (logger.isDebugEnabled()) {
+                            logger.debug(Thread.currentThread().getName()
+                                         + " about to read");
+                        }
                         i = is.read(buf);
-                        if (logger.isDebugEnabled())
-                            logger.debug("" + Thread.currentThread().getName() + " got " + i);
+                        if (logger.isDebugEnabled()) {
+                            logger.debug(Thread.currentThread().getName()
+                                         + " got " + i);
+                        }
                     } catch (SocketTimeoutException exn) {
-                        // This is expected with Tomcat sockets, just
-                        // gives us a chance to see if the session
-                        // timeout has expired or whatever. XXX
-                        continue;
+                        long t = System.currentTimeMillis();
+                        if (t - lastTx > TIMEOUT_MILLIS) {
+                            logger.debug(Thread.currentThread().getName()
+                                         + " timed out");
+                            break;
+                        } else {
+                            // This is expected with Tomcat sockets, just
+                            // gives us a chance to see if the session
+                            // timeout has expired or whatever. XXX
+                            continue;
+                        }
                     }
-                    if (i < 0)
+                    if (i < 0) {
                         break;
+                    }
+                    lastTx = System.currentTimeMillis();
                     os.write(buf, 0, i);
                     os.flush();
                 }
