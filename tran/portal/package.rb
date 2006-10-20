@@ -2,7 +2,7 @@
 
 portal = Package['portal-transform']
 
-TransformBuilder.makeTransform( 'portal' )
+TransformBuilder.makeTransform('portal')
 
 deps = %w(
            jcifs_1.2.9/jcifs-1.2.9.jar
@@ -29,8 +29,9 @@ ServletBuilder.new(portal, 'com.metavize.tran.portal.proxy.jsp',
                    [$BuildEnv.servletcommon, 'tran/portal/common'])
 
 ServletBuilder.new(portal, 'com.metavize.tran.portal.rdp.jsp',
-                   'tran/portal/servlets/rdp', [], [],
-                   [$BuildEnv.servletcommon, 'tran/portal/common'])
+                   'tran/portal/servlets/rdp', [portal['gui']], [],
+                   [$BuildEnv.servletcommon, 'tran/portal/common'],
+                   false, %w(rdp.jnlp rdp.jsp))
 
 portal_web = "#{portal.distDirectory}/usr/share/metavize/web/vnc"
 deps = %w( tightvnc-1.2.9/classes/VncViewer.jar ).map { |f| Jars.downloadTarget(f) }
