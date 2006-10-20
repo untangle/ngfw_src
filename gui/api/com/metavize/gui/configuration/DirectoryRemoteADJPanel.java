@@ -165,6 +165,11 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 	orgCurrent = repositorySettings.getOUFilter();
 	orgJTextField.setText( orgCurrent );
 	orgJTextField.setBackground( Color.WHITE );
+
+    // TEST BUTTON //
+    if( enabledCurrent )
+        adTestJButton.setEnabled( true );
+
     }
     
     
@@ -192,12 +197,15 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 orgJLabel = new javax.swing.JLabel();
                 orgJTextField = new javax.swing.JTextField();
                 orgOptionalJLabel = new javax.swing.JLabel();
+                jSeparator3 = new javax.swing.JSeparator();
+                jLabel10 = new javax.swing.JLabel();
+                adTestJButton = new javax.swing.JButton();
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMaximumSize(new java.awt.Dimension(563, 243));
-                setMinimumSize(new java.awt.Dimension(563, 243));
-                setPreferredSize(new java.awt.Dimension(563, 243));
+                setMaximumSize(new java.awt.Dimension(563, 339));
+                setMinimumSize(new java.awt.Dimension(563, 339));
+                setPreferredSize(new java.awt.Dimension(563, 339));
                 externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
                 externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Active Directory (AD) Server", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -389,6 +397,12 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 orgJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
                 orgJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
                 orgJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
+                orgJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                orgJTextFieldCaretUpdate(evt);
+                        }
+                });
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 1;
@@ -412,6 +426,36 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 gridBagConstraints.insets = new java.awt.Insets(5, 87, 5, 0);
                 enableRemoteJPanel.add(restrictIPJPanel1, gridBagConstraints);
 
+                jSeparator3.setForeground(new java.awt.Color(200, 200, 200));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                enableRemoteJPanel.add(jSeparator3, gridBagConstraints);
+
+                jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel10.setText("<html>The <b>Active Directory Test</b> can be used to test that your settings above are correct.  If you have made changes to the above settings, you must save them before this button will be enabled.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
+                enableRemoteJPanel.add(jLabel10, gridBagConstraints);
+
+                adTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                adTestJButton.setText("Run Active Directory Test");
+                adTestJButton.setFocusPainted(false);
+                adTestJButton.setFocusable(false);
+                adTestJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                adTestJButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+                enableRemoteJPanel.add(adTestJButton, gridBagConstraints);
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -431,32 +475,55 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
         }//GEN-END:initComponents
 
+		private void orgJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_orgJTextFieldCaretUpdate
+            if( !orgJTextField.getText().trim().equals( orgCurrent ) )
+                adTestJButton.setEnabled( false );
+		}//GEN-LAST:event_orgJTextFieldCaretUpdate
+
+		private void adTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adTestJButtonActionPerformed
+            if( Util.getIsDemo() )
+                return;
+            try{
+                DirectoryADConnectivityTestJDialog testJDialog = new DirectoryADConnectivityTestJDialog((JDialog)this.getTopLevelAncestor());
+                testJDialog.setVisible(true);
+            }
+            catch(Exception e){
+                try{ Util.handleExceptionWithRestart("Error running AD Test.", e); }
+                catch(Exception f){ Util.handleExceptionNoRestart("Error running AD Test.", f); }
+            }
+		}//GEN-LAST:event_adTestJButtonActionPerformed
+
     private void adEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adEnabledJRadioButtonActionPerformed
-	adEnabledDependency( true );
+        adEnabledDependency( true );
     }//GEN-LAST:event_adEnabledJRadioButtonActionPerformed
     
     private void adDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adDisabledJRadioButtonActionPerformed
-	adEnabledDependency( false );
+        adEnabledDependency( false );
     }//GEN-LAST:event_adDisabledJRadioButtonActionPerformed
     
     private void portJSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_portJSpinnerStateChanged
-	
+        adTestJButton.setEnabled( false );
     }//GEN-LAST:event_portJSpinnerStateChanged
     
     private void hostJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_hostJTextFieldCaretUpdate
-	
+        if( !hostJTextField.getText().trim().equals( hostCurrent ) )
+            adTestJButton.setEnabled( false );
     }//GEN-LAST:event_hostJTextFieldCaretUpdate
     
     private void loginJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_loginJTextFieldCaretUpdate
-	
+        if( !loginJTextField.getText().trim().equals( loginCurrent ) )
+            adTestJButton.setEnabled( false );
     }//GEN-LAST:event_loginJTextFieldCaretUpdate
     
     private void passwordJPasswordFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_passwordJPasswordFieldCaretUpdate
-	
+        String password = new String(passwordJPasswordField.getPassword());
+        if( !password.trim().equals(passwordCurrent) )
+            adTestJButton.setEnabled( false );
     }//GEN-LAST:event_passwordJPasswordFieldCaretUpdate
     
     private void baseJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_baseJTextFieldCaretUpdate
-
+        if( !baseJTextField.getText().trim().equals( domainCurrent ) )
+            adTestJButton.setEnabled( false );
     }//GEN-LAST:event_baseJTextFieldCaretUpdate
     
     private void adEnabledDependency(boolean enabled){
@@ -472,19 +539,24 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 	baseJLabel.setEnabled( enabled );
 	orgJTextField.setEnabled( enabled );
 	orgJLabel.setEnabled( enabled );
+    if(!enabled)
+        adTestJButton.setEnabled( false );
     }
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.ButtonGroup adButtonGroup;
         public javax.swing.JRadioButton adDisabledJRadioButton;
         public javax.swing.JRadioButton adEnabledJRadioButton;
+        private javax.swing.JButton adTestJButton;
         private javax.swing.JLabel baseJLabel;
         public javax.swing.JTextField baseJTextField;
         private javax.swing.JPanel enableRemoteJPanel;
         private javax.swing.JPanel externalRemoteJPanel;
         private javax.swing.JLabel hostJLabel;
         public javax.swing.JTextField hostJTextField;
+        private javax.swing.JLabel jLabel10;
         private javax.swing.JSeparator jSeparator2;
+        private javax.swing.JSeparator jSeparator3;
         private javax.swing.JLabel loginJLabel;
         public javax.swing.JTextField loginJTextField;
         private javax.swing.JLabel orgJLabel;
