@@ -165,6 +165,8 @@ file bundledAjx => ajaxTkList do
       end
     end
   end
+
+  Kernel.system('sed', '-i', '-e', '/\/\/if (AjxEnv.isGeckoBased)/,+1s/\/\///', bundledAjx);
 end
 $InstallTarget.registerDependency(bundledAjx)
 
