@@ -106,9 +106,12 @@ restartPostgres() {
 # Return true (0) when we need to reap and restart the mvvm.
 needToRestart() {
     MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
-
-    # FIXME
-    # < 1G => reboot at 384
+    
+    if [ $MEM -lt 1000000 ] ; then
+      VSZ=85000
+    else
+      VSZ=95000
+    fi
 
     cheaphigh=`head -3 /proc/$pid/maps | tail -1 | awk '{ high=split($1, arr, "-"); print arr[2]; }'`
     if [ -z $cheaphigh ]; then
@@ -145,13 +148,11 @@ needToRestart() {
         return 0;
     fi
 
-# extra nightime checks
+    # extra nightime checks
     if [ `date +%H` -eq 1 ]; then
         # VSZ greater than 1.1 gigs reboot
-      # FIXME
-      # less than a gig -> 850000
         VIRT="`cat /proc/$pid/status | grep VmSize | awk '{print $2}'`"
-        if [ $VIRT -gt 1050000 ] ; then
+        if [ $VIRT -gt $VSZ ] ; then
             echo "*** Virt Size too high ($VIRT) on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
             return 0;
         fi
