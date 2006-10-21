@@ -51,7 +51,12 @@ public class PingPacket implements Serializable
 
     public String toString()
     {
-        return "sequence: " + this.sequence + ", ttl: " + this.ttl + ", delay: " + this.micros + " us, size: " + this.size + " bytes";
+        StringBuilder sb = new StringBuilder();
+        sb.append( "sequence: " + this.sequence );
+        sb.append( " ttl: " + this.ttl + "," );
+        sb.append( " delay: " + (((float)this.micros ) / 1000 ) + " ms," );
+        sb.append( " size: " + this.size + " bytes" );
+        return sb.toString();
     }
     
 

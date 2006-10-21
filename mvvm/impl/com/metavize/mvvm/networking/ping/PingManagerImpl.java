@@ -91,16 +91,15 @@ public class PingManagerImpl implements PingManager
         try {
             address = InetAddress.getByName( addressString );
         } catch ( UnknownHostException e ) {
-            throw new ValidateException( "Unable to determine host address for: " + addressString, e );
+            return new PingResult( addressString );
         }
-
 
         Thread t = null;
 
         try {
             /* Wait 1 second per ping, and plus the default timeout */
             Date end = new Date( System.currentTimeMillis() + ( 1000 * count ) + DEFAULT_TIMEOUT );
-            Helper helper = go( address, count );
+            Helper helper = go( addressString, address, count );
             
             t = new Thread( helper );
             t.start();
@@ -141,7 +140,7 @@ public class PingManagerImpl implements PingManager
         return INSTANCE;
     }
 
-    private Helper go( InetAddress address, int count ) throws IOException
+    private Helper go( String addressString, InetAddress address, int count ) throws IOException
     {
         /* args: ping, -c, count, ip */
         String args[] = new String[6];
@@ -155,27 +154,31 @@ public class PingManagerImpl implements PingManager
 
         Process p = MvvmContextFactory.context().exec( args );
 
-        return new Helper( address, p );
+        return new Helper( addressString, address, count, p );
     }
     
     private class Helper implements Runnable
     {
+        private final String hostname;
         private final InetAddress address;
+        private final int count;
         private final Process p;
 
         private PingResult result;
 
-        Helper( InetAddress address, Process p )
+        Helper( String hostname, InetAddress address, int count, Process p )
         {
+            this.hostname = hostname;
             this.address = address;
+            this.count = count;
             this.p = p;
         }
 
         public void run()
         {
             List<PingPacket> pingPacketList = new LinkedList<PingPacket>();
-            long totalTime = -1;
-            int totalTransmitted = -1;
+            long totalTime = this.count * 1000000;
+            int totalTransmitted = this.count;
             int totalReceived = 0;
             
             /* read everything from standard output */
@@ -262,7 +265,7 @@ public class PingManagerImpl implements PingManager
             /* should log this */
             if ( totalRx != pingPacketList.size()) logger.info( "size mismatch on ping data." );
 
-            this.result = new PingResult( this.address, pingPacketList, totalTx, totalTime );
+            this.result = new PingResult( this.hostname, this.address, pingPacketList, totalTx, totalTime );
         }
     }
 }
