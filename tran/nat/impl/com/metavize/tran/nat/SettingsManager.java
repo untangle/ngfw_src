@@ -403,7 +403,7 @@ class SettingsManager
             PortMatcherFactory pmf  = PortMatcherFactory.getInstance();
             ProtocolMatcherFactory prmf = ProtocolMatcherFactory.getInstance();
             
-            RedirectRule dmz = new RedirectRule( true, prmf.getTCPAndUDPMatcher(),
+            RedirectRule dmz = new RedirectRule( true, prmf.getAllMatcher(),
                                                  imf.getExternalMatcher(), imf.getAllMatcher(),
                                                  ipmf.getAllMatcher(), ipmf.getLocalMatcher(),
                                                  pmf.getAllMatcher(), pmf.getAllMatcher(),

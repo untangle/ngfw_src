@@ -65,7 +65,7 @@ public class ProtocolMatcherFactory
 
     public final ProtocolDBMatcher getTCPAndUDPMatcher()
     {
-        return ProtocolBasicMatcher.getUDPMatcher();
+        return ProtocolBasicMatcher.getTCPAndUDPMatcher();
     }
 
     public static final ProtocolMatcherFactory getInstance()

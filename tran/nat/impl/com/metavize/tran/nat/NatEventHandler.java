@@ -836,7 +836,7 @@ class NatMatcher
         }
 
         // System.out.println( "client: " + clientIPMatcher + " server: " + serverIntfMatcher );
-        RedirectMatcher matcher = new RedirectMatcher( true, false, prmf.getTCPAndUDPMatcher(),
+        RedirectMatcher matcher = new RedirectMatcher( true, false, prmf.getAllMatcher(),
                                                        clientIntfMatcher, serverIntfMatcher,
                                                        clientIPMatcher, imf.getAllMatcher(),
                                                        pmf.getAllMatcher(), pmf.getAllMatcher(),
@@ -847,7 +847,7 @@ class NatMatcher
         /* build the interface redirect for nat traffic that is coming back (eg for FTP */
         /* This just redirects it to the first interface in the nat space, this way it gets through */
         InterfaceRedirect redirect =
-            new InterfaceStaticRedirect( prmf.getTCPAndUDPMatcher(),
+            new InterfaceStaticRedirect( prmf.getAllMatcher(),
                                          serverIntfMatcher, intfMatcherFactory.getAllMatcher(),
                                          imf.getAllMatcher(), imf.makeSingleMatcher( natAddress ),
                                          pmf.getAllMatcher(), pmf.getAllMatcher(),
@@ -954,7 +954,7 @@ class DmzMatcher
         }
                 
         RedirectMatcher matcher = new RedirectMatcher( true, space.getIsDmzHostLoggingEnabled(),
-                                                       prmf.getTCPAndUDPMatcher(),
+                                                       prmf.getAllMatcher(),
                                                        clientIntfMatcher, serverIntfMatcher,
                                                        imf.getAllMatcher(), serverIPMatcher,
                                                        pmf.getAllMatcher(), pmf.getAllMatcher(),
@@ -962,7 +962,7 @@ class DmzMatcher
 
         /* build the interface redirect for dmz traffic */
         InterfaceRedirect redirect =
-            new InterfaceAddressRedirect( prmf.getTCPAndUDPMatcher(),
+            new InterfaceAddressRedirect( prmf.getAllMatcher(),
                                           clientIntfMatcher, serverIntfMatcher,
                                           imf.getAllMatcher(), serverIPMatcher,
                                           pmf.getAllMatcher(), pmf.getAllMatcher(),

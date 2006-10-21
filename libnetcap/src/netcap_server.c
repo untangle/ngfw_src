@@ -610,7 +610,7 @@ static int  _handle_nfqueue (epoll_info_t* info, int revents)
             return errlog( ERR_CRITICAL, "netcap_nfqueue_read\n" );
         }
         
-        if ( revents * EPOLLHUP ) {
+        if ( revents & EPOLLHUP ) {
             /* XXXxxxXXX not really sure what to do here */
             errlog( ERR_CRITICAL, "HUP on queue socket\n" );
         }
