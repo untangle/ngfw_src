@@ -291,6 +291,7 @@ public class Util {
     // CD //////////////////////
     private static boolean IS_CD = false;
     public static boolean getIsCD(){ return IS_CD; }
+    public static void setIsCD(boolean isCD){ IS_CD = isCD; }
     //////////////////////////////
 
 

@@ -95,11 +95,19 @@ public class MLauncher {
                 }
             } );
 
-        // ARGS
+        // ARGS (local)
         for( String arg : args )
             if( arg.equals("local") ){
                 Util.setLocal(true);
             }
+
+        // ARGS (isCD)
+        if( args.length >= 2 ){
+            if( args[1].equals("true") )
+                Util.setIsCD(true);
+            else if( args[1].equals("false") )
+                Util.setIsCD(false);
+        }
 
         // HANDLE FIRST TIME LOGINS
         try{
