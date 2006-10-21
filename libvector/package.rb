@@ -2,8 +2,7 @@
 
 libvector = Package["libvector"]
 
-compilerEnv = CCompilerEnv.new( { "flags" => "#{CCompilerEnv::DebugFlags}",
-                                  "pkg"   => "#{CCompilerEnv::Vector}",
+compilerEnv = CCompilerEnv.new( { "pkg"   => "#{CCompilerEnv::Vector}",
                                   "version" => getVersion( libvector )})
 
 ## libvector

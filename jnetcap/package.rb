@@ -17,8 +17,7 @@ headerClasses = [ "com.metavize.jnetcap.Netcap",
 
 javah = JavahTarget.new(jnetcap, j, headerClasses)
 
-compilerEnv = CCompilerEnv.new( { "flags" => "#{CCompilerEnv::DebugFlags}",
-                                  "pkg"   => "#{CCompilerEnv::JNetcap}" })
+compilerEnv = CCompilerEnv.new( { "pkg"   => "#{CCompilerEnv::JNetcap}" })
                                   
 
 ## jnetcap

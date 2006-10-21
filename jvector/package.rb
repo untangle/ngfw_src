@@ -23,8 +23,7 @@ headerClasses = [ "com.metavize.jvector.OutgoingSocketQueue",
 
 javah = JavahTarget.new(jvector, j, headerClasses)
 
-compilerEnv = CCompilerEnv.new( { "flags" => "#{CCompilerEnv::DebugFlags}",
-                                  "pkg"   => "#{CCompilerEnv::JVector}" })
+compilerEnv = CCompilerEnv.new( { "pkg"   => "#{CCompilerEnv::JVector}" })
                                   
 
 ArchiveTarget.buildTarget( jvector, [ Package["libmvutil"], Package["jmvutil"], javah ], compilerEnv, 

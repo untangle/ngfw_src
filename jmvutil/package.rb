@@ -3,8 +3,7 @@
 jmvutil = Package['jmvutil']
 
 ## jmvutil
-compilerEnv = CCompilerEnv.new( { "flags" => "#{CCompilerEnv::DebugFlags}",
-                                  "pkg"   => "#{CCompilerEnv::JMvutil}",
+compilerEnv = CCompilerEnv.new( { "pkg"   => "#{CCompilerEnv::JMvutil}",
                                   "version" => getVersion( jmvutil )})
 
 ArchiveTarget.buildTarget( jmvutil, [ Package["libmvutil"] ], compilerEnv, 

@@ -2,8 +2,7 @@
 
 libnetcap = Package["libnetcap"]
 
-compilerEnv = CCompilerEnv.new( { "flags" => "#{CCompilerEnv::DebugFlags}",
-                                  "pkg"   => "#{CCompilerEnv::Netcap}",
+compilerEnv = CCompilerEnv.new( { "pkg"   => "#{CCompilerEnv::Netcap}",
                                   "version" => "#{getVersion( libnetcap )}" } )
 
 ## libnetcap

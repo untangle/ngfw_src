@@ -5,17 +5,12 @@ class CCompilerEnv
   ## parameters to the defaults if they want to.
   Defines       = "-D_GNU_SOURCE -D_REENTRANT"
   Warnings      = "-Wall"
-  Optimizations = ""
-
-  ## Add these flags if you need debugging
-  DebugFlags    = "-g -ggdb -DDEBUG_ON"
 
   CC            = "gcc"
   Ranlib        = "ranlib"
   Archive       = "ar"
   Loader        = "ld"
   Link          = "ln"
-  Strip         = "strip"
 
   ## Debugging packages
   Mvutil        = 255
@@ -25,18 +20,18 @@ class CCompilerEnv
   JNetcap       = 212
   JVector       = 214
   
-  def initialize( overrides )
+  def initialize( overrides = {} )
     @defines       = Defines
     @warnings      = Warnings
-    @optimizations = Optimizations
+    @optimizations = CCompilerEnv.defaultOptimizations
     
     @cc            = CC
     @ranlib        = Ranlib
     @archive       = Archive
     @loader        = Loader
     @link          = Link
-    @strip         = Strip
-    @flags         = ""
+    @strip         = CCompilerEnv.defaultStripCommand
+    @flags         = CCompilerEnv.defaultDebugFlags
     @pkg           = ""
     @version       = ""
 
@@ -68,6 +63,18 @@ class CCompilerEnv
     value+= " -DDEBUG_PKG=#{@pkg}" unless ( @pkg == "" )
     value+= " -DVERSION=\\\"#{@version}\\\"" unless ( @version == "" )
     return value
+  end
+
+  def CCompilerEnv.defaultDebugFlags
+    ( $DevelBuild ) ?  "-g -ggdb -DDEBUG_ON" : ""
+  end
+
+  def CCompilerEnv.defaultOptimizations
+    ( $DevelBuild ) ? "" : "-funroll-loops -fomit-frame-pointer"
+  end
+
+  def CCompilerEnv.defaultStripCommand
+    ( $DevelBuild ) ? "echo \"not stripping symbols for: \"" : "strip --strip-debug --remove-section=.note --remove-section=.comment -x"
   end
 
   attr_reader     :warnings, :optimizations, :cc, :ranlib
@@ -112,6 +119,10 @@ class CBuilder
 
     debug cmd
     raise "gcc failed" unless Kernel.system( cmd )
+
+    cmd = "#{@env.strip} #{destination}"
+    debug cmd
+    raise "unable to strip symbols" unless Kernel.system( cmd )
   end
 
   ## source: Array of object and archive files for the shared object

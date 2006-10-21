@@ -2,8 +2,7 @@
 
 libmvutil = Package["libmvutil"]
 
-compilerEnv = CCompilerEnv.new( { "flags" => "#{CCompilerEnv::DebugFlags}",
-                                  "pkg"   => "#{CCompilerEnv::Mvutil}",
+compilerEnv = CCompilerEnv.new( { "pkg"   => "#{CCompilerEnv::Mvutil}",
                                   "version" => "#{getVersion( libmvutil )}" } )
 
 ## libmvutil
