@@ -8,7 +8,7 @@ source = FileList["nfutil/src/*.c"]
 source.each { |f| file nfutil => f }
 
 file nfutil do
-  compilerEnv = CCompilerEnv.new({ 'flags' => "#{CCompilerEnv::DebugFlags}" })
+  compilerEnv = CCompilerEnv.new()
   
   CBuilder.new(compilerEnv).makeBinary(source, nfutil, [], ['netfilter_queue'])
 end
