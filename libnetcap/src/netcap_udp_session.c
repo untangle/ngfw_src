@@ -5,11 +5,23 @@
 
 #include <libnetcap.h>
 
+#include "netcap_globals.h"
 #include "netcap_session.h"
 #include "netcap_sesstable.h"
 #include "netcap_route.h"
 
-int netcap_udp_session_init(netcap_session_t* netcap_sess, netcap_pkt_t* pkt) 
+/* callback for a UDP session */
+static int _callback    ( netcap_session_t* netcap_sess, netcap_callback_action_t action, 
+                          netcap_callback_flag_t flags );
+
+/* liberate a session from being caught by netcap */
+static int  _liberate   ( netcap_session_t* netcap_sess, netcap_callback_action_t action,
+                          netcap_callback_flag_t flags );
+
+/* Liberate an individual packet */
+static int _liberate_pkt( netcap_pkt_t* pkt );
+
+int netcap_udp_session_init( netcap_session_t* netcap_sess, netcap_pkt_t* pkt ) 
 {
     netcap_endpoints_t endpoints;
     
@@ -27,6 +39,10 @@ int netcap_udp_session_init(netcap_session_t* netcap_sess, netcap_pkt_t* pkt)
     
     endpoints.intf = pkt->src_intf;
 
+    if ( netcap_session_init( netcap_sess, &endpoints, NC_INTF_UNK, NC_SESSION_IF_MB ) < 0 ) {
+        return errlog( ERR_CRITICAL, "netcap_session_init\n" );
+    }
+
     /* Set alive to true */
     netcap_sess->alive = 1;
 
@@ -37,9 +53,8 @@ int netcap_udp_session_init(netcap_session_t* netcap_sess, netcap_pkt_t* pkt)
     netcap_sess->ttl      = pkt->ttl;
     netcap_sess->tos      = pkt->tos;
 
-    if ( netcap_session_init( netcap_sess, &endpoints, NC_INTF_UNK, NC_SESSION_IF_MB ) < 0 ) {
-        return errlog( ERR_CRITICAL, "netcap_session_init\n" );
-    }
+    /* Set the callback, for most actions this doesn't do anything */
+    netcap_sess->callback = _callback;
 
     return 0;
 }
@@ -108,4 +123,103 @@ int netcap_udp_session_raze(int if_lock, netcap_session_t* netcap_sess)
     }
 
     return err;
+}
+
+/**************************************** STATIC ****************************************/
+
+static int _callback ( netcap_session_t* netcap_sess, netcap_callback_action_t action, 
+                       netcap_callback_flag_t flags )
+{
+    if ( netcap_sess == NULL ) return errlogargs();
+        
+    switch ( action ) {
+    case CLI_COMPLETE: 
+        /* fall through */
+    case SRV_COMPLETE: 
+        /* fall through */
+        /* fallthrough */
+    case CLI_DROP:
+        /* fallthrough */
+        return 0;
+    case CLI_ICMP:
+        /* XXXX Should do something here */
+        /* fallthrough */
+    case CLI_RESET:
+        /* XXXX Should do something here */
+    case CLI_FORWARD_REJECT:
+        /* XXXX Should do something here */
+        errlog( ERR_WARNING, "_udp_rejection type %d is not implemented, ignoring\n", action );
+        return 0;
+        
+    case LIBERATE:
+        return _liberate( netcap_sess, action, flags );
+
+    default:
+        return errlog( ERR_CRITICAL, "Unknown action: %i\n", action );
+    }
+
+    return errlogcons();
+}
+
+/* liberate a session from being caught by netcap */
+static int  _liberate( netcap_session_t* netcap_sess, netcap_callback_action_t action,
+                       netcap_callback_flag_t flags )
+{
+    netcap_pkt_t* pkt = NULL;
+    int count = 0;
+
+    /* this has to release any of the queued packets with a special mark indicating that they
+     * are liberated, this applies to both ICMP and UDP packets. */
+
+    /* Iterate through all of the packets grabbing them out of the mailbox */
+    while (( pkt = (netcap_pkt_t*)mailbox_try_get( &netcap_sess->cli_mb )) != NULL ) {
+        if ( _liberate_pkt( pkt ) < 0 ) errlog( ERR_CRITICAL, "_liberate_pkt\n" );
+        netcap_pkt_raze( pkt );
+        count++;
+    }
+
+    /* If there weren't any packets liberated and the session was alive, then print an error message */
+    if (  netcap_sess->alive && ( 0 == count )) {
+        errlog( ERR_WARNING, "_liberated a session that contained no packet\n" );
+    }
+
+    return 0;
+}
+
+static int _liberate_pkt( netcap_pkt_t* pkt )
+{
+    if ( pkt == NULL ) return errlogargs();
+    
+    /* decrement the ttl on outgoing packets to discourage floods */
+    if ( 0 == pkt->ttl ) {
+        debug( 10, "UDP_SESSION: dropping packet with TTL of zero.\n" );
+    } else {
+        debug( 10, "UDP_SESSION: liberating a packet with TTL %d.\n", pkt->ttl );
+        
+        /* decrement the ttl */
+        pkt->ttl--;
+        
+        /* Set the mark on the packet this guarantees that it is connmarked */
+        pkt->is_marked = IS_MARKED_FORCE_FLAG;
+        pkt->nfmark    = MARK_ANTISUB | MARK_LIBERATE;
+        
+        /* Actually release the packet */
+        /* have to determine which type of packet this is */
+        
+        /* !!!! ICMP or UDP !!!! */
+        switch ( pkt->proto ) {
+        case IPPROTO_UDP:
+            netcap_udp_send( pkt->data, pkt->data_len, pkt );
+                break;
+                
+        case IPPROTO_ICMP:
+            netcap_icmp_send( pkt->data, pkt->data_len, pkt );
+            break;
+                
+        default:
+            return errlog( ERR_WARNING, "Unable to liberate packet of unknown protocol %d\n", pkt->proto );
+        }
+    }
+
+    return 0;
 }

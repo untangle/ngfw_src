@@ -21,11 +21,18 @@ procset() {
     fi
 }
 
-# check ip_queue
-if [ ! -f /proc/net/ip_queue ]; then
+# check nfqueue
+if [ ! -f /proc/net/netfilter/nfnetlink_queue ]; then
     echo "ERROR: kernel does not have IP_NF_QUEUE" >& 2
     exit 1
-elif [ "`grep Peer /proc/net/ip_queue  | awk '{ print $4 }'`" != "0" ] ; then
+elif [ "`cat /proc/net/netfilter/nfnetlink_queue | wc -l`x" != "0x" ] ; then
+    echo "ERROR: nfqueue allocated, exiting" >&2
+    exit 1
+fi
+
+# also check ip_queue
+# check ip_queue
+if [ -f /proc/net/ip_queue ] && [ "`grep Peer /proc/net/ip_queue  | awk '{ print $4 }'`" != "0" ]; then
     echo "ERROR: ip_queue allocated, exiting" >&2
     exit 1
 fi
@@ -40,6 +47,8 @@ procset /proc/sys/vm/swappiness 5
 procset /proc/sys/net/ipv4/tcp_synack_retries 0
 procset /proc/sys/net/ipv4/tcp_syncookies 1
 procset /proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_time_wait 30
+
+## not sure if this is still applicable since we now use nfqueue, (rbs 9/29/06)
 procset /proc/sys/net/ipv4/ip_queue_maxlen 16384
 
 # remove tomcat persisted sessions

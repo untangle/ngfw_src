@@ -34,6 +34,9 @@ CHAIN_MARKINTF="markintf"
 CHAIN_GUARDS="guards"
 CHAIN_ANTISUB="antisub"
 CHAIN_INTERCEPT="intercept"
+CHAIN_LIBERATION="liberation"
+
+## These are all for the mangle prerouting rules
 CHAINS_ORDER="${CHAIN_MARKINTF} ${CHAIN_GUARDS} ${CHAIN_ANTISUB} ${CHAIN_INTERCEPT}"
 
 ## Invalid address and netmask used when dhcp loading fails.
@@ -366,4 +369,29 @@ function deleteGateways() {
 function logDebug() {
     echo $@
 }
+
+## Flush all of the iptables rules
+function flush() {
+    local t_table
+
+    ## Always flush intercepting first to avoid a few errant packets flying in unmarked.
+    ${IPTABLES} -t mangle -F ${CHAIN_INTERCEPT} 2> /dev/null
+
+    ${IPTABLES} -t filter -F ${CHAIN_LIBERATION} 2> /dev/null
+
+    for table in ${TABLE_LIST}; do 
+        ${IPTABLES} -t ${table} -F
+    done
+
+    ## Remove all of the sub chains
+    for chain in ${CHAINS_ORDER} ; do
+        ${IPTABLES} -t mangle -X ${chain} 2> /dev/null
+    done
+
+    ${IPTABLES} -t filter -X ${CHAIN_LIBERATION} 2> /dev/null
+
+    ## flush all of the ebtables 
+    for t_table in ${EBTABLE_LIST} ; do ${EBTABLES} -t ${t_table} -F ; done
+}
+
 

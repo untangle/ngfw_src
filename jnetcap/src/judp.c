@@ -27,10 +27,19 @@
 #include <jmvutil.h>
 
 #include "jnetcap.h"
+#include "jsession.h"
 
 #include JH_IPTraffic
 #include JH_ICMPTraffic
 #include JH_UDPSession
+
+#define VERIFY_PKT_SESSION(session) if ((session)->protocol != IPPROTO_UDP && (session)->protocol != IPPROTO_ICMP ) \
+   return jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, \
+                         "JPKT: Expecting a PKT session: %d\n", (session)->protocol )
+
+#define VERIFY_PKT_SESSION_VOID(session) if ((session)->protocol != IPPROTO_UDP && (session)->protocol != IPPROTO_ICMP ) \
+   return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, \
+                              "JPKT: Expecting a PKT Session: %d\n", (session)->protocol )
 
 #define JLONG_TO_PACKET( packet, packet_ptr )   do { \
     if (( packet_ptr ) == 0 ) return errlogargs(); \
@@ -47,7 +56,10 @@
     (packet) = (netcap_pkt_t*)JLONG_TO_UINT(( packet_ptr )); \
   } while (0)
 
-static netcap_endpoint_t* _get_endpoint( netcap_pkt_t* pkt, int req_id )
+
+static void _udp_callback( jlong session_ptr, netcap_callback_action_t action, jint _flags );
+
+static netcap_endpoint_t* _get_pkt_endpoint( netcap_pkt_t* pkt, int req_id )
 {
     if (( req_id & JN_IPTraffic( FLAG_SRC_MASK )) == JN_IPTraffic( FLAG_SRC )) return &pkt->src;
     
@@ -142,7 +154,7 @@ JNIEXPORT jlong JNICALL JF_IPTraffic( getLongValue )
     /* XXX What happens on the long return */
     JLONG_TO_PACKET( pkt, pkt_ptr );
 
-    endpoint = _get_endpoint( pkt, req );
+    endpoint = _get_pkt_endpoint( pkt, req );
     
     switch( req & JN_IPTraffic( FLAG_MASK )) {
     case JN_IPTraffic( FLAG_HOST ): return UINT_TO_JLONG((uint)endpoint->host.s_addr );
@@ -168,7 +180,7 @@ JNIEXPORT jint JNICALL JF_IPTraffic( getIntValue )
 
     
 
-    if (( endpoint  = _get_endpoint( pkt, req )) == NULL ) return errlogargs();
+    if (( endpoint  = _get_pkt_endpoint( pkt, req )) == NULL ) return errlogargs();
 
     switch( req & JN_IPTraffic( FLAG_MASK )) {
     case JN_IPTraffic( FLAG_PORT ): return endpoint->port;
@@ -231,7 +243,7 @@ JNIEXPORT jint JNICALL JF_IPTraffic( setLongValue )
 
     /* XXX What happens on the long return */
     JLONG_TO_PACKET( pkt, pkt_ptr );
-    endpoint = _get_endpoint( pkt, req );
+    endpoint = _get_pkt_endpoint( pkt, req );
 
     switch( req & JN_IPTraffic( FLAG_MASK )) {
     case JN_IPTraffic( FLAG_HOST ): endpoint->host.s_addr = UINT_TO_JLONG(value); break;
@@ -254,7 +266,7 @@ JNIEXPORT jint JNICALL JF_IPTraffic( setIntValue )
     netcap_endpoint_t* endpoint;
 
     JLONG_TO_PACKET( pkt, pkt_ptr );
-    endpoint = _get_endpoint( pkt, req );
+    endpoint = _get_pkt_endpoint( pkt, req );
 
     switch( req & JN_IPTraffic( FLAG_MASK ) ) {
     case JN_IPTraffic( FLAG_PORT ): endpoint->port = value; break;
@@ -507,6 +519,18 @@ JNIEXPORT jint JNICALL JF_UDPSession( mailboxPointer )
 }
 
 /*
+ * Class:     com_metavize_jnetcap_NetcapUDPSession
+ * Method:    liberate
+ * Signature: (JI)I
+ */
+JNIEXPORT void JNICALL JF_UDPSession( liberate )
+    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+{
+    _udp_callback( session_ptr, LIBERATE, flags );
+}
+
+
+/*
  * Class:     com_metavize_jnetcap_ICMPTraffic
  * Method:    icmpSource
  * Signature: (J[BI)J
@@ -573,4 +597,25 @@ static int _icmp_get_info( netcap_pkt_t* pkt, int is_type )
     }
 
     return ( is_type == ICMP_GET_INFO_TYPE ) ? icmp->icmp_type : icmp->icmp_code;
+}
+
+
+static void _udp_callback( jlong session_ptr, netcap_callback_action_t action, jint _flags )
+{
+    netcap_session_t* netcap_sess;
+    int flags = 0;
+
+    JLONG_TO_SESSION_VOID( netcap_sess, session_ptr );
+    VERIFY_PKT_SESSION_VOID( netcap_sess );    
+        
+    if ( netcap_sess->callback == NULL ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "JPKT: null callback %d\n", action );
+    }
+
+    if ( netcap_sess->callback( netcap_sess, action, flags ) < 0 ) {
+        debug( 2, "JPKT: callback failed=%d\n", action );
+
+        /* Throw an error, but don't print an error message */
+        jmvutil_error_throw( JMVUTIL_ERROR_STT, "JPKT: callback failed action=%d", action );
+    }
 }

@@ -11,6 +11,11 @@
 
 #include <jni.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+
 #include <libnetcap.h>
 #include <libmvutil.h>
 #include <mvutil/errlog.h>

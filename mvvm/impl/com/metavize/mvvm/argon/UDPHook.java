@@ -265,6 +265,11 @@ public class UDPHook implements NetcapHook
             }
         }
 
+        protected void liberate()
+        {
+            netcapUDPSession.liberate();
+        }
+
         protected void raze()
         {
             try {

@@ -84,22 +84,22 @@ struct ip_sendnfmark_opts {
 #define MARK_ANTISUB   0x01000000
 #define MARK_NOTRACK   0x02000000
 
+/* This mark is used to indicate that a packet came in on one of the internal interfaces.
+ * this is used by the https server to determined.
+ * XXXXXX This information shouldn't be here, it is not related to netcap it is only here to
+ * avoid confusion.  netcap should reserve 8 bits for its own marks and then allow for helper
+ * applications to use unreserved bits. */
+#define MARK_INSIDE    0x04000000
+#define MARK_DHCP_SERVER_ANTISUBSCRIBE 0x08000000
+
+/* This mark is used to release a TCP/UDP/ICMP session that was queued */
+#define MARK_LIBERATE  0x10000000
+
 /* Indicates a packet destined for the local host */
 #define MARK_LOCAL     0x00000100
 
 #define MARK_LOCAL_OFFSET     4
 #define MARK_LOCAL_MASK    0xF0
-
-/* XXX Replace string versions with a way to do this in macros */
-
-/* Stringify the previous constants */
-#define MARK_S_ANTISUB "0x01000000"
-#define MARK_S_NOTRACK "0x02000000"
-#define MARK_S_LOCAL   "0x00000100"
-
-#define MARK_S_MASK_ANTISUB MARK_S_ANTISUB "/" MARK_S_ANTISUB
-#define MARK_S_MASK_NOTRACK MARK_S_NOTRACK "/" MARK_S_NOTRACK
-
 
 #ifndef SOL_UDP /* missing from early kernels */
 #define SOL_UDP 17

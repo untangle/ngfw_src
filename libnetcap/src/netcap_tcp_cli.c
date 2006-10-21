@@ -297,13 +297,39 @@ int _netcap_tcp_cli_send_reset( netcap_pkt_t* pkt )
     return 0;
 }
 
+/* Do whatever is necessary to undo everything that was done to vector a TCP session */
+int _netcap_tcp_callback_liberate    ( netcap_session_t* netcap_sess, netcap_callback_action_t action, 
+                                       netcap_callback_flag_t flags )
+{
+    if ( netcap_sess == NULL ) return errlogargs();
+
+    /* If the session was not in syn mode, this is not supported, and has to be dropped */
+    if ( !netcap_sess->syn_mode ) {
+        debug( 5, "TCP: (%10u) CLI_LIBERATE %s opaque mode, have to reset\n", netcap_sess->session_id,
+               netcap_session_cli_tuple_print( netcap_sess ));
+        return _netcap_tcp_callback_cli_reject( netcap_sess, action, flags );
+    }
+    
+    debug( 10, "TCP: (%10u) CLI_LIBERATE %s releasing with antisubscribe and release mark\n",
+           netcap_sess->session_id, netcap_session_cli_tuple_print( netcap_sess ));
+
+    if ( _retrieve_and_reject( netcap_sess, LIBERATE ) < 0 ) {
+        return errlog( ERR_CRITICAL, "_retrieve_and_reject\n" );
+    }
+    
+    return 0;
+}
+
 static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback_action_t action )
 {
     tcp_msg_t* msg;
     int ret = 0;
     int c;
+    int drop_pkt;
 
     for ( c = 0 ; c < _SYN_REJECT_COUNT ; c++ ) {
+        drop_pkt = 0xF00D;
+
         /**
          * read syn message
          */
@@ -356,12 +382,26 @@ static int  _retrieve_and_reject( netcap_session_t* netcap_sess, netcap_callback
         case CLI_DROP:
             break;
 
+        case LIBERATE:
+            /* This is the one case where you just want to raze the
+             * packet, since the verdict is set with the mark */
+            drop_pkt = 0x0;
+            /* to liberate just release the packet with the appropriate mark */
+            if ( netcap_set_verdict_mark( msg->pkt->packet_id, NF_ACCEPT, NULL, 0, 1, 
+                                          msg->pkt->nfmark | MARK_ANTISUB | MARK_LIBERATE ) < 0 ) {
+                ret = errlog( ERR_CRITICAL, "netcap_set_verdict_mark\n" );
+            }
+            break;
+
         default:
             errlog( ERR_WARNING, "Invalid action(%d), dropping\n", action );
             break;
         }
-        
-        netcap_pkt_action_raze( msg->pkt, NF_DROP );
+
+        /* Only set the verdict if that is necessary */
+        if ( drop_pkt == 0 ) netcap_pkt_raze( msg->pkt );
+        else                 netcap_pkt_action_raze( msg->pkt, NF_DROP );
+
         msg->pkt = NULL;
         netcap_tcp_msg_raze( msg );
         msg = NULL;

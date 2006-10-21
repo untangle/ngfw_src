@@ -19,6 +19,7 @@
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
 #include <signal.h>
+#include <unistd.h>
 
 #include <libnetcap.h>
 #include <libmvutil.h>
@@ -33,11 +34,11 @@
 
 #define VERIFY_TCP_SESSION(session) if ( (session)->protocol != IPPROTO_TCP ) \
    return jmvutil_error( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, \
-                         "TCP: Expecting a TCP session: %d\n", (session)->protocol )
+                         "JTCP: Expecting a TCP session: %d\n", (session)->protocol )
 
 #define VERIFY_TCP_SESSION_VOID(session) if ( (session)->protocol != IPPROTO_TCP ) \
    return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, \
-                              "TCP: Expecting a TCP Session: %d\n", (session)->protocol )
+                              "JTCP: Expecting a TCP Session: %d\n", (session)->protocol )
 
 static void _tcp_callback( jlong session_ptr, netcap_callback_action_t type, jint flags );
 
@@ -141,6 +142,16 @@ JNIEXPORT void JNICALL JF_TCPSession( clientForwardReject )
     _tcp_callback( session_ptr, CLI_FORWARD_REJECT, flags );
 }
 
+/*
+ * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Method:    liberate
+ * Signature: (JI)I
+ */
+JNIEXPORT void JNICALL JF_TCPSession( liberate )
+    ( JNIEnv *env, jclass _class, jlong session_ptr, jint flags )
+{
+    _tcp_callback( session_ptr, LIBERATE, flags );
+}
 
 /*
  * Class:     com_metavize_jnetcap_NetcapTCPSession
@@ -299,7 +310,7 @@ JNIEXPORT void JNICALL JF_TCPSession( blocking )
     
     if ( ret < 0 ) {
         return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, 
-                                   "TCP: Unable to change blocking flags for fd: %d\n", sock );
+                                   "JTCP: Unable to change blocking flags for fd: %d\n", sock );
     }
 }
 
@@ -311,18 +322,18 @@ static void _tcp_callback( jlong session_ptr, netcap_callback_action_t action, j
     JLONG_TO_SESSION_VOID( session, session_ptr );
     VERIFY_TCP_SESSION_VOID( session );    
     
-    if ( session->protocol != IPPROTO_TCP ) {
-        return jmvutil_error_void( JMVUTIL_ERROR_ARGS, ERR_CRITICAL, 
-                                   "TCP: Expecting a TCP session: %d\n", session->protocol );
-    }
-
     if ( _flags & JN_TCPSession( NON_LOCAL_BIND )) flags |= SRV_COMPLETE_NONLOCAL_BIND;
     
+    /* Verify that the callback is non-null */
+    if ( session->callback == NULL ) {
+        return jmvutil_error_void( JMVUTIL_ERROR_STT, ERR_CRITICAL, "JTCP: null callback %d\n", action );
+    }
+
     if ( session->callback( session, action, flags ) < 0 ) {
-        debug( 2, "TCP: callback failed=%d\n", action );
+        debug( 2, "JTCP: callback failed=%d\n", action );
 
         /* Throw an error, but don't print an error message */
-        jmvutil_error_throw( JMVUTIL_ERROR_STT, "TCP: callback failed action=%d\n", action );
+        jmvutil_error_throw( JMVUTIL_ERROR_STT, "JTCP: callback failed action=%d", action );
     }
 }
 

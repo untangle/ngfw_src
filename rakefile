@@ -57,21 +57,29 @@ require 'libvector/package.rb'
 require 'jmvutil/package.rb'
 require 'jnetcap/package.rb'
 require 'jvector/package.rb'
+require 'nfutil/package.rb'
 require 'mvvm/package.rb'
 require 'gui/package.rb'
 require 'tran/package.rb'
 
 libalpine_so = "#{$BuildEnv.staging}/libalpine.so"
 
+archives = ['libmvutil', 'libnetcap', 'libvector', 'jmvutil', 'jnetcap', 'jvector']
+
+## Make the so dependent on each archive
+archives.each do |n|
+  file libalpine_so => Package[n]['archive']
+end
+
 file libalpine_so do
   compilerEnv = CCompilerEnv.new({ 'flags' => "#{CCompilerEnv::DebugFlags}" })
-  archives = ['libmvutil', 'libnetcap', 'libvector', 'jmvutil', 'jnetcap', 'jvector'].map do |n|
-    Package[n]['archive'].filename
-  end
+  archivesFiles = archives.map { |n| Package[n]['archive'].filename }
 
-  CBuilder.new(compilerEnv).makeSharedLibrary(archives, libalpine_so, [],
-                                              ['xml2', 'sysfs'], ['ipq'])
+  CBuilder.new(compilerEnv).makeSharedLibrary(archivesFiles, libalpine_so, [],
+                                              ['xml2', 'sysfs', 'netfilter_queue'], ['ipq'])
 end
+
+
 
 $InstallTarget.registerDependency(libalpine_so)
 

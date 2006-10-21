@@ -212,9 +212,7 @@ netcap_session_t* netcap_session_malloc(void)
 int netcap_session_init( netcap_session_t* netcap_sess, netcap_endpoints_t *endpoints, 
                          netcap_intf_t srv_intf, int if_mb )
 {
-    if ( endpoints == NULL ) {
-        return errlog(ERR_CRITICAL, "Invalid arguments");
-    }
+    if ( endpoints == NULL ) return errlog(ERR_CRITICAL, "Invalid arguments");
 
     // Clear out the app_data variable
     netcap_sess->app_data = NULL;
@@ -231,9 +229,7 @@ int netcap_session_init( netcap_session_t* netcap_sess, netcap_endpoints_t *endp
 
     netcap_sess->srv.intf = srv_intf;
 
-    if ( netcap_sess->session_id == 0 ) {
-        return errlog( ERR_CRITICAL, "netcap_session_next_id\n" );
-    }
+    if ( netcap_sess->session_id == 0 ) return errlog( ERR_CRITICAL, "netcap_session_next_id\n" );
     
     // If needed, Create the two mail boxes
     if ( if_mb ) {
@@ -260,7 +256,10 @@ int netcap_session_init( netcap_session_t* netcap_sess, netcap_endpoints_t *endp
     netcap_sess->dead_tcp.code      = 255;
     netcap_sess->dead_tcp.use_src   = 0;
     netcap_sess->dead_tcp.redirect  = (in_addr_t)0;
-    netcap_sess->dead_tcp.src       = (in_addr_t)0;    
+    netcap_sess->dead_tcp.src       = (in_addr_t)0;
+
+    /* null out the callback */
+    netcap_sess->callback           = NULL;
 
     /* Need the ICMP mailboxes */
     /* XXX Only need these for UDP */

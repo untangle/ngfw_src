@@ -25,8 +25,13 @@ MARK_ANTISUB="0x01000000"
 MARK_NOTRACK="0x02000000"
 MARK_INTERNAL_REDIRECT="0x04000000"
 MARK_DHCP_SERVER_ANTISUB="0x08000000"
+MARK_LIBERATE="0x10000000"
 MARK_LOCAL="0x00001000"
 MARK_INTF_MASK="0xF" ## Mask to use when testing the interface
+
+## this is the liberate mark plus the antisubscribe mark, both bits
+## must always be set together.
+MARK_LIBERATE=$(( ${MARK_ANTISUB} | ${MARK_LIBERATE} ))
 
 ## This is not the interface index (1,2,3, etc), this is the special bit that
 ## is set to indicate that the traffic entered on the inside interface.
@@ -57,20 +62,6 @@ DHCP_SERVER_PORT="67"
 DHCP_CLIENT_PORT="68"
 DHCP_PORT_RANGE="${DHCP_SERVER_PORT}:${DHCP_CLIENT_PORT}"
 
-function flush() {
-    local t_table
-    ## Always flush intercepting first to avoid a few errant packets flying in unmarked.
-    ${IPTABLES} -t mangle -F ${CHAIN_INTERCEPT}
-    for t_table in ${TABLE_LIST}; do 
-        ${IPTABLES} -t ${t_table} -F 
-    done
-
-    ## Flush all of the ebtables just in case
-    for t_table in ${EBTABLE_LIST}; do
-        ${EBTABLES} -t ${t_table} -F
-    done
-}
-
 ## This creates the foundation
 function buildFoundation() {
     ## Flush out the prerouting table
@@ -94,7 +85,32 @@ function blockForwarding() {
     ${IPTABLES} -t filter -F FORWARD
     ${IPTABLES} -t mangle -F FORWARD
     ${IPTABLES} -t filter -F INPUT
-    ${IPTABLES} -t mangle -F INPUT        
+    ${IPTABLES} -t mangle -F INPUT
+
+    ## create the liberation chain
+    ${IPTABLES} -t filter -N ${CHAIN_LIBERATION} 2> /dev/null
+    ${IPTABLES} -t filter -F ${CHAIN_LIBERATION}
+
+    ## connmark all traffic that enters and exits from the same interface.
+    for l_interface in ${INTERFACE_ORDER}  ; do 
+        if [ -z `getBridge ${l_interface}` ]; then
+            l_modules=" "
+            l_inFlag=" -i "
+            l_outFlag=" -o "            
+        else
+            l_modules=" -m physdev "
+            l_inFlag=" --physdev-in "
+            l_outFlag=" --physdev-out "            
+        fi
+        
+        ${IPTABLES} -t filter -A FORWARD ${l_modules} ${l_inFlag} ${l_interface} \
+            ${l_outFlag} ${l_interface} -g ${CHAIN_LIBERATION}
+    done
+    
+    ## connmark all antisubscribed packets in the liberation chain, done this way
+    ## because some packets cannot be connmarked, but shouldn't hit they shouldn't hit
+    ## the rejection rules that are past these rules.
+    ${IPTABLES} -t filter -A ${CHAIN_LIBERATION} -j CONNMARK --set-mark ${MARK_ANTISUB}/${MARK_ANTISUB}
     
     ## Block non-antisubscribed TCP traffic from being forwarded
     ${IPTABLES} -t filter -A FORWARD -m mark -p tcp --mark 0/${MARK_ANTISUB} \
@@ -128,11 +144,11 @@ function blockForwarding() {
             ## that the DHCP server should not see.
             ${IPTABLES} ${l_modules} -t mangle -A INPUT ${l_inFlag} ${l_interface} -p udp \
                 --destination-port ${DHCP_SERVER_PORT} \
-                -j MARK --set-mark $(( ${MARK_ANTISUB} | ${MARK_DHCP_SERVER_ANTISUB} ))
+                -j MARK --or-mark $(( ${MARK_ANTISUB} | ${MARK_DHCP_SERVER_ANTISUB} ))
         done
         
         ## Drop any DHCP traffic that didn't get antisubscribed.
-        ${IPTABLES} ${l_modules} -t mangle -A INPUT -p udp  \
+        ${IPTABLES} -t mangle -A INPUT -p udp  \
             --destination-port ${DHCP_SERVER_PORT} -m mark --mark 0/${MARK_DHCP_SERVER_ANTISUB} -j DROP
     fi
 }
@@ -243,6 +259,9 @@ function markIntfRules () {
 
     ## Flush the interface marking table
     ${IPTABLES} -t mangle -F ${CHAIN_MARKINTF}
+
+    ## Clear the lower bits of the interface mark
+    ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} -j MARK --and-mark 0xFFFF0000
     
     c=1
     for interface in ${INTERFACE_ORDER} ; do
@@ -265,12 +284,12 @@ function markIntfRules () {
             mask=$(( ${mask} | ${MARK_INSIDE_INTF} ))
         fi
 
-        ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${matchType} ${interface} -j MARK --set-mark ${mask}
+        ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${matchType} ${interface} -j MARK --or-mark ${mask}
         
         d=${MARK_LOCAL_ADDRESS_BASE}
         for address in $addresses; do
             ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${matchType} ${interface} --destination ${address} \
-                -j MARK --set-mark $(( ${mask} | $d | ${MARK_LOCAL} ))
+                -j MARK --or-mark $(( ${mask} | $d | ${MARK_LOCAL} ))
             d="$(( $d + ${MARK_LOCAL_ADDRESS_BASE} ))"
         done
         c=$(( $c + 1 ))
@@ -312,12 +331,12 @@ function markIntfVpn() {
     if [ -z "${l_interface}" ]; then return ; fi
     
     ## Mark all packets that come in on on the VPN interface
-    ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${l_matchType} ${l_interface} -j MARK --set-mark ${l_mark}
+    ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${l_matchType} ${l_interface} -j MARK --or-mark ${l_mark}
 
     d=${MARK_LOCAL_ADDRESS_BASE}
     for l_address in ${l_addresses}; do
         ${IPTABLES} -t mangle -A ${CHAIN_MARKINTF} ${l_matchType} ${l_interface} --destination ${l_address} \
-            -j MARK --set-mark $(( ${l_mark} | ${d} | ${MARK_LOCAL} ))
+            -j MARK --or-mark $(( ${l_mark} | ${d} | ${MARK_LOCAL} ))
         d=$(( ${d} + ${MARK_LOCAL_ADDRESS_BASE} ))
     done
 }
@@ -342,11 +361,11 @@ function antisubscribeRules() {
 
     ## antisubscribe to related non-tcp packets
     ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m state -m mark -p ! tcp --mark 0/${MARK_ANTISUB} \
-        --state related,established -j MARK --set-mark ${MARK_ANTISUB}
+        --state related,established -j MARK --or-mark ${MARK_ANTISUB}
 
     ## Antisubscribe to localhost
     ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m mark --mark 0/${MARK_ANTISUB} \
-        --source 127.0.0.0/8 --destination 127.0.0.0/8 -j MARK --set-mark ${MARK_ANTISUB}
+        --source 127.0.0.0/8 --destination 127.0.0.0/8 -j MARK --or-mark ${MARK_ANTISUB}
 
     ## Antisubscribe to ping where necessary, if it isn't set, 
     ## Antisubscribe on all interfaces. (default is a little janky.)
@@ -377,7 +396,7 @@ function antisubscribeRules() {
         ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p tcp \
             -m mark --mark "$(( ${MARK_INSIDE_INTF} | ${MARK_LOCAL} ))/${t_mark}" \
             -m multiport --destination-ports ${t_httpsPorts} \
-            -j MARK --set-mark $(( ${MARK_ANTISUB} | ${MARK_INTERNAL_REDIRECT} ))
+            -j MARK --or-mark $(( ${MARK_ANTISUB} | ${MARK_INTERNAL_REDIRECT} ))
     fi
     
     ## This rule will often be unecessary, but it is there just in case.
@@ -388,14 +407,14 @@ function antisubscribeRules() {
             -m mark --mark "${MARK_INSIDE_INTF}/$(( ${MARK_ANTISUB} | ${MARK_INSIDE_INTF} ))" \
             --destination ${HTTPS_PUBLIC_ADDR} \
             --destination-port ${HTTPS_PUBLIC_PORT} \
-            -j MARK --set-mark $(( ${MARK_ANTISUB} | ${MARK_INTERNAL_REDIRECT} ))
+            -j MARK --or-mark $(( ${MARK_ANTISUB} | ${MARK_INTERNAL_REDIRECT} ))
 
         ## If outside is enabled, catch everything else
         if [ "${MVVM_ALLOW_OUT_HTTPS}x" = "truex" ]; then
             ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p tcp -m mark --mark "0/${MARK_ANTISUB}" \
                 --destination ${HTTPS_PUBLIC_ADDR} \
                 --destination-port ${HTTPS_PUBLIC_PORT} \
-                -j MARK --set-mark ${MARK_ANTISUB}
+                -j MARK --or-mark ${MARK_ANTISUB}
         fi
     fi
 
@@ -411,24 +430,36 @@ function antisubscribeRules() {
     ## antisubscribe to unwanted ICMP
     for icmpType in ${ANTISUBSCRIBES_ICMP} ; do
         ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p icmp -m mark --mark 0/${MARK_ANTISUB} \
-            --icmp-type ${icmpType} -j MARK --set-mark ${MARK_ANTISUB}
+            --icmp-type ${icmpType} -j MARK --or-mark ${MARK_ANTISUB}
     done
+
+    ## Antisubscribe to broadcasts and multicasts by using the MAC addreses
+    ## Broadcasts
+    ${EBTABLES} -t broute -A BROUTING --log -d Broadcast -j mark --set-mark ${MARK_ANTISUB}
+
+    ## Multicasts
+    ${EBTABLES} -t broute -A BROUTING --log -d 01:00:5E:00:00:00/ff:ff:ff:00:00:00 \
+        -j mark --set-mark ${MARK_ANTISUB}
 
     ## Antisubscribe to DHCP
     ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p udp -m mark --mark 0/${MARK_ANTISUB} \
         --source-port ${DHCP_PORT_RANGE} --destination-port ${DHCP_PORT_RANGE} \
-        -j MARK --set-mark ${MARK_ANTISUB}
+        -j MARK --or-mark ${MARK_ANTISUB}
 
     ## Antisubscribe to port 137 on the inside, this is for samba broadcasts
     t_mark=$(( ${MARK_LOCAL} | ${MARK_INSIDE_INTF} ))
     t_mask=$(( ${t_mark} | ${MARK_ANTISUB} ))
     ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p udp --source-port 137 \
-        -m mark --mark ${t_mark}/${t_mask} -j MARK --set-mark ${MARK_ANTISUB}
+        -m mark --mark ${t_mark}/${t_mask} -j MARK --or-mark ${MARK_ANTISUB}
+
+    ## antisubscribe to connmarked packets
+    ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m connmark --mark ${MARK_ANTISUB}/${MARK_ANTISUB} \
+        -j MARK --or-mark ${MARK_ANTISUB}
 
     ## Antisubscribe to NIS if necessary.
     if [ "x" != "x@PREFIX@" ] ; then
         ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m mark -p udp \
-            --source-port 111 --mark 0x1000/0x1001000 -j MARK --set-mark ${MARK_ANTISUB}
+            --source-port 111 --mark 0x1000/0x1001000 -j MARK --or-mark ${MARK_ANTISUB}
     fi
 }
 
@@ -464,7 +495,7 @@ function antisubscribeLocal() {
 
         ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m multiport -m mark -p ${t_protocol}  \
             --destination-ports ${t_portList} --mark ${t_mark}/${t_markMask} \
-            -j MARK --set-mark ${MARK_ANTISUB}
+            -j MARK --or-mark ${MARK_ANTISUB}
     else
         echo "No local antisubscribes for ${protocol}"
     fi
@@ -495,7 +526,7 @@ function antisubscribeLocalTraffic() {
         ## Antisubscribe to all traffic but ICMP.
         ## Ping is regulated using antisubscribeLocalPing.
         ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} ! -p icmp -m mark \
-            --mark ${t_mark}/${t_markMask} -j MARK --set-mark ${MARK_ANTISUB}
+            --mark ${t_mark}/${t_markMask} -j MARK --or-mark ${MARK_ANTISUB}
     fi
 }
 
@@ -522,7 +553,7 @@ function antisubscribeLocalPing() {
         ## Antisubscribe to all echo-requests coming in on the right interface.
         ## replies are outgoing and handled by conntrack.
         ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p icmp --icmp-type echo-request \
-            -m mark --mark ${t_mark}/${t_markMask} -j MARK --set-mark ${MARK_ANTISUB}
+            -m mark --mark ${t_mark}/${t_markMask} -j MARK --or-mark ${MARK_ANTISUB}
     done
 }
 
@@ -537,9 +568,9 @@ function interceptRules() {
     ${IPTABLES} -t mangle -A ${CHAIN_INTERCEPT} -m mark --mark ${MARK_ANTISUB}/${MARK_ANTISUB} -j RETURN
     
 ## Queue all packets for TCP and ICMP
-    ${IPTABLES} -t mangle -A ${CHAIN_INTERCEPT} -p tcp --tcp-flags SYN,ACK SYN -j QUEUE
+    ${IPTABLES} -t mangle -A ${CHAIN_INTERCEPT} -p tcp --tcp-flags SYN,ACK SYN -j NFQUEUE
     
-    ${IPTABLES} -t mangle -A ${CHAIN_INTERCEPT} -p icmp -j QUEUE
+    ${IPTABLES} -t mangle -A ${CHAIN_INTERCEPT} -p icmp -j NFQUEUE
 
 ## Divert all of the UDP traffic
     if [ "${UDP_DIVERT_PORT}x" != "x" ]; then
@@ -562,7 +593,17 @@ function interceptRules() {
             --destination-port ${HTTPS_PUBLIC_PORT} \
             -j REDIRECT --to-ports ${HTTPS_PORT}
     fi
+    
+    ## connmark all of the traffic that was unqueued or diverted.
+    ## This is for situations when the choice to antisubscribe cannot
+    ## be made in iptables.  for example, traffic coming and going
+    ## from the same interface.
+    ${IPTABLES} -t nat -A PREROUTING -m mark --mark ${MARK_LIBERATE}/${MARK_LIBERATE} \
+        -j CONNMARK --set-mark ${MARK_ANTISUB}/${MARK_ANTISUB}
 
+    ${IPTABLES} -t nat -A OUTPUT -m mark --mark ${MARK_LIBERATE}/${MARK_LIBERATE} \
+        -j CONNMARK --set-mark ${MARK_ANTISUB}/${MARK_ANTISUB}
+    
 ## Redirect all of the TCP traffic that is not antisubscribed
     if [ "${TCP_REDIRECT_PORTS}x" != "x" ]; then
         ${IPTABLES} -t nat -A PREROUTING -m mark --mark 0/${MARK_ANTISUB} -p tcp --tcp-flags SYN,ACK SYN \
@@ -639,7 +680,7 @@ function setupMode()
             ${IPTABLES} -t nat -A PREROUTING ${t_qualifier} -j REDIRECT
 
             ## Antisubscribe to the stolen traffic
-            ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} ${t_qualifier} -j MARK --set-mark ${MARK_ANTISUB}
+            ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} ${t_qualifier} -j MARK --or-mark ${MARK_ANTISUB}
         fi
 
         if [ -n "${STEAL_UDP_PORTS}" ]; then
@@ -649,7 +690,7 @@ function setupMode()
             ${IPTABLES} -t nat -A PREROUTING ${t_qualifier} -j REDIRECT
 
             ## Antisubscribe to the stolen traffic
-            ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} ${t_qualifier} -j MARK --set-mark ${MARK_ANTISUB}
+            ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} ${t_qualifier} -j MARK --or-mark ${MARK_ANTISUB}
         fi
     fi
 }

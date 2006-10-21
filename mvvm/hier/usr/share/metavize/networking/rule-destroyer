@@ -13,24 +13,5 @@ fi
 
 echo "Flushing all of the rules and deleting all of the chains"
 
-IPTABLES="/sbin/iptables"
-#IPTABLES=iptablesDbg
-
-function flush() {
-    ## Always flush intercepting first to avoid a few errant packets flying in unmarked.
-    ${IPTABLES} -t mangle -F ${CHAIN_INTERCEPT}
-
-    for table in ${TABLE_LIST}; do 
-        ${IPTABLES} -t ${table} -F 
-    done
-
-    ## Remove all of the sub chains
-    for chain in ${CHAINS_ORDER} ; do
-        ${IPTABLES} -t mangle -X ${chain} 2> /dev/null
-    done
-}
-
-
-
 ## Flush all of the rules
 flush

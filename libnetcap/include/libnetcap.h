@@ -16,7 +16,6 @@
 #include <net/if.h>
 #include <pthread.h>
 #include <semaphore.h>
-#include <libipq/libipq.h>
 #include <mvutil/lock.h>
 #include <mvutil/mailbox.h>
 
@@ -37,7 +36,11 @@ typedef enum {
     CLI_RESET,
     CLI_DROP,
     CLI_ICMP,
-    CLI_FORWARD_REJECT  /* Forward whatever rejection the server sent to the client */
+    /* Forward whatever rejection the server sent to the client */
+    CLI_FORWARD_REJECT,
+    /* do whatever is necessary to treat this session as if it was antisubscribed,
+     * this only works if the session is in SYN mode. */
+    LIBERATE
 } netcap_callback_action_t;
 
 typedef enum {
@@ -99,6 +102,8 @@ typedef struct netcap_endpoints {
     netcap_endpoint_t srv;
 } netcap_endpoints_t;
 
+#define IS_MARKED_FORCE_FLAG 0xD0ED1273
+
 typedef struct netcap_pkt {
     /**
      * Protocol
@@ -149,6 +154,7 @@ typedef struct netcap_pkt {
      * packets.  This is only for UDP and is ignored for TCP.
      * 0 for not marked
      * non-zero for is marked.
+     * IS_MARKED_FORCE_FLAG to override the default marking bits.
      */
     int is_marked;
     
@@ -162,7 +168,7 @@ typedef struct netcap_pkt {
      */
     u_char* buffer; 
 
-    ipq_id_t packet_id;
+    u_int32_t packet_id;
 
     /**
      * TCP flags (if a tcp packet)

@@ -275,6 +275,11 @@ public class TCPHook implements NetcapHook
             }
         }
 
+        protected void liberate()
+        {
+            netcapTCPSession.liberate();
+        }
+
         protected void raze()
         {
             netcapTCPSession.raze();

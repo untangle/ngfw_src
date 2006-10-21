@@ -1,4 +1,16 @@
+/*
+ * Copyright (c) 2003-2006 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -15,6 +27,7 @@
 #include "netcap_sesstable.h"
 #include "netcap_tcp.h"
 #include "netcap_route.h"
+#include "netcap_pkt.h"
 
 int netcap_tcp_session_init( netcap_session_t* netcap_sess,
                              in_addr_t client_addr, u_short client_port, int client_sock,
@@ -130,10 +143,13 @@ int netcap_tcp_session_destroy(int if_lock,netcap_session_t* netcap_sess)
         case TCP_MSG_SYN:
             if ( msg->pkt != NULL ) {
                 /* Release it from the queue */
-                if ( netcap_set_verdict( msg->pkt->packet_id, NF_DROP, NULL, 0 ) < 0 )
+                /* this may drop one or two packets that are
+                 * liberated, but the connection is marked so when
+                 * the client sends another SYN, then that will make
+                 * it through untouched */
+                if ( netcap_pkt_action_raze( msg->pkt, NF_DROP ) < 0 ) {
                     errlog( ERR_CRITICAL, "netcap_set_verdict\n" );
-                
-                netcap_pkt_raze (msg->pkt);
+                }
             }
             break;
 

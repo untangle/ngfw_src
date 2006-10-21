@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 Metavize Inc.
+ * Copyright (c) 2003-2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -23,9 +23,12 @@
 #include <linux/netfilter.h>
 #include <ctype.h>
 #include <errno.h>
+#include <pthread.h>
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
+
+#include <libnetfilter_queue/libnetfilter_queue.h>
 
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
@@ -51,46 +54,126 @@
 /* max packet contents size */
 #define	MAXPAYLOAD	(IP_MAXPACKET - MAXIPLEN - ICMP_MINLEN)
 
-static struct ipq_handle *ipq_h;
-static int    rawsock;
+/* This is passed to the nf_callback using TLS */
+typedef struct
+{
+    u_char* buf;
+    int buf_len;
+    netcap_pkt_t* pkt;
+} _nf_callback_args_t;
+
+static struct
+{
+    pthread_key_t tls_key;
+    struct nfq_handle*  nfq_h;
+    struct nfq_q_handle* nfq_qh;
+    int nfq_fd;
+    int    raw_sock;
+} _queue = 
+{
+    .nfq_h    = NULL,
+    .nfq_qh   = NULL,
+    .raw_sock = -1,
+    .tls_key  = -1
+};
+
+/* This is the callback for netfilter queuing */
+static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct nfq_data *nfa, void *data );
+
+/* Since this is a callback, have to use tls to pass data back */
 
 int  netcap_queue_init (void)
 {
-    int one = 1;
-    
-    if ((rawsock = socket(PF_INET, SOCK_RAW, IPPROTO_RAW))<0)  
-        return perrlog("socket");
-    if (setsockopt(rawsock, IPPROTO_IP, IP_HDRINCL, (char *) &one, sizeof(one)) < 0)
-        return perrlog("setsockopt");
-    
-    if (!(ipq_h = ipq_create_handle(0, PF_INET)))
-        return perrlog("ipq_create_handle");
+    int _critical_section( void )
+    {
+        int one = 1;
+        
+        /* Initialize the TLS key */
+        /* no need to use a destruction function, because the value is unset after the 
+         * netfilter callback is called */
+        if ( pthread_key_create( &_queue.tls_key, NULL ) < 0 ) return perrlog( "pthread_key_create" );
 
-    if (ipq_set_mode(ipq_h, IPQ_COPY_PACKET, QUEUE_BUFSIZE)<0) {
-        ipq_destroy_handle(ipq_h);
-        return perrlog("ipq_set_mode");
+        /* Initialize the raw socket */
+        if (( _queue.raw_sock = socket(PF_INET, SOCK_RAW, IPPROTO_RAW )) < 0 ) return perrlog("socket");
+        
+        if ( setsockopt( _queue.raw_sock, IPPROTO_IP, IP_HDRINCL, (char *) &one, sizeof( one )) < 0 )
+            return perrlog( "setsockopt" );
+        
+        /* initialize the netfilter queue */
+        if (( _queue.nfq_h = nfq_open()) == NULL ) return perrlog( "nfq_open" );
+        
+        /* Unbind any existing queue handlers */
+        if ( nfq_unbind_pf( _queue.nfq_h, PF_INET ) < 0 ) return perrlog( "nfq_unbind_pf" );
+        
+        /* Bind queue */
+        if ( nfq_bind_pf( _queue.nfq_h, PF_INET ) < 0 ) return perrlog( "nfq_bind_pf" );
+        
+        /* Bind the socket to a queue */
+        if (( _queue.nfq_qh = nfq_create_queue( _queue.nfq_h,  0, &_nf_callback, NULL )) == NULL ) {
+            return perrlog( "nfq_create_queue" );
+        }
+        
+        /* set the copy mode */
+        if ( nfq_set_mode( _queue.nfq_qh, NFQNL_COPY_PACKET, 0xFFFF ) < 0) return perrlog( "nfq_set_mode" );
+
+        /* Retrieve the file descriptor for the netfilter queue */
+        if (( _queue.nfq_fd = nfnl_fd( nfq_nfnlh( _queue.nfq_h ))) <= 0 ) {
+            return errlog( ERR_CRITICAL, "nfnl_fd/nfq_nfnlh\n" );
+        }
+
+        return 0;
     }
-
+    
+    if ( _critical_section() < 0 ) {
+        netcap_queue_cleanup();
+        return errlog( ERR_CRITICAL, "_critical_section\n" );
+    }
+    
     return 0;
 }
 
 int  netcap_queue_cleanup (void)
 {
-    if (ipq_destroy_handle(ipq_h)<0)
-        perrlog("ipq_destroy_handle");
+    /* Cleanup */    
+    /* close the queue handler */
+    if (( _queue.nfq_qh != NULL ) && ( nfq_destroy_queue( _queue.nfq_qh ) < 0 )) {
+        perrlog( "nfq_destroy_queue" );
+    }
+    
+    /* close the queue */
+    if ( _queue.nfq_h != NULL ) {
+        if ( nfq_unbind_pf( _queue.nfq_h, AF_INET) < 0 ) perrlog( "nfq_unbind_pf" );
+        if ( nfq_close( _queue.nfq_h ) < 0 ) perrlog( "nfq_close" );
+    }
 
-    if (close(rawsock)<0)
-        perrlog("close");
+    /* close the raw socket */
+    if (( _queue.raw_sock > 0 ) && ( close( _queue.raw_sock ) < 0 )) perrlog("close");
+    
+    /* null out everything */
+    _queue.raw_sock = -1;        
+    _queue.nfq_qh = NULL;
+    _queue.nfq_h = NULL;
     
     return 0;
 }
 
-int  netcap_queue_get_sock (void)
+int  netcap_nfqueue_get_sock (void)
 {
-    return ipq_h->fd;
+    if ( _queue.nfq_h == NULL ) return errlog( ERR_CRITICAL, "QUEUE is not initialized\n" );
+
+    debug( 0, "Handle queue sock: %d\n", _queue.nfq_fd );
+
+    return _queue.nfq_fd;
 }
 
-int  netcap_set_verdict (u_long packet_id, int verdict, u_char* buffer, int len)
+
+int  netcap_set_verdict ( u_int32_t packet_id, int verdict, u_char* buf, int len)
+{
+    return netcap_set_verdict_mark( packet_id, verdict, buf, len, 0, 0 );
+}
+
+int  netcap_set_verdict_mark( u_int32_t packet_id, int verdict, u_char* buf, int len, int set_mark, 
+                              u_int32_t mark )
 {
     int nf_verdict = -1;
 
@@ -105,114 +188,67 @@ int  netcap_set_verdict (u_long packet_id, int verdict, u_char* buffer, int len)
         nf_verdict = NF_STOLEN;
         break;
     default:
-        return errlog(ERR_CRITICAL,"Invalid verdict.\n");
+        errlog(ERR_CRITICAL, "Invalid verdict, dropping packet %d\n", verdict );
+        nf_verdict = NF_DROP;
     }
     
-    if (ipq_set_verdict(ipq_h, packet_id, nf_verdict, len, buffer)<0)
-        return perrlog("ipq_set_verdict\n");
+    if ( set_mark == 0 ) {
+        if ( nfq_set_verdict( _queue.nfq_qh, packet_id, nf_verdict, len, buf ) < 0 ) {
+            return perrlog("nfq_set_verdict");
+        }
+    } else {
+        debug( 10, "setting mark to: %#010x\n", mark );
+        /* Convert to the proper byte order */
+        mark = htonl( mark );
+        if ( nfq_set_verdict_mark( _queue.nfq_qh, packet_id, nf_verdict, mark, len, buf ) < 0 ) {
+            return perrlog("nfq_set_verdict_mark");
+        }
+    }
 
-    return 0;
+    return 0;    
 }
 
-int  netcap_queue_read (u_char* buffer, int max, netcap_pkt_t* pkt)
+/* The netfiler version of the queue reading function */
+int  netcap_nfqueue_read( u_char* buf, int buf_len, netcap_pkt_t* pkt )
 {
-    int status;
-    ipq_packet_msg_t* msg;
-    u_char* p;
-    struct iphdr* iph;
-    struct tcphdr* tcph;
-    struct udphdr* udph;
+    int _critical_section( void )
+    {
+        int pkt_len = 0;
         
-    status = ipq_read(ipq_h, buffer, max, 0 );
+        if (( pkt_len = recv( _queue.nfq_fd, buf, buf_len, 0 )) < 0 ) return perrlog( "recv" );
 
-    if ( status == 0 ) {
-        errlog(ERR_WARNING,"ipq_read: %s\n", strerror(ipq_get_msgerr(buffer)));
+        debug( 11, "NFQUEUE Received %d bytes.\n", pkt_len );
+
+        if ( nfq_handle_packet( _queue.nfq_h, buf, pkt_len ) < 0 ) perrlog( "nfq_handle_packet" );
+
+        debug( 11, "NFQUEUE Packet ID: %#010x.\n", pkt->packet_id );
+        
         return 0;
     }
     
-    if (status < 0) 
-        return errlog(ERR_CRITICAL,"ipq_read: %s\n", strerror(ipq_get_msgerr(buffer)));
-
-    switch (ipq_message_type(buffer)) {
-
-    case IPQM_PACKET: 
-        msg = ipq_get_packet(buffer);
-        p = msg->payload;
-        break;
-
-    case NLMSG_ERROR:
-        return errlog(ERR_CRITICAL,"ipq_message_type: %s\n", strerror(ipq_get_msgerr(buffer)));
-        break;
-
-    default:
-        return errlog(ERR_CRITICAL,"ipq_message_type: Unknown ret: %s\n", strerror(ipq_get_msgerr((buffer))));
-        break;
-    }
-
-    iph  = (struct iphdr*)  p;
-
-    /* XXX correct? can't be larger than 16 */
-    if (iph->ihl > 20) {
-        errlog(ERR_WARNING,"Illogical IP header length (%i), Assuming 5.\n",ntohs(iph->ihl));
-        tcph = (struct tcphdr*) (p+sizeof(struct iphdr));
-        udph = (struct udphdr*) (p+sizeof(struct iphdr));
-    }
-    else {
-        tcph = (struct tcphdr*) (p+(4*iph->ihl));
-        udph = (struct udphdr*) (p+(4*iph->ihl));
-    }
-
-    if (msg->data_len < ntohs(iph->tot_len))
-        return errlogcons();
+    /* Build the arguments for the queuing callback */
     
-    pkt->src.host.s_addr = iph->saddr;
-    pkt->dst.host.s_addr = iph->daddr;
+    /* XXX This is kind of dirty since it is on the stack. */
+    _nf_callback_args_t args =
+        {
+            .buf = buf,
+            .buf_len = buf_len,
+            .pkt = pkt
+        };
+
+    int ret;
+
+    /* set the tls key */
+    pthread_setspecific( _queue.tls_key, &args );
+
+    ret = _critical_section();
     
-    /* Set the ttl, tos and option values */
-    pkt->ttl = iph->ttl;
-    pkt->tos = iph->tos;
-
-    /* XXX If nececssary, options should be copied out here */
-    /* XXX The flags should always be initialized to zero has to be cleared out */
-    // XXX pkt->th_flags = 0;
-    if (iph->protocol == IPPROTO_TCP) {
-        if (msg->data_len < (sizeof(struct iphdr)+sizeof(struct tcphdr))) return errlogcons();
-            
-        pkt->src.port = ntohs(tcph->source);
-        pkt->dst.port = ntohs(tcph->dest);
-        if(tcph->ack)  pkt->th_flags |= TH_ACK;
-        if(tcph->syn)  pkt->th_flags |= TH_SYN;
-        if(tcph->fin)  pkt->th_flags |= TH_FIN;	    
-        if(tcph->rst)  pkt->th_flags |= TH_RST;	    
-        if(tcph->urg)  pkt->th_flags |= TH_URG;	    
-        if(tcph->psh)  pkt->th_flags |= TH_PUSH;	
-    }
-    else if (iph->protocol == IPPROTO_UDP) {
-        if (msg->data_len < (sizeof(struct iphdr)+sizeof(struct udphdr))) return errlogcons();
-            
-        pkt->src.port = ntohs(udph->source);
-        pkt->dst.port = ntohs(udph->dest);
-    }
-    else {
-        pkt->src.port = 0;
-        pkt->dst.port = 0;
-    }
-
-    pkt->packet_id = msg->packet_id;
-    pkt->buffer = buffer;
-    pkt->data = msg->payload;
-    pkt->data_len = msg->data_len;
-    pkt->proto = iph->protocol;
-    pkt->nfmark  = (u_int)msg->mark;
+    /* unset the tls key */
+    pthread_setspecific( _queue.tls_key, NULL );
     
-    if ( netcap_interface_mark_to_intf( msg->mark, &pkt->src_intf ) < 0 ) {
-        errlog( ERR_WARNING, "Unable to determine the source interface from mark[%s:%d -> %s:%d]\n",
-                unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
-                unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port );
-    }
-    pkt->dst_intf = NC_INTF_UNK;
-
-    return msg->data_len;
+    if ( ret < 0 ) return errlog( ERR_CRITICAL, "_critical_section\n" );
+    return 0;
+    
 }
 
 int  netcap_raw_send (u_char* pkt, int len)
@@ -224,8 +260,119 @@ int  netcap_raw_send (u_char* pkt, int len)
     to.sin_port = 0;
     to.sin_addr.s_addr = iph->daddr;
     
-    if (sendto(rawsock, pkt, len, 0, (struct sockaddr*)&to, sizeof(struct sockaddr))<0)
+    if (sendto( _queue.raw_sock, pkt, len, 0, (struct sockaddr*)&to, sizeof(struct sockaddr)) < 0 ) {
         return perrlog("sendto");
+    }
 
+    return 0;
+}
+
+/* This is the callback for netfilter queuing */
+static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct nfq_data *nfa, void *unused )
+{
+    u_char* data = NULL;
+    int data_len = 0;
+    struct iphdr* ip_header = NULL;
+    struct tcphdr* tcp_header = NULL;
+    struct udphdr* udp_header = NULL;
+    
+    struct nfqnl_msg_packet_hdr *ph = NULL;
+    netcap_pkt_t* pkt = NULL;
+    _nf_callback_args_t* args = NULL;
+
+    /* XXX This should be higher */
+    debug( 0, "Entering callback.\n" );
+    
+    if (( args = pthread_getspecific( _queue.tls_key  )) == NULL ) {
+        return errlog( ERR_CRITICAL, "null args\n" );
+    }
+    
+    if (( ph = nfq_get_msg_packet_hdr( nfa )) == NULL ) return perrlog( "nfq_get_msg_packet_hdr" );
+
+    if (( pkt = args->pkt ) == NULL ) return errlogargs();
+    
+    pkt->packet_id = ntohl( ph->packet_id );
+    
+    /* Fill in the values for a packet */
+    if ((( data_len = nfq_get_payload( nfa, (char**)&data )) < 0 ) || ( data == NULL )) {
+        return perrlog( "nfq_get_payload" );
+    }
+
+    ip_header = (struct iphdr*)data;
+    
+    /* XXX correct? can't be larger than 16 */
+    if ( ip_header->ihl > 20 ) {
+        errlog(ERR_WARNING,"Illogical IP header length (%i), Assuming 5.\n",ntohs(ip_header->ihl));
+        tcp_header = (struct tcphdr*) (data + sizeof(struct iphdr));
+        udp_header = (struct udphdr*) (data + sizeof(struct iphdr));
+    }
+    else {
+        tcp_header = (struct tcphdr*) ( data + ( 4 * ip_header->ihl ));
+        udp_header = (struct udphdr*) ( data + ( 4 * ip_header->ihl ));
+    }
+
+    if ( data_len < ntohs( ip_header->tot_len )) return errlogcons();
+    
+    pkt->src.host.s_addr = ip_header->saddr;
+    pkt->dst.host.s_addr = ip_header->daddr;
+    
+    /* Set the ttl, tos and option values */
+    pkt->ttl = ip_header->ttl;
+    pkt->tos = ip_header->tos;
+
+    /* XXX If nececssary, options should be copied out here */
+    /* XXX The flags should always be initialized to zero has to be cleared out */
+    pkt->th_flags = 0;
+    if ( ip_header->protocol == IPPROTO_TCP ) {
+        if ( data_len < ( sizeof( struct iphdr ) + sizeof( struct tcphdr ))) return errlogcons();
+            
+        pkt->src.port = ntohs(tcp_header->source);
+        pkt->dst.port = ntohs(tcp_header->dest);
+        if ( tcp_header->ack ) pkt->th_flags |= TH_ACK;
+        if ( tcp_header->syn ) pkt->th_flags |= TH_SYN;
+        if ( tcp_header->fin ) pkt->th_flags |= TH_FIN;
+        if ( tcp_header->rst ) pkt->th_flags |= TH_RST;
+        if ( tcp_header->urg ) pkt->th_flags |= TH_URG;
+        if ( tcp_header->psh ) pkt->th_flags |= TH_PUSH;
+    }
+    else if ( ip_header->protocol == IPPROTO_UDP ) {
+        if ( data_len < (sizeof(struct iphdr) + sizeof( struct udphdr ))) return errlogcons();
+            
+        pkt->src.port = ntohs( udp_header->source );
+        pkt->dst.port = ntohs( udp_header->dest );
+    }
+    else {
+        pkt->src.port = 0;
+        pkt->dst.port = 0;
+    }
+
+    pkt->buffer = args->buf;
+    pkt->data = data;
+    pkt->data_len = data_len;
+    pkt->proto = ip_header->protocol;
+    pkt->nfmark  = nfq_get_nfmark( nfa );
+    
+    if ( netcap_interface_mark_to_intf( pkt->nfmark, &pkt->src_intf ) < 0 ) {
+        errlog( ERR_WARNING, "Unable to determine the source interface from mark[%s:%d -> %s:%d]\n",
+                unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
+                unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port );
+    }
+
+    /* Verify that the marks match, eventually, it should just go to this other method */
+    /* First lookup the physdev in */
+    u_int32_t dev = nfq_get_physindev( nfa );
+    if ( dev == 0 ) dev = nfq_get_indev( nfa );
+
+    debug( 10, "NFQUEUE Input device %d\n", dev );
+
+    /* Verify that the device matches the device indicated from the mark */
+    if (( dev == 0 ) || ( netcap_interface_index_to_intf( dev ) != pkt->src_intf )) {
+        errlog( ERR_WARNING, "Unable to determine the source interface from nfq [%s:%d -> %s:%d]\n",
+                unet_next_inet_ntoa( pkt->src.host.s_addr ), pkt->src.port,
+                unet_next_inet_ntoa( pkt->dst.host.s_addr ), pkt->dst.port );
+        
+    }
+    pkt->dst_intf = NC_INTF_UNK;
+    
     return 0;
 }

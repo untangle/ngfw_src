@@ -1,4 +1,14 @@
-/* $Id$ */
+/*
+ * Copyright (c) 2003-2006 Metavize Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Metavize Inc. ("Confidential Information").  You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 #include "netcap_udp.h"
 
 #include <stdlib.h>
@@ -11,6 +21,7 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <errno.h>
+#include <unistd.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/list.h>
@@ -510,9 +521,10 @@ static int _netcap_udp_sendto (int sock, void* data, size_t data_len, int flags,
     u_int              nfmark = ( MARK_ANTISUB | MARK_NOTRACK | (pkt->is_marked ? pkt->nfmark : 0 )); 
     /* mark is  antisub + notrack + whatever packet marks are specified */
 
-    if ( pkt->dst_intf != NC_INTF_UNK ) {
-        errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
-    }
+    /* if the caller uses the force flag, then override the default bits of the mark */
+    if ( pkt->is_marked == IS_MARKED_FORCE_FLAG ) nfmark = pkt->nfmark;
+
+    if ( pkt->dst_intf != NC_INTF_UNK ) errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
 
     /* Setup the destination */
     memset(&dst, 0, sizeof(dst));

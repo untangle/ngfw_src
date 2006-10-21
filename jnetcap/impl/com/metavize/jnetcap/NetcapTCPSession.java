@@ -25,6 +25,7 @@ public class NetcapTCPSession extends NetcapSession
     private static final int DEFAULT_SERVER_COMPLETE_FLAGS = NON_LOCAL_BIND;
     private static final int DEFAULT_CLIENT_COMPLETE_FLAGS = 0;
     private static final int DEFAULT_RESET_FLAGS           = 0;
+    private static final int DEFAULT_LIBERATE_FLAGS        = 0;
     private static final int DEFAULT_DROP_FLAGS            = 0;
     private static final int DEFAULT_SEND_ICMP_FLAGS       = 0;
     private static final int DEFAULT_FORWARD_REJECT_FLAGS  = 0;
@@ -91,6 +92,14 @@ public class NetcapTCPSession extends NetcapSession
     public void clientReset()
     {
         clientReset( pointer.value(), DEFAULT_RESET_FLAGS );
+    }
+
+    /**
+     * liberate the connection.
+     */
+    public void liberate()
+    {
+        liberate( pointer.value(), DEFAULT_LIBERATE_FLAGS );
     }
 
     /**
@@ -172,6 +181,7 @@ public class NetcapTCPSession extends NetcapSession
 
     private static native void clientComplete           ( long sessionPointer, int flags );
     private static native void clientReset              ( long sessionPointer, int flags );
+    private static native void liberate                 ( long sessionPointer, int flags );
     private static native void clientDrop               ( long sessionPointer, int flags );
     private static native void clientSendIcmp           ( long sessionPointer, int flags );
     private static native void clientForwardReject      ( long sessionPointer, int flags );

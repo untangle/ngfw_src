@@ -139,6 +139,7 @@ abstract class ArgonHook implements Runnable
                 if ( logger.isInfoEnabled()) {
                     logger.info( "" + netcapSession + " has matching client and server interface, raze." );
                 }
+                liberate();
                 raze();
                 return;
             }
@@ -617,6 +618,8 @@ abstract class ArgonHook implements Runnable
 
         return false;
     }
+
+    protected abstract void liberate();
 
     protected void printRelays( List relayList )
     {

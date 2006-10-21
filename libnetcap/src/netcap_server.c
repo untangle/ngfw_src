@@ -56,11 +56,11 @@
  * the types of events the server handles
  */
 typedef enum {
-    POLL_MESSAGE = 1,  /* poll type for message queue */
-    POLL_TCP_INCOMING, /* poll type for accepting new tcp connections */
-    POLL_UDP_INCOMING, /* poll type for accepting udp packets */
-    POLL_QUEUE_INCOMING,/* poll type for accepting queued packets */
-    POLL_TCP_WAITING   /* poll type for waiting on connections to complete */
+    POLL_MESSAGE = 1,      /* poll type for message queue */
+    POLL_TCP_INCOMING,     /* poll type for accepting new tcp connections */
+    POLL_UDP_INCOMING,     /* poll type for accepting udp packets */
+    POLL_NFQUEUE_INCOMING, /* poll type for accepting netfilter queued packets */
+    POLL_TCP_WAITING       /* poll type for waiting on connections to complete */
 } poll_type_t;
     
 /**
@@ -94,7 +94,7 @@ static int  _handle_tcp_incoming (epoll_info_t* info, int revents, int sock );
 static int  _handle_message (epoll_info_t* info, int revents);
 static int  _handle_completion (epoll_info_t* info, int revents);
 static int  _handle_udp (epoll_info_t* info, int revents, int sock );
-static int  _handle_queue (epoll_info_t* info, int revents);
+static int  _handle_nfqueue (epoll_info_t* info, int revents);
 
 /* static int  _start_open_connection (struct in_addr* destaddr,u_short destport); */
 static int  _epoll_info_add (int fd, int events, int type, netcap_session_t* netcap_sess);
@@ -140,7 +140,7 @@ int  netcap_server_init (void)
 
     if (_epoll_info_add(_message_pipe[0], EPOLL_INPUT_SET,POLL_MESSAGE,NULL)<0)
         return perrlog("_epoll_info_add");
-    if (_epoll_info_add(netcap_queue_get_sock(),EPOLL_INPUT_SET,POLL_QUEUE_INCOMING,NULL)<0)
+    if (_epoll_info_add(netcap_nfqueue_get_sock(),EPOLL_INPUT_SET,POLL_NFQUEUE_INCOMING,NULL)<0)
         return perrlog("_epoll_info_add");
 
     if ((( _server.tcp.count = netcap_tcp_redirect_socks( &_server.tcp.sock_array )) < 0 ) || 
@@ -187,7 +187,7 @@ int  netcap_server_shutdown (void)
         
     if (_epoll_info_del_fd(_message_pipe[0])<0) 
         perrlog("_epoll_info_del_fd");
-    if (_epoll_info_del_fd(netcap_queue_get_sock())<0) 
+    if (_epoll_info_del_fd(netcap_nfqueue_get_sock())<0) 
         perrlog("_epoll_info_del_fd");
     
     if (( _server.udp_divert_sock > 0 ) && ( _epoll_info_del_fd( _server.udp_divert_sock ) < 0 )) {
@@ -267,9 +267,8 @@ int  netcap_server (void)
             case POLL_TCP_WAITING:
                 _handle_completion(info, events[i].events);
                 break;
-            case POLL_QUEUE_INCOMING:
-                _handle_queue(info, events[i].events);
-                break;
+            case POLL_NFQUEUE_INCOMING:
+                _handle_nfqueue(info, events[i].events);
             }
 
             break;
@@ -584,75 +583,71 @@ static int  _handle_udp (epoll_info_t* info, int revents, int sock )
     return netcap_udp_call_hooks( pkt, NULL );
 }
 
-static int  _handle_queue (epoll_info_t* info, int revents)
+static int  _handle_nfqueue (epoll_info_t* info, int revents)
 {
-    netcap_pkt_t* pkt;
-    u_char*       buf;
-    int           len;
+    netcap_pkt_t* pkt = NULL;
+    u_char*       buf = NULL;
 
-    /**
-     * Sanity checks
-     */
-    if (!info) {
-        _server_unlock();
-        return errlogargs();
+    int _critical_section()
+    {
+        debug( 0, "SERVER Handle nf_queue.\n" );
+
+        if ( info == NULL ) return errlogargs();
+
+        if ( info->fd != netcap_nfqueue_get_sock()) return errlogcons();
+        
+        /* if there are any events in the input set, just read out */
+        if (!( revents & ( EPOLL_INPUT_SET ))) {
+            _epoll_print_stat( revents );
+            return -1;
+        }
+
+        if (( buf = malloc( QUEUE_MAX_MESG_SIZE )) == NULL ) return errlogmalloc();
+
+        if (( pkt = netcap_pkt_create()) == NULL ) return errlogmalloc();
+
+        if ( netcap_nfqueue_read( buf, QUEUE_MAX_MESG_SIZE, pkt ) < 0 ) {
+            return errlog( ERR_CRITICAL, "netcap_nfqueue_read\n" );
+        }
+        
+        if ( revents * EPOLLHUP ) {
+            /* XXXxxxXXX not really sure what to do here */
+            errlog( ERR_CRITICAL, "HUP on queue socket\n" );
+        }
+
+        return 0;
     }
 
-    if (info->fd != netcap_queue_get_sock()) {
-        _server_unlock();
-        return errlog(ERR_CRITICAL,"Constraint failed.\n");
-    }
-
-    if (!(revents & EPOLLIN)) {
-        _epoll_print_stat(revents);
-        _server_unlock();
-        return -1;
-    }
-
-    buf = malloc(QUEUE_MAX_MESG_SIZE);
-    if (!buf) {
-        _server_unlock();
-        return errlogmalloc();
-    }
-    pkt = netcap_pkt_create();
-    if (!pkt) {
-        free(buf);
-        _server_unlock();
-        return errlogmalloc();
-    }
+    int ret = _critical_section();
     
-    /**
-     * read the packet 
-     */
-    len = netcap_queue_read(buf, QUEUE_MAX_MESG_SIZE, pkt);
-    if (len <= 0) {
-        if (len<0) perrlog("netcap_queue_read");
-        free(buf);
-        netcap_pkt_raze(pkt);
-        _server_unlock();
-        return -1;
-    }
-    
-    debug(10,"Got QUEUE Packet from: %s\n",inet_ntoa(pkt->src.host));
-    
-    /**
-     * unlock the server
-     */
     _server_unlock();
 
-    if (pkt->proto == IPPROTO_ICMP) {
-        /* XXX no arg because unknown sub
-         * RBS: 04/13/05: args are never used, and probably could be eliminated */
-        return netcap_icmp_call_hook( pkt );
-    } else if (pkt->proto == IPPROTO_TCP) {
-        return global_tcp_syn_hook( pkt );
-    } else if ( pkt->proto == IPPROTO_UDP ) {
-        /* XXX no arg because unknown sub
-         * RBS: 04/13/05: args are never used, and probably could be eliminated */
-        return netcap_udp_call_hooks( pkt, NULL );
+    if ( ret < 0 ) {
+        /* !!!! XXXX may have to also free the buffer, this is difficult because the buffer
+         * may be set in the packet, probably have to unset it first. !!!!!!! */        
+        if ( pkt != NULL ) netcap_pkt_raze( pkt );
+        return errlog( ERR_CRITICAL, "_critical_section\n" );
     }
-    else
-        return errlog(ERR_CRITICAL,"Unknown protocol from QUEUE\n");
+    
+    switch ( pkt->proto ) {
+    case IPPROTO_ICMP:
+        return netcap_icmp_call_hook( pkt );
+        
+    case IPPROTO_TCP:
+        return global_tcp_syn_hook( pkt );
+        
+    case IPPROTO_UDP:
+        return netcap_udp_call_hooks( pkt, NULL );
+        
+    default:
+        /* XXXXXXXX need to raze the packet */
+        return errlog(ERR_CRITICAL,"Unknown protocol  %d from QUEUE\n", pkt->proto );        
+    }
+
+    /* Actually call the handle */
+    errlog( ERR_CRITICAL, "potentially leaking another packet\n" );
+    
+    return ret;
 }
 
 static int  _epoll_info_add (int fd, int events, int type, netcap_session_t* netcap_sess)

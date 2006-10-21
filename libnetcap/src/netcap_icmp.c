@@ -18,6 +18,7 @@
 #include <string.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/ip.h>
+#include <unistd.h>
 #include <mvutil/errlog.h>
 #include <mvutil/debug.h>
 #include <mvutil/list.h>
@@ -658,9 +659,10 @@ static int  _netcap_icmp_send( char *data, int data_len, netcap_pkt_t* pkt, int 
     u_int              nfmark = ( MARK_ANTISUB | MARK_NOTRACK | (pkt->is_marked ? pkt->nfmark : 0 )); 
     /* mark is  antisub + notrack + whatever packet marks are specified */
 
-    if ( pkt->dst_intf != NC_INTF_UNK ) {
-        errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
-    }
+    /* if the caller uses the force flag, then override the default bits of the mark */
+    if ( pkt->is_marked == IS_MARKED_FORCE_FLAG ) nfmark = pkt->nfmark;
+
+    if ( pkt->dst_intf != NC_INTF_UNK ) errlog(ERR_CRITICAL,"NC_INTF_UNK Unsupported (IP_DEVICE)\n");
 
     /* Setup the destination */
     memset(&dst, 0, sizeof(dst));

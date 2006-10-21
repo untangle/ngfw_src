@@ -18,6 +18,8 @@ import java.util.EmptyStackException;
 public class NetcapUDPSession extends NetcapSession 
 {
     protected static final int MERGED_DEAD = 0xDEAD00D;
+
+    private static final int DEFAULT_LIBERATE_FLAGS = 0;
     
     /** These cannot conflict with the flags inside of NetcapTCPSession and NetcapSession */
     private final static int FLAG_TTL            = 64;
@@ -123,6 +125,13 @@ public class NetcapUDPSession extends NetcapSession
         return false;
     }
 
+    /**
+     * liberate the connection.
+     */
+    public void liberate()
+    {
+        liberate( pointer.value(), DEFAULT_LIBERATE_FLAGS );
+    }
     
     private static native long   read( long sessionPointer, boolean ifClient, int timeout );
     private static native byte[] data( long packetPointer );
@@ -157,6 +166,9 @@ public class NetcapUDPSession extends NetcapSession
     
     /* This is for sending the data associated with a netcap_pkt_t structure */
     private static native int  send( long packetPointer );
+
+    /* Release a session that was previously captured */
+    private static native void liberate( long sessionPointer, int flags );
     
     class UDPSessionMailbox implements PacketMailbox
     {

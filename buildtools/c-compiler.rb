@@ -113,6 +113,21 @@ class CBuilder
     debug cmd
     raise "gcc failed" unless Kernel.system( cmd )
   end
+
+  ## source: Array of object and archive files for the shared object
+  ## destination: Name of the file where the shared library should be created.
+  ## libDir: Search paths for libraries that are not in the standard location
+  ## lib: Array of the libraries to include in the compilation.
+  ## wLib: Array of the libraries that should be included in their entirety.
+  def makeBinary( source, destination, libDir, lib, wLib = [] )
+    info "Binary: #{destination}"
+    wLibFlags = wLib.map{ |l| "-l#{l}" }.join( " " )
+    flags = @env.linkerFlags( libDir, lib )
+    cmd = "#{@env.cc} #{flags} -Wl,-whole-archive #{source.join( " " )} #{wLibFlags} -Wl,--no-whole-archive -o #{destination}"
+    
+    debug cmd
+    raise "gcc failed" unless Kernel.system( cmd )
+  end
 end
 
 class CCompilerTarget < Target

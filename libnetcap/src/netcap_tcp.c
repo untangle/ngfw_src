@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <unistd.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
@@ -64,6 +65,10 @@ extern int  _netcap_tcp_callback_srv_complete( netcap_session_t* netcap_sess,
                                                netcap_callback_flag_t flags );
 
 extern int  _netcap_tcp_callback_cli_reject  ( netcap_session_t* netcap_sess, 
+                                               netcap_callback_action_t action, 
+                                               netcap_callback_flag_t flags );
+
+extern int  _netcap_tcp_callback_liberate    ( netcap_session_t* netcap_sess, 
                                                netcap_callback_action_t action, 
                                                netcap_callback_flag_t flags );
 
@@ -136,14 +141,13 @@ int  netcap_tcp_syn_mode ( int toggle )
 
 int  netcap_tcp_callback ( netcap_session_t* netcap_sess, netcap_callback_action_t action, netcap_callback_flag_t flags )
 {
-    if ( netcap_sess == NULL )
-        return errlogargs();
+    if ( netcap_sess == NULL ) return errlogargs();
 
     switch ( action ) {
     case CLI_COMPLETE: 
-        return _netcap_tcp_callback_cli_complete( netcap_sess,action, flags );
+        return _netcap_tcp_callback_cli_complete( netcap_sess, action, flags );
     case SRV_COMPLETE: 
-        return _netcap_tcp_callback_srv_complete( netcap_sess,action, flags );
+        return _netcap_tcp_callback_srv_complete( netcap_sess, action, flags );
     case CLI_RESET:
         /* fallthrough */
     case CLI_DROP:
@@ -151,7 +155,9 @@ int  netcap_tcp_callback ( netcap_session_t* netcap_sess, netcap_callback_action
     case CLI_ICMP:
         /* fallthrough */
     case CLI_FORWARD_REJECT:
-        return _netcap_tcp_callback_cli_reject( netcap_sess,action,flags );
+        return _netcap_tcp_callback_cli_reject( netcap_sess, action,flags );
+    case LIBERATE:
+        return _netcap_tcp_callback_liberate( netcap_sess, action, flags );
 
     default:
         return errlog( ERR_CRITICAL, "Unknown action: %i\n", action );

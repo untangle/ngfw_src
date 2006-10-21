@@ -124,7 +124,7 @@ public class RuleManager
     {
         try {
             /* Call the rule generator */
-            ScriptRunner.getInstance().exec( RULE_GENERATOR_SCRIPT );            
+            ScriptRunner.getInstance().exec( RULE_DESTROYER_SCRIPT );            
         } catch ( Exception e ) {
             logger.error( "Error while removing iptables rules", e );
             throw new NetworkException( "Unable to remove iptables rules", e );
