@@ -31,6 +31,8 @@ public class KeepAliveThread extends Thread implements Shutdownable {
                 sleep(PING_DELAY);
             }
             catch(Exception e){
+                try{ sleep(PING_DELAY); }
+                catch(Exception e){}
                 e.printStackTrace();
             }
         }

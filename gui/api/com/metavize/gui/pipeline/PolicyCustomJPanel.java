@@ -17,6 +17,8 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
@@ -30,6 +32,7 @@ import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
 import com.metavize.mvvm.tran.firewall.user.UserMatcherFactory;
 import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
+import com.metavize.mvvm.tran.firewall.time.*;
 
 public class PolicyCustomJPanel extends MEditTableJPanel {
 
@@ -43,7 +46,7 @@ public class PolicyCustomJPanel extends MEditTableJPanel {
         CustomPolicyTableModel customPolicyTableModel = new CustomPolicyTableModel();
         this.setTableModel( customPolicyTableModel );
         this.setAddRemoveEnabled(true);
-	this.setFillJButtonEnabled(false);
+        this.setFillJButtonEnabled(false);
     }
 }
 
@@ -67,7 +70,10 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     private static final int C9_MW = 100; /* client port */
     private static final int C10_MW = 100; /* server port */
     private static final int C11_MW = 100; /* user */
-    private static final int C12_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW + C10_MW + C11_MW), 125); /* description */
+    private static final int C12_MW = 100; /* start time */
+    private static final int C13_MW = 100; /* end time */
+    private static final int C14_MW = 100; /* days */
+    private static final int C15_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW + C10_MW + C11_MW + C12_MW + C13_MW + C14_MW), 125); /* description */
 
     protected boolean getSortable(){ return false; }
 
@@ -119,8 +125,11 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
         addTableColumn( tableColumnModel,  9,  C9_MW,  true,  true,  true,  false, String.class, "any", sc.html("client<br>port"));
         addTableColumn( tableColumnModel,  10, C10_MW, true,  true,  false, false, String.class, "any", sc.html("server<br>port"));
         addTableColumn( tableColumnModel,  11, C11_MW, true,  true,  false, false, String.class, "any", sc.html("user name"));
-        addTableColumn( tableColumnModel,  12, C12_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
-        addTableColumn( tableColumnModel,  13, 13,     false, false, true,  false, UserPolicyRule.class, null, "" );
+        addTableColumn( tableColumnModel,  12, C12_MW, true,  true,  false, false, String.class, "12:00 am", sc.html("start time"));
+        addTableColumn( tableColumnModel,  13, C13_MW, true,  true,  false, false, String.class, "12:00 am", sc.html("end time"));
+        addTableColumn( tableColumnModel,  14, C14_MW, true,  true,  false, false, String.class, "any", sc.html("days"));
+        addTableColumn( tableColumnModel,  15, C15_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
+        addTableColumn( tableColumnModel,  16, 16,     false, false, true,  false, UserPolicyRule.class, null, "" );
 
         return tableColumnModel;
     }
@@ -135,10 +144,12 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
         PortMatcherFactory pmf = PortMatcherFactory.getInstance();
         IPMatcherFactory ipmf  = IPMatcherFactory.getInstance();
         UserMatcherFactory umf = UserMatcherFactory.getInstance();
+        DayOfWeekMatcherFactory dmf = DayOfWeekMatcherFactory.getInstance();
+        DateFormat dateFormat = new SimpleDateFormat();
 
 	for( Vector rowVector : tableVector ){
 	    rowIndex++;
-        newElem = (UserPolicyRule) rowVector.elementAt(13);
+        newElem = (UserPolicyRule) rowVector.elementAt(16);
 
         boolean isLive = (Boolean) rowVector.elementAt(2);
         newElem.setLive( isLive );
@@ -165,8 +176,15 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 	    catch(Exception e){ throw new Exception("Invalid \"server port\" in row: " + rowIndex); }
         try{ newElem.setUser( umf.parse((String) rowVector.elementAt(11)) ); }
         catch(Exception e){ throw new Exception("Invalid \"user name\" in row: " + rowIndex); }
-
-            newElem.setDescription( (String) rowVector.elementAt(12) );
+        try{ newElem.setStartTime( dateFormat.parse((String)rowVector.elementAt(12)) ); }
+        catch(Exception e){ throw new Exception("Invalid \"start time\" in row: " + rowIndex); }
+        try{ newElem.setEndTime( dateFormat.parse((String)rowVector.elementAt(13)) ); }
+        catch(Exception e){ throw new Exception("Invalid \"end time\" in row: " + rowIndex); }
+        if( newElem.getStartTime().compareTo(newElem.getEndTime()) > 0 )
+            throw new Exception("The start time cannot be later than the end time in row: " + rowIndex);
+        try{ newElem.setDayOfWeek( dmf.parse((String)rowVector.elementAt(14)) ); }
+        catch(Exception e){ throw new Exception("Invalid \"days\" in row: " + rowIndex); }
+            newElem.setDescription( (String) rowVector.elementAt(15) );
             elemList.add(newElem);
     }
     
@@ -189,13 +207,15 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 	int rowIndex = 0;
 
     IntfDBMatcher intfEnumeration[] = IntfMatcherFactory.getInstance().getEnumeration();
+    
+    DateFormat dateFormat = new SimpleDateFormat("hh:mm a");
 
 	updatePolicyNames( policyConfiguration.getPolicies() );
 	updatePolicyModel();
 
 	for( UserPolicyRule newElem : userPolicyRules ){
 	    rowIndex++;
-	    tempRow = new Vector(13);
+	    tempRow = new Vector(17);
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
         tempRow.add( newElem.isLive() );
@@ -213,6 +233,9 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 	    tempRow.add( newElem.getClientPort().toString() );
 	    tempRow.add( newElem.getServerPort().toString() );
         tempRow.add( newElem.getUser().toString() );
+        tempRow.add( dateFormat.format(newElem.getStartTime()) );
+        tempRow.add( dateFormat.format(newElem.getEndTime()) );
+        tempRow.add( newElem.getDayOfWeek().toString() );
 	    tempRow.add( newElem.getDescription() );
 	    tempRow.add( newElem );
 	    allRows.add( tempRow );
