@@ -13,10 +13,8 @@ package com.metavize.mvvm.networking;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-
-import java.net.InetAddress;
 import java.net.Inet4Address;
-
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -83,7 +81,7 @@ class NetworkUtilPriv extends NetworkUtil
     private NetworkUtilPriv()
     {
     }
-        
+
     /* Convert a NetworkConfiguration and the previous internal network settings into
      * a new network spaces settings object.
      * @param networkingConfiguration:  New networking configuration for the primary space.
@@ -95,7 +93,7 @@ class NetworkUtilPriv extends NetworkUtil
         throws NetworkException, ValidateException
     {
         NetworkSpacesSettings settings = toSettings( internalSettings );
-        
+
         settings.setHasCompletedSetup( hasCompletedSetup );
 
         /* Now replace the parameters for the first space */
@@ -124,7 +122,7 @@ class NetworkUtilPriv extends NetworkUtil
         settings.setDefaultRoute( basic.gateway());
         settings.setDns1( basic.dns1());
         settings.setDns2( basic.dns2());
-        
+
         return toInternal( settings );
     }
 
@@ -186,7 +184,7 @@ class NetworkUtilPriv extends NetworkUtil
                     throw new NetworkException( "Each enabled network space " + index +
                                                 " must be mapped to an interface" );
                 case 1:
-                    try { 
+                    try {
                         /* XXXX Does the device name mean the phyiscal interface or the virtual
                          * interface */
                         deviceName = lim.argonIntfToString( primaryIntf.getArgonIntf());
@@ -290,7 +288,7 @@ class NetworkUtilPriv extends NetworkUtil
             networkSpaceList.remove( 0 );
             networkSpaceList.add( 0, nwi );
         }
-        
+
         return NetworkSpacesInternalSettings.
             makeInstance( setupState, isEnabled, hasCompletedSetup,
                           realInterfaceList, interfaceList, networkSpaceList,
@@ -328,7 +326,7 @@ class NetworkUtilPriv extends NetworkUtil
         primary.setIsDhcpEnabled( configuration.isDhcpEnabled());
 
         List<Interface> interfaceList = new LinkedList<Interface>();
-        
+
         byte [] argonIntfArray = getArgonIntfArray();
         for ( byte argonIntf : argonIntfArray ) {
             /* The VPN interface doesn't belong to a network space */
@@ -423,7 +421,7 @@ class NetworkUtilPriv extends NetworkUtil
             /* Don't bind to an interface */
             interfaceName = null;
         }
-        
+
         return ServicesInternalSettings.
             makeInstance( isEnabled, dhcp, dns, defaultRoute, netmask, dnsServerList,
                           interfaceName, primary.getNetwork());
@@ -464,17 +462,17 @@ class NetworkUtilPriv extends NetworkUtil
             if ( space.getIsDhcpEnabled()) {
                 /* Update the dns servers */
                 List<IPaddr> dnsServers = getDnsServers();
-                
+
                 switch( dnsServers.size()) {
                 default:
                 case 2:
                     settings.setDns2( dnsServers.get( 1 ));
-                    
+
                     /* fallthrough */
                 case 1:
                     settings.setDns1( dnsServers.get( 0 ));
                     break;
-                    
+
                 case 0:
                     logger.info( "DHCP didn't set any DNS servers" );
                 }
@@ -781,14 +779,14 @@ class NetworkUtilPriv extends NetworkUtil
         InetAddress addr = address.getAddr();
         if (addr.isLoopbackAddress() || addr.isLinkLocalAddress())
             return true;
-        
+
         List<NetworkSpaceInternal> spaces = settings.getNetworkSpaceList();
-        
+
         for (NetworkSpaceInternal space : spaces) {
             if (space.getIsEnabled()) {
                 /* Check the primary address */
                 if ( address.equals( space.getPrimaryAddress().getNetwork())) return true;
-                
+
                 for(IPNetwork aliasRule : (List<IPNetwork>) space.getNetworkList()) {
                     IPaddr alias = aliasRule.getNetwork();
                     if (alias.equals(address))

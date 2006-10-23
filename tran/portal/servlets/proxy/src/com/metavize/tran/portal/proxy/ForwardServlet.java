@@ -14,6 +14,7 @@ package com.metavize.tran.portal.proxy;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -136,11 +137,16 @@ public class ForwardServlet extends HttpServlet
                 logger.info("Opening forward for " + pl + " to " + destHost + ":" + destPort);
 
             InetSocketAddress isa = new InetSocketAddress(destHost, destPort);
-            IPaddr addr = new IPaddr(isa.getAddress());
-            if (netManager.isAddressLocal(addr)) {
-                logger.warn("Unable to forward to local address");
-                resp.sendError(HttpServletResponse.SC_FORBIDDEN,
-                               "Unable to forward to local address");
+            InetAddress addr = isa.getAddress();
+            if (null == addr) {
+                String msg = "Unable to resolve hostname: " + destHost;
+                logger.warn(msg);
+                resp.sendError(HttpServletResponse.SC_FORBIDDEN, msg);
+                return;
+            } else if (netManager.isAddressLocal(new IPaddr(addr))) {
+                String msg = "Unable to forward to local address: " + destHost;
+                logger.warn(msg);
+                resp.sendError(HttpServletResponse.SC_FORBIDDEN, msg);
                 return;
             }
 
