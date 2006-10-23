@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.Iterator;
@@ -160,9 +161,15 @@ public class ForwardServlet extends HttpServlet
             Socket s = new Socket();
             try {
                 s.connect(isa, CONNECTION_TIMEOUT);
+            } catch (NoRouteToHostException exn) {
+                String msg = "No route to host";
+                logger.warn(msg, exn);
+                resp.sendError(HttpServletResponse.SC_GATEWAY_TIMEOUT, msg);
+                return;
             } catch (SocketTimeoutException exn) {
-                logger.warn("socket timed out", exn);
-                resp.sendError(HttpServletResponse.SC_GATEWAY_TIMEOUT);
+                String msg = "socket timed out";
+                logger.warn(msg, exn);
+                resp.sendError(HttpServletResponse.SC_GATEWAY_TIMEOUT, msg);
                 return;
             }
 
