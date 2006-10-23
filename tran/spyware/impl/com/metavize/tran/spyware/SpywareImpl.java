@@ -161,6 +161,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             return false;
         } else if (global) {
             String site = bd.getWhitelistHost();
+            logger.warn("permanently unblocking site: " + site);
             StringRule sr = new StringRule(site, site, "user whitelisted",
                                            "whitelisted by user", true);
             settings.getDomainWhitelist().add(sr);
@@ -169,7 +170,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             return true;
         } else {
             String site = bd.getWhitelistHost();
-
+            logger.warn("temporarily unblocking site: " + site);
             InetAddress addr = bd.getClientAddress();
 
             synchronized (this) {

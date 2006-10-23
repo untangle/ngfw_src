@@ -357,9 +357,19 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 
             synchronized (LOG_LOCK) {
                 if (null == transformContext) {
-                    MvvmContextFactory.context().runTransaction(tw);
+                    boolean s = MvvmContextFactory.context().runTransaction(tw);
+                    if (!s) {
+                        logger.warn("could not log events for MVVM");
+                    }
                 } else {
-                    transformContext.runTransaction(tw);
+                    boolean s = transformContext.runTransaction(tw);
+                    if (!s) {
+                        logger.warn("could not log events for: "
+                                    + transformContext.getTid()
+                                    + "("
+                                    + transformContext.getMackageDesc().getName()
+                                    + ")");
+                    }
                 }
             }
         }

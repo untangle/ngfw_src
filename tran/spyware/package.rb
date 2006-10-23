@@ -3,7 +3,7 @@
 http = Package['http-casing']
 spyware = Package['spyware-transform']
 
-TransformBuilder.makeTransform( "spyware", [ http["localapi"] ] )
+TransformBuilder.makeTransform('spyware', [http["localapi"]], [http["localapi"]])
 
 deps = [Package['mvvm']['api'], spyware['gui']]
 
