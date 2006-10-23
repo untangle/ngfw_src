@@ -21,7 +21,7 @@ public class KeepAliveThread extends Thread implements Shutdownable {
 
     public KeepAliveThread(MvvmRemoteContext mvvmRemoteContext){
         setName("MV-CLIENT: KeepAliveThread");
-        this.mvvmRemoteContext = mvvmRemoteContext;        
+        this.mvvmRemoteContext = mvvmRemoteContext;
         start();
     }
     public void run(){
@@ -32,7 +32,7 @@ public class KeepAliveThread extends Thread implements Shutdownable {
             }
             catch(Exception e){
                 try{ sleep(PING_DELAY); }
-                catch(Exception e){}
+                catch(InterruptedException exn){}
                 e.printStackTrace();
             }
         }
