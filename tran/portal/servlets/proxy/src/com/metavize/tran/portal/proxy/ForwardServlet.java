@@ -228,9 +228,10 @@ public class ForwardServlet extends HttpServlet
                                          + " timed out");
                             break;
                         } else {
-                            // This is expected with Tomcat sockets, just
-                            // gives us a chance to see if the session
-                            // timeout has expired or whatever. XXX
+                            // This is expected with Tomcat sockets,
+                            // just gives us a chance to see if the
+                            // session timeout has expired or
+                            // whatever. XXX
                             continue;
                         }
                     }
@@ -258,3 +259,5 @@ public class ForwardServlet extends HttpServlet
         }
     }
 }
+
+

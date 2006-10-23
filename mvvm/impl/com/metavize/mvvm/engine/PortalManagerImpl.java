@@ -412,11 +412,23 @@ class PortalManagerImpl implements LocalPortalManager
 
         PortalUser user = getUser(uid);
 
-        if (null == user && portalSettings.getGlobal().isAutoCreateUsers()) {
-            logger.debug(uid + " didn't exist, auto creating");
-            PortalUser newUser = portalSettings.addUser(uid);
-            setPortalSettings(portalSettings);
-            user = newUser;
+        if (null == user) {
+            if (portalSettings.getGlobal().isAutoCreateUsers()) {
+                logger.debug(uid + " didn't exist, auto creating");
+                PortalUser newUser = portalSettings.addUser(uid);
+                setPortalSettings(portalSettings);
+                user = newUser;
+            } else {
+                logger.debug("no user found with login: " + uid);
+                PortalLoginEvent event = new PortalLoginEvent(addr, uid, false, LoginFailureReason.UNKNOWN_USER);
+                portalLogger.log(event);
+
+                try {
+                    Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
+                } catch (InterruptedException exn) { }
+
+                return null;
+            }
         }
 
         if (!user.isLive()) {
