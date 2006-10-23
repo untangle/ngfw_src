@@ -28,6 +28,7 @@ import com.metavize.mvvm.tran.firewall.*;
 import com.metavize.mvvm.tran.firewall.intf.*;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.metavize.mvvm.tran.firewall.port.PortMatcherFactory;
+import com.metavize.mvvm.tran.firewall.user.UserMatcherFactory;
 import com.metavize.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 
 public class PolicyCustomJPanel extends MEditTableJPanel {
@@ -65,7 +66,8 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     private static final int C8_MW = 100; /* server address */
     private static final int C9_MW = 100; /* client port */
     private static final int C10_MW = 100; /* server port */
-    private static final int C11_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW + C10_MW), 125); /* description */
+    private static final int C11_MW = 100; /* user */
+    private static final int C12_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW + C10_MW + C11_MW), 125); /* description */
 
     protected boolean getSortable(){ return false; }
 
@@ -116,8 +118,9 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
         addTableColumn( tableColumnModel,  8,  C8_MW,  true,  true,  false, false, String.class, "any", sc.html("server<br>address"));
         addTableColumn( tableColumnModel,  9,  C9_MW,  true,  true,  true,  false, String.class, "any", sc.html("client<br>port"));
         addTableColumn( tableColumnModel,  10, C10_MW, true,  true,  false, false, String.class, "any", sc.html("server<br>port"));
-        addTableColumn( tableColumnModel,  11, C11_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
-        addTableColumn( tableColumnModel,  12, 12,     false, false, true,  false, UserPolicyRule.class, null, "" );
+        addTableColumn( tableColumnModel,  11, C11_MW, true,  true,  false, false, String.class, "any", sc.html("user name"));
+        addTableColumn( tableColumnModel,  12, C12_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
+        addTableColumn( tableColumnModel,  13, 13,     false, false, true,  false, UserPolicyRule.class, null, "" );
 
         return tableColumnModel;
     }
@@ -126,16 +129,16 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     public void generateSettings(PolicyCompoundSettings policyCompoundSettings,
 				 Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         List elemList = new ArrayList(tableVector.size());
-	UserPolicyRule newElem = null;
-	int rowIndex = 0;
+        UserPolicyRule newElem = null;
+        int rowIndex = 0;
 
         PortMatcherFactory pmf = PortMatcherFactory.getInstance();
-        IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
-        
+        IPMatcherFactory ipmf  = IPMatcherFactory.getInstance();
+        UserMatcherFactory umf = UserMatcherFactory.getInstance();
 
 	for( Vector rowVector : tableVector ){
 	    rowIndex++;
-        newElem = (UserPolicyRule) rowVector.elementAt(12);
+        newElem = (UserPolicyRule) rowVector.elementAt(13);
 
         boolean isLive = (Boolean) rowVector.elementAt(2);
         newElem.setLive( isLive );
@@ -144,8 +147,8 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 	    boolean isInbound = ((String) ((ComboBoxModel)rowVector.elementAt(3)).getSelectedItem()).contains(INBOUND_STRING);
         newElem.setInbound( isInbound );
         
-        newElem.setClientIntf( (IntfDBMatcher)((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
-        newElem.setServerIntf( (IntfDBMatcher)((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem() );
+        newElem.setClientIntf( (IntfMatcher)((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
+        newElem.setServerIntf( (IntfMatcher)((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem() );
             
         if( newElem.getClientIntf() == newElem.getServerIntf() )
             throw new Exception("In row: " + rowIndex + ". The \"client interface\" cannot match the \"server interface\"");
@@ -160,9 +163,15 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 	    catch(Exception e){ throw new Exception("Invalid \"client port\" in row: " + rowIndex); }
 	    try{ newElem.setServerPort( pmf.parse((String) rowVector.elementAt(10)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"server port\" in row: " + rowIndex); }
-            newElem.setDescription( (String) rowVector.elementAt(11) );
+        try{ newElem.setUser( umf.parse((String) rowVector.elementAt(11)) ); }
+        catch(Exception e){ throw new Exception("Invalid \"user name\" in row: " + rowIndex); }
+
+            newElem.setDescription( (String) rowVector.elementAt(12) );
             elemList.add(newElem);
-        }
+    }
+    
+    
+    
 
 	// SAVE SETTINGS /////////
 	if( !validateOnly ){
@@ -203,6 +212,7 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 	    tempRow.add( newElem.getServerAddr().toString() );
 	    tempRow.add( newElem.getClientPort().toString() );
 	    tempRow.add( newElem.getServerPort().toString() );
+        tempRow.add( newElem.getUser().toString() );
 	    tempRow.add( newElem.getDescription() );
 	    tempRow.add( newElem );
 	    allRows.add( tempRow );
