@@ -36,13 +36,14 @@ CREATE TABLE settings.policy_tmp AS
         case client_intf when 0 then 'External' when 1 then 'Internal' when 2 then 'DMZ' when 3 then 'VPN' end as client_intf_matcher,
         case server_intf when 0 then 'External' when 1 then 'Internal' when 2 then 'DMZ' when 3 then 'VPN' end as server_intf_matcher,
         policy_id, is_inbound, name, category, description, live, alert, log, set_id,
-        position, time '00:00:00' as start_time, time '23:59:00' as end_time, 'all'::text as day_of_week_matcher, 'all'::text as user_matcher
+        position, time '00:00:00' as start_time, time '23:59:00' as end_time, 'all'::text as day_of_week_matcher, 'all'::text as user_matcher, false as invert_entire_duration
     FROM settings.user_policy_rule;
 
 DROP TABLE settings.user_policy_rule;
 ALTER TABLE settings.policy_tmp RENAME TO user_policy_rule;
 ALTER TABLE settings.user_policy_rule ALTER COLUMN rule_id SET NOT NULL;
 ALTER TABLE settings.user_policy_rule ALTER COLUMN is_inbound SET NOT NULL;
+ALTER TABLE settings.user_policy_rule ALTER COLUMN invert_entire_duration SET NOT NULL;
 ALTER TABLE settings.user_policy_rule ADD PRIMARY KEY (rule_id);
 
 ALTER TABLE settings.user_policy_rule

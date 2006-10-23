@@ -71,6 +71,8 @@ public class UserPolicyRule extends PolicyRule
     private DayOfWeekMatcher dayOfWeek = DayOfWeekMatcherFactory.getInstance()
         .getAllMatcher();
 
+    private boolean invertEntireDuration;
+
     private UserMatcher user = UserMatcherFactory.getInstance()
         .getAllMatcher();
 
@@ -84,7 +86,7 @@ public class UserPolicyRule extends PolicyRule
                           PortMatcher clientPort, PortMatcher serverPort,
                           Date startTime, Date endTime,
                           DayOfWeekMatcher dayOfWeek, UserMatcher user,
-                          boolean live) {
+                          boolean live, boolean invertEntireDuration) {
         super(live, policy, inbound);
         this.clientIntf = clientIntf;
         this.serverIntf = serverIntf;
@@ -103,6 +105,7 @@ public class UserPolicyRule extends PolicyRule
 	    this.endTime = endTime;
         this.dayOfWeek = dayOfWeek;
         this.user = user;
+        this.invertEntireDuration = invertEntireDuration;
     }
 
     // PolicyRule methods -----------------------------------------------------
@@ -130,19 +133,25 @@ public class UserPolicyRule extends PolicyRule
         Calendar start = Calendar.getInstance();
         start.setTime(startTime);
         int starthour = start.get(Calendar.HOUR_OF_DAY);
-        if (nowhour < starthour ||
-            (nowhour == starthour && now.get(Calendar.MINUTE) < start.get(Calendar.MINUTE)))
-            return false;
+        boolean outsideDuration =
+            (nowhour < starthour ||
+             (nowhour == starthour && now.get(Calendar.MINUTE) < start.get(Calendar.MINUTE)));
 
-        // We're still good.  Check the end.
-        Calendar end = Calendar.getInstance();
-        end.setTime(endTime);
-        int endhour = end.get(Calendar.HOUR_OF_DAY);
-        if (nowhour > endhour ||
-            (nowhour == endhour && now.get(Calendar.MINUTE) > end.get(Calendar.MINUTE)))
-            return false;
+        // Check the end.
+        if (!outsideDuration) {
+            Calendar end = Calendar.getInstance();
+            end.setTime(endTime);
+            int endhour = end.get(Calendar.HOUR_OF_DAY);
+            outsideDuration =
+                (nowhour > endhour ||
+                 (nowhour == endhour && now.get(Calendar.MINUTE) > end.get(Calendar.MINUTE)));
+        }
+        if (!outsideDuration)
+            outsideDuration = !dayOfWeek.isMatch(dnow);
 
-        return dayOfWeek.isMatch(dnow)
+        boolean durationTest = invertEntireDuration ? outsideDuration : !outsideDuration;
+
+        return durationTest
             && user.isMatch(sd.user());
     }
 
@@ -334,6 +343,27 @@ public class UserPolicyRule extends PolicyRule
     {
         this.serverPort = serverPort;
     }
+
+    /**
+     * Specifies if we should invert sense of the entire duration.
+     * So a duration of 0900 -> 1700 M,T,W,R,F when inverted would
+     * mean:
+     *  all Saturday, all Sunday, and Monday through Friday
+     *  from 0000 -> 0859 and 1701 -> 2359
+     *
+     * @return true if entire duration is inverted 
+     */
+    @Column(name="invert_entire_duration", nullable=false)
+    public boolean isInvertEntireDuration()
+    {
+        return invertEntireDuration;
+    }
+
+    public void setInvertEntireDuration(boolean invertEntireDuration)
+    {
+        this.invertEntireDuration = invertEntireDuration;
+    }
+
 
     @Transient
     public boolean isSameRow(UserPolicyRule pr)

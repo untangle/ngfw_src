@@ -93,6 +93,7 @@ CREATE TABLE settings.user_policy_rule (
     end_time time,
     day_of_week_matcher text,
     user_matcher text,
+    invert_entire_duration bool NOT NULL,
     PRIMARY KEY (rule_id));
 
 -- com.metavize.mvvm.policy.SystemPolicyRule
