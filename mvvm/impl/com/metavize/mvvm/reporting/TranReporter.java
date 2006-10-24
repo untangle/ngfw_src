@@ -239,6 +239,32 @@ public class TranReporter {
                     processUserReports(resource, conn, userNames, reportFile, "--monthly", Util.lastmonth, Util.midnight);
                 }
             }
+            else if (type.equalsIgnoreCase("hNameSummary")) {
+                String resource = resourceOrClassname;
+                if (!tok.hasMoreTokens()) { continue; }
+                String reportName = tok.nextToken();
+                String reportFile = new File(tranDir, reportName).getCanonicalPath();
+
+                // reuse processUserReports to process hName reports
+                // - hName reports use different sql queries but
+                //   otherwise, are the same as uName reports
+                String[] hostNames;
+
+                if (true == settings.getDaily()) {
+                    hostNames = getHostNames(conn, Util.lastday, Util.midnight);
+                    processUserReports(resource, conn, hostNames, reportFile, "--daily", Util.lastday, Util.midnight);
+                }
+
+                if (true == settings.getWeekly()) {
+                    hostNames = getHostNames(conn, Util.lastweek, Util.midnight);
+                    processUserReports(resource, conn, hostNames, reportFile, "--weekly", Util.lastweek, Util.midnight);
+                }
+
+                if (true == settings.getMonthly()) {
+                    hostNames = getHostNames(conn, Util.lastmonth, Util.midnight);
+                    processUserReports(resource, conn, hostNames, reportFile, "--monthly", Util.lastmonth, Util.midnight);
+                }
+            }
             else {
                 String resource = resourceOrClassname;
                 String outputName = type;
@@ -334,13 +360,61 @@ public class TranReporter {
         bw.close();
     }
 
+    private String[] getUserNames(Connection conn, Timestamp startTime, Timestamp endTime) throws Exception
+    {
+        ArrayList<String> uNameList = new ArrayList();
+        String sql = "SELECT DISTINCT UUU AS uname FROM TTT WHERE start_time >= ? AND end_time < ?"; // XXX
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setTimestamp(1, startTime);
+            ps.setTimestamp(2, endTime);
+
+            ResultSet rs = ps.executeQuery();
+            while (true == rs.next()) {
+                uNameList.add(rs.getString(1));
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException exn) {
+            logger.error("unable to retrieve list of user names (" + startTime + ", " + endTime + ")", exn);
+        }
+
+        return (String[]) uNameList.toArray(new String[uNameList.size()]);
+    }
+
+    private String[] getHostNames(Connection conn, Timestamp startTime, Timestamp endTime) throws Exception
+    {
+        ArrayList<String> hNameList = new ArrayList();
+        String sql = "SELECT DISTINCT COALESCE(NULLIF(name, ''), HOST(addr)) AS hname FROM merged_address_map WHERE start_time >= ? AND end_time < ?";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setTimestamp(1, startTime);
+            ps.setTimestamp(2, endTime);
+
+            ResultSet rs = ps.executeQuery();
+            while (true == rs.next()) {
+                hNameList.add(rs.getString(1));
+            }
+            rs.close();
+
+            ps.close();
+        } catch (SQLException exn) {
+            logger.error("unable to retrieve list of host names (" + startTime + ", " + endTime + ")", exn);
+        }
+
+        return (String[]) hNameList.toArray(new String[hNameList.size()]);
+    }
+
     private void processUserReports(String resource, Connection conn, String[] userNames, String baseTag, String periodTag, Timestamp startTime, Timestamp endTime)
         throws Exception
     {
         logger.debug("From: " + startTime + " To: " + endTime);
 
-        // startTime, endTime, and userName parameters need to be defined
-        // in template files whenever a report references these parameters
+        // startTime, endTime, and userName parameters are defined
+        // in template files so that a report can reference these parameters
 
         Map<String, Object> baseParams = new HashMap<String, Object>();
         baseParams.put("startTime", startTime);

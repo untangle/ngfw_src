@@ -1,5 +1,6 @@
 reports/SpywareMaster.jasper:Spyware_Blocker--Summary:Summary
 reports/SpywareUserMaster.jasper:userSummary:Spyware_Blocker--UserSummary
+reports/SpywareHNameMaster.jasper:hNameSummary:Spyware_Blocker--UserSummary
 reports/SpywareCookieDetail.jasper:Spyware_Blocker--Cookie_Incidents:Cookie Incidents
 reports/SpywareActiveXDetail.jasper:Spyware_Blocker--ActiveX_Incidents:ActiveX Incidents
 reports/SpywareBlacklistDetail.jasper:Spyware_Blocker--Blocklist_Incidents:URL Blocklist Incidents

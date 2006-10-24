@@ -710,6 +710,9 @@ if [ xuserSummary = "x$base_name" ] ; then
     generate_user_summary $rel_dir $rep_name
     display_name="User Summary"
     base_tmp=$rep_name
+elif [ xhNameSummary = "x$base_name" ] ; then
+# the data for this page is handled with userSummary
+    continue
 else
     display_name=$rep_name
     base_tmp=$base_name

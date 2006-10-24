@@ -129,6 +129,9 @@ EOF
 
         echo "ANALYZE;" | psql -U metavize mvvm
 
+        # XXX
+        psql -qt -U metavize mvvm -c "SELECT DISTINCT COALESCE(NULLIF(name, ''), HOST(addr)) FROM merged_address_map;" -o $REPORT_DIR/current/hname.lst
+
         @USR_BIN@/mcli -t 3600 startReports
         exitOnMvvmError $? reporter
 
