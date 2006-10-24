@@ -1,25 +1,28 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
 
-import java.util.*;
-import com.metavize.tran.util.ASCIIStringBuilder;
 import static com.metavize.tran.util.Ascii.*;
+
 import java.io.*;
+import java.util.*;
+
+import com.metavize.tran.util.ASCIIStringBuilder;
 
 /**
- * Base class for MIME headers which follow the general 
- * format "HNAME: VALUE[; name=value]".  I cannot seem 
- * to find anything in the RFCs to define this format, 
- * so I'll call the first VALUE the "primaryValue".  The 
+ * Base class for MIME headers which follow the general
+ * format "HNAME: VALUE[; name=value]".  I cannot seem
+ * to find anything in the RFCs to define this format,
+ * so I'll call the first VALUE the "primaryValue".  The
  * subclass is thus responsible for providing implementations
  * to {@link #parsePrimaryValue parse} and
  * {@link #writePrimaryValue unparse} this "primaryValue".
@@ -31,7 +34,7 @@ import java.io.*;
  * should be parsed via the {@link #getParamParsePolicy getParamParsePolicy}
  * method.
  */
-public abstract class HeaderFieldWithParams 
+public abstract class HeaderFieldWithParams
   extends HeaderField {
 
   /**
@@ -53,7 +56,7 @@ public abstract class HeaderFieldWithParams
   };
 
   private final ParamList m_paramList = new ParamList();
- 
+
   public HeaderFieldWithParams(String name, LCString lcString) {
     super(name, lcString);
   }
@@ -115,8 +118,8 @@ public abstract class HeaderFieldWithParams
    */
   public Iterator<LCString> paramKeys() {
     return m_paramList.keys();
-  }  
-  
+  }
+
 
   /**
    * For subclasses to define how a given param name should be parsed.
@@ -146,12 +149,12 @@ public abstract class HeaderFieldWithParams
     throws HeaderParseException {
     HeaderFieldTokenizer.Token token = null;
     while(true) {
-      
+
       token = t.nextTokenIgnoreComments();
       if(token == null) {
         break;
       }
-//      System.out.println("Loop Top: " + token.toString());      
+//      System.out.println("Loop Top: " + token.toString());
       //Always begin this loop looking for the param name.  Assume
       //leftover from previous parse
       if(token.getType() == HeaderFieldTokenizer.TokenType.DELIM) {
@@ -189,7 +192,7 @@ public abstract class HeaderFieldWithParams
       if("".equals(paramName)) {
         continue;//More crap
       }
-      
+
       ParamParsePolicy policy = getParamParsePolicy(paramName);
       StringBuilder valueB = new StringBuilder();
       //TODO bscott what about name=;
@@ -203,7 +206,7 @@ public abstract class HeaderFieldWithParams
             token.getType() == HeaderFieldTokenizer.TokenType.ATOM) {
             m_paramList.set(paramName, token.toString());
             break;
-          }        
+          }
           break;
         case QTEXT_OR_ALL:
           token = t.nextTokenIgnoreComments();
@@ -256,7 +259,7 @@ public abstract class HeaderFieldWithParams
     test("foo=$#_goo; doo=eoo");
     test("foo=\"goo\"");
     test("foo=goo doo=foo");
-    test("foo=goo foo doo");            
+    test("foo=goo foo doo");
   }
   private static void test(String str) throws Exception {
     System.out.println("\n\n=======================\n");
@@ -269,14 +272,14 @@ public abstract class HeaderFieldWithParams
     hfwp.m_paramList.writeOut(sb, 0);
     System.out.println("--------");
     System.out.println(sb.toString());
-    
+
   }
-*/  
+*/
 
 
-  
+
   @Override
-  public final void parseLines() 
+  public final void parseLines()
     throws HeaderParseException {
     parseStringValue();
   }
@@ -289,7 +292,7 @@ public abstract class HeaderFieldWithParams
    *        primary value should be written.
    */
   protected abstract void writePrimaryValue(StringBuilder sb);
-  
+
   @Override
   public final void writeToAssemble(MIMEOutputStream out)
     throws IOException {
@@ -305,6 +308,6 @@ public abstract class HeaderFieldWithParams
     sb.append(COLON);
     writePrimaryValue(sb);
     m_paramList.writeOut(sb, sb.length());
-    return sb.toString();  
+    return sb.toString();
   }
 }

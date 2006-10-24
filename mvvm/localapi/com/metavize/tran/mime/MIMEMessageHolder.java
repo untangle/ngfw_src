@@ -1,17 +1,20 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
+
 import java.io.*;
-import com.metavize.tran.util.FileFactory;
 import java.nio.ByteBuffer;
+
+import com.metavize.tran.util.FileFactory;
 
 
 /**
@@ -29,7 +32,7 @@ public class MIMEMessageHolder {
   private MIMESource m_source;
   private boolean m_changed = false;
   private File m_file;
-  
+
 
   public MIMEMessageHolder(MIMEMessage message,
     MIMESource source) {
@@ -45,9 +48,9 @@ public class MIMEMessageHolder {
   public MIMEMessage getMIMEMessage() {
     return m_message;
   }
-    
+
   /**
-   * Write-out the MIMEMessage.  If the 
+   * Write-out the MIMEMessage.  If the
    * message has not changed, the source is used.
    * Otherwise, the message's writeTo
    * method is invoked.
@@ -120,7 +123,7 @@ public class MIMEMessageHolder {
   }
 
   /**
-   * Close this holder.  Also closes the 
+   * Close this holder.  Also closes the
    * source and MIMEMessage
    */
   public void close() {

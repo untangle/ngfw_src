@@ -1,19 +1,21 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
+
 import java.io.*;
 import java.util.*;
-import org.apache.log4j.Logger;
-import static com.metavize.tran.util.Ascii.*;
+
 import com.metavize.tran.util.*;
+import org.apache.log4j.Logger;
 import static com.metavize.tran.mime.HeaderNames.*;
 
 
@@ -25,18 +27,18 @@ import static com.metavize.tran.mime.HeaderNames.*;
 public class AttachedMIMEMessage
   extends MIMEPart {
 
-  private final Logger m_logger = Logger.getLogger(AttachedMIMEMessage.class);  
+  private final Logger m_logger = Logger.getLogger(AttachedMIMEMessage.class);
 
   private MIMEMessage m_attach;
 
   public AttachedMIMEMessage(MIMEPartHeaders headers) throws IOException,
-      InvalidHeaderDataException, 
+      InvalidHeaderDataException,
       HeaderParseException,
       MIMEPartParseException {
-      
+
     super(headers);
 
-  }  
+  }
 
   public AttachedMIMEMessage(MIMEMessage attach) {
     super();
@@ -59,10 +61,10 @@ public class AttachedMIMEMessage
     MIMEPolicy policy,
     String outerBoundary,
     MIMEPartHeaders headers) throws IOException,
-      InvalidHeaderDataException, 
+      InvalidHeaderDataException,
       HeaderParseException,
       MIMEPartParseException {
-      
+
     super(headers);
     m_logger.debug("[<init>] parse child");
     m_attach = new MIMEMessage(stream,
@@ -80,7 +82,7 @@ public class AttachedMIMEMessage
     MIMESource source,
     MIMEPolicy policy,
     String outerBoundary) throws IOException,
-      InvalidHeaderDataException, 
+      InvalidHeaderDataException,
       HeaderParseException,
       MIMEPartParseException {
 
@@ -95,8 +97,8 @@ public class AttachedMIMEMessage
     setWrappedMessage(msg);
     return ret;
   }
-    
-  
+
+
 /*
   @Override
   public void dispose() {
@@ -107,7 +109,7 @@ public class AttachedMIMEMessage
 */
   @Override
   public boolean isMultipart() {
-    checkDisposed();  
+    checkDisposed();
     return true;
   }
 /*
@@ -119,7 +121,7 @@ public class AttachedMIMEMessage
   @Override
   public int getNumChildren() {
     checkDisposed();
-    return getWrappedMessage()==null?0:1;    
+    return getWrappedMessage()==null?0:1;
   }
 
   @Override
@@ -156,11 +158,11 @@ public class AttachedMIMEMessage
 
   @Override
   public File getContentAsFile(FileFactory factory,
-    boolean decoded) 
+    boolean decoded)
     throws IOException {
 
     checkDisposed();
-    
+
     File f = factory.createFile();
     FileOutputStream fOut = null;
     try {
@@ -186,7 +188,7 @@ public class AttachedMIMEMessage
 
   @Override
   public final void writeTo(MIMEOutputStream out)
-    throws IOException {  
+    throws IOException {
     checkDisposed();
     m_logger.debug("[writeTo()] write headers");
     getMPHeaders().writeTo(out);

@@ -1,17 +1,19 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
-import java.util.Map;
+
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import static com.metavize.tran.util.Ascii.*;
 
 /**
@@ -28,7 +30,7 @@ import static com.metavize.tran.util.Ascii.*;
  * <b>Note that it currently does no encoding/decoding
  * for non-ascii text (RFC 2047), nor does it "obey" the
  * goofy continuations of RFC 2184</b>
- * 
+ *
  */
 public class ParamList {
 
@@ -52,9 +54,9 @@ public class ParamList {
    *
    * @param key the param name
    * @param value the param value
-   */  
+   */
   public void set(String key, String value) {
-    LCString lcKey = new LCString(key);  
+    LCString lcKey = new LCString(key);
     if(value==null) {
       remove(lcKey);
     }
@@ -68,7 +70,7 @@ public class ParamList {
    * is not mapped, no error is encountered
    *
    * @param key the name of the parameter to remove
-   */  
+   */
   public void remove(LCString key) {
     m_map.remove(key);
   }
@@ -80,7 +82,7 @@ public class ParamList {
    *
    * @return true if a call to {@link #get get}
    *         will return a non-null value
-   */  
+   */
   public boolean contains(LCString key) {
     return m_map.containsKey(key);
   }
@@ -92,7 +94,7 @@ public class ParamList {
    *
    * @return the value, or null if
    *         {@link contains not mapped}
-   */  
+   */
   public String get(LCString key) {
     ParamKVP ret = m_map.get(key);
     return ret==null?
@@ -115,7 +117,7 @@ public class ParamList {
    *        line (i.e. the header name, colon, and
    *        any primary value).
    *
-   * @return the length of the current (last) line 
+   * @return the length of the current (last) line
    *         of the StringBuilder
    */
   public int writeOut(StringBuilder sb,
@@ -145,7 +147,7 @@ public class ParamList {
     }
     return thisLineLen;
   }
-  
+
   private class ParamKVP {
     final String key;
     final String val;

@@ -1,23 +1,24 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
 
 //TODO: bscott Make sure we also set the "name" attribute,
 //      for compatability with crappy MUAs
 
 /**
- * Object representing a "Content-Disposition" Header as found in an 
+ * Object representing a "Content-Disposition" Header as found in an
  * RFC 821/RFC 2045 document.
  */
-public class ContentDispositionHeaderField 
+public class ContentDispositionHeaderField
   extends HeaderFieldWithParams {
 
   public static final String FILENAME_PARAM_NAME = "filename";
@@ -46,7 +47,7 @@ public class ContentDispositionHeaderField
     ATTACH,
     INLINE
   }
-  
+
   private DispositionType m_dispType;
 
   public ContentDispositionHeaderField(String name) {
@@ -54,9 +55,9 @@ public class ContentDispositionHeaderField
   }
   public ContentDispositionHeaderField() {
     super(HeaderNames.CONTENT_DISPOSITION, HeaderNames.CONTENT_DISPOSITION_LC);
-  }  
+  }
 
-  
+
   /**
    * Get the DispositionType as defined by this
    * header.  As-per RFC2183, this defaults to
@@ -67,7 +68,7 @@ public class ContentDispositionHeaderField
   public DispositionType getDispositionType() {
     return m_dispType;
   }
-  
+
   /**
    * Set the DispositionType as defined by this
    * header.  Note that converting from ATTACH
@@ -79,8 +80,8 @@ public class ContentDispositionHeaderField
   public void setDispositionType(DispositionType type) {
     m_dispType = type;
     changed();
-  }  
-  
+  }
+
   /**
    * Note that an attachment type of "inline" <b>with</b>
    * a FileName is considered an attachment.  This was a bug
@@ -91,7 +92,7 @@ public class ContentDispositionHeaderField
     return m_dispType == DispositionType.ATTACH ||
       getFilename() != null;
   }
-  
+
   /**
    * May be null, even if {@link #isAttachment isAttachment}
    * is true.
@@ -112,9 +113,9 @@ public class ContentDispositionHeaderField
     //base class is an implicit remove
     setParam(FILENAME_PARAM_NAME, filename);
     changed();
-  }  
-  
-  
+  }
+
+
   /**
    * Converts the DispositionType to a String.
    */
@@ -139,7 +140,7 @@ public class ContentDispositionHeaderField
     }
     if(SIZE_PARAM_NAME_KEY.str.equals(paramName)) {
       return ParamParsePolicy.ATOM_OR_QTEXT;
-    }    
+    }
     return super.getParamParsePolicy(paramName);
   }
 
@@ -161,6 +162,6 @@ public class ContentDispositionHeaderField
 
   @Override
   protected void writePrimaryValue(StringBuilder sb) {
-    sb.append(dispositionTypeToString(getDispositionType()));  
+    sb.append(dispositionTypeToString(getDispositionType()));
   }
 }

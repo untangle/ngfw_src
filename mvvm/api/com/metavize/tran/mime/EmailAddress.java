@@ -1,23 +1,25 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
 
-import javax.mail.internet.*;
-import javax.mail.*;
-import org.apache.log4j.Logger;
 import java.io.UnsupportedEncodingException;
+import javax.mail.*;
+import javax.mail.internet.*;
+
+import org.apache.log4j.Logger;
 
 //---------------------------------------------------------
 // Implementation Note:  Currently, we wrap a
-// JavaMail InternetAddress.  Experience has shown 
+// JavaMail InternetAddress.  Experience has shown
 // JavaMail to sometimes be flaky, so this class adds
 // abstraction should we ever need to roll our own.
 //
@@ -35,7 +37,7 @@ import java.io.UnsupportedEncodingException;
  * seen often in MIME headers) whereas the SMTPString version will not.
  * There are accessors for each.
  * <p>
- * To support SMTP, there is a special case of a "blank" address.  This is an 
+ * To support SMTP, there is a special case of a "blank" address.  This is an
  * address without any data.  This is useful when the SMTP command "MAIL FROM:"
  * is formatted with "<>", as with notifications.  A null address can be tested-for
  * via the {@link #isNullAddress isNullAddress} accessor.  Note that Null address
@@ -50,62 +52,62 @@ public class EmailAddress {
   /**
    * Email Address used to represent a blank mailbox.
    */
-  public static final EmailAddress NULL_ADDRESS = 
+  public static final EmailAddress NULL_ADDRESS =
     new EmailAddress();
-  
+
   /**
    * Construct a new EmailAddress from the "local@domain"
    * formatted String.
    *
    * @param addr the "local@domain" formatted String.
    */
-  public EmailAddress(String addr) 
+  public EmailAddress(String addr)
     throws BadEmailAddressFormatException {
     try {
       m_jmAddress = new InternetAddress(addr, false);
     }
     catch(AddressException ex) {
       throw new BadEmailAddressFormatException(ex);
-    }    
+    }
   }
-  
+
   /**
    * Construct a new EmailAddress from the "local@domain"
    * formatted String and personal
    *
    * @param addr the "local@domain" formatted String.
-   * @param personal the personal, which may currently be 
-   *        encoded using the "=?" stuff from RFC 2047 
-   */  
-  public EmailAddress(String addr, String personal) 
+   * @param personal the personal, which may currently be
+   *        encoded using the "=?" stuff from RFC 2047
+   */
+  public EmailAddress(String addr, String personal)
     throws BadEmailAddressFormatException,
       java.io.UnsupportedEncodingException {
     try {
       m_jmAddress = new InternetAddress(addr, false);
       if(personal != null) {
         m_jmAddress.setPersonal(personal);
-      }  
+      }
     }
     catch(AddressException ex) {
       throw new BadEmailAddressFormatException(ex);
-    }    
-  }  
-    
-    
+    }
+  }
+
+
   /**
    * Constructor which wraps a JavaMail address.
    */
   protected EmailAddress(InternetAddress addr) {
     m_jmAddress = addr;
   }
-  
+
   /*
    * Constructor for the null address.
    */
   private EmailAddress() {
   }
-  
-  
+
+
   /**
    * Test if this is a null address.
    *
@@ -114,14 +116,14 @@ public class EmailAddress {
   public boolean isNullAddress() {
     return m_jmAddress == null;
   }
-    
-  
+
+
   /**
    * Access the "personal" field, which is a comment associated
    * with the address (usualy the name of the user who owns the address).
    * This may be null.
    * <p>
-   * Any RFC 2047 encoding has been removed from 
+   * Any RFC 2047 encoding has been removed from
    * what is returned.
    */
   public String getPersonal() {
@@ -136,8 +138,8 @@ public class EmailAddress {
 
 //    return isNullAddress()?
 //      null:
-//      m_jmAddress.getPersonal();    
-    
+//      m_jmAddress.getPersonal();
+
     if(isNullAddress()) {
       return null;
     }
@@ -154,7 +156,7 @@ public class EmailAddress {
     }
     return ret;
   }
-  
+
   /**
    * Get the email address (w/o personal).
    *
@@ -164,7 +166,7 @@ public class EmailAddress {
     return isNullAddress()?
       null:m_jmAddress.getAddress();
   }
-  
+
   /**
    * Convert to a String suitable for SMTP transport.  This removes
    * any of the "personal" stuff, and makes sure it
@@ -200,7 +202,7 @@ public class EmailAddress {
     }
     return str;
   }
-  
+
   /**
    * Convert to a MIME String.  Note that this may have personal name,
    * and may be encoded as-per the encoding of the original personal
@@ -209,7 +211,7 @@ public class EmailAddress {
     return isNullAddress()?
       BLANK_STR:m_jmAddress.toString();
   }
-  
+
   /**
    * Email addresses test for equivilancy based on the case-insensitive
    * comparison of the {@link #getAddress address} property.  Twp
@@ -218,7 +220,7 @@ public class EmailAddress {
   public boolean equals(Object obj) {
     if(obj instanceof EmailAddress) {
       EmailAddress other = (EmailAddress) obj;
-      return 
+      return
         other.isNullAddress()?
           isNullAddress()://Other guy null.  True if we are also null address
           isNullAddress()?//Other guy is not null.  Test if we are
@@ -227,7 +229,7 @@ public class EmailAddress {
     }
     return false;
   }
-  
+
   /**
    * For debugging.  Callers should be aware of their preference
    * for {@link #toSMTPString SMTP} and {@link #toMIMEString MIME}
@@ -238,16 +240,16 @@ public class EmailAddress {
   public String toString() {
     return toMIMEString();
   }
-  
+
   @Override
   public int hashCode() {
     return isNullAddress()?
       BLANK_STR.hashCode():m_jmAddress.hashCode();
   }
 
-  
+
   /**
-   * Helper method for creating a (Metavize) EmailAddress from 
+   * Helper method for creating a (Metavize) EmailAddress from
    * a JavaMail address.  Note that a blank (null) address
    * can be created by passing null.
    *
@@ -285,7 +287,7 @@ public class EmailAddress {
     catch(AddressException ex) {
       throw new BadEmailAddressFormatException(ex);
     }
-    
+
   }
 
   /**
@@ -312,7 +314,7 @@ public class EmailAddress {
     parseTest("'foo' foo@moo");
     parseTest("foo <foo@moo>");
     parseTest("foo<foo@moo>");
-    
+
     parseTest("(\"foo\")<foo@moo>");
     parseTest("(\"foo\") <foo@moo>");
     parseTest("(\"foo\") foo@moo");
@@ -349,7 +351,7 @@ public class EmailAddress {
     parseTest("'foo o'connor' foo@moo");
     parseTest("foo o'connor <foo@moo>");
     parseTest("foo o'connor<foo@moo>");
-    
+
     parseTest("(\"foo o'connor\")<foo@moo>");
     parseTest("(\"foo o'connor\") <foo@moo>");
     parseTest("(\"foo o'connor\") foo@moo");
@@ -376,8 +378,8 @@ public class EmailAddress {
     parseTest("'(foo o'connor)' ");
     parseTest("(foo o'connor) <>");
     parseTest("(foo o'connor)<>");
-    
-    
+
+
   }
 
   private static void parseTest(String str) {

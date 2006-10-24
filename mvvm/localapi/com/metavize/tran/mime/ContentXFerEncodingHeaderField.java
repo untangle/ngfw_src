@@ -1,22 +1,22 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
 
 import java.io.IOException;
 import static com.metavize.tran.util.Ascii.SEMI;
 import static com.metavize.tran.util.Ascii.COLON;
 
-
 /**
- * Object representing a "Content-transfer-Encoding" Header as found in an 
+ * Object representing a "Content-transfer-Encoding" Header as found in an
  * RFC 821/RFC 2045 document.
  */
 public class ContentXFerEncodingHeaderField
@@ -28,7 +28,7 @@ public class ContentXFerEncodingHeaderField
   public static final String QP_STR = "quoted-printable";
   public static final String BASE64_STR = "base64";
   public static final String UUENCODE_STR = "uuencode";
-  public static final String UUENCODE_STR_ALT = "x-uuencode";  
+  public static final String UUENCODE_STR_ALT = "x-uuencode";
   public static final String UNKNOWN_STR = BINARY_STR;
 
   /**
@@ -43,35 +43,35 @@ public class ContentXFerEncodingHeaderField
     UUENCODE,
     UNKNOWN
   };
-  
+
   private XFreEncoding m_encoding;
- 
+
   public ContentXFerEncodingHeaderField(String name) {
     super(name, HeaderNames.CONTENT_TRANSFER_ENCODING_LC);
   }
   public ContentXFerEncodingHeaderField() {
     super(HeaderNames.CONTENT_TRANSFER_ENCODING, HeaderNames.CONTENT_TRANSFER_ENCODING_LC);
-  }  
+  }
 
-    
-  
-  @Override  
-  protected void parseStringValue() 
+
+
+  @Override
+  protected void parseStringValue()
     throws HeaderParseException {
-    
+
     String val = getValueAsString();
-    
+
     if(val == null) {
       m_encoding = ContentXFerEncodingHeaderField.XFreEncoding.SEVEN_BIT;
       return;
     }
-    
+
     //Shouldn't have other stuff but....
     if(val.indexOf(SEMI) > 0) {
       val = val.substring(0, val.indexOf(SEMI));
     }
     val = val.trim().toLowerCase();
-    
+
     if(val.equals(SEVEN_BIT_STR)) {
       m_encoding = ContentXFerEncodingHeaderField.XFreEncoding.SEVEN_BIT;
     }
@@ -89,14 +89,14 @@ public class ContentXFerEncodingHeaderField
     }
     else if(val.equals(UUENCODE_STR) || val.equals(UUENCODE_STR_ALT)) {
       m_encoding = ContentXFerEncodingHeaderField.XFreEncoding.UUENCODE;
-    }    
+    }
     else {
       m_encoding = ContentXFerEncodingHeaderField.XFreEncoding.UNKNOWN;
-    }                    
-    
+    }
+
 
   }
-  
+
   public XFreEncoding getEncodingType() {
     return m_encoding;
   }
@@ -104,13 +104,13 @@ public class ContentXFerEncodingHeaderField
     m_encoding = encoding;
     changed();
   }
-  
+
   @Override
-  protected void parseLines() 
+  protected void parseLines()
     throws HeaderParseException {
-    
+
     parseStringValue();
-    
+
   }
 
   /**
@@ -138,23 +138,23 @@ public class ContentXFerEncodingHeaderField
     }
     return UNKNOWN_STR;
   }
-  
+
   @Override
   public void writeToAssemble(MIMEOutputStream out)
     throws IOException {
     out.write(toString());
     out.writeLine();
-  }    
-  
+  }
+
   /**
    * Really only for debugging, not to produce output suitable
    * for output.
-   */  
+   */
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append(getName());
     sb.append(COLON);
     sb.append(enumToString(getEncodingType()));
     return sb.toString();
-  }  
-} 
+  }
+}

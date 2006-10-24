@@ -1,24 +1,26 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
- 
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
-import java.io.IOException;
+
 import java.io.File;
+import java.io.IOException;
+
 import com.metavize.tran.util.*;
 
 /**
- * This interface is a strange beast.  It is intended as an 
+ * This interface is a strange beast.  It is intended as an
  * abstraction to the bytes which comprise a MIME message, which
  * may be within a file (or memory, esp for testing).  Since we are
- * limited by the file semantics, we cannot offer random access to 
+ * limited by the file semantics, we cannot offer random access to
  * any byte[] for the underlying MIME content.  Instead, instances
  * of this interface offer a Stream.  Here's where things get ugly.
  * <p>
@@ -28,11 +30,11 @@ import com.metavize.tran.util.*;
  * I'd like to be able to use that class independent of this interface.  Instead,
  * we offer a method to produce such a Stream on instances of this class.
  * <p>
- * 
+ *
  */
 public interface MIMESource {
 
-  /** 
+  /**
    * Access a Stream for the underlying bytes of the MIME.
    * Each time this method is called, a new Stream is produced
    * positioned at the start of the MIME bytes.  The actual position
@@ -45,29 +47,29 @@ public interface MIMESource {
    */
   public MIMEParsingInputStream getInputStream()
     throws IOException;
-    
+
   public MIMEParsingInputStream getInputStream(long offset)
-    throws IOException;  
-    
+    throws IOException;
+
   /**
    * Close this Source.  Any associated resources (i.e. Files)
    * should be closed and deleted.  Any open MIMEParsingInputStreams
    * will also be implicitly closed.
-   */  
-  public void close();  
-  
+   */
+  public void close();
+
   /**
    * If a MIMESource is already in a File, it is permitted
    * to return the existing file and not create a new one
    * via the factory.
    */
   public File toFile(FileFactory factory) throws IOException;
-  
-  
+
+
   /**
    * If a MIMESource is already in a File, it is permitted
    * to return the existing file and not create a new one
    * via the factory.
    */
-  public File toFile(FileFactory factory, String name) throws IOException;  
+  public File toFile(FileFactory factory, String name) throws IOException;
 }

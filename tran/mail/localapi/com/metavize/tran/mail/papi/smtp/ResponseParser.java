@@ -1,21 +1,22 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mail.papi.smtp;
 
 import static com.metavize.tran.util.BufferUtil.*;
 import static com.metavize.tran.util.ASCIIUtil.*;
 import static com.metavize.tran.util.Ascii.*;
 
-import java.util.*;
 import java.nio.*;
+import java.util.*;
 
 //TODO bscott unbounded nature of buffering here
 //     concerns me, but who would connect to a
@@ -62,7 +63,7 @@ public class ResponseParser {
    */
   public Response parse(ByteBuffer buf)
     throws NotAnSMTPResponseLineException {
-    
+
     while(buf.hasRemaining()) {
       int endOfLine = findCrLf(buf);
       if(endOfLine == -1) {
@@ -84,7 +85,7 @@ public class ResponseParser {
 
       boolean isLast = true;
       String arg = null;
-      
+
       if(line.hasRemaining()) {
         byte b = line.get();
         if(!(b == SP || b == DASH)) {
@@ -92,7 +93,7 @@ public class ResponseParser {
           dup.limit(endOfLine);
           throw new NotAnSMTPResponseLineException("Not a response line NNNX where " +
             "NNN is number and X is not space or dash \"" +
-            bbToString(line) + "\"");          
+            bbToString(line) + "\"");
         }
         isLast = (b == SP);
         if(line.hasRemaining()) {
@@ -107,7 +108,7 @@ public class ResponseParser {
 
       //Consume the line from the buffer
       buf.position(endOfLine + 2);
-      
+
       ResponseLine respLine = new ResponseLine(replyCode, arg, isLast);
       if(!respLine.isLast) {
         if(m_lines == null) {
@@ -206,7 +207,7 @@ public class ResponseParser {
     String inputStr;
     String outputStr;
 
-    
+
     inputStr = "123 " + crlf;
     outputStr = inputStr;
     doTest("Normal Conforming", inputStr.getBytes(), outputStr.getBytes(), false);
@@ -226,7 +227,7 @@ public class ResponseParser {
     inputStr = "123-" + crlf + "123 " + crlf;
     outputStr = inputStr;
     doTest("123-CRLF123CRLF", inputStr.getBytes(), outputStr.getBytes(), false);
-    
+
     inputStr = "123-" + crlf + "123" + crlf;
     outputStr = "123-" + crlf + "123 " + crlf;
     doTest("123-CRLF123CRLF (fix trailing space)", inputStr.getBytes(), outputStr.getBytes(), false);
@@ -248,7 +249,7 @@ public class ResponseParser {
       "123-doo" + crlf +
       "123 goo" + crlf;
     outputStr = inputStr;
-    doTest("text on each of 4 lines", inputStr.getBytes(), outputStr.getBytes(), false);    
+    doTest("text on each of 4 lines", inputStr.getBytes(), outputStr.getBytes(), false);
   }
 
 
@@ -277,7 +278,7 @@ public class ResponseParser {
 
     while(ch.hasNext()) {
       int[] arraySizes = ch.next();
-      String subName = name + arraySizesToString(arraySizes);      
+      String subName = name + arraySizesToString(arraySizes);
       List<ByteBuffer> bufs = new ArrayList<ByteBuffer>();
       int lenSoFar = 0;
       for(int i = 0; i<arraySizes.length; i++) {
@@ -293,10 +294,10 @@ public class ResponseParser {
           System.out.println("=======================================\n");
         }
         catch(Exception ex) {
-          System.out.println("\n=======================================");      
+          System.out.println("\n=======================================");
           System.out.println(subName + " passed (Got exception)");
-          System.out.println("=======================================\n");           
-        }        
+          System.out.println("=======================================\n");
+        }
       }
       else {
         byte[] ret = test(subName, bufs);
@@ -308,9 +309,9 @@ public class ResponseParser {
           System.out.println("=======================================\n");
         }
         else {
-          System.out.println("\n=======================================");      
+          System.out.println("\n=======================================");
           System.out.println(subName + " passed");
-          System.out.println("=======================================\n");        
+          System.out.println("=======================================\n");
         }
       }
     }
@@ -372,7 +373,7 @@ public class ResponseParser {
     int len = Math.max(expected.length, found.length);
 
     System.out.println(" expected     output");
-    
+
     for(int i = 0; i<len; i++) {
       String str = null;
       if(i < expected.length) {
@@ -400,7 +401,7 @@ public class ResponseParser {
       }
       else {
         System.out.print("  <EOF>  ");
-      }      
+      }
       System.out.println();
     }
   }
@@ -424,8 +425,8 @@ public class ResponseParser {
       }
     }
     return true;
-  }  
-  
+  }
+
   //Stateful class which acts as a factory
   //for all combinations of array sizes.
   //Works by ensuring that any given
@@ -475,7 +476,7 @@ public class ResponseParser {
         return makeNext(ptr+1);
       }
     }
-    
+
   }
 */
 

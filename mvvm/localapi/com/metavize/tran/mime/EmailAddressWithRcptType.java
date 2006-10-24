@@ -1,42 +1,42 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
 
-
 /**
- * Lightweight class to associate an 
- * EmailAddress with its RcptType 
+ * Lightweight class to associate an
+ * EmailAddress with its RcptType
  * in a MIMEMessage.
  */
 public class EmailAddressWithRcptType {
-  
+
   /**
    * The address member
    */
   public final EmailAddress address;
-  
+
   /**
    * The type of recipient member
    */
   public final RcptType type;
-  
+
   /**
-   * 
+   *
    */
   public EmailAddressWithRcptType(EmailAddress address,
     RcptType type) {
     this.address = address;
     this.type = type;
   }
-  
+
   /**
    * Tests for equality based on equality of addresses,
    * then equivilancy of type.
@@ -59,7 +59,7 @@ public class EmailAddressWithRcptType {
     }
     return false;
   }
-  
+
   @Override
   public int hashCode() {
     //TODO bscott.  What should null's hashcode be?  How
@@ -71,8 +71,8 @@ public class EmailAddressWithRcptType {
       (type==null?
         address.hashCode():
         address.hashCode() + type.hashCode());
-  }  
-  
+  }
+
   /**
    * For debugging
    */
@@ -84,6 +84,6 @@ public class EmailAddressWithRcptType {
     sb.append(address==null?"null":address.toMIMEString());
     return sb.toString();
   }
-  
+
 
 }

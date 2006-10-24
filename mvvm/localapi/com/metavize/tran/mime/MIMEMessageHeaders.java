@@ -1,17 +1,19 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
+
 import static com.metavize.tran.mime.HeaderNames.*;
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 
 /**
@@ -19,26 +21,26 @@ import java.io.*;
  * Adds convienence methods for dealing with the common
  * headers (TO, FROM, CC, SUBJECT).
  */
-public class MIMEMessageHeaders 
+public class MIMEMessageHeaders
   extends MIMEPartHeaders {
 
   public MIMEMessageHeaders(MailMessageHeaderFieldFactory factory) {
     super(factory);
   }
-  
+
   public MIMEMessageHeaders() {
     super(new MailMessageHeaderFieldFactory());
-  }  
-  
+  }
+
   public MIMEMessageHeaders(MailMessageHeaderFieldFactory factory,
     MIMESource source,
     int sourceStart,
     int sourceLen,
     List<HeaderField> headersInOrder,
     Map<LCString, List<HeaderField>> headersByName) {
-    
+
     super(factory, source, sourceStart, sourceLen, headersInOrder, headersByName);
-    
+
   }
 
   /**
@@ -49,21 +51,21 @@ public class MIMEMessageHeaders
     List<HeaderField> headers = getHeaderFields(SUBJECT_LC);
     return (headers == null || headers.size() == 0)?
       null:
-      headers.get(0).getValueAsString();    
+      headers.get(0).getValueAsString();
   }
 
   /**
    * Set the subject.  Passing null implicitly causes
    * the SUBJECT heder field to be removed.
    */
-  public void setSubject(String subject) 
+  public void setSubject(String subject)
     throws HeaderParseException {
 
     if(subject == null) {
       removeHeaderFields(SUBJECT_LC);
       return;
     }
-    
+
     HeaderField subjectField = null;
     List<HeaderField> headers = getHeaderFields(SUBJECT_LC);
     if(headers == null || headers.size() == 0) {
@@ -101,7 +103,7 @@ public class MIMEMessageHeaders
       removeHeaderFields(FROM_LC);
       return;
     }
-    
+
     EmailAddressHeaderField fromField = null;
     List<HeaderField> headers = getHeaderFields(FROM_LC);
     if(headers == null || headers.size() == 0) {
@@ -141,14 +143,14 @@ public class MIMEMessageHeaders
       return false;
     }
     for(HeaderField field : allHeadersOfType) {
-      EmailAddressHeaderField addrField = 
+      EmailAddressHeaderField addrField =
         (EmailAddressHeaderField) field;
       Iterator<EmailAddress> addresses = addrField.iterator();
       while(addresses.hasNext()) {
         if(addresses.next().equals(rcpt.address)) {
           return true;
         }
-      }      
+      }
     }
     return false;
   }
@@ -156,7 +158,7 @@ public class MIMEMessageHeaders
   public void addRecipient(EmailAddress addr, RcptType type) {
     addRecipient(new EmailAddressWithRcptType(addr, type));
   }
-    
+
   public void addRecipient(EmailAddressWithRcptType newMember) {
     EmailAddressHeaderField field = getHeaderFieldForModification(newMember.type);
     if(!field.contains(newMember.address)) {
@@ -172,13 +174,13 @@ public class MIMEMessageHeaders
     removeRecipient(new EmailAddressWithRcptType(addr, RcptType.TO));
     removeRecipient(new EmailAddressWithRcptType(addr, RcptType.CC));
   }
-  
+
   public void removeRecipient(EmailAddressWithRcptType rcptWithType) {
-    EmailAddressHeaderField field = 
+    EmailAddressHeaderField field =
       getHeaderFieldForModification(rcptWithType.type);
     field.remove(rcptWithType.address);
   }
-  
+
   public List<EmailAddressWithRcptType> getAllRecipients() {
     List<EmailAddressWithRcptType> ret = new ArrayList<EmailAddressWithRcptType>();
     Set<EmailAddress> addresses = getRecipients(RcptType.TO);
@@ -188,14 +190,14 @@ public class MIMEMessageHeaders
       }
     }
     addresses = getRecipients(RcptType.CC);
-    if(addresses != null) {    
+    if(addresses != null) {
       for(EmailAddress addr : addresses) {
         ret.add(new EmailAddressWithRcptType(addr, RcptType.CC));
       }
     }
     return ret;
   }
-  
+
   public Set<EmailAddress> getRecipients(RcptType type) {
     List<HeaderField> allHeadersOfType = getHeaderFields(rcptTypeToHeaderName(type));
     Set<EmailAddress> ret = new HashSet<EmailAddress>();
@@ -203,7 +205,7 @@ public class MIMEMessageHeaders
       return ret;
     }
     for(HeaderField field : allHeadersOfType) {
-      EmailAddressHeaderField addrField = 
+      EmailAddressHeaderField addrField =
         (EmailAddressHeaderField) field;
       Iterator<EmailAddress> addresses = addrField.iterator();
       while(addresses.hasNext()) {
@@ -219,11 +221,11 @@ public class MIMEMessageHeaders
    */
   public static MIMEMessageHeaders parseMMHeaders(MIMEParsingInputStream stream,
     MIMESource streamSource)
-    throws IOException, 
-      InvalidHeaderDataException, 
+    throws IOException,
+      InvalidHeaderDataException,
       HeaderParseException {
     return parseMMHeaders(stream, streamSource, new MIMEPolicy());
-  }  
+  }
 
   /**
    * Helper method.  Parses the headers from source
@@ -232,15 +234,15 @@ public class MIMEMessageHeaders
   public static MIMEMessageHeaders parseMMHeaders(MIMEParsingInputStream stream,
     MIMESource streamSource,
     MIMEPolicy policy)
-    throws IOException, 
-      InvalidHeaderDataException, 
+    throws IOException,
+      InvalidHeaderDataException,
       HeaderParseException {
     return (MIMEMessageHeaders) parseHeaders(stream,
       streamSource,
       new MailMessageHeaderFieldFactory(),
       policy);
-  }  
-  
+  }
+
   private void compressAddrField(RcptType type) {
     LCString typeAsString = rcptTypeToHeaderName(type);
     Set<EmailAddress> oldAddresses = getRecipients(type);
@@ -248,13 +250,13 @@ public class MIMEMessageHeaders
     if(oldAddresses == null || oldAddresses.size() == 0) {
       return;
     }
-    EmailAddressHeaderField newHeader = (EmailAddressHeaderField) 
+    EmailAddressHeaderField newHeader = (EmailAddressHeaderField)
       addHeaderField((type == RcptType.TO?HeaderNames.TO:HeaderNames.CC));
     for(EmailAddress address : oldAddresses) {
       newHeader.add(address);
     }
   }
-  
+
   /**
    * Causes compression and creation
    */
@@ -262,7 +264,7 @@ public class MIMEMessageHeaders
     LCString typeAsString = rcptTypeToHeaderName(type);
     List<HeaderField> allHeadersOfType = getHeaderFields(typeAsString);
     if(allHeadersOfType == null || allHeadersOfType.size() == 0) {
-      return (EmailAddressHeaderField) 
+      return (EmailAddressHeaderField)
         addHeaderField((type == RcptType.TO?HeaderNames.TO:HeaderNames.CC));
     }
     if(allHeadersOfType.size() > 1) {
@@ -270,7 +272,7 @@ public class MIMEMessageHeaders
     }
     return (EmailAddressHeaderField) (getHeaderFields(typeAsString).get(0));
   }
-  
+
   private LCString rcptTypeToHeaderName(RcptType type) {
     switch(type) {
       case TO:
@@ -280,9 +282,9 @@ public class MIMEMessageHeaders
     }
     return null;
   }
-  
-    
 
-  
+
+
+
 
 }

@@ -1,13 +1,14 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
 
 import static com.metavize.tran.util.Ascii.*;
@@ -57,7 +58,7 @@ public class HeaderFieldTokenizer {
     }
     /**
      * Only applies for DELIM.  Otherwise, returns 0
-     */    
+     */
     public byte getDelim() {
       return m_delim;
     }
@@ -86,7 +87,7 @@ public class HeaderFieldTokenizer {
 
     /**
      * Append the value of this token (either a single char
-     * or the return of {@link #getText 
+     * or the return of {@link #getText
      */
     public void appendTo(StringBuilder sb) {
       if(getType() == TokenType.ATOM ||
@@ -110,7 +111,7 @@ public class HeaderFieldTokenizer {
   }
   public HeaderFieldTokenizer(byte[] bytes) {
     this(bytes, DEF_DELIMS);
-  }  
+  }
   public HeaderFieldTokenizer(byte[] bytes,
     byte[] delims) {
     m_data = bytes;
@@ -167,7 +168,7 @@ public class HeaderFieldTokenizer {
   private Token nextToken() {
 
     StringBuilder sb = null;
-  
+
     while(m_pos < m_len) {
       //Check for pure delim
       if(isDelim(m_data[m_pos]) &&
@@ -175,7 +176,7 @@ public class HeaderFieldTokenizer {
 
         if(m_data[m_pos] == OPEN_PAREN_B) {
           if(sb==null) {
-            m_openCommentCount++;          
+            m_openCommentCount++;
             return new Token(TokenType.OPEN_COMMENT, m_data[m_pos++]);
           }
           else {
@@ -184,7 +185,7 @@ public class HeaderFieldTokenizer {
         }
         if(m_data[m_pos] == CLOSE_PAREN_B) {
           if(sb==null) {
-            m_openCommentCount--;          
+            m_openCommentCount--;
             return new Token(TokenType.OPEN_COMMENT, m_data[m_pos++]);
           }
           else {
@@ -196,7 +197,7 @@ public class HeaderFieldTokenizer {
           new Token(TokenType.DELIM, m_data[m_pos++]):
           new Token(TokenType.ATOM, sb);
       }
-      
+
       if(sb == null) {
         sb = new StringBuilder();
       }
@@ -265,7 +266,7 @@ public class HeaderFieldTokenizer {
     test("text/plain name=\"eicar.=?us-ascii?Q?com?=");
     test("text/plain name=eicar.=?us-ascii?Q?com?=");
     test("text/plain name=eicar.=?us-ascii?Q?co?=m");
-    
+
     test("text/plain name==?us-ascii?b?eicar.com?=");
     test("text/plain name==?us-ascii?b?eicar?=.com");
     test("text/plain name==?us-ascii?b?eicar?= =?us-ascii?b?.com?=");
@@ -290,7 +291,7 @@ public class HeaderFieldTokenizer {
         System.out.print((char) token.getDelim());
       }
       System.out.println("|");
-        
+
     }
   }
 */

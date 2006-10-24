@@ -1,13 +1,14 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
 
 /**
@@ -22,22 +23,22 @@ public class LCString {
    * be null.
    */
   public final String str;
-  
-  public LCString(String mayBeMixedCase) 
+
+  public LCString(String mayBeMixedCase)
     throws NullPointerException {
     this.str = mayBeMixedCase.toLowerCase();
   }
-  
+
   @Override
   public String toString() {
     return str;
   }
-  
+
   @Override
   public int hashCode() {
     return str.hashCode();
   }
-  
+
   @Override
   public boolean equals(Object obj) {
     if(obj == null) {
@@ -52,4 +53,4 @@ public class LCString {
     }
     return false;
   }
-} 
+}

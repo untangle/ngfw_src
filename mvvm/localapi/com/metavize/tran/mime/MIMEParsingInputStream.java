@@ -1,31 +1,31 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
- 
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
-import java.io.InputStream;
-import java.io.PushbackInputStream;
-import java.io.IOException;
-import com.metavize.tran.util.*;
-import java.nio.*;
-import java.util.*;
 
 import static com.metavize.tran.util.Ascii.*;
 import static com.metavize.tran.util.ASCIIUtil.*;
-import com.metavize.tran.util.ByteBufferBuilder;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
+import java.nio.*;
+import java.util.*;
+
+import com.metavize.tran.util.*;
+import com.metavize.tran.util.ByteBufferBuilder;
 import org.apache.log4j.Logger;
 
-
 /**
- * Specialized Stream with methods useful for 
+ * Specialized Stream with methods useful for
  * parsing MIME messages.  It defines a "line" as
  * being terminated by CRLF, CR, or LF.  The
  * sequences "CRCR" and "LFLF" would be considered
@@ -33,16 +33,16 @@ import org.apache.log4j.Logger;
  * <p>
  * For the MIME classes, this class supports querying
  * for the relative position within the larger stream via
- * the {@link #position position() method}.  Note that 
+ * the {@link #position position() method}.  Note that
  * calling the {@link #skip skip method} affects the count.
  * <p>
  * This stream has support for <i>unreading</i>.  This is implemented
- * by pushing bytes back, such that subsequent reads will see 
+ * by pushing bytes back, such that subsequent reads will see
  * the pushed-back bytes (like the JavaSoft "PushbackInputStream").
  */
 public class MIMEParsingInputStream extends InputStream {
 
-  private final Logger m_logger = Logger.getLogger(MIMEParsingInputStream.class);  
+  private final Logger m_logger = Logger.getLogger(MIMEParsingInputStream.class);
 
   private static final int LINE_SZ = 1024;
 
@@ -52,14 +52,14 @@ public class MIMEParsingInputStream extends InputStream {
   private static final int CRLF_EOL = 1;
   private static final int CR_EOL = 2;
   private static final int LF_EOL = 3;
-  
- 
+
+
   /**
    * Class used as the return of the
    * {@link #skipToBoundary skipToBoundary method}.
    */
   public static class BoundaryResult {
-    
+
     /**
      * Was the boundary found.
      */
@@ -83,7 +83,7 @@ public class MIMEParsingInputStream extends InputStream {
      * "EOL--" and trailing "EOL", "--", or "--EOL"
      */
     public final long boundaryLen;
-    
+
     private BoundaryResult() {
       this.boundaryFound = false;
       this.boundaryWasLast = false;
@@ -97,25 +97,25 @@ public class MIMEParsingInputStream extends InputStream {
       this.boundaryWasLast = wasLast;
       this.boundaryStartPos = start;
       this.boundaryLen = end-start;
-    }    
-  }  
-  
+    }
+  }
+
   /**
    * Member indicating that the final boundary was not found.  Used when
    * parsing pre-MIME or non-conformant MIME messages.
    */
   public static final BoundaryResult BOUNDARY_NOT_FOUND = new BoundaryResult();
-  
-    
 
-  private final DynPushbackInputStream m_wrapped;  
-  
+
+
+  private final DynPushbackInputStream m_wrapped;
+
   //A bit optimistic on the system to read more than
   //2 gigs, but since the Java APIs let you skip
   //with a long we should count that as well
   private long m_count = 0;
-  
-  
+
+
   /**
    * Construct a new MIMEParsingInputStream, wrapping the
    * given stream.  Note that this class does not do any
@@ -125,7 +125,7 @@ public class MIMEParsingInputStream extends InputStream {
   public MIMEParsingInputStream(InputStream wrap) {
     m_wrapped = new DynPushbackInputStream(wrap, LINE_SZ, LINE_SZ);
   }
-  
+
   /**
    * The current position (or "count").  This is the number
    * of bytes consumed from the underlying
@@ -138,50 +138,50 @@ public class MIMEParsingInputStream extends InputStream {
   public long position() {
     return m_count;
   }
-  
+
   /**
    * Unread the byte by placing it back into the
    * stream for the next call to {@link #read read}.
-   * 
+   *
    * @param b the byte to be placed back-into the stream
    *
    * @exception IOException from the backing stream
-   */  
-  public void unread(int b) 
+   */
+  public void unread(int b)
     throws IOException {
     m_wrapped.unread(b);
     m_count--;
   }
-  
-  
+
+
   /**
    * Unread the byte sequence by placing it back into the
    * stream for the next call to {@link #read read}.
-   * 
+   *
    * @exception IOException from the backing stream
-   */         
+   */
   public void unread(byte[] b)
     throws IOException {
     m_wrapped.unread(b);
     m_count-=b.length;
-  }      
-  
-  
+  }
+
+
   /**
    * Unread the byte sequence by placing it back into the
    * stream for the next call to {@link #read read}.
-   * 
+   *
    * @exception IOException from the backing stream
-   */         
-  public void unread(byte[] b, int off, int len) 
+   */
+  public void unread(byte[] b, int off, int len)
     throws IOException {
     m_wrapped.unread(b, off, len);
     m_count-=len;
-  }            
-  
-  
-  @Override       
-  public int read() 
+  }
+
+
+  @Override
+  public int read()
     throws IOException {
     int ret = m_wrapped.read();
     if(ret >= 0) {
@@ -189,37 +189,37 @@ public class MIMEParsingInputStream extends InputStream {
     }
     return ret;
   }
-  
-  
-  @Override       
+
+
+  @Override
   public int read(byte[] b)
     throws IOException {
     int ret = m_wrapped.read(b);
     if(ret > 0) {
       m_count+=ret;
-    }        
+    }
     return ret;
-  }      
-  
-  
-  @Override        
-  public int read(byte[] b, int off, int len) 
+  }
+
+
+  @Override
+  public int read(byte[] b, int off, int len)
     throws IOException {
     int ret = m_wrapped.read(b, off, len);
     if(ret > 0) {
       m_count+=ret;
-    }        
-    return ret;         
-  }  
-  
-  
+    }
+    return ret;
+  }
+
+
   /**
-   * Reads a line from the underlying data source. 
+   * Reads a line from the underlying data source.
    * <p>
-   * If an EOF is encountered before a line terminator, 
+   * If an EOF is encountered before a line terminator,
    * the remaining bytes are considered a line and a Line is returned
    * with a zero-length {@link Line#getTermLen terminator}.  If an EOF
-   * is encountered as the first byte, null is returned.  If 
+   * is encountered as the first byte, null is returned.  If
    * only a terminator is encountered, a Line with a zero-length
    * {@link Line#getBuffer ByteBuffer} is returned.
    *
@@ -228,20 +228,20 @@ public class MIMEParsingInputStream extends InputStream {
    *
    * @return a Line or null (see desc above).
    *
-   * @exception LineTooLongException if the line exceeds 
+   * @exception LineTooLongException if the line exceeds
    *            <code>maxLen</code>
    * @exception IOException from the backing stream
    */
-  public Line readLine(int maxLen) 
+  public Line readLine(int maxLen)
     throws IOException, LineTooLongException {
-    
+
     byte b;
     int count = 0;
     ByteBufferBuilder bb = new ByteBufferBuilder(
-      LINE_SZ, 
+      LINE_SZ,
       ByteBufferBuilder.GrowthStrategy.INCREMENTAL);
-      
-          
+
+
     int read = read();
     count++;
 
@@ -277,7 +277,7 @@ public class MIMEParsingInputStream extends InputStream {
     }
     return bb.size() == 0?
       null:
-      new Line(bb.toByteBuffer(), 0);      
+      new Line(bb.toByteBuffer(), 0);
   }
 
   /**
@@ -291,21 +291,21 @@ public class MIMEParsingInputStream extends InputStream {
    */
   public Line readLine()
     throws IOException, LineTooLongException {
-    
+
     return readLine(Integer.MAX_VALUE);
   }
-  
+
   /**
-   * Unreads the line w/ terminator.  
+   * Unreads the line w/ terminator.
    *
    * @param line the line to unread
    */
-  public void unreadLine(Line line) 
+  public void unreadLine(Line line)
     throws IOException {
     ByteBuffer buf = line.getBuffer(true);
     unread(buf.array(), buf.arrayOffset() + buf.position(), buf.remaining());
   }
-  
+
 
   /**
    * Advance the Stream to a boundary.  The flag <code>leaveBoundary</code>
@@ -337,19 +337,19 @@ public class MIMEParsingInputStream extends InputStream {
    * @return the BoundaryResult.
    */
   public BoundaryResult skipToBoundary(String boundaryStr,
-    final boolean leaveBoundary) 
-    throws IOException {  
-    
+    final boolean leaveBoundary)
+    throws IOException {
+
     final byte[] matchPattern = new StringBuilder().
       append('-').
       append('-').
       append(boundaryStr).
       toString().getBytes();
-    
+
     final int matchPatternLen = matchPattern.length;
-    long boundaryStart = position();   
+    long boundaryStart = position();
     int read = read();
-    
+
     //Members which are used while scanning for a
     //candidate boundary
     int candidatePos = 0;//In case someone positioned us after a EOL,
@@ -357,13 +357,13 @@ public class MIMEParsingInputStream extends InputStream {
 
 
     long boundaryEnd = 0;
-    int boundaryStartEOL = 0;//TODO Make this a symbol                                                  
-    int isEOL;             
-    
+    int boundaryStartEOL = 0;//TODO Make this a symbol
+    int isEOL;
+
     while(read >= 0) {
       if(candidatePos == -1) {
         //candidatePos == -1 means "not starting search yet"
-        
+
         //The "eatEOL" method is defined below
         isEOL = eatEOL(read);
         switch(isEOL) {
@@ -384,7 +384,7 @@ public class MIMEParsingInputStream extends InputStream {
             boundaryStart = position();
             boundaryStart-=1;
         }
-       
+
         read = read();
         continue;
       }
@@ -417,11 +417,11 @@ public class MIMEParsingInputStream extends InputStream {
               if(leaveBoundary) {
                 uneatEOL(boundaryStartEOL);
                 unread(matchPattern);
-              }              
+              }
               m_logger.debug("\"-\"(-1) ended (implicitly last) boundary");
               return new BoundaryResult(boundaryStart,
                 boundaryEnd,
-                false);              
+                false);
             }
             else if(read == DASH) {
               //Boundary ended in "--".  Check for the terminator
@@ -433,14 +433,14 @@ public class MIMEParsingInputStream extends InputStream {
                 uneatEOL(boundaryStartEOL);
                 unread(matchPattern);
                 uneatEOL(boundaryEndEOL);
-              }              
+              }
               return new BoundaryResult(boundaryStart,
                 boundaryEnd,
-                true);               
+                true);
             }
             else {
               //Boundary ended in "boundary-X" where "X" was not
-              //a dash.  
+              //a dash.
               m_logger.debug("\"-\"" + read + " ended non-last boundary");
               unread(DASH);
               unread(read);
@@ -448,10 +448,10 @@ public class MIMEParsingInputStream extends InputStream {
               if(leaveBoundary) {
                 uneatEOL(boundaryStartEOL);
                 unread(matchPattern);
-              }               
+              }
               return new BoundaryResult(boundaryStart,
                 position(),
-                false);             
+                false);
             }
           }
           else {
@@ -465,16 +465,16 @@ public class MIMEParsingInputStream extends InputStream {
             else {
               m_logger.debug("New line ended non-last boundary");
             }
-            
+
             boundaryEnd = position();
             if(leaveBoundary) {
               uneatEOL(boundaryStartEOL);
               unread(matchPattern);
               uneatEOL(boundaryEndEOL);
-            }   
+            }
             return new BoundaryResult(boundaryStart,
               boundaryEnd,
-              false);                       
+              false);
           }
         }
         read = read();
@@ -487,14 +487,14 @@ public class MIMEParsingInputStream extends InputStream {
       }
     }
     return new BoundaryResult();
-  }  
+  }
 
   /**
-   * Advances past the next EOL sequence (CRLF 
+   * Advances past the next EOL sequence (CRLF
    * CR, or LF), or EOF
    *
    * @exception IOException from the backing stream
-   */         
+   */
   public void advanceToNextLine()
     throws IOException {
     int b = read();
@@ -506,79 +506,79 @@ public class MIMEParsingInputStream extends InputStream {
       b = read();
     }
   }
-  
-  /** 
+
+  /**
    * Skips to the end of the file.
    *
    * @exception IOException from the backing stream
-   */         
+   */
   public void advanceToEOF()
     throws IOException {
     while(read() >= 0);
   }
- 
-  
-  
-  
-  @Override       
+
+
+
+
+  @Override
   public long skip(long n)
     throws IOException {
     long ret = m_wrapped.skip(n);
     m_count+=ret;
     return ret;
   }
-  
-  
-  @Override        
+
+
+  @Override
   public int available() throws IOException {
     return m_wrapped.available();
   }
-  
-  
-  @Override      
+
+
+  @Override
   public void close()
     throws IOException {
     m_wrapped.close();
   }
-  
+
   /**
-   * Mark is not supported, so this method does nothing 
+   * Mark is not supported, so this method does nothing
    *
    * @exception IOException from the backing stream
-   */       
-  @Override       
+   */
+  @Override
   public void mark(int readlimit) {
     //Do nothing
   }
 
-  
-  
+
+
   /**
    * Since marks are not supported, this always throws
-   * an exception  
+   * an exception
    *
    * @exception IOException (always)
-   */         
-  @Override     
+   */
+  @Override
   public void reset()
     throws IOException {
     throw new IOException("mark not supported");
   }
-  
-  
+
+
   /**
-   * Always returns false  
+   * Always returns false
    *
    * @exception IOException from the backing stream
-   */         
-  @Override     
+   */
+  @Override
   public boolean markSupported() {
     return false;
   }
-  
-  
-  
-  private void uneatEOL(int val) 
+
+
+
+  private void uneatEOL(int val)
     throws IOException {
     switch(val) {
       case CRLF_EOL:
@@ -592,31 +592,31 @@ public class MIMEParsingInputStream extends InputStream {
         break;
     }
   }
-  
+
   /**
    * Eat the next EOL, if one is found
-   * 
+   *
    * @return constants defined as "XXX_EOL"
    *         on this class.
-   */  
-  private int eatEOL() 
+   */
+  private int eatEOL()
     throws IOException {
     int read = read();
     int ret = eatEOL(read);
     if(ret == 0) {
       unread(read);
-    }    
+    }
     return ret;
-  }  
+  }
   /**
    * Eat the EOL, if the character starts
    * an EOL sequence.  If it does not,
    * it is <b>not</b> unread implicitly.
-   * 
+   *
    * @return constants defined as "XXX_EOL"
    *         on this class.
    */
-  private int eatEOL(int read) 
+  private int eatEOL(int read)
     throws IOException {
     if(read == -1) {
       return EOF_EOL;
@@ -648,7 +648,7 @@ public class MIMEParsingInputStream extends InputStream {
     doTest("ABC" + crlf + "--foo" + crlf + "next line");
     doTest("--foo" + crlf + "next line");
 
-      
+
   }
 
   private static void doTest(String str)
@@ -670,6 +670,6 @@ public class MIMEParsingInputStream extends InputStream {
     BoundaryResult br = stream.skipToBoundary("foo", false);
     System.out.println("boundaryStartPos: " + br.boundaryStartPos);
     System.out.println("boundaryLen: " + br.boundaryLen);
-    System.out.println("Position: " + stream.position());    
+    System.out.println("Position: " + stream.position());
   }
 }

@@ -1,16 +1,18 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
 package com.metavize.tran.mime.test;
-import com.metavize.tran.mime.*;
+
 import java.util.*;
+
+import com.metavize.tran.mime.*;
 
 /**
  * Little test which creates MIME address lines
@@ -25,7 +27,7 @@ public class GeneratedAddressTest {
   //Start of the address(es) line
   private static String[] s_preFixes =
     new String[] {"", ",", ", ", ";", "; ", ",;", ",; ", ";,", ";, "};
-    
+
   //Endof of the address(es) line
   private static String[] s_suffixes =
     new String[] {"", ",", " ,", " ;", " ;", ",;", " ,;", ";,", " ;,"};
@@ -38,7 +40,7 @@ public class GeneratedAddressTest {
     for(String s : seStrs) {
       seps.add(s);
     }
-     
+
     seStrs = spacePad(";");
     for(String s : seStrs) {
       seps.add(s);
@@ -58,7 +60,7 @@ public class GeneratedAddressTest {
   private long m_timestamp = 0;
   private TestProgress m_testProgress;
 
-  
+
   GeneratedAddressTest() {
 
     List<String> personalsList = createPersonals();
@@ -71,9 +73,9 @@ public class GeneratedAddressTest {
     for(List<String> p1 : new CombinationGenerator<String>(pre, addr)) {
       for(List<String> p2 : new CombinationGenerator<String>(pre, addr)) {
         testTwoAddressLine(new AddrBitPair(p1.get(0), p1.get(1)), new AddrBitPair(p2.get(0), p2.get(1)), true);
-      }    
+      }
     }
-    
+
     m_numTests = m_testCount;
     m_testCount = 0;
     m_testProgress = new TestProgress(m_numTests, m_sampleAt);
@@ -81,8 +83,8 @@ public class GeneratedAddressTest {
     for(List<String> p1 : new CombinationGenerator<String>(pre, addr)) {
       for(List<String> p2 : new CombinationGenerator<String>(pre, addr)) {
         testTwoAddressLine(new AddrBitPair(p1.get(0), p1.get(1)), new AddrBitPair(p2.get(0), p2.get(1)), false);
-      }    
-    }    
+      }
+    }
   }
 
 
@@ -102,10 +104,10 @@ public class GeneratedAddressTest {
   }
 
   private void testTwoAddressLine(AddrBitPair e1, AddrBitPair e2, boolean audit) {
-  
+
     String[] emails1 = createFullAddress(e1);
-    String[] emails2 = createFullAddress(e2);    
-    
+    String[] emails2 = createFullAddress(e2);
+
     for(List<String> sep : new CombinationGenerator<String>(s_preFixes, s_separators, s_suffixes)) {
       for(String email1 : emails1) {
         for(String email2 : emails2) {
@@ -142,7 +144,7 @@ public class GeneratedAddressTest {
     }
     try {
       List<EmailAddress> list = EmailAddressHeaderField.parseHeaderLine(sb.toString(), false);
-      
+
       if(print) {
         System.out.println("Parsed into " + list.size() + " addresses");
         for(EmailAddress addr : list) {
@@ -187,7 +189,7 @@ public class GeneratedAddressTest {
         p.personal + " <" + p.address,
         p.personal + " <" + p.address + ">"};
     }
-  }  
+  }
 
   private boolean contains(EmailAddressHeaderField field,
     AddrBitPair pair) {
@@ -221,9 +223,9 @@ public class GeneratedAddressTest {
         addr.getAddress() == null ||
         "".equals(addr.getAddress().trim());
     }
-    return comp.trim().equalsIgnoreCase(addr.getPersonal());    
+    return comp.trim().equalsIgnoreCase(addr.getPersonal());
   }
-  
+
   private boolean isQuoted(String str) {
     str = str.trim();
     return str.startsWith("\"") && str.endsWith("\"");
@@ -240,7 +242,7 @@ public class GeneratedAddressTest {
     ret.add("foo@");//Legal?
 
     return ret;
-  }  
+  }
 
   private List<String> createPersonals() {
     List<String> ret = new ArrayList<String>();
@@ -272,9 +274,9 @@ public class GeneratedAddressTest {
     //Escaped comment
     ret.add(quote("foo\\(doo\\)moo"));
     ret.add(quote("foo \\(doo\\) moo"));
-    
+
     return ret;
-    
+
   }
 
   private static String quote(String str) {
@@ -331,7 +333,7 @@ public class GeneratedAddressTest {
 
 
   //================ Inner Class =====================
-  
+
   static class CombinationGenerator<E>
     implements Iterable<List<E>>, Iterator<List<E>> {
 
@@ -339,7 +341,7 @@ public class GeneratedAddressTest {
     private final int[] m_positions;
     private final int m_numArrays;
     private boolean m_hasNext = true;
-  
+
     CombinationGenerator(E[]...arrays) {
       m_arrays = arrays;
       m_numArrays = m_arrays.length;
@@ -356,7 +358,7 @@ public class GeneratedAddressTest {
     public Iterator<List<E>> iterator() {
       return this;
     }
-    
+
     public boolean hasNext() {
       return m_hasNext;
     }
@@ -393,11 +395,11 @@ public class GeneratedAddressTest {
     public void remove() {
       //
     }
-  
+
   }
 
   //================ Inner Class =====================
-  
+
   private class AddrBitPair {
     final String personal;
     final String address;

@@ -1,13 +1,14 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
 
 import org.apache.log4j.Logger;
@@ -15,16 +16,16 @@ import static com.metavize.tran.util.Ascii.*;
 
 
 /**
- * Object representing a "Content-Type" Header as found in an 
+ * Object representing a "Content-Type" Header as found in an
  * RFC 821/RFC 2045 document.
  * <br>
- * So this Object is usefull (without a lot of conditional code), if 
+ * So this Object is usefull (without a lot of conditional code), if
  * the type is mal-formed it will return {@link #TEXT_PRIM_TYPE_STR text}/
- * {@link #PLAIN_SUB_TYPE_STR plain} as the 
+ * {@link #PLAIN_SUB_TYPE_STR plain} as the
  * {@link #getPrimaryType primary} and {@link getSubType sub} types
- * respectivly.  
+ * respectivly.
  */
-public class ContentTypeHeaderField 
+public class ContentTypeHeaderField
   extends HeaderFieldWithParams {
 
   private static final String BOUNDARY_PARAM_NAME = "boundary";
@@ -32,28 +33,28 @@ public class ContentTypeHeaderField
   private static final String NAME_NAME = "name";
   private static final String FORMAT_NAME = "format";
   private static final String DELSP_NAME = "delsp";
-  
+
   private static final LCString BOUNDARY_PARAM_KEY = new LCString(BOUNDARY_PARAM_NAME);
   private static final LCString CHARSET_PARAM_KEY = new LCString(CHARSET_PARAM_NAME);
   private static final LCString NAME_KEY = new LCString(NAME_NAME);
   //Next two from RFC 3676
   private static final LCString FORMAT_KEY = new LCString(FORMAT_NAME);
   private static final LCString DELSP_KEY = new LCString(DELSP_NAME);
-  
+
   //Composite primary types
   public static final String MULTIPART_PRIM_TYPE_STR = "multipart";
-  public static final String MESSAGE_PRIM_TYPE_STR = "message";    
-  
+  public static final String MESSAGE_PRIM_TYPE_STR = "message";
+
   //discrete primary types
-  public static final String TEXT_PRIM_TYPE_STR = "text";  
-  public static final String IMAGE_PRIM_TYPE_STR = "image";  
-  public static final String AUDIO_PRIM_TYPE_STR = "audio";  
-  public static final String VIDEO_PRIM_TYPE_STR = "video";  
-  public static final String APPLICATION_PRIM_TYPE_STR = "application";  
-  
+  public static final String TEXT_PRIM_TYPE_STR = "text";
+  public static final String IMAGE_PRIM_TYPE_STR = "image";
+  public static final String AUDIO_PRIM_TYPE_STR = "audio";
+  public static final String VIDEO_PRIM_TYPE_STR = "video";
+  public static final String APPLICATION_PRIM_TYPE_STR = "application";
+
   //popular subtypes
   public static final String PLAIN_SUB_TYPE_STR = "plain";
-  public static final String HTML_SUB_TYPE_STR = "html";  
+  public static final String HTML_SUB_TYPE_STR = "html";
   public static final String RFC222_SUB_TYPE_STR = "rfc822";
   public static final String MIXED_SUB_TYPE_STR = "mixed";
   public static final String ALTERNATIVE_SUB_TYPE_STR = "alternative";
@@ -63,16 +64,16 @@ public class ContentTypeHeaderField
   public static final String TEXT_PLAIN = TEXT_PRIM_TYPE_STR + "/" + PLAIN_SUB_TYPE_STR;
   public static final String TEXT_HTML = TEXT_PRIM_TYPE_STR + "/" + HTML_SUB_TYPE_STR;
   public static final String MULTIPART_ALTERNATIVE = MULTIPART_PRIM_TYPE_STR + "/" + ALTERNATIVE_SUB_TYPE_STR;
-  
+
 
   private final Logger m_logger = Logger.getLogger(ContentTypeHeaderField.class);
-  
+
   private String m_primaryType;
   private String m_subtype;
 
   public ContentTypeHeaderField() {
     super(HeaderNames.CONTENT_TYPE, HeaderNames.CONTENT_TYPE_LC);
-  }  
+  }
   public ContentTypeHeaderField(String name) {
     super(name, HeaderNames.CONTENT_TYPE_LC);
   }
@@ -90,15 +91,15 @@ public class ContentTypeHeaderField
       TEXT_PRIM_TYPE_STR:
       m_primaryType;
   }
-  
+
   /**
    * Set the primary type defined by this header
    */
   public void setPrimaryType(String type) {
     m_primaryType = type;
-    changed();    
-  }  
-  
+    changed();
+  }
+
   /**
    * Get the sub type defined by this header,
    * or {@link PLAIN_SUB_TYPE_STR text} if either the
@@ -110,16 +111,16 @@ public class ContentTypeHeaderField
       PLAIN_SUB_TYPE_STR:
       m_subtype;
   }
-  
-  
+
+
   /**
    * Set the subtype defined by this header
    */
   public void setSubType(String subtype) {
     m_subtype = subtype;
     changed();
-  }  
-  
+  }
+
   /**
    * Equivilant to:
    * <pre>
@@ -133,7 +134,7 @@ public class ContentTypeHeaderField
     sb.append(getSubType());
     return sb.toString();
   }
-  
+
   /**
    * Get the Boundary defined by this header.  This value
    * only applies to multipart sections, and may be null.
@@ -141,7 +142,7 @@ public class ContentTypeHeaderField
   public String getBoundary() {
     return getParam(BOUNDARY_PARAM_KEY);
   }
-  
+
   /**
    * Set the Boundary defined by this header.  Note that this
    * method does <b>not</b> implicitly change the type
@@ -161,32 +162,32 @@ public class ContentTypeHeaderField
    * {@link com.metavize.tran.mime.MIMEUtil#makeBoundary MIMEUtil has a helper method}
    * for creating boundaries
    *
-   * @param boundary the boundary.  If null, this "unsets" 
+   * @param boundary the boundary.  If null, this "unsets"
    *        the boundary attribute.
    */
   public void setBoundary(String boundary) {
     setParam(BOUNDARY_PARAM_KEY.str, boundary);
   }
-  
+
   public String getCharset() {
     return getParam(CHARSET_PARAM_KEY);
   }
   public void setCharset(String charset) {
     setParam(CHARSET_PARAM_KEY.str, charset);
   }
-  
+
   /**
    * Convienence method which determines if the {@link #getPrimaryType primary type}
    * is multipart.
-   * 
+   *
    */
   public boolean isMultipart() {
     return getPrimaryType() != null &&
       MULTIPART_PRIM_TYPE_STR.equalsIgnoreCase(getPrimaryType());
   }
-  
+
   /**
-   * Convienence method which determines if this is "message/rfc822" 
+   * Convienence method which determines if this is "message/rfc822"
    * type
    */
   public boolean isMessageRFC822() {
@@ -204,23 +205,23 @@ public class ContentTypeHeaderField
         (token1.getType() != HeaderFieldTokenizer.TokenType.ATOM &&
           token1.getType() != HeaderFieldTokenizer.TokenType.QTEXT)) {
         throw new HeaderParseException("Invalid ContentType header \"" +
-          t.getOriginal() + "\".  First token null or not ATOM or QTEXT");      
+          t.getOriginal() + "\".  First token null or not ATOM or QTEXT");
       }
-      
-      HeaderFieldTokenizer.Token token2 = t.nextTokenIgnoreComments();    
+
+      HeaderFieldTokenizer.Token token2 = t.nextTokenIgnoreComments();
       if(token2 == null || token2.getDelim() != (byte) FWD_SLASH) {
         throw new HeaderParseException("Invalid ContentType header \"" +
           t.getOriginal() + "\".  Second token null or not /");
       }
-      
-      HeaderFieldTokenizer.Token token3 = t.nextTokenIgnoreComments();    
+
+      HeaderFieldTokenizer.Token token3 = t.nextTokenIgnoreComments();
       if(token3 == null ||
         (token3.getType() != HeaderFieldTokenizer.TokenType.ATOM &&
           token3.getType() != HeaderFieldTokenizer.TokenType.QTEXT)) {
         throw new HeaderParseException("Invalid ContentType header \"" +
           t.getOriginal() + "\".  Third token null or not ATOM or QTEXT");
-      }         
-  
+      }
+
       m_primaryType = token1.toString();
       m_subtype = token3.toString();
     }
@@ -239,7 +240,7 @@ public class ContentTypeHeaderField
 //    sb.append(COLON);
   }
 
-  @Override 
+  @Override
   protected ParamParsePolicy getParamParsePolicy(String paramName) {
     paramName = paramName.toLowerCase();
     if(BOUNDARY_PARAM_KEY.str.equals(paramName)) {
@@ -254,7 +255,7 @@ public class ContentTypeHeaderField
     }
     if(NAME_KEY.str.equals(paramName)) {
       return ParamParsePolicy.LOOSE;
-    }    
+    }
     return super.getParamParsePolicy(paramName);
   }
 
@@ -268,11 +269,11 @@ public class ContentTypeHeaderField
     test(
       "multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP;name=a b c; charset=US-ASCII");
     test(
-      "multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP;name=a b c; charset=US-ASCII (plain text) goo=doo");          
+      "multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP;name=a b c; charset=US-ASCII (plain text) goo=doo");
     test(
       "multipart/mixed; " + "boundary=\"--abc\"xRND_CRAP; foo=\"moo\"");
     test(
-      "multipart/mixed; a b=\"doo\"; " +  
+      "multipart/mixed; a b=\"doo\"; " +
       "boundary=------------070407010503030002060104 xRND_CRAP; foo=\"moo\"");
   }
   public static void test(String s) throws Exception {
@@ -282,7 +283,7 @@ public class ContentTypeHeaderField
     hf.parseLines();
     System.out.println("-------------------------");
     System.out.println(hf.toString());
-    System.out.println("-------------------------");    
+    System.out.println("-------------------------");
   }
-  
-}  
+
+}

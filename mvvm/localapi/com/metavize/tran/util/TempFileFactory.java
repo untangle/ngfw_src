@@ -1,19 +1,20 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.util;
-import com.metavize.mvvm.tapi.Pipeline;
+
 import java.io.File;
 import java.io.IOException;
 
-
+import com.metavize.mvvm.tapi.Pipeline;
 
 /**
  * Implementation of FileFactory which creates temp files.
@@ -22,20 +23,20 @@ public class TempFileFactory
     implements FileFactory {
 
     private Pipeline pipeline;
-  
+
     public TempFileFactory(Pipeline pipeline) {
         this.pipeline = pipeline;
     }
-  
-    public File createFile(String name) 
+
+    public File createFile(String name)
         throws IOException {
         return pipeline.mktemp(name);
     }
-  
+
     /**
      * Create an anonymous file.
      */
-    public File createFile() 
+    public File createFile()
         throws IOException {
         return pipeline.mktemp();
     }

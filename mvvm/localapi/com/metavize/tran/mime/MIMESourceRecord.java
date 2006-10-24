@@ -1,16 +1,15 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
- 
-package com.metavize.tran.mime;
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
 
+package com.metavize.tran.mime;
 
 /**
  * Class to encapsulate a given MIME atrifact's
@@ -26,7 +25,7 @@ package com.metavize.tran.mime;
  * This of course assumes a parent/child relationship, where
  * a parent may have children whose data is part of its MIMESource.
  * In that situation, the children's MIMESourceRecords
- * have a shared property of "true" where the parent's 
+ * have a shared property of "true" where the parent's
  * record indicates "false".
  */
 public class MIMESourceRecord {
@@ -35,19 +34,19 @@ public class MIMESourceRecord {
   public final int start;
   public final int len;
   private boolean m_shared;
-  
+
   public MIMESourceRecord(MIMESource source,
     int start,
     int len,
     boolean shared) {
-    
+
     this.source = source;
     this.start = start;
     this.len = len;
     m_shared = shared;
-    
+
   }
-  
+
   /**
    * Is the underlying MIMESource shared by the owner
    * of this record and other objects.

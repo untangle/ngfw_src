@@ -1,15 +1,15 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
-package com.metavize.tran.mime;
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
 
+package com.metavize.tran.mime;
 
 //XXXXXXX bscott - this is redundant with InvalidHeaderDataException
 
@@ -17,20 +17,20 @@ package com.metavize.tran.mime;
  * Exception thrown when parsing headers, if they
  * cannot be parsed.
  */
-public class HeaderParseException 
+public class HeaderParseException
   extends Exception {
-  
+
   public HeaderParseException() {
     super();
   }
   public HeaderParseException(Exception ex) {
     super(ex);
-  }  
+  }
   public HeaderParseException(String msg) {
     super(msg);
-  } 
+  }
   public HeaderParseException(String msg, Exception ex) {
     super(msg, ex);
-  }     
-  
+  }
+
 }

@@ -1,19 +1,21 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
-import java.util.*;
+
 import static com.metavize.tran.util.ASCIIUtil.*;
 import static com.metavize.tran.util.Ascii.*;
-import java.nio.*;
 
+import java.nio.*;
+import java.util.*;
 
 /**
  * Class which creates HeaderFields from raw data (or creates new ones).  This
@@ -21,24 +23,22 @@ import java.nio.*;
  * known to be interesting.  The default implementation simply returns
  * the basic HeaderField class.
  */
-public class HeaderFieldFactory {
+public class HeaderFieldFactory
+{
 
-
-  
-  
   /**
    * Create a new HeaderField based on the name.  SUbclasses
    * should override to provide more typed implementations.
    *
    * @param mixedCaseName the name of the header
-   * 
+   *
    * @return a new HeaderField with the given name
    */
-  protected HeaderField createHeaderField(String mixedCaseName) {  
+  protected HeaderField createHeaderField(String mixedCaseName) {
     return new HeaderField(mixedCaseName,
-      new LCString(mixedCaseName)); 
+      new LCString(mixedCaseName));
   }
-   
+
 
   /**
    * Create a new Headers, with the given contents
@@ -57,23 +57,23 @@ public class HeaderFieldFactory {
    *        by name
    *
    * @return a new Headers (or subclass).
-   */  
+   */
   protected Headers createHeaders(MIMESource source,
     int sourceStart,
     int sourceLen,
     List<HeaderField> headersInOrder,
     Map<LCString, List<HeaderField>> headersByName) {
-    
+
     return new Headers(this,
       source,
       sourceStart,
       sourceLen,
       headersInOrder,
       headersByName);
-    
+
   }
-  
-  
+
+
   /**
    * Helper method.  Reads a HeaderFieldName from the Buffer.
    * <p>
@@ -83,7 +83,7 @@ public class HeaderFieldFactory {
    * LWS
    */
   public static String readHeaderFieldName(ByteBuffer buf) {
-    
+
     buf.mark();
     String headerFieldName = readString(buf,
       (byte) COLON,
@@ -94,7 +94,7 @@ public class HeaderFieldFactory {
       return null;
     }
     eatWhitespace(buf, false);
-    
+
     return headerFieldName;
   }
 

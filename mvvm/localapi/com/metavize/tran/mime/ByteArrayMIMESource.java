@@ -1,46 +1,48 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
- 
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
+
 import java.io.*;
+
 import com.metavize.tran.util.*;
 
 /**
  * Implementation of MIMESource which has a backing
  * byte array.  Useful for testing.
  */
-public class ByteArrayMIMESource 
+public class ByteArrayMIMESource
   implements MIMESource {
 
   private final byte[] m_bytes;
   private final int m_start;
   private final int m_len;
-  
-  
+
+
   /**
    * Construct a new source wrapping the given bytes
-   * 
+   *
    * @param bytes the bytes
    */
   public ByteArrayMIMESource(byte[] bytes) {
     this(bytes, 0, bytes.length);
   }
-  
+
   /**
    * Construct a new source wrapping the given bytes
-   * 
+   *
    * @param bytes the bytes
    * @param start start
    * @param len the length
-   */  
+   */
   public ByteArrayMIMESource(byte[] bytes,
     int start,
     int len) {
@@ -56,17 +58,17 @@ public class ByteArrayMIMESource
     return new MIMEParsingInputStream(
       new ByteArrayInputStream(m_bytes, m_start, m_len));
   }
-  
+
   public MIMEParsingInputStream getInputStream(long offset)
     throws IOException {
     return new MIMEParsingInputStream(
       new ByteArrayInputStream(m_bytes, (int) offset, (m_len - (int) offset)));
-  } 
-  
-  public void close() {
-  }  
+  }
 
-  
+  public void close() {
+  }
+
+
   public File toFile(FileFactory factory) throws IOException {
     //TODO bscott If this class is ever anything more than for testing,
     //     we should cache the file.
@@ -77,16 +79,16 @@ public class ByteArrayMIMESource
     fOut.close();
     return f;
   }
-  
+
   public File toFile(FileFactory factory, String name) throws IOException {
     return toFile(factory);
   }
-  
-  public static void main(String[] args) 
+
+  public static void main(String[] args)
     throws Exception {
 
-    
-    com.metavize.tran.util.ASCIIStringBuilder sb = 
+
+    com.metavize.tran.util.ASCIIStringBuilder sb =
       new com.metavize.tran.util.ASCIIStringBuilder();
     String newLine = "\r\n";
     sb.append("Received: foobaloo");
@@ -97,17 +99,17 @@ public class ByteArrayMIMESource
     sb.append(newLine);
     sb.append("To:<bscott@sigaba.com>,foo@moo.com");
     sb.append(newLine);
-    sb.append(newLine);    
-    
+    sb.append(newLine);
+
     ByteArrayMIMESource mabs = new ByteArrayMIMESource(sb.toString().getBytes());
-    
+
     HeadersParser parser = new HeadersParser();
     Headers headers = parser.parseHeaders(mabs.getInputStream(),
       mabs,
       new MailMessageHeaderFieldFactory(),
       new MIMEPolicy());
-    
+
     System.out.println(headers.toString());
-   
+
   }
 }

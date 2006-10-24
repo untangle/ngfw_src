@@ -1,20 +1,21 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
 
-import javax.mail.internet.*;
-import javax.mail.*;
-import org.apache.log4j.Logger;
 import java.io.UnsupportedEncodingException;
+import javax.mail.*;
+import javax.mail.internet.*;
 
+import org.apache.log4j.Logger;
 
 /**
  * Subclass of {@link EmailAddress EmailAddress} which can
@@ -23,21 +24,21 @@ import java.io.UnsupportedEncodingException;
 public class MutableEmailAddress
   extends EmailAddress {
 
-  
+
   /**
    * Constructor which wraps a JavaMail address.
    */
   protected MutableEmailAddress(InternetAddress addr) {
     super(addr);
   }
-  
+
   /**
    * Blank constructor.
    */
   public MutableEmailAddress() {
     super((InternetAddress) null);
   }
-  
+
   /**
    * Construct a new EmailAddress from the "local@domain"
    * formatted String.
@@ -47,32 +48,32 @@ public class MutableEmailAddress
    * @exception BadEmailAddressFormatException if the addr
    *            String could not be parsed into a valid address.
    */
-  public MutableEmailAddress(String addr) 
+  public MutableEmailAddress(String addr)
     throws BadEmailAddressFormatException {
     super(addr);
   }
-  
+
   /**
    * Construct a new EmailAddress from the "local@domain"
    * formatted String and personal
    *
    * @param addr the "local@domain" formatted String.
-   * @param personal the personal, which may currently be 
-   *        encoded as per RFC 2047.  
+   * @param personal the personal, which may currently be
+   *        encoded as per RFC 2047.
    *
    * @exception BadEmailAddressFormatException if the addr
-   *            String could not be parsed into a valid address.    
-   * 
+   *            String could not be parsed into a valid address.
+   *
    * @exception UnsupportedEncodingException if the personal
    *            is currently encoded (as per the RFC 2047 "?="
    *            stuff) but this platform cannot decode.
-   */  
-  public MutableEmailAddress(String addr, String personal) 
+   */
+  public MutableEmailAddress(String addr, String personal)
     throws BadEmailAddressFormatException,
       UnsupportedEncodingException {
     super(addr, personal);
-  }   
-  
+  }
+
   /**
    * Copy constructor
    */
@@ -81,7 +82,7 @@ public class MutableEmailAddress
       (InternetAddress) null:
       copyFromEmailAddress(copyFrom));
   }
-  
+
   /**
    * This method supresses the encoding exception,
    * as it should not be thrown (it would have already
@@ -104,24 +105,24 @@ public class MutableEmailAddress
         Logger.getLogger(EmailAddress.class).error(ex);
         return null;//XXXXXXX bscott Correct behavior?
       }
-    }  
+    }
     catch(AddressException ex) {
       Logger.getLogger(EmailAddress.class).error(ex);
       return null;//XXXXXXX bscott Correct behavior?
-    }    
+    }
   }
-  
+
   /**
    * Set this to be the null address.  There is no
    * "UnsetNullAddress".  This is done by calling
    * {@link #setAddress setAddress}.
-   * 
+   *
    */
   public void setNullAddress() {
     m_jmAddress = null;
-  }  
-  
-  
+  }
+
+
   /**
    * Set the personal for this address.
    * <p>
@@ -135,22 +136,22 @@ public class MutableEmailAddress
    *
    * @exception UnsupportedEncodingException if the personal
    *            is currently encoded (as per the RFC 2047 "?="
-   *            stuff) but this platform cannot decode.   
+   *            stuff) but this platform cannot decode.
    */
-  public void setPersonal(String personal) 
+  public void setPersonal(String personal)
     throws UnsupportedEncodingException {
     if(!isNullAddress()) {
       m_jmAddress.setPersonal(personal);
     }
   }
-  
+
   /**
    * Set the address (local@domain).
-   * 
-   * @exception BadEmailAddressFormatException if the address 
+   *
+   * @exception BadEmailAddressFormatException if the address
    *            is in an invalid format
    */
-  public void setAddress(String addr) 
+  public void setAddress(String addr)
     throws BadEmailAddressFormatException {
     try {
       if(isNullAddress()) {
@@ -161,7 +162,7 @@ public class MutableEmailAddress
         m_jmAddress = new InternetAddress(addr, false);
         if(oldPersonal != null) {
           m_jmAddress.setPersonal(oldPersonal);
-        }  
+        }
       }
     }
     catch(UnsupportedEncodingException shouldNotHappen) {
@@ -172,11 +173,11 @@ public class MutableEmailAddress
       throw new BadEmailAddressFormatException(ex);
     }
   }
-  
-  
+
+
   /**
-   * Helper method for creating a (Metavize) MutableEmailAddress from 
-   * a JavaMail address.  
+   * Helper method for creating a (Metavize) MutableEmailAddress from
+   * a JavaMail address.
    *
    * @param addr the JavaMail address
    *
@@ -184,6 +185,6 @@ public class MutableEmailAddress
    */
   public static EmailAddress fromJavaMail(InternetAddress addr) {
     return new MutableEmailAddress(addr);
-  }  
+  }
 
 }

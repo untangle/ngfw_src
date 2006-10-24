@@ -1,18 +1,19 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
 
 import static com.metavize.tran.util.Ascii.*;
-import java.nio.*;
 import java.io.*;
+import java.nio.*;
 
 /**
  * OutputStream which adds some convienences
@@ -22,14 +23,14 @@ import java.io.*;
  */
 public class MIMEOutputStream
   extends FilterOutputStream {
-  
+
   private byte[] m_transferBuf;
-  
+
   public MIMEOutputStream(OutputStream target) {
     super(target);
   }
-  
-  public long write(Line[] lines) 
+
+  public long write(Line[] lines)
     throws IOException {
     long ret = 0;
     for(Line line : lines) {
@@ -37,14 +38,14 @@ public class MIMEOutputStream
     }
     return ret;
   }
-  
-  public int write(Line line) 
+
+  public int write(Line line)
     throws IOException {
     return write(line.getBuffer(true));
   }
-  
+
   /**
-   * The buffer is not reset to its original 
+   * The buffer is not reset to its original
    * position after this method concludes.
    */
   public int write(ByteBuffer buf)
@@ -52,8 +53,8 @@ public class MIMEOutputStream
 
     //Technically sloppy, but assume we will write this
     //much
-    int ret = buf.remaining();    
-    
+    int ret = buf.remaining();
+
     if(buf.hasArray()) {
       write(buf.array(), buf.arrayOffset() + buf.position(), buf.remaining());
     }
@@ -69,35 +70,35 @@ public class MIMEOutputStream
     }
     return ret;
   }
-  
+
   /**
    * Pipes the contents of the input stream
    * to this output stream, until EOF is
    * reached.
    */
-  public long pipe(InputStream in) 
+  public long pipe(InputStream in)
     throws IOException {
-    
+
     return pipe(in, Long.MAX_VALUE);
   }
-  
+
   public long pipe(final InputStream in,
-    final long maxTransfer) 
+    final long maxTransfer)
     throws IOException {
-    
+
     long total = 0;
     int reqAmt = 0;
     int read = 0;
 
-    ensureTransferBuf();    
-        
+    ensureTransferBuf();
+
     while(total < maxTransfer) {
-    
-      //Figure out how much to ask for in our read.  
+
+      //Figure out how much to ask for in our read.
       reqAmt = (maxTransfer - total) > m_transferBuf.length?
         m_transferBuf.length:
         (int) (maxTransfer - total);
-      
+
       //Perform the read
       read = in.read(m_transferBuf, 0, reqAmt);
       if(read == -1) {
@@ -109,45 +110,45 @@ public class MIMEOutputStream
     }
     return total;
   }
-   
+
   /**
    * Note that this String should be in the US-ASCII charset!
    */
-  public void write(String aString) 
+  public void write(String aString)
     throws IOException {
     write(aString.getBytes());
-  } 
-  
+  }
+
   /**
    * Writes the given line, terminating with a CRLF
    */
-  public void writeLine(String line) 
+  public void writeLine(String line)
     throws IOException {
     write(line);
     writeLine();
   }
-  
+
   /**
    * Writes a proper line terminator (CRLF).
    */
-  public void writeLine() 
+  public void writeLine()
     throws IOException {
     write(CRLF_BA);
   }
-  
-  public void write(MIMESourceRecord record) 
+
+  public void write(MIMESourceRecord record)
     throws IOException {
     //TODO bscott There has to be a better way to handle this
     MIMEParsingInputStream inStream = record.source.getInputStream(record.start);
     pipe(inStream, record.len);
     inStream.close();
   }
-  
-  
+
+
   private void ensureTransferBuf() {
     if(m_transferBuf == null) {
       m_transferBuf = new byte[8192];
     }
   }
-  
+
 }

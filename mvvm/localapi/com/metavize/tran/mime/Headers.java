@@ -1,13 +1,14 @@
- /*
-  * Copyright (c) 2005 Metavize Inc.
-  * All rights reserved.
-  *
-  * This software is the confidential and proprietary information of
-  * Metavize Inc. ("Confidential Information").  You shall
-  * not disclose such Confidential Information.
-  *
-  * $Id$
-  */
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 package com.metavize.tran.mime;
 
 import static com.metavize.tran.util.ASCIIUtil.*;
@@ -18,7 +19,6 @@ import java.util.*;
 
 import com.metavize.mvvm.tran.TemplateValues;
 import org.apache.log4j.Logger;
-
 
 /**
  * Class representing a collection of RFC 822 Headers (also MIME-conformant).
