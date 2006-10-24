@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Metavize Inc.
+ * Copyright (c) 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -77,6 +77,7 @@ public class Closure
     {
         ClassVisitor cv = new ClassVisitor(cl, classes);
         cv.visitAll();
+
         Set<String> s = cv.getVisited();
         for (String str : s) {
             System.out.println(str);

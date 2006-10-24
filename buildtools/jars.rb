@@ -75,6 +75,6 @@ class Jars
   Reporting   = Jars.makeGroup(Ant, Commons, Itext, Jasper, JFreeChart, Log4j, Postgres )
 
   # A jar used to build one of the buildutil classes
-  Becl        = downloadTarget('bcel-5.1/bcel-5.1.jar')
+  Becl        = downloadTarget('bcel-5.2/bcel-5.2.jar')
   JDKTools    = [ ThirdpartyJar.get("#{$BuildEnv.javahome}/lib/tools.jar") ]
 end
