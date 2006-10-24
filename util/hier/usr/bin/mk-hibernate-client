@@ -8,7 +8,7 @@ closure=$(mktemp)
 cat @MVVM_HOME@/buildutils/hibernate-client.list \
     | xargs @USR_BIN@/closure -cp $unpacked compute-closure \
     | grep hibernate \
-    | sed -e 's/^\(.*\)\$.$/\1/' -e 's|\.|/|g' -e 's/^\(.*\)$/\1.class/' \
+    | sed -e 's|\.|/|g' -e 's/^\(.*\)$/\1.class/' \
     | sort | uniq >$closure
 
 outdir=$PWD
