@@ -3,7 +3,7 @@
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Metavize Inc. ("Confidential Information").  You shall
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id: NetworkManagerImpl.java 6411 2006-07-13 06:56:10Z inieves $

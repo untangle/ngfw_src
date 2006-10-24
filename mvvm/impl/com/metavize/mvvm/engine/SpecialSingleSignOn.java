@@ -3,7 +3,7 @@
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Metavize Inc. ("Confidential Information").  You shall
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id: PortalManagerImpl.java 6287 2006-06-23 21:39:49Z amread $

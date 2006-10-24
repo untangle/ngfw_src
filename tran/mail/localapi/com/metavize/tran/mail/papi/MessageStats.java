@@ -3,7 +3,7 @@
  * All rights reserved.
  *
  * This software is the confidential and proprietary statsrmation of
- * Metavize Inc. ("Confidential Statsrmation").  You shall
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Statsrmation.
  *
  * $Id$

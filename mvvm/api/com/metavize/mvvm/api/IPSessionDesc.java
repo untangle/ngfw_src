@@ -3,7 +3,7 @@
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Metavize Inc. ("Confidential Information").  You shall
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id: IPSessionDesc.java 6765 2006-08-10 23:25:26Z rbscott $

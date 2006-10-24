@@ -3,7 +3,7 @@
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Metavize Inc. ("Confidential Information").  You shall
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id: ArgonInterface.java 7128 2006-09-06 17:32:14Z rbscott $
