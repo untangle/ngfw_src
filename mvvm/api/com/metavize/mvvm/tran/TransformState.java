@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * Represents the runtime state of a transform instance.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  */
 public enum TransformState

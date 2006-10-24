@@ -37,7 +37,7 @@ import org.hibernate.annotations.IndexColumn;
  * when the address book user is deleted (since we couldn't do that
  * for an AD user at all))
  *
- * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untanglenetworks.com">John Irwin</a>
  * @version 1.0
  */
 @Entity

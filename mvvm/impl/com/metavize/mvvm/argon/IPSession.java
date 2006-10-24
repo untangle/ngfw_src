@@ -17,7 +17,7 @@ import java.nio.ByteBuffer;
 /**
  * The interface <code>Session</code> here.
  *
- * @author <a href="mailto:jdi@SLAB"></a>
+ * @author <a href="mailto:jdi@untanglenetworks.com"></a>
  * @version 1.0
  */
 

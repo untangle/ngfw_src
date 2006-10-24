@@ -22,7 +22,7 @@ import com.metavize.tran.mail.papi.MessageInfo;
 /**
  * Log e-mail message info.
  *
- * @author <a href="mailto:cng@metavize.com">C Ng</a>
+ * @author <a href="mailto:cng@untanglenetworks.com">C Ng</a>
  * @version 1.0
  */
 @Entity

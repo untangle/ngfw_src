@@ -39,7 +39,7 @@ import org.hibernate.annotations.Type;
 /**
  * the configuration for a vpn client.
  *
- * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
+ * @author <a href="mailto:rbscott@untanglenetworks.com">Robert Scott</a>
  * @version 1.0
  */
 @Entity

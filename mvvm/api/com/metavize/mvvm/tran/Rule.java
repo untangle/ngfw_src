@@ -20,7 +20,7 @@ import javax.persistence.MappedSuperclass;
 /**
  * Rule for matching based on IP addresses and subnets.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  */
 @MappedSuperclass

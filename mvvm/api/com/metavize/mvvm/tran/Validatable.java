@@ -16,7 +16,7 @@ public interface Validatable {
     /**
      * Allows a data object to be checked for internal and external consistancy.
      *
-     * @author <a href="mailto:inieves@metavize.com">Ian Morris Nieves</a>
+     * @author <a href="mailto:inieves@untanglenetworks.com">Ian Morris Nieves</a>
      * @version 1.0
      */
     public void validate() throws ValidateException;

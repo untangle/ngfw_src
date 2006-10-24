@@ -22,7 +22,7 @@ import javax.persistence.Transient;
 /**
  * Hibernate object to store IDS Variable.
  *
- * @author <a href="mailto:nchilders@metavize.com">Nick Childers</a>
+ * @author <a href="mailto:nchilders@untanglenetworks.com">Nick Childers</a>
  * @version 1.0
  */
 @Entity

@@ -25,7 +25,7 @@ import org.xml.sax.helpers.DefaultHandler;
 /**
  * SAX handler for mvvm-transform.xml files.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  */
 public class MvvmTransformHandler extends DefaultHandler

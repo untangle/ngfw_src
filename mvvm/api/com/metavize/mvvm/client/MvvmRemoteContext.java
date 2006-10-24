@@ -32,7 +32,7 @@ import com.metavize.mvvm.tran.TransformManager;
  * Provides an interface to get major MVVM components that are
  * accessible a remote client.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  */
 public interface MvvmRemoteContext

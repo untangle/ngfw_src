@@ -23,7 +23,7 @@ import com.metavize.mvvm.tran.PipelineEndpoints;
 /**
  * Log event for a blocked request.
  *
- * @author <a href="mailto:nchilders@metavize.com">Nick Childers</a>
+ * @author <a href="mailto:nchilders@untanglenetworks.com">Nick Childers</a>
  * @version 1.0
  */
 @Entity

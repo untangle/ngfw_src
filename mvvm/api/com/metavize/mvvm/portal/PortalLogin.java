@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 /**
  * Portal login. Represents a logged in user.
  *
- * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untanglenetworks.com">John Irwin</a>
  */
 public class PortalLogin implements Principal, Serializable
 {

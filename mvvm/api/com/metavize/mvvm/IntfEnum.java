@@ -18,7 +18,7 @@ import java.util.*;
  * This singleton enumerates the interfaces present in the MVVM.  It is created
  * via a factory method in <code>NetworkingManager</code>.
  *
- * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untanglenetworks.com">John Irwin</a>
  * @version 1.0
  */
 public class IntfEnum implements Serializable

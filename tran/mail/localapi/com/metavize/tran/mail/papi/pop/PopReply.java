@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 /**
  * POP server reply to a command.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  * @see RFC1939
  */

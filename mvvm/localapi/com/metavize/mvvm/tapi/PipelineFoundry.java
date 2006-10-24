@@ -20,7 +20,7 @@ import com.metavize.mvvm.tran.PipelineEndpoints;
 /**
  * Compiles pipes based on subscriptions and interest sets.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  */
 public interface PipelineFoundry

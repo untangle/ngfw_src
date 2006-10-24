@@ -15,7 +15,7 @@ package com.metavize.mvvm.engine;
  * This class is for Main to manipulate MvvmContext without resorting
  * to reflection and allowing package protection for sensitive methods.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  */
 public abstract class MvvmContextBase

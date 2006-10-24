@@ -48,7 +48,7 @@ import org.hibernate.annotations.Type;
 /**
  * Settings for the Nat transform.
  *
- * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
+ * @author <a href="mailto:rbscott@untanglenetworks.com">Robert Scott</a>
  * @version 1.0
  */
 @Entity

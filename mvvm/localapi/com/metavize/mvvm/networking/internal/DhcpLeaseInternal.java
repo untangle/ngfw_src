@@ -22,7 +22,7 @@ import com.metavize.mvvm.networking.DhcpLeaseRule;
 /**
  * Immutable representation of a static DHCP lease.
  *
- * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
+ * @author <a href="mailto:rbscott@untanglenetworks.com">Robert Scott</a>
  */
 public class DhcpLeaseInternal
 {

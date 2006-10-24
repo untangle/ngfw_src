@@ -19,7 +19,7 @@ import com.metavize.tran.token.Token;
 /**
  * Holds a RFC 2616 status-line.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  */
 public class StatusLine implements Token

@@ -15,7 +15,7 @@ public interface Equivalence {
     /**
      * Check a new object against the current object for equivalence
      *
-     * @author <a href="mailto:inieves@metavize.com">Ian Morris Nieves</a>
+     * @author <a href="mailto:inieves@untanglenetworks.com">Ian Morris Nieves</a>
      * @version 1.0
      */
     public boolean equals(Object newObject);

@@ -17,7 +17,7 @@ import java.net.InetAddress;
 /**
 * A UDPSession is 
 *
-* @author <a href="mailto:jdi@SLAB"></a>
+* @author <a href="mailto:jdi@untanglenetworks.com"></a>
 * @version 1.0
 */
 public interface UDPSession extends UDPSessionDesc, IPSession {

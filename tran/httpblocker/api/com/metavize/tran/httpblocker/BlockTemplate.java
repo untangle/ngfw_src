@@ -38,7 +38,7 @@ import com.metavize.mvvm.security.Tid;
 /**
  * Message to be displayed when a message is blocked.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  */
 @Entity

@@ -27,7 +27,7 @@ import org.hibernate.annotations.Type;
 /**
  * A routing entry
  *
- * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
+ * @author <a href="mailto:rbscott@untanglenetworks.com">Robert Scott</a>
  * @version 1.0
  */
 @Entity

@@ -30,7 +30,7 @@ import org.hibernate.annotations.Type;
 /**
  * Log event for when a client logs in.
  *
- * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
+ * @author <a href="mailto:rbscott@untanglenetworks.com">Robert Scott</a>
  * @version 1.0
  */
 @Entity

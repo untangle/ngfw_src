@@ -15,7 +15,7 @@ package com.metavize.tran.token;
 /**
  * Marks the end of a set of {@link Chunk}s.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  */
 public class EndMarker extends MetadataToken

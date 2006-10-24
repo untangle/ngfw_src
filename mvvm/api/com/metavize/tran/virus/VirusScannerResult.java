@@ -21,7 +21,7 @@ import com.metavize.mvvm.tran.TemplateValues;
  * <code>VirusReport:VIRUS_NAME</code>.  This will be replaced with
  * the name of the virus which was found.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  */
 public class VirusScannerResult

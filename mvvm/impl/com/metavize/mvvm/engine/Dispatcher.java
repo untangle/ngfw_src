@@ -30,7 +30,7 @@ import com.metavize.mvvm.util.*;
  * the bottom half (writing is in the MPipeImpl class), containing the
  * main event loop and all threads.
  *
- * @author <a href="mailto:jdi@SLAB"></a>
+ * @author <a href="mailto:jdi@untanglenetworks.com"></a>
  * @version 1.0
  */
 class Dispatcher implements com.metavize.mvvm.argon.NewSessionEventListener  {

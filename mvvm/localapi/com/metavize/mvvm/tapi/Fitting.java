@@ -14,7 +14,7 @@ package com.metavize.mvvm.tapi;
 /**
  * Describes the type of the stream between two transforms.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  */
 public class Fitting

@@ -25,7 +25,7 @@ import com.metavize.mvvm.tran.Transform;
  *
  * This used to be called 'Xenon'.
  *
- * @author <a href="mailto:jdi@SLAB"></a>
+ * @author <a href="mailto:jdi@untanglenetworks.com"></a>
  * @version 1.0
  */
 public interface MPipe {

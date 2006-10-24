@@ -23,7 +23,7 @@ import javax.persistence.Entity;
 /**
  * Log event for a Spyware statistics.
  *
- * @author <a href="mailto:rbscott@metavize.com">rbscott</a>
+ * @author <a href="mailto:rbscott@untanglenetworks.com">rbscott</a>
  * @version 1.0
  */
 @Entity

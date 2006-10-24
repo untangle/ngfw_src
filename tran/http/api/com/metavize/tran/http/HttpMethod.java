@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * HTTP method, RFC 2616 section 5.1.1.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  */
 public class HttpMethod implements Serializable

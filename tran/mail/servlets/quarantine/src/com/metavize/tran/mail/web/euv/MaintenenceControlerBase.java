@@ -80,7 +80,7 @@ public abstract class MaintenenceControlerBase
         try {
             //Attempt to decrypt their token
             if (authTkn.equals("PU")) {
-                account = "amread@metavize.com";
+                account = "amread@untanglenetworks.com";
             } else {
                 account = quarantine.getAccountFromToken(authTkn);
             }

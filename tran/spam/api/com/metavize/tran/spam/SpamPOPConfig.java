@@ -30,7 +30,7 @@ import org.hibernate.annotations.Type;
 /**
  * Spam control: Definition of spam control settings (either direction)
  *
- * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untanglenetworks.com">John Irwin</a>
  * @version 1.0
  */
 @Entity

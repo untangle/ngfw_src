@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 /**
  * Describes the fittings for this pipe.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  */
 public abstract class PipeSpec

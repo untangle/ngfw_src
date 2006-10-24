@@ -29,7 +29,7 @@ import static com.metavize.mvvm.tran.firewall.protocol.ProtocolParsingConstants.
  * The class <code>ProtocolMatcher</code> represents a class for filtering on the Protocol of a
  * session.
  *
- * @author <a href="mailto:rbscott@metavize.com">rbscott</a>
+ * @author <a href="mailto:rbscott@untanglenetworks.com">rbscott</a>
  * @version 1.0
  */
 public final class ProtocolBasicMatcher extends ProtocolDBMatcher

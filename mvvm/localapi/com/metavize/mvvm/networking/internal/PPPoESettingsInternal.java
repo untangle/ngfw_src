@@ -23,7 +23,7 @@ import com.metavize.mvvm.tran.ValidateException;
 /**
  * Immutable PPPoE Settings values.
  *
- * @author <a href="mailto:rbscott@metavize.com">Robert Scott</a>
+ * @author <a href="mailto:rbscott@untanglenetworks.com">Robert Scott</a>
  * @version 1.0
  */
 public class PPPoESettingsInternal

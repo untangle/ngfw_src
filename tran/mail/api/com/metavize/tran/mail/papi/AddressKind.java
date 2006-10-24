@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * Kind of Email address
  *
- * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untanglenetworks.com">John Irwin</a>
  * @version 1.0
  */
 public class AddressKind implements Serializable

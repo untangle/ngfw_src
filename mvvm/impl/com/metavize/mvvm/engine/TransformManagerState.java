@@ -23,7 +23,7 @@ import com.metavize.mvvm.security.Tid;
 /**
  * Internal state for TransformManagerImpl.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  */
 @Entity

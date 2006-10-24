@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
  * provide methods that would do the subscription making work for the
  * client.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  */
 public class Subscription

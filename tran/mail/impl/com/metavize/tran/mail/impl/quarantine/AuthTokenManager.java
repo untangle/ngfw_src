@@ -166,7 +166,7 @@ class AuthTokenManager {
     AuthTokenManager atm = new AuthTokenManager();
     atm.setKey(bytes);
 
-    String tkn = atm.createAuthToken("bscott@metavize.com");
+    String tkn = atm.createAuthToken("bscott@untanglenetworks.com");
     System.out.println(tkn);
     Pair<DecryptOutcome, String> p = atm.decryptAuthToken(tkn);
 

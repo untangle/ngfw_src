@@ -19,7 +19,7 @@ import java.util.Hashtable;
 /**
  * The registration info for the EdgeGuard customer
  *
- * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untanglenetworks.com">John Irwin</a>
  * @version 1.0
  */
 public class RegistrationInfo implements Serializable

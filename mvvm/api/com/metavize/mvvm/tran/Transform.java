@@ -18,7 +18,7 @@ import com.metavize.mvvm.tapi.IPSessionDesc;
  * Interface for a transform instance, provides public runtime control
  * methods for manipulating the instance's state.
  *
- * @author <a href="mailto:amread@metavize.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
  * @version 1.0
  */
 public interface Transform

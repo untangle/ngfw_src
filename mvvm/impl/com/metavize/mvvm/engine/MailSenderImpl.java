@@ -45,7 +45,7 @@ import org.hibernate.SessionFactory;
  * as a stand-alone application. The stand-alone mode is used for mailing out
  * EdgeReports.
  *
- * @author <a href="mailto:jdi@metavize.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untanglenetworks.com">John Irwin</a>
  * @version 1.0
  */
 class MailSenderImpl implements MailSender
