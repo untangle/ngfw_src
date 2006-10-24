@@ -102,6 +102,20 @@ restartPostgres() {
     echo "*** restarting missing postgres on `date` ***" >> $MVVM_WRAPPER_LOG
     /etc/init.d/postgresql restart
 }
+
+restartServiceIfNeeded() {
+  # if the PID file is present but the corresponding process is not running,
+  # wipe out the obsolete PID file and restart the service.
+
+  serviceName=$1
+  pidFile=$2
+
+  if [ -f "$pidFile" -a -d /proc/`cat "$pidFile"` ] ; then
+    echo "*** restarting missing $serviceName on `date` ***" >> $MVVM_WRAPPER_LOG
+    rm -f $pidFile
+    /etc/init.d/$serviceName restart
+  fi
+}
     
 # Return true (0) when we need to reap and restart the mvvm.
 needToRestart() {
@@ -180,6 +194,9 @@ while true; do
     raiseFdLimit
     flushIptables
     checkPostgresUp
+    restartServiceIfNeeded clamav-freshclam /var/run/clamd/freshclam.pid
+    restartServiceIfNeeded clamav-daemon /var/run/clamd/clamd.pid
+    restartServiceIfNeeded spamassassin /var/run/spamd.pid
 
     $MVVM_LAUNCH $* >>$MVVM_CONSOLE_LOG 2>&1 &
 
