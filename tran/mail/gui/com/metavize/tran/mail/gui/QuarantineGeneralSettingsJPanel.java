@@ -90,8 +90,8 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoun
         int sendingMinute = tempCalendar.get(Calendar.MINUTE);
 
         // MAX STORAGE SPACE
-        tempRowVector = tableVector.elementAt(2);
-        int totalSize = (Integer) ((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue();
+        //tempRowVector = tableVector.elementAt(2);
+        //int totalSize = (Integer) ((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue();
 
 
         // SAVE SETTINGS //////////
@@ -101,7 +101,7 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoun
             quarantineSettings.setMaxMailIntern( ((long)maxHoldingDays) * 1440l * 60 * 1000l );
             quarantineSettings.setDigestHourOfDay( sendingHour );
             quarantineSettings.setDigestMinuteOfDay( sendingMinute );
-            quarantineSettings.setMaxQuarantineTotalSz( ((long) totalSize)*1024l*1024l*1024l );
+            //quarantineSettings.setMaxQuarantineTotalSz( ((long) totalSize)*1024l*1024l*1024l );
         }
     }
     
@@ -137,17 +137,18 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoun
         allRows.add( tempRow );
 	
         // MAX SPACE
+        /*
         rowIndex++;
         tempRow = new Vector(5);
         tempRow.add( super.ROW_SAVED );
         tempRow.add( rowIndex );
         tempRow.add( "Maximum Quarantine Space (MB)" );
-
         int min = (int) mailTransformCompoundSettings.getMinStorageGigs();
         int max = (int) mailTransformCompoundSettings.getMaxStorageGigs();
         tempRow.add( new SpinnerNumberModel( (int)(quarantineSettings.getMaxQuarantineTotalSz()/1024l/1024l/1024l), min, max, 1) );
         tempRow.add( "This is the maximum amount of disk space (in MB) that will be used to quarantine emails." );
         allRows.add( tempRow );
+        */
 
         return allRows;
     }
