@@ -86,23 +86,6 @@ raiseFdLimit() {
     ulimit -n 1024000
 }
 
-# Run every 5 seconds to make sure Postgres is up.
-checkPostgresUp() {
-    if [ -d "$PGDATA" -a ! -f "$PGDATA/postmaster.pid" ]; then
-        restartPostgres
-    else
-        pgid=`head -n 1 "$PGDATA/postmaster.pid"`
-        if [ ! -d /proc/$pgid ]; then
-            restartPostgres
-        fi
-    fi
-}
-
-restartPostgres() {
-    echo "*** restarting missing postgres on `date` ***" >> $MVVM_WRAPPER_LOG
-    /etc/init.d/postgresql restart
-}
-
 restartServiceIfNeeded() {
   # if the PID file is present but the corresponding process is not running,
   # wipe out the obsolete PID file and restart the service.
@@ -110,7 +93,7 @@ restartServiceIfNeeded() {
   serviceName=$1
   pidFile=$2
 
-  if [ -f "$pidFile" -a -d /proc/`cat "$pidFile"` ] ; then
+  if [ -f "$pidFile" -a ! -d /proc/`cat "$pidFile"` ] ; then
     echo "*** restarting missing $serviceName on `date` ***" >> $MVVM_WRAPPER_LOG
     rm -f $pidFile
     /etc/init.d/$serviceName restart
@@ -193,7 +176,7 @@ while true; do
 
     raiseFdLimit
     flushIptables
-    checkPostgresUp
+    restartServiceIfNeeded postgresql $PGDATE/postmaster.pid
     restartServiceIfNeeded clamav-freshclam /var/run/clamd/freshclam.pid
     restartServiceIfNeeded clamav-daemon /var/run/clamd/clamd.pid
     restartServiceIfNeeded spamassassin /var/run/spamd.pid
