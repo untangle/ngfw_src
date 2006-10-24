@@ -54,7 +54,7 @@ public class PolicyJDialog extends MConfigJDialog {
 	addRefreshable(NAME_SYSTEM_POLICIES, policyDefaultJPanel);
 
         // USER POLICIES //////
-        PolicyCustomJPanel policyCustomJPanel = new PolicyCustomJPanel();
+        PolicyCustomJPanel policyCustomJPanel = new PolicyCustomJPanel(this);
         policiesJTabbedPane.addTab(NAME_USER_POLICIES, null, policyCustomJPanel);
 	addSavable(NAME_USER_POLICIES, policyCustomJPanel);
 	addRefreshable(NAME_USER_POLICIES, policyCustomJPanel);

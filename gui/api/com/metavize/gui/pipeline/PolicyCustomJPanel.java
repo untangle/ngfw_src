@@ -13,6 +13,7 @@
 package com.metavize.gui.pipeline;
 
 import java.awt.Insets;
+import java.awt.Window;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -23,6 +24,7 @@ import java.text.SimpleDateFormat;
 import com.metavize.gui.transform.*;
 import com.metavize.gui.util.*;
 import com.metavize.gui.widgets.editTable.*;
+import com.metavize.gui.widgets.dialogs.*;
 import com.metavize.mvvm.*;
 import com.metavize.mvvm.tran.*;
 import com.metavize.mvvm.policy.*;
@@ -36,14 +38,14 @@ import com.metavize.mvvm.tran.firewall.time.*;
 
 public class PolicyCustomJPanel extends MEditTableJPanel {
 
-    public PolicyCustomJPanel() {
+    public PolicyCustomJPanel(MConfigJDialog mConfigJDialog) {
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("");
         super.setDetailsTitle("");
 
         // create actual table model
-        CustomPolicyTableModel customPolicyTableModel = new CustomPolicyTableModel();
+        CustomPolicyTableModel customPolicyTableModel = new CustomPolicyTableModel(mConfigJDialog);
         this.setTableModel( customPolicyTableModel );
         this.setAddRemoveEnabled(true);
         this.setFillJButtonEnabled(false);
@@ -53,8 +55,10 @@ public class PolicyCustomJPanel extends MEditTableJPanel {
 
 class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     
-    public CustomPolicyTableModel(){
+    private MConfigJDialog mConfigJDialog;
 
+    public CustomPolicyTableModel(MConfigJDialog mConfigJDialog){
+        this.mConfigJDialog = mConfigJDialog;
     }
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
@@ -69,7 +73,7 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     private static final int C8_MW = 100; /* server address */
     private static final int C9_MW = 100; /* client port */
     private static final int C10_MW = 100; /* server port */
-    private static final int C11_MW = 100; /* user */
+    private static final int C11_MW = 150; /* user */
     private static final int C12_MW = 100; /* start time */
     private static final int C13_MW = 100; /* end time */
     private static final int C14_MW = 100; /* days */
@@ -124,14 +128,19 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
         addTableColumn( tableColumnModel,  8,  C8_MW,  true,  true,  false, false, String.class, "any", sc.html("server<br>address"));
         addTableColumn( tableColumnModel,  9,  C9_MW,  true,  true,  true,  false, String.class, "any", sc.html("client<br>port"));
         addTableColumn( tableColumnModel,  10, C10_MW, true,  true,  false, false, String.class, "any", sc.html("server<br>port"));
-        addTableColumn( tableColumnModel,  11, C11_MW, true,  true,  false, false, String.class, "any", sc.html("user name"));
-        addTableColumn( tableColumnModel,  12, C12_MW, true,  true,  false, false, String.class, "12:00 am", sc.html("start time"));
-        addTableColumn( tableColumnModel,  13, C13_MW, true,  true,  false, false, String.class, "12:00 am", sc.html("end time"));
+        addTableColumn( tableColumnModel,  11, C11_MW, true,  true,  false, false, UidButtonRunnable.class, "true", sc.html("user ID/login"));
+        addTableColumn( tableColumnModel,  12, C12_MW, true,  true,  false, false, String.class, "00:00", sc.html("start time"));
+        addTableColumn( tableColumnModel,  13, C13_MW, true,  true,  false, false, String.class, "23:59", sc.html("end time"));
         addTableColumn( tableColumnModel,  14, C14_MW, true,  true,  false, false, String.class, "any", sc.html("days"));
         addTableColumn( tableColumnModel,  15, C15_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
         addTableColumn( tableColumnModel,  16, 16,     false, false, true,  false, UserPolicyRule.class, null, "" );
 
         return tableColumnModel;
+    }
+
+    protected void wireUpNewRow(Vector rowVector){
+        UidButtonRunnable uidButtonRunnable = (UidButtonRunnable) rowVector.elementAt(11);
+        uidButtonRunnable.setTopLevelWindow((Window) mConfigJDialog );
     }
 
 
@@ -145,7 +154,7 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
         IPMatcherFactory ipmf  = IPMatcherFactory.getInstance();
         UserMatcherFactory umf = UserMatcherFactory.getInstance();
         DayOfWeekMatcherFactory dmf = DayOfWeekMatcherFactory.getInstance();
-        DateFormat dateFormat = new SimpleDateFormat();
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
 	for( Vector rowVector : tableVector ){
 	    rowIndex++;
@@ -174,7 +183,7 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 	    catch(Exception e){ throw new Exception("Invalid \"client port\" in row: " + rowIndex); }
 	    try{ newElem.setServerPort( pmf.parse((String) rowVector.elementAt(10)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"server port\" in row: " + rowIndex); }
-        try{ newElem.setUser( umf.parse((String) rowVector.elementAt(11)) ); }
+        try{ newElem.setUser( umf.parse(((UidButtonRunnable) rowVector.elementAt(11)).getUid()) ); }
         catch(Exception e){ throw new Exception("Invalid \"user name\" in row: " + rowIndex); }
         try{ newElem.setStartTime( dateFormat.parse((String)rowVector.elementAt(12)) ); }
         catch(Exception e){ throw new Exception("Invalid \"start time\" in row: " + rowIndex); }
@@ -208,7 +217,7 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 
     IntfDBMatcher intfEnumeration[] = IntfMatcherFactory.getInstance().getEnumeration();
     
-    DateFormat dateFormat = new SimpleDateFormat("hh:mm a");
+    DateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
 	updatePolicyNames( policyConfiguration.getPolicies() );
 	updatePolicyModel();
@@ -232,7 +241,9 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 	    tempRow.add( newElem.getServerAddr().toString() );
 	    tempRow.add( newElem.getClientPort().toString() );
 	    tempRow.add( newElem.getServerPort().toString() );
-        tempRow.add( newElem.getUser().toString() );
+        UidButtonRunnable uidButtonRunnable = new UidButtonRunnable("true");
+        uidButtonRunnable.setUid( newElem.getUser().toString() );
+        tempRow.add( uidButtonRunnable );
         tempRow.add( dateFormat.format(newElem.getStartTime()) );
         tempRow.add( dateFormat.format(newElem.getEndTime()) );
         tempRow.add( newElem.getDayOfWeek().toString() );

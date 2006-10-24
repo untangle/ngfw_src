@@ -42,7 +42,7 @@ public class UserConfigJPanel extends MEditTableJPanel{
         super.setAddRemoveEnabled(true);
         
         // create actual table model
-        UserConfigTableModel userConfigTableModel = new UserConfigTableModel(mTransformControlsJPanel, this);
+        UserConfigTableModel userConfigTableModel = new UserConfigTableModel(mTransformControlsJPanel);
         this.setTableModel( userConfigTableModel );
         //userConfigTableModel.setSortingStatus(3, UserConfigTableModel.ASCENDING);
     }
@@ -66,9 +66,8 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
 
     protected boolean getSortable(){ return false; }
 
-    public UserConfigTableModel(MTransformControlsJPanel mTransformControlsJPanel, JPanel jPanel){
+    public UserConfigTableModel(MTransformControlsJPanel mTransformControlsJPanel){
 	this.mTransformControlsJPanel = mTransformControlsJPanel;
-	panel = jPanel;
     }
 
     private static final String PLEASE_SELECT_USER = "Please select a user";
@@ -107,7 +106,7 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
         settingsButtonRunnable.setUserType(true);
         settingsButtonRunnable.setMTransformControlsJPanel(mTransformControlsJPanel);
         UidButtonRunnable uidButtonRunnable = (UidButtonRunnable) rowVector.elementAt(3);
-        uidButtonRunnable.setMTransformControlsJPanel(mTransformControlsJPanel);
+        uidButtonRunnable.setTopLevelWindow((Window)mTransformControlsJPanel.getTopLevelAncestor());
     }
 
 
