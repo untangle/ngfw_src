@@ -1,4 +1,4 @@
-// Copyright (c) 2006 Metavize Inc.
+// Copyright (c) 2003-2006 Untangle Networks, Inc.
 // All rights reserved.
 
 function BookmarkList(parent)
