@@ -19,6 +19,7 @@ import com.metavize.mvvm.logging.ListEventFilter;
 import com.metavize.mvvm.logging.LogEvent;
 import com.metavize.mvvm.logging.RepositoryDesc;
 import com.metavize.mvvm.logging.SimpleEventFilter;
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -71,6 +72,7 @@ class SimpleEventFilterAdaptor<E extends LogEvent>
         int c = 0;
         for (Iterator i = q.iterate(); i.hasNext() && ++c < limit; ) {
             E sb = (E)i.next();
+            Hibernate.initialize(sb);
             l.add(sb);
         }
     }
