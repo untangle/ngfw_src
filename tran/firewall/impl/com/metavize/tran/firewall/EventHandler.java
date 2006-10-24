@@ -1,4 +1,15 @@
 /*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
+/*
  * copyright (c) 2003, 2004, 2005, 2006 Metavize Inc.
  * All rights reserved.
  *
