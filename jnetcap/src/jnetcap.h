@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2003 Metavize Inc.
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
