@@ -35,7 +35,6 @@ import com.metavize.mvvm.policy.Policy;
 import com.metavize.mvvm.policy.PolicyRule;
 import com.metavize.mvvm.tapi.PipelineFoundry;
 import com.metavize.mvvm.tran.PipelineEndpoints;
-import com.metavize.mvvm.user.PhoneBook;
 import com.metavize.mvvm.user.UserInfo;
 import com.metavize.mvvm.user.Username;
 import org.apache.log4j.Logger;
@@ -153,22 +152,22 @@ abstract class ArgonHook implements Runnable
 
             /* lookup the user information */
 
-            if ( false || !true ) { // XXX don't want to subject everyone to this yet
+            if ( false || !true ) {
                 UserInfo info = MvvmContextFactory.context().localPhoneBook().lookup( clientSide.clientAddr());
                 
                 logger.debug( "user information: " + info );
                 Username username = info.getUsername();
-                
+            
                 /* should cache the lookup key, but no worries for now */
                 if ( username != null && info.getUsernameState().equals( UserInfo.LookupState.COMPLETED )) {
                     String u = username.toString().trim();
                     if ( u.length() > 0 ) sessionGlobalState.setUser( u );
                 }
             }
-
+                
             pipelineDesc = pipelineFoundry.weld( clientSide );
             pipelineAgents = pipelineDesc.getAgents();
-
+            
             // Create the (fake) endpoints early so they can be available at request time.
             endpoints = pipelineFoundry.createInitialEndpoints(clientSide);
 

@@ -162,13 +162,13 @@ class WMIAssistant implements Assistant
         if ( cimData.isExpired()) {
             cache.remove( address );
             if ( logger.isDebugEnabled()) {
-                logger.debug( "cached value[" +address.getHostAddress() + "]: " + cimData + " expired" );
+                logger.debug( "cached value [" +address.getHostAddress() + "]: " + cimData + " expired" );
             }
             return false;
         }
         
         if ( logger.isDebugEnabled()) {
-            logger.debug( "cached value[" +address.getHostAddress() + "]: " + cimData + " expired" );
+            logger.debug( "found valid cached value [" + address.getHostAddress() + "]: " + cimData );
         }
         
         cimData.completeInfo( info );
@@ -380,30 +380,38 @@ class WMIAssistant implements Assistant
     }
 
     /* CIMData: interface to keep track of the status of a WMI query. */
-    private static interface CIMData
-    {
-        public void completeInfo( UserInfo info );
-        
-        public boolean isExpired();
-    }
-    
-    /* CIMData: representation of a failed CMI request, this is used to cache the fact
-     * that the username should not be looked up again for a long time.  */
-    private static class FailedCIMData implements CIMData
+    private static abstract class  CIMData
     {
         private final Date expirationDate;
 
-        FailedCIMData( Date expirationDate )
+        CIMData( Date expirationDate )
         {
             this.expirationDate = expirationDate;
         }
 
-        public boolean isExpired()
+        abstract void completeInfo( UserInfo info );
+        
+        boolean isExpired()
         {
-            return this.expirationDate.after( new Date());
+            return new Date().after( this.expirationDate );
+        }
+    }
+    
+    /* CIMData: representation of a failed CMI request, this is used to cache the fact
+     * that the username should not be looked up again for a long time.  */
+    private static class FailedCIMData extends CIMData
+    {
+        FailedCIMData( Date expirationDate )
+        {
+            super( expirationDate );
         }
 
-        public void completeInfo( UserInfo info )
+        public String toString()
+        {
+            return "<FailedCIMData>";
+        }
+
+        void completeInfo( UserInfo info )
         {
             /* indicate that the lookup failed */
             info.setUsernameState( LookupState.FAILED );
@@ -416,21 +424,20 @@ class WMIAssistant implements Assistant
     }
 
     /* CIMData: representation of a successful CMI request. */
-    private static class SuccessfulCIMData implements CIMData
+    private static class SuccessfulCIMData extends CIMData
     {
         private final InetAddress address;
         private final Username username;
         private final HostName hostname;
-        private final Date expirationDate;
 
         /* in order to perform a CIM query, you have to lookup the
          * hostname, windows doesn't work on ip addresses. */
         SuccessfulCIMData( InetAddress address, Username username, HostName hostname, Date expirationDate )
         {
+            super( expirationDate );
             this.address = address;
             this.username = username;
             this.hostname = hostname;
-            this.expirationDate = expirationDate;
         }
 
         public void completeInfo( UserInfo info )
@@ -440,9 +447,9 @@ class WMIAssistant implements Assistant
             info.setUsername( this.username );
         }
 
-        public boolean isExpired()
+        public String toString()
         {
-            return this.expirationDate.after( new Date());
+            return "<SuccessfulCIMData: " + address.getHostAddress() + "/" + username + ">";
         }
     }      
 }
