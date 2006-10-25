@@ -35,7 +35,7 @@ Description: The Untangle Networks Email Decoder
 Package: airgap-transform
 Architecture: any
 Depends: mvvm
-XB-Display-Name: Attack Shield
+XB-Display-Name: Attack Blocker
 XB-View-Position: 1010
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -328,7 +328,7 @@ Description: The Untangle Networks Web Content Control Software Appliance
 Package: hauri-transform
 Architecture: any
 Depends: mvvm, virus-base, hauri-mv, http-casing, ftp-casing, mail-casing
-XB-Display-Name: Hauri AntiVirus Scanner
+XB-Display-Name: Hauri Virus Blocker
 XB-View-Position: 60
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
@@ -441,7 +441,7 @@ Description: The Hauri AntiVirus Scanner Software Appliance
 Package: kav-transform
 Architecture: any
 Depends: mvvm, virus-base, kav-mv, http-casing, ftp-casing, mail-casing
-XB-Display-Name: Kaspersky AntiVirus Scanner
+XB-Display-Name: Kaspersky Virus Blocker
 XB-View-Position: 50
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
@@ -521,7 +521,7 @@ Description: The Kaspersky AntiVirus Scanner Software Appliance
 Package: clam-transform
 Architecture: any
 Depends: mvvm, virus-base, clamav-mv, http-casing, ftp-casing, mail-casing
-XB-Display-Name: Clam AntiVirus Scanner
+XB-Display-Name: Clam Virus Blocker
 XB-View-Position: 70
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
@@ -627,7 +627,7 @@ Package: protofilter-transform
 Architecture: any
 Depends: mvvm
 Conflicts: protoanalyzer-transform
-XB-Display-Name: Rogue Protocol Control
+XB-Display-Name: Protocol Control
 XB-View-Position: 80
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1040,7 +1040,7 @@ Description: The Untangle Networks SpamGuard Software Appliance
 Package: clamphish-transform
 Architecture: any
 Depends: mvvm, spam-base, clamav-mv, mail-casing
-XB-Display-Name: PhishNet
+XB-Display-Name: Identity Theft Blocker
 XB-View-Position: 17
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1625,7 +1625,7 @@ Description: The Untangle Networks Intrusion Prevention Software Appliance
 Package: reporting-transform
 Architecture: any
 Depends: mvvm
-XB-Display-Name: EdgeReport
+XB-Display-Name: Untangle Reports
 XB-View-Position: 1020
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1829,14 +1829,14 @@ Description: The 24-Hour Box Backup Service
 Package: virus-base
 Architecture: any
 Depends: mvvm
-XB-Display-Name: AntiVirus Base
+XB-Display-Name: Virus Blocker Base
 Description: The Untangle Networks AntiVirus Base
  The Untangle Networks Base AntiVirus Scanner
 
 Package: spam-base
 Architecture: any
 Depends: mvvm
-XB-Display-Name: AntiSpam Base
+XB-Display-Name: Spam Blocker Base
 Description: The Untangle Networks SpamGuard Base
  The Untangle Networks Base SpamGuard Scanner
 
