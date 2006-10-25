@@ -111,21 +111,17 @@ class PhoneBookAssistant implements Assistant
 
         private final Username username;
         private final HostName hostname;
-        private final UserInfo.LookupState state;
 
         Data( Username u, HostName h )
         {
             this.username = u;
             this.hostname = h;
-            if ( this.username != null && this.hostname != null ) this.state = UserInfo.LookupState.COMPLETED;
-            else this.state = null;
         }
         
         void fillInfo( UserInfo info )
         {
             if ( this.username != null ) info.setUsername( this.username );
             if ( this.hostname != null ) info.setHostname( this.hostname );
-            if ( this.state    != null ) info.setState( this.state );
         }
    }
 }

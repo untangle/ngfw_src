@@ -33,6 +33,9 @@ class Jars
     ThirdpartyJar.get(n)
   end
 
+  ## WBEM Jars
+  WBEM       = [ Jars.downloadTarget('wbemservices-1.0.2.src/dist/wbemservices/lib/wbem.jar') ]
+
   ## GUIJars
   Alloy      = [ Jars.downloadTarget('alloylnf-1_4_4-1/alloy.jar') ]
   ## Kunstoff   = [ Jars.downloadTarget('kunststoff-2_0_1/kunststoff-mv.jar') ]
@@ -60,7 +63,7 @@ class Jars
   ## Groups used for compiling
   # This is available to everything?
   Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres, Activation, Jcifs,
-                              C3p0, Ant, JavaMailApi, JavaMail, TomcatEmb, Velocity)
+                              C3p0, Ant, JavaMailApi, JavaMail, TomcatEmb, Velocity,WBEM)
 
   # Jars for compiling the GUI, and GUI transform components
   Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)

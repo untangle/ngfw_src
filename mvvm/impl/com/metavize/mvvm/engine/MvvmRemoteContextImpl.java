@@ -29,6 +29,7 @@ import com.metavize.mvvm.portal.RemotePortalManager;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.tran.TransformManager;
+import com.metavize.mvvm.user.RemotePhoneBook;
 
 class MvvmRemoteContextImpl implements MvvmRemoteContext
 {
@@ -106,6 +107,11 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
     public RemoteAppServerManager appServerManager()
     {
         return context.remoteAppServerManager();
+    }
+
+    public RemotePhoneBook phoneBook()
+    {
+        return context.remotePhoneBook();
     }
 
     public AddressBook appAddressBook()

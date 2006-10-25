@@ -31,7 +31,10 @@ import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.tapi.PipelineFoundry;
 import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.tran.LocalTransformManager;
+import com.metavize.mvvm.user.LocalPhoneBook;
+import com.metavize.mvvm.user.RemotePhoneBook;
 import com.metavize.mvvm.util.TransactionWork;
+
 
 /**
  * Provides an interface to get all local MVVM components from an MVVM
@@ -127,6 +130,18 @@ public interface MvvmLocalContext
      * @return the singleton
      */
     AddressBook appAddressBook();
+
+    /**
+     * Get the phonebook singleton 
+     * @return the singleton
+     */
+    LocalPhoneBook localPhoneBook();
+
+    /**
+     * Get the phonebook singleton 
+     * @return the singleton
+     */
+    RemotePhoneBook remotePhoneBook();
 
     /**
      * Save settings to local hard drive.

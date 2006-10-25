@@ -220,6 +220,8 @@ public class RemoteClient
             updateAddress();
         } else if (args[0].equalsIgnoreCase("pppoe")) {
             pppoe(args);
+        } else if (args[0].equalsIgnoreCase("wmi")) {
+            wmi(args);
         } else if (args[0].equalsIgnoreCase("gc")) {
             doFullGC();
         } else if (args[0].equalsIgnoreCase("messageQueue")) {
@@ -954,6 +956,12 @@ public class RemoteClient
     {
         mc.networkManager().pppoe( args );
     }
+
+    private static void wmi( String args[] ) throws Exception
+    {
+        mc.phoneBook().wmi( args );
+    }
+
 
     // helper functions -------------------------------------------------------
 

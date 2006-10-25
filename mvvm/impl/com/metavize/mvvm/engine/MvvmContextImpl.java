@@ -40,8 +40,13 @@ import com.metavize.mvvm.tapi.MPipeManager;
 import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformManager;
+import com.metavize.mvvm.user.LocalPhoneBook;
+import com.metavize.mvvm.user.LocalPhoneBookImpl;
+import com.metavize.mvvm.user.RemotePhoneBook;
+import com.metavize.mvvm.user.RemotePhoneBookImpl;
 import com.metavize.mvvm.util.TransactionRunner;
 import com.metavize.mvvm.util.TransactionWork;
+
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
@@ -90,6 +95,8 @@ public class MvvmContextImpl extends MvvmContextBase
     private AppServerManagerImpl appServerManager;
     private RemoteAppServerManagerImpl remoteAppServerManager;
     private AddressBookImpl addressBookImpl;
+    private LocalPhoneBookImpl localPhoneBookImpl;
+    private RemotePhoneBookImpl remotePhoneBookImpl;
     private PortalManagerImpl portalManager;
     private RemotePortalManagerImpl remotePortalManager;
     private TomcatManager tomcatManager;
@@ -127,6 +134,14 @@ public class MvvmContextImpl extends MvvmContextBase
 
     public AddressBookImpl appAddressBook() {
         return addressBookImpl;
+    }
+
+    public RemotePhoneBook remotePhoneBook() {
+        return remotePhoneBookImpl;
+    }
+
+    public LocalPhoneBook localPhoneBook() {
+        return localPhoneBookImpl;
     }
 
     public PortalManagerImpl portalManager() {
@@ -532,6 +547,10 @@ public class MvvmContextImpl extends MvvmContextBase
         //Start AddressBookImpl
         addressBookImpl = AddressBookImpl.getInstance();
 
+        // Start the phonebook
+        localPhoneBookImpl = LocalPhoneBookImpl.getInstance();
+        remotePhoneBookImpl = new RemotePhoneBookImpl( localPhoneBookImpl );
+
         portalManager = new PortalManagerImpl(this);
         remotePortalManager = new RemotePortalManagerImpl(portalManager);
 
@@ -575,6 +594,9 @@ public class MvvmContextImpl extends MvvmContextBase
         if (null != useHeapMonitor && Boolean.valueOf(useHeapMonitor)) {
             this.heapMonitor.start();
         }
+
+        /* initalize everything and start it up */
+        localPhoneBookImpl.init();
 
         httpInvoker = HttpInvoker.invoker();
 

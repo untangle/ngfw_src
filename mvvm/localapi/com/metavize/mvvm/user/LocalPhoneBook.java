@@ -13,7 +13,7 @@ package com.metavize.mvvm.user;
 
 import java.net.InetAddress;
 
-public interface PhoneBook
+public interface LocalPhoneBook extends RemotePhoneBook
 {
     /* Lookup the corresponding user user information object user the address */
     public UserInfo lookup( InetAddress address );

@@ -205,7 +205,7 @@ end
 $InstallTarget.registerDependency(mvvm_cacerts)
 
 deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
-  Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::Junit +
+  Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::Junit + Jars::WBEM +
   [ mvvm['bootstrap'], mvvm['api'], mvvm['localapi'], mvvm['impl'], jnetcap['impl'], jvector['impl']]
 
 JarTarget.buildTarget(Package["unittest"], deps, 'mvvm', 'mvvm/unittest')

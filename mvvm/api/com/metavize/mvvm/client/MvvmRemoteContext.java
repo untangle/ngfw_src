@@ -27,6 +27,7 @@ import com.metavize.mvvm.portal.RemotePortalManager;
 import com.metavize.mvvm.security.AdminManager;
 import com.metavize.mvvm.toolbox.ToolboxManager;
 import com.metavize.mvvm.tran.TransformManager;
+import com.metavize.mvvm.user.RemotePhoneBook;
 
 /**
  * Provides an interface to get major MVVM components that are
@@ -119,6 +120,12 @@ public interface MvvmRemoteContext
      * @return the singleton
      */
     RemoteAppServerManager appServerManager();
+
+    /**
+     * Get the phonebook singleton 
+     * @return the singleton
+     */
+    RemotePhoneBook phoneBook();
 
     /**
      * Get the RemotePortalManager singleton for this instance

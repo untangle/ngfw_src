@@ -22,7 +22,10 @@ public final class UserInfo
     /* Various states the user info object can be in */
     public enum LookupState
     { 
-        IN_PROGRESS, FAILED, COMPLETED
+        UNITITIATED,     /* none of the assistants attempted to lookup information */
+        IN_PROGRESS,     /* an assistant is attempting to lookup the information */
+        FAILED,          /* an assistant attempted to lookup and failed */
+        COMPLETED        /* lookup completed succesfully */
     };
 
     /* This is the key used to lookup the data, this is an ID that can
@@ -43,8 +46,10 @@ public final class UserInfo
     /* The hostname for this ip address */
     private HostName hostname;
     
-    /* Current state is pending */
-    private LookupState state = LookupState.IN_PROGRESS;
+    /* Default state of the username lookup is pending */
+    private LookupState usernameState = LookupState.UNITITIATED;
+    
+    private LookupState hostnameState = LookupState.UNITITIATED;
 
     private UserInfo( long userLookupKey, InetAddress address, Date lookupTime )
     {
@@ -85,6 +90,18 @@ public final class UserInfo
     public void setUsername( Username newValue )
     {
         this.username = newValue;
+        /* update the state to completed */
+        this.hostnameState = LookupState.COMPLETED;
+    }
+
+    public LookupState getUsernameState()
+    {
+        return this.usernameState;
+    }
+
+    public void setUsernameState( LookupState newValue )
+    {
+        this.usernameState = newValue;
     }
 
     public HostName getHostname()
@@ -95,16 +112,31 @@ public final class UserInfo
     public void setHostname( HostName newValue )
     {
         this.hostname = newValue;
+        /* update the state to completed */
+        this.hostnameState = LookupState.COMPLETED;
     }
 
-   public LookupState getState()
+    public LookupState getHostnameState()
     {
-        return this.state;
+        return this.hostnameState;
     }
 
-    public void setState( LookupState newValue )
+    public void setHostnameState( LookupState newValue )
     {
-        this.state = newValue;
+        this.hostnameState = newValue;
+    }
+
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append( "<key: " + this.userLookupKey );
+        sb.append( " ip: " +  this.address );
+        sb.append( " time: " + this.lookupTime );
+        sb.append( " user:[" + this.usernameState + "] " + this.username );
+        sb.append( " host:[" + this.hostnameState + "] " + this.hostname + ">" );
+        
+        return sb.toString();
     }
 
     /* Create an initial user lookup instance */

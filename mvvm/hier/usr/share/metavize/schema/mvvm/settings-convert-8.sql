@@ -26,6 +26,14 @@ CREATE TABLE settings.mvvm_pppoe (
     live              BOOL,
     PRIMARY KEY      (settings_id));
 
+-- com.metavize.mvvm.user.WMISettings -- 4.1
+CREATE TABLE settings.mvvm_wmi_settings (
+    settings_id       INT8 NOT NULL,
+    live              BOOL,
+    address           INET,
+    username          TEXT,
+    password          TEXT
+    PRIMARY KEY       (settings_id));
 
 -- com.metavize.mvvm.policy.UserPolicyRule
 DROP TABLE settings.policy_tmp;
