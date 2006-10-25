@@ -521,7 +521,7 @@ Description: The Kaspersky AntiVirus Scanner Software Appliance
 Package: clam-transform
 Architecture: any
 Depends: mvvm, virus-base, clamav-mv, http-casing, ftp-casing, mail-casing
-XB-Display-Name: Clam Virus Blocker
+XB-Display-Name: Virus Blocker
 XB-View-Position: 70
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
