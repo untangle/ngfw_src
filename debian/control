@@ -9,7 +9,6 @@ Package: ftp-casing
 Architecture: any
 Depends: mvvm
 XB-Display-Name: File Transfer
-XB-Website: http://www.untanglenetworks.com
 XB-Is-Service: true
 Description: The Untangle Networks File Transfer/FTP Decoder
  The Untangle Networks File Transfer/FTP Decoder
@@ -18,7 +17,6 @@ Package: http-casing
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Web
-XB-Website: http://www.untanglenetworks.com
 XB-Is-Service: true
 Description: The Untangle Networks Web/HTTP Decoder
  The Untangle Networks Web/HTTP Decoder
@@ -30,7 +28,6 @@ Replaces: email-transform
 Provides: email-transform
 Depends: mvvm
 XB-Display-Name: Email
-XB-Website: http://www.untanglenetworks.com
 XB-Is-Service: true
 Description: The Untangle Networks Email Decoder
  The Untangle Networks Email Decoder
@@ -39,7 +36,6 @@ Package: airgap-transform
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Attack Shield
-XB-Website: http://www.untanglenetworks.com/attackshield.html
 XB-View-Position: 1010
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -150,7 +146,6 @@ Package: spyware-transform
 Architecture: any
 Depends: mvvm, http-casing
 XB-Display-Name: Spyware Blocker
-XB-Website: http://www.untanglenetworks.com/spyware.html
 XB-View-Position: 20
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -237,7 +232,6 @@ Package: httpblocker-transform
 Architecture: any
 Depends: mvvm, http-casing, urlblacklist.com-mv
 XB-Display-Name: Web Content Control
-XB-Website: http://www.untanglenetworks.com/webcontrol.html
 XB-View-Position: 30
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0RVh0
@@ -335,7 +329,6 @@ Package: hauri-transform
 Architecture: any
 Depends: mvvm, virus-base, hauri-mv, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Hauri AntiVirus Scanner
-XB-Website: http://www..com/hauri_antivirus.html
 XB-View-Position: 60
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
@@ -449,7 +442,6 @@ Package: kav-transform
 Architecture: any
 Depends: mvvm, virus-base, kav-mv, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Kaspersky AntiVirus Scanner
-XB-Website: http://www.untanglenetworks.com/kaspersky_antivirus.html
 XB-View-Position: 50
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
@@ -530,7 +522,6 @@ Package: clam-transform
 Architecture: any
 Depends: mvvm, virus-base, clamav-mv, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Clam AntiVirus Scanner
-XB-Website: http://www.untanglenetworks.com/clam_antivirus.html
 XB-View-Position: 70
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
@@ -637,7 +628,6 @@ Architecture: any
 Depends: mvvm
 Conflicts: protoanalyzer-transform
 XB-Display-Name: Rogue Protocol Control
-XB-Website: http://www.untanglenetworks.com/protocolcontrol.html
 XB-View-Position: 80
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -758,7 +748,6 @@ Package: nat-transform
 Architecture: any
 Depends: mvvm, dnsmasq, ftp-casing
 XB-Display-Name: Router
-XB-Website: http://www.untanglenetworks.com/networksharing.html
 XB-View-Position: 1000
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -852,7 +841,6 @@ Package: firewall-transform
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Firewall
-XB-Website: http://www.untanglenetworks.com/firewall.html
 XB-View-Position: 90
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -939,7 +927,6 @@ Package: spamassassin-transform
 Architecture: any
 Depends: mvvm, spam-base, spamc-mv, mail-casing
 XB-Display-Name: SpamGuard
-XB-Website: http://www.untanglenetworks.com/spam.html
 XB-View-Position: 15
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1054,7 +1041,6 @@ Package: clamphish-transform
 Architecture: any
 Depends: mvvm, spam-base, clamav-mv, mail-casing
 XB-Display-Name: PhishNet
-XB-Website: http://www.untanglenetworks.com/phishnet.html
 XB-View-Position: 17
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1183,7 +1169,6 @@ Package: test-transform
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Test
-XB-Website: http://www.untanglenetworks.com
 XB-View-Position: 2002
 XB-Is-Core: true
 XB-Org-Icon:  iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1325,7 +1310,6 @@ Package: openvpn-transform
 Architecture: any
 Depends: mvvm, openvpn, nsis, nsis-mv, sysutils, zip, openssl
 XB-Display-Name: OpenVPN
-XB-Website: http://www.untanglenetworks.com/openvpn.html
 XB-View-Position: 1003
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1429,7 +1413,6 @@ Package: portal-transform
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Remote Access Portal
-XB-Website: http://www.untanglenetworks.com/openvpn.html
 XB-View-Position: 990
 Description: Remote Access Portal
  The Remote Access Portal.
@@ -1538,7 +1521,6 @@ Package: ids-transform
 Architecture: any
 Depends: mvvm, http-casing, snort-rules-current
 XB-Display-Name: Intrusion Prevention
-XB-Website: http://www.untanglenetworks.com/ips.html
 XB-View-Position: 75
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1644,7 +1626,6 @@ Package: reporting-transform
 Architecture: any
 Depends: mvvm
 XB-Display-Name: EdgeReport
-XB-Website: http://www.untanglenetworks.com/reports.html
 XB-View-Position: 1020
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1730,7 +1711,6 @@ Package: boxbackup-transform
 Architecture: any
 Depends: mvvm, curl
 XB-Display-Name: 24-Hour Replacement
-XB-Website: http://www.untanglenetworks.com/boxbackup.html
 XB-View-Position: 1015
 XB-Is-Core: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1850,7 +1830,6 @@ Package: virus-base
 Architecture: any
 Depends: mvvm
 XB-Display-Name: AntiVirus Base
-XB-Website: http://www.untanglenetworks.com
 Description: The Untangle Networks AntiVirus Base
  The Untangle Networks Base AntiVirus Scanner
 
@@ -1858,7 +1837,6 @@ Package: spam-base
 Architecture: any
 Depends: mvvm
 XB-Display-Name: AntiSpam Base
-XB-Website: http://www.untanglenetworks.com
 Description: The Untangle Networks SpamGuard Base
  The Untangle Networks Base SpamGuard Scanner
 
@@ -1867,7 +1845,6 @@ Architecture: any
 Depends: mvvm
 Conflicts: metavize-gui
 XB-Display-Name: Untangle Networks Client
-XB-Website: http://www.untanglenetworks.com
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
@@ -1937,7 +1914,6 @@ Depends: jre-mv
 Conflicts: mvvm (<< 3.0.0-39)
 Replaces: mvvm (<< 3.0.0-39)
 XB-Display-Name: Untangle Networks Server Thirdparty Libraries
-XB-Website: http://www.untanglenetworks.com
 Description: The third party libraries needed for the EdgeGuard
  The third party libraries needed for EdgeGuard
 
@@ -1947,7 +1923,6 @@ Depends: jre-mv, libmvvm-thirdparty, sudo, iptables (>= 1.3.3-mv1), restore-mv, 
 Pre-Depends: postgresql-mv
 Conflicts: xenon, xenon-dbg
 XB-Display-Name: Untangle Networks Server
-XB-Website: http://www.untanglenetworks.com
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
