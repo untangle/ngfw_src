@@ -435,10 +435,10 @@ function antisubscribeRules() {
 
     ## Antisubscribe to broadcasts and multicasts by using the MAC addreses
     ## Broadcasts
-    ${EBTABLES} -t broute -A BROUTING --log -d Broadcast -j mark --set-mark ${MARK_ANTISUB}
+    ${EBTABLES} -t broute -A BROUTING -d Broadcast -j mark --set-mark ${MARK_ANTISUB}
 
     ## Multicasts
-    ${EBTABLES} -t broute -A BROUTING --log -d 01:00:5E:00:00:00/ff:ff:ff:00:00:00 \
+    ${EBTABLES} -t broute -A BROUTING -d 01:00:5E:00:00:00/ff:ff:ff:00:00:00 \
         -j mark --set-mark ${MARK_ANTISUB}
 
     ## Antisubscribe to DHCP
