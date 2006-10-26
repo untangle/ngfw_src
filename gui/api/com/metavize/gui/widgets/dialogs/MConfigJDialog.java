@@ -126,6 +126,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 		}
 	    }});
 	    if(saveException != null){
+            saveException.printStackTrace();
 		ValidateFailureDialog.factory( (Window) MConfigJDialog.this,
 					       getTitle(), componentName, saveException.getMessage() );
 		throw new ValidationException();

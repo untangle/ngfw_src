@@ -526,6 +526,21 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
 	if( settingsChangedListener != null )
 	    settingsChangedListener.settingsChanged(this);
     }
+    public void insertNewRow(int modelRow, Vector newRow){
+	int rowCount = getRowCount();
+	Vector movedRow;
+	Vector<Vector> dataVector = getDataVector();
+        for(int i=modelRow; i<rowCount; i++){
+	    movedRow = dataVector.elementAt(i);
+	    movedRow.setElementAt(i+2, orderModelIndex);
+	}
+        dataVector.insertElementAt(newRow, modelRow);
+        fireTableRowsInserted(modelRow, modelRow);
+	if( settingsChangedListener != null )
+	    settingsChangedListener.settingsChanged(this);
+    }
+    
+
     public void clearAllRows(){
 	this.getTableHeader().getTable().getCellEditor().stopCellEditing();
 	this.getTableHeader().getTable().clearSelection();

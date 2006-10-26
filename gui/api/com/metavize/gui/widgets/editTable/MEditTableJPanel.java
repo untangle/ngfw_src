@@ -434,6 +434,11 @@ public class MEditTableJPanel extends javax.swing.JPanel
     }//GEN-LAST:event_fillJButtonActionPerformed
 
 
+    protected boolean generateNewRow(int selectedModelRow){
+	    getTableModel().insertNewRow(selectedModelRow);
+        return true;
+    }
+
     private void addJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addJButtonActionPerformed
 	try{
 	    int[] selectedViewRows;
@@ -462,7 +467,8 @@ public class MEditTableJPanel extends javax.swing.JPanel
 		selectedModelRow = getTableModel().getRowViewToModelIndex(selectedViewRows[0]);
 	    
 	    // insert actual row, and determine its new view location
-	    getTableModel().insertNewRow(selectedModelRow);
+        if( !generateNewRow(selectedModelRow))
+            return;
 	    int newViewRow = getTableModel().getRowModelToViewIndex(selectedModelRow);
 	    
 	    // highlight row
