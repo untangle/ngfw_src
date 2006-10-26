@@ -19,6 +19,10 @@ import com.metavize.mvvm.user.Username;
 
 public final class UserInfo
 {
+    /* this is how long to assume a login is valid for (in millis) */
+    private static final long DEFAULT_LIFETIME_MILLIS = 3 * 60 * 1000;
+    // private static final long DEFAULT_LIFETIME_MILLIS =  10 * 1000 ;
+    
     /* Various states the user info object can be in */
     public enum LookupState
     { 
@@ -30,7 +34,7 @@ public final class UserInfo
 
     /* This is the key used to lookup the data, this is an ID that can
      * be referenced in the future to find out user information */
-    private final long userLookupKey;
+    private final long lookupKey;
 
     /* The address of the information */
     private final InetAddress address;
@@ -39,6 +43,9 @@ public final class UserInfo
 
     /* The time that the lookup was initiated */
     private final Date lookupTime;
+
+    /* The expiration date (millis since epoch) */
+    private long expirationDate;
 
     /* The username for this ip address */
     private Username username;
@@ -51,30 +58,40 @@ public final class UserInfo
     
     private LookupState hostnameState = LookupState.UNITITIATED;
 
-    private UserInfo( long userLookupKey, InetAddress address, Date lookupTime )
+    private UserInfo( long lookupKey, InetAddress address, Date lookupTime )
     {
-        this( userLookupKey, address, lookupTime, null, null );
+        this( lookupKey, address, lookupTime, null, null );
     }
     /* generic helper */
-    private UserInfo( long userLookupKey, InetAddress address, Date lookupTime, Username username, 
+    private UserInfo( long lookupKey, InetAddress address, Date lookupTime, Username username, 
                       HostName hostname )
     {
-        this.userLookupKey = userLookupKey;
+        this.lookupKey = lookupKey;
         this.address = address;
         this.lookupTime = lookupTime;
         this.username = username;
         this.hostname = hostname;
+        this.expirationDate = System.currentTimeMillis() + DEFAULT_LIFETIME_MILLIS;
     }
-    
 
-    public long getUserLookupKey()
+    public long getLookupKey()
     {
-        return this.userLookupKey;
+        return this.lookupKey;
     }
 
     public Date getLookupTime()
     {
         return this.lookupTime;
+    }
+
+    public boolean isExpired()
+    {
+        return ( System.currentTimeMillis() > expirationDate );
+    }
+
+    public void setExpirationDate( long newValue )
+    {
+        this.expirationDate = newValue;
     }
 
     public InetAddress getAddress()
@@ -91,7 +108,7 @@ public final class UserInfo
     {
         this.username = newValue;
         /* update the state to completed */
-        this.hostnameState = LookupState.COMPLETED;
+        this.usernameState = LookupState.COMPLETED;
     }
 
     public LookupState getUsernameState()
@@ -130,7 +147,7 @@ public final class UserInfo
     {
         StringBuilder sb = new StringBuilder();
         
-        sb.append( "<key: " + this.userLookupKey );
+        sb.append( "<key: " + this.lookupKey );
         sb.append( " ip: " +  this.address );
         sb.append( " time: " + this.lookupTime );
         sb.append( " user:[" + this.usernameState + "] " + this.username );
@@ -140,8 +157,8 @@ public final class UserInfo
     }
 
     /* Create an initial user lookup instance */
-    static UserInfo makeInstance( long userLookupKey, InetAddress address )
+    static UserInfo makeInstance( long lookupKey, InetAddress address )
     {
-        return new UserInfo( userLookupKey, address, new Date());
+        return new UserInfo( lookupKey, address, new Date());
     }
 }

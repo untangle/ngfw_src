@@ -590,7 +590,7 @@ static int  _handle_nfqueue (epoll_info_t* info, int revents)
 
     int _critical_section()
     {
-        debug( 0, "SERVER Handle nf_queue.\n" );
+        debug( 10, "SERVER Handle nf_queue.\n" );
 
         if ( info == NULL ) return errlogargs();
 

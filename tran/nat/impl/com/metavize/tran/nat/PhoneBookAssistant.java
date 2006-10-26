@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
+
 import com.metavize.mvvm.tran.HostNameList;
 import com.metavize.mvvm.tran.HostName;
 
@@ -30,8 +32,12 @@ class PhoneBookAssistant implements Assistant
 {
     private final int PRIORITY = 0;
 
+    private final Logger logger = Logger.getLogger( getClass());
+
     /* These are the special addresses that are inside of the DNS map */
     private Map<InetAddress,HostName> dnsAddressMap = Collections.emptyMap();
+
+    private boolean isEnabled = false;
 
     private boolean isDhcpEnabled = false;
 
@@ -48,6 +54,9 @@ class PhoneBookAssistant implements Assistant
     {
         InetAddress address = info.getAddress();
 
+        /* nothing to do if the services are disabled */
+        if ( !isEnabled ) return;
+
         /* First check the dns address map */
         Map<InetAddress,HostName> currentMap = this.dnsAddressMap;
 
@@ -61,7 +70,15 @@ class PhoneBookAssistant implements Assistant
             if ( lease != null && lease.isActive()) h = lease.getHostname();
         }
 
+        if ( logger.isDebugEnabled()) logger.debug( "found the hostname: " + h );
+
         if ( h != null ) info.setHostname( h );
+    }
+
+    /* Check to see if the user information has changed, if it has return a new UserInfo object */
+    public UserInfo update( UserInfo info )
+    {
+        throw new IllegalStateException( "unimplemented" );
     }
 
     public int priority()
@@ -102,5 +119,8 @@ class PhoneBookAssistant implements Assistant
 
         /* Update whether or not DHCP is enabled */
         this.isDhcpEnabled = servicesSettings.getIsDhcpEnabled();
+
+        /* update whether or not the services are enabled */
+        this.isEnabled = servicesSettings.getIsEnabled();
     }
 }

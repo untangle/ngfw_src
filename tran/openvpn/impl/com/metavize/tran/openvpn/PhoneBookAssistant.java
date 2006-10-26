@@ -36,7 +36,7 @@ class PhoneBookAssistant implements Assistant
     /* determines whether or not VPN is presently enabled */
     private boolean isVpnEnabled = false;
     
-    private final Logger logger = Logger.getLogger( VpnTransformImpl.class );
+    private final Logger logger = Logger.getLogger( getClass());
 
     /* -------------- Constructors -------------- */
     PhoneBookAssistant()
@@ -56,6 +56,12 @@ class PhoneBookAssistant implements Assistant
         Data d = currentMap.get( address );
         
         if ( d != null ) d.fillInfo( info );
+    }
+
+    /* Check to see if the user information has changed, if it has return a new UserInfo object */
+    public UserInfo update( UserInfo info )
+    {
+        throw new IllegalStateException( "unimplemented" );
     }
 
     public int priority()

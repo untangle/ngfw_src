@@ -161,7 +161,7 @@ int  netcap_nfqueue_get_sock (void)
 {
     if ( _queue.nfq_h == NULL ) return errlog( ERR_CRITICAL, "QUEUE is not initialized\n" );
 
-    debug( 0, "Handle queue sock: %d\n", _queue.nfq_fd );
+    debug( 10, "Handle queue sock: %d\n", _queue.nfq_fd );
 
     return _queue.nfq_fd;
 }
@@ -280,8 +280,7 @@ static int _nf_callback( struct nfq_q_handle *qh, struct nfgenmsg *nfmsg, struct
     netcap_pkt_t* pkt = NULL;
     _nf_callback_args_t* args = NULL;
 
-    /* XXX This should be higher */
-    debug( 0, "Entering callback.\n" );
+    debug( 10, "Entering callback.\n" );
     
     if (( args = pthread_getspecific( _queue.tls_key  )) == NULL ) {
         return errlog( ERR_CRITICAL, "null args\n" );

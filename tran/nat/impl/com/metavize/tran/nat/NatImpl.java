@@ -65,6 +65,7 @@ public class NatImpl extends AbstractTransform implements Nat
     /* Done with an inner class so the GUI doesn't freak out about not
      * having the NetworkSettingsListener class */
     private final SettingsListener listener;
+    private final PhoneBookAssistant assistant;
 
     /* Indicate whether or not the transform is starting */
 
@@ -89,6 +90,7 @@ public class NatImpl extends AbstractTransform implements Nat
         this.settingsManager  = new SettingsManager();
         this.dhcpMonitor      = new DhcpMonitor( this, MvvmContextFactory.context());
         this.listener         = new SettingsListener();
+        this.assistant        = new PhoneBookAssistant( this.dhcpMonitor );
 
         /* Have to figure out pipeline ordering, this should always next
          * to towards the outside */
@@ -291,10 +293,14 @@ public class NatImpl extends AbstractTransform implements Nat
     }
 
     @Override
-    protected void postInit(String[] args)
+    protected void postInit(String[] args) throws TransformException
     {
+        super.postInit( args );
+
         /* Register a listener, this should hang out until the transform is removed dies. */
         getNetworkManager().registerListener( this.listener );
+        
+        MvvmContextFactory.context().localPhoneBook().registerAssistant( this.assistant );
 
         /* Check if the settings have been upgraded yet */
         DataLoader<NatSettingsImpl> natLoader = new DataLoader<NatSettingsImpl>( "NatSettingsImpl",
@@ -368,6 +374,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
         try {
             configureDhcpMonitor( servicesSettings.getIsDhcpEnabled());
+            this.assistant.configure( servicesSettings );
             this.handler.configure( networkSettings );
             networkManager.startServices();
         } catch( TransformException e ) {
@@ -429,6 +436,8 @@ public class NatImpl extends AbstractTransform implements Nat
     {
         /* Deregister the network settings listener */
         getNetworkManager().unregisterListener( this.listener );
+
+        MvvmContextFactory.context().localPhoneBook().unregisterAssistant( this.assistant );
     }
 
     public void networkSettingsEvent( ) throws TransformException
@@ -450,6 +459,8 @@ public class NatImpl extends AbstractTransform implements Nat
             nm.stopServices();
             this.handler.deconfigure();
         }
+
+        this.assistant.configure( servicesSettings );
     }
 
 
@@ -601,36 +612,34 @@ public class NatImpl extends AbstractTransform implements Nat
         return sessionManager;
     }
 
-    class SettingsListener implements NetworkSettingsListener
+    class SettingsListener 
+        implements NetworkSettingsListener, TransformContextSwitcher.Event<NetworkSpacesInternalSettings>
     {
         /* Use this to automatically switch context */
-        private final TransformContextSwitcher tl;
-
-        private final Runnable go;
+        private final TransformContextSwitcher<NetworkSpacesInternalSettings> tcs;
 
         /* This are the settings passed in by the network settings */
         private NetworkSpacesInternalSettings settings;
 
         SettingsListener()
         {
-            tl = new TransformContextSwitcher( getTransformContext().getClassLoader());
-            go = new Runnable() {
-                    public void run()
-                    {
-                        if ( logger.isDebugEnabled()) logger.debug( "network settings changed:" + settings );
-                        try {
-                            networkSettingsEvent();
-                        } catch( TransformException e ) {
-                            logger.error( "Unable to reconfigure the NAT transform" );
-                        }
-                    }
-                };
+            tcs = new TransformContextSwitcher<NetworkSpacesInternalSettings>( getTransformContext());
         }
-
+        
         public void event( NetworkSpacesInternalSettings settings )
         {
-            this.settings = settings;
-            tl.run( go );
+            tcs.run( this, settings );
+        }
+
+        /* TransformContextSwitcher.Event */
+        public void handle( NetworkSpacesInternalSettings settings )
+        {
+            if ( logger.isDebugEnabled()) logger.debug( "network settings changed:" + settings );
+            try {
+                networkSettingsEvent();
+            } catch( TransformException e ) {
+                logger.error( "Unable to reconfigure the NAT transform" );
+            }
         }
     }
 }

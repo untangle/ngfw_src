@@ -11,8 +11,6 @@
 
 package com.metavize.mvvm.user;
 
-import org.apache.log4j.Logger;
-
 import java.net.InetAddress;
 
 import java.util.Date;
@@ -41,6 +39,8 @@ import com.metavize.mvvm.util.Worker;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
 
+import com.metavize.tran.util.MVLogger;
+
 import static com.metavize.mvvm.user.UserInfo.LookupState;
 
 class WMIAssistant implements Assistant
@@ -63,7 +63,7 @@ class WMIAssistant implements Assistant
     /* do this last, as it is the most expensive */
     private static final int PRIORITY = 1000;
 
-    private final Logger logger = Logger.getLogger( getClass());
+    private final MVLogger logger = new MVLogger( getClass());
     
     /* matches machines that are currently on the private network, this is essentially
      * used to determine which machines can be queried. */
@@ -114,7 +114,7 @@ class WMIAssistant implements Assistant
         return PRIORITY;
     }
 
-    /* ---------------- Protected ---------------- */
+    /* ----------------- Package ----------------- */
     WMISettings getSettings()
     {
         return worker.getSettings();
@@ -161,15 +161,11 @@ class WMIAssistant implements Assistant
          * cache and perform a full query */
         if ( cimData.isExpired()) {
             cache.remove( address );
-            if ( logger.isDebugEnabled()) {
-                logger.debug( "cached value [" +address.getHostAddress() + "]: " + cimData + " expired" );
-            }
+            logger.debug( "cached value [", address.getHostAddress(), "]: ", cimData, " expired" );
             return false;
         }
         
-        if ( logger.isDebugEnabled()) {
-            logger.debug( "found valid cached value [" + address.getHostAddress() + "]: " + cimData );
-        }
+        logger.debug( "found valid cached value [", address.getHostAddress(), "]: ", cimData );
         
         cimData.completeInfo( info );
 
@@ -190,7 +186,7 @@ class WMIAssistant implements Assistant
             info.setUsernameState( LookupState.FAILED );
             if ( !hasHostname ) info.setHostnameState( LookupState.FAILED );
         } else {
-            if ( logger.isDebugEnabled()) logger.debug( "initiated lookup for: " + info );
+            logger.debug( "initiated lookup for: ", info );
                 
         }
     }
@@ -239,7 +235,7 @@ class WMIAssistant implements Assistant
                 lookup( info );
             } catch ( CIMException e ) {
                 /* this can actually happen for a number of reasons */
-                logger.info( "exception looking up user information", e );
+                logger.info( e, "exception looking up user information" );
                 fail( info );
             }
         }
@@ -316,10 +312,8 @@ class WMIAssistant implements Assistant
                 
                 CIMNameSpace nameSpace = new CIMNameSpace( cs.getURI(), ns );
                 
-                if ( logger.isDebugEnabled()) {
-                    logger.debug( "namespace: " + nameSpace + " uri: " + cs.getURI());
-                }
-                
+                logger.debug( "namespace: ", nameSpace, " uri: ", cs.getURI());
+
                 clientConnection = new CIMClient( nameSpace, cs.getPrincipal(), cs.getCredentials());
                 
                 /* create a new CIM object path */
@@ -333,17 +327,15 @@ class WMIAssistant implements Assistant
                 
                 CIMValue value = clientConnection.getProperty( objectPath, WIN32_LOGIN_PROP );
 
-                if ( logger.isDebugEnabled()) {
-                    logger.debug( "completed lookup for[" + address.getHostAddress() + "]: " + value );
-                }
+                logger.debug( "completed lookup for[", address.getHostAddress(), "]: ", value );
 
                 /* should this append the domain? */
                 pass( info, value );
             } catch ( WMIException e ) {
-                logger.warn( "wmi settings are enabled, yet uri is invalid", e );
+                logger.warn( e, "wmi settings are enabled, yet uri is invalid" );
                 fail( info );
             } catch ( ParseException e ) {
-                logger.info( "WMI returned an unparseable username.", e );
+                logger.info( e, "WMI returned an unparseable username." );
                 fail( info );
             } finally {
                 if ( clientConnection != null ) clientConnection.close();
@@ -352,8 +344,8 @@ class WMIAssistant implements Assistant
         
         private void fail( UserInfo info )
         {
-            CIMData d = 
-                new FailedCIMData( new Date( System.currentTimeMillis() + this.negativeLifetimeMillis ));
+            HostName h = info.getHostname();
+            CIMData d = new FailedCIMData( System.currentTimeMillis() + this.negativeLifetimeMillis, h );
 
             cache.put( info.getAddress(), d );
             
@@ -371,7 +363,7 @@ class WMIAssistant implements Assistant
             
             CIMData d = 
                 new SuccessfulCIMData( address, username, info.getHostname(), 
-                                       new Date( System.currentTimeMillis() + this.lifetimeMillis ));
+                                       System.currentTimeMillis() + this.lifetimeMillis );
 
             cache.put( info.getAddress(), d );
             
@@ -382,9 +374,9 @@ class WMIAssistant implements Assistant
     /* CIMData: interface to keep track of the status of a WMI query. */
     private static abstract class  CIMData
     {
-        private final Date expirationDate;
+        private final long expirationDate;
 
-        CIMData( Date expirationDate )
+        CIMData( long expirationDate )
         {
             this.expirationDate = expirationDate;
         }
@@ -393,7 +385,7 @@ class WMIAssistant implements Assistant
         
         boolean isExpired()
         {
-            return new Date().after( this.expirationDate );
+            return ( System.currentTimeMillis() > expirationDate );
         }
     }
     
@@ -401,9 +393,17 @@ class WMIAssistant implements Assistant
      * that the username should not be looked up again for a long time.  */
     private static class FailedCIMData extends CIMData
     {
-        FailedCIMData( Date expirationDate )
+        private final HostName hostname;
+
+        FailedCIMData( long expirationDate )
+        {
+            this( expirationDate, null );
+        }
+
+        FailedCIMData( long expirationDate, HostName hostname )
         {
             super( expirationDate );
+            this.hostname = hostname;
         }
 
         public String toString()
@@ -418,7 +418,8 @@ class WMIAssistant implements Assistant
 
             /* only indicate that the hostname lookup failed if it was pending */
             if ( info.getHostnameState() != LookupState.COMPLETED ) {
-                info.setHostnameState( LookupState.FAILED );
+                if ( this.hostname != null ) info.setHostname( this.hostname );
+                else info.setHostnameState( LookupState.FAILED );
             }
         }
     }
@@ -432,7 +433,7 @@ class WMIAssistant implements Assistant
 
         /* in order to perform a CIM query, you have to lookup the
          * hostname, windows doesn't work on ip addresses. */
-        SuccessfulCIMData( InetAddress address, Username username, HostName hostname, Date expirationDate )
+        SuccessfulCIMData( InetAddress address, Username username, HostName hostname, long expirationDate )
         {
             super( expirationDate );
             this.address = address;

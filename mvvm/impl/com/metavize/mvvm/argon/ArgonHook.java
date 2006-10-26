@@ -152,17 +152,16 @@ abstract class ArgonHook implements Runnable
 
             /* lookup the user information */
 
-            if ( false || !true ) {
-                UserInfo info = MvvmContextFactory.context().localPhoneBook().lookup( clientSide.clientAddr());
-                
-                logger.debug( "user information: " + info );
-                Username username = info.getUsername();
+            UserInfo info = MvvmContextFactory.context().localPhoneBook().lookup( clientSide.clientAddr());
             
-                /* should cache the lookup key, but no worries for now */
-                if ( username != null && info.getUsernameState().equals( UserInfo.LookupState.COMPLETED )) {
-                    String u = username.toString().trim();
-                    if ( u.length() > 0 ) sessionGlobalState.setUser( u );
-                }
+            if ( logger.isDebugEnabled()) logger.debug( "user information: " + info );
+            
+            Username username = info.getUsername();
+            
+            /* should cache the lookup key, but no worries for now */
+            if ( username != null && info.getUsernameState().equals( UserInfo.LookupState.COMPLETED )) {
+                String u = username.toString().trim();
+                if ( u.length() > 0 ) sessionGlobalState.setUser( u );
             }
                 
             pipelineDesc = pipelineFoundry.weld( clientSide );

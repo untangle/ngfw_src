@@ -19,24 +19,25 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ValidateException;
+import com.metavize.tran.util.MVLogger;
+
+import static com.metavize.mvvm.user.UserInfo.LookupState;
 
 public class LocalPhoneBookImpl implements LocalPhoneBook
 {
     /* Singleton */
     private static final LocalPhoneBookImpl INSTANCE = new LocalPhoneBookImpl();
     
-    private final Logger logger = Logger.getLogger( getClass());
+    private final MVLogger logger = new MVLogger( getClass());
 
     /* This is a list of all of the assistants */
     private List<Assistant> assistantList = new LinkedList<Assistant>();
@@ -44,9 +45,7 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
 
     /* not sure if both lookup methods are necessary */
     /* ??? how exactly do we expire the entries in here ??? */
-    private final Map<InetAddress,UserInfo> addressMap = new HashMap<InetAddress,UserInfo>();
-    
-    private final Map<Long,UserInfo> keyMap = new HashMap<Long,UserInfo>();   
+    private final Map<InetAddress,UserInfo> addressMap = new ConcurrentHashMap<InetAddress,UserInfo>();
 
     /* XXX not sure how to update this between startups, perhaps the first 32 bits are random */
     private long currentKey = 0;
@@ -57,9 +56,6 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     {
         /* have to build the WMI assistant */
         this.wmiAssistant = new WMIAssistant();
-
-        /* register the WMI assistant */
-        registerAssistant( this.wmiAssistant );
     }
 
     /* ----------------- Public ----------------- */
@@ -81,8 +77,8 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     {
         UserInfo info = addressMap.get( address );
 
-        if ( info == null ) info = executeLookup( address );
-        else  logger.debug( "cached info: " + info + ";" );
+        if ( info == null || info.isExpired()) info = executeLookup( address );
+        else  logger.debug( "cached info: ", info, ";" );
 
         return info;
     }
@@ -106,15 +102,27 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
             
             for ( Assistant assistant : newList ) {
                 /* This checks if the assistant is already registered */
-                if ( priority == assistant.priority() && assistant.equals( newAssistant )) {
-                    logger.debug( "The assistant: " + assistant + " is already registered" );
-                    return;
+                if ( priority == assistant.priority()) {
+                    if ( assistant.equals( newAssistant )) {
+                        logger.debug( "The assistant: ", assistant, " is already registered" );
+                        return;
+                    }
+                    
+                    if (( assistant instanceof TransformAssistant ) && 
+                        ((TransformAssistant)assistant).getAssistant().equals( newAssistant )) {
+                        logger.debug( "The trnasform assistant: ", assistant, " is already registered" );
+                        return;
+                    }
                 }
                 
                 if ( priority < assistant.priority()) break;
                 c++;
             }
             
+            /* if necessary convert to a transform assistant */
+            newAssistant = TransformAssistant.fixTransformContext( newAssistant );
+
+            logger.debug( "registering the new assistant: ", newAssistant );
             newList.add( c, newAssistant );
             
             /* replace the entire list, anything iterating will be just use the old list */
@@ -135,7 +143,13 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
                 /* This checks if the assistant is already registered */
                 Assistant a = iter.next();
 
-                if ( priority == a.priority() && a.equals( assistant )) iter.remove();
+                if ( priority == a.priority()) {
+                    if ( a.equals( assistant )) iter.remove();
+                    else if (( assistant instanceof TransformAssistant ) && 
+                             ((TransformAssistant)a).getAssistant().equals( assistant )) {
+                        iter.remove();
+                    }
+                }
                 
                 if ( priority < assistant.priority()) break;
             }
@@ -150,6 +164,9 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     
     public void init()
     {
+        /* register the WMI assistant */
+        registerAssistant( this.wmiAssistant );
+
         /* Start the wmi asssitant lookup thread */
         this.wmiAssistant.start();
     }
@@ -172,7 +189,7 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
         String scheme = DEFAULT_SCHEME;
         int port = DEFAULT_PORT;
 
-        logger.debug( "current settings: " + getWMISettings());
+        logger.debug( "current settings: ", getWMISettings());
 
         int length = args.length;
         if (( length & 1 ) != 1 ) {
@@ -240,7 +257,7 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
         
         setWMISettings( settings );
         
-        logger.debug( "new settings: " + getWMISettings());
+        logger.debug( "new settings: ", getWMISettings());
         // return new GetUserInfo( username, password, client, host, scheme, port );
     }
 
@@ -287,27 +304,41 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
         /* Designed this way so if multiple lookups are pending on an
          * address, only the first one will initiate a complete
          * lookup */
-        synchronized ( this ) {
-            logger.debug( "checking cache again for " + address.getHostAddress() + "." );
+        synchronized ( address.getHostAddress().intern()) {
+            logger.debug( "checking cache again for ", address.getHostAddress(), "." );
+
             /* Attempt to lookup again now that this has the lock */
             info = addressMap.get( address );
 
-            /* xxx have to expire the old ones */
-
-            if ( info != null ) return info;
+            if ( info != null ) {
+                if ( !info.isExpired()) return info;
+                
+                logger.debug( "expiring the key: ", info );
+                addressMap.remove( address );
+                /* xxxxx log the info */
+            } 
 
             /* Create a new user info object */
             info = UserInfo.makeInstance( getNextKey(), address );
-            logger.debug( "making a new instance for: " + info + "." );
-            // XXXXXX Not caching anything 
-            // addressMap.put( address, info );
-            // keyMap.put( info.getUserLookupKey(), info );
+            logger.debug( "making a new instance for: ", info, "." );
+            addressMap.put( address, info );
         }
 
         List<Assistant> currentAssistantList = this.assistantList;
+
+        /* new cached info, time for a full lookup. */
         for ( Assistant assistant : currentAssistantList ) {
-            if ( logger.isDebugEnabled()) logger.debug( "checking with assistant: " + assistant );
-            assistant.lookup( info );
+            try {
+                assistant.lookup( info );
+            } catch ( Exception e ){
+                logger.warn( "the assistant " + assistant + "threw an exception.", e );
+            }
+
+            /* stop once something has initiated a lookup for the hostname and the username */
+            if ( info.getHostnameState() != LookupState.UNITITIATED && 
+                 info.getUsernameState() != LookupState.UNITITIATED ) {
+                break;
+            }
         }
 
         return info;

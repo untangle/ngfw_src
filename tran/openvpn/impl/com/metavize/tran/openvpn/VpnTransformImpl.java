@@ -66,6 +66,7 @@ public class VpnTransformImpl extends AbstractTransform
     private final AddressMapper addressMapper = new AddressMapper();
     private final OpenVpnMonitor openVpnMonitor;
     private final OpenVpnCaretaker openVpnCaretaker = new OpenVpnCaretaker();
+    private final PhoneBookAssistant assistant;
 
     private final EventHandler handler;
 
@@ -79,6 +80,7 @@ public class VpnTransformImpl extends AbstractTransform
     {
         this.handler          = new EventHandler( this );
         this.openVpnMonitor   = new OpenVpnMonitor( this );
+        this.assistant        = new PhoneBookAssistant();
 
         /* Have to figure out pipeline ordering, this should always
          * next to towards the outside, then there is OpenVpn and then Nat */
@@ -160,6 +162,8 @@ public class VpnTransformImpl extends AbstractTransform
                     this.openVpnMonitor.enable();
                 }
             }
+
+            this.assistant.configure( this.settings, getRunState() == TransformState.RUNNING );
         } catch ( TransformException exn ) {
             logger.error( "Could not save VPN settings", exn );
         }
@@ -422,6 +426,9 @@ public class VpnTransformImpl extends AbstractTransform
     {
         super.postInit( args );
 
+        /* register the assistant with the phonebook */
+        MvvmContextFactory.context().localPhoneBook().registerAssistant( this.assistant );
+
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork( Session s )
@@ -463,6 +470,7 @@ public class VpnTransformImpl extends AbstractTransform
             this.openVpnManager.configure( settings );
             this.handler.configure( settings );
             this.openVpnManager.restart( settings );
+            this.assistant.configure( settings, true );
         } catch( Exception e ) {
             try {
                 this.openVpnManager.stop();
@@ -503,6 +511,8 @@ public class VpnTransformImpl extends AbstractTransform
         } catch ( TransformException e ) {
             logger.warn( "Error stopping openvpn manager", e );
         }
+
+        this.assistant.configure( settings, false );
     }
 
     @Override protected void postDestroy() throws TransformException
@@ -515,6 +525,8 @@ public class VpnTransformImpl extends AbstractTransform
         } catch ( Exception e ) {
             logger.warn( "Error stopping openvpn monitor", e );
         }
+
+        MvvmContextFactory.context().localPhoneBook().unregisterAssistant( this.assistant );
 
         unDeployWebApp();
     }
