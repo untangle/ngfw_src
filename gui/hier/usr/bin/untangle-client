@@ -27,5 +27,10 @@ ${JAVA_HOME}/bin/javaws -updateVersions
 #${JAVA_HOME}/bin/javaws -Xclearcache
 
 echo "Webstarting Untangle Networks Client.  Connecting to: http://$HOST/webstart/gui-local.jnlp"
-exec ${JAVA_HOME}/bin/javaws -Xnosplash http://$HOST/webstart/gui-local.jnlp
+if [ -f /usr/share/metavize/.cdinstall ] ; then
+  exec ${JAVA_HOME}/bin/javaws -Xnosplash http://$HOST/webstart/gui-local-cd.jnlp
+else
+  exec ${JAVA_HOME}/bin/javaws -Xnosplash http://$HOST/webstart/gui-local.jnlp
+fi
+
 

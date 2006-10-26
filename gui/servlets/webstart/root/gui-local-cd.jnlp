@@ -70,5 +70,6 @@ MackageDesc[] mds = mc.toolboxManager().installed();
   </resources>
   <application-desc main-class="com.metavize.gui.util.MLauncher">
     <argument>local</argument>
+    <argument>cdinstall</argument>
   </application-desc>
 </jnlp>
