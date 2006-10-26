@@ -177,7 +177,7 @@ public class MLauncher {
         }
         public void propertyChange(java.beans.PropertyChangeEvent evt){
             if( evt.getPropertyName().equals("lookAndFeel") ){
-                if( !evt.getNewValue().equals(Util.getLookAndFeel()) ){
+                if( (Util.getLookAndFeel() != null) && !(Util.getLookAndFeel().equals(evt.getNewValue())) )
                     try{ UIManager.setLookAndFeel(Util.getLookAndFeel()); }
                     catch(Exception e){
                         System.out.println("Error resetting LAF");
@@ -186,7 +186,7 @@ public class MLauncher {
                 }
             }
         }
-    }
-
 }
+
+
 
