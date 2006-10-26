@@ -122,7 +122,7 @@ public class SafelistSettings implements Serializable
      * @return the recipient of this safelist
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="recipient", nullable=false)
+    @JoinColumn(name="recipient")
     public SafelistRecipient getRecipient()
     {
         return recipient;
