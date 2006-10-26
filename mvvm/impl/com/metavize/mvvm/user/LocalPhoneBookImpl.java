@@ -34,10 +34,15 @@ import static com.metavize.mvvm.user.UserInfo.LookupState;
 
 public class LocalPhoneBookImpl implements LocalPhoneBook
 {
+    /* properties */
+    private static final String PROPERTY_LIFETIME = "com.metavize.mvvm.user.phonebook.lifetime";
+    
     /* Singleton */
     private static final LocalPhoneBookImpl INSTANCE = new LocalPhoneBookImpl();
     
     private final MVLogger logger = new MVLogger( getClass());
+
+    private long lifetimeMillis = UserInfo.DEFAULT_LIFETIME_MILLIS;
 
     /* This is a list of all of the assistants */
     private List<Assistant> assistantList = new LinkedList<Assistant>();
@@ -164,6 +169,14 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     
     public void init()
     {
+        /* Check for a property overriding the timeout. */
+        this.lifetimeMillis = Long.getLong( PROPERTY_LIFETIME, this.lifetimeMillis );
+
+        logger.debug( "lifetime: ", this.lifetimeMillis );
+        
+        /* initialize the wmi assistant */
+        this.wmiAssistant.init();
+
         /* register the WMI assistant */
         registerAssistant( this.wmiAssistant );
 
@@ -319,7 +332,7 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
             } 
 
             /* Create a new user info object */
-            info = UserInfo.makeInstance( getNextKey(), address );
+            info = UserInfo.makeInstance( getNextKey(), address, this.lifetimeMillis );
             logger.debug( "making a new instance for: ", info, "." );
             addressMap.put( address, info );
         }

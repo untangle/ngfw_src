@@ -102,6 +102,15 @@ MVVM_ARGS="${MVVM_ARGS} -Dcom.metavize.mvvm.memmonitor.enabled=true"
 ## Name of the file where the log should go, if unspecified, this goes to console.log
 #MVVM_ARGS="${MVVM_ARGS} -Dcom.metavize.mvvm.memmonitor.file=heapmonitor.log"
 
+## Lifetime for positive phonebook lookups (millis)
+#MVVM_ARGS="${MVVM_ARGS} -Dcom.metavize.mvvm.user.phonebook.lifetime=300000"
+
+## Lifetime for succesful wmi lookups (millis)
+#MVVM_ARGS="${MVVM_ARGS} -Dcom.metavize.mvvm.user.wmi.lifetime=240000"
+
+## Lifetime for unsuccesful wmi lookups (millis)
+#MVVM_ARGS="${MVVM_ARGS} -Dcom.metavize.mvvm.user.wmi.negativelifetime=600000"
+
 #
 # JAVA options
 #

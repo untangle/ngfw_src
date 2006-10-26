@@ -45,6 +45,12 @@ import static com.metavize.mvvm.user.UserInfo.LookupState;
 
 class WMIAssistant implements Assistant
 {
+    /* this is the property for the success timeout */
+    private static final String PROPERTY_LIFETIME = "com.metavize.mvvm.user.wmi.lifetime";
+
+    /* this is the property for the failed timeout */
+    private static final String PROPERTY_NEGATIVE_LIFETIME = "com.metavize.mvvm.user.wmi.negativelifetime";
+
     /* this is how long to assume a login is valid for (in millis) */
     private static final long DEFAULT_LIFETIME_MS = 5 * 60 * 1000 ;
     
@@ -77,8 +83,8 @@ class WMIAssistant implements Assistant
     /* the worker thread that actually performs lookups */
     private final WMIWorker worker;
 
+    /* the runner that polls for WMI lookup requests */
     private final WorkerRunner runner;
-
 
     /* xxx consider keeping the connection open */
     WMIAssistant()
@@ -128,6 +134,17 @@ class WMIAssistant implements Assistant
         /* xxx have to write this to a database or something */
         /* clear all of the values from the cache, this gets rid of all of the negative lookups */
         cache.clear();
+    }
+
+    /* load the property values */
+    void init()
+    {
+        this.worker.lifetimeMillis = Long.getLong( PROPERTY_LIFETIME, this.worker.lifetimeMillis );
+        this.worker.negativeLifetimeMillis = 
+            Long.getLong( PROPERTY_LIFETIME, this.worker.negativeLifetimeMillis );
+
+        logger.debug( "lifetime: ", this.worker.lifetimeMillis, 
+                      " negative-lifetime: ", this.worker.negativeLifetimeMillis );
     }
 
     void start()
@@ -202,7 +219,7 @@ class WMIAssistant implements Assistant
 
         /* positive response timeout */
         private long lifetimeMillis;
-
+        
         /* negative response length */
         private long negativeLifetimeMillis;
 

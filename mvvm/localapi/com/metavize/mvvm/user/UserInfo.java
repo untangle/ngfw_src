@@ -20,8 +20,7 @@ import com.metavize.mvvm.user.Username;
 public final class UserInfo
 {
     /* this is how long to assume a login is valid for (in millis) */
-    private static final long DEFAULT_LIFETIME_MILLIS = 3 * 60 * 1000;
-    // private static final long DEFAULT_LIFETIME_MILLIS =  10 * 1000 ;
+    static final long DEFAULT_LIFETIME_MILLIS = 3 * 60 * 1000;
     
     /* Various states the user info object can be in */
     public enum LookupState
@@ -58,20 +57,20 @@ public final class UserInfo
     
     private LookupState hostnameState = LookupState.UNITITIATED;
 
-    private UserInfo( long lookupKey, InetAddress address, Date lookupTime )
+    private UserInfo( long lookupKey, InetAddress address, Date lookupTime, long lifetimeMillis )
     {
-        this( lookupKey, address, lookupTime, null, null );
+        this( lookupKey, address, lookupTime, null, null, lifetimeMillis );
     }
     /* generic helper */
     private UserInfo( long lookupKey, InetAddress address, Date lookupTime, Username username, 
-                      HostName hostname )
+                      HostName hostname, long lifetimeMillis )
     {
         this.lookupKey = lookupKey;
         this.address = address;
         this.lookupTime = lookupTime;
         this.username = username;
         this.hostname = hostname;
-        this.expirationDate = System.currentTimeMillis() + DEFAULT_LIFETIME_MILLIS;
+        this.expirationDate = System.currentTimeMillis() + lifetimeMillis;
     }
 
     public long getLookupKey()
@@ -159,6 +158,12 @@ public final class UserInfo
     /* Create an initial user lookup instance */
     static UserInfo makeInstance( long lookupKey, InetAddress address )
     {
-        return new UserInfo( lookupKey, address, new Date());
+        return makeInstance( lookupKey, address, DEFAULT_LIFETIME_MILLIS );
+    }
+
+    static UserInfo makeInstance( long lookupKey, InetAddress address, long lifetimeMillis )
+    {
+        if ( lifetimeMillis <= 10 ) lifetimeMillis = DEFAULT_LIFETIME_MILLIS;
+        return new UserInfo( lookupKey, address, new Date(), lifetimeMillis );
     }
 }
