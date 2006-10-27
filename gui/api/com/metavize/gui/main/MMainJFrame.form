@@ -352,7 +352,7 @@
                               <Font name="Arial" size="12" style="0"/>
                             </Property>
                             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                              <Image iconType="3" name="/com/metavize/gui/icons/LogoNoText32x32.png"/>
+                              <Image iconType="3" name="/com/metavize/gui/main/IconConfigNetwork36x36.png"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="&lt;html&gt;Networking&lt;/html&gt;"/>
                             <Property name="doubleBuffered" type="boolean" value="true"/>
@@ -381,7 +381,7 @@
                               <Font name="Arial" size="12" style="0"/>
                             </Property>
                             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                              <Image iconType="3" name="/com/metavize/gui/icons/LogoNoText32x32.png"/>
+                              <Image iconType="3" name="/com/metavize/gui/main/IconConfigAdmin36x36.png"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="&lt;html&gt;Remote Admin&lt;/html&gt;"/>
                             <Property name="doubleBuffered" type="boolean" value="true"/>
@@ -410,7 +410,7 @@
                               <Font name="Arial" size="12" style="0"/>
                             </Property>
                             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                              <Image iconType="3" name="/com/metavize/gui/icons/LogoNoText32x32.png"/>
+                              <Image iconType="3" name="/com/metavize/gui/main/IconConfigEmail36x36.png"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="&lt;html&gt;Email&lt;/html&gt;"/>
                             <Property name="doubleBuffered" type="boolean" value="true"/>
@@ -439,7 +439,7 @@
                               <Font name="Arial" size="12" style="0"/>
                             </Property>
                             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                              <Image iconType="3" name="/com/metavize/gui/icons/LogoNoText32x32.png"/>
+                              <Image iconType="3" name="/com/metavize/gui/main/IconConfigDirectory36x36.png"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="&lt;html&gt;User Directory&lt;/html&gt;"/>
                             <Property name="doubleBuffered" type="boolean" value="true"/>
@@ -468,7 +468,7 @@
                               <Font name="Arial" size="12" style="0"/>
                             </Property>
                             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                              <Image iconType="3" name="/com/metavize/gui/icons/LogoNoText32x32.png"/>
+                              <Image iconType="3" name="/com/metavize/gui/main/IconConfigBackup36x36.png"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="&lt;html&gt;Backup/Restore&lt;/html&gt;"/>
                             <Property name="doubleBuffered" type="boolean" value="true"/>
@@ -497,7 +497,7 @@
                               <Font name="Arial" size="12" style="0"/>
                             </Property>
                             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                              <Image iconType="3" name="/com/metavize/gui/icons/LogoNoText32x32.png"/>
+                              <Image iconType="3" name="/com/metavize/gui/main/IconConfigSupport36x36.png"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="&lt;html&gt;Support&lt;/html&gt;"/>
                             <Property name="doubleBuffered" type="boolean" value="true"/>
@@ -526,7 +526,7 @@
                               <Font name="Arial" size="12" style="0"/>
                             </Property>
                             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                              <Image iconType="3" name="/com/metavize/gui/icons/LogoNoText32x32.png"/>
+                              <Image iconType="3" name="/com/metavize/gui/main/IconConfigSetup36x36.png"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="&lt;html&gt;Setup Info&lt;/html&gt;"/>
                             <Property name="doubleBuffered" type="boolean" value="true"/>

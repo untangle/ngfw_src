@@ -303,7 +303,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 
                 jPanel8.setFocusable(false);
                 networkJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                networkJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+                networkJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/IconConfigNetwork36x36.png")));
                 networkJButton.setText("<html>Networking</html>");
                 networkJButton.setDoubleBuffered(true);
                 networkJButton.setFocusPainted(false);
@@ -325,7 +325,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 jPanel8.add(networkJButton, gridBagConstraints);
 
                 remoteJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                remoteJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+                remoteJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/IconConfigAdmin36x36.png")));
                 remoteJButton.setText("<html>Remote Admin</html>");
                 remoteJButton.setDoubleBuffered(true);
                 remoteJButton.setFocusPainted(false);
@@ -347,7 +347,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 jPanel8.add(remoteJButton, gridBagConstraints);
 
                 emailJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                emailJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+                emailJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/IconConfigEmail36x36.png")));
                 emailJButton.setText("<html>Email</html>");
                 emailJButton.setDoubleBuffered(true);
                 emailJButton.setFocusPainted(false);
@@ -369,7 +369,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 jPanel8.add(emailJButton, gridBagConstraints);
 
                 directoryJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                directoryJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+                directoryJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/IconConfigDirectory36x36.png")));
                 directoryJButton.setText("<html>User Directory</html>");
                 directoryJButton.setDoubleBuffered(true);
                 directoryJButton.setFocusPainted(false);
@@ -391,7 +391,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 jPanel8.add(directoryJButton, gridBagConstraints);
 
                 backupJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                backupJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+                backupJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/IconConfigBackup36x36.png")));
                 backupJButton.setText("<html>Backup/Restore</html>");
                 backupJButton.setDoubleBuffered(true);
                 backupJButton.setFocusPainted(false);
@@ -413,7 +413,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 jPanel8.add(backupJButton, gridBagConstraints);
 
                 maintenanceJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                maintenanceJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+                maintenanceJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/IconConfigSupport36x36.png")));
                 maintenanceJButton.setText("<html>Support</html>");
                 maintenanceJButton.setDoubleBuffered(true);
                 maintenanceJButton.setFocusPainted(false);
@@ -435,7 +435,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 jPanel8.add(maintenanceJButton, gridBagConstraints);
 
                 aboutJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                aboutJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText32x32.png")));
+                aboutJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/IconConfigSetup36x36.png")));
                 aboutJButton.setText("<html>Setup Info</html>");
                 aboutJButton.setDoubleBuffered(true);
                 aboutJButton.setFocusPainted(false);
