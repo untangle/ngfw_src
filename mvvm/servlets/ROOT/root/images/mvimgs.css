@@ -25,6 +25,8 @@
 .ImgAddDisabled{background-image:url("icons/AddDisabled.gif");background-position:0px 0px;background-repeat:no-repeat;width:32px;height:32px;overflow:hidden;}
 .ImgRemove{background-image:url("icons/Remove.gif");background-position:0px 0px;background-repeat:no-repeat;width:32px;height:32px;overflow:hidden;}
 .ImgRemoveDisabled{background-image:url("icons/RemoveDisabled.gif");background-position:0px 0px;background-repeat:no-repeat;width:32px;height:32px;overflow:hidden;}
+.ImgEdit{background-image:url("icons/Edit.gif");background-position:0px 0px;background-repeat:no-repeat;width:32px;height:32px;overflow:hidden;}
+.ImgEditDisabled{background-image:url("icons/EditDisabled.gif");background-position:0px 0px;background-repeat:no-repeat;width:32px;height:32px;overflow:hidden;}
 
 
 .ImgLogo{background-image:url("LogoNoText96x96.gif");background-position:0px 0px;background-repeat:no-repeat;width:96px;height:96px;overflow:hidden;}

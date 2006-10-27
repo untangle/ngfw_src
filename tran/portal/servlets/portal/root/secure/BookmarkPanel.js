@@ -79,9 +79,9 @@ BookmarkPanel.prototype._makeToolbar = function() {
     this.deleteBookmarkButton = b;
 
     b = new DwtButton(toolbar,DwtLabel.ALIGN_CENTER,"DwtButton32");
-    b.setText("Edit"); // XXX change to setImage
-    //b.setDisabledImage("AddDisabled");
-    b.setToolTipContent("Edit bookmark");
+    b.setImage("Edit");
+    b.setDisabledImage("EditDisabled");
+    b.setToolTipContent("Edit selected bookmark");
     this.editBookmarkButton = b;
 
     return toolbar;
