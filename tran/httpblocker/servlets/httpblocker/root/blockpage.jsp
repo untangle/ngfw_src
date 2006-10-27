@@ -24,7 +24,7 @@ String url = bd.getUrl().toString();
   <head>
     <link href="/main.css" rel="stylesheet" type="text/css"/>
 
-<title>403 Forbidden</title>
+<title>Untangle Networks Warning</title>
 <script language="JavaScript">
 nonce = '<%=nonce%>';
 tid = '<%=tidStr%>';
@@ -63,7 +63,7 @@ url = '<%=url%>';
 <td><hr></td>
 </tr>
 <tr>
-<td>This site blocked because of inappropriate content.</td>
+<td>This web page was blocked because it is considered inappropriate.</td>
 </tr>
 <tr>
 <td>Host: <%=host%></td>

@@ -21,7 +21,7 @@ String url = bd.getUrl();
   <head>
     <link href="/main.css" rel="stylesheet" type="text/css"/>
 
-<title>403 Forbidden</title>
+<title>Untangle Networks Warning</title>
 <script language="JavaScript">
 nonce = '<%=nonce%>';
 tid = '<%=tidStr%>';
@@ -62,7 +62,7 @@ url = '<%=url%>';
 <td><hr></td>
 </tr>
 <tr>
-<td>This site blocked because it may contain spyware.</td>
+<td>This web page was blocked because it may contain spyware.</td>
 </tr>
 <tr>
 <td>Host: <%=host%></td>

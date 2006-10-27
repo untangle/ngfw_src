@@ -112,7 +112,7 @@ public class GroupHomeSettingsJPanel extends javax.swing.JPanel implements Savab
 	if( portalHomeSettings == null ){
 	    settingsDisabledJRadioButton.setSelected(true);
 	    setTextEnabledDependency(false);
-	    return;
+	    portalHomeSettings = new PortalHomeSettings();
 	}
 	else{
 	    settingsEnabledJRadioButton.setSelected(true);
