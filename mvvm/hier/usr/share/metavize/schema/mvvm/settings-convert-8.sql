@@ -30,9 +30,11 @@ CREATE TABLE settings.mvvm_pppoe (
 CREATE TABLE settings.mvvm_wmi_settings (
     settings_id       INT8 NOT NULL,
     live              BOOL,
+    scheme            TEXT,
     address           INET,
+    port              INT4,
     username          TEXT,
-    password          TEXT
+    password          TEXT,
     PRIMARY KEY       (settings_id));
 
 -- com.metavize.mvvm.policy.UserPolicyRule

@@ -39,3 +39,4 @@ com.metavize.mvvm.tran.MimeTypeRule
 com.metavize.mvvm.tran.PipelineEndpoints
 com.metavize.mvvm.tran.StringRule
 com.metavize.mvvm.tran.TransformPreferences
+com.metavize.mvvm.user.WMISettings

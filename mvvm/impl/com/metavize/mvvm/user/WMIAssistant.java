@@ -15,8 +15,12 @@ import java.net.InetAddress;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import javax.wbem.cim.CIMDataType;
 import javax.wbem.cim.CIMException;
@@ -28,11 +32,14 @@ import javax.wbem.cim.CIMValue;
 import javax.wbem.client.CIMClient;
 
 import com.metavize.mvvm.MvvmContextFactory;
+import com.metavize.mvvm.MvvmLocalContext;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.ValidateException;
 
+import com.metavize.mvvm.util.DataLoader;
+import com.metavize.mvvm.util.DataSaver;
 import com.metavize.mvvm.util.WorkerRunner;
 import com.metavize.mvvm.util.Worker;
 
@@ -104,9 +111,10 @@ class WMIAssistant implements Assistant
     public void lookup( UserInfo info )
     {
         /* if someone else is looking up the request, or it is not on the private network, ignore it */
-        if (( info.getUsernameState() != LookupState.UNITITIATED ) || !isOnPrivateNetwork( info )) {
-            return;
-        }
+        if (( info.getUsernameState() != LookupState.UNITITIATED ) || !isOnPrivateNetwork( info )) return;
+
+        /* settings are disabled, nothing to do */
+        if ( !this.worker.settings.getIsEnabled()) return;
 
         /* attempt to grab the user info from the local cache */
         if ( updateFromCache( info )) return;
@@ -129,9 +137,12 @@ class WMIAssistant implements Assistant
     /* set the WMI settings */
     void setSettings( WMISettings settings ) throws ValidateException
     {
-        this.worker.setSettings( settings );
-
-        /* xxx have to write this to a database or something */
+        WMIInternal internal = WMIInternal.makeInternal( settings );
+        
+        saveSettings( settings );
+        
+        this.worker.setSettings( internal );
+        
         /* clear all of the values from the cache, this gets rid of all of the negative lookups */
         cache.clear();
     }
@@ -145,6 +156,23 @@ class WMIAssistant implements Assistant
 
         logger.debug( "lifetime: ", this.worker.lifetimeMillis, 
                       " negative-lifetime: ", this.worker.negativeLifetimeMillis );
+
+        /* load the settings from the database */
+        WMISettings settings = loadSettings();
+        
+        try {
+            if ( settings == null ) {
+                logger.debug( "No settings exists, attempting to save new settings" );
+                settings = new WMISettings();
+                settings.setIsEnabled( false );
+                setSettings( settings );
+            } else { 
+                /* configure the worker with the existing settings */
+                this.worker.setSettings( WMIInternal.makeInternal( settings ));
+            }
+        } catch ( ValidateException e ) {
+            logger.warn( e, "unable to load initial settings: ", settings );
+        }
     }
 
     void start()
@@ -208,6 +236,21 @@ class WMIAssistant implements Assistant
         }
     }
 
+    /* write the settings to the database */
+    private void saveSettings( WMISettings settings )
+    {
+        DataSaver<WMISettings> saver = new WMISettingsDataSaver( MvvmContextFactory.context());
+        saver.saveData( settings );
+    }
+
+    private WMISettings loadSettings()
+    {
+        DataLoader<WMISettings> loader =
+            new DataLoader<WMISettings>( "WMISettings", MvvmContextFactory.context());
+                                         
+        return loader.loadData();
+    }
+
     /* -------------- Inner Classes -------------- */
 
     /* WMIWorker:
@@ -268,11 +311,10 @@ class WMIAssistant implements Assistant
             return settings.toSettings();
         }
 
-        void setSettings( WMISettings settings ) throws ValidateException
+        void setSettings( WMIInternal internal ) throws ValidateException
         {
-            this.settings = WMIInternal.makeInternal( settings );
+            this.settings = internal;
         }
-
                
         private boolean getHostname( UserInfo info )
         {
@@ -469,5 +511,23 @@ class WMIAssistant implements Assistant
         {
             return "<SuccessfulCIMData: " + address.getHostAddress() + "/" + username + ">";
         }
-    }      
+    }
+    
+    class WMISettingsDataSaver extends DataSaver<WMISettings>
+    {
+        public WMISettingsDataSaver( MvvmLocalContext local )
+        {
+            super( local );
+        }
+        
+        protected void preSave( Session s )
+        {
+            Query q = s.createQuery( "from WMISettings" );
+            for ( Iterator iter = q.iterate() ; iter.hasNext() ; ) {
+                WMISettings settings = (WMISettings)iter.next();
+                s.delete( settings );
+            }
+        }
+    }
+
 }
