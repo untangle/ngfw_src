@@ -96,7 +96,8 @@ restartServiceIfNeeded() {
   if [ -f "$pidFile" -a ! -d /proc/`cat "$pidFile"` ] ; then
     echo "*** restarting missing $serviceName on `date` ***" >> $MVVM_WRAPPER_LOG
     rm -f $pidFile
-    /etc/init.d/$serviceName restart
+    /etc/init.d/$serviceName stop
+    /etc/init.d/$serviceName start
   fi
 }
     
