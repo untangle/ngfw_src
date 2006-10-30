@@ -243,9 +243,7 @@ public class MailTransformSettings implements Serializable
      *
      * @return the list of Safelist settings
      */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
     @JoinTable(name="tr_mail_safelists",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="safels_id"))
