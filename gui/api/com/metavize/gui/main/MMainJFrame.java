@@ -156,7 +156,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 controlsJPanel.setMinimumSize(new java.awt.Dimension(200, 427));
                 controlsJPanel.setOpaque(false);
                 controlsJPanel.setPreferredSize(new java.awt.Dimension(200, 410));
-                metavizeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/LogoNoText96x96.png")));
+                metavizeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/Logo150x96.png")));
                 metavizeJButton.setBorderPainted(false);
                 metavizeJButton.setContentAreaFilled(false);
                 metavizeJButton.setDoubleBuffered(true);
@@ -164,6 +164,9 @@ public class MMainJFrame extends javax.swing.JFrame {
                 metavizeJButton.setFocusable(false);
                 metavizeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 metavizeJButton.setMargin(new java.awt.Insets(1, 3, 3, 3));
+                metavizeJButton.setMaximumSize(new java.awt.Dimension(150, 96));
+                metavizeJButton.setMinimumSize(new java.awt.Dimension(150, 96));
+                metavizeJButton.setPreferredSize(new java.awt.Dimension(150, 96));
                 metavizeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 metavizeJButtonActionPerformed(evt);
@@ -173,8 +176,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-                gridBagConstraints.insets = new java.awt.Insets(45, 45, 45, 45);
+                gridBagConstraints.insets = new java.awt.Insets(45, 0, 45, 0);
                 controlsJPanel.add(metavizeJButton, gridBagConstraints);
 
                 mTabbedPane.setDoubleBuffered(true);

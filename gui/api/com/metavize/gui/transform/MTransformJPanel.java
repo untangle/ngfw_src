@@ -149,6 +149,9 @@ public class MTransformJPanel extends javax.swing.JPanel {
                                                                                                        +  "/gui/IconDesc42x42.png")));
         }
         catch(Exception e){ Util.handleExceptionNoRestart("Error adding icon: " + name , e); }
+        
+               organizationIconJLabel.setIcon(null);
+               /*
         try{
             name = transformDesc.getName();
             name = name.substring(0, name.indexOf('-'));
@@ -157,7 +160,8 @@ public class MTransformJPanel extends javax.swing.JPanel {
                                                                                                         + "/gui/IconOrg42x42.png")));
         }
         catch(Exception e){ Util.handleExceptionNoRestart("Error adding icon: " + name , e); }
-
+        
+               */
         // SIZES
         if(maxDimension == null)
             maxDimension = new Dimension((int)this.getPreferredSize().getWidth(), (int)(this.getPreferredSize().getHeight()

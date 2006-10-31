@@ -160,7 +160,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 contentJPanel.setMinimumSize(new java.awt.Dimension(330, 238));
                 contentJPanel.setPreferredSize(new java.awt.Dimension(330, 400));
                 logoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                logoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/icons/LogoNoText96x96.png")));
+                logoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/main/Logo150x96.png")));
                 logoLabel.setDoubleBuffered(true);
                 logoLabel.setFocusable(false);
                 logoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -170,7 +170,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
                 gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(48, 115, 0, 115);
+                gridBagConstraints.insets = new java.awt.Insets(48, 0, 0, 0);
                 contentJPanel.add(logoLabel, gridBagConstraints);
 
                 upperBackgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/metavize/gui/images/LightGreyBackground1600x100.png")));

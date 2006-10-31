@@ -51,12 +51,15 @@ public class MTransformJButton extends JButton {
 	add(contentJPanel);
 
         // ORG ICON
+    /*
         organizationIconJLabel = new JLabel();
         if( mackageDesc.getOrgIcon() != null )
             organizationIconJLabel.setIcon( new javax.swing.ImageIcon(mackageDesc.getOrgIcon()) );
         else
             organizationIconJLabel.setIcon( new ImageIcon(getClass().getResource("/com/metavize/gui/transform/IconOrgUnknown42x42.png")) );
+    */
         //organizationIconJLabel.setDisabledIcon(this.orgIcon);
+        /*
         organizationIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         organizationIconJLabel.setFocusable(false);
         organizationIconJLabel.setPreferredSize(new java.awt.Dimension(42, 42));
@@ -68,6 +71,7 @@ public class MTransformJButton extends JButton {
         gridBagConstraints.weightx = 0.5;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 4);
         contentJPanel.add(organizationIconJLabel, gridBagConstraints);
+        */
 
         // DESC ICON
         descriptionIconJLabel = new JLabel();
@@ -76,16 +80,16 @@ public class MTransformJButton extends JButton {
         else
             descriptionIconJLabel.setIcon( new ImageIcon(getClass().getResource("/com/metavize/gui/transform/IconDescUnknown42x42.png")) );
         //descriptionIconJLabel.setDisabledIcon(this.descIcon);
-        descriptionIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        descriptionIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         descriptionIconJLabel.setFocusable(false);
         descriptionIconJLabel.setPreferredSize(new java.awt.Dimension(42, 42));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.CENTER;
         gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 2);
+        gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
         contentJPanel.add(descriptionIconJLabel, gridBagConstraints);
 
         //DISPLAY NAME
@@ -102,7 +106,7 @@ public class MTransformJButton extends JButton {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
@@ -127,7 +131,7 @@ public class MTransformJButton extends JButton {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 1;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         contentJPanel.add(statusJProgressBar, gridBagConstraints);
 
@@ -246,7 +250,7 @@ public class MTransformJButton extends JButton {
 
     public void setEnabled(boolean enabled){
         super.setEnabled(enabled);
-        organizationIconJLabel.setEnabled(enabled);
+        //organizationIconJLabel.setEnabled(enabled);
         descriptionIconJLabel.setEnabled(enabled);
         nameJLabel.setEnabled(enabled);
 	if(enabled)
