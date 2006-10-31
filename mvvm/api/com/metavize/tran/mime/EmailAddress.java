@@ -249,7 +249,7 @@ public class EmailAddress {
 
 
   /**
-   * Helper method for creating a (Metavize) EmailAddress from
+   * Helper method for creating a (Untangle) EmailAddress from
    * a JavaMail address.  Note that a blank (null) address
    * can be created by passing null.
    *

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Metavize Inc. ("Confidential Information").  You shall
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -11,24 +11,23 @@
 
 package com.metavize.mvvm.util;
 
-import org.apache.log4j.Logger;
-
 import com.metavize.mvvm.MvvmLocalContext;
+import org.apache.log4j.Logger;
 
 public class WorkerRunner
 {
     /* give the thread 3 seconds to die by default */
     private static final long DEFAULT_STOP_DELAY_MILLIS = 3000;
-    
+
     /* At most 5 attempts at ending the thread */
     private static final int MAX_STOP_INTERRUPT_COUNT = 5;
 
     private final Worker worker;
     private final MvvmLocalContext localContext;
     private final long stopDelayMillis;
-    
+
     private Thread thread;
-    
+
     private final Logger logger = Logger.getLogger( this.getClass());
 
     public WorkerRunner( Worker worker, MvvmLocalContext localContext )
@@ -49,7 +48,7 @@ public class WorkerRunner
             logger.info( "The worker: " + worker + " is already started." );
             return;
         }
-        
+
         logger.debug( "Starting the worker: " + this.worker );
 
         this.thread = localContext.newThread( new RunnerThread());
@@ -62,9 +61,9 @@ public class WorkerRunner
         this.thread = null;
 
         logger.debug( "Stopping the worker: " + this.worker );
-        
+
         int count = 0;
-        
+
         /* calcuate the end time */
         long endTime = System.currentTimeMillis() + this.stopDelayMillis;
 
@@ -79,7 +78,7 @@ public class WorkerRunner
                     break;
                 }
                 currentThread.join( delay );
-                
+
                 /* stop after successfully joining */
                 break;
             } catch ( SecurityException e ) {
@@ -89,21 +88,21 @@ public class WorkerRunner
                 if ( count > MAX_STOP_INTERRUPT_COUNT ) {
                     logger.warn( "interrupted too many times while stopping the thread, cancelling.", e );
                 }
-                
+
                 logger.info( "interrupted while stopping the thread, attempting again." );
                 count++;
                 continue;
             }
         }
     }
-    
+
     private class RunnerThread implements Runnable
     {
         public void run()
         {
             logger.debug( "Starting" );
             while( thread == Thread.currentThread()) {
-                try { 
+                try {
                     worker.work();
                 } catch( InterruptedException e ) {
                     continue;

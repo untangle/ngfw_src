@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -15,23 +15,23 @@ import com.metavize.mvvm.MvvmException;
 
 class WMIException extends MvvmException
 {
-    public WMIException() 
-    { 
-        super(); 
+    public WMIException()
+    {
+        super();
     }
 
     public WMIException( String message )
-    { 
-        super( message ); 
+    {
+        super( message );
     }
 
     public WMIException( String message, Throwable cause )
-    { 
+    {
         super( message, cause );
     }
 
     public WMIException( Throwable cause )
-    { 
-        super( cause ); 
+    {
+        super( cause );
     }
 }

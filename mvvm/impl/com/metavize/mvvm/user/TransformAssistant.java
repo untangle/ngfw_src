@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,10 +12,9 @@
 package com.metavize.mvvm.user;
 
 import com.metavize.mvvm.MvvmContextFactory;
-import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.LocalTransformManager;
+import com.metavize.mvvm.tran.TransformContext;
 import com.metavize.mvvm.tran.TransformContextSwitcher;
-
 import com.metavize.tran.util.MVLogger;
 
 /* a wrapper that automatically detects if an assistant needs to
@@ -23,7 +22,7 @@ import com.metavize.tran.util.MVLogger;
 class TransformAssistant implements Assistant, TransformContextSwitcher.Event<UserInfo>
 {
     private static final MVLogger logger = new MVLogger( TransformAssistant.class );
-    
+
     private final Assistant assistant;
     private final int priority;
     private final TransformContextSwitcher<UserInfo> transformContextSwitcher;
@@ -34,7 +33,7 @@ class TransformAssistant implements Assistant, TransformContextSwitcher.Event<Us
         this.assistant = assistant;
         this.priority = assistant.priority();
     }
-    
+
     /* pass thru that guarantees the context is switched properly */
     public void lookup( UserInfo info )
     {
@@ -74,7 +73,7 @@ class TransformAssistant implements Assistant, TransformContextSwitcher.Event<Us
             logger.debug( "the assistant ", assistant, " has no transform context, using as is." );
             return assistant;
         }
-        
+
         logger.debug( "building a new transform assistant for ", assistant );
         return new TransformAssistant( assistant, transformContext );
     }

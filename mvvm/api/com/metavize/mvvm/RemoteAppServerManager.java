@@ -113,7 +113,7 @@ public interface RemoteAppServerManager
      *
      * @return the CSR, or null if there is an error. Any error is
      * the result of code failure. The logs will contain the error
-     * and users are advised to contact Metavize support.
+     * and users are advised to contact Untangle support.
      */
     byte[] generateCSR();
 

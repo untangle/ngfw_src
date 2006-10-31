@@ -176,7 +176,7 @@ public class MutableEmailAddress
 
 
   /**
-   * Helper method for creating a (Metavize) MutableEmailAddress from
+   * Helper method for creating a (Untangle) MutableEmailAddress from
    * a JavaMail address.
    *
    * @param addr the JavaMail address

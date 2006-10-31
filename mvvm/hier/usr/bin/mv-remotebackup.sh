@@ -15,7 +15,7 @@
 #=============================================================
 # This application creates a backup of the system, then
 # sends it to the given URL.  The intention is to post to
-# Metavize for the 24-hour backup service
+# Untangle for the 24-hour backup service
 #
 #
 # Exit codes:
@@ -26,7 +26,7 @@
 #       returned either a 401 or 403 (bad-password type stuff).
 #   4 - Unable to contact the specified server
 #   5 - Timed out
-# 
+#
 #==============================================================
 
 #================================================================
@@ -91,11 +91,11 @@ function callCurl() {
 function createBackup() {
   debug "Creating Backup in " $1
   mvvmdb-backup local $1
-#  pushd $1 > /dev/null 2>&1 
+#  pushd $1 > /dev/null 2>&1
 #  echo "FOO" > foo.txt;
 #  echo "MOO" > moo.txt;
 #  echo "DOO" > doo.txt;
-#  popd > /dev/null 2>&1 
+#  popd > /dev/null 2>&1
   DUMP_EXIT=$?
   debug "Done creating backup with return code $DUMP_EXIT"
 }
@@ -105,7 +105,7 @@ function createBackup() {
 # 2 = dir with backups
 function tarBackupFiles() {
   debug "Taring files in $2 into tar $1"
-  pushd $2 > /dev/null 2>&1 
+  pushd $2 > /dev/null 2>&1
   tar -cf $1 .
   popd > /dev/null 2>&1
   TAR_EXIT=$?
@@ -176,7 +176,7 @@ rm -f $TAR_FILE
 if [ $CURL_RET -eq 7 ]; then
   # A machine that exists, wrong port (e.g. http://localhost:800/)
   # or machine cannot be contacted then CURL returns 7
-  err "CURL returned 7, indicating that the URL $URL could not be contacted"  
+  err "CURL returned 7, indicating that the URL $URL could not be contacted"
   rm -f $HEADER_FILE
   exit 4
 fi

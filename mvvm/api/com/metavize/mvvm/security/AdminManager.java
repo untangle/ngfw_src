@@ -69,7 +69,7 @@ public interface AdminManager
 
     /**
      * Sets the registration info for the box customer.  The new info
-     * will be transmitted to Metavize automatically by cron.
+     * will be transmitted to Untangle automatically by cron.
      *
      * @param info a <code>RegistrationInfo</code> giving the new
      * registration info for the customer

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Metavize Inc. ("Confidential Information").  You shall
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -12,19 +12,17 @@
 package com.metavize.mvvm.user;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Type;
-
 import com.metavize.mvvm.networking.NetworkUtil;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.Validatable;
 import com.metavize.mvvm.tran.ValidateException;
+import org.hibernate.annotations.Type;
 
 
 @Entity
@@ -49,13 +47,13 @@ public class WMISettings implements Serializable, Validatable
     private String scheme = DEFAULT_WMI_SCHEME;
 
     private IPaddr address;
-    
+
     private int port = DEFAULT_WMI_PORT;
 
     public WMISettings()
     {
     }
-   
+
     @Id
     @Column(name="settings_id")
     @GeneratedValue
@@ -74,7 +72,7 @@ public class WMISettings implements Serializable, Validatable
     {
         return this.isEnabled;
     }
-    
+
     public void setIsEnabled( boolean newValue )
     {
         this.isEnabled = newValue;
@@ -183,7 +181,7 @@ public class WMISettings implements Serializable, Validatable
 
         if ( this.port <= 0 || this.port >= 0xFFFF ) {
             this.port = DEFAULT_WMI_PORT;
-            
+
             /* no user configurable value for this */
             // throw new ValidateException( "invalid port: " + this. );
         }
@@ -197,7 +195,7 @@ public class WMISettings implements Serializable, Validatable
         if ( this.password == null || this.password.trim().length() == 0 ) {
             throw new ValidateException( "A password must be specified for the WMI server." );
         }
-        
+
         if ( this.address == null || this.address.isEmpty()) {
             throw new ValidateException( "An address must be specified for the WMI server." );
         }

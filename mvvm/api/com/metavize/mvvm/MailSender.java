@@ -11,9 +11,9 @@
 
 package com.metavize.mvvm;
 
-import java.util.List;
 import java.io.File;
 import java.io.InputStream;
+import java.util.List;
 import javax.mail.internet.MimeBodyPart;
 
 
@@ -45,7 +45,7 @@ public interface MailSender
     void sendReports(String subject, String bodyHTML, List<String> extraLocations, List<File> extras);
 
     /**
-     * <code>sendErrorLogs</code> sends an error log email to Metavize.  Each attachment contains
+     * <code>sendErrorLogs</code> sends an error log email to Untangle.  Each attachment contains
      * the latest events for a particular transform.
      * to the reportEmail address (from the mail settings).
      *
@@ -133,7 +133,7 @@ public interface MailSender
      * <code>sendTestMessage</code> is for the UI to test saved MailSettings to see if
      * they work.  A static test email is sent to the given address.  If some exception
      * occurs during send, false is returned.  Otherwise true is returned.
-     * 
+     *
      * Note that a
      * true return doesn't guarantee that the email will be received, it could be dropped
      * somewhere along the way.  But a false return guarantees that the settings are

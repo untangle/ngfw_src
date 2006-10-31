@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,8 +12,8 @@
 package com.metavize.mvvm.user;
 
 
-import javax.wbem.client.UserPrincipal;
 import javax.wbem.client.PasswordCredential;
+import javax.wbem.client.UserPrincipal;
 
 import com.metavize.mvvm.networking.NetworkUtil;
 import com.metavize.mvvm.tran.IPaddr;
@@ -46,11 +46,11 @@ class WMIInternal
         this.port = settings.getPort();
         this.scheme = settings.getScheme();
         this.uri = uri;
-        
+
         this.principal = new UserPrincipal( this.username );
         this.credentials = new PasswordCredential( this.password );
     }
-   
+
     boolean getIsEnabled()
     {
         return this.isEnabled;
@@ -64,7 +64,7 @@ class WMIInternal
     String getURI() throws WMIException
     {
         if ( this.uri == null ) throw new WMIException( "Settings are invalid, unable to generate uri." );
-        
+
         return this.uri;
     }
 
@@ -96,7 +96,7 @@ class WMIInternal
 
         /* make sure the settings are legit */
         settings.validate();
-        
+
         /* try to generate a uri */
         if ( settings.getIsEnabled()) {
             uri = settings.getScheme() + "://" + settings.getAddress() + ":" + settings.getPort();
@@ -105,5 +105,5 @@ class WMIInternal
         return new WMIInternal( settings, uri );
     }
 
-    
+
 }

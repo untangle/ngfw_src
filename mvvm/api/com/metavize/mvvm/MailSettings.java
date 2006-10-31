@@ -153,7 +153,7 @@ public class MailSettings implements Serializable
     }
 
     /**
-     * The From address for mail coming from the Metavize system.
+     * The From address for mail coming from the Untangle Platform.
      *
      * @return a <code>String</code> value
      */

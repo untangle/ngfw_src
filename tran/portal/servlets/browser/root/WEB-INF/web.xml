@@ -64,7 +64,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
     <url-pattern>/js/msgs/*</url-pattern>
   </servlet-mapping>
 
-  <!-- Metavize stuff -->
+  <!-- Untangle stuff -->
 
   <display-name>Portal</display-name>
 

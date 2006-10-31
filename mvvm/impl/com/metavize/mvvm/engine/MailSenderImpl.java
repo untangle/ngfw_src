@@ -134,7 +134,7 @@ class MailSenderImpl implements MailSender
     // This is the session used to send report mail inside the organization
     private Session reportSession;
 
-    // This is the session used to send mail to Metavize Inc.
+    // This is the session used to send mail to Untangle Networks, Inc.
     private Session mvSession;
 
     private final Logger logger = Logger.getLogger(getClass());

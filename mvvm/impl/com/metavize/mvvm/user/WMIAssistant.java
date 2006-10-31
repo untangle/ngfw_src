@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Metavize Inc.
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -12,27 +12,20 @@
 package com.metavize.mvvm.user;
 
 import java.net.InetAddress;
-
 import java.util.Date;
-import java.util.Map;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import org.hibernate.Query;
-import org.hibernate.Session;
-
+import java.util.concurrent.TimeUnit;
 import javax.wbem.cim.CIMDataType;
 import javax.wbem.cim.CIMException;
 import javax.wbem.cim.CIMNameSpace;
 import javax.wbem.cim.CIMObjectPath;
 import javax.wbem.cim.CIMProperty;
 import javax.wbem.cim.CIMValue;
-
 import javax.wbem.client.CIMClient;
 
 import com.metavize.mvvm.MvvmContextFactory;
@@ -41,16 +34,15 @@ import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ParseException;
 import com.metavize.mvvm.tran.ValidateException;
-
-import com.metavize.mvvm.util.DataLoader;
-import com.metavize.mvvm.util.DataSaver;
-import com.metavize.mvvm.util.WorkerRunner;
-import com.metavize.mvvm.util.Worker;
-
 import com.metavize.mvvm.tran.firewall.ip.IPMatcher;
 import com.metavize.mvvm.tran.firewall.ip.IPMatcherFactory;
-
+import com.metavize.mvvm.util.DataLoader;
+import com.metavize.mvvm.util.DataSaver;
+import com.metavize.mvvm.util.Worker;
+import com.metavize.mvvm.util.WorkerRunner;
 import com.metavize.tran.util.MVLogger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import static com.metavize.mvvm.user.UserInfo.LookupState;
 
@@ -58,7 +50,7 @@ class WMIAssistant implements Assistant
 {
     /* This is the maximum time to wait to connect to the server */
     private static final String PROPERTY_CONNECT_TIMEOUT = "javax.wbem.client.adapter.http.transport.connect-timeout";
-    
+
     /* This is the maxiumum amount of time to wait for a read from the server */
     private static final String PROPERTY_READ_TIMEOUT = "javax.wbem.client.adapter.http.transport.read-timeout";
 
@@ -76,16 +68,16 @@ class WMIAssistant implements Assistant
 
     /* this is how long to assume a login is valid for (in millis) */
     private static final long DEFAULT_LIFETIME_MS = 5 * 60 * 1000 ;
-    
+
     /* wait 10 minutes for a negative response */
     private static final long DEFAULT_NEGATIVE_LIFETIME_MS = 10 * 60 * 1000 ;
 
     /* Maximum delay to wait for a lookup event (1 minute, then cleanup) */
     private static final long POLL_TIMEOUT = 60000;
-    
+
     private static final String DEFAULT_NAMESPACE = "/root/cimv2";
     private static final int DEFAULT_QUEUE_LENGTH = 128;
-    
+
     private static final String WIN32_CLASS_NAME = "Win32_ComputerSystem";
     private static final String WIN32_KEY_NAME = "Name";
     private static final String WIN32_LOGIN_PROP = "UserName";
@@ -96,7 +88,7 @@ class WMIAssistant implements Assistant
     private static final int PRIORITY = 1000;
 
     private final MVLogger logger = new MVLogger( getClass());
-    
+
     /* matches machines that are currently on the private network, this is essentially
      * used to determine which machines can be queried. */
 
@@ -157,11 +149,11 @@ class WMIAssistant implements Assistant
     void setSettings( WMISettings settings ) throws ValidateException
     {
         WMIInternal internal = WMIInternal.makeInternal( settings );
-        
+
         saveSettings( settings );
-        
+
         this.worker.setSettings( internal );
-        
+
         /* clear all of the values from the cache, this gets rid of all of the negative lookups */
         cache.clear();
     }
@@ -170,31 +162,31 @@ class WMIAssistant implements Assistant
     void init()
     {
         this.worker.lifetimeMillis = Long.getLong( PROPERTY_LIFETIME, this.worker.lifetimeMillis );
-        this.worker.negativeLifetimeMillis = 
+        this.worker.negativeLifetimeMillis =
             Long.getLong( PROPERTY_LIFETIME, this.worker.negativeLifetimeMillis );
 
         /* set the system properties for connection and read timeouts on wbem connections */
         if ( null == System.getProperty( PROPERTY_CONNECT_TIMEOUT )) {
             System.setProperty( PROPERTY_CONNECT_TIMEOUT, String.valueOf( DEFAULT_CONNECT_TIMEOUT ));
         }
-        
+
         if ( null == System.getProperty( PROPERTY_READ_TIMEOUT )) {
             System.setProperty( PROPERTY_READ_TIMEOUT, String.valueOf( DEFAULT_READ_TIMEOUT ));
         }
 
-        logger.debug( "lifetime: ", this.worker.lifetimeMillis, 
+        logger.debug( "lifetime: ", this.worker.lifetimeMillis,
                       " negative-lifetime: ", this.worker.negativeLifetimeMillis );
 
         /* load the settings from the database */
         WMISettings settings = loadSettings();
-        
+
         try {
             if ( settings == null ) {
                 logger.debug( "No settings exists, attempting to save new settings" );
                 settings = new WMISettings();
                 settings.setIsEnabled( false );
                 setSettings( settings );
-            } else { 
+            } else {
                 /* configure the worker with the existing settings */
                 this.worker.setSettings( WMIInternal.makeInternal( settings ));
             }
@@ -221,12 +213,12 @@ class WMIAssistant implements Assistant
         return true;
         // XXX return this.privateNetwork.isMatch( info.getAddress());
     }
-    
+
     /* attempt to lookup the response from the cache */
     private boolean updateFromCache( UserInfo info )
     {
         InetAddress address = info.getAddress();
-        
+
         CIMData cimData = cache.get( address );
         if ( cimData == null ) return false;
 
@@ -237,9 +229,9 @@ class WMIAssistant implements Assistant
             logger.debug( "cached value [", address.getHostAddress(), "]: ", cimData, " expired" );
             return false;
         }
-        
+
         logger.debug( "found valid cached value [", address.getHostAddress(), "]: ", cimData );
-        
+
         cimData.completeInfo( info );
 
         return true;
@@ -250,7 +242,7 @@ class WMIAssistant implements Assistant
     {
         InetAddress address = info.getAddress();
         boolean hasHostname = ( info.getHostnameState() == LookupState.UNITITIATED );
-        
+
         info.setUsernameState( LookupState.IN_PROGRESS );
         if ( !hasHostname ) info.setHostnameState( LookupState.IN_PROGRESS );
 
@@ -260,7 +252,7 @@ class WMIAssistant implements Assistant
             if ( !hasHostname ) info.setHostnameState( LookupState.FAILED );
         } else {
             logger.debug( "initiated lookup for: ", info );
-                
+
         }
     }
 
@@ -275,7 +267,7 @@ class WMIAssistant implements Assistant
     {
         DataLoader<WMISettings> loader =
             new DataLoader<WMISettings>( "WMISettings", MvvmContextFactory.context());
-                                         
+
         return loader.loadData();
     }
 
@@ -293,7 +285,7 @@ class WMIAssistant implements Assistant
 
         /* positive response timeout */
         private long lifetimeMillis;
-        
+
         /* negative response length */
         private long negativeLifetimeMillis;
 
@@ -306,26 +298,26 @@ class WMIAssistant implements Assistant
             this.lifetimeMillis = lifetimeMillis;
             this.negativeLifetimeMillis = negativeLifetimeMillis;
         }
-        
+
         /* Execute one iteration */
         public void work() throws InterruptedException
         {
             /* remove one element */
             UserInfo info = this.lookupQueue.poll( POLL_TIMEOUT, TimeUnit.MILLISECONDS );
-            
+
             expireValues();
-            
+
             if ( info == null ) return;
-            
+
             /* first check the queue */
             if ( updateFromCache( info )) return;
-            
+
             if ( !getHostname( info )) {
                 /* unable to lookup the hostname */
                 fail( info );
                 return;
             }
-            
+
             try {
                 lookup( info );
             } catch ( CIMException e ) {
@@ -350,32 +342,32 @@ class WMIAssistant implements Assistant
         {
             this.settings = internal;
         }
-               
+
         private boolean getHostname( UserInfo info )
         {
             InetAddress address = info.getAddress();
             HostName hostname = info.getHostname();
-            
+
             if ( hostname == null ) {
                 /* perform a reverse lookup */
                 String h = address.getHostName();
                 /* if it returned the ip textual version, there is nothing to be done */
                 if ( h.equals( address.getHostAddress())) return false;
-                
-                try {                          
+
+                try {
                     hostname = HostName.parse( h );
                 } catch ( ParseException e ) {
                     logger.warn( "unable to parse the hostname: '" + h + "'" );
                     return false;
                 }
-                
+
                 /* only update the info if it has changed */
                 info.setHostname( hostname );
             }
-            
+
             return true;
         }
-        
+
         private void lookup( UserInfo info ) throws CIMException
         {
             /* no need for locking */
@@ -389,36 +381,36 @@ class WMIAssistant implements Assistant
 
             CIMClient clientConnection = null;
 
-            try {                
+            try {
                 InetAddress address = info.getAddress();
-                
+
                 /* assuming the hostname is valid and is not an textual ip address */
                 HostName hostname = info.getHostname();
-                
+
                 String machineName = hostname.unqualified().toString();
-                
+
                 String ns = DEFAULT_NAMESPACE;
-                
+
                 IPaddr wmiServer = cs.getAddress();
-            
+
                 /* If the machine is not the WMI server, than have to prepend the machine to the name space */
                 if ( !wmiServer.toString().equals( address.getHostAddress())) ns = "/" + machineName + ns;
-                
+
                 CIMNameSpace nameSpace = new CIMNameSpace( cs.getURI(), ns );
-                
+
                 logger.debug( "namespace: ", nameSpace, " uri: ", cs.getURI());
 
                 clientConnection = new CIMClient( nameSpace, cs.getPrincipal(), cs.getCredentials());
-                
+
                 /* create a new CIM object path */
                 CIMObjectPath objectPath = new CIMObjectPath( WIN32_CLASS_NAME );
-            
+
                 /* add a key to isolate just the machine */
-                CIMProperty property = 
+                CIMProperty property =
                     new CIMProperty( WIN32_KEY_NAME, new CIMValue( machineName, CIM_STRING_TYPE ));
-                                     
+
                 objectPath.addKey( property );
-                
+
                 CIMValue value = clientConnection.getProperty( objectPath, WIN32_LOGIN_PROP );
 
                 logger.debug( "completed lookup for[", address.getHostAddress(), "]: ", value );
@@ -435,7 +427,7 @@ class WMIAssistant implements Assistant
                 if ( clientConnection != null ) clientConnection.close();
             }
         }
-        
+
         private void fail( UserInfo info )
         {
             HostName h = info.getHostname();
@@ -447,7 +439,7 @@ class WMIAssistant implements Assistant
             this.expireList.add( d );
             d.completeInfo( info );
         }
-        
+
         private void pass( UserInfo info, CIMValue value ) throws ParseException
         {
             /* not sure why it needs 4 per one \ but it does? */
@@ -456,9 +448,9 @@ class WMIAssistant implements Assistant
             Username username = Username.parse(( components.length == 1 ) ? components[0] : components[1] );
 
             InetAddress address = info.getAddress();
-            
-            CIMData d = 
-                new SuccessfulCIMData( address, username, info.getHostname(), 
+
+            CIMData d =
+                new SuccessfulCIMData( address, username, info.getHostname(),
                                        System.currentTimeMillis() + this.lifetimeMillis );
 
             cache.put( info.getAddress(), d );
@@ -469,7 +461,7 @@ class WMIAssistant implements Assistant
         /* no synchronization necessary since all values are added from this thread */
         private void expireValues()
         {
-            
+
             /* optimization */
             if ( this.expireList.size() == 0 || !this.expireList.get( 0 ).isExpired() ) return;
 
@@ -481,11 +473,11 @@ class WMIAssistant implements Assistant
                 if ( !cimData.isExpired()) break;
 
                 iter.remove();
-                
+
                 InetAddress address = cimData.getAddress();
-                
+
                 cimData = cache.get( address );
-                
+
                 if ( cimData == null || !cimData.isExpired()) continue;
 
                 /* value is expired, time to remove it */
@@ -508,7 +500,7 @@ class WMIAssistant implements Assistant
         }
 
         abstract void completeInfo( UserInfo info );
-        
+
         boolean isExpired()
         {
             return ( System.currentTimeMillis() > expirationDate );
@@ -519,7 +511,7 @@ class WMIAssistant implements Assistant
             return this.address;
         }
     }
-    
+
     /* CIMData: representation of a failed CMI request, this is used to cache the fact
      * that the username should not be looked up again for a long time.  */
     private static class FailedCIMData extends CIMData
@@ -573,7 +565,7 @@ class WMIAssistant implements Assistant
         public void completeInfo( UserInfo info )
         {
             if ( info.getHostnameState() != LookupState.COMPLETED ) info.setHostname( this.hostname );
-            
+
             info.setUsername( this.username );
         }
 
@@ -589,7 +581,7 @@ class WMIAssistant implements Assistant
         {
             super( local );
         }
-        
+
         protected void preSave( Session s )
         {
             Query q = s.createQuery( "from WMISettings" );
