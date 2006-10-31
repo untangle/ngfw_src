@@ -2,7 +2,7 @@
 
 set -e
 
-REGISTRATION_URL="https://poptrack.metavize.com/register/custreg.php"
+REGISTRATION_URL="https://poptrack.untangle.com/register/custreg.php"
 
 REGDONE="@MVVM_HOME@/.regdone"
 REGINFO="@MVVM_HOME@/registration.info"

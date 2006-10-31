@@ -33,7 +33,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
 
     /* Name of the host to lookup */
     private static final String TEST_HOSTNAME_BASE    = "release";
-    private static final String TEST_HOSTNAME_DOMAIN  = "metavize.com";
+    private static final String TEST_HOSTNAME_DOMAIN  = "untangle.com";
 
     /* Backup IP address to use if DNS fails */
     private static final String BACKUP_ADDRESS_STRING = "216.129.106.56";
@@ -192,7 +192,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
     }
 
     /* This isn't a test, it is just a method used to lookup the address
-     * of release.metavize.com with a timeout.  The real test is now executed by
+     * of release.untangle.com with a timeout.  The real test is now executed by
      * the script.  For the original test, look at subversion R2828 */
     class DnsLookup implements Runnable
     {

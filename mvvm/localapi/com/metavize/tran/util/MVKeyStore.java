@@ -8,20 +8,22 @@
  *
  *  $Id$
  */
- 
+
 package com.metavize.tran.util;
-import java.util.ArrayList;
-import java.util.Map;
-import java.io.IOException;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
-import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.Map;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
+
 import com.metavize.mvvm.security.RFC2253Name;
 
 //TODO backup keystore on all operations
@@ -32,7 +34,7 @@ import com.metavize.mvvm.security.RFC2253Name;
  * manipulation to make-up for some lacking features in the command-
  * line version.
  * <br>
- * Instances of this class are <b>not</b> threadsafe, and it is 
+ * Instances of this class are <b>not</b> threadsafe, and it is
  * recommended that a single (synchronized) instance be used for a given
  * VM/File pair.
  */
@@ -69,8 +71,8 @@ public class MVKeyStore {
    * @return the bytes of the exported cert
    */
   public byte[] exportEntry(String alias)
-    throws IOException {  
-  
+    throws IOException {
+
     //=============================================
     // keytool -export -rfc -alias foo \
     // -keystore myKeystore
@@ -86,7 +88,7 @@ public class MVKeyStore {
         "-storepass",
         m_ktPass,
         "-keypass",
-        m_ktPass,        
+        m_ktPass,
         "-alias",
         alias
       },
@@ -95,7 +97,7 @@ public class MVKeyStore {
       true,
       true,
       1000*20);
-      
+
 
     if(result.exitCode!=0) {
       throw new IOException("Exception Importing cert.  Return code " + result.exitCode +
@@ -103,7 +105,7 @@ public class MVKeyStore {
       new String(result.stdOut) + "\", stderr \"" +
       new String(result.stdErr) + "\"");
     }
-    return result.stdOut;   
+    return result.stdOut;
   }
 
   /**
@@ -123,7 +125,7 @@ public class MVKeyStore {
     if(!containsAlias(oldAlias)) {
       return false;
     }
-    
+
     KeyStore ks = openKeyJavaStore();
 
     MVKSEntryType type = getEntryTypeImpl(ks, oldAlias);
@@ -135,7 +137,7 @@ public class MVKeyStore {
 
 
     switch(type) {
-      case SecKey:    
+      case SecKey:
       case PrivKey:
         entry = ks.getEntry(oldAlias, new KeyStore.PasswordProtection(m_ktPass.toCharArray()));
         ks.setEntry(newAlias, entry, new KeyStore.PasswordProtection(m_ktPass.toCharArray()));
@@ -150,19 +152,19 @@ public class MVKeyStore {
     saveKeystore(ks, m_ktFile, m_ktPass);
 
     return true;
-    
+
   }
 
-  
+
 
   /**
    * Import a cert into the store.  This call should be used
    * to import trusted certs (i.e. CA certs, client certs etc).
    * <br>
-   * Note that this clobbers existing entries (i.e. you may want to 
+   * Note that this clobbers existing entries (i.e. you may want to
    * check containsAlias first).  Also, it permits placing the
    * same cert into the store under different aliases.
-   * 
+   *
    * @param certBytes the bytes of the cert
    * @param alias the alias into-which the cert will be placed
    */
@@ -180,16 +182,16 @@ public class MVKeyStore {
     }
   }
 
-  
+
 
   /**
    * Import a cert into the store.  This call should be used
    * to import trusted certs (i.e. CA certs, client certs etc).
    * <br>
-   * Note that this clobbers existing entries (i.e. you may want to 
+   * Note that this clobbers existing entries (i.e. you may want to
    * check containsAlias first).  Also, it permits placing the
    * same cert into the store under different aliases.
-   * 
+   *
    * @param certFile the cert file
    * @param alias the alias into-which the cert will be placed
    */
@@ -211,7 +213,7 @@ public class MVKeyStore {
         "-storepass",
         m_ktPass,
         "-keypass",
-        m_ktPass,        
+        m_ktPass,
         "-alias",
         alias,
         "-noprompt",
@@ -223,7 +225,7 @@ public class MVKeyStore {
       true,
       true,
       1000*20);
-      
+
 
     if(result.exitCode!=0) {
       throw new IOException("Exception Importing cert.  Return code " + result.exitCode +
@@ -233,8 +235,8 @@ public class MVKeyStore {
     }
   }
 
-  
-  
+
+
   /**
    * Create a certificate request.  Note that first one
    * must create the key within the store (under the same
@@ -269,7 +271,7 @@ public class MVKeyStore {
         "-storepass",
         m_ktPass,
         "-keypass",
-        m_ktPass,        
+        m_ktPass,
         "-alias",
         alias,
         "-keyalg",
@@ -280,7 +282,7 @@ public class MVKeyStore {
       true,
       true,
       1000*20);
-      
+
 
     if(result.exitCode!=0) {
       throw new IOException("Exception creating CSR.  Return code " + result.exitCode +
@@ -288,7 +290,7 @@ public class MVKeyStore {
       new String(result.stdOut) + "\", stderr \"" +
       new String(result.stdErr) + "\"");
     }
-    return result.stdOut;   
+    return result.stdOut;
   }
 
 
@@ -338,7 +340,7 @@ public class MVKeyStore {
     //-storepass changeit -keypass changeit \
     //-alias foo -dname "C=US, ST=Cali, L=San Mateo, O=foo1, CN=foo.com"
     //========================================
-    
+
     SimpleExec.SimpleExecResult result = SimpleExec.exec(
       "keytool",
       new String[] {
@@ -350,7 +352,7 @@ public class MVKeyStore {
         "-keypass",
         m_ktPass,
         "-keyalg",
-        "RSA",   
+        "RSA",
         "-alias",
         alias,
         "-validity",
@@ -363,7 +365,7 @@ public class MVKeyStore {
       true,
       true,
       1000*10);
-      
+
 
     if(result.exitCode!=0) {
       throw new IOException("Exception updating Keystore.  Return code " +
@@ -393,7 +395,7 @@ public class MVKeyStore {
     }
     return false;
   }
-  
+
 
   /**
    * List all aliases within the keystore
@@ -421,7 +423,7 @@ public class MVKeyStore {
     return getEntryTypeImpl(openKeyJavaStore(), alias);
   }
 
-  
+
   /**
    * Create a new KeyStore
    *
@@ -443,7 +445,7 @@ public class MVKeyStore {
     //
     // keytool -genkey -keystore keystore \
     // -storepass changeit -keypass changeit \
-    // -alias bootstrap -dname "CN=uselessbootstrap.metavize.com"
+    // -alias bootstrap -dname "CN=uselessbootstrap.untangle.com"
     //
     // If there is a problem, exits with "1"
     //============================================
@@ -464,24 +466,24 @@ public class MVKeyStore {
         "-alias",
         "bootstrap",
         "-dname",
-        "CN=uselessbootstrap.metavize.com"
+        "CN=uselessbootstrap.untangle.com"
       },
       null,
       dir,
       true,
       true,
       1000*60);
-      
+
 
     if(result.exitCode==0) {
       return new MVKeyStore(f, pwd);
-    }    
+    }
     throw new IOException("Error creating file.  stdout \"" +
       new String(result.stdOut) + "\", stderr \"" +
       new String(result.stdErr) + "\"");
   }
 
-  
+
 
   /**
    * Open a key store
@@ -493,7 +495,7 @@ public class MVKeyStore {
    *        exist
    *
    * @return the opened key store
-   */  
+   */
   public static MVKeyStore open(String fileName,
     String pwd,
     boolean autoCreate)
@@ -514,11 +516,11 @@ public class MVKeyStore {
 
     //Test via "list".  Will throw exception if problem
     ret.listAliases();
-    
+
     return ret;
   }
 
-  
+
 
   /**
    * Returns null if not found
@@ -537,7 +539,7 @@ public class MVKeyStore {
     return null;
   }
 
-  
+
 
   private static void saveKeystore(KeyStore ks, File outFile, String pwd)
     throws GeneralSecurityException, IOException {
@@ -558,7 +560,7 @@ public class MVKeyStore {
       IOUtil.close(fOut);
       throw ex;
     }
-    
+
   }
 
   /**
@@ -584,6 +586,6 @@ public class MVKeyStore {
       IOUtil.close(fis);
       throw ex;
     }
-  }  
+  }
 }
 

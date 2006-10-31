@@ -1,15 +1,15 @@
 #!/bin/sh
 
-if [ $# -lt 1 ] ; then 
-	echo "Usage: $0 example-storeitem"
-	exit 1
-fi	
+if [ $# -lt 1 ] ; then
+    echo "Usage: $0 example-storeitem"
+    exit 1
+fi
 
 FAILED=0
-/usr/bin/wget -O /dev/null "https://poptrack.metavize.com/register/unsub.php?box_id=`cat /usr/share/metavize/activation.key`&filename=\"$1\""  &> /dev/null
+/usr/bin/wget -O /dev/null "https://poptrack.untangle.com/register/unsub.php?box_id=`cat /usr/share/metavize/activation.key`&filename=\"$1\""  &> /dev/null
 if [ $? -ne 0 ] ; then FAILED=1 ; fi
 
-if [ $FAILED -ne 0 ] ; then 
+if [ $FAILED -ne 0 ] ; then
     echo "Failed. Rescheduling \"$0 $1\" for +1 hour" &> /var/log/mvvm/apt.log
     echo "$0 $1 &> /dev/null" | at "+1 hour" &> /dev/null
 fi
