@@ -16,6 +16,10 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -75,6 +79,9 @@ class WMIAssistant implements Assistant
     
     /* wait 10 minutes for a negative response */
     private static final long DEFAULT_NEGATIVE_LIFETIME_MS = 10 * 60 * 1000 ;
+
+    /* Maximum delay to wait for a lookup event (1 minute, then cleanup) */
+    private static final long POLL_TIMEOUT = 60000;
     
     private static final String DEFAULT_NAMESPACE = "/root/cimv2";
     private static final int DEFAULT_QUEUE_LENGTH = 128;
@@ -281,6 +288,9 @@ class WMIAssistant implements Assistant
         /* queue to add more results */
         private final LinkedBlockingQueue<UserInfo> lookupQueue = new LinkedBlockingQueue<UserInfo>( DEFAULT_QUEUE_LENGTH );
 
+        /* ordered list of the CIM data, used to expire requests */
+        private final List<CIMData> expireList = new LinkedList<CIMData>();
+
         /* positive response timeout */
         private long lifetimeMillis;
         
@@ -301,7 +311,11 @@ class WMIAssistant implements Assistant
         public void work() throws InterruptedException
         {
             /* remove one element */
-            UserInfo info = this.lookupQueue.take();
+            UserInfo info = this.lookupQueue.poll( POLL_TIMEOUT, TimeUnit.MILLISECONDS );
+            
+            expireValues();
+            
+            if ( info == null ) return;
             
             /* first check the queue */
             if ( updateFromCache( info )) return;
@@ -425,10 +439,12 @@ class WMIAssistant implements Assistant
         private void fail( UserInfo info )
         {
             HostName h = info.getHostname();
-            CIMData d = new FailedCIMData( System.currentTimeMillis() + this.negativeLifetimeMillis, h );
+            InetAddress address = info.getAddress();
+            long endTime = System.currentTimeMillis() + this.negativeLifetimeMillis;
+            CIMData d = new FailedCIMData( endTime, address, h );
 
-            cache.put( info.getAddress(), d );
-            
+            cache.put( address, d );
+            this.expireList.add( d );
             d.completeInfo( info );
         }
         
@@ -446,8 +462,36 @@ class WMIAssistant implements Assistant
                                        System.currentTimeMillis() + this.lifetimeMillis );
 
             cache.put( info.getAddress(), d );
-            
+            this.expireList.add( d );
             d.completeInfo( info );
+        }
+
+        /* no synchronization necessary since all values are added from this thread */
+        private void expireValues()
+        {
+            
+            /* optimization */
+            if ( this.expireList.size() == 0 || !this.expireList.get( 0 ).isExpired() ) return;
+
+            logger.debug( "checking for expired cim data." );
+
+            for ( Iterator<CIMData> iter = this.expireList.iterator() ; iter.hasNext() ; ) {
+                CIMData cimData = iter.next();
+
+                if ( !cimData.isExpired()) break;
+
+                iter.remove();
+                
+                InetAddress address = cimData.getAddress();
+                
+                cimData = cache.get( address );
+                
+                if ( cimData == null || !cimData.isExpired()) continue;
+
+                /* value is expired, time to remove it */
+                logger.debug( "cleaning expired value in cache: ", cimData );
+                cache.remove( address );
+            }
         }
     }
 
@@ -455,10 +499,12 @@ class WMIAssistant implements Assistant
     private static abstract class  CIMData
     {
         private final long expirationDate;
+        private final InetAddress address;
 
-        CIMData( long expirationDate )
+        CIMData( long expirationDate, InetAddress address )
         {
             this.expirationDate = expirationDate;
+            this.address = address;
         }
 
         abstract void completeInfo( UserInfo info );
@@ -466,6 +512,11 @@ class WMIAssistant implements Assistant
         boolean isExpired()
         {
             return ( System.currentTimeMillis() > expirationDate );
+        }
+
+        InetAddress getAddress()
+        {
+            return this.address;
         }
     }
     
@@ -475,14 +526,14 @@ class WMIAssistant implements Assistant
     {
         private final HostName hostname;
 
-        FailedCIMData( long expirationDate )
+        FailedCIMData( long expirationDate, InetAddress address )
         {
-            this( expirationDate, null );
+            this( expirationDate, address, null );
         }
 
-        FailedCIMData( long expirationDate, HostName hostname )
+        FailedCIMData( long expirationDate, InetAddress address, HostName hostname )
         {
-            super( expirationDate );
+            super( expirationDate, address );
             this.hostname = hostname;
         }
 
@@ -507,7 +558,6 @@ class WMIAssistant implements Assistant
     /* CIMData: representation of a successful CMI request. */
     private static class SuccessfulCIMData extends CIMData
     {
-        private final InetAddress address;
         private final Username username;
         private final HostName hostname;
 
@@ -515,8 +565,7 @@ class WMIAssistant implements Assistant
          * hostname, windows doesn't work on ip addresses. */
         SuccessfulCIMData( InetAddress address, Username username, HostName hostname, long expirationDate )
         {
-            super( expirationDate );
-            this.address = address;
+            super( expirationDate, address );
             this.username = username;
             this.hostname = hostname;
         }
@@ -530,10 +579,10 @@ class WMIAssistant implements Assistant
 
         public String toString()
         {
-            return "<SuccessfulCIMData: " + address.getHostAddress() + "/" + username + ">";
+            return "<SuccessfulCIMData: " + getAddress().getHostAddress() + "/" + username + ">";
         }
     }
-    
+
     class WMISettingsDataSaver extends DataSaver<WMISettings>
     {
         public WMISettingsDataSaver( MvvmLocalContext local )

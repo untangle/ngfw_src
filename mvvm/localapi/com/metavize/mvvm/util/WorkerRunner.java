@@ -79,6 +79,9 @@ public class WorkerRunner
                     break;
                 }
                 currentThread.join( delay );
+                
+                /* stop after successfully joining */
+                break;
             } catch ( SecurityException e ) {
                 logger.error( "security exception, impossible", e );
                 break;

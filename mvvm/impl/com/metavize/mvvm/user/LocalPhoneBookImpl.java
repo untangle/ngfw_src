@@ -20,17 +20,24 @@ import java.io.IOException;
 
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
+import com.metavize.mvvm.MvvmContextFactory;
+
 import com.metavize.mvvm.logging.EventLogger;
 import com.metavize.mvvm.logging.EventLoggerFactory;
+
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ValidateException;
+
 import com.metavize.tran.util.MVLogger;
+import com.metavize.mvvm.util.Worker;
+import com.metavize.mvvm.util.WorkerRunner;
 
 import static com.metavize.mvvm.user.UserInfo.LookupState;
 
@@ -38,6 +45,11 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
 {
     /* properties */
     private static final String PROPERTY_LIFETIME = "com.metavize.mvvm.user.phonebook.lifetime";
+
+    /* ??? */
+    private static final int DEFAULT_QUEUE_LENGTH = 384;
+
+    private static final int CLEANUP_DELAY = 120000;
     
     /* Singleton */
     private static final LocalPhoneBookImpl INSTANCE = new LocalPhoneBookImpl();
@@ -56,15 +68,24 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     /* ??? how exactly do we expire the entries in here ??? */
     private final Map<InetAddress,UserInfo> addressMap = new ConcurrentHashMap<InetAddress,UserInfo>();
 
+    /* queue of addresses in the order they where looked up, this is to expire addresses in order */
+    private final LinkedBlockingQueue<UserInfo> lookupQueue = new LinkedBlockingQueue<UserInfo>( DEFAULT_QUEUE_LENGTH );
+
     /* XXX not sure how to update this between startups, perhaps the first 32 bits are random */
     private long currentKey = 0;
 
     private final WMIAssistant wmiAssistant;
 
+    /* the runner that cleans up after lookups */
+    private final WorkerRunner runner;
+
     private boolean isRunning = false;
 
     private LocalPhoneBookImpl()
     {
+        /* create the utility to cleanup */
+        this.runner = new WorkerRunner( new Cleaner(), MvvmContextFactory.context());
+                
         /* create a WMI assistant */
         this.wmiAssistant = new WMIAssistant();
     }
@@ -195,6 +216,9 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
         /* register the WMI assistant */
         registerAssistant( this.wmiAssistant );
 
+        /* start the cleaner */
+        this.runner.start();
+
         /* Start the wmi asssitant lookup thread */
         this.wmiAssistant.start();
 
@@ -210,6 +234,9 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
 
         /* Start the wmi asssitant lookup thread */
         this.wmiAssistant.stop();
+
+        /* stop the cleaner */
+        this.runner.stop();
 
         /* log all of the current user info objects */
         for ( Iterator<UserInfo> iter = addressMap.values().iterator() ; iter.hasNext() ; ) {
@@ -373,6 +400,9 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
             info = UserInfo.makeInstance( getNextKey(), address, this.lifetimeMillis );
             logger.debug( "making a new instance for: ", info, "." );
             addressMap.put( address, info );
+
+            /* Add to the lookup list in order to expire the addresses in order */
+            if ( !lookupQueue.offer( info )) logger.warn( "lookup queue full, potential leak." );
         }
 
         List<Assistant> currentAssistantList = this.assistantList;
@@ -398,5 +428,57 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     private synchronized long getNextKey()
     {
         return ++currentKey;
+    }
+
+    private class Cleaner implements Worker
+    {
+        private final List<UserInfo> infoList = new LinkedList<UserInfo>();
+
+        /* Execute one iteration */
+        public void work() throws InterruptedException
+        {
+            lookupQueue.drainTo( this.infoList );
+            
+            /* xxxx could make this a little more intelligent, like sleep until the next object
+             * is expired xxxx */
+            Thread.sleep( CLEANUP_DELAY );
+            
+            for ( Iterator<UserInfo> iter = this.infoList.iterator() ; iter.hasNext() ; ) {
+                UserInfo info = iter.next();
+                
+                /* these are inserted in order, so the first element that is not expired, 
+                 * means everything passed it is not expired, this will change once things can
+                 * be expired out of order */
+                if ( !info.isExpired()) break;
+
+                /* the value that was added is expired, so it must be removed from the list */
+                iter.remove();
+
+                InetAddress address = info.getAddress();
+                
+                UserInfo cachedInfo = addressMap.get( address );
+                /* nothing left to do */
+                if ( cachedInfo == null ) continue;
+
+
+                /* The cached info is not expired, nothing left to do */
+                if ( !cachedInfo.isExpired()) continue;
+
+                /* check after grabbing the lock */
+                synchronized( address.getHostAddress().intern()) {
+                    cachedInfo = addressMap.get( address );
+                    
+                    if ( cachedInfo != null && cachedInfo.isExpired()) {
+                        addressMap.remove( address );
+
+                        logger.debug( "logging the event: ", cachedInfo, "<", cachedInfo.hasData(), ">" );
+                        
+                        if ( cachedInfo.hasData() && ( eventLogger != null )) {
+                            eventLogger.log( new LookupLogEvent( cachedInfo ));
+                        }
+                    }
+                }
+            }
+        }
     }
 }
