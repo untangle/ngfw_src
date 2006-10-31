@@ -34,7 +34,7 @@ import org.hibernate.annotations.Type;
  * Virus control: Definition of virus control settings (either
  * direction)
  *
- * @author <a href="mailto:jdi@untanglenetworks.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 @Entity

@@ -21,7 +21,7 @@ import com.metavize.tran.util.AsciiCharBuffer;
 /**
  * FTP command.
  *
- * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  * @see "RFC 959, Section 4"
  */

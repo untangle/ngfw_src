@@ -19,7 +19,7 @@ import java.util.Date;
  * transform.  It is contained within each Transform.  All statistics
  * are since the last start.
  *
- * @author <a href="mailto:jdi@untanglenetworks.com"></a>
+ * @author <a href="mailto:jdi@untangle.com"></a>
  * @version 1.0
  */
 public class TransformStats implements Serializable

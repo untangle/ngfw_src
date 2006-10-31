@@ -183,7 +183,7 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
 
                 localJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 localJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                localJLabel.setText("<html><center>(Disabled because there is no browser present.)<br>\nPlease go to http://www.untanglenetworks.com to<br>\nlearn about this Software Appliance.\n</center></html>");
+                localJLabel.setText("<html><center>(Disabled because there is no browser present.)<br>\nPlease go to http://www.untangle.com to<br>\nlearn about this Software Appliance.\n</center></html>");
                 purchaseJPanel.add(localJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 240, -1, -1));
 
                 jPanel1.add(purchaseJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));

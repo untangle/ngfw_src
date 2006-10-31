@@ -45,7 +45,7 @@ import org.hibernate.SessionFactory;
  * as a stand-alone application. The stand-alone mode is used for mailing out
  * EdgeReports.
  *
- * @author <a href="mailto:jdi@untanglenetworks.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 class MailSenderImpl implements MailSender
@@ -55,9 +55,9 @@ class MailSenderImpl implements MailSender
 //    public static final String DEFAULT_FROM_ADDRESS = DEFAULT_SENDER + "@" + DEFAULT_LOCAL_DOMAIN;
 
     // All error log emails go here.
-    public static final String ERROR_LOG_RECIPIENT = "exceptions@untanglenetworks.com";
+    public static final String ERROR_LOG_RECIPIENT = "exceptions@untangle.com";
 
-    public static final String METAVIZE_SMTP_RELAY = "mail.untanglenetworks.com";
+    public static final String METAVIZE_SMTP_RELAY = "mail.untangle.com";
 
     public static final String Mailer = "MVVM MailSender";
 

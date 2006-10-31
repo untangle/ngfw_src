@@ -35,7 +35,7 @@ import com.metavize.mvvm.tran.PipelineEndpoints;
 /**
  * Log e-mail message info.
  *
- * @author <a href="mailto:cng@untanglenetworks.com">C Ng</a>
+ * @author <a href="mailto:cng@untangle.com">C Ng</a>
  * @version 1.0
  */
 @Entity

@@ -119,7 +119,7 @@ if (targetstr == null) {
   <information>
     <title>Remote Desktop Client @ <%=host%>  </title>
     <vendor>Untangle Networks</vendor>
-    <homepage href="http://www.untanglenetworks.com"/>
+    <homepage href="http://www.untangle.com"/>
     <description>Remote Desktop Client @ <%=host%>  </description>
     <description kind="short">The graphical client for remote desktop access via RDP.</description>
     <icon href="images/LogoNoText96x96.gif" kind="splash" width="96" height="96"/>

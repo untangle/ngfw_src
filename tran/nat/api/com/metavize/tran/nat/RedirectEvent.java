@@ -26,7 +26,7 @@ import javax.persistence.Entity;
 /**
  * Log event for the firewall.
  *
- * @author <a href="mailto:rbscott@untanglenetworks.com">Robert Scott</a>
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
 @Entity

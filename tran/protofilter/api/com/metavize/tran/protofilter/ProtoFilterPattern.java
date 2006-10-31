@@ -26,7 +26,7 @@ import javax.persistence.Transient;
 /**
  * Rule for proto filter patterns
  *
- * @author <a href="mailto:dmorris@untanglenetworks.com">Dirk Morris</a>
+ * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
  * @version 1.0
  */
 @Entity

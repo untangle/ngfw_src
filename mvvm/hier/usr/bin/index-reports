@@ -22,7 +22,7 @@ function exitOnMvvmError()
 }
 
 if [ "$generate_email_index" != false ]; then
-web_base=http://untanglenetworks.com/mail_blast
+web_base=http://untangle.com/mail_blast
 else
 web_base=.
 fi

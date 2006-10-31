@@ -21,7 +21,7 @@ import com.metavize.mvvm.util.MetaEnv;
  * internally by the mvvm.
  * It is contained within a Session (never in a SessionDesc).
  *
- * @author <a href="mailto:jdi@untanglenetworks.com"></a>
+ * @author <a href="mailto:jdi@untangle.com"></a>
  * @version 1.0
  */
 class RWSessionStats extends SessionStats {

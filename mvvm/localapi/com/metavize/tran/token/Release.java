@@ -17,7 +17,7 @@ import java.nio.ByteBuffer;
  * This token means: drain queued data, send this data out, and
  * release the session.
  *
- * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 public class Release implements Token

@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * XXX make 1.5 enum
  *
- * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  * @see "RFC 959, Section 4"
  */

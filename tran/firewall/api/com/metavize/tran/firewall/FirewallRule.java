@@ -34,7 +34,7 @@ import com.metavize.mvvm.tran.firewall.protocol.ProtocolDBMatcher;
 /**
  * Rule for matching based on IP addresses and subnets.
  *
- * @author <a href="mailto:rbscott@untanglenetworks.com">Robert Scott</a>
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
 @Entity

@@ -25,7 +25,7 @@ import org.hibernate.annotations.Type;
 /**
  * A VPN group of address and clients.
  *
- * @author <a href="mailto:rbscott@untanglenetworks.com">Robert Scott</a>
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
 @Entity

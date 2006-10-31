@@ -33,7 +33,7 @@ import org.hibernate.annotations.IndexColumn;
  * Portal group.  Group name is free, and currently has no
  * relationship to addrress book.
  *
- * @author <a href="mailto:jdi@untanglenetworks.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 @Entity

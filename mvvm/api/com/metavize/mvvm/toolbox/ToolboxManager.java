@@ -22,7 +22,7 @@ import com.metavize.mvvm.tran.DeployException;
  * data concerning a Transform that is not related to any particular
  * transform instance.
  *
- * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 public interface ToolboxManager

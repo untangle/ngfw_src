@@ -21,7 +21,7 @@ import javax.persistence.Table;
 /**
  * Portal Home Settings -- customization of portal home page.
  *
- * @author <a href="mailto:jdi@untanglenetworks.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 @Entity

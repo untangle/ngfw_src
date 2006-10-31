@@ -40,7 +40,7 @@ import org.hibernate.Session;
 /**
  * A base class for transform instances, both normal and casing.
  *
- * @author Aaron Read <amread@untanglenetworks.com>
+ * @author Aaron Read <amread@untangle.com>
  * @version 1.0
  */
 public abstract class TransformBase implements Transform

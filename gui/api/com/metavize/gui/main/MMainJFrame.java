@@ -588,7 +588,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 
     private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
         try{
-            URL newURL = new URL( "http://www.untanglenetworks.com/docs/" + Version.getVersion());
+            URL newURL = new URL( "http://www.untangle.com/docs/" + Version.getVersion());
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
         }
         catch(Exception f){

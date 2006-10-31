@@ -17,7 +17,7 @@ import java.nio.ByteBuffer;
  * A data chunk. This object is only serializable within the same
  * ClassLoader they were serialized in.
  *
- * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 public class Chunk implements Token

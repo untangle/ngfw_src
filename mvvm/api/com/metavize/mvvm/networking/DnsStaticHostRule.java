@@ -23,7 +23,7 @@ import org.hibernate.annotations.Type;
 /**
  * Rule for storing DNS static hosts.
  *
- * @author <a href="mailto:rbscott@untanglenetworks.com">Robert Scott</a>
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
 @Entity

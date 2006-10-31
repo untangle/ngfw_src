@@ -84,11 +84,11 @@ HARDWARE WITH THE INSTALLED CODE AND DOCUMENTATION TO UNTANGLE.
     Source"). Copies of such licenses are available in the Installed
     Software, , the applicable source code files for the portion of
     Installed Code to which they pertain, or from Untangle at
-    www.untanglenetworks.com. Copies of the source code for files
+    www.untangle.com. Copies of the source code for files
     licensed under the General Public License, the Lesser General
     Public License, the Apache License, and the Sun Public License,
     including Untangle modifications to such source code, are
-    available from Untangle at www.untanglenetworks.com. All Open
+    available from Untangle at www.untangle.com. All Open
     Source is licensed under the terms of applicable third party
     licenses.
 

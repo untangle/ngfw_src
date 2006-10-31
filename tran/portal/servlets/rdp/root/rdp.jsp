@@ -100,7 +100,7 @@ if (!( isIndex || isDownload)) isIndex = true;
                 </span>
                 <br/>
                 <br/>
-                <% if ( host.equalsIgnoreCase( "egdemo.untanglenetworks.com" )  && !isDownload ) { %>
+                <% if ( host.equalsIgnoreCase( "egdemo.untangle.com" )  && !isDownload ) { %>
                   <b>Login: egdemo</b>
                   <br/>
                   <b>Password: egdemo</b>

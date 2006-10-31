@@ -21,7 +21,7 @@ import java.util.Date;
  * XXX if this is for the client, it should probably be moved to
  * com.metavize.mvvm.tran.
  *
- * @author <a href="mailto:jdi@untanglenetworks.com"></a>
+ * @author <a href="mailto:jdi@untangle.com"></a>
  * @version 1.0
  */
 public class SessionStats implements Serializable

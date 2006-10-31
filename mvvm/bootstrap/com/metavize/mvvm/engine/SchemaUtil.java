@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 /**
  * Internal utilities for dealing with the database schema.
  *
- * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 public class SchemaUtil

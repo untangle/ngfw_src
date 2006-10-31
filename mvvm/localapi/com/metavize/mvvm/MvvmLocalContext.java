@@ -40,7 +40,7 @@ import com.metavize.mvvm.util.TransactionWork;
  * Provides an interface to get all local MVVM components from an MVVM
  * instance.  This interface is accessible locally.
  *
- * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 public interface MvvmLocalContext

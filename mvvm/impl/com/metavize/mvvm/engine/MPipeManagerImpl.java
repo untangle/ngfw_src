@@ -29,7 +29,7 @@ import com.metavize.mvvm.tapi.event.SessionEventListener;
  *
  * We also add internally used functionality here.
  *
- * @author <a href="mailto:jdi@untanglenetworks.com"></a>
+ * @author <a href="mailto:jdi@untangle.com"></a>
  * @version 1.0
  */
 class MPipeManagerImpl implements MPipeManager

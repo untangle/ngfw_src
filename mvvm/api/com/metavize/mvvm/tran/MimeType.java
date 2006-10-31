@@ -16,7 +16,7 @@ import java.io.Serializable;
 /**
  * An immutable holder for an RFC 1049 Mime type.
  *
- * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 public class MimeType implements Serializable

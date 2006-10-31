@@ -24,7 +24,7 @@ import org.hibernate.annotations.Type;
 /**
  * Rule for matching sessions based on direction and IP addresses, ports
  *
- * @author <a href="mailto:rbscott@untanglenetworks.com">Robert Scott</a>
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
 @MappedSuperclass

@@ -20,7 +20,7 @@ import com.metavize.mvvm.security.Tid;
 /**
  * Manages transform instances in the pipeline.
  *
- * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 public interface TransformManager

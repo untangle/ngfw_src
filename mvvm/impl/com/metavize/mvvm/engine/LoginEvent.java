@@ -26,7 +26,7 @@ import org.hibernate.annotations.Type;
 /**
  * Log event for a login/login-attempt.
  *
- * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @Entity

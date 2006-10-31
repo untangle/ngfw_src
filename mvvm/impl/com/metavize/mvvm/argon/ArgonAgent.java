@@ -25,7 +25,7 @@ import java.net.InetSocketAddress;
  * This used to be half of the class called 'Xenon', the other half is the view as seen
  * by the transform and transform API, which is now MPipe.
  *
- * @author <a href="mailto:jdi@untanglenetworks.com"></a>
+ * @author <a href="mailto:jdi@untangle.com"></a>
  * @version 1.0
  */
 public interface ArgonAgent {

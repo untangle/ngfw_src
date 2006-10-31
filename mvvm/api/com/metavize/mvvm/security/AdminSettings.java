@@ -32,7 +32,7 @@ import org.hibernate.annotations.Cascade;
 /**
  * Mvvm administrator settings.
  *
- * @author <a href="mailto:amread@untanglenetworks.com">Aaron Read</a>
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @Entity

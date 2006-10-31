@@ -21,7 +21,7 @@ import javax.persistence.Table;
 /**
  * Bookmark for portal use.  Points to a target for a given application
  *
- * @author <a href="mailto:jdi@untanglenetworks.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 @Entity

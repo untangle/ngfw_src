@@ -17,7 +17,7 @@ import com.metavize.mvvm.tapi.event.TCPStreamer;
 /**
 * A TCPSession is 
 *
-* @author <a href="mailto:jdi@untanglenetworks.com"></a>
+* @author <a href="mailto:jdi@untangle.com"></a>
 * @version 1.0
 */
 public interface TCPSession extends TCPSessionDesc, IPSession {

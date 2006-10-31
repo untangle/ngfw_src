@@ -48,7 +48,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
         }});
         resetLogin("Please enter your login and password.");
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-            if( Util.getServerCodeBase().getHost().equals("egdemo.untanglenetworks.com") ){
+            if( Util.getServerCodeBase().getHost().equals("egdemo.untangle.com") ){
                 loginJTextField.setText("egdemo");
                 passJPasswordField.setText("egdemo");
             }

@@ -21,7 +21,7 @@ import com.metavize.mvvm.snmp.SnmpManager;
 /**
  * Describe interface <code>AdminManager</code> here.
  *
- * @author <a href="mailto:jdi@untanglenetworks.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 public interface AdminManager

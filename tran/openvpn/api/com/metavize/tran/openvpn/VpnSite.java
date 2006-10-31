@@ -31,7 +31,7 @@ import org.hibernate.annotations.IndexColumn;
  * A site network for a client.  Done this way so the client site
  * networks and the server site networks are in their own tables.
  *
- * @author <a href="mailto:rbscott@untanglenetworks.com">Robert Scott</a>
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
 @Entity

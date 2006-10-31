@@ -23,7 +23,7 @@ import javax.persistence.Entity;
 /**
  * Log event for a IDS statistics.
  *
- * @author <a href="mailto:nchilders@untanglenetworks.com">nchilders</a>
+ * @author <a href="mailto:nchilders@untangle.com">nchilders</a>
  * @stolen from rbscott yo
  * @version 1.0
  */

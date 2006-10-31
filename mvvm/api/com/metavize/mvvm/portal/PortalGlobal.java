@@ -32,7 +32,7 @@ import org.hibernate.annotations.IndexColumn;
 /**
  * Portal global.  Global settings for portal.
  *
- * @author <a href="mailto:jdi@untanglenetworks.com">John Irwin</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 @Entity

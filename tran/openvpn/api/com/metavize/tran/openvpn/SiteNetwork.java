@@ -22,7 +22,7 @@ import org.hibernate.annotations.Type;
 /**
  * A network that is available at a site.
  *
- * @author <a href="mailto:rbscott@untanglenetworks.com">Robert Scott</a>
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
 @MappedSuperclass
