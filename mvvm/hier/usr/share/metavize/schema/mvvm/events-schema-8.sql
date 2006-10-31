@@ -119,6 +119,16 @@ CREATE TABLE events.portal_app_launch_evt (
     time_stamp  timestamp,
     PRIMARY KEY (event_id));
 
+-- com.metavize.mvvm.user.LookupLogEvent
+CREATE TABLE events.mvvm_lookup_evt (
+    event_id    INT8 NOT NULL,
+    lookup_key  INT8 NOT NULL,
+    address     INET,
+    username    TEXT,
+    hostname    TEXT,
+    lookup_time TIMESTAMP,
+    time_stamp  TIMESTAMP,
+    PRIMARY KEY (event_id));
 
 ----------------
 -- constraints |

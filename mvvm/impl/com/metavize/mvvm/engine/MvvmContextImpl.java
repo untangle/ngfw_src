@@ -669,6 +669,14 @@ public class MvvmContextImpl extends MvvmContextBase
         }
         portalManager = null;
 
+        // destroy the phonebook:
+        try {
+            if (localPhoneBookImpl != null)
+                localPhoneBookImpl.destroy();
+        } catch (Exception exn) {
+            logger.warn("could not destroy LocalPhoneBook", exn);
+        }
+
         // XXX destroy needed
         addressBookImpl = null;
 

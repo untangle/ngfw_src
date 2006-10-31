@@ -17,7 +17,7 @@ import java.util.Date;
 import com.metavize.mvvm.tran.HostName;
 import com.metavize.mvvm.user.Username;
 
-public final class UserInfo
+public class UserInfo
 {
     /* this is how long to assume a login is valid for (in millis) */
     static final long DEFAULT_LIFETIME_MILLIS = 3 * 60 * 1000;
@@ -140,6 +140,13 @@ public final class UserInfo
     public void setHostnameState( LookupState newValue )
     {
         this.hostnameState = newValue;
+    }
+    
+    /* has data if the hostname or the username is non-null */
+    public boolean hasData()
+    {
+        return ( this.hostnameState == LookupState.COMPLETED && this.hostname != null ) ||
+            ( this.usernameState == LookupState.COMPLETED && this.username != null );
     }
 
     public String toString()

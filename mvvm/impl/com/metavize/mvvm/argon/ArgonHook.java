@@ -156,10 +156,11 @@ abstract class ArgonHook implements Runnable
             
             if ( logger.isDebugEnabled()) logger.debug( "user information: " + info );
             
-            Username username = info.getUsername();
-            
+            Username username;
+
             /* should cache the lookup key, but no worries for now */
-            if ( username != null && info.getUsernameState().equals( UserInfo.LookupState.COMPLETED )) {
+            if ( info != null && info.getUsernameState().equals( UserInfo.LookupState.COMPLETED ) &&
+                 (( username = info.getUsername()) != null )) {
                 String u = username.toString().trim();
                 if ( u.length() > 0 ) sessionGlobalState.setUser( u );
             }

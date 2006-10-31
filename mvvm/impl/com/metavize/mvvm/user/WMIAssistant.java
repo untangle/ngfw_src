@@ -52,6 +52,18 @@ import static com.metavize.mvvm.user.UserInfo.LookupState;
 
 class WMIAssistant implements Assistant
 {
+    /* This is the maximum time to wait to connect to the server */
+    private static final String PROPERTY_CONNECT_TIMEOUT = "javax.wbem.client.adapter.http.transport.connect-timeout";
+    
+    /* This is the maxiumum amount of time to wait for a read from the server */
+    private static final String PROPERTY_READ_TIMEOUT = "javax.wbem.client.adapter.http.transport.read-timeout";
+
+    /* default connection timeout to connect to server(millis) */
+    private static final int DEFAULT_CONNECT_TIMEOUT = 4000;
+
+    /* default connection timeout to read from the server  */
+    private static final int DEFAULT_READ_TIMEOUT = 4000;
+
     /* this is the property for the success timeout */
     private static final String PROPERTY_LIFETIME = "com.metavize.mvvm.user.wmi.lifetime";
 
@@ -153,6 +165,15 @@ class WMIAssistant implements Assistant
         this.worker.lifetimeMillis = Long.getLong( PROPERTY_LIFETIME, this.worker.lifetimeMillis );
         this.worker.negativeLifetimeMillis = 
             Long.getLong( PROPERTY_LIFETIME, this.worker.negativeLifetimeMillis );
+
+        /* set the system properties for connection and read timeouts on wbem connections */
+        if ( null == System.getProperty( PROPERTY_CONNECT_TIMEOUT )) {
+            System.setProperty( PROPERTY_CONNECT_TIMEOUT, String.valueOf( DEFAULT_CONNECT_TIMEOUT ));
+        }
+        
+        if ( null == System.getProperty( PROPERTY_READ_TIMEOUT )) {
+            System.setProperty( PROPERTY_READ_TIMEOUT, String.valueOf( DEFAULT_READ_TIMEOUT ));
+        }
 
         logger.debug( "lifetime: ", this.worker.lifetimeMillis, 
                       " negative-lifetime: ", this.worker.negativeLifetimeMillis );

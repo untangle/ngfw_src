@@ -26,6 +26,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
+import com.metavize.mvvm.logging.EventLogger;
+import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ValidateException;
 import com.metavize.tran.util.MVLogger;
@@ -42,6 +44,8 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     
     private final MVLogger logger = new MVLogger( getClass());
 
+    private EventLogger<LookupLogEvent> eventLogger;
+
     private long lifetimeMillis = UserInfo.DEFAULT_LIFETIME_MILLIS;
 
     /* This is a list of all of the assistants */
@@ -57,9 +61,11 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
 
     private final WMIAssistant wmiAssistant;
 
+    private boolean isRunning = false;
+
     private LocalPhoneBookImpl()
     {
-        /* have to build the WMI assistant */
+        /* create a WMI assistant */
         this.wmiAssistant = new WMIAssistant();
     }
 
@@ -80,6 +86,9 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     /* Lookup the corresponding user user information object user the address */
     public UserInfo lookup( InetAddress address )
     {
+        /* XXXX returns null */
+        if ( !this.isRunning ) return null;
+
         UserInfo info = addressMap.get( address );
 
         if ( info == null || info.isExpired()) info = executeLookup( address );
@@ -169,6 +178,12 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     
     public void init()
     {
+        /* create an event logger */
+        this.eventLogger = EventLoggerFactory.factory().getEventLogger();
+
+        /* start the event logger */
+        this.eventLogger.start();
+
         /* Check for a property overriding the timeout. */
         this.lifetimeMillis = Long.getLong( PROPERTY_LIFETIME, this.lifetimeMillis );
 
@@ -182,12 +197,29 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
 
         /* Start the wmi asssitant lookup thread */
         this.wmiAssistant.start();
+
+        this.isRunning = true;
     }
 
     public void destroy()
     {
+        this.isRunning = false;
+
+        /* Clear the assistants */
+        clearAssistants();
+
         /* Start the wmi asssitant lookup thread */
         this.wmiAssistant.stop();
+
+        /* log all of the current user info objects */
+        for ( Iterator<UserInfo> iter = addressMap.values().iterator() ; iter.hasNext() ; ) {
+            UserInfo info = iter.next();
+            iter.remove();
+            if ( info.hasData()) this.eventLogger.log( new LookupLogEvent( info ));
+        }
+
+        /* stop the event logger */
+        this.eventLogger.stop();
     }
 
     /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX testing code */
@@ -328,6 +360,12 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
                 
                 logger.debug( "expiring the key: ", info );
                 addressMap.remove( address );
+
+                logger.debug( "logging the event: ", info, "<", info.hasData(), ">" );
+
+                if ( info.hasData() && ( this.eventLogger != null )) {
+                    this.eventLogger.log( new LookupLogEvent( info ));
+                }
                 /* xxxxx log the info */
             } 
 
