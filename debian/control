@@ -1,4 +1,4 @@
-Source: metavize-java
+Source: untangle-java
 Section: net
 Priority: optional
 Maintainer: Dirk Morris <dmorris@untanglenetworks.com>
@@ -1840,9 +1840,16 @@ Description: Untangle Spam Blocker Base
  The Untangle Networks Spam Blocker Base.
 
 Package: metavize-client
+Depends: untangle-client
+Architecture: All
+Description: transitional dummy package
+
+Package: untangle-client
 Architecture: any
 Depends: mvvm
-Conflicts: metavize-gui
+Provides: metavize-client
+Conflicts: metavize-client (<< 4.1)
+Replaces: metavize-client (<< 4.1)
 XB-Display-Name: Untangle Networks Client
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d

@@ -28,7 +28,7 @@ class TransformBuilder
   def TransformBuilder.makePackage(name, suffix, depsImpl = [], depsGui = [],
                                    depsLocalApi = [], baseTransforms = [])
     mvvm = Package['mvvm']
-    gui  = Package['metavize-client']
+    gui  = Package['untangle-client']
     transform = Package["#{name}-#{suffix}"]
     Package['tran'].registerTarget(name, transform)
 
@@ -69,7 +69,7 @@ class TransformBuilder
     baseTransforms.each { |bt| directories << "tran/#{bt}/impl" }
 
     ## The IMPL jar depends on the reports
-    deps << JasperTarget.buildTarget( transform, 
+    deps << JasperTarget.buildTarget( transform,
                                       "#{$BuildEnv.staging}/#{transform.name}-impl/reports",
                                       directories )
 
@@ -118,6 +118,6 @@ class TransformBuilder
   ## Helper to retrieve the standard dependencies for a GUI jar
   def TransformBuilder.baseJarsGui
     Jars::Base + Jars::Gui + Jars::TomcatEmb +
-      [Package['mvvm']['api'], Package['metavize-client']['api']]
+      [Package['mvvm']['api'], Package['untangle-client']['api']]
   end
 end

@@ -27,7 +27,7 @@ task :clean do
 end
 
 task :devel => [Package['install']]
-$InstallTarget = InstallTarget.new(Package['install'], [Package['mvvm'], Package['metavize-client'], Package['tran']], 'install')
+$InstallTarget = InstallTarget.new(Package['install'], [Package['mvvm'], Package['untangle-client'], Package['tran']], 'install')
 
 # See rake-util.rb, we check the arguments for "pkgs"
 task :pkgs => Package['install'] do
