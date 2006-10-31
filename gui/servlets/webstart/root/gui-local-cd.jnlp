@@ -22,7 +22,7 @@ MackageDesc[] mds = mc.toolboxManager().installed();
 %>
 
 <?xml version="1.0" encoding="utf-8"?>
-<!-- JNLP File for Metavize Application -->
+<!-- JNLP File for Untangle Platform -->
 <jnlp spec="1.0+" codebase="<%=cb%>" href="<%=href%>">
   <information>
     <title>Untangle Networks EdgeGuard @ <%=host%>  </title>
@@ -42,8 +42,8 @@ MackageDesc[] mds = mc.toolboxManager().installed();
   <resources>
     <j2se version="1.5+" initial-heap-size="48m" max-heap-size="128m"/>
 
-    <jar href="./metavize-client-api.jar" main="true"/>
-    <jar href="./metavize-client-impl.jar"/>
+    <jar href="./untangle-client-api.jar" main="true"/>
+    <jar href="./untangle-client-impl.jar"/>
     <jar href="./mvvm-api.jar"/>
 
     <jar href="./asm.jar"/>

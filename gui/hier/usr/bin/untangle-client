@@ -7,7 +7,7 @@
 # Untangle Networks, Inc. ("Confidential Information"). You shall
 # not disclose such Confidential Information.
 #
-# $Id: metavize-client,v 1.11 2005/02/24 04:38:35 inieves Exp $
+# $Id: untangle-client,v 1.11 2005/02/24 04:38:35 inieves Exp $
 
 
 JAVA_HOME=${JAVA_HOME:-/opt/java}

@@ -14,16 +14,16 @@ mini = MiniInstallTarget.new(Package['gui-temp'], [Package['metavize-client']], 
 ## Api
 deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [mvvm['api']]
 jt = JarTarget.buildTarget(gui, deps, 'api', 'gui/api')
-$InstallTarget.installJars(jt, gui.getWebappDir('webstart'), nil, true)
-mini.installJars(jt, gui.getWebappDir('webstart'), nil, true)
-
+$InstallTarget.installJars(jt, gui.getWebappDir('webstart'), 'untangle-client-api.jar', true)
+# XXX renaming because the package name is bad
+mini.installJars(jt, gui.getWebappDir('webstart'), 'untangle-client-api.jar', true)
 
 ## Implementation
 deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [mvvm['api'], gui['api']]
 jt = JarTarget.buildTarget(gui, deps, 'impl', 'gui/impl')
-$InstallTarget.installJars(jt, gui.getWebappDir('webstart'), nil, true)
-
-mini.installJars(jt, gui.getWebappDir('webstart'), nil, true)
+$InstallTarget.installJars(jt, gui.getWebappDir('webstart'), 'untangle-client-impl.jar', true)
+# XXX renaming because the package name is bad
+mini.installJars(jt, gui.getWebappDir('webstart'), 'untangle-client-impl.jar', true)
 
 ServletBuilder.new(gui, 'com.metavize.gui.webstart.jsp',
                    'gui/servlets/webstart', [], [], [$BuildEnv.servletcommon],
