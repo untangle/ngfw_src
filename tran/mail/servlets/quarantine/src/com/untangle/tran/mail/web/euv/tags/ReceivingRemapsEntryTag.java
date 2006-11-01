@@ -11,16 +11,15 @@
 package com.untangle.tran.mail.web.euv.tags;
 
 import javax.servlet.jsp.PageContext;
+
 import sun.misc.BASE64Encoder;
-
-
 
 /**
  *
  * Works with ReceivingRemapsListTag
- * 
+ *
  */
-public final class ReceivingRemapsEntryTag 
+public final class ReceivingRemapsEntryTag
   extends SingleValueTag {
 
   private static final String KEY = "metavize.remapping.ReceivingRemapsEntryTag";
@@ -41,7 +40,7 @@ public final class ReceivingRemapsEntryTag
       ret = base64Encode(ret);
     }
     return ret;
-  }  
+  }
 
   public static void setCurrent(PageContext pageContext, String entry) {
     pageContext.setAttribute(KEY, entry, PageContext.PAGE_SCOPE);
@@ -57,5 +56,5 @@ public final class ReceivingRemapsEntryTag
     catch(Exception ex) {
       return null;
     }
-  }   
+  }
 }

@@ -4,12 +4,12 @@ set -e
 
 make_dir()
 {
-    psql -U metavize mvvm >/dev/null <<EOF
+    psql -U untangle mvvm >/dev/null <<EOF
 DELETE FROM ipmaddr_dir;
 INSERT INTO ipmaddr_dir (id, notes) VALUES (nextval('hibernate_sequence'), 'foo');
 EOF
 
-    echo "SELECT id FROM ipmaddr_dir;" | psql -U metavize mvvm | egrep '^ [0-9]+' \
+    echo "SELECT id FROM ipmaddr_dir;" | psql -U untangle mvvm | egrep '^ [0-9]+' \
         | sed -e 's/^ \([0-9]*\)/\1/'
 }
 
@@ -22,7 +22,7 @@ gen_dml ()
     let 'idx = idx + 1'
     echo "index: $idx"
 
-    psql -a -U metavize mvvm <<EOF
+    psql -a -U untangle mvvm <<EOF
 INSERT INTO ipmaddr_rule (rule_id, ipmaddr, name, description, live, alert, log)
        VALUES (nextval('hibernate_sequence'), '$ip', '$name', '$name', true, true, true);
 

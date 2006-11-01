@@ -60,7 +60,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                                        utilToolboxJPanel,policyToolboxJPanel,coreToolboxJPanel,
                                        storeScrollJPanel,Util.getMPipelineJPanel().getJScrollPane());
 	Util.addShutdownable("PolicyStateMachine", policyStateMachine);
-        metavizeJButton.addActionListener(policyStateMachine);
+        untangleJButton.addActionListener(policyStateMachine);
 
         // UPDATE/UPGRADE
         UpdateCheckThread updateCheckThread = new UpdateCheckThread();
@@ -104,7 +104,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 java.awt.GridBagConstraints gridBagConstraints;
 
                 controlsJPanel = new javax.swing.JPanel();
-                metavizeJButton = new javax.swing.JButton();
+                untangleJButton = new javax.swing.JButton();
                 mTabbedPane = new javax.swing.JTabbedPane();
                 storeJPanel = new javax.swing.JPanel();
                 storeJScrollPane = new javax.swing.JScrollPane();
@@ -156,20 +156,20 @@ public class MMainJFrame extends javax.swing.JFrame {
                 controlsJPanel.setMinimumSize(new java.awt.Dimension(200, 427));
                 controlsJPanel.setOpaque(false);
                 controlsJPanel.setPreferredSize(new java.awt.Dimension(200, 410));
-                metavizeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/Logo150x96.png")));
-                metavizeJButton.setBorderPainted(false);
-                metavizeJButton.setContentAreaFilled(false);
-                metavizeJButton.setDoubleBuffered(true);
-                metavizeJButton.setFocusPainted(false);
-                metavizeJButton.setFocusable(false);
-                metavizeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                metavizeJButton.setMargin(new java.awt.Insets(1, 3, 3, 3));
-                metavizeJButton.setMaximumSize(new java.awt.Dimension(150, 96));
-                metavizeJButton.setMinimumSize(new java.awt.Dimension(150, 96));
-                metavizeJButton.setPreferredSize(new java.awt.Dimension(150, 96));
-                metavizeJButton.addActionListener(new java.awt.event.ActionListener() {
+                untangleJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/Logo150x96.png")));
+                untangleJButton.setBorderPainted(false);
+                untangleJButton.setContentAreaFilled(false);
+                untangleJButton.setDoubleBuffered(true);
+                untangleJButton.setFocusPainted(false);
+                untangleJButton.setFocusable(false);
+                untangleJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                untangleJButton.setMargin(new java.awt.Insets(1, 3, 3, 3));
+                untangleJButton.setMaximumSize(new java.awt.Dimension(150, 96));
+                untangleJButton.setMinimumSize(new java.awt.Dimension(150, 96));
+                untangleJButton.setPreferredSize(new java.awt.Dimension(150, 96));
+                untangleJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                metavizeJButtonActionPerformed(evt);
+                                untangleJButtonActionPerformed(evt);
                         }
                 });
 
@@ -177,7 +177,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.insets = new java.awt.Insets(45, 0, 45, 0);
-                controlsJPanel.add(metavizeJButton, gridBagConstraints);
+                controlsJPanel.add(untangleJButton, gridBagConstraints);
 
                 mTabbedPane.setDoubleBuffered(true);
                 mTabbedPane.setFocusable(false);
@@ -611,8 +611,8 @@ public class MMainJFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_emailJButtonActionPerformed
 
-    private void metavizeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_metavizeJButtonActionPerformed
-    }//GEN-LAST:event_metavizeJButtonActionPerformed
+    private void untangleJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_untangleJButtonActionPerformed
+    }//GEN-LAST:event_untangleJButtonActionPerformed
 
 
 
@@ -735,7 +735,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         private javax.swing.JPanel mPipelineJPanel;
         private javax.swing.JTabbedPane mTabbedPane;
         private javax.swing.JButton maintenanceJButton;
-        private javax.swing.JButton metavizeJButton;
+        private javax.swing.JButton untangleJButton;
         private javax.swing.JButton networkJButton;
         private javax.swing.JPanel policyToolboxJPanel;
         private javax.swing.JButton remoteJButton;

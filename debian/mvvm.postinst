@@ -79,7 +79,7 @@ fi
 /bin/chmod 775 ${MVVM_LOGDIR} ${MVVM_CACHEDIR}
 
 update-schema mvvm
-echo "UPDATE transform_persistent_state SET name = 'http-casing' WHERE name = 'http-transform';" | psql -U metavize mvvm
+echo "UPDATE transform_persistent_state SET name = 'http-casing' WHERE name = 'http-transform';" | psql -U untangle mvvm
 
 # start mvvm
 if [ -x "/etc/init.d/mvvm" ]; then

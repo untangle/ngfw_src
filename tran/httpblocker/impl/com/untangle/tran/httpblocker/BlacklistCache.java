@@ -32,7 +32,7 @@ class BlacklistCache
     // XXX use the connection pool
     private static final String DB_URL
         = "jdbc:postgresql://localhost/blacklist";
-    private static final String DB_USER = "metavize";
+    private static final String DB_USER = "untangle";
     private static final String DB_PASSWD = "foo";
 
     private static final BlacklistCache CACHE = new BlacklistCache();

@@ -144,10 +144,10 @@ public class DhcpMap
             BasicConfigurator.configure();
 
             Class.forName( "org.postgresql.Driver" );
-            conn = DriverManager.getConnection( "jdbc:postgresql://localhost/mvvm", "metavize", "foo" );
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost/mvvm", "untangle", "foo");
 
             /* Regenerate address map */
-            INSTANCE.generateAddressMap( conn, Timestamp.valueOf( args[0] ), Timestamp.valueOf( args[1] ));
+            INSTANCE.generateAddressMap(conn, Timestamp.valueOf(args[0]), Timestamp.valueOf(args[1]));
         } catch ( ClassNotFoundException e ) {
             Logger logger = Logger.getLogger(DhcpMap.class);
             logger.warn( "Could not load the Postgres JDBC driver" );
@@ -163,7 +163,7 @@ public class DhcpMap
         }
     }
 
-    public void generateAddressMap( Connection conn, Timestamp start, Timestamp end )
+    public void generateAddressMap(Connection conn, Timestamp start, Timestamp end)
     {
         boolean natTransformInstalled = true;
         // Really all we have to know is, do the tables exist at all?  If they do, everything

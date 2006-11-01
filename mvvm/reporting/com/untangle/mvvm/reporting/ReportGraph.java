@@ -11,6 +11,19 @@
 
 package com.untangle.mvvm.reporting;
 
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.sql.*;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.untangle.mvvm.util.PortServiceNames;
+import net.sf.jasperreports.engine.JRAbstractSvgRenderer;
+import net.sf.jasperreports.engine.JRDefaultScriptlet;
+import net.sf.jasperreports.engine.JRScriptletException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot3D;
@@ -19,23 +32,8 @@ import org.jfree.data.time.Hour;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.util.Rotation;
 import org.jfree.ui.Drawable;
-
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
-import java.sql.*;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Map;
-import java.util.HashMap;
-
-import net.sf.jasperreports.engine.JRAbstractSvgRenderer;
-import net.sf.jasperreports.engine.JRDefaultScriptlet;
-import net.sf.jasperreports.engine.JRScriptletException;
-
-import com.untangle.mvvm.util.PortServiceNames;
+import org.jfree.util.Rotation;
 
 
 public abstract class ReportGraph
@@ -50,7 +48,7 @@ public abstract class ReportGraph
 
     protected static long DAY_INTERVAL = 24*60*60*1000;
     protected static long MINUTE_INTERVAL = 60*1000;
-    
+
     private JRDefaultScriptlet ourScriptlet;
 
     // General ones
@@ -61,7 +59,7 @@ public abstract class ReportGraph
     protected Map<String,Object> extraParams;
 
     protected void setExtraParams(Map<String,Object> extraParams){
-	this.extraParams = new HashMap<String,Object>(extraParams); // Make a copy just in case	
+    this.extraParams = new HashMap<String,Object>(extraParams); // Make a copy just in case
     }
 
 
@@ -76,7 +74,7 @@ public abstract class ReportGraph
         try {
             Class.forName("org.postgresql.Driver");
             con = DriverManager.getConnection("jdbc:postgresql://localhost/mvvm",
-                                                         "metavize", "foo");
+                                              "untangle", "foo");
             JFreeChart chart = doInternal(con, ourScriptlet);
             ourScriptlet.setVariableValue("Traffic", new JCommonDrawableRenderer(chart));
         } catch (SQLException x) {
@@ -93,8 +91,8 @@ public abstract class ReportGraph
     public JFreeChart doInternal(Connection con, JRDefaultScriptlet ourScriptlet) throws JRScriptletException, SQLException,
                                                         ClassNotFoundException
     {
-	this.ourScriptlet = ourScriptlet;
-	initParams();
+    this.ourScriptlet = ourScriptlet;
+    initParams();
         return doChart(con);
     }
 
@@ -109,7 +107,7 @@ public abstract class ReportGraph
         endDate = (Timestamp) gpv(PARAM_REPORT_END_DATE);
         if (endDate == null)
             endDate = new Timestamp(now);
-	type = (Integer) gpv(PARAM_REPORT_TYPE);
+    type = (Integer) gpv(PARAM_REPORT_TYPE);
     }
 
     protected abstract JFreeChart doChart(Connection con) throws JRScriptletException, SQLException;
@@ -134,18 +132,18 @@ public abstract class ReportGraph
      */
     static class JCommonDrawableRenderer extends JRAbstractSvgRenderer
     {
-	private Drawable drawable = null;
+    private Drawable drawable = null;
 
-	public JCommonDrawableRenderer(Drawable drawable) 
-	{
+    public JCommonDrawableRenderer(Drawable drawable)
+    {
             this.drawable = drawable;
-	}
+    }
 
-	public void render(Graphics2D grx, Rectangle2D rectangle) 
-	{
+    public void render(Graphics2D grx, Rectangle2D rectangle)
+    {
             if (drawable != null) {
                 drawable.draw(grx, rectangle);
             }
-	}
+    }
     }
 }

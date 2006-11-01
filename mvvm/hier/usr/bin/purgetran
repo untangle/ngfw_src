@@ -8,8 +8,8 @@ fi
 
 component=$1
 
-PSQL="psql -U metavize --tuples-only --no-align mvvm"
+PSQL="psql -U untangle --tuples-only --no-align mvvm"
 
 script=@MVVM_SCHEMA@/$component/purgetran.sql
 
-psql -U metavize -f $script mvvm
+psql -U untangle -f $script mvvm

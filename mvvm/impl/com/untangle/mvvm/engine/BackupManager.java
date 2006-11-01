@@ -85,7 +85,7 @@ class BackupManager {
         System.getProperty("bunnicula.log.dir") +
         File.separator +
         "restart.log");
-      
+
       //unzip file
       result = SimpleExec.exec(RESTORE_SCRIPT,//cmd
           new String[] {//args
@@ -102,7 +102,7 @@ class BackupManager {
           "-v",
           "2>&1",
           "&"
-        },*/          
+        },*/
           null,//env
           null,//dir
           true,//stdout
@@ -129,7 +129,7 @@ class BackupManager {
         case 1:
         case 2:
         case 3:
-          throw new IllegalArgumentException("File does not seem to be valid metavize backup");
+          throw new IllegalArgumentException("File does not seem to be valid untangle backup");
         case 4:
           throw new IOException("Error in processing restore itself (yet file seems valid)");
         default:
