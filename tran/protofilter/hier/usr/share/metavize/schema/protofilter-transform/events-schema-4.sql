@@ -4,7 +4,7 @@
 -- events |
 -----------
 
--- com.metavize.tran.protofilter.ProtoFilterLogEvent
+-- com.untangle.tran.protofilter.ProtoFilterLogEvent
 CREATE TABLE events.tr_protofilter_evt (
     event_id int8 NOT NULL,
     pl_endp_id int8,

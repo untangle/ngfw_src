@@ -4,7 +4,7 @@
 -- events |
 -----------
 
--- com.metavize.tran.spyware.SpywareAccessEvent
+-- com.untangle.tran.spyware.SpywareAccessEvent
 CREATE TABLE events.tr_spyware_evt_access (
     event_id int8 NOT NULL,
     pl_endp_id int8,
@@ -14,7 +14,7 @@ CREATE TABLE events.tr_spyware_evt_access (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.tran.spyware.SpywareActiveXEvent
+-- com.untangle.tran.spyware.SpywareActiveXEvent
 CREATE TABLE events.tr_spyware_evt_activex (
     event_id int8 NOT NULL,
     request_id int8,
@@ -22,7 +22,7 @@ CREATE TABLE events.tr_spyware_evt_activex (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.tran.spyware.SpywareCookieEvent
+-- com.untangle.tran.spyware.SpywareCookieEvent
 CREATE TABLE events.tr_spyware_evt_cookie (
     event_id int8 NOT NULL,
     request_id int8,
@@ -31,14 +31,14 @@ CREATE TABLE events.tr_spyware_evt_cookie (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.tran.spyware.SpywareBlacklistEvent
+-- com.untangle.tran.spyware.SpywareBlacklistEvent
 CREATE TABLE events.tr_spyware_evt_blacklist (
     event_id int8 NOT NULL,
     request_id int8,
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.tran.spyware.SpywareStatisticEvent
+-- com.untangle.tran.spyware.SpywareStatisticEvent
 CREATE TABLE events.tr_spyware_statistic_evt (
     event_id int8 NOT NULL,
     pass int4,

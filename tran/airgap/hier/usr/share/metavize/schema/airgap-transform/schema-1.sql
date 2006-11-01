@@ -4,7 +4,7 @@
 -- settings |
 -------------
 
--- com.metavize.tran.airgap.AirgapSettings
+-- com.untangle.tran.airgap.AirgapSettings
 CREATE TABLE settings.tr_airgap_settings (
     id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,

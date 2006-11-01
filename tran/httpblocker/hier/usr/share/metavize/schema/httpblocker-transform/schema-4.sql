@@ -4,21 +4,21 @@
 -- settings |
 -------------
 
--- com.metavize.tran.httpblocker.BlockTemplate
+-- com.untangle.tran.httpblocker.BlockTemplate
 CREATE TABLE settings.tr_httpblk_template (
     message_id int8 NOT NULL,
     HEADER varchar(255),
     CONTACT varchar(255),
     PRIMARY KEY (message_id));
 
--- com.metavize.tran.httpblocker.HttpBlockerSettings.blockedUrls
+-- com.untangle.tran.httpblocker.HttpBlockerSettings.blockedUrls
 CREATE TABLE settings.tr_httpblk_passed_urls (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.metavize.tran.httpblocker.HttpBlockerSettings
+-- com.untangle.tran.httpblocker.HttpBlockerSettings
 CREATE TABLE settings.tr_httpblk_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
@@ -26,35 +26,35 @@ CREATE TABLE settings.tr_httpblk_settings (
     block_all_ip_hosts bool NOT NULL,
     PRIMARY KEY (settings_id));
 
--- com.metavize.tran.httpblocker.HttpBlockerSettings.blockedExtensions
+-- com.untangle.tran.httpblocker.HttpBlockerSettings.blockedExtensions
 CREATE TABLE settings.tr_httpblk_extensions (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.metavize.tran.httpblocker.HttpBlockerSettings.blockedMimeTypes
+-- com.untangle.tran.httpblocker.HttpBlockerSettings.blockedMimeTypes
 CREATE TABLE settings.tr_httpblk_mime_types (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.metavize.tran.httpblocker.HttpBlockerSettings.passedClients
+-- com.untangle.tran.httpblocker.HttpBlockerSettings.passedClients
 CREATE TABLE settings.tr_httpblk_passed_clients (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.metavize.tran.httpblocker.HttpBlockerSettings.blockedUrls
+-- com.untangle.tran.httpblocker.HttpBlockerSettings.blockedUrls
 CREATE TABLE settings.tr_httpblk_blocked_urls (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.metavize.tran.httpblocker.BlacklistCategory
+-- com.untangle.tran.httpblocker.BlacklistCategory
 CREATE TABLE settings.tr_httpblk_blcat (
     category_id int8 NOT NULL,
     name varchar(255),
@@ -71,7 +71,7 @@ CREATE TABLE settings.tr_httpblk_blcat (
 -- events |
 -----------
 
--- com.metavize.tran.httpblocker.HttpBlockerEvent
+-- com.untangle.tran.httpblocker.HttpBlockerEvent
 CREATE TABLE events.tr_httpblk_evt_blk (
     event_id int8 NOT NULL,
     request_id int8,

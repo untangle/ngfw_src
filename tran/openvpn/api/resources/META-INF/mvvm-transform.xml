@@ -3,7 +3,7 @@
 <mvvm-transform>
   <transform-desc name="openvpn-transform"
                   display-name="OpenVPN"
-                  classname="com.metavize.tran.openvpn.VpnTransformImpl"
-                  gui-classname="com.metavize.tran.openvpn.gui.MTransformJPanel"
+                  classname="com.untangle.tran.openvpn.VpnTransformImpl"
+                  gui-classname="com.untangle.tran.openvpn.gui.MTransformJPanel"
                   single-instance="true"/>
 </mvvm-transform>

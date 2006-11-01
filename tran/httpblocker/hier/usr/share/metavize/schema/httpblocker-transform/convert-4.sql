@@ -4,7 +4,7 @@
 -- move old tables to new schemas |
 -----------------------------------
 
--- com.metavize.tran.httpblocker.BlockTemplate
+-- com.untangle.tran.httpblocker.BlockTemplate
 CREATE TABLE settings.tr_httpblk_template
     AS SELECT * FROM public.tr_httpblk_template;
 
@@ -13,7 +13,7 @@ ALTER TABLE settings.tr_httpblk_template
 ALTER TABLE settings.tr_httpblk_template
     ALTER COLUMN message_id SET NOT NULL;
 
--- com.metavize.tran.httpblocker.HttpBlockerSettings.blockedUrls
+-- com.untangle.tran.httpblocker.HttpBlockerSettings.blockedUrls
 CREATE TABLE settings.tr_httpblk_passed_urls
     AS SELECT * from public.tr_httpblk_passed_urls;
 
@@ -27,7 +27,7 @@ ALTER TABLE settings.tr_httpblk_passed_urls
 ALTER TABLE settings.tr_httpblk_passed_urls
     ALTER COLUMN position SET NOT NULL;
 
--- com.metavize.tran.httpblocker.HttpBlockerSettings
+-- com.untangle.tran.httpblocker.HttpBlockerSettings
 CREATE TABLE settings.tr_httpblk_settings
     AS SELECT * FROM public.tr_httpblk_settings;
 
@@ -44,7 +44,7 @@ ALTER TABLE settings.tr_httpblk_settings
 ALTER TABLE settings.tr_httpblk_settings
     ALTER COLUMN block_all_ip_hosts SET NOT NULL;
 
--- com.metavize.tran.httpblocker.HttpBlockerSettings.blockedExtensions
+-- com.untangle.tran.httpblocker.HttpBlockerSettings.blockedExtensions
 CREATE TABLE settings.tr_httpblk_extensions
     AS SELECT * FROM public.tr_httpblk_extensions;
 
@@ -58,7 +58,7 @@ ALTER TABLE settings.tr_httpblk_extensions
 ALTER TABLE settings.tr_httpblk_extensions
     ALTER COLUMN position SET NOT NULL;
 
--- com.metavize.tran.httpblocker.HttpBlockerSettings.blockedMimeTypes
+-- com.untangle.tran.httpblocker.HttpBlockerSettings.blockedMimeTypes
 CREATE TABLE settings.tr_httpblk_mime_types
     AS SELECT * FROM public.tr_httpblk_mime_types;
 
@@ -72,7 +72,7 @@ ALTER TABLE settings.tr_httpblk_mime_types
 ALTER TABLE settings.tr_httpblk_mime_types
     ALTER COLUMN position SET NOT NULL;
 
--- com.metavize.tran.httpblocker.HttpBlockerSettings.passedClients
+-- com.untangle.tran.httpblocker.HttpBlockerSettings.passedClients
 CREATE TABLE settings.tr_httpblk_passed_clients
     AS SELECT * FROM public.tr_httpblk_passed_clients;
 
@@ -86,7 +86,7 @@ ALTER TABLE settings.tr_httpblk_passed_clients
 ALTER TABLE settings.tr_httpblk_passed_clients
     ALTER COLUMN position SET NOT NULL;
 
--- com.metavize.tran.httpblocker.HttpBlockerSettings.blockedUrls
+-- com.untangle.tran.httpblocker.HttpBlockerSettings.blockedUrls
 CREATE TABLE settings.tr_httpblk_blocked_urls
     AS SELECT * FROM public.tr_httpblk_blocked_urls;
 
@@ -100,7 +100,7 @@ ALTER TABLE settings.tr_httpblk_blocked_urls
 ALTER TABLE settings.tr_httpblk_blocked_urls
     ALTER COLUMN position SET NOT NULL;
 
--- com.metavize.tran.httpblocker.BlacklistCategory
+-- com.untangle.tran.httpblocker.BlacklistCategory
 CREATE TABLE settings.tr_httpblk_blcat
     AS SELECT * FROM public.tr_httpblk_blcat;
 
@@ -109,7 +109,7 @@ ALTER TABLE settings.tr_httpblk_blcat
 ALTER TABLE settings.tr_httpblk_blcat
     ALTER COLUMN category_id SET NOT NULL;
 
--- com.metavize.tran.httpblocker.HttpBlockerEvent
+-- com.untangle.tran.httpblocker.HttpBlockerEvent
 
 CREATE TABLE events.tr_httpblk_evt_blk (
     event_id,

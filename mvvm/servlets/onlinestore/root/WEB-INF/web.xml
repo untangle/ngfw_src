@@ -22,7 +22,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>Proxy</servlet-name>
     <servlet-class>
-      com.metavize.mvvm.servlet.store.ProxyServlet
+      com.untangle.mvvm.servlet.store.ProxyServlet
     </servlet-class>
   </servlet>
 
@@ -34,7 +34,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>InstallRequest</servlet-name>
     <servlet-class>
-      com.metavize.mvvm.servlet.store.InstallRequestServlet
+      com.untangle.mvvm.servlet.store.InstallRequestServlet
     </servlet-class>
   </servlet>
 
@@ -46,7 +46,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>InstalledAppliances</servlet-name>
     <servlet-class>
-      com.metavize.mvvm.servlet.store.InstalledAppliances
+      com.untangle.mvvm.servlet.store.InstalledAppliances
     </servlet-class>
   </servlet>
 

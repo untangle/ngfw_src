@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.toolbox.*" %>
+<%@ page language="java" import="com.untangle.mvvm.*, com.untangle.mvvm.toolbox.*" %>
 
 <%
 response.addHeader("content-type", "application/x-java-jnlp-file");
@@ -66,6 +66,6 @@ MackageDesc[] mds = mvvm.toolboxManager().installed();
     %>
 
   </resources>
-  <application-desc main-class="com.metavize.gui.util.MLauncher">
+  <application-desc main-class="com.untangle.gui.util.MLauncher">
   </application-desc>
 </jnlp>

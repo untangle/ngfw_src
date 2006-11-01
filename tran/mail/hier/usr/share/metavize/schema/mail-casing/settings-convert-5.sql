@@ -5,7 +5,7 @@ ALTER TABLE settings.tr_mail_quarantine_settings
 
 
 
--- com.metavize.mvvm.tran.EmailAddressRule
+-- com.untangle.mvvm.tran.EmailAddressRule
 CREATE TABLE settings.email_addr_rule (
     rule_id int8 NOT NULL,
     address text,
@@ -19,7 +19,7 @@ CREATE TABLE settings.email_addr_rule (
     settings_id int8,     
     PRIMARY KEY (rule_id));    
 
--- com.metavize.tran.mail.papi.EmailAddressPairRule
+-- com.untangle.tran.mail.papi.EmailAddressPairRule
 CREATE TABLE settings.email_addr_pair_rule (
     rule_id int8 NOT NULL,
     address1 text,

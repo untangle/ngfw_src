@@ -20,4 +20,4 @@ done
 # for m in @MVVM_TOOLBOX@/*.mar; do CLASSPATH="$CLASSPATH:$m"; done
 export CLASSPATH
 
-exec ${JAVA_HOME}/bin/java com.metavize.tran.reporting.summary.SummaryApp $@
+exec ${JAVA_HOME}/bin/java com.untangle.tran.reporting.summary.SummaryApp $@

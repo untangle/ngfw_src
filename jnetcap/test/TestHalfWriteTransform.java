@@ -12,8 +12,8 @@
 
 import java.util.LinkedList;
 
-import com.metavize.jvector.*;
-import com.metavize.jnetcap.*;
+import com.untangle.jvector.*;
+import com.untangle.jnetcap.*;
     
 public class TestHalfWriteTransform implements SocketQueueListener
 {

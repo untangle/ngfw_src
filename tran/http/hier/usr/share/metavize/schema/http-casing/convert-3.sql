@@ -4,7 +4,7 @@
 -- move old tables to new schemas |
 -----------------------------------
 
--- com.metavize.tran.http.HttpResponseEvent
+-- com.untangle.tran.http.HttpResponseEvent
 CREATE TABLE events.tr_http_evt_resp AS SELECT * FROM public.tr_http_evt_resp;
 
 ALTER TABLE events.tr_http_evt_resp
@@ -12,7 +12,7 @@ ALTER TABLE events.tr_http_evt_resp
 ALTER TABLE events.tr_http_evt_resp
     ALTER COLUMN event_id SET NOT NULL;
 
--- com.metavize.tran.http.HttpRequestEvent
+-- com.untangle.tran.http.HttpRequestEvent
 CREATE TABLE events.tr_http_evt_req AS SELECT * FROM public.tr_http_evt_req;
 
 ALTER TABLE events.tr_http_evt_req
@@ -20,7 +20,7 @@ ALTER TABLE events.tr_http_evt_req
 ALTER TABLE events.tr_http_evt_req
     ALTER COLUMN event_id SET NOT NULL;
 
--- com.metavize.tran.http.RequestLine
+-- com.untangle.tran.http.RequestLine
 CREATE TABLE events.tr_http_req_line AS SELECT * FROM public.tr_http_req_line;
 
 ALTER TABLE events.tr_http_req_line
@@ -40,7 +40,7 @@ DROP TABLE public.tr_http_req_line;
 -- new tables |
 ---------------
 
--- com.metavize.tran.http.HttpSettings
+-- com.untangle.tran.http.HttpSettings
 CREATE TABLE settings.tr_http_settings (
     settings_id,
     tid,

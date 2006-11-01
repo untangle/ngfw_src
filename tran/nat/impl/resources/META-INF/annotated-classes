@@ -1,4 +1,4 @@
-com.metavize.tran.nat.DhcpAbsoluteEvent
-com.metavize.tran.nat.DhcpAbsoluteLease
-com.metavize.tran.nat.NatStatisticEvent
-com.metavize.tran.nat.DhcpLeaseEvent
+com.untangle.tran.nat.DhcpAbsoluteEvent
+com.untangle.tran.nat.DhcpAbsoluteLease
+com.untangle.tran.nat.NatStatisticEvent
+com.untangle.tran.nat.DhcpLeaseEvent

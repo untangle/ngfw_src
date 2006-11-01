@@ -9,7 +9,7 @@
  * $Id$
  */
 
-import com.metavize.jvector.*;
+import com.untangle.jvector.*;
 import java.util.LinkedList;
 
 public class Test2

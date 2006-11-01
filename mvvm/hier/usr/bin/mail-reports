@@ -15,4 +15,4 @@ export CLASSPATH
 $JAVA_HOME/bin/java \
     -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
     -Dbunnicula.home=@MVVM_HOME@ \
-    com.metavize.mvvm.engine.MailSenderImpl @MVVM_LIB@/mvvm-impl.jar "$@"
+    com.untangle.mvvm.engine.MailSenderImpl @MVVM_LIB@/mvvm-impl.jar "$@"

@@ -3,6 +3,6 @@
 <mvvm-transform>
   <transform-desc name="reporting-transform"
                   display-name="EdgeReport"
-                  classname="com.metavize.tran.reporting.ReportingTransformImpl"
-                  gui-classname="com.metavize.tran.reporting.gui.MTransformJPanel"/>
+                  classname="com.untangle.tran.reporting.ReportingTransformImpl"
+                  gui-classname="com.untangle.tran.reporting.gui.MTransformJPanel"/>
 </mvvm-transform>

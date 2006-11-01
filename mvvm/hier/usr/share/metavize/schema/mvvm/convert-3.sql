@@ -18,7 +18,7 @@ CREATE SEQUENCE settings.hibernate_sequence;
 SELECT setval('settings.hibernate_sequence', nextval('public.hibernate_sequence'));
 DROP SEQUENCE public.hibernate_sequence;
 
--- com.metavize.mvvm.security.AdminSettings
+-- com.untangle.mvvm.security.AdminSettings
 CREATE TABLE settings.admin_settings AS SELECT * FROM public.admin_settings;
 
 ALTER TABLE settings.admin_settings
@@ -26,7 +26,7 @@ ALTER TABLE settings.admin_settings
 ALTER TABLE settings.admin_settings
     ALTER COLUMN admin_settings_id SET NOT NULL;
 
--- com.metavize.mvvm.security.User
+-- com.untangle.mvvm.security.User
 CREATE TABLE settings.mvvm_user AS SELECT * FROM public.mvvm_user;
 
 ALTER TABLE settings.mvvm_user
@@ -40,7 +40,7 @@ ALTER TABLE settings.mvvm_user
 ALTER TABLE settings.mvvm_user
     ALTER COLUMN name SET NOT NULL;
 
--- com.metavize.mvvm.UpgradeSettings
+-- com.untangle.mvvm.UpgradeSettings
 CREATE TABLE settings.upgrade_settings AS SELECT * public.upgrade_settings;
 
 ALTER TABLE settings.upgrade_settings
@@ -52,7 +52,7 @@ ALTER TABLE settings.upgrade_settings
 ALTER TABLE settings.upgrade_settings
     ALTER COLUMN period SET NOT NULL;
 
--- com.metavize.mvvm.MailSettings
+-- com.untangle.mvvm.MailSettings
 CREATE TABLE settings.mail_settings AS SELECT * FROM public.mail_settings;
 
 ALTER TABLE settings.mail_settings
@@ -60,7 +60,7 @@ ALTER TABLE settings.mail_settings
 ALTER TABLE settings.mail_settings
     ALTER COLUMN mail_settings_id SET NOT NULL;
 
--- com.metavize.mvvm.engine.TransformPersistentState.args
+-- com.untangle.mvvm.engine.TransformPersistentState.args
 CREATE TABLE settings.transform_args AS SELECT * FROM public.transform_args;
 
 ALTER TABLE settings.transform_args
@@ -72,7 +72,7 @@ ALTER TABLE settings.transform_args
 ALTER TABLE settings.transform_args
     ALTER COLUMN position SET NOT NULL;
 
--- com.metavize.mvvm.engine.TransformManagerState
+-- com.untangle.mvvm.engine.TransformManagerState
 CREATE TABLE settings.transform_manager_state
     AS SELECT * FROM public.transform_manager_state;
 
@@ -81,7 +81,7 @@ ALTER TABLE settings.transform_manager_state
 ALTER TABLE settings.transform_manager_state
     ALTER COLUMN id SET NOT NULL;
 
--- com.metavize.mvvm.tran.UriRule
+-- com.untangle.mvvm.tran.UriRule
 CREATE TABLE settings.uri_rule AS SELECT * FROM public.uri_rule;
 
 ALTER TABLE settings.uri_rule
@@ -89,7 +89,7 @@ ALTER TABLE settings.uri_rule
 ALTER TABLE settings.uri_rule
     ALTER COLUMN rule_id SET NOT NULL;
 
--- com.metavize.mvvm.Period
+-- com.untangle.mvvm.Period
 CREATE TABLE settings.period AS SELECT * FROM public.period;
 
 ALTER TABLE settings.period
@@ -101,7 +101,7 @@ ALTER TABLE settings.period
 ALTER TABLE settings.period
     ALTER COLUMN minute SET NOT NULL;
 
--- com.metavize.mvvm.tran.TransformPreferences
+-- com.untangle.mvvm.tran.TransformPreferences
 CREATE TABLE settings.transform_preferences
     AS SELECT * FROM public.transform_preferences;
 
@@ -110,7 +110,7 @@ ALTER TABLE settings.transform_preferences
 ALTER TABLE settings.transform_preferences
     ALTER COLUMN id SET NOT NULL;
 
--- com.metavize.mvvm.tran.StringRule
+-- com.untangle.mvvm.tran.StringRule
 CREATE TABLE settings.string_rule AS SELECT * FROM public.string_rule;
 
 ALTER TABLE settings.string_rule
@@ -118,7 +118,7 @@ ALTER TABLE settings.string_rule
 ALTER TABLE settings.string_rule
     ALTER COLUMN rule_id SET NOT NULL;
 
--- com.metavize.mvvm.security.Tid
+-- com.untangle.mvvm.security.Tid
 CREATE TABLE settings.tid AS SELECT * FROM public.tid;
 
 ALTER TABLE settings.tid
@@ -126,7 +126,7 @@ ALTER TABLE settings.tid
 ALTER TABLE settings.tid
     ALTER COLUMN id SET NOT NULL;
 
--- com.metavize.mvvm.tran.Rule
+-- com.untangle.mvvm.tran.Rule
 CREATE TABLE settings.rule AS SELECT * FROM public.rule;
 
 ALTER TABLE settings.rule
@@ -134,7 +134,7 @@ ALTER TABLE settings.rule
 ALTER TABLE settings.rule
     ALTER COLUMN rule_id SET NOT NULL;
 
--- com.metavize.mvvm.engine.TransformPersistentState
+-- com.untangle.mvvm.engine.TransformPersistentState
 CREATE TABLE settings.transform_persistent_state
     AS SELECT * FROM public.transform_persistent_state;
 
@@ -149,7 +149,7 @@ ALTER TABLE settings.transform_persistent_state
 ALTER TABLE settings.transform_persistent_state
     ALTER COLUMN target_state SET NOT NULL;
 
--- com.metavize.mvvm.tran.IPMaddrDirectory
+-- com.untangle.mvvm.tran.IPMaddrDirectory
 CREATE TABLE settings.ipmaddr_dir AS SELECT * FROM public.ipmaddr_dir;
 
 ALTER TABLE settings.ipmaddr_dir
@@ -157,7 +157,7 @@ ALTER TABLE settings.ipmaddr_dir
 ALTER TABLE settings.ipmaddr_dir
     ALTER COLUMN id SET NOT NULL;
 
--- com.metavize.mvvm.tran.StringRule
+-- com.untangle.mvvm.tran.StringRule
 CREATE TABLE settings.mimetype_rule AS SELECT * FROM public.mimetype_rule;
 
 ALTER TABLE settings.mimetype_rule
@@ -165,7 +165,7 @@ ALTER TABLE settings.mimetype_rule
 ALTER TABLE settings.mimetype_rule
     ALTER COLUMN rule_id SET NOT NULL;
 
--- com.metavize.mvvm.tran.IPMaddrDirectory.entries
+-- com.untangle.mvvm.tran.IPMaddrDirectory.entries
 CREATE TABLE settings.ipmaddr_dir_entries
     AS SELECT * FROM public.ipmaddr_dir_entries;
 
@@ -178,7 +178,7 @@ ALTER TABLE settings.ipmaddr_dir_entries
 ALTER TABLE settings.ipmaddr_dir_entries
     ALTER COLUMN position SET NOT NULL;
 
--- com.metavize.mvvm.tran.IPMaddrRule
+-- com.untangle.mvvm.tran.IPMaddrRule
 CREATE TABLE settings.ipmaddr_rule AS SELECT * FROM public.ipmaddr_rule;
 
 ALTER TABLE settings.ipmaddr_rule
@@ -186,7 +186,7 @@ ALTER TABLE settings.ipmaddr_rule
 ALTER TABLE settings.ipmaddr_rule
     ALTER COLUMN rule_id SET NOT NULL;
 
--- com.metavize.mvvm.engine.LoginEvent
+-- com.untangle.mvvm.engine.LoginEvent
 CREATE TABLE events.mvvm_login_evt AS SELECT * FROM public.mvvm_login_evt;
 
 ALTER TABLE events.mvvm_login_evt
@@ -324,7 +324,7 @@ DROP TABLE public.mvvm_login_evt;
 ---------------
 
 -- shield rejection events
--- com.metavize.mvvm.shield.ShieldRejectionEvent
+-- com.untangle.mvvm.shield.ShieldRejectionEvent
 CREATE TABLE events.shield_rejection_evt (
     event_id int8 NOT NULL,
     client_addr inet,
@@ -339,7 +339,7 @@ CREATE TABLE events.shield_rejection_evt (
 
 -- shield statistics
 
--- com.metavize.mvvm.shield.ShieldStatisticEvent
+-- com.untangle.mvvm.shield.ShieldStatisticEvent
 CREATE TABLE events.shield_statistic_evt (
     event_id int8 NOT NULL,
     accepted int4,

@@ -1,0 +1,30 @@
+/*
+ * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+package com.untangle.tran.mail.web.euv.tags;
+
+import com.untangle.tran.mail.papi.quarantine.InboxRecord;
+
+
+/**
+ * Works with InboxIndexTag (i.e. must be within one).
+ * 
+ */
+public final class InboxRecordHasAttachmentTag
+  extends IfElseTag {
+
+  @Override
+  protected boolean isConditionTrue() {
+    InboxRecord record = InboxRecordTag.getCurrent(pageContext);
+    return record==null?false:record.getMailSummary().getAttachmentCount() > 0;
+  }
+}  
+
+

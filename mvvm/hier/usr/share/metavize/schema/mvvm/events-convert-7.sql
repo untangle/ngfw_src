@@ -1,6 +1,6 @@
 -- events conversion for release-4.0
 
--- com.metavize.mvvm.portal.PortalLoginEvent
+-- com.untangle.mvvm.portal.PortalLoginEvent
 CREATE TABLE events.portal_login_evt (
     event_id    int8 NOT NULL,
     client_addr inet,
@@ -10,7 +10,7 @@ CREATE TABLE events.portal_login_evt (
     time_stamp  timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.portal.PortalLogoutEvent
+-- com.untangle.mvvm.portal.PortalLogoutEvent
 CREATE TABLE events.portal_logout_evt (
     event_id    int8 NOT NULL,
     client_addr inet,
@@ -19,7 +19,7 @@ CREATE TABLE events.portal_logout_evt (
     time_stamp  timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.portal.PortalAppLaunchEvent
+-- com.untangle.mvvm.portal.PortalAppLaunchEvent
 CREATE TABLE events.portal_app_launch_evt (
     event_id    int8 NOT NULL,
     client_addr inet,

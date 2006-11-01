@@ -33,7 +33,7 @@
 # **************************************************
 #
 # As this file is maintained, note that its behavior is bound
-# to com.metavize.tran.boxbackup.BoxBackupImpl.  Any changes
+# to com.untangle.tran.boxbackup.BoxBackupImpl.  Any changes
 # this this script should be reflected in that Java code
 #================================================================
 

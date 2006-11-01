@@ -14,8 +14,8 @@ $Id$
 <mvvm-transform>
   <transform-desc name="spamassassin-transform"
                   display-name="SpamGuard"
-                  classname="com.metavize.tran.spamassassin.SpamAssassinTransform"
-                  gui-classname="com.metavize.tran.spamassassin.gui.MTransformJPanel"
+                  classname="com.untangle.tran.spamassassin.SpamAssassinTransform"
+                  gui-classname="com.untangle.tran.spamassassin.gui.MTransformJPanel"
                   transform-base="spam-base"/>
   <parent>mail-casing</parent>
 </mvvm-transform>

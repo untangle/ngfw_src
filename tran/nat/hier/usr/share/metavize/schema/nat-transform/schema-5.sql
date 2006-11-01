@@ -4,7 +4,7 @@
 -- settings |
 -------------
 
--- com.metavize.tran.nat.DhcpLeaseRule
+-- com.untangle.tran.nat.DhcpLeaseRule
 CREATE TABLE settings.dhcp_lease_rule (
     rule_id int8 NOT NULL,
     mac_address varchar(255),
@@ -19,14 +19,14 @@ CREATE TABLE settings.dhcp_lease_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.metavize.tran.nat.NatSettings.dhcpLeaseList
+-- com.untangle.tran.nat.NatSettings.dhcpLeaseList
 CREATE TABLE settings.tr_dhcp_leases (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.metavize.tran.nat.RedirectRule
+-- com.untangle.tran.nat.RedirectRule
 CREATE TABLE settings.redirect_rule (
     rule_id int8 NOT NULL,
     is_dst_redirect bool,
@@ -47,7 +47,7 @@ CREATE TABLE settings.redirect_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.metavize.tran.nat.NatSettings
+-- com.untangle.tran.nat.NatSettings
 CREATE TABLE settings.tr_nat_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
@@ -65,21 +65,21 @@ CREATE TABLE settings.tr_nat_settings (
     dmz_logging_enabled bool,
     PRIMARY KEY (settings_id));
 
--- com.metavize.tran.nat.NatSettings.redirectList
+-- com.untangle.tran.nat.NatSettings.redirectList
 CREATE TABLE settings.tr_nat_redirects (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.metavize.tran.nat.NatSettings.dnsStaticHostList
+-- com.untangle.tran.nat.NatSettings.dnsStaticHostList
 CREATE TABLE settings.tr_nat_dns_hosts (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.metavize.tran.nat.DnsStaticHostRule
+-- com.untangle.tran.nat.DnsStaticHostRule
 CREATE TABLE settings.dns_static_host_rule (
     rule_id int8 NOT NULL,
     hostname_list varchar(255),
@@ -96,7 +96,7 @@ CREATE TABLE settings.dns_static_host_rule (
 -- events |
 -----------
 
--- com.metavize.tran.nat.DhcpLeaseEvent
+-- com.untangle.tran.nat.DhcpLeaseEvent
 CREATE TABLE events.tr_nat_evt_dhcp (
     event_id int8 NOT NULL,
     mac varchar(255),
@@ -107,7 +107,7 @@ CREATE TABLE events.tr_nat_evt_dhcp (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.tran.nat.DhcpAbsoluteLease
+-- com.untangle.tran.nat.DhcpAbsoluteLease
 CREATE TABLE events.dhcp_abs_lease (
     event_id int8 NOT NULL,
     mac varchar(255),
@@ -116,20 +116,20 @@ CREATE TABLE events.dhcp_abs_lease (
     event_type int4,
     PRIMARY KEY (event_id));
 
--- com.metavize.tran.nat.DhcpAbsoluteEvent
+-- com.untangle.tran.nat.DhcpAbsoluteEvent
 CREATE TABLE events.tr_nat_evt_dhcp_abs (
     event_id int8 NOT NULL,
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.tran.nat.DhcpAbsoluteEvent.absoluteLeaseList
+-- com.untangle.tran.nat.DhcpAbsoluteEvent.absoluteLeaseList
 CREATE TABLE events.tr_nat_evt_dhcp_abs_leases (
     event_id int8 NOT NULL,
     lease_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (event_id, position));
 
--- com.metavize.tran.nat.RedirectEvent
+-- com.untangle.tran.nat.RedirectEvent
 CREATE TABLE events.tr_nat_redirect_evt (
     event_id int8 NOT NULL,
     session_id int4,
@@ -139,7 +139,7 @@ CREATE TABLE events.tr_nat_redirect_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.tran.nat.NatStatisticEvent
+-- com.untangle.tran.nat.NatStatisticEvent
 CREATE TABLE events.tr_nat_statistic_evt (
     event_id int8 NOT NULL,
     nat_sessions int4,

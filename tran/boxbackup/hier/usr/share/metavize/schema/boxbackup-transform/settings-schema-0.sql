@@ -4,7 +4,7 @@
 -- settings |
 -------------
 
--- com.metavize.tran.boxbackup.BoxBackupSettings
+-- com.untangle.tran.boxbackup.BoxBackupSettings
 CREATE TABLE settings.tr_boxbackup_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,

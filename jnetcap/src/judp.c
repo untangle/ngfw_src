@@ -76,7 +76,7 @@ static netcap_endpoint_t* _get_pkt_endpoint( netcap_pkt_t* pkt, int req_id )
 static int _icmp_get_info( netcap_pkt_t* pkt, int is_type );
 
 /*
- * Class:     com_metavize_jnetcap_IPTraffic
+ * Class:     com_untangle_jnetcap_IPTraffic
  * Method:    createIPTraffic
  * Signature: (JJJJ)I
  */
@@ -109,7 +109,7 @@ JNIEXPORT jlong JNICALL JF_IPTraffic( createIPTraffic )
 
 
 /*
- * Class:     com_metavize_jnetcap_IPTraffic
+ * Class:     com_untangle_jnetcap_IPTraffic
  * Method:    send
  * Signature: (J[B)I
  */
@@ -141,7 +141,7 @@ JNIEXPORT jint JNICALL JF_IPTraffic( send )
 }
 
 /*
- * Class:     com_metavize_jnetcap_IPTraffic
+ * Class:     com_untangle_jnetcap_IPTraffic
  * Method:    getLongValue
  * Signature: (JI)J
  */
@@ -164,7 +164,7 @@ JNIEXPORT jlong JNICALL JF_IPTraffic( getLongValue )
 }
 
 /*
- * Class:     com_metavize_jnetcap_IPTraffic
+ * Class:     com_untangle_jnetcap_IPTraffic
  * Method:    getIntValue
  * Signature: (JI)I
  */
@@ -201,7 +201,7 @@ JNIEXPORT jint JNICALL JF_IPTraffic( getIntValue )
 }
 
 /*
- * Class:     com_metavize_jnetcap_IPTraffic
+ * Class:     com_untangle_jnetcap_IPTraffic
  * Method:    getStringValue
  * Signature: (JI)Ljava/lang/String;
  */
@@ -231,7 +231,7 @@ JNIEXPORT jstring JNICALL JF_IPTraffic( getStringValue )
 }
 
 /*
- * Class:     com_metavize_jnetcap_IPTraffic
+ * Class:     com_untangle_jnetcap_IPTraffic
  * Method:    setLongValue
  * Signature: (JIJ)I
  */
@@ -255,7 +255,7 @@ JNIEXPORT jint JNICALL JF_IPTraffic( setLongValue )
 }
 
 /*
- * Class:     com_metavize_jnetcap_IPTraffic
+ * Class:     com_untangle_jnetcap_IPTraffic
  * Method:    setIntValue
  * Signature: (JII)I
  */
@@ -293,7 +293,7 @@ JNIEXPORT jint JNICALL JF_IPTraffic( setIntValue )
 }
 
 /*
- * Class:     com_metavize_jnetcap_IPTraffic
+ * Class:     com_untangle_jnetcap_IPTraffic
  * Method:    setStringValue
  * Signature: (JILjava/lang/String;)I
  */
@@ -334,7 +334,7 @@ JNIEXPORT jint JNICALL JF_IPTraffic( setStringValue )
 }
 
 /*
- * Class:     com_metavize_jnetcap_IPTraffic
+ * Class:     com_untangle_jnetcap_IPTraffic
  * Method:    raze
  * Signature: (J)V
  */
@@ -351,7 +351,7 @@ JNIEXPORT void JNICALL JF_IPTraffic( raze )
 }
 
 /*
- * Class:     com_metavize_jnetcap_UDPSession
+ * Class:     com_untangle_jnetcap_UDPSession
  * Method:    read
  * Signature: (JZI)J
  */
@@ -375,7 +375,7 @@ JNIEXPORT jlong JNICALL JF_UDPSession( read )
 }
 
 /*
- * Class:     com_metavize_jnetcap_UDPSession
+ * Class:     com_untangle_jnetcap_UDPSession
  * Method:    data
  * Signature: (J)[B
  */
@@ -399,7 +399,7 @@ JNIEXPORT jbyteArray JNICALL JF_UDPSession( data )
 }
 
 /*
- * Class:     com_metavize_jnetcap_UDPSession
+ * Class:     com_untangle_jnetcap_UDPSession
  * Method:    getData
  * Signature: (J)[B
  */
@@ -426,7 +426,7 @@ JNIEXPORT int JNICALL JF_UDPSession( getData )
 
 
 /*
- * Class:     com_metavize_jnetcap_UDPSession
+ * Class:     com_untangle_jnetcap_UDPSession
  * Method:    send
  * Signature: (J)I
  */
@@ -450,7 +450,7 @@ JNIEXPORT jint JNICALL JF_UDPSession( send )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapUDPSession
+ * Class:     com_untangle_jnetcap_NetcapUDPSession
  * Method:    merge
  * Signature: (JJJII)I
  */
@@ -478,7 +478,7 @@ JNIEXPORT jint JNICALL JF_UDPSession( merge )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapUDPSession
+ * Class:     com_untangle_jnetcap_NetcapUDPSession
  * Method:    icmpMerge
  * Signature: (JJJII)I
  */
@@ -505,7 +505,7 @@ JNIEXPORT jint JNICALL JF_UDPSession( icmpMerge )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapUDPSession
+ * Class:     com_untangle_jnetcap_NetcapUDPSession
  * Method:    mailboxPointer
  * Signature: (JZ)I
  */
@@ -519,7 +519,7 @@ JNIEXPORT jint JNICALL JF_UDPSession( mailboxPointer )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapUDPSession
+ * Class:     com_untangle_jnetcap_NetcapUDPSession
  * Method:    liberate
  * Signature: (JI)I
  */
@@ -531,7 +531,7 @@ JNIEXPORT void JNICALL JF_UDPSession( liberate )
 
 
 /*
- * Class:     com_metavize_jnetcap_ICMPTraffic
+ * Class:     com_untangle_jnetcap_ICMPTraffic
  * Method:    icmpSource
  * Signature: (J[BI)J
  */

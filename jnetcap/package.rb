@@ -7,13 +7,13 @@ mvvm    = Package['mvvm']
 j = JarTarget.buildTarget(jnetcap, Jars::Base, "impl", "jnetcap/impl" )
 $InstallTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib")
 
-headerClasses = [ "com.metavize.jnetcap.Netcap",
-                  "com.metavize.jnetcap.IPTraffic",
-                  "com.metavize.jnetcap.ICMPTraffic",
-                  "com.metavize.jnetcap.NetcapUDPSession",
-                  "com.metavize.jnetcap.NetcapSession",
-                  "com.metavize.jnetcap.NetcapTCPSession",
-                  "com.metavize.jnetcap.Shield" ]
+headerClasses = [ "com.untangle.jnetcap.Netcap",
+                  "com.untangle.jnetcap.IPTraffic",
+                  "com.untangle.jnetcap.ICMPTraffic",
+                  "com.untangle.jnetcap.NetcapUDPSession",
+                  "com.untangle.jnetcap.NetcapSession",
+                  "com.untangle.jnetcap.NetcapTCPSession",
+                  "com.untangle.jnetcap.Shield" ]
 
 javah = JavahTarget.new(jnetcap, j, headerClasses)
 

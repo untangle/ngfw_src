@@ -6,13 +6,13 @@ SET search_path TO settings,events,public;
 
 CREATE SEQUENCE settings.hibernate_sequence;
 
--- com.metavize.mvvm.security.AdminSettings
+-- com.untangle.mvvm.security.AdminSettings
 CREATE TABLE settings.admin_settings (
     admin_settings_id int8 NOT NULL,
     summary_period_id int8,
     PRIMARY KEY (admin_settings_id));
 
--- com.metavize.mvvm.security.User
+-- com.untangle.mvvm.security.User
 CREATE TABLE settings.mvvm_user (
     id int8 NOT NULL,
     login text NOT NULL,
@@ -24,14 +24,14 @@ CREATE TABLE settings.mvvm_user (
     admin_setting_id int8,
     PRIMARY KEY (id));
 
--- com.metavize.mvvm.UpgradeSettings
+-- com.untangle.mvvm.UpgradeSettings
 CREATE TABLE settings.upgrade_settings (
     upgrade_settings_id int8 NOT NULL,
     auto_upgrade bool NOT NULL,
     period int8 NOT NULL,
     PRIMARY KEY (upgrade_settings_id));
 
--- com.metavize.mvvm.MailSettings
+-- com.untangle.mvvm.MailSettings
 CREATE TABLE settings.mail_settings (
     mail_settings_id int8 NOT NULL,
     report_email text,
@@ -44,7 +44,7 @@ CREATE TABLE settings.mail_settings (
     local_host_name text,
     PRIMARY KEY (mail_settings_id));
 
--- com.metavize.mvvm.logging.LoggingSettings
+-- com.untangle.mvvm.logging.LoggingSettings
 CREATE TABLE settings.logging_settings (
     settings_id int8 NOT NULL,
     syslog_enabled bool NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE settings.logging_settings (
     syslog_threshold int4,
     PRIMARY KEY (settings_id));
 
--- com.metavize.mvvm.policy.Policy
+-- com.untangle.mvvm.policy.Policy
 CREATE TABLE settings.policy (
     id int8 NOT NULL,
     is_default bool NOT NULL,
@@ -62,12 +62,12 @@ CREATE TABLE settings.policy (
     notes text,
     PRIMARY KEY (id));
 
--- com.metavize.mvvm.policy.UserPolicyRuleSet
+-- com.untangle.mvvm.policy.UserPolicyRuleSet
 CREATE TABLE settings.mvvm_user_policy_rules (
     set_id int8 NOT NULL,
     PRIMARY KEY (set_id));
 
--- com.metavize.mvvm.policy.UserPolicyRule
+-- com.untangle.mvvm.policy.UserPolicyRule
 CREATE TABLE settings.user_policy_rule (
     rule_id int8 NOT NULL,
     protocol_matcher text,
@@ -89,7 +89,7 @@ CREATE TABLE settings.user_policy_rule (
     position int4,
     PRIMARY KEY (rule_id));
 
--- com.metavize.mvvm.policy.SystemPolicyRule
+-- com.untangle.mvvm.policy.SystemPolicyRule
 CREATE TABLE settings.system_policy_rule (
     rule_id int8 NOT NULL,
     client_intf int2 NOT NULL,
@@ -104,20 +104,20 @@ CREATE TABLE settings.system_policy_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.metavize.mvvm.engine.TransformPersistentState.args
+-- com.untangle.mvvm.engine.TransformPersistentState.args
 CREATE TABLE settings.transform_args (
     tps_id int8 NOT NULL,
     arg text NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (tps_id, position));
 
--- com.metavize.mvvm.engine.TransformManagerState
+-- com.untangle.mvvm.engine.TransformManagerState
 CREATE TABLE settings.transform_manager_state (
     id int8 NOT NULL,
     last_tid int8,
     PRIMARY KEY (id));
 
--- com.metavize.mvvm.Period
+-- com.untangle.mvvm.Period
 CREATE TABLE settings.period (
     period_id int8 NOT NULL,
     hour int4 NOT NULL,
@@ -131,7 +131,7 @@ CREATE TABLE settings.period (
     saturday bool,
     PRIMARY KEY (period_id));
 
--- com.metavize.mvvm.tran.TransformPreferences
+-- com.untangle.mvvm.tran.TransformPreferences
 CREATE TABLE settings.transform_preferences (
     id int8 NOT NULL,
     tid int8,
@@ -141,7 +141,7 @@ CREATE TABLE settings.transform_preferences (
     alpha int4,
     PRIMARY KEY (id));
 
--- com.metavize.mvvm.tran.StringRule
+-- com.untangle.mvvm.tran.StringRule
 CREATE TABLE settings.string_rule (
     rule_id int8 NOT NULL,
     string text,
@@ -153,13 +153,13 @@ CREATE TABLE settings.string_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.metavize.mvvm.security.Tid
+-- com.untangle.mvvm.security.Tid
 CREATE TABLE settings.tid (
     id int8 NOT NULL,
     policy_id int8,
     PRIMARY KEY (id));
 
--- com.metavize.mvvm.engine.TransformPersistentState
+-- com.untangle.mvvm.engine.TransformPersistentState
 CREATE TABLE settings.transform_persistent_state (
     id int8 NOT NULL,
     name text NOT NULL,
@@ -168,13 +168,13 @@ CREATE TABLE settings.transform_persistent_state (
     target_state text NOT NULL,
     PRIMARY KEY (id));
 
--- com.metavize.mvvm.tran.IPMaddrDirectory
+-- com.untangle.mvvm.tran.IPMaddrDirectory
 CREATE TABLE settings.ipmaddr_dir (
     id int8 NOT NULL,
     notes text,
     PRIMARY KEY (id));
 
--- com.metavize.mvvm.tran.MimeTypeRule
+-- com.untangle.mvvm.tran.MimeTypeRule
 CREATE TABLE settings.mimetype_rule (
     rule_id int8 NOT NULL,
     mime_type text,
@@ -186,14 +186,14 @@ CREATE TABLE settings.mimetype_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.metavize.mvvm.tran.IPMaddrDirectory.entries
+-- com.untangle.mvvm.tran.IPMaddrDirectory.entries
 CREATE TABLE settings.ipmaddr_dir_entries (
     ipmaddr_dir_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (ipmaddr_dir_id, position));
 
--- com.metavize.mvvm.tran.IPMaddrRule
+-- com.untangle.mvvm.tran.IPMaddrRule
 CREATE TABLE settings.ipmaddr_rule (
     rule_id int8 NOT NULL,
     ipmaddr inet,
@@ -206,7 +206,7 @@ CREATE TABLE settings.ipmaddr_rule (
     PRIMARY KEY (rule_id));
 
 
--- com.metavize.mvvm.snmp.SnmpSettings
+-- com.untangle.mvvm.snmp.SnmpSettings
 CREATE TABLE settings.snmp_settings (
     snmp_settings_id int8 NOT NULL,
     enabled bool,
@@ -221,7 +221,7 @@ CREATE TABLE settings.snmp_settings (
     PRIMARY KEY (snmp_settings_id));
 
 
--- com.metavize.mvvm.addrbook.RepositorySettings
+-- com.untangle.mvvm.addrbook.RepositorySettings
 CREATE TABLE settings.ab_repository_settings (
     settings_id int8 NOT NULL,
     superuser_dn text,
@@ -232,14 +232,14 @@ CREATE TABLE settings.ab_repository_settings (
     PRIMARY KEY (settings_id));
 
 
--- com.metavize.mvvm.addrbook.AddressBookSettings
+-- com.untangle.mvvm.addrbook.AddressBookSettings
 CREATE TABLE settings.ab_settings (
     settings_id int8 NOT NULL,
     ad_repo_settings int8 NOT NULL,
     ab_configuration char(1) NOT NULL,
     PRIMARY KEY (settings_id));
 
--- com.metavize.mvvm.networking.DynamicDNSSettings -- 3.2
+-- com.untangle.mvvm.networking.DynamicDNSSettings -- 3.2
 CREATE TABLE settings.mvvm_ddns_settings (
     settings_id int8 NOT NULL,
     enabled     BOOL,
@@ -248,7 +248,7 @@ CREATE TABLE settings.mvvm_ddns_settings (
     password    TEXT,
     PRIMARY KEY (settings_id));
 
--- com.metavize.mvvm.networking.DhcpLeaseRule -- 3.2
+-- com.untangle.mvvm.networking.DhcpLeaseRule -- 3.2
 CREATE TABLE settings.mvvm_dhcp_lease_rule (
     rule_id        INT8 NOT NULL,
     mac_address    TEXT,
@@ -263,7 +263,7 @@ CREATE TABLE settings.mvvm_dhcp_lease_rule (
     log            BOOL,
     PRIMARY KEY    (rule_id));
 
--- com.metavize.mvvm.networking.DnsStaticHostRule -- 3.2
+-- com.untangle.mvvm.networking.DnsStaticHostRule -- 3.2
 CREATE TABLE settings.mvvm_dns_static_host_rule (
     rule_id        INT8 NOT NULL,
     hostname_list  TEXT,
@@ -277,7 +277,7 @@ CREATE TABLE settings.mvvm_dns_static_host_rule (
     PRIMARY KEY    (rule_id));
 
 
--- com.metavize.mvvm.networking.Interface -- 3.2
+-- com.untangle.mvvm.networking.Interface -- 3.2
 CREATE TABLE settings.mvvm_network_intf (
     rule_id        INT8 NOT NULL,
     argon_intf     INT2,
@@ -294,7 +294,7 @@ CREATE TABLE settings.mvvm_network_intf (
     position       INT4,
     PRIMARY KEY    (rule_id));
 
--- com.metavize.mvvm.networking.IPNetworkRule -- 3.2
+-- com.untangle.mvvm.networking.IPNetworkRule -- 3.2
 CREATE TABLE settings.mvvm_ip_network (
     rule_id     INT8 NOT NULL,
     network     TEXT,
@@ -308,7 +308,7 @@ CREATE TABLE settings.mvvm_ip_network (
     position    INT4,
     PRIMARY KEY (rule_id));
 
--- com.metavize.mvvm.networking.Route -- 3.2
+-- com.untangle.mvvm.networking.Route -- 3.2
 CREATE TABLE settings.mvvm_network_route (
     rule_id       INT8 NOT NULL,
     network_space INT8,
@@ -324,7 +324,7 @@ CREATE TABLE settings.mvvm_network_route (
     position      INT4,
     PRIMARY KEY   (rule_id));
 
--- com.metavize.mvvm.networking.NetworkSpace -- 3.2
+-- com.untangle.mvvm.networking.NetworkSpace -- 3.2
 CREATE TABLE settings.mvvm_network_space (
     rule_id              INT8 NOT NULL,
     papers               INT8,
@@ -347,7 +347,7 @@ CREATE TABLE settings.mvvm_network_space (
     position             INT4,
     PRIMARY KEY          (rule_id));
 
--- com.metavize.mvvm.networking.RedirectRule -- 3.2
+-- com.untangle.mvvm.networking.RedirectRule -- 3.2
 CREATE TABLE settings.mvvm_redirect_rule (
     rule_id          INT8 NOT NULL,
     is_dst_redirect  BOOL,
@@ -369,14 +369,14 @@ CREATE TABLE settings.mvvm_redirect_rule (
     primary key      (rule_id));
 
 -- Table linking network settings to redirects -- 3.2x
--- com.metavize.mvvm.networking.NetworkSpacesSettings.redirectList -- 3.2
+-- com.untangle.mvvm.networking.NetworkSpacesSettings.redirectList -- 3.2
 CREATE TABLE settings.mvvm_redirects (
     setting_id  INT8 NOT NULL,
     rule_id     INT8 NOT NULL,
     position    INT4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.metavize.mvvm.networking.NetworkSpacesSettings -- 3.2
+-- com.untangle.mvvm.networking.NetworkSpacesSettings -- 3.2
 CREATE TABLE settings.mvvm_network_settings (
     settings_id INT8 NOT NULL,
     is_enabled BOOL,
@@ -387,7 +387,7 @@ CREATE TABLE settings.mvvm_network_settings (
     PRIMARY KEY (settings_id));
 
 -- Services settings
--- com.metavize.mvvm.networking.ServicesSettingsImpl -- 3.2
+-- com.untangle.mvvm.networking.ServicesSettingsImpl -- 3.2
 CREATE TABLE settings.mvvm_network_services (
        settings_id        INT8 NOT NULL,
        is_dhcp_enabled    BOOL,
@@ -398,14 +398,14 @@ CREATE TABLE settings.mvvm_network_services (
        dns_local_domain   TEXT,
        primary key        (settings_id));
 
--- com.metavize.mvvm.networking.ServicesSettingsImpl.dhcpLeaseList -- 3.2
+-- com.untangle.mvvm.networking.ServicesSettingsImpl.dhcpLeaseList -- 3.2
 CREATE TABLE settings.mvvm_dhcp_lease_list (
        setting_id   INT8 NOT NULL,
        rule_id      INT8 NOT NULL,
        position     INT4 NOT NULL,
        PRIMARY KEY  (setting_id, position));
 
--- com.metavize.mvvm.networking.ServicesSettingsImpl.dnsStaticHostList -- 3.2
+-- com.untangle.mvvm.networking.ServicesSettingsImpl.dnsStaticHostList -- 3.2
 CREATE TABLE settings.mvvm_dns_host_list (
        setting_id   INT8 NOT NULL,
        rule_id      INT8 NOT NULL,

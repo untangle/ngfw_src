@@ -4,7 +4,7 @@
 -- new tables |
 ---------------
 
--- com.metavize.mvvm.logging.LoggingSettings
+-- com.untangle.mvvm.logging.LoggingSettings
 CREATE TABLE settings.logging_settings (
     settings_id int8 NOT NULL,
     syslog_enabled bool NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE settings.logging_settings (
     syslog_threshold int4,
     PRIMARY KEY (settings_id));
 
--- com.metavize.mvvm.snmp.SnmpSettings
+-- com.untangle.mvvm.snmp.SnmpSettings
 CREATE TABLE settings.snmp_settings (
     snmp_settings_id int8 NOT NULL,
     enabled bool,
@@ -39,7 +39,7 @@ DROP TABLE settings.uri_rule;
 -- elimintate varchars |
 ------------------------
 
--- com.metavize.mvvm.security.User
+-- com.untangle.mvvm.security.User
 DROP TABLE settings.mvvm_tmp;
 
 CREATE TABLE settings.mvvm_tmp AS
@@ -55,7 +55,7 @@ ALTER TABLE settings.mvvm_user ALTER COLUMN password SET NOT NULL;
 ALTER TABLE settings.mvvm_user ALTER COLUMN name SET NOT NULL;
 ALTER TABLE settings.mvvm_user ADD PRIMARY KEY (id);
 
--- com.metavize.mvvm.MailSettings
+-- com.untangle.mvvm.MailSettings
 DROP TABLE settings.mvvm_tmp;
 
 CREATE TABLE settings.mvvm_tmp AS
@@ -71,7 +71,7 @@ ALTER TABLE settings.mail_settings ALTER COLUMN smtp_port SET NOT NULL;
 ALTER TABLE settings.mail_settings ALTER COLUMN use_tls SET NOT NULL;
 ALTER TABLE settings.mail_settings ADD PRIMARY KEY (mail_settings_id);
 
--- com.metavize.mvvm.policy.Policy
+-- com.untangle.mvvm.policy.Policy
 DROP TABLE settings.mvvm_tmp;
 
 CREATE TABLE settings.mvvm_tmp AS
@@ -85,7 +85,7 @@ ALTER TABLE settings.policy ALTER COLUMN is_default SET NOT NULL;
 ALTER TABLE settings.policy ALTER COLUMN name SET NOT NULL;
 ALTER TABLE settings.policy ADD PRIMARY KEY (id);
 
--- com.metavize.mvvm.policy.UserPolicyRule
+-- com.untangle.mvvm.policy.UserPolicyRule
 DROP TABLE settings.mvvm_tmp;
 
 CREATE TABLE settings.mvvm_tmp AS
@@ -104,7 +104,7 @@ ALTER TABLE settings.user_policy_rule ALTER COLUMN server_intf SET NOT NULL;
 ALTER TABLE settings.user_policy_rule ALTER COLUMN is_inbound SET NOT NULL;
 ALTER TABLE settings.user_policy_rule ADD PRIMARY KEY (rule_id);
 
--- com.metavize.mvvm.policy.SystemPolicyRule
+-- com.untangle.mvvm.policy.SystemPolicyRule
 DROP TABLE settings.mvvm_tmp;
 
 CREATE TABLE settings.mvvm_tmp AS
@@ -120,7 +120,7 @@ ALTER TABLE settings.system_policy_rule ALTER COLUMN server_intf SET NOT NULL;
 ALTER TABLE settings.system_policy_rule ALTER COLUMN is_inbound SET NOT NULL;
 ALTER TABLE settings.system_policy_rule ADD PRIMARY KEY (rule_id);
 
--- com.metavize.mvvm.engine.TransformPersistentState.args
+-- com.untangle.mvvm.engine.TransformPersistentState.args
 DROP TABLE settings.mvvm_tmp;
 
 CREATE TABLE settings.mvvm_tmp AS
@@ -134,7 +134,7 @@ ALTER TABLE settings.transform_args ALTER COLUMN arg SET NOT NULL;
 ALTER TABLE settings.transform_args ALTER COLUMN position SET NOT NULL;
 ALTER TABLE settings.transform_args ADD PRIMARY KEY (tps_id, position);
 
--- com.metavize.mvvm.tran.StringRule
+-- com.untangle.mvvm.tran.StringRule
 ALTER TABLE settings.string_rule ADD COLUMN tmp text;
 UPDATE settings.string_rule SET tmp = string;
 ALTER TABLE settings.string_rule DROP COLUMN string;
@@ -155,7 +155,7 @@ UPDATE settings.string_rule SET tmp = description;
 ALTER TABLE settings.string_rule DROP COLUMN description;
 ALTER TABLE settings.string_rule RENAME COLUMN tmp TO description;
 
--- com.metavize.mvvm.engine.TransformPersistentState
+-- com.untangle.mvvm.engine.TransformPersistentState
 DROP TABLE settings.mvvm_tmp;
 
 CREATE TABLE settings.mvvm_tmp AS
@@ -170,13 +170,13 @@ ALTER TABLE settings.transform_persistent_state ALTER COLUMN public_key SET NOT 
 ALTER TABLE settings.transform_persistent_state ALTER COLUMN target_state SET NOT NULL;
 ALTER TABLE settings.transform_persistent_state ADD PRIMARY KEY (id);
 
--- com.metavize.mvvm.tran.IPMaddrDirectory
+-- com.untangle.mvvm.tran.IPMaddrDirectory
 ALTER TABLE settings.ipmaddr_dir ADD COLUMN tmp text;
 UPDATE settings.ipmaddr_dir SET tmp = notes;
 ALTER TABLE settings.ipmaddr_dir DROP COLUMN notes;
 ALTER TABLE settings.ipmaddr_dir RENAME COLUMN tmp TO notes;
 
--- com.metavize.mvvm.tran.MimeTypeRule
+-- com.untangle.mvvm.tran.MimeTypeRule
 ALTER TABLE settings.mimetype_rule ADD COLUMN tmp text;
 UPDATE settings.mimetype_rule SET tmp = mime_type;
 ALTER TABLE settings.mimetype_rule DROP COLUMN mime_type;
@@ -197,7 +197,7 @@ UPDATE settings.mimetype_rule SET tmp = description;
 ALTER TABLE settings.mimetype_rule DROP COLUMN description;
 ALTER TABLE settings.mimetype_rule RENAME COLUMN tmp TO description;
 
--- com.metavize.mvvm.tran.IPMaddrRule
+-- com.untangle.mvvm.tran.IPMaddrRule
 ALTER TABLE settings.ipmaddr_rule ADD COLUMN tmp text;
 UPDATE settings.ipmaddr_rule SET tmp = name;
 ALTER TABLE settings.ipmaddr_rule DROP COLUMN name;

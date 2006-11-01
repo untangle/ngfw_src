@@ -14,8 +14,8 @@ $Id$
 <mvvm-transform>
   <transform-desc name="clamphish-transform"
                   display-name="PhishNet"
-                  classname="com.metavize.tran.clamphish.ClamPhishTransform"
-                  gui-classname="com.metavize.tran.clamphish.gui.MTransformJPanel"
+                  classname="com.untangle.tran.clamphish.ClamPhishTransform"
+                  gui-classname="com.untangle.tran.clamphish.gui.MTransformJPanel"
                   transform-base="spam-base"/>
   <parent>mail-casing</parent>
 </mvvm-transform>

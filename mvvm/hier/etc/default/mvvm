@@ -82,34 +82,34 @@ fi
 # Heap monitor thread
 #
 ## Enable the heap monitor.
-MVVM_ARGS="${MVVM_ARGS} -Dcom.metavize.mvvm.memmonitor.enabled=true"
+MVVM_ARGS="${MVVM_ARGS} -Dcom.untangle.mvvm.memmonitor.enabled=true"
 
 ## Rate, kilobytes/second to start dumping stack traces.
-#MVVM_ARGS="${MVVM_ARGS} -Dcom.metavize.mvvm.memmonitor.rate=$((3 * 1024)"
+#MVVM_ARGS="${MVVM_ARGS} -Dcom.untangle.mvvm.memmonitor.rate=$((3 * 1024)"
 
 ## required minimum to start dumping memory (even if rate exceeds rate)
-#MVVM_ARGS="${MVVM_ARGS} -Dcom.metavize.mvvm.memmonitor.min=$(( 100 * 1024 ))"
+#MVVM_ARGS="${MVVM_ARGS} -Dcom.untangle.mvvm.memmonitor.min=$(( 100 * 1024 ))"
 
 ## Level at which to just dump memory regardless of the rate
-#MVVM_ARGS="${MVVM_ARGS} -Dcom.metavize.mvvm.memmonitor.level=$(( 310 * 1024 ))"
+#MVVM_ARGS="${MVVM_ARGS} -Dcom.untangle.mvvm.memmonitor.level=$(( 310 * 1024 ))"
 
 ## Poll frequence in milliseconds
-#MVVM_ARGS="${MVVM_ARGS} -Dcom.metavize.mvvm.memmonitor.poll=500"
+#MVVM_ARGS="${MVVM_ARGS} -Dcom.untangle.mvvm.memmonitor.poll=500"
 
 ## Minimum number of milliseconds in between dumping two thread dumps
-#MVVM_ARGS="${MVVM_ARGS} -Dcom.metavize.mvvm.memmonitor.interval=3000"
+#MVVM_ARGS="${MVVM_ARGS} -Dcom.untangle.mvvm.memmonitor.interval=3000"
 
 ## Name of the file where the log should go, if unspecified, this goes to console.log
-#MVVM_ARGS="${MVVM_ARGS} -Dcom.metavize.mvvm.memmonitor.file=heapmonitor.log"
+#MVVM_ARGS="${MVVM_ARGS} -Dcom.untangle.mvvm.memmonitor.file=heapmonitor.log"
 
 ## Lifetime for positive phonebook lookups (millis)
-#MVVM_ARGS="${MVVM_ARGS} -Dcom.metavize.mvvm.user.phonebook.lifetime=300000"
+#MVVM_ARGS="${MVVM_ARGS} -Dcom.untangle.mvvm.user.phonebook.lifetime=300000"
 
 ## Lifetime for succesful wmi lookups (millis)
-#MVVM_ARGS="${MVVM_ARGS} -Dcom.metavize.mvvm.user.wmi.lifetime=240000"
+#MVVM_ARGS="${MVVM_ARGS} -Dcom.untangle.mvvm.user.wmi.lifetime=240000"
 
 ## Lifetime for unsuccesful wmi lookups (millis)
-#MVVM_ARGS="${MVVM_ARGS} -Dcom.metavize.mvvm.user.wmi.negativelifetime=600000"
+#MVVM_ARGS="${MVVM_ARGS} -Dcom.untangle.mvvm.user.wmi.negativelifetime=600000"
 
 #
 # JAVA options

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-import com.metavize.jvector.*;
+import com.untangle.jvector.*;
     
 public class Transform implements SocketQueueListener
 {

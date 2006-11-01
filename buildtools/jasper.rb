@@ -2,7 +2,7 @@
 
 class JasperCompiler
   JavaCommand = "#{$BuildEnv.javahome}/bin/java"
-  BuildUtilPkg = "com.metavize.buildutil"
+  BuildUtilPkg = "com.untangle.buildutil"
   ReportGenerator = "#{BuildUtilPkg}.ReportGenerator"
   JRCompiler = "#{BuildUtilPkg}.JRCompiler"
 

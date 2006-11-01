@@ -4,7 +4,7 @@
 -- move old tables to new schemas |
 -----------------------------------
 
--- com.metavize.tran.nat.DhcpLeaseRule
+-- com.untangle.tran.nat.DhcpLeaseRule
 CREATE TABLE settings.dhcp_lease_rule AS SELECT * FROM public.dhcp_lease_rule;
 
 ALTER TABLE settings.dhcp_lease_rule
@@ -12,7 +12,7 @@ ALTER TABLE settings.dhcp_lease_rule
 ALTER TABLE settings.dhcp_lease_rule
     ALTER COLUMN rule_id SET NOT NULL;
 
--- com.metavize.tran.nat.NatSettings.dhcpLeaseList
+-- com.untangle.tran.nat.NatSettings.dhcpLeaseList
 CREATE TABLE settings.tr_dhcp_leases AS SELECT * FROM public.tr_dhcp_leases;
 
 ALTER TABLE settings.tr_dhcp_leases
@@ -24,7 +24,7 @@ ALTER TABLE settings.tr_dhcp_leases
 ALTER TABLE settings.tr_dhcp_leases
     ALTER COLUMN position SET NOT NULL;
 
--- com.metavize.tran.nat.RedirectRule
+-- com.untangle.tran.nat.RedirectRule
 CREATE TABLE settings.redirect_rule AS SELECT * FROM public.redirect_rule;
 
 ALTER TABLE settings.redirect_rule
@@ -32,7 +32,7 @@ ALTER TABLE settings.redirect_rule
 ALTER TABLE settings.redirect_rule
     ALTER COLUMN rule_id SET NOT NULL;
 
--- com.metavize.tran.nat.NatSettings (adding column dmz_logging_enabled)
+-- com.untangle.tran.nat.NatSettings (adding column dmz_logging_enabled)
 CREATE TABLE settings.tr_nat_settings (
     settings_id,
     tid,
@@ -63,7 +63,7 @@ ALTER TABLE settings.tr_nat_settings
 ALTER TABLE settings.tr_nat_settings
     ALTER COLUMN tid SET NOT NULL;
 
--- com.metavize.tran.nat.NatSettings.redirectList
+-- com.untangle.tran.nat.NatSettings.redirectList
 CREATE TABLE settings.tr_nat_redirects
     AS SELECT * FROM public.tr_nat_redirects;
 
@@ -76,7 +76,7 @@ ALTER TABLE settings.tr_nat_redirects
 ALTER TABLE settings.tr_nat_redirects
     ALTER COLUMN position SET NOT NULL;
 
--- com.metavize.tran.nat.NatSettings.dnsStaticHostList
+-- com.untangle.tran.nat.NatSettings.dnsStaticHostList
 CREATE TABLE settings.tr_nat_dns_hosts
     AS SELECT * from public.tr_nat_dns_hosts;
 
@@ -89,7 +89,7 @@ ALTER TABLE settings.tr_nat_dns_hosts
 ALTER TABLE settings.tr_nat_dns_hosts
     ALTER COLUMN position SET NOT NULL;
 
--- com.metavize.tran.nat.DnsStaticHostRule
+-- com.untangle.tran.nat.DnsStaticHostRule
 CREATE TABLE settings.dns_static_host_rule
     AS SELECT * FROM public.dns_static_host_rule;
 
@@ -98,7 +98,7 @@ ALTER TABLE settings.dns_static_host_rule
 ALTER TABLE settings.dns_static_host_rule
     ALTER COLUMN rule_id SET NOT NULL;
 
--- com.metavize.tran.nat.DhcpLeaseEvent
+-- com.untangle.tran.nat.DhcpLeaseEvent
 CREATE TABLE events.tr_nat_evt_dhcp AS SELECT * FROM public.tr_nat_evt_dhcp;
 
 ALTER TABLE events.tr_nat_evt_dhcp
@@ -106,7 +106,7 @@ ALTER TABLE events.tr_nat_evt_dhcp
 ALTER TABLE events.tr_nat_evt_dhcp
     ALTER COLUMN event_id SET NOT NULL;
 
--- com.metavize.tran.nat.DhcpAbsoluteLease
+-- com.untangle.tran.nat.DhcpAbsoluteLease
 CREATE TABLE events.dhcp_abs_lease AS SELECT * FROM public.dhcp_abs_lease;
 
 ALTER TABLE events.dhcp_abs_lease
@@ -114,7 +114,7 @@ ALTER TABLE events.dhcp_abs_lease
 ALTER TABLE events.dhcp_abs_lease
     ALTER COLUMN event_id SET NOT NULL;
 
--- com.metavize.tran.nat.DhcpAbsoluteEvent
+-- com.untangle.tran.nat.DhcpAbsoluteEvent
 CREATE TABLE events.tr_nat_evt_dhcp_abs
     AS SELECT * FROM public.tr_nat_evt_dhcp_abs;
 
@@ -123,7 +123,7 @@ ALTER TABLE events.tr_nat_evt_dhcp_abs
 ALTER TABLE events.tr_nat_evt_dhcp_abs
     ALTER COLUMN event_id SET NOT NULL;
 
--- com.metavize.tran.nat.DhcpAbsoluteEvent.absoluteLeaseList
+-- com.untangle.tran.nat.DhcpAbsoluteEvent.absoluteLeaseList
 CREATE TABLE events.tr_nat_evt_dhcp_abs_leases
     AS SELECT * FROM public.tr_nat_evt_dhcp_abs_leases;
 
@@ -194,7 +194,7 @@ DROP TABLE public.tr_nat_evt_dhcp_abs_leases;
 -- new tables |
 ---------------
 
--- com.metavize.tran.nat.RedirectEvent
+-- com.untangle.tran.nat.RedirectEvent
 CREATE TABLE events.tr_nat_redirect_evt (
     event_id int8 NOT NULL,
     session_id int4,
@@ -204,7 +204,7 @@ CREATE TABLE events.tr_nat_redirect_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.tran.nat.NatStatisticEvent
+-- com.untangle.tran.nat.NatStatisticEvent
 CREATE TABLE events.tr_nat_statistic_evt (
     event_id int8 NOT NULL,
     nat_sessions int4,

@@ -1,7 +1,7 @@
 -- settings conversion for release-3.2
 
 -- Added for AddressBook
--- com.metavize.mvvm.addrbook.RepositorySettings
+-- com.untangle.mvvm.addrbook.RepositorySettings
 CREATE TABLE settings.ab_repository_settings (
     settings_id int8 NOT NULL,
     superuser_dn text,
@@ -13,7 +13,7 @@ CREATE TABLE settings.ab_repository_settings (
 
 
 -- Added for AddressBook
--- com.metavize.mvvm.addrbook.AddressBookSettings
+-- com.untangle.mvvm.addrbook.AddressBookSettings
 
 CREATE TABLE settings.ab_settings (
     settings_id int8 NOT NULL,
@@ -36,7 +36,7 @@ ALTER TABLE settings.mvvm_user ALTER COLUMN read_only SET NOT NULL;
 -- Network spaces
 
 -- Add the table for the dynamic DNS settings
--- com.metavize.mvvm.networking.DynamicDNSSettings
+-- com.untangle.mvvm.networking.DynamicDNSSettings
 CREATE TABLE settings.mvvm_ddns_settings (
     settings_id int8 NOT NULL,
     enabled     BOOL,
@@ -45,7 +45,7 @@ CREATE TABLE settings.mvvm_ddns_settings (
     password    TEXT,
     PRIMARY KEY (settings_id));
 
--- com.metavize.mvvm.networking.DhcpLeaseRule -- 3.2
+-- com.untangle.mvvm.networking.DhcpLeaseRule -- 3.2
 -- moved from dhcp_lease_rule to mvvm_dhcp_lease_rule
 -- ALTER TABLE settings.dhcp_lease_rule RENAME TO mvvm_dhcp_lease_rule;
 
@@ -64,7 +64,7 @@ ALTER TABLE settings.mvvm_dhcp_lease_rule ADD PRIMARY KEY (rule_id);
 
 
 -- This is just in case NAT was never installed.
--- com.metavize.mvvm.networking.DhcpLeaseRule -- 3.2
+-- com.untangle.mvvm.networking.DhcpLeaseRule -- 3.2
 CREATE TABLE settings.mvvm_dhcp_lease_rule (
     rule_id        INT8 NOT NULL,
     mac_address    TEXT,
@@ -79,7 +79,7 @@ CREATE TABLE settings.mvvm_dhcp_lease_rule (
     log            BOOL,
     PRIMARY KEY    (rule_id));
 
--- com.metavize.mvvm.networking.DnsStaticHostRule -- 3.2
+-- com.untangle.mvvm.networking.DnsStaticHostRule -- 3.2
 -- moved from dns_static_host_rule to mvvm_dns_static_host_rule
 CREATE TABLE settings.mvvm_dns_static_host_rule AS
     SELECT rule_id, hostname_list::text, static_address, 
@@ -95,7 +95,7 @@ ALTER TABLE settings.mvvm_dns_static_host_rule ALTER COLUMN rule_id SET NOT NULL
 ALTER TABLE settings.mvvm_dns_static_host_rule ADD PRIMARY KEY (rule_id);
 
 -- This is just in case NAT was never installed.
--- com.metavize.mvvm.networking.DnsStaticHostRule -- 3.2
+-- com.untangle.mvvm.networking.DnsStaticHostRule -- 3.2
 CREATE TABLE settings.mvvm_dns_static_host_rule (
     rule_id        INT8 NOT NULL,
     hostname_list  TEXT,
@@ -108,21 +108,21 @@ CREATE TABLE settings.mvvm_dns_static_host_rule (
     log            BOOL,
     PRIMARY KEY    (rule_id));
 
--- com.metavize.mvvm.networking.ServicesSettingsImpl.dhcpLeaseList -- 3.2
+-- com.untangle.mvvm.networking.ServicesSettingsImpl.dhcpLeaseList -- 3.2
 CREATE TABLE settings.mvvm_dhcp_lease_list (
        setting_id   INT8 NOT NULL,
        rule_id      INT8 NOT NULL,
        position     INT4 NOT NULL,
        PRIMARY KEY  (setting_id, position));
 
--- com.metavize.mvvm.networking.ServicesSettingsImpl.dnsStaticHostList -- 3.2
+-- com.untangle.mvvm.networking.ServicesSettingsImpl.dnsStaticHostList -- 3.2
 CREATE TABLE settings.mvvm_dns_host_list (
        setting_id   INT8 NOT NULL,
        rule_id      INT8 NOT NULL,
        position     INT4 NOT NULL,
        PRIMARY KEY  (setting_id, position));
 
--- com.metavize.mvvm.networking.Interface -- 3.2
+-- com.untangle.mvvm.networking.Interface -- 3.2
 CREATE TABLE settings.mvvm_network_intf (
     rule_id        INT8 NOT NULL,
     argon_intf     INT2,
@@ -139,7 +139,7 @@ CREATE TABLE settings.mvvm_network_intf (
     position       INT4,
     PRIMARY KEY    (rule_id));
 
--- com.metavize.mvvm.networking.IPNetworkRule -- 3.2
+-- com.untangle.mvvm.networking.IPNetworkRule -- 3.2
 CREATE TABLE settings.mvvm_ip_network (
     rule_id     INT8 NOT NULL,
     network     TEXT,
@@ -153,7 +153,7 @@ CREATE TABLE settings.mvvm_ip_network (
     position    INT4,
     PRIMARY KEY (rule_id));
 
--- com.metavize.mvvm.networking.Route -- 3.2
+-- com.untangle.mvvm.networking.Route -- 3.2
 CREATE TABLE settings.mvvm_network_route (
     rule_id       INT8 NOT NULL,
     network_space INT8,
@@ -169,7 +169,7 @@ CREATE TABLE settings.mvvm_network_route (
     position      INT4,
     PRIMARY KEY   (rule_id));
 
--- com.metavize.mvvm.networking.NetworkSpace -- 3.2
+-- com.untangle.mvvm.networking.NetworkSpace -- 3.2
 CREATE TABLE settings.mvvm_network_space (
     rule_id              INT8 NOT NULL,
     papers               INT8,
@@ -192,7 +192,7 @@ CREATE TABLE settings.mvvm_network_space (
     position             INT4,
     PRIMARY KEY          (rule_id));
 
--- com.metavize.mvvm.networking.RedirectRule -- 3.2
+-- com.untangle.mvvm.networking.RedirectRule -- 3.2
 -- (moved to the mvvm from nat)
 CREATE TABLE settings.mvvm_redirect_rule AS
     SELECT rule_id, is_dst_redirect, redirect_port, redirect_addr,
@@ -211,7 +211,7 @@ ALTER TABLE settings.mvvm_redirect_rule ALTER COLUMN rule_id SET NOT NULL;
 ALTER TABLE settings.mvvm_redirect_rule ADD PRIMARY KEY (rule_id);
 
 -- This is just in case NAT was never installed.
--- com.metavize.mvvm.networking.RedirectRule -- 3.2
+-- com.untangle.mvvm.networking.RedirectRule -- 3.2
 CREATE TABLE settings.mvvm_redirect_rule (
     rule_id          INT8 NOT NULL,
     is_dst_redirect  BOOL,
@@ -241,7 +241,7 @@ CREATE TABLE settings.mvvm_redirects (
     position    INT4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.metavize.mvvm.networking.NetworkSpacesSettings -- 3.2
+-- com.untangle.mvvm.networking.NetworkSpacesSettings -- 3.2
 CREATE TABLE settings.mvvm_network_settings (
     settings_id INT8 NOT NULL,
     is_enabled BOOL,
@@ -251,7 +251,7 @@ CREATE TABLE settings.mvvm_network_settings (
     dns_2 INET,
     PRIMARY KEY (settings_id));
 
--- com.metavize.mvvm.networking.ServicesSettingsImpl -- 3.2
+-- com.untangle.mvvm.networking.ServicesSettingsImpl -- 3.2
 CREATE TABLE settings.mvvm_network_services (
        settings_id        INT8 NOT NULL,
        is_dhcp_enabled    BOOL,

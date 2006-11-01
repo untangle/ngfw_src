@@ -14,8 +14,8 @@ $Id: mvvm-transform.xml,v 1.4 2005/02/24 02:53:06 amread Exp $
 <mvvm-transform>
   <transform-desc name="nat-transform"
                   display-name="Router"
-                  classname="com.metavize.tran.nat.NatImpl"
-                  gui-classname="com.metavize.tran.nat.gui.MTransformJPanel"
+                  classname="com.untangle.tran.nat.NatImpl"
+                  gui-classname="com.untangle.tran.nat.gui.MTransformJPanel"
                   single-instance="true"/>
   <parent>ftp-casing</parent>
 </mvvm-transform>

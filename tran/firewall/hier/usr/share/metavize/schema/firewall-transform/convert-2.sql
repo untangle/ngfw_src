@@ -10,7 +10,7 @@
 -- outbound booleans.                            |
 --------------------------------------------------
 
--- com.metavize.tran.firewall.FirewallEvent (adding was_blocked)
+-- com.untangle.tran.firewall.FirewallEvent (adding was_blocked)
 ALTER TABLE events.tr_firewall_evt ADD COLUMN was_blocked BOOL;
 
 -- Setting was_blocked to true initially (assuming that default, 

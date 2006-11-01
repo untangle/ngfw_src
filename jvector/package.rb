@@ -9,17 +9,17 @@ deps = Jars::Base + [jnetcap["impl"]]
 j = JarTarget.buildTarget(jvector, deps, "impl", "jvector/impl")
 $InstallTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib")
 
-headerClasses = [ "com.metavize.jvector.OutgoingSocketQueue",
-                  "com.metavize.jvector.IncomingSocketQueue",
-                  "com.metavize.jvector.Relay",
-                  "com.metavize.jvector.Vector",
-                  "com.metavize.jvector.Sink",
-                  "com.metavize.jvector.Source",
-                  "com.metavize.jvector.TCPSink",
-                  "com.metavize.jvector.TCPSource",
-                  "com.metavize.jvector.UDPSource",
-                  "com.metavize.jvector.UDPSink",
-                  "com.metavize.jvector.Crumb" ]
+headerClasses = [ "com.untangle.jvector.OutgoingSocketQueue",
+                  "com.untangle.jvector.IncomingSocketQueue",
+                  "com.untangle.jvector.Relay",
+                  "com.untangle.jvector.Vector",
+                  "com.untangle.jvector.Sink",
+                  "com.untangle.jvector.Source",
+                  "com.untangle.jvector.TCPSink",
+                  "com.untangle.jvector.TCPSource",
+                  "com.untangle.jvector.UDPSource",
+                  "com.untangle.jvector.UDPSink",
+                  "com.untangle.jvector.Crumb" ]
 
 javah = JavahTarget.new(jvector, j, headerClasses)
 

@@ -39,7 +39,7 @@
  */
 
 /*
- * Class:     com_metavize_jnetcap_NetcapSession
+ * Class:     com_untangle_jnetcap_NetcapSession
  * Method:    getSession
  * Signature: (II)J
  */
@@ -78,7 +78,7 @@ JNIEXPORT jlong JNICALL JF_Session( getSession )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapSession
+ * Class:     com_untangle_jnetcap_NetcapSession
  * Method:    getLongValue
  * Signature: (IJ)J
  */
@@ -105,7 +105,7 @@ JNIEXPORT jlong JNICALL JF_Session( getLongValue )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapSession
+ * Class:     com_untangle_jnetcap_NetcapSession
  * Method:    getIntValue
  * Signature: (IJ)I
  */
@@ -173,7 +173,7 @@ JNIEXPORT jint JNICALL JF_Session( getIntValue )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapSession
+ * Class:     com_untangle_jnetcap_NetcapSession
  * Method:    getStringValue
  * Signature: (IJ)Ljava/lang/String;
  */
@@ -203,7 +203,7 @@ JNIEXPORT jstring JNICALL JF_Session( getStringValue )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapSession
+ * Class:     com_untangle_jnetcap_NetcapSession
  * Method:    raze
  * Signature: (J)I
  */
@@ -220,7 +220,7 @@ JNIEXPORT void JNICALL JF_Session( raze )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapSession
+ * Class:     com_untangle_jnetcap_NetcapSession
  * Method:    toString
  * Signature: (J)Ljava/lang/String;
  */
@@ -247,7 +247,7 @@ JNIEXPORT jstring JNICALL JF_Session( toString )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapSession
+ * Class:     com_untangle_jnetcap_NetcapSession
  * Method:    updateServerIntf
  * Signature: (J)V
  */
@@ -264,7 +264,7 @@ JNIEXPORT void JNICALL JF_Session( updateServerIntf )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapSession
+ * Class:     com_untangle_jnetcap_NetcapSession
  * Method:    serverInterfaceId
  * Signature: (JB)V
  */

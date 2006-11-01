@@ -4,7 +4,7 @@ CREATE SCHEMA events;
 
 SET search_path TO settings,events,public;
 
--- com.metavize.mvvm.engine.LoginEvent
+-- com.untangle.mvvm.engine.LoginEvent
 CREATE TABLE events.mvvm_login_evt (
     event_id int8 NOT NULL,
     client_addr inet,
@@ -15,7 +15,7 @@ CREATE TABLE events.mvvm_login_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.engine.TransformStateChange
+-- com.untangle.mvvm.engine.TransformStateChange
 CREATE TABLE events.transform_state_change (
     event_id int8 NOT NULL,
     time_stamp timestamp,
@@ -23,7 +23,7 @@ CREATE TABLE events.transform_state_change (
     state text NOT NULL,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.tran.PipelineEndpoints
+-- com.untangle.mvvm.tran.PipelineEndpoints
 CREATE TABLE events.pl_endp (
     event_id int8 NOT NULL,
     time_stamp timestamp,
@@ -44,7 +44,7 @@ CREATE TABLE events.pl_endp (
     policy_inbound bool,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.tran.PipelineStats
+-- com.untangle.mvvm.tran.PipelineStats
 CREATE TABLE events.pl_stats (
     event_id int8 NOT NULL,
     time_stamp timestamp,
@@ -61,7 +61,7 @@ CREATE TABLE events.pl_stats (
     uid        text,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.shield.ShieldRejectionEvent
+-- com.untangle.mvvm.shield.ShieldRejectionEvent
 CREATE TABLE events.shield_rejection_evt (
     event_id int8 NOT NULL,
     client_addr inet,
@@ -74,7 +74,7 @@ CREATE TABLE events.shield_rejection_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.shield.ShieldStatisticEvent
+-- com.untangle.mvvm.shield.ShieldStatisticEvent
 CREATE TABLE events.shield_statistic_evt (
     event_id int8 NOT NULL,
     accepted int4,
@@ -88,7 +88,7 @@ CREATE TABLE events.shield_statistic_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.portal.PortalLoginEvent
+-- com.untangle.mvvm.portal.PortalLoginEvent
 CREATE TABLE events.portal_login_evt (
     event_id    int8 NOT NULL,
     client_addr inet,
@@ -98,7 +98,7 @@ CREATE TABLE events.portal_login_evt (
     time_stamp  timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.portal.PortalLogoutEvent
+-- com.untangle.mvvm.portal.PortalLogoutEvent
 CREATE TABLE events.portal_logout_evt (
     event_id    int8 NOT NULL,
     client_addr inet,
@@ -107,7 +107,7 @@ CREATE TABLE events.portal_logout_evt (
     time_stamp  timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.portal.PortalAppLaunchEvent
+-- com.untangle.mvvm.portal.PortalAppLaunchEvent
 CREATE TABLE events.portal_app_launch_evt (
     event_id    int8 NOT NULL,
     client_addr inet,
@@ -119,7 +119,7 @@ CREATE TABLE events.portal_app_launch_evt (
     time_stamp  timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.user.LookupLogEvent
+-- com.untangle.mvvm.user.LookupLogEvent
 CREATE TABLE events.mvvm_lookup_evt (
     event_id    INT8 NOT NULL,
     lookup_key  INT8 NOT NULL,

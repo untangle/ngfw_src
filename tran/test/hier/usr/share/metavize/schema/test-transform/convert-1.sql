@@ -4,7 +4,7 @@
 -- move old tables to new schemas |
 -----------------------------------
 
--- com.metavize.tran.test.TestSettings
+-- com.untangle.tran.test.TestSettings
 CREATE TABLE settings.tr_test_settings
     AS SELECT * FROM public.tr_test_settings;
 

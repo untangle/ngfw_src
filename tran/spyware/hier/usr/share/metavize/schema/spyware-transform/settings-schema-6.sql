@@ -4,7 +4,7 @@
 -- settings |
 -------------
 
--- com.metavize.tran.spyware.SpywareSettings
+-- com.untangle.tran.spyware.SpywareSettings
 CREATE TABLE settings.tr_spyware_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
@@ -23,28 +23,28 @@ CREATE TABLE settings.tr_spyware_settings (
     cookie_version int4 NOT NULL,
     PRIMARY KEY (settings_id));
 
--- com.metavize.tran.spyware.SpywareSettings.cookieRules
+-- com.untangle.tran.spyware.SpywareSettings.cookieRules
 CREATE TABLE settings.tr_spyware_cr (
     settings_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (settings_id, position));
 
--- com.metavize.tran.spyware.SpywareSettings.activeXRules
+-- com.untangle.tran.spyware.SpywareSettings.activeXRules
 CREATE TABLE settings.tr_spyware_ar (
     settings_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (settings_id, position));
 
--- com.metavize.tran.spyware.SpywareSettings.subnetRules
+-- com.untangle.tran.spyware.SpywareSettings.subnetRules
 CREATE TABLE settings.tr_spyware_sr (
     settings_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (settings_id, position));
 
--- com.metavize.tran.spyware.SpywareSettings.domainWhitelist
+-- com.untangle.tran.spyware.SpywareSettings.domainWhitelist
 CREATE TABLE settings.tr_spyware_wl (
     settings_id int8 NOT NULL,
     rule_id int8 NOT NULL,

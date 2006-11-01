@@ -1,3 +1,3 @@
-com.metavize.tran.firewall.FirewallRule
-com.metavize.tran.firewall.FirewallSettings
-com.metavize.tran.firewall.FirewallEvent
+com.untangle.tran.firewall.FirewallRule
+com.untangle.tran.firewall.FirewallSettings
+com.untangle.tran.firewall.FirewallEvent

@@ -1,6 +1,6 @@
-com.metavize.tran.virus.VirusConfig
-com.metavize.tran.virus.VirusIMAPConfig
-com.metavize.tran.virus.VirusMailEvent
-com.metavize.tran.virus.VirusPOPConfig
-com.metavize.tran.virus.VirusSMTPConfig
-com.metavize.tran.virus.VirusSettings
+com.untangle.tran.virus.VirusConfig
+com.untangle.tran.virus.VirusIMAPConfig
+com.untangle.tran.virus.VirusMailEvent
+com.untangle.tran.virus.VirusPOPConfig
+com.untangle.tran.virus.VirusSMTPConfig
+com.untangle.tran.virus.VirusSettings

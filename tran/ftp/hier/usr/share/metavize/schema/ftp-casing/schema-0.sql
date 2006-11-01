@@ -4,7 +4,7 @@
 -- settings |
 -------------
 
--- com.metavize.tran.ftp.FtpSettings
+-- com.untangle.tran.ftp.FtpSettings
 CREATE TABLE settings.tr_ftp_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,

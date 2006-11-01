@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.metavize.mvvm.*, com.metavize.mvvm.portal.*, com.metavize.tran.portal.vnc.*, java.util.*, java.io.IOException, org.apache.log4j.Logger" %>
+<%@ page language="java" import="com.untangle.mvvm.*, com.untangle.mvvm.portal.*, com.untangle.tran.portal.vnc.*, java.util.*, java.io.IOException, org.apache.log4j.Logger" %>
 
 <%
 Logger logger = Logger.getLogger(getClass());

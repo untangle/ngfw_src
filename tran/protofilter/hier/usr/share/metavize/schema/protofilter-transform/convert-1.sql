@@ -4,7 +4,7 @@
 -- move old tables to new schemas |
 -----------------------------------
 
--- com.metavize.tran.protofilter.ProtoFilterSettings
+-- com.untangle.tran.protofilter.ProtoFilterSettings
 CREATE TABLE settings.tr_protofilter_settings
     AS SELECT * FROM public.tr_protofilter_settings;
 
@@ -19,7 +19,7 @@ ALTER TABLE settings.tr_protofilter_settings
 ALTER TABLE settings.tr_protofilter_settings
     ALTER COLUMN tid SET NOT NULL;
 
--- com.metavize.tran.protofilter.ProtoFilterPattern
+-- com.untangle.tran.protofilter.ProtoFilterPattern
 CREATE TABLE settings.tr_protofilter_pattern
     AS SELECT * FROM public.tr_protofilter_pattern;
 
@@ -29,7 +29,7 @@ ALTER TABLE settings.tr_protofilter_pattern
 ALTER TABLE settings.tr_protofilter_pattern
     ALTER COLUMN rule_id SET NOT NULL;
 
--- com.metavize.tran.protofilter.ProtoFilterLogEvent
+-- com.untangle.tran.protofilter.ProtoFilterLogEvent
 CREATE TABLE events.tr_protofilter_evt
     AS SELECT * FROM public.tr_protofilter_evt;
 

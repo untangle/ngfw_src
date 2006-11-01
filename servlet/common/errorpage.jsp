@@ -3,7 +3,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <%
-Object errorObject = request.getAttribute( "com.metavize.mvvm.util.errorpage.error-message" );
+Object errorObject = request.getAttribute( "com.untangle.mvvm.util.errorpage.error-message" );
 String errorMessage = "Access to this resource is prohibited.";
 if (( errorObject != null ) && ( errorObject instanceof String )) {
   errorMessage = (String)errorObject;

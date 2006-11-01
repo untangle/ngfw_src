@@ -14,6 +14,6 @@ $Id: mvvm-transform.xml,v 1.4 2005/02/24 02:53:06 amread Exp $
 <mvvm-transform>
   <transform-desc name="protofilter-transform"
                   display-name="Rogue Protocol Control"
-                  classname="com.metavize.tran.protofilter.ProtoFilterImpl"
-                  gui-classname="com.metavize.tran.protofilter.gui.MTransformJPanel"/>
+                  classname="com.untangle.tran.protofilter.ProtoFilterImpl"
+                  gui-classname="com.untangle.tran.protofilter.gui.MTransformJPanel"/>
 </mvvm-transform>

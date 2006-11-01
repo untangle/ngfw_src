@@ -4,7 +4,7 @@
 -- move old tables to new schemas |
 -----------------------------------
 
--- com.metavize.tran.spyware.SpywareSettings
+-- com.untangle.tran.spyware.SpywareSettings
 -- (adding url_blacklist_enabled and url_blacklist_details)
 CREATE TABLE settings.tr_spyware_settings (
     settings_id,
@@ -34,7 +34,7 @@ ALTER TABLE settings.tr_spyware_settings
 ALTER TABLE settings.tr_spyware_settings
     ALTER COLUMN tid SET NOT NULL;
 
--- com.metavize.tran.spyware.SpywareSettings.cookieRules
+-- com.untangle.tran.spyware.SpywareSettings.cookieRules
 CREATE TABLE settings.tr_spyware_cr AS SELECT * FROM public.tr_spyware_cr;
 
 ALTER TABLE settings.tr_spyware_cr
@@ -46,7 +46,7 @@ ALTER TABLE settings.tr_spyware_cr
 ALTER TABLE settings.tr_spyware_cr
     ALTER COLUMN position SET NOT NULL;
 
--- com.metavize.tran.spyware.SpywareSettings.activeXRules
+-- com.untangle.tran.spyware.SpywareSettings.activeXRules
 CREATE TABLE settings.tr_spyware_ar AS SELECT * FROM public.tr_spyware_ar;
 
 ALTER TABLE settings.tr_spyware_ar
@@ -59,7 +59,7 @@ ALTER TABLE settings.tr_spyware_ar
 ALTER TABLE settings.tr_spyware_ar
     ALTER COLUMN position SET NOT NULL;
 
--- com.metavize.tran.spyware.SpywareSettings.subnetRules
+-- com.untangle.tran.spyware.SpywareSettings.subnetRules
 CREATE TABLE settings.tr_spyware_sr AS SELECT * FROM public.tr_spyware_sr;
 
 ALTER TABLE settings.tr_spyware_sr
@@ -76,7 +76,7 @@ ALTER TABLE settings.tr_spyware_sr
 -- events |
 -----------
 
--- com.metavize.tran.spyware.SpywareAccessEvent
+-- com.untangle.tran.spyware.SpywareAccessEvent
 CREATE TABLE events.tr_spyware_evt_access
     AS SELECT * FROM public.tr_spyware_evt_access;
 
@@ -85,7 +85,7 @@ ALTER TABLE events.tr_spyware_evt_access
 ALTER TABLE events.tr_spyware_evt_access
     ALTER COLUMN event_id SET NOT NULL;
 
--- com.metavize.tran.spyware.SpywareActiveXEvent
+-- com.untangle.tran.spyware.SpywareActiveXEvent
 CREATE TABLE events.tr_spyware_evt_activex
     AS SELECT * FROM public.tr_spyware_evt_activex;
 
@@ -95,7 +95,7 @@ ALTER TABLE events.tr_spyware_evt_activex
     ALTER COLUMN event_id SET NOT NULL;
 
 
--- com.metavize.tran.spyware.SpywareCookieEvent
+-- com.untangle.tran.spyware.SpywareCookieEvent
 CREATE TABLE events.tr_spyware_evt_cookie
     AS SELECT * FROM public.tr_spyware_evt_cookie;
 
@@ -168,7 +168,7 @@ DROP TABLE public.tr_spyware_evt_cookie;
 -- new tables |
 ---------------
 
--- com.metavize.tran.spyware.SpywareBlacklistEvent
+-- com.untangle.tran.spyware.SpywareBlacklistEvent
 CREATE TABLE events.tr_spyware_evt_blacklist (
     event_id int8 NOT NULL,
     session_id int4,

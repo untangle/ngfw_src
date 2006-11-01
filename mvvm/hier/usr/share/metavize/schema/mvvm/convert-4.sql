@@ -1,4 +1,4 @@
--- com.metavize.mvvm.policy.Policy
+-- com.untangle.mvvm.policy.Policy
 CREATE TABLE settings.policy (
     id int8 NOT NULL,
     is_default bool NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE settings.policy (
 INSERT INTO settings.policy
     VALUES (0, true, 'Default Rack', 'The default rack');
 
--- com.metavize.mvvm.policy.UserPolicyRuleSet
+-- com.untangle.mvvm.policy.UserPolicyRuleSet
 CREATE TABLE settings.mvvm_user_policy_rules (
     set_id int8 NOT NULL,
     PRIMARY KEY (set_id));
@@ -17,7 +17,7 @@ CREATE TABLE settings.mvvm_user_policy_rules (
 INSERT INTO settings.mvvm_user_policy_rules
     VALUES (nextval('hibernate_sequence'));
 
--- com.metavize.mvvm.policy.UserPolicyRule
+-- com.untangle.mvvm.policy.UserPolicyRule
 CREATE TABLE settings.user_policy_rule (
     rule_id int8 NOT NULL,
     protocol_matcher varchar(255),
@@ -39,7 +39,7 @@ CREATE TABLE settings.user_policy_rule (
     position int4,
     PRIMARY KEY (rule_id));
 
--- com.metavize.mvvm.policy.SystemPolicyRule
+-- com.untangle.mvvm.policy.SystemPolicyRule
 CREATE TABLE settings.system_policy_rule (
     rule_id int8 NOT NULL,
     client_intf int2 NOT NULL,
@@ -63,13 +63,13 @@ INSERT INTO settings.system_policy_rule (
     FROM settings.policy
 );
 
--- com.metavize.mvvm.security.Tid
+-- com.untangle.mvvm.security.Tid
 ALTER TABLE settings.tid ADD COLUMN policy_id int8;
 UPDATE settings.tid SET policy_id = 0 FROM
  (SELECT tps.tid FROM transform_persistent_state tps WHERE tps.name NOT LIKE '%-casing' AND tps.name NOT IN ('nat-transform', 'reporting-transform', 'airgap-transform')) AS foo
  WHERE id = foo.tid;
 
--- com.metavize.mvvm.tran.PipelineEndpoints
+-- com.untangle.mvvm.tran.PipelineEndpoints
 DROP TABLE events.pl_endp_new;
 CREATE TABLE events.pl_endp_new (
     event_id int8 NOT NULL,
@@ -107,7 +107,7 @@ ALTER TABLE events.pl_endp
 CREATE INDEX pl_endp_sid_idx ON events.pl_endp (session_id);
 CREATE INDEX pl_endp_cdate_idx ON events.pl_endp (create_date);
 
--- com.metavize.mvvm.MailSettings
+-- com.untangle.mvvm.MailSettings
 ALTER TABLE settings.mail_settings ADD COLUMN smtp_port int4;
 ALTER TABLE settings.mail_settings ADD COLUMN use_tls bool;
 ALTER TABLE settings.mail_settings ADD COLUMN auth_user varchar(255);

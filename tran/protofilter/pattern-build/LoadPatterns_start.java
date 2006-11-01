@@ -7,7 +7,7 @@
  * not disclose such Confidential Information.
  *
  */
-package com.metavize.tran.protofilter;
+package com.untangle.tran.protofilter;
 
 import java.util.TreeMap;
 

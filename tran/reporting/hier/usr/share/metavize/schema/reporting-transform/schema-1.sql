@@ -4,7 +4,7 @@
 -- settings |
 -------------
 
--- com.metavize.tran.reporting.ReportingSettings
+-- com.untangle.tran.reporting.ReportingSettings
 CREATE TABLE settings.tr_reporting_settings (
     id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,

@@ -53,7 +53,7 @@ static struct
 static void _event_hook ( netcap_shield_event_data_t* data );
 
 /*
- * Class:     com_metavize_jnetcap_Shield
+ * Class:     com_untangle_jnetcap_Shield
  * Method:    config
  * Signature: (Ljava/lang/String;)V
  */
@@ -128,7 +128,7 @@ JNIEXPORT void JNICALL JF_Shield( config )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Shield
+ * Class:     com_untangle_jnetcap_Shield
  * Method:    dump
  * Signature: (LI);
  */
@@ -161,7 +161,7 @@ JNIEXPORT void JNICALL JF_Shield( status )
 
 
 /*
- * Class:     com_metavize_jnetcap_Shield
+ * Class:     com_untangle_jnetcap_Shield
  * Method:    addChunk
  * Signature: (JII)V
  */
@@ -175,7 +175,7 @@ JNIEXPORT void JNICALL JF_Shield( addChunk )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Shield
+ * Class:     com_untangle_jnetcap_Shield
  * Method:    registerEventListener
  * Signature: ()V
  */
@@ -228,7 +228,7 @@ JNIEXPORT void JNICALL JF_Shield( registerEventListener )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Shield
+ * Class:     com_untangle_jnetcap_Shield
  * Method:    removeEventListener
  * Signature: ()V
  */
@@ -245,7 +245,7 @@ JNIEXPORT void JNICALL JF_Shield( removeEventListener )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Shield
+ * Class:     com_untangle_jnetcap_Shield
  * Method:    setNodeSettings
  * Signature: ([D[J[J)V
  */

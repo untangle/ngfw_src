@@ -4,7 +4,7 @@
 -- events |
 -----------
 
--- com.metavize.tran.firewall.FirewallEvent
+-- com.untangle.tran.firewall.FirewallEvent
 CREATE TABLE events.tr_firewall_evt (
     event_id int8 NOT NULL,
     pl_endp_id int8,
@@ -14,7 +14,7 @@ CREATE TABLE events.tr_firewall_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.tran.firewall.FirewallStatisticEvent
+-- com.untangle.tran.firewall.FirewallStatisticEvent
 CREATE TABLE events.tr_firewall_statistic_evt (
     event_id int8 NOT NULL,
     tcp_block_default int4,

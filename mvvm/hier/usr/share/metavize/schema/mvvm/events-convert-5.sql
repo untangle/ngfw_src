@@ -17,7 +17,7 @@ ALTER TABLE events.mvvm_tmp RENAME TO pl_stats;
 ALTER TABLE events.pl_stats ALTER COLUMN event_id SET NOT NULL;
 ALTER TABLE events.pl_stats ADD PRIMARY KEY (event_id);
 
--- com.metavize.mvvm.engine.LoginEvent
+-- com.untangle.mvvm.engine.LoginEvent
 DROP TABLE events.mvvm_tmp;
 
 CREATE TABLE events.mvvm_tmp AS

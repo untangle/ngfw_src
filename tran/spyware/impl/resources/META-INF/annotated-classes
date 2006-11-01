@@ -1,4 +1,4 @@
-com.metavize.tran.spyware.SpywareActiveXEvent
-com.metavize.tran.spyware.SpywareStatisticEvent
-com.metavize.tran.spyware.SpywareBlacklistEvent
-com.metavize.tran.spyware.SpywareCookieEvent
+com.untangle.tran.spyware.SpywareActiveXEvent
+com.untangle.tran.spyware.SpywareStatisticEvent
+com.untangle.tran.spyware.SpywareBlacklistEvent
+com.untangle.tran.spyware.SpywareCookieEvent

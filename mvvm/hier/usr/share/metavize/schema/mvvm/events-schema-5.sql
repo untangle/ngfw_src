@@ -4,7 +4,7 @@ CREATE SCHEMA events;
 
 SET search_path TO settings,events,public;
 
--- com.metavize.mvvm.engine.LoginEvent
+-- com.untangle.mvvm.engine.LoginEvent
 CREATE TABLE events.mvvm_login_evt (
     event_id int8 NOT NULL,
     client_addr inet,
@@ -15,7 +15,7 @@ CREATE TABLE events.mvvm_login_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.tran.PipelineEndpoints
+-- com.untangle.mvvm.tran.PipelineEndpoints
 CREATE TABLE events.pl_endp (
     event_id int8 NOT NULL,
     time_stamp timestamp,
@@ -36,7 +36,7 @@ CREATE TABLE events.pl_endp (
     policy_inbound bool,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.tran.PipelineStats
+-- com.untangle.mvvm.tran.PipelineStats
 CREATE TABLE events.pl_stats (
     event_id int8 NOT NULL,
     time_stamp timestamp,
@@ -52,7 +52,7 @@ CREATE TABLE events.pl_stats (
     p2s_chunks int8,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.shield.ShieldRejectionEvent
+-- com.untangle.mvvm.shield.ShieldRejectionEvent
 CREATE TABLE events.shield_rejection_evt (
     event_id int8 NOT NULL,
     client_addr inet,
@@ -65,7 +65,7 @@ CREATE TABLE events.shield_rejection_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.shield.ShieldStatisticEvent
+-- com.untangle.mvvm.shield.ShieldStatisticEvent
 CREATE TABLE events.shield_statistic_evt (
     event_id int8 NOT NULL,
     accepted int4,

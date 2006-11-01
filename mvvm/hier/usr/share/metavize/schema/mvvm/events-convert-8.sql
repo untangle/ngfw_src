@@ -9,7 +9,7 @@ CREATE TABLE reports.report_data_days (
         day_begin date NOT NULL);
 
 
--- com.metavize.mvvm.user.LookupLogEvent
+-- com.untangle.mvvm.user.LookupLogEvent
 CREATE TABLE events.mvvm_lookup_evt (
     event_id    INT8 NOT NULL,
     lookup_key  INT8 NOT NULL,

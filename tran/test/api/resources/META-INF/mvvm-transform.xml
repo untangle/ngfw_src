@@ -3,6 +3,6 @@
 <mvvm-transform>
   <transform-desc name="test-transform"
                   display-name="Test Device"
-                  classname="com.metavize.tran.test.TestTransformImpl"
-                  gui-classname="com.metavize.tran.test.gui.MTransformJPanel"/>
+                  classname="com.untangle.tran.test.TestTransformImpl"
+                  gui-classname="com.untangle.tran.test.gui.MTransformJPanel"/>
 </mvvm-transform>

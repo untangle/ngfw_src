@@ -4,7 +4,7 @@
 -- settings |
 -------------
 
--- com.metavize.tran.protofilter.ProtoFilterSettings
+-- com.untangle.tran.protofilter.ProtoFilterSettings
 CREATE TABLE settings.tr_protofilter_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
@@ -14,7 +14,7 @@ CREATE TABLE settings.tr_protofilter_settings (
     stripzeros bool,
     PRIMARY KEY (settings_id));
 
--- com.metavize.tran.protofilter.ProtoFilterPattern
+-- com.untangle.tran.protofilter.ProtoFilterPattern
 CREATE TABLE settings.tr_protofilter_pattern (
     rule_id int8 NOT NULL,
     protocol varchar(255),
@@ -33,7 +33,7 @@ CREATE TABLE settings.tr_protofilter_pattern (
 -- events |
 -----------
 
--- com.metavize.tran.protofilter.ProtoFilterLogEvent
+-- com.untangle.tran.protofilter.ProtoFilterLogEvent
 CREATE TABLE events.tr_protofilter_evt (
     event_id int8 NOT NULL,
     session_id int4,

@@ -1,4 +1,4 @@
-com.metavize.tran.spam.SpamIMAPConfig
-com.metavize.tran.spam.SpamPOPConfig
-com.metavize.tran.spam.SpamSMTPConfig
-com.metavize.tran.spam.SpamSettings
+com.untangle.tran.spam.SpamIMAPConfig
+com.untangle.tran.spam.SpamPOPConfig
+com.untangle.tran.spam.SpamSMTPConfig
+com.untangle.tran.spam.SpamSettings

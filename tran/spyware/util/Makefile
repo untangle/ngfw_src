@@ -1,4 +1,4 @@
-TARGET_DIR=../resources/spyware/com/metavize/tran/spyware
+TARGET_DIR=../resources/spyware/com/untangle/tran/spyware
 
 all: clean build
 	cp ./urlblacklist.txt $(TARGET_DIR)

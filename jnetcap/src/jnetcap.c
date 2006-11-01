@@ -31,7 +31,7 @@
 #include <jmvutil.h>
 
 #include "jnetcap.h"
-#include "com_metavize_jnetcap_Netcap.h"
+#include "com_untangle_jnetcap_Netcap.h"
 
 /* Too hard to include kernel include files, so we just define it again here. XXX */
 #ifndef SCHED_NORMAL
@@ -232,7 +232,7 @@ JNIEXPORT jint JNICALL JF_Netcap( init )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    setSessionLimit
  * Signature: (I)V
  */
@@ -250,7 +250,7 @@ JNIEXPORT void JNICALL JF_Netcap( setSessionLimit )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    setNewSessionSchedPolicy
  * Signature: (I)V
  */
@@ -263,7 +263,7 @@ JNIEXPORT void JNICALL JF_Netcap( setNewSessionSchedPolicy )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    setSessionSchedPolicy
  * Signature: (I)V
  */
@@ -281,7 +281,7 @@ JNIEXPORT void JNICALL JF_Netcap( setSessionSchedPolicy )
  */
 #define _DATA_NUM_ITEMS 3
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    getInterfaceDataArray
  * Signature: ();
  */
@@ -372,7 +372,7 @@ JNIEXPORT void JNICALL JF_Netcap( cleanup )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    convertStringToIntf
  * Signature: (Ljava/lang/String;)B
  */
@@ -399,7 +399,7 @@ JNIEXPORT jbyte JNICALL JF_Netcap( convertStringToIntf )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    convertIntfToString
  * Signature: (I)Ljava/lang/String;
  */
@@ -418,7 +418,7 @@ JNIEXPORT jstring JNICALL JF_Netcap( convertIntfToString )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    debugLevel
  * Signature: (I)V
  */
@@ -441,7 +441,7 @@ JNIEXPORT void JNICALL JF_Netcap( debugLevel )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    donateThreads
  * Signature: (I)I
  */
@@ -473,7 +473,7 @@ JNIEXPORT jint JNICALL JF_Netcap( donateThreads )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    startScheduler
  * Signature: ()I
  */
@@ -504,9 +504,9 @@ JNIEXPORT jint JNICALL JF_Netcap( startScheduler )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    registerUDPHook
- * Signature: (Lcom/metavize/jnetcap/Hook;)I
+ * Signature: (Lcom/untangle/jnetcap/Hook;)I
  */
 JNIEXPORT jint JNICALL JF_Netcap( registerUDPHook )
   (JNIEnv *env, jclass _class, jobject udp_hook )
@@ -515,9 +515,9 @@ JNIEXPORT jint JNICALL JF_Netcap( registerUDPHook )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    registerTCPHook
- * Signature: (Lcom/metavize/jnetcap/Hook;)I
+ * Signature: (Lcom/untangle/jnetcap/Hook;)I
  */
 JNIEXPORT jint JNICALL JF_Netcap( registerTCPHook )
   (JNIEnv *env, jclass _class, jobject tcp_hook )
@@ -526,9 +526,9 @@ JNIEXPORT jint JNICALL JF_Netcap( registerTCPHook )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    unregisterUDPHook
- * Signature: (Lcom/metavize/jnetcap/Hook;)I
+ * Signature: (Lcom/untangle/jnetcap/Hook;)I
  */
 JNIEXPORT jint JNICALL JF_Netcap( unregisterUDPHook )
 (JNIEnv *env, jclass _class )
@@ -537,9 +537,9 @@ JNIEXPORT jint JNICALL JF_Netcap( unregisterUDPHook )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    unregisterTCPHook
- * Signature: (Lcom/metavize/jnetcap/Hook;)I
+ * Signature: (Lcom/untangle/jnetcap/Hook;)I
  */
 JNIEXPORT jint JNICALL JF_Netcap( unregisterTCPHook )
 (JNIEnv *env, jclass _class )
@@ -548,7 +548,7 @@ JNIEXPORT jint JNICALL JF_Netcap( unregisterTCPHook )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    isBroadcast
  * Signature: (J)Z
  */
@@ -564,7 +564,7 @@ JNIEXPORT jboolean JNICALL JF_Netcap( isBroadcast )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    updateIcmpPacket
  * Signature: ([BIII)V
  */
@@ -606,7 +606,7 @@ JNIEXPORT jint JNICALL JF_Netcap( updateIcmpPacket )
 
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    isMulticast
  * Signature: (J)Z
  */
@@ -622,7 +622,7 @@ JNIEXPORT jboolean JNICALL JF_Netcap( isMulticast )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    updateAddress
  * Signature: ()V;
  */
@@ -635,7 +635,7 @@ JNIEXPORT void JNICALL JF_Netcap( updateAddress )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    cTcpRedirectPorts
  * Signature: ()V;
  */
@@ -660,7 +660,7 @@ JNIEXPORT jintArray JNICALL JF_Netcap( cTcpRedirectPorts )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    cUdpDivertPort
  * Signature: ()I;
  */
@@ -677,11 +677,11 @@ JNIEXPORT jint JNICALL JF_Netcap( cUdpDivertPort )
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    cGetOutgoingInterface
  * Signature: (J)B
  */
-JNIEXPORT jbyte JNICALL Java_com_metavize_jnetcap_Netcap_cGetOutgoingInterface
+JNIEXPORT jbyte JNICALL Java_com_untangle_jnetcap_Netcap_cGetOutgoingInterface
   (JNIEnv* env, jobject _this, jlong j_address )
 {
     struct in_addr address = {
@@ -700,11 +700,11 @@ JNIEXPORT jbyte JNICALL Java_com_metavize_jnetcap_Netcap_cGetOutgoingInterface
 }
 
 /*
- * Class:     com_metavize_jnetcap_Netcap
+ * Class:     com_untangle_jnetcap_Netcap
  * Method:    cConfigureInterfaceArray
  * Signature: ([Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_metavize_jnetcap_Netcap_cConfigureInterfaceArray
+JNIEXPORT void JNICALL Java_com_untangle_jnetcap_Netcap_cConfigureInterfaceArray
   (JNIEnv* env , jobject _this, jbyteArray j_intf_array, jobjectArray j_interface_array )
 {
     int  num_intf;

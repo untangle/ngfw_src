@@ -22,7 +22,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>WebProxy</servlet-name>
     <servlet-class>
-      com.metavize.tran.portal.proxy.WebProxy
+      com.untangle.tran.portal.proxy.WebProxy
     </servlet-class>
   </servlet>
 
@@ -39,7 +39,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>ForwardServlet</servlet-name>
     <servlet-class>
-      com.metavize.tran.portal.proxy.ForwardServlet
+      com.untangle.tran.portal.proxy.ForwardServlet
     </servlet-class>
   </servlet>
 

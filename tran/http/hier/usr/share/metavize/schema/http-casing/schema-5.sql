@@ -4,7 +4,7 @@
 -- settings |
 -------------
 
--- com.metavize.tran.http.HttpSettings
+-- com.untangle.tran.http.HttpSettings
 CREATE TABLE settings.tr_http_settings (
     settings_id int8 NOT NULL,
     enabled bool NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE settings.tr_http_settings (
 -- events |
 -----------
 
--- com.metavize.tran.http.HttpResponseEvent
+-- com.untangle.tran.http.HttpResponseEvent
 CREATE TABLE events.tr_http_evt_resp (
     event_id int8 NOT NULL,
     request_id int8,
@@ -28,7 +28,7 @@ CREATE TABLE events.tr_http_evt_resp (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.tran.http.HttpRequestEvent
+-- com.untangle.tran.http.HttpRequestEvent
 CREATE TABLE events.tr_http_evt_req (
     event_id int8 NOT NULL,
     session_id int4,
@@ -38,7 +38,7 @@ CREATE TABLE events.tr_http_evt_req (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.tran.http.RequestLine
+-- com.untangle.tran.http.RequestLine
 CREATE TABLE events.tr_http_req_line (
     request_id int8 NOT NULL,
     method char(1),

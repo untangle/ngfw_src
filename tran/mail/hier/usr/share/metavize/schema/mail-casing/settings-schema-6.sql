@@ -4,7 +4,7 @@
 -- tables |
 -----------
 
--- com.metavize.tran.mail.papi.MailTransformSettings
+-- com.untangle.tran.mail.papi.MailTransformSettings
 CREATE TABLE settings.tr_mail_settings (
     settings_id int8 NOT NULL,
     smtp_enabled bool NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE settings.tr_mail_settings (
     quarantine_settings int8,
     PRIMARY KEY (settings_id));
 
--- com.metavize.tran.mail.papi.quarantine.QuarantineSettings
+-- com.untangle.tran.mail.papi.quarantine.QuarantineSettings
 CREATE TABLE settings.tr_mail_quarantine_settings (
     settings_id int8 NOT NULL,
     max_intern_time int8 NOT NULL,
@@ -30,32 +30,32 @@ CREATE TABLE settings.tr_mail_quarantine_settings (
     max_quarantine_sz int8 NOT NULL,
     PRIMARY KEY (settings_id));
 
--- com.metavize.tran.mail.papi.safelist.SafelistRecipient
+-- com.untangle.tran.mail.papi.safelist.SafelistRecipient
 CREATE TABLE settings.tr_mail_safels_recipient (
     id int8 NOT NULL,
     addr text NOT NULL,
     PRIMARY KEY (id));
 
--- com.metavize.tran.mail.papi.safelist.SafelistSender
+-- com.untangle.tran.mail.papi.safelist.SafelistSender
 CREATE TABLE settings.tr_mail_safels_sender (
     LIKE settings.tr_mail_safels_recipient,
     PRIMARY KEY (id));
 
--- com.metavize.tran.mail.papi.safelist.SafelistSettings
+-- com.untangle.tran.mail.papi.safelist.SafelistSettings
 CREATE TABLE settings.tr_mail_safels_settings (
     safels_id int8 NOT NULL,
     recipient int8 NOT NULL,
     sender int8 NOT NULL,
     PRIMARY KEY (safels_id));
 
--- com.metavize.tran.mail.papi.MailTransformSettings.safelists (list construct)
+-- com.untangle.tran.mail.papi.MailTransformSettings.safelists (list construct)
 CREATE TABLE settings.tr_mail_safelists (
     safels_id int8 NOT NULL,
     setting_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.metavize.tran.mail.papi.EmailAddressPairRule
+-- com.untangle.tran.mail.papi.EmailAddressPairRule
 CREATE TABLE settings.email_addr_pair_rule (
     rule_id int8 NOT NULL,
     address1 text,
@@ -70,7 +70,7 @@ CREATE TABLE settings.email_addr_pair_rule (
     settings_id int8,    
     PRIMARY KEY (rule_id));
 
--- com.metavize.mvvm.tran.EmailAddressRule
+-- com.untangle.mvvm.tran.EmailAddressRule
 CREATE TABLE settings.email_addr_rule (
     rule_id int8 NOT NULL,
     address text,

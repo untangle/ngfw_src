@@ -10,13 +10,13 @@ SET search_path TO settings,events,public;
 
 CREATE SEQUENCE settings.hibernate_sequence;
 
--- com.metavize.mvvm.security.AdminSettings
+-- com.untangle.mvvm.security.AdminSettings
 CREATE TABLE settings.admin_settings (
     admin_settings_id int8 NOT NULL,
     summary_period_id int8,
     PRIMARY KEY (admin_settings_id));
 
--- com.metavize.mvvm.security.User
+-- com.untangle.mvvm.security.User
 CREATE TABLE settings.mvvm_user (
     id int8 NOT NULL,
     login varchar(24) NOT NULL,
@@ -27,14 +27,14 @@ CREATE TABLE settings.mvvm_user (
     admin_setting_id int8,
     PRIMARY KEY (id));
 
--- com.metavize.mvvm.UpgradeSettings
+-- com.untangle.mvvm.UpgradeSettings
 CREATE TABLE settings.upgrade_settings (
     upgrade_settings_id int8 NOT NULL,
     auto_upgrade bool NOT NULL,
     period int8 NOT NULL,
     PRIMARY KEY (upgrade_settings_id));
 
--- com.metavize.mvvm.MailSettings
+-- com.untangle.mvvm.MailSettings
 CREATE TABLE settings.mail_settings (
     mail_settings_id int8 NOT NULL,
     report_email varchar(255),
@@ -42,20 +42,20 @@ CREATE TABLE settings.mail_settings (
     from_address varchar(255),
     PRIMARY KEY (mail_settings_id));
 
--- com.metavize.mvvm.engine.TransformPersistentState.args
+-- com.untangle.mvvm.engine.TransformPersistentState.args
 CREATE TABLE settings.transform_args (
     tps_id int8 NOT NULL,
     arg varchar(255) NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (tps_id, position));
 
--- com.metavize.mvvm.engine.TransformManagerState
+-- com.untangle.mvvm.engine.TransformManagerState
 CREATE TABLE settings.transform_manager_state (
     id int8 NOT NULL,
     last_tid int8,
     PRIMARY KEY (id));
 
--- com.metavize.mvvm.tran.UriRule
+-- com.untangle.mvvm.tran.UriRule
 CREATE TABLE settings.uri_rule (
     rule_id int8 NOT NULL,
     uri varchar(255),
@@ -67,7 +67,7 @@ CREATE TABLE settings.uri_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.metavize.mvvm.Period
+-- com.untangle.mvvm.Period
 CREATE TABLE settings.period (
     period_id int8 NOT NULL,
     hour int4 NOT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE settings.period (
     saturday bool,
     PRIMARY KEY (period_id));
 
--- com.metavize.mvvm.tran.TransformPreferences
+-- com.untangle.mvvm.tran.TransformPreferences
 CREATE TABLE settings.transform_preferences (
     id int8 NOT NULL,
     tid int8,
@@ -91,7 +91,7 @@ CREATE TABLE settings.transform_preferences (
     alpha int4,
     PRIMARY KEY (id));
 
--- com.metavize.mvvm.tran.StringRule
+-- com.untangle.mvvm.tran.StringRule
 CREATE TABLE settings.string_rule (
     rule_id int8 NOT NULL,
     string varchar(255),
@@ -103,12 +103,12 @@ CREATE TABLE settings.string_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.metavize.mvvm.security.Tid
+-- com.untangle.mvvm.security.Tid
 CREATE TABLE settings.tid (
     id int8 NOT NULL,
     PRIMARY KEY (id));
 
--- com.metavize.mvvm.tran.Rule
+-- com.untangle.mvvm.tran.Rule
 CREATE TABLE settings.rule (
     rule_id int8 NOT NULL,
     name varchar(255),
@@ -119,7 +119,7 @@ CREATE TABLE settings.rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.metavize.mvvm.engine.TransformPersistentState
+-- com.untangle.mvvm.engine.TransformPersistentState
 CREATE TABLE settings.transform_persistent_state (
     id int8 NOT NULL,
     name varchar(64) NOT NULL,
@@ -128,13 +128,13 @@ CREATE TABLE settings.transform_persistent_state (
     target_state varchar(255) NOT NULL,
     PRIMARY KEY (id));
 
--- com.metavize.mvvm.tran.IPMaddrDirectory
+-- com.untangle.mvvm.tran.IPMaddrDirectory
 CREATE TABLE settings.ipmaddr_dir (
     id int8 NOT NULL,
     notes varchar(255),
     PRIMARY KEY (id));
 
--- com.metavize.mvvm.tran.StringRule
+-- com.untangle.mvvm.tran.StringRule
 CREATE TABLE settings.mimetype_rule (
     rule_id int8 NOT NULL,
     mime_type varchar(255),
@@ -146,14 +146,14 @@ CREATE TABLE settings.mimetype_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.metavize.mvvm.tran.IPMaddrDirectory.entries
+-- com.untangle.mvvm.tran.IPMaddrDirectory.entries
 CREATE TABLE settings.ipmaddr_dir_entries (
     ipmaddr_dir_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (ipmaddr_dir_id, position));
 
--- com.metavize.mvvm.tran.IPMaddrRule
+-- com.untangle.mvvm.tran.IPMaddrRule
 CREATE TABLE settings.ipmaddr_rule (
     rule_id int8 NOT NULL,
     ipmaddr inet,
@@ -169,7 +169,7 @@ CREATE TABLE settings.ipmaddr_rule (
 -- events |
 -----------
 
--- com.metavize.mvvm.engine.LoginEvent
+-- com.untangle.mvvm.engine.LoginEvent
 CREATE TABLE events.mvvm_login_evt (
     event_id int8 NOT NULL,
     client_addr inet,
@@ -180,7 +180,7 @@ CREATE TABLE events.mvvm_login_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.tran.PipelineEndpoints
+-- com.untangle.mvvm.tran.PipelineEndpoints
 CREATE TABLE events.pl_endp (
     event_id int8 NOT NULL,
     time_stamp timestamp,
@@ -199,7 +199,7 @@ CREATE TABLE events.pl_endp (
     s_server_port int4,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.tran.PipelineStats
+-- com.untangle.mvvm.tran.PipelineStats
 CREATE TABLE events.pl_stats (
     event_id int8 NOT NULL,
     time_stamp timestamp,
@@ -215,7 +215,7 @@ CREATE TABLE events.pl_stats (
     p2s_chunks int8,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.shield.ShieldRejectionEvent
+-- com.untangle.mvvm.shield.ShieldRejectionEvent
 CREATE TABLE events.shield_rejection_evt (
     event_id int8 NOT NULL,
     client_addr inet,
@@ -228,7 +228,7 @@ CREATE TABLE events.shield_rejection_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.mvvm.shield.ShieldStatisticEvent
+-- com.untangle.mvvm.shield.ShieldStatisticEvent
 CREATE TABLE events.shield_statistic_evt (
     event_id int8 NOT NULL,
     accepted int4,

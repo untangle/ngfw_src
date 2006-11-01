@@ -4,7 +4,7 @@
 -- move old tables to new schemas |
 -----------------------------------
 
--- com.metavize.tran.airgap.AirgapSettings
+-- com.untangle.tran.airgap.AirgapSettings
 CREATE TABLE settings.tr_airgap_settings
     AS SELECT * FROM public.tr_airgap_settings;
 

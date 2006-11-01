@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.metavize.mvvm.*" %>
+<%@ page language="java" import="com.untangle.mvvm.*" %>
 
 <%
 

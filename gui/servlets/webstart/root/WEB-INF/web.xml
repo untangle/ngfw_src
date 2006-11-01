@@ -11,7 +11,7 @@
   <description>Untangle Networks Webstart</description>
 
   <servlet-mapping>
-    <servlet-name>com.metavize.gui.webstart.jsp.index_jsp</servlet-name>
+    <servlet-name>com.untangle.gui.webstart.jsp.index_jsp</servlet-name>
     <url-pattern>*.html</url-pattern>
   </servlet-mapping>
 

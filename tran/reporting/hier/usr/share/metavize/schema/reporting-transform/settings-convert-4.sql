@@ -12,7 +12,7 @@ ALTER TABLE settings.tr_reporting_settings
    ADD COLUMN schedule int8;
 -- when converting, defaults for schedule are generated in code
 
--- com.metavize.tran.reporting.Schedule
+-- com.untangle.tran.reporting.Schedule
 -- day of week based on java.util.Calendar constants
 -- -1 (None), 1 (Sun), 2 (Mon), 3 (Tue), 4 (Wed), 5 (Thu), 6 (Fri), 7 (Sat)
 CREATE TABLE settings.tr_reporting_sched (
@@ -23,7 +23,7 @@ CREATE TABLE settings.tr_reporting_sched (
     monthly_n_first bool NOT NULL,
     PRIMARY KEY (id));
 
--- com.metavize.tran.reporting.WeeklyScheduleRule
+-- com.untangle.tran.reporting.WeeklyScheduleRule
 -- day of week based on java.util.Calendar constants
 -- 1 (Sun), 2 (Mon), 3 (Tue), 4 (Wed), 5 (Thu), 6 (Fri), 7 (Sat)
 CREATE TABLE settings.tr_reporting_wk_sched_rule (
@@ -31,7 +31,7 @@ CREATE TABLE settings.tr_reporting_wk_sched_rule (
     day int4 NOT NULL,
     PRIMARY KEY (id));
 
--- com.metavize.tran.reporting.ReportingSettings.weeklySchedule (list construct)
+-- com.untangle.tran.reporting.ReportingSettings.weeklySchedule (list construct)
 CREATE TABLE settings.tr_reporting_wk_sched (
     rule_id int8 NOT NULL,
     setting_id int8 NOT NULL,

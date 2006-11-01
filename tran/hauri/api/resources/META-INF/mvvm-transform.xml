@@ -14,8 +14,8 @@ $Id: mvvm-transform.xml,v 1.2 2005/03/08 23:05:46 inieves Exp $
 <mvvm-transform>
   <transform-desc name="hauri-transform"
                   display-name="Hauri AntiVirus Scanner"
-                  classname="com.metavize.tran.hauri.HauriTransform"
-                  gui-classname="com.metavize.tran.hauri.gui.MTransformJPanel"
+                  classname="com.untangle.tran.hauri.HauriTransform"
+                  gui-classname="com.untangle.tran.hauri.gui.MTransformJPanel"
                   transform-base="virus-base"/>
   <parent>http-casing</parent>
   <parent>mail-casing</parent>

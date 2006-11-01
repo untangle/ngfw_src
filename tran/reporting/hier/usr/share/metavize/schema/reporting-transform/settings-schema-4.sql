@@ -4,7 +4,7 @@
 -- settings |
 -------------
 
--- com.metavize.tran.reporting.ReportingSettings
+-- com.untangle.tran.reporting.ReportingSettings
 CREATE TABLE settings.tr_reporting_settings (
     id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
@@ -13,7 +13,7 @@ CREATE TABLE settings.tr_reporting_settings (
     schedule int8,
     PRIMARY KEY (id));
 
--- com.metavize.tran.reporting.Schedule
+-- com.untangle.tran.reporting.Schedule
 -- day of week based on java.util.Calendar constants
 -- 1 (Sun), 2 (Mon), 3 (Tue), 4 (Wed), 5 (Thu), 6 (Fri), 7 (Sat)
 CREATE TABLE settings.tr_reporting_sched (
@@ -24,7 +24,7 @@ CREATE TABLE settings.tr_reporting_sched (
     monthly_n_first bool,
     PRIMARY KEY (id));
 
--- com.metavize.tran.reporting.WeeklyScheduleRule
+-- com.untangle.tran.reporting.WeeklyScheduleRule
 -- day of week based on java.util.Calendar constants
 -- 1 (Sun), 2 (Mon), 3 (Tue), 4 (Wed), 5 (Thu), 6 (Fri), 7 (Sat)
 CREATE TABLE settings.tr_reporting_wk_sched_rule (
@@ -32,7 +32,7 @@ CREATE TABLE settings.tr_reporting_wk_sched_rule (
     day int4 NOT NULL,
     PRIMARY KEY (id));
 
--- com.metavize.tran.reporting.ReportingSettings.weeklySchedule (list construct)
+-- com.untangle.tran.reporting.ReportingSettings.weeklySchedule (list construct)
 CREATE TABLE settings.tr_reporting_wk_sched (
     rule_id int8 NOT NULL,
     setting_id int8 NOT NULL,

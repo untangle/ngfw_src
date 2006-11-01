@@ -28,7 +28,7 @@ deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
 jts << JarTarget.buildTarget(mvvm, deps, 'impl', 'mvvm/impl')
 
 # servlets
-ServletBuilder.new(mvvm, 'com.metavize.mvvm.invoker.jsp',
+ServletBuilder.new(mvvm, 'com.untangle.mvvm.invoker.jsp',
                    'mvvm/servlets/http-invoker', [], [],
                    [$BuildEnv.servletcommon], true)
 
@@ -36,16 +36,16 @@ deps = %w( commons-httpclient-3.0/commons-httpclient-3.0.jar
            commons-codec-1.3/commons-codec-1.3.jar
            commons-fileupload-1.1/commons-fileupload-1.1.jar
          ).map { |n| ThirdpartyJar.get("#{$BuildEnv.downloads}/#{n}") }
-ServletBuilder.new(mvvm, 'com.metavize.mvvm.store.jsp',
+ServletBuilder.new(mvvm, 'com.untangle.mvvm.store.jsp',
                    'mvvm/servlets/onlinestore', deps)
 
 deps = [ 'logging-log4j-1.2.9/dist/lib/log4j-1.2.9.jar' ].map { |n| ThirdpartyJar.get("#{$BuildEnv.downloads}/#{n}") }
-ServletBuilder.new(mvvm, 'com.metavize.mvvm.reports.jsp',
+ServletBuilder.new(mvvm, 'com.untangle.mvvm.reports.jsp',
                    'mvvm/servlets/reports', deps)
 
 deps = FileList["#{$BuildEnv.downloads}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
 ms = [ MoveSpec.new("#{$BuildEnv.downloads}/Ajax/WebRoot/js", '**/*', 'AjaxTk')]
-ServletBuilder.new(mvvm, 'com.metavize.mvvm.root.jsp',
+ServletBuilder.new(mvvm, 'com.untangle.mvvm.root.jsp',
                    'mvvm/servlets/ROOT', deps, ms)
 
 ajaxTkList =
@@ -171,7 +171,7 @@ end
 $InstallTarget.registerDependency(bundledAjx)
 
 deps = [ 'logging-log4j-1.2.9/dist/lib/log4j-1.2.9.jar' ].map { |n| ThirdpartyJar.get("#{$BuildEnv.downloads}/#{n}") }
-ServletBuilder.new(mvvm, 'com.metavize.mvvm.sessiondumper.jsp',
+ServletBuilder.new(mvvm, 'com.untangle.mvvm.sessiondumper.jsp',
                    'mvvm/servlets/session-dumper', deps)
 
 ms = MoveSpec.new('mvvm/hier', FileList['mvvm/hier/**/*'], mvvm.distDirectory)

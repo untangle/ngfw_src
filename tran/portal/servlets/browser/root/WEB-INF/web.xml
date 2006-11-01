@@ -71,7 +71,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>FileLister</servlet-name>
     <servlet-class>
-      com.metavize.tran.portal.browser.FileLister
+      com.untangle.tran.portal.browser.FileLister
     </servlet-class>
   </servlet>
 
@@ -83,7 +83,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>FileGetter</servlet-name>
     <servlet-class>
-      com.metavize.tran.portal.browser.FileGetter
+      com.untangle.tran.portal.browser.FileGetter
     </servlet-class>
   </servlet>
 
@@ -95,7 +95,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>FileSaver</servlet-name>
     <servlet-class>
-      com.metavize.tran.portal.browser.FileSaver
+      com.untangle.tran.portal.browser.FileSaver
     </servlet-class>
   </servlet>
 
@@ -107,7 +107,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>CommandRunner</servlet-name>
     <servlet-class>
-      com.metavize.tran.portal.browser.CommandRunner
+      com.untangle.tran.portal.browser.CommandRunner
     </servlet-class>
   </servlet>
 
@@ -119,7 +119,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>ImageScaler</servlet-name>
     <servlet-class>
-      com.metavize.tran.portal.browser.ImageScaler
+      com.untangle.tran.portal.browser.ImageScaler
     </servlet-class>
   </servlet>
 
@@ -131,7 +131,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>SmbLogin</servlet-name>
     <servlet-class>
-      com.metavize.tran.portal.browser.SmbLogin
+      com.untangle.tran.portal.browser.SmbLogin
     </servlet-class>
   </servlet>
 

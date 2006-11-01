@@ -4,7 +4,7 @@
 -- new tables |
 ---------------
 
--- com.metavize.tran.virus.VirusSMTPConfig
+-- com.untangle.tran.virus.VirusSMTPConfig
 CREATE TABLE settings.tr_virus_smtp_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE settings.tr_virus_smtp_config (
     notes varchar(255),
     PRIMARY KEY (config_id));
 
--- com.metavize.tran.virus.VirusPOPConfig
+-- com.untangle.tran.virus.VirusPOPConfig
 CREATE TABLE settings.tr_virus_pop_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE settings.tr_virus_pop_config (
     notes varchar(255),
     PRIMARY KEY (config_id));
 
--- com.metavize.tran.virus.VirusIMAPConfig
+-- com.untangle.tran.virus.VirusIMAPConfig
 CREATE TABLE settings.tr_virus_imap_config (
     config_id int8 NOT NULL,
     scan bool NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE settings.tr_virus_imap_config (
     notes varchar(255),
     PRIMARY KEY (config_id));
 
--- com.metavize.tran.virus.VirusSmtpEvent
+-- com.untangle.tran.virus.VirusSmtpEvent
 CREATE TABLE events.tr_virus_evt_smtp (
     event_id int8 NOT NULL,
     msg_id int8,
@@ -42,7 +42,7 @@ CREATE TABLE events.tr_virus_evt_smtp (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.tran.virus.VirusMailEvent
+-- com.untangle.tran.virus.VirusMailEvent
 CREATE TABLE events.tr_virus_evt_mail (
     event_id int8 NOT NULL,
     msg_id int8,
@@ -58,7 +58,7 @@ CREATE TABLE events.tr_virus_evt_mail (
 -- move old tables to new schemas |
 -----------------------------------
 
--- com.metavize.tran.virus.VirusSettings
+-- com.untangle.tran.virus.VirusSettings
 -- (adding smtp_inbound, smtp_outbound, pop_inbound, pop_outbound,
 --  imap_inbound, imap_outbound)
 CREATE TABLE settings.tr_virus_settings (
@@ -164,7 +164,7 @@ ALTER TABLE settings.tr_virus_settings
 ALTER TABLE settings.tr_virus_settings
     ALTER COLUMN imap_outbound SET NOT NULL;
 
--- com.metavize.tran.virus.VirusSettings.extensions
+-- com.untangle.tran.virus.VirusSettings.extensions
 CREATE TABLE settings.tr_virus_vs_ext
     AS SELECT * FROM public.tr_virus_vs_ext;
 
@@ -178,7 +178,7 @@ ALTER TABLE settings.tr_virus_vs_ext
 ALTER TABLE settings.tr_virus_vs_ext
     ALTER COLUMN position SET NOT NULL;
 
--- com.metavize.tran.virus.VirusConfig
+-- com.untangle.tran.virus.VirusConfig
 CREATE TABLE settings.tr_virus_config
     AS SELECT * FROM public.tr_virus_config;
 
@@ -188,7 +188,7 @@ ALTER TABLE settings.tr_virus_config
 ALTER TABLE settings.tr_virus_config
     ALTER COLUMN config_id SET NOT NULL;
 
--- com.metavize.tran.virus.VirusSettings.httpMimeTypes
+-- com.untangle.tran.virus.VirusSettings.httpMimeTypes
 CREATE TABLE settings.tr_virus_vs_mt
     AS SELECT * FROM public.tr_virus_vs_mt;
 
@@ -202,7 +202,7 @@ ALTER TABLE settings.tr_virus_vs_mt
 ALTER TABLE settings.tr_virus_vs_mt
     ALTER COLUMN position SET NOT NULL;
 
--- com.metavize.tran.virus.VirusLogEvent
+-- com.untangle.tran.virus.VirusLogEvent
 
 -- add vendor name
 CREATE TABLE events.tr_virus_evt
@@ -216,7 +216,7 @@ ALTER TABLE events.tr_virus_evt
 ALTER TABLE events.tr_virus_evt
     ALTER COLUMN event_id SET NOT NULL;
 
--- com.metavize.tran.virus.VirusHttpEvent
+-- com.untangle.tran.virus.VirusHttpEvent
 
 CREATE TABLE events.tr_virus_evt_http
     AS SELECT event_id, request_line, clean, virus_name, virus_cleaned,

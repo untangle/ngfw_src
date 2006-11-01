@@ -27,7 +27,7 @@ jt = JarTarget.buildTarget(gui, deps, 'impl', 'gui/impl')
 $InstallTarget.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 mini.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 
-ServletBuilder.new(gui, 'com.metavize.gui.webstart.jsp',
+ServletBuilder.new(gui, 'com.untangle.gui.webstart.jsp',
                    'gui/servlets/webstart', [], [], [$BuildEnv.servletcommon],
                    false, ['gui.jnlp', 'gui-local.jnlp', 'gui-local-cd', 'index.jsp'])
 

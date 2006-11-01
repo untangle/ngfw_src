@@ -3,6 +3,6 @@
 <mvvm-transform>
   <transform-desc name="airgap-transform"
                   display-name="Attack Shield"
-                  classname="com.metavize.tran.airgap.AirgapTransformImpl"
-                  gui-classname="com.metavize.tran.airgap.gui.MTransformJPanel"/>
+                  classname="com.untangle.tran.airgap.AirgapTransformImpl"
+                  gui-classname="com.untangle.tran.airgap.gui.MTransformJPanel"/>
 </mvvm-transform>

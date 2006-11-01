@@ -14,6 +14,6 @@ $Id$
 <mvvm-transform>
   <transform-desc name="sigma-transform"
                   display-name="Sigma Transform"
-                  classname="com.metavize.tran.sigma.SigmaImpl"
-                  gui-classname="com.metavize.tran.sigma.gui.MTransformJPanel"/>
+                  classname="com.untangle.tran.sigma.SigmaImpl"
+                  gui-classname="com.untangle.tran.sigma.gui.MTransformJPanel"/>
 </mvvm-transform>

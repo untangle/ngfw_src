@@ -4,7 +4,7 @@
 -- settings |
 -------------
 
--- com.metavize.tran.firewall.FirewallRule
+-- com.untangle.tran.firewall.FirewallRule
 CREATE TABLE settings.firewall_rule (
     rule_id int8 NOT NULL,
     is_traffic_blocker bool,
@@ -23,14 +23,14 @@ CREATE TABLE settings.firewall_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.metavize.tran.firewall.FirewallSettings.firewallRuleList
+-- com.untangle.tran.firewall.FirewallSettings.firewallRuleList
 CREATE TABLE settings.tr_firewall_rules (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.metavize.tran.firewall.FirewallSettings
+-- com.untangle.tran.firewall.FirewallSettings
 CREATE TABLE settings.tr_firewall_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,

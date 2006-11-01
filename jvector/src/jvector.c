@@ -85,8 +85,8 @@ static struct
 #define J_EVENT_TYPE           "type"
 #define J_EVENT_TYPE_SIG       "()I"
 
-#define J_SHUTDOWN_CRUMB       "com/metavize/jvector/ShutdownCrumb"
-#define J_RESET_CRUMB          "com/metavize/jvector/ResetCrumb"
+#define J_SHUTDOWN_CRUMB       "com/untangle/jvector/ShutdownCrumb"
+#define J_RESET_CRUMB          "com/untangle/jvector/ResetCrumb"
 
 #define J_GET_INSTANCE        "getInstance"
 #define J_GET_INSTANCE_SIG    "()"

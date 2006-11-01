@@ -1,2 +1,2 @@
-com.metavize.tran.nat.NatSettingsImpl
-com.metavize.tran.nat.RedirectEvent
+com.untangle.tran.nat.NatSettingsImpl
+com.untangle.tran.nat.RedirectEvent

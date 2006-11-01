@@ -7,6 +7,6 @@ TransformBuilder.makeTransform('httpblocker', [http['localapi']], [http['gui']])
 
 deps = [Package['mvvm']['api'], httpblocker['gui']]
 
-ServletBuilder.new(httpblocker, 'com.metavize.tran.httpblocker.jsp',
+ServletBuilder.new(httpblocker, 'com.untangle.tran.httpblocker.jsp',
                    'tran/httpblocker/servlets/httpblocker', deps, [],
                    [$BuildEnv.servletcommon])

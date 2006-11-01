@@ -1,6 +1,6 @@
 -- events schema for release 4.0
 
--- com.metavize.tran.httpblocker.HttpBlockerEvent
+-- com.untangle.tran.httpblocker.HttpBlockerEvent
 CREATE TABLE events.tr_httpblk_evt_blk (
     event_id int8 NOT NULL,
     request_id int8,

@@ -4,7 +4,7 @@
 -- move old tables to new schemas |
 -----------------------------------
 
--- com.metavize.tran.reporting.ReportingSettings
+-- com.untangle.tran.reporting.ReportingSettings
 CREATE TABLE settings.tr_reporting_settings
     AS SELECT * FROM public.tr_reporting_settings;
 

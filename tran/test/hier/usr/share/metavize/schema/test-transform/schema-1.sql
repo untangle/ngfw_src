@@ -4,7 +4,7 @@
 -- settings |
 -------------
 
--- com.metavize.tran.test.TestSettings
+-- com.untangle.tran.test.TestSettings
 CREATE TABLE settings.tr_test_settings (
     id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,

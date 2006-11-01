@@ -14,8 +14,8 @@ $Id$
 <mvvm-transform>
   <transform-desc name="kav-transform"
                   display-name="Kaspersky AntiVirus Scanner"
-                  classname="com.metavize.tran.kav.KavTransform"
-                  gui-classname="com.metavize.tran.kav.gui.MTransformJPanel"
+                  classname="com.untangle.tran.kav.KavTransform"
+                  gui-classname="com.untangle.tran.kav.gui.MTransformJPanel"
                   transform-base="virus-base"/>
   <parent>http-casing</parent>
   <parent>mail-casing</parent>

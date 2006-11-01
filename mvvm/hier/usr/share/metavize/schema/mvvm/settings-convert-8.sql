@@ -2,7 +2,7 @@
 
 ALTER TABLE settings.mvvm_user ADD COLUMN email text;
 
--- com.metavize.mvvm.networking.PPPoEConnectionRule -- 4.1
+-- com.untangle.mvvm.networking.PPPoEConnectionRule -- 4.1
 CREATE TABLE settings.mvvm_pppoe_connection (
     rule_id           INT8 NOT NULL,
     name              TEXT,
@@ -20,13 +20,13 @@ CREATE TABLE settings.mvvm_pppoe_connection (
     secret_field      TEXT,
     PRIMARY KEY       (rule_id));
 
--- com.metavize.mvvm.networking.PPPoESettings -- 4.1
+-- com.untangle.mvvm.networking.PPPoESettings -- 4.1
 CREATE TABLE settings.mvvm_pppoe (
     settings_id       INT8 NOT NULL,
     live              BOOL,
     PRIMARY KEY      (settings_id));
 
--- com.metavize.mvvm.user.WMISettings -- 4.1
+-- com.untangle.mvvm.user.WMISettings -- 4.1
 CREATE TABLE settings.mvvm_wmi_settings (
     settings_id       INT8 NOT NULL,
     live              BOOL,
@@ -37,7 +37,7 @@ CREATE TABLE settings.mvvm_wmi_settings (
     password          TEXT,
     PRIMARY KEY       (settings_id));
 
--- com.metavize.mvvm.policy.UserPolicyRule
+-- com.untangle.mvvm.policy.UserPolicyRule
 DROP TABLE settings.policy_tmp;
 
 CREATE TABLE settings.policy_tmp AS

@@ -9,8 +9,8 @@
  * $Id$
  */
 
-import com.metavize.jvector.*;
-import com.metavize.jnetcap.*;
+import com.untangle.jvector.*;
+import com.untangle.jnetcap.*;
 import java.util.LinkedList;
 
 class TestTCPHook implements NetcapHook {

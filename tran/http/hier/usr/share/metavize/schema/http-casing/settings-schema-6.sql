@@ -4,7 +4,7 @@
 -- tables |
 -----------
 
--- com.metavize.tran.http.HttpSettings
+-- com.untangle.tran.http.HttpSettings
 CREATE TABLE settings.tr_http_settings (
     settings_id int8 NOT NULL,
     enabled bool NOT NULL,

@@ -2,7 +2,7 @@ Make sure that you preload libsig before running this code, this replaces all of
 
 EG:
 export LD_PRELOAD=/opt/j2sdk1.4.2_05/jre/lib/i386/libjsig.so
-java com.metavize.jnetcap.Test Subscribe
+java com.untangle.jnetcap.Test Subscribe
 
 Also, jrockit doesn't work properly because it uses the signal USR1 to start and stop the threads.  The system calls are not a fan of this kind of behavior, and so sun it is, for now at least.
 

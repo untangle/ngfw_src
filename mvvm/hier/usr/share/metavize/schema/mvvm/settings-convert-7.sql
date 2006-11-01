@@ -1,6 +1,6 @@
 -- settings conversion for release-4.0
 
--- com.metavize.mvvm.engine.MackageState
+-- com.untangle.mvvm.engine.MackageState
 CREATE TABLE settings.mackage_state (
     id int8 NOT NULL,
     mackage_name text NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE settings.mackage_state (
 
 ------ Added for Portal
 
--- com.metavize.mvvm.addrbook.RepositorySettings
+-- com.untangle.mvvm.addrbook.RepositorySettings
 DROP TABLE settings.ab_repository_settings;
 CREATE TABLE settings.ab_repository_settings (
     settings_id int8 NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE settings.ab_repository_settings (
     port int4,
     PRIMARY KEY (settings_id));
 
--- com.metavize.mvvm.addrbook.AddressBookSettings
+-- com.untangle.mvvm.addrbook.AddressBookSettings
 DROP TABLE settings.ab_settings;
 CREATE TABLE settings.ab_settings (
     settings_id int8 NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE settings.ab_settings (
     PRIMARY KEY (settings_id));
 
 
--- com.metavize.mvvm.portal.Bookmark -- 4.0
+-- com.untangle.mvvm.portal.Bookmark -- 4.0
 CREATE TABLE settings.portal_bookmark (
         id               INT8 NOT NULL,
         name             TEXT,
@@ -39,7 +39,7 @@ CREATE TABLE settings.portal_bookmark (
         application_name TEXT,
         PRIMARY KEY      (id));
 
--- com.metavize.mvvm.portal.PortalUser -- 4.0
+-- com.untangle.mvvm.portal.PortalUser -- 4.0
 CREATE TABLE settings.portal_user (
         id               INT8 NOT NULL,
         uid              TEXT,
@@ -51,14 +51,14 @@ CREATE TABLE settings.portal_user (
         position         INT4,
         PRIMARY KEY      (id));
 
--- com.metavize.mvvm.portal.PortalUser.bookmarks -- 4.0
+-- com.untangle.mvvm.portal.PortalUser.bookmarks -- 4.0
 CREATE TABLE settings.portal_user_bm_mt (
     settings_id int8 NOT NULL,
     bookmark_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (settings_id, position));
 
--- com.metavize.mvvm.portal.PortalGroup -- 4.0
+-- com.untangle.mvvm.portal.PortalGroup -- 4.0
 CREATE TABLE settings.portal_group (
         id               INT8 NOT NULL,
         name             TEXT,
@@ -68,14 +68,14 @@ CREATE TABLE settings.portal_group (
         position         INT4,
         PRIMARY KEY      (id));
 
--- com.metavize.mvvm.portal.PortalGroup.bookmarks -- 4.0
+-- com.untangle.mvvm.portal.PortalGroup.bookmarks -- 4.0
 CREATE TABLE settings.portal_group_bm_mt (
     settings_id int8 NOT NULL,
     bookmark_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (settings_id, position));
 
--- com.metavize.mvvm.portal.PortalGlobal -- 4.0
+-- com.untangle.mvvm.portal.PortalGlobal -- 4.0
 CREATE TABLE settings.portal_global (
         id               INT8 NOT NULL,
         auto_create_users BOOL,
@@ -84,14 +84,14 @@ CREATE TABLE settings.portal_global (
         home_settings_id INT8,
         PRIMARY KEY      (id));
 
--- com.metavize.mvvm.portal.PortalGlobal.bookmarks -- 4.0
+-- com.untangle.mvvm.portal.PortalGlobal.bookmarks -- 4.0
 CREATE TABLE settings.portal_global_bm_mt (
     settings_id int8 NOT NULL,
     bookmark_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (settings_id, position));
 
--- com.metavize.mvvm.security.PortalHomeSettings
+-- com.untangle.mvvm.security.PortalHomeSettings
 CREATE TABLE settings.portal_home_settings (
     id              INT8 NOT NULL,
     home_page_title TEXT,
@@ -103,7 +103,7 @@ CREATE TABLE settings.portal_home_settings (
     idle_timeout    INT8,
     PRIMARY KEY (id));
 
--- com.metavize.mvvm.security.PortalSettings
+-- com.untangle.mvvm.security.PortalSettings
 CREATE TABLE settings.portal_settings (
     id int8 NOT NULL,
     global_settings_id INT8,
@@ -117,7 +117,7 @@ ALTER TABLE settings.portal_user
     ADD CONSTRAINT fk_portal_user_parent
     FOREIGN KEY (settings_id) REFERENCES settings.portal_settings;
 
--- com.metavize.mvvm.networking.RedirectRule
+-- com.untangle.mvvm.networking.RedirectRule
 -- Need to insert a column for is_local_redirect
 ALTER TABLE settings.mvvm_redirect_rule ADD COLUMN is_local_redirect BOOL;
 UPDATE settings.mvvm_redirect_rule SET is_local_redirect = false;

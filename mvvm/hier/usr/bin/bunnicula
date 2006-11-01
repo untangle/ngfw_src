@@ -123,4 +123,4 @@ exec $JAVA_HOME/bin/java \
     -Dargon.shield.cfg_file=@MVVM_HOME@/conf/shield.cfg \
     -Djdbc.drivers=org.postgresql.Driver \
     ${JAVA_OPTS} $* \
-    com.metavize.mvvm.engine.Main
+    com.untangle.mvvm.engine.Main

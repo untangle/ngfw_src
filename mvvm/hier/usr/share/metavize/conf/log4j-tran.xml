@@ -25,14 +25,14 @@
     <param name="MaxFileSize" value="5000KB"/>
     <param name="MaxBackupIndex" value="9"/>
     <param name="Threshold" value="ALL"/>
-    <layout class="com.metavize.mvvm.logging.MvPatternLayout">
+    <layout class="com.untangle.mvvm.logging.MvPatternLayout">
       <param name="ConversionPattern" value="%D %-5p [%c{1}] &lt;%X{SessionID}&gt; %m%n"/>
     </layout>
   </appender>
 
   <!-- Log Emailer -->
 
-  <appender name="EmailAppender" class="com.metavize.mvvm.logging.SMTPAppender">
+  <appender name="EmailAppender" class="com.untangle.mvvm.logging.SMTPAppender">
     <!-- Note: We do *not* specify a layout here because we must create it programmatically
          so that we can get the transform name in there.  Instead we provide the Conversion
          Pattern here at the top level so that the SMTPAppender constructor can create the
@@ -43,11 +43,11 @@
   <!-- #      DEBUG           new session debugging -->
   <!-- #      INFO            each new session -->
   <!-- #      WARN            exceptions -->
-  <category name="com.metavize.mvvm.tapi.MPipe">
+  <category name="com.untangle.mvvm.tapi.MPipe">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.mvvm.tapi.Dispatcher">
+  <category name="com.untangle.mvvm.tapi.Dispatcher">
     <priority value="WARN"/>
   </category>
 
@@ -56,7 +56,7 @@
   <!-- #      DEBUG          Data events -->
   <!-- #      INFO           shutdown, close, other session events. -->
   <!-- #      WARN           New session, new session request events -->
-  <category name="com.metavize.mvvm.tapi.SessionEvent">
+  <category name="com.untangle.mvvm.tapi.SessionEvent">
     <!-- No logging by default -->
     <priority value="ERROR"/>
   </category>
@@ -65,83 +65,83 @@
   <!-- #      DEBUG           session read/write state change, read/write statistics -->
   <!-- #      INFO            (currently same as WARN) -->
   <!-- #      WARN             exceptions or unusual conditions  -->
-  <category name="com.metavize.mvvm.tapi.Session">
+  <category name="com.untangle.mvvm.tapi.Session">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.mvvm.tapi.TCPSession">
+  <category name="com.untangle.mvvm.tapi.TCPSession">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.mvvm.tapi.UDPSession">
+  <category name="com.untangle.mvvm.tapi.UDPSession">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.mvvm.tapi.SessionTimes">
+  <category name="com.untangle.mvvm.tapi.SessionTimes">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.tran.token">
+  <category name="com.untangle.tran.token">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.tran.virus">
+  <category name="com.untangle.tran.virus">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.tran.clam">
+  <category name="com.untangle.tran.clam">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.tran.hauri">
+  <category name="com.untangle.tran.hauri">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.tran.spam">
+  <category name="com.untangle.tran.spam">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.tran.spamassassin">
+  <category name="com.untangle.tran.spamassassin">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.tran.clamphish">
+  <category name="com.untangle.tran.clamphish">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.tran.ftp">
+  <category name="com.untangle.tran.ftp">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.tran.http">
+  <category name="com.untangle.tran.http">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.tran.mail">
+  <category name="com.untangle.tran.mail">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.tran.httpblocker">
+  <category name="com.untangle.tran.httpblocker">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.tran.ids">
+  <category name="com.untangle.tran.ids">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.metavize.tran.protofilter">
+  <category name="com.untangle.tran.protofilter">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.tran.spyware">
+  <category name="com.untangle.tran.spyware">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.mvvm.tran">
+  <category name="com.untangle.mvvm.tran">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.metavize.tran">
+  <category name="com.untangle.tran">
     <priority value="WARN"/>
   </category>
 

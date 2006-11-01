@@ -53,7 +53,7 @@ static __inline__ int _get_sock( netcap_session_t* session, int if_client )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Class:     com_untangle_jnetcap_NetcapTCPSession
  * Method:    setServerEndpoint
  * Signature: (JIJI)I
  */
@@ -88,7 +88,7 @@ JNIEXPORT jint JNICALL JF_TCPSession( setServerEndpoint )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Class:     com_untangle_jnetcap_NetcapTCPSession
  * Method:    serverComplete
  * Signature: (JI)I
  */
@@ -99,7 +99,7 @@ JNIEXPORT void JNICALL JF_TCPSession( serverComplete )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Class:     com_untangle_jnetcap_NetcapTCPSession
  * Method:    clientComplete
  * Signature: (JI)I
  */
@@ -110,7 +110,7 @@ JNIEXPORT void JNICALL JF_TCPSession( clientComplete )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Class:     com_untangle_jnetcap_NetcapTCPSession
  * Method:    clientReset
  * Signature: (JI)I
  */
@@ -121,7 +121,7 @@ JNIEXPORT void JNICALL JF_TCPSession( clientReset )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Class:     com_untangle_jnetcap_NetcapTCPSession
  * Method:    clientDrop
  * Signature: (JI)I
  */
@@ -132,7 +132,7 @@ JNIEXPORT void JNICALL JF_TCPSession( clientDrop )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Class:     com_untangle_jnetcap_NetcapTCPSession
  * Method:    clientForwardReject
  * Signature: (JI)I
  */
@@ -143,7 +143,7 @@ JNIEXPORT void JNICALL JF_TCPSession( clientForwardReject )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Class:     com_untangle_jnetcap_NetcapTCPSession
  * Method:    liberate
  * Signature: (JI)I
  */
@@ -154,7 +154,7 @@ JNIEXPORT void JNICALL JF_TCPSession( liberate )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Class:     com_untangle_jnetcap_NetcapTCPSession
  * Method:    clientSendIcmp
  * Signature: (JI)I
  */
@@ -165,7 +165,7 @@ JNIEXPORT void JNICALL JF_TCPSession( clientSendIcmp )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Class:     com_untangle_jnetcap_NetcapTCPSession
  * Method:    clientSendIcmpDestUnreach
  * Signature: (JI)I
  */
@@ -189,7 +189,7 @@ JNIEXPORT void JNICALL JF_TCPSession( clientSendIcmpDestUnreach )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Class:     com_untangle_jnetcap_NetcapTCPSession
  * Method:    close
  * Signature: (JZI)I
  */
@@ -215,7 +215,7 @@ JNIEXPORT void JNICALL JF_TCPSession( close )
 }
 
 /*
- * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Class:     com_untangle_jnetcap_NetcapTCPSession
  * Method:    read
  * Signature: (JZ[B)I
  */
@@ -252,7 +252,7 @@ JNIEXPORT int JNICALL JF_TCPSession( read )
 
 
 /*
- * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Class:     com_untangle_jnetcap_NetcapTCPSession
  * Method:    write
  * Signature: (JZ[B)I
  */
@@ -289,7 +289,7 @@ JNIEXPORT int JNICALL JF_TCPSession( write )
 
 
 /*
- * Class:     com_metavize_jnetcap_NetcapTCPSession
+ * Class:     com_untangle_jnetcap_NetcapTCPSession
  * Method:    blocking
  * Signature: (JZZ)I
  */

@@ -48,8 +48,8 @@ JNIEnv* jnetcap_get_java_env( void );
 /* Returns INITIALIZED if netcap is unitialized, and unitialized otherwise */
 int jnetcap_initialized( void );
 
-// JN Build standard name eg com_metavize_jnetcap_Class_name
-// JF Build function name eg Java_com_metavize_jnetcap_Class_name
+// JN Build standard name eg com_untangle_jnetcap_Class_name
+// JF Build function name eg Java_com_untangle_jnetcap_Class_name
 // JP Build path
 #define JN_BUILD_NAME(CLASS,NAME)  '${c_package}'_ ## CLASS ## _ ## NAME
 #define JF_BUILD_NAME(CLASS,FUNC)  Java_ ## '${c_package}'_ ## CLASS ## _ ## FUNC

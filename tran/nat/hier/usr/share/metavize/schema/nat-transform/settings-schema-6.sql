@@ -4,7 +4,7 @@
 -- settings |
 -------------
 
--- com.metavize.tran.nat.DhcpLeaseRule
+-- com.untangle.tran.nat.DhcpLeaseRule
 CREATE TABLE settings.dhcp_lease_rule (
     rule_id int8 NOT NULL,
     mac_address varchar(255),
@@ -19,14 +19,14 @@ CREATE TABLE settings.dhcp_lease_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.metavize.tran.nat.NatSettings.dhcpLeaseList
+-- com.untangle.tran.nat.NatSettings.dhcpLeaseList
 CREATE TABLE settings.tr_dhcp_leases (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.metavize.tran.nat.RedirectRule
+-- com.untangle.tran.nat.RedirectRule
 CREATE TABLE settings.redirect_rule (
     rule_id int8 NOT NULL,
     is_dst_redirect bool,
@@ -47,7 +47,7 @@ CREATE TABLE settings.redirect_rule (
     log bool,
     PRIMARY KEY (rule_id));
 
--- com.metavize.tran.nat.NatSettings
+-- com.untangle.tran.nat.NatSettings
 CREATE TABLE settings.tr_nat_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
@@ -65,21 +65,21 @@ CREATE TABLE settings.tr_nat_settings (
     dmz_logging_enabled bool,
     PRIMARY KEY (settings_id));
 
--- com.metavize.tran.nat.NatSettings.redirectList
+-- com.untangle.tran.nat.NatSettings.redirectList
 CREATE TABLE settings.tr_nat_redirects (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.metavize.tran.nat.NatSettings.dnsStaticHostList
+-- com.untangle.tran.nat.NatSettings.dnsStaticHostList
 CREATE TABLE settings.tr_nat_dns_hosts (
     setting_id int8 NOT NULL,
     rule_id int8 NOT NULL,
     position int4 NOT NULL,
     PRIMARY KEY (setting_id, position));
 
--- com.metavize.tran.nat.DnsStaticHostRule
+-- com.untangle.tran.nat.DnsStaticHostRule
 CREATE TABLE settings.dns_static_host_rule (
     rule_id int8 NOT NULL,
     hostname_list varchar(255),

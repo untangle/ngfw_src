@@ -72,7 +72,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>LoginServlet</servlet-name>
     <servlet-class>
-      com.metavize.tran.portal.LoginServlet
+      com.untangle.tran.portal.LoginServlet
     </servlet-class>
   </servlet>
 
@@ -84,7 +84,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>BookmarkServlet</servlet-name>
     <servlet-class>
-      com.metavize.tran.portal.BookmarkServlet
+      com.untangle.tran.portal.BookmarkServlet
     </servlet-class>
   </servlet>
 
@@ -96,7 +96,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>ApplicationServlet</servlet-name>
     <servlet-class>
-      com.metavize.tran.portal.ApplicationServlet
+      com.untangle.tran.portal.ApplicationServlet
     </servlet-class>
   </servlet>
 
@@ -108,7 +108,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>PortalServlet</servlet-name>
     <servlet-class>
-      com.metavize.tran.portal.PortalServlet
+      com.untangle.tran.portal.PortalServlet
     </servlet-class>
   </servlet>
 
@@ -120,7 +120,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>LogoutServlet</servlet-name>
     <servlet-class>
-      com.metavize.tran.portal.LogoutServlet
+      com.untangle.tran.portal.LogoutServlet
     </servlet-class>
   </servlet>
 

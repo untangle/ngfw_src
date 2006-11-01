@@ -14,7 +14,7 @@ $Id: mvvm-transform.xml,v 1.6 2005/02/24 02:53:06 amread Exp $
 <mvvm-transform>
   <transform-desc name="httpblocker-transform"
                   display-name="Web Content Control"
-                  classname="com.metavize.tran.httpblocker.HttpBlockerImpl"
-                  gui-classname="com.metavize.tran.httpblocker.gui.MTransformJPanel"/>
+                  classname="com.untangle.tran.httpblocker.HttpBlockerImpl"
+                  gui-classname="com.untangle.tran.httpblocker.gui.MTransformJPanel"/>
   <parent>http-casing</parent>
 </mvvm-transform>

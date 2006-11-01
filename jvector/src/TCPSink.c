@@ -150,7 +150,7 @@ JNIEXPORT jint JNICALL JF_TCPSink( close )
 }
 
 /*
- * Class:     com_metavize_jvector_TCPSink
+ * Class:     com_untangle_jvector_TCPSink
  * Method:    reset
  * Signature: (I)I
  */

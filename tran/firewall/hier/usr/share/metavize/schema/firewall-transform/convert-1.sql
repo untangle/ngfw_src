@@ -4,7 +4,7 @@
 -- move old tables to new schemas |
 -----------------------------------
 
--- com.metavize.tran.firewall.FirewallRule (removing is_dst_redirect)
+-- com.untangle.tran.firewall.FirewallRule (removing is_dst_redirect)
 CREATE TABLE settings.firewall_rule (
     rule_id,
     is_traffic_blocker,
@@ -31,7 +31,7 @@ ALTER TABLE settings.firewall_rule
 ALTER TABLE settings.firewall_rule
     ALTER COLUMN rule_id SET NOT NULL;
 
--- com.metavize.tran.firewall.FirewallSettings.firewallRuleList
+-- com.untangle.tran.firewall.FirewallSettings.firewallRuleList
 CREATE TABLE settings.tr_firewall_rules
     AS SELECT * FROM public.tr_firewall_rules;
 
@@ -44,7 +44,7 @@ ALTER TABLE settings.tr_firewall_rules
 ALTER TABLE settings.tr_firewall_rules
     ALTER COLUMN position SET NOT NULL;
 
--- com.metavize.tran.firewall.FirewallSettings
+-- com.untangle.tran.firewall.FirewallSettings
 CREATE TABLE settings.tr_firewall_settings
     AS SELECT * FROM public.tr_firewall_settings;
 
@@ -94,7 +94,7 @@ DROP TABLE public.tr_firewall_settings;
 -- new tables |
 ---------------
 
--- com.metavize.tran.firewall.FirewallEvent
+-- com.untangle.tran.firewall.FirewallEvent
 CREATE TABLE events.tr_firewall_evt (
     event_id int8 NOT NULL,
     session_id int4,
@@ -103,7 +103,7 @@ CREATE TABLE events.tr_firewall_evt (
     time_stamp timestamp,
     PRIMARY KEY (event_id));
 
--- com.metavize.tran.firewall.FirewallStatisticEvent
+-- com.untangle.tran.firewall.FirewallStatisticEvent
 CREATE TABLE events.tr_firewall_statistic_evt (
     event_id int8 NOT NULL,
     tcp_block_default int4,

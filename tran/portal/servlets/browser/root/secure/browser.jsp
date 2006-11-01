@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.metavize.mvvm.portal.PortalLogin"%>
+<%@ page language="java" import="com.untangle.mvvm.portal.PortalLogin"%>
 
 <%
 String sp = (String)request.getContextPath() + "/secure";

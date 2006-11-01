@@ -6,4 +6,4 @@ export JAVA_HOME
 
 CLASSPATH="@THIRDPARTY_MVVM_LIB@/bcel-5.2.jar:@MVVM_LIB@/buildutil-impl.jar"
 
-$JAVA_HOME/bin/java -cp "$CLASSPATH" com.metavize.buildutil.Closure $@
+$JAVA_HOME/bin/java -cp "$CLASSPATH" com.untangle.buildutil.Closure $@

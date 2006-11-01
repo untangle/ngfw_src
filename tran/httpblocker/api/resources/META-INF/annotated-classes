@@ -1,4 +1,4 @@
-com.metavize.tran.httpblocker.BlacklistCategory
-com.metavize.tran.httpblocker.BlockTemplate
-com.metavize.tran.httpblocker.HttpBlockerEvent
-com.metavize.tran.httpblocker.HttpBlockerSettings
+com.untangle.tran.httpblocker.BlacklistCategory
+com.untangle.tran.httpblocker.BlockTemplate
+com.untangle.tran.httpblocker.HttpBlockerEvent
+com.untangle.tran.httpblocker.HttpBlockerSettings
