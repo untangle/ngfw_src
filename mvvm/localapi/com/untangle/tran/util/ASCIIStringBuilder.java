@@ -21,7 +21,7 @@ package com.untangle.tran.util;
  * Note that this class always <i>should</i> work.  However, if a given
  * app is leary of the JVM running, the method {@link #testPlatform  testPlatform}
  * may be called as a test.  Note that when used within the known
- * Metavize Platform, it should never be a problem.
+ * Untangle Platform, it should never be a problem.
  */
 public class ASCIIStringBuilder {
 
