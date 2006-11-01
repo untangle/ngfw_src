@@ -129,7 +129,8 @@ EOF
 
         echo "ANALYZE;" | psql -U metavize mvvm
 
-        # XXX
+        # create files w/ username and hostname lists for usersummary-reports
+        psql -qt -U metavize mvvm -c "SELECT DISTINCT username FROM mvvm_lookup_evt;" -o $REPORT_DIR/current/uname.lst
         psql -qt -U metavize mvvm -c "SELECT DISTINCT COALESCE(NULLIF(name, ''), HOST(addr)) FROM merged_address_map;" -o $REPORT_DIR/current/hname.lst
 
         @USR_BIN@/mcli -t 3600 startReports

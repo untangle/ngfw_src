@@ -234,10 +234,7 @@ EOF
 
 generate_user_content_area ()
 {
-# cat $base_dir/user_list | while read line
-# cat @MVVM_REPORTS@/user_list | while read line
-# user_list XXX
-for line in jdi dmorris cng amread
+while read line
 do
 if [ "${line}" = "" ]; then
     # skip blank lines
@@ -281,7 +278,7 @@ cat >> $base_file <<EOF
 EOF
 
 fi
-done
+done < $base_dir/uname.lst
 }
 
 generate_hname_content_area ()

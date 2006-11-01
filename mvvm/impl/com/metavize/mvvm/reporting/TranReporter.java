@@ -226,16 +226,20 @@ public class TranReporter {
                 String reportName = tok.nextToken();
                 String reportFile = new File(tranDir, reportName).getCanonicalPath();
 
-                String[] userNames = { "jdi", "dmorris", "cng", "amread" }; //XXXX
+                String[] userNames;
+
                 if (true == settings.getDaily()) {
+                    userNames = getUserNames(conn, Util.lastday, Util.midnight);
                     processUserReports(resource, conn, userNames, reportFile, "--daily", Util.lastday, Util.midnight);
                 }
 
                 if (true == settings.getWeekly()) {
+                    userNames = getUserNames(conn, Util.lastweek, Util.midnight);
                     processUserReports(resource, conn, userNames, reportFile, "--weekly", Util.lastweek, Util.midnight);
                 }
 
                 if (true == settings.getMonthly()) {
+                    userNames = getUserNames(conn, Util.lastmonth, Util.midnight);
                     processUserReports(resource, conn, userNames, reportFile, "--monthly", Util.lastmonth, Util.midnight);
                 }
             }
@@ -363,7 +367,7 @@ public class TranReporter {
     private String[] getUserNames(Connection conn, Timestamp startTime, Timestamp endTime) throws Exception
     {
         ArrayList<String> uNameList = new ArrayList();
-        String sql = "SELECT DISTINCT UUU AS uname FROM TTT WHERE start_time >= ? AND end_time < ?"; // XXX
+        String sql = "SELECT DISTINCT username AS uname FROM mvvm_lookup_evt WHERE time_stamp >= ? AND time_stamp < ?";
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
