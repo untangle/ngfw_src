@@ -30,7 +30,7 @@
                   <table class="logoTable">
                     <tr>
                       <td>
-                        <img src="images/logo.gif"/>
+                        <img src="images/Logo150x96.gif"/>
                       </td>
                       <td class="logotext">
                         &nbsp;&nbsp;Untangle Networks EdgeGuard

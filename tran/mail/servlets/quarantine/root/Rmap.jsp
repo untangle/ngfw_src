@@ -49,9 +49,9 @@
         <table width="100%">
           <tbody>
             <tr>
-              <td valign="middle" width="96">
+              <td valign="middle" width="150">
                 <a href="http://www.untangle.com">
-                  <img src="images/logo_no_text_shiny_96x96.gif" border="0" alt="Untangle Networks logo"/>
+                  <img src="images/Logo150x96.gif" border="0" alt="Untangle Networks logo"/>
                 </a>
               </td>
               

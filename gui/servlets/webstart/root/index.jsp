@@ -89,8 +89,8 @@ if (!( isIndex || isDownload)) isIndex = true;
           <tr>
             <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; width: 400px;">
               <div style="text-align: center;">
-                <img alt="" src="images/LogoNoText96x96.gif"
-                     style="border: 0px solid ; width: 96px; height: 96px;" align="top"
+                <img alt="" src="images/Logo150x96.gif"
+                     style="border: 0px solid ; width: 150px; height: 96px;" align="top"
                      hspace="0" vspace="0"/>
                 <br/>
                 <br/>
