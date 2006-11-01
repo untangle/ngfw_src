@@ -412,8 +412,9 @@ class PolicyManagerImpl implements PolicyManagerPriv
     // or removeSystemPolicyRules as appropriate.  We also build the
     // in-memory UserPolicyRule list.
     //
-    // Note that the interfaces list should be sorted from outside to inside.  This is because
-    // we create the missing system policy rules given this sorting.
+    // Note that the interfaces list should be sorted from outside to
+    // inside.  This is because we create the missing system policy
+    // rules given this sorting.
     public void reconfigure(final byte[] interfaces)
     {
         // For now do nothing

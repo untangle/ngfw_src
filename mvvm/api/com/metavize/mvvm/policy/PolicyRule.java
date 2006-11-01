@@ -12,7 +12,6 @@
 package com.metavize.mvvm.policy;
 
 import java.util.*;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -55,7 +54,7 @@ public abstract class PolicyRule extends Rule
      *
      * @return Policy for this rule
      */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="policy_id")
     public Policy getPolicy()
     {

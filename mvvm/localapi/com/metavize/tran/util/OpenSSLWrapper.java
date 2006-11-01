@@ -8,17 +8,19 @@
  *
  *  $Id$
  */
- 
+
 package com.metavize.tran.util;
-import java.io.IOException;
-import java.io.FileNotFoundException;
+
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
-import java.text.SimpleDateFormat;
+import java.util.Map;
 import javax.naming.InvalidNameException;
+
 import com.metavize.mvvm.security.CertInfo;
 import com.metavize.mvvm.security.RFC2253Name;
 
@@ -61,7 +63,7 @@ public class OpenSSLWrapper {
       throw ex;
     }
   }
-  
+
 
   /**
    * "Pretty" is a relative term, but prints the human-readable
@@ -73,7 +75,7 @@ public class OpenSSLWrapper {
    */
   public static String prettyPrint(File certFile)
     throws IOException {
-    
+
     if(!certFile.exists()) {
       throw new FileNotFoundException(certFile.getAbsolutePath());
     }
@@ -99,7 +101,7 @@ public class OpenSSLWrapper {
       result.exitCode + ", stdout \"" +
       new String(result.stdOut) + "\", stderr \"" +
       new String(result.stdErr) + "\"");
-    
+
   }
 
   /**
@@ -129,7 +131,7 @@ public class OpenSSLWrapper {
     // Then to determine if it is a CA, call "inspect_ca" which should
     // be in "/usr/bin".  It exits with "1" if it is not a CA (0 if it is).
     //=================================================
-    
+
     SimpleExec.SimpleExecResult result = SimpleExec.exec(
       "openssl",//cmd
       new String[] {//args
@@ -171,7 +173,7 @@ public class OpenSSLWrapper {
         }
         if(theLines[i].startsWith("issuer=")) {
           issuerDN = RFC2253Name.parse(theLines[i].substring("issuer=".length()));
-        }        
+        }
       }
 
       //Now figure out if this is a CA
@@ -187,7 +189,7 @@ public class OpenSSLWrapper {
         1000*20,
         null,//logas
         false);//TODO More thread junk.  This is getting to be a real pain...
-        
+
       return new CertInfo(notBefore,
         notAfter,
         subjectDN,
@@ -195,12 +197,12 @@ public class OpenSSLWrapper {
         result.exitCode == 0,
         prettyPrint(certFile));
     }
-    
+
     throw new IOException("openssl exited with value " + result.exitCode);
   }
 
 
-  
+
 
 
 
@@ -216,7 +218,7 @@ public class OpenSSLWrapper {
    * @return the info
    */
   public static CertInfo getCertInfo(byte[] certBytes)
-    throws IOException, InvalidNameException {    
+    throws IOException, InvalidNameException {
 
     File temp = File.createTempFile("gci", ".tmp");
     try {
@@ -232,7 +234,7 @@ public class OpenSSLWrapper {
     catch(InvalidNameException ex) {
       IOUtil.delete(temp);
       throw ex;
-    }    
+    }
   }
 
 
@@ -260,7 +262,7 @@ public class OpenSSLWrapper {
     if(result.exitCode==0) {
       return result.stdOut;
     }
-    throw new IOException("openssl exited with value " + result.exitCode);    
+    throw new IOException("openssl exited with value " + result.exitCode);
   }
 
   /**
@@ -282,7 +284,7 @@ public class OpenSSLWrapper {
     String city,
     byte[] privateKey)
     throws IOException {
-    
+
     File temp = File.createTempFile("csr", ".tmp");
     try {
       IOUtil.bytesToFile(privateKey, temp);
@@ -336,9 +338,9 @@ public class OpenSSLWrapper {
     if(cn != null) {
       subject.append("/CN=");
       subject.append(cn);
-    }              
-    
-    
+    }
+
+
     SimpleExec.SimpleExecResult result = SimpleExec.exec(
       "openssl",
       new String[] {
@@ -358,7 +360,7 @@ public class OpenSSLWrapper {
     if(result.exitCode==0) {
       return result.stdOut;
     }
-    throw new IOException("openssl exited with value " + result.exitCode);    
+    throw new IOException("openssl exited with value " + result.exitCode);
   }
 
 //============
@@ -382,13 +384,13 @@ public class OpenSSLWrapper {
         CERT_DATE_FORMAT + "\"");
     }
   }
-  
+
 
   /**
    * Parse an RFC2253 DN.  I hope the JavaSoft folks got the parsing
    * right, because I sure as hell didn't want to write the parser.
    */
-/*   
+/*
   private static HashMap<String, String> parseDN(String dnStr)
     throws IOException {
 
@@ -396,11 +398,11 @@ public class OpenSSLWrapper {
     dnStr = dnStr.trim();
     try {
       HashMap<String, String> ret = new HashMap<String, String>();
-      
+
       LdapName ldapName = new LdapName(dnStr);
-  
+
       List<Rdn> rdns = ldapName.getRdns();
-  
+
       for(Rdn rdn : rdns) {
         ret.put(rdn.getType().toString(), rdn.getValue().toString());
       }
@@ -411,11 +413,11 @@ public class OpenSSLWrapper {
         dnStr + "\" into a distinguished name.  Error: " +
         ex.toString());
     }
-  }   
+  }
 */
 //============
 // Testing
-//============  
+//============
 
   public static void main(String[] args) throws Exception {
     /*
@@ -446,7 +448,7 @@ public class OpenSSLWrapper {
     System.out.println(ci);
 
 
-  
+
 
   }
 
@@ -455,7 +457,7 @@ public class OpenSSLWrapper {
 // Trying to determine the "purpose" of a cert.  Example
 // on a non-CA cert
 //
-// openssl x509 -in tomcat.cer -purpose -noout  
+// openssl x509 -in tomcat.cer -purpose -noout
 /*
 Certificate purposes:
 SSL client : Yes
@@ -505,7 +507,7 @@ OCSP helper CA : Yes
 // to get a site's cert
 // openssl s_client -connect login.yahoo.com:443
 //======================================
-  
+
 
 }
 
