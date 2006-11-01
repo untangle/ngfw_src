@@ -26,24 +26,24 @@ import java.util.*;
 public class MessagesSetTag
   extends BodyTagSupport {
 
-  private static final String MESSAGES_KEY_PREFIX = "metavize.messages.";
+  private static final String MESSAGES_KEY_PREFIX = "untangle.messages.";
   static final String ERROR_MSG_SUFFIX = "error";
   static final String INFO_MSG_SUFFIX = "info";
 
   private String m_type = null;
   private Iterator<String> m_it;
-  
+
   public void setType(String type){
     m_type = type;
   }
-  
+
   public String getType(){
     return m_type;
   }
 
   public int doStartTag() throws JspException {
     String[] messages = getMessages(pageContext.getRequest(), getType());
-    
+
     if(messages == null || messages.length == 0) {
       return SKIP_BODY;
     }
@@ -75,8 +75,8 @@ public class MessagesSetTag
     catch (Exception ioe){
       throw new JspException(ioe.getMessage());
     }
-  }   
-  
+  }
+
 
   public static final void setErrorMessages(ServletRequest request,
     String...messages) {

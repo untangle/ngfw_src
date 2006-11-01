@@ -86,7 +86,7 @@ public interface MvvmRemoteContext
      * @return the PingManager.
      */
     PingManager pingManager();
-    
+
     /**
      * Get the <code>NetworkManager</code> singleton.
      *
@@ -122,7 +122,7 @@ public interface MvvmRemoteContext
     RemoteAppServerManager appServerManager();
 
     /**
-     * Get the phonebook singleton 
+     * Get the phonebook singleton
      * @return the singleton
      */
     RemotePhoneBook phoneBook();
@@ -176,9 +176,8 @@ public interface MvvmRemoteContext
     /**
      * Create a backup which the client can save to a local disk.  The
      * returned bytes are for a .tar.gz file, so it is a good idea to
-     * either use a ".tar.gz" extension or ".metavizebk" extension so
-     * basic validation can be performed for {@link #restoreBackup
-     * restoreBackup).
+     * either use a ".tar.gz" extension so basic validation can be
+     * performed for {@link #restoreBackup restoreBackup}.
      *
      * @return the byte[] contents of the backup.
      *

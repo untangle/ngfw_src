@@ -132,13 +132,13 @@ public interface MvvmLocalContext
     AddressBook appAddressBook();
 
     /**
-     * Get the phonebook singleton 
+     * Get the phonebook singleton
      * @return the singleton
      */
     LocalPhoneBook localPhoneBook();
 
     /**
-     * Get the phonebook singleton 
+     * Get the phonebook singleton
      * @return the singleton
      */
     RemotePhoneBook remotePhoneBook();
@@ -229,10 +229,10 @@ public interface MvvmLocalContext
     String getActivationKey();
 
     /**
-     * Create a backup which the client can save to a local
-     * disk.  The returned bytes are for a .tar.gz file, so it is a good
-     * idea to either use a ".tar.gz" extension or ".metavizebk" extension
-     * so basic validation can be performed for {@link #restore restore).
+     * Create a backup which the client can save to a local disk.  The
+     * returned bytes are for a .tar.gz file, so it is a good idea to
+     * either use a ".tar.gz" extension so basic validation can be
+     * performed for {@link #restore restore}.
      *
      * @return the byte[] contents of the backup.
      *
