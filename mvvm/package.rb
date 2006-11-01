@@ -187,14 +187,18 @@ $InstallTarget.installJars(Jars::Reporting, "#{mvvm.distDirectory}/usr/share/jav
 mvvm_cacerts = "#{mvvm.distDirectory}/usr/share/metavize/conf/cacerts"
 java_cacerts = "#{$BuildEnv.javahome}/jre/lib/security/cacerts"
 mv_ca = 'mvvm/resources/mv-ca.pem'
+ut_ca = 'mvvm/resources/ut-ca.pem'
 
-file mvvm_cacerts => [ java_cacerts, mv_ca ] do
+file mvvm_cacerts => [ java_cacerts, mv_ca, ut_ca ] do
   ensureDirectory(File.dirname(mvvm_cacerts))
   FileUtils.cp(java_cacerts, mvvm_cacerts)
   FileUtils.chmod(0666, mvvm_cacerts)
   Kernel.system("#{$BuildEnv.javahome}/bin/keytool", '-import', '-noprompt',
                 '-keystore', mvvm_cacerts, '-storepass', 'changeit', '-file',
                 mv_ca, '-alias', 'metavizeprivateca')
+  Kernel.system("#{$BuildEnv.javahome}/bin/keytool", '-import', '-noprompt',
+                '-keystore', mvvm_cacerts, '-storepass', 'changeit', '-file',
+                ut_ca, '-alias', 'metavizeprivateca')
 end
 
 if $BuildEnv.isDevel
