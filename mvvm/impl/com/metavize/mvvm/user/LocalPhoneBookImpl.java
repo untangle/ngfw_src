@@ -19,13 +19,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import java.util.Collections;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import com.metavize.mvvm.MvvmContextFactory;
 
@@ -35,9 +40,11 @@ import com.metavize.mvvm.logging.EventLoggerFactory;
 import com.metavize.mvvm.tran.IPaddr;
 import com.metavize.mvvm.tran.ValidateException;
 
-import com.metavize.tran.util.MVLogger;
+import com.metavize.mvvm.util.TransactionWork;
 import com.metavize.mvvm.util.Worker;
 import com.metavize.mvvm.util.WorkerRunner;
+
+import com.metavize.tran.util.MVLogger;
 
 import static com.metavize.mvvm.user.UserInfo.LookupState;
 
@@ -199,6 +206,9 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     
     public void init()
     {
+        /* load the initial key */
+        loadCurrentKey();
+
         /* create an event logger */
         this.eventLogger = EventLoggerFactory.factory().getEventLogger();
 
@@ -244,6 +254,9 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
             iter.remove();
             if ( info.hasData()) this.eventLogger.log( new LookupLogEvent( info ));
         }
+
+        /* log the current key last */
+        saveCurrentKey();
 
         /* stop the event logger */
         this.eventLogger.stop();
@@ -423,6 +436,18 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
         }
 
         return info;
+    }
+
+    private void loadCurrentKey()
+    {
+        /* doesn't matter, we presently don't log the lookup key
+         * anywhere else, so just restart from zero each time */
+    }
+
+    private void saveCurrentKey()
+    {
+        /* doesn't matter, we presently don't log the lookup key
+         * anywhere else, so just restart from zero each time */
     }
 
     private synchronized long getNextKey()
