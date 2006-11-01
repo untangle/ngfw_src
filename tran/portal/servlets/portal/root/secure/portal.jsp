@@ -19,7 +19,7 @@
 <link rel="stylesheet" type="text/css" href="/AjaxTk/common.css"/>
 <link rel="stylesheet" type="text/css" href="/AjaxTk/dwt.css"/>
 <link rel="stylesheet" type="text/css" href="<%=sp%>/portal.css"/>
-<link rel="stylesheet" type="text/css" href="/metavize.css"/>
+<link rel="stylesheet" type="text/css" href="/untangle.css"/>
 
 <script type="text/javascript" src="/AjaxTk/I18nMsg.js"></script>
 <script type="text/javascript" src="/AjaxTk/AjxMsg.js"></script>
