@@ -88,7 +88,7 @@ public class VpnClient extends Rule implements Validatable
      * @return The address group that this client belongs to.
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="group_id", nullable=false)
+    @JoinColumn(name="group_id")
     public VpnGroup getGroup()
     {
         return this.group;

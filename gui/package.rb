@@ -42,3 +42,6 @@ end
 guiRuntimeJars << Jars.downloadTarget('hibernate-client/hibernate-client.jar')
 $InstallTarget.installJars(guiRuntimeJars, gui.getWebappDir('webstart'), nil, true)
 
+ms = MoveSpec.new('gui/hier', FileList['gui/hier/**/*'], gui.distDirectory)
+cf = CopyFiles.new(gui, ms, 'hier', $BuildEnv.filterset)
+gui.registerTarget('hier', cf)
