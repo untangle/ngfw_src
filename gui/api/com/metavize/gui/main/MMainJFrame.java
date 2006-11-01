@@ -138,7 +138,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
                 setTitle("Untangle Networks EdgeGuard Client");
                 setFocusCycleRoot(false);
-                setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/metavize/gui/icons/LogoNoText16x16.gif"))).getImage());
+                setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/metavize/gui/main/Logo16x16.png"))).getImage());
                 addComponentListener(new java.awt.event.ComponentAdapter() {
                         public void componentResized(java.awt.event.ComponentEvent evt) {
                                 formComponentResized(evt);
