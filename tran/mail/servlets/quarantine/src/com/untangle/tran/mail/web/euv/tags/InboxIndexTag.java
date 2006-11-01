@@ -23,7 +23,7 @@ import java.util.Iterator;
 public final class InboxIndexTag
   extends IteratingTag<InboxRecord> {
 
-  private static final String INBOX_CURSOR_KEY = "metavize.inbox_cursor";
+  private static final String INBOX_CURSOR_KEY = "untangle.inbox_cursor";
 
   @Override
   protected Iterator<InboxRecord> createIterator() {

@@ -23,7 +23,7 @@ import java.util.Arrays;
 public final class ReceivingRemapsListTag
   extends IteratingTag<String> {
 
-  private static final String KEY = "metavize.remapps.ReceivingRemapsListTag";
+  private static final String KEY = "untangle.remapps.ReceivingRemapsListTag";
   
   @Override
   protected Iterator<String> createIterator() {

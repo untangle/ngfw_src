@@ -20,7 +20,7 @@ import javax.servlet.ServletRequest;
 public final class CurrentEmailAddressTag
   extends SingleValueTag {
 
-  private static final String ADDRESS_KEY = "metavize.email_address";
+  private static final String ADDRESS_KEY = "untangle.email_address";
 
   @Override
   protected String getValue() {

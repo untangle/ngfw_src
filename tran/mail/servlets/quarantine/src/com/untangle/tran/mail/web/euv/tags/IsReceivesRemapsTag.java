@@ -20,7 +20,7 @@ import javax.servlet.ServletRequest;
 public final class IsReceivesRemapsTag
   extends IfElseTag {
 
-  private static final String RECEIVES_REMAPS_KEY = "metavize.remapping.IsReceivesRemapsTag";
+  private static final String RECEIVES_REMAPS_KEY = "untangle.remapping.IsReceivesRemapsTag";
   
   @Override
   protected boolean isConditionTrue() {

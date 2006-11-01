@@ -22,7 +22,7 @@ import javax.servlet.jsp.PageContext;
 public final class RPPCurrentOptionTag
   extends SingleValueTag {
 
-  private static final String KEY = "metavize.RPPCurrentOptionTag";
+  private static final String KEY = "untangle.RPPCurrentOptionTag";
 
 
   @Override

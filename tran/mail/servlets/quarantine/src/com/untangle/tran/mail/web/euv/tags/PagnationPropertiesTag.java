@@ -25,7 +25,7 @@ import javax.servlet.ServletRequest;
 public final class PagnationPropertiesTag
   extends SingleValueTag {
 
-  private static final String KEY = "metavize.pagnationproperties.rowsperpage";
+  private static final String KEY = "untangle.pagnationproperties.rowsperpage";
   private String m_propName;
 
 

@@ -23,7 +23,7 @@ import java.util.Arrays;
 public final class RPPIteratorTag
   extends IteratingTag<String> {
 
-  private static final String IKEY = "metavize.RPPIteratorTag";
+  private static final String IKEY = "untangle.RPPIteratorTag";
 
   private static final String[] CHOICES = {
     "25",

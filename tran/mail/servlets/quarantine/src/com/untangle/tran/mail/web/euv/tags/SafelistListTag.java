@@ -23,7 +23,7 @@ import java.util.Arrays;
 public final class SafelistListTag
   extends IteratingTag<String> {
 
-  private static final String SL_KEY = "metavize.safelist.contents.";
+  private static final String SL_KEY = "untangle.safelist.contents.";
   
   @Override
   protected Iterator<String> createIterator() {

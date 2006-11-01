@@ -20,7 +20,7 @@ import javax.servlet.ServletRequest;
 public final class RemappedToTag
   extends SingleValueTag {
 
-  private static final String KEY = "metavize.remapping.RemappedToTag";
+  private static final String KEY = "untangle.remapping.RemappedToTag";
 
   private boolean m_encoded = false;
 

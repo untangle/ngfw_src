@@ -20,7 +20,7 @@ import javax.servlet.ServletRequest;
 public final class HasSafelistTag
   extends IfElseTag {
 
-  private static final String HAS_ENTRY_KEY = "metavize.safelist.exists";  
+  private static final String HAS_ENTRY_KEY = "untangle.safelist.exists";  
   
   @Override
   protected boolean isConditionTrue() {

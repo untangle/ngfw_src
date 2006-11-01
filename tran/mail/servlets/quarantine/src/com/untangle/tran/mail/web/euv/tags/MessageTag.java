@@ -24,7 +24,7 @@ import javax.servlet.jsp.PageContext;
 public final class MessageTag 
   extends SingleValueTag {
 
-  private static final String MESSAGE_PS_KEY = "metavize.message";
+  private static final String MESSAGE_PS_KEY = "untangle.message";
 
   @Override
   protected String getValue() {

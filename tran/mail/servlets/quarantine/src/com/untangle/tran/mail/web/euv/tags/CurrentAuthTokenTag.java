@@ -21,7 +21,7 @@ import java.net.URLEncoder;
 public final class CurrentAuthTokenTag
   extends SingleValueTag {
 
-  private static final String AUTH_TOKEN_KEY = "metavize.auth_token";
+  private static final String AUTH_TOKEN_KEY = "untangle.auth_token";
 
   private boolean m_encoded = false;
 

@@ -20,7 +20,7 @@ import javax.servlet.ServletRequest;
 public final class RPPIsCurrentOptionSelectedTag
   extends IfElseTag {
 
-  private static final String KEY = "metavize.RPPIsCurrentOptionSelectedTag";
+  private static final String KEY = "untangle.RPPIsCurrentOptionSelectedTag";
   
   @Override
   protected boolean isConditionTrue() {

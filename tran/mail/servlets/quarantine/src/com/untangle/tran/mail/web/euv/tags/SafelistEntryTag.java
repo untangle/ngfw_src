@@ -26,7 +26,7 @@ import sun.misc.BASE64Encoder;
 public final class SafelistEntryTag 
   extends SingleValueTag {
 
-  private static final String ENTRY_KEY = "metavize.safelist.entry";
+  private static final String ENTRY_KEY = "untangle.safelist.entry";
 
   private boolean m_encoded = false;
 

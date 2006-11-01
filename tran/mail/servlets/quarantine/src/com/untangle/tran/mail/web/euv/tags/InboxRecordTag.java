@@ -22,7 +22,7 @@ import javax.servlet.jsp.PageContext;
 public final class InboxRecordTag
   extends SingleValueTag {
 
-  private static final String INBOX_RECORD_PS_KEY = "metavize.inbox_record";
+  private static final String INBOX_RECORD_PS_KEY = "untangle.inbox_record";
 
   public static final String MID_PROP = "mid";
   public static final String FROM_PROP = "from";

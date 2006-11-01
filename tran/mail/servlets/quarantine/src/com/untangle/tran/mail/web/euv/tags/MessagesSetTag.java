@@ -25,7 +25,7 @@ import java.util.ArrayList;
 public final class MessagesSetTag
   extends IteratingTag<String> {
 
-  private static final String MESSAGES_KEY_PREFIX = "metavize.messages.";
+  private static final String MESSAGES_KEY_PREFIX = "untangle.messages.";
   private static final String ERROR_MSG_SUFFIX = "error";
   private static final String INFO_MSG_SUFFIX = "info";
 

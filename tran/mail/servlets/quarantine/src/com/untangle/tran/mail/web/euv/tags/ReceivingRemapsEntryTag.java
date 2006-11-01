@@ -22,7 +22,7 @@ import sun.misc.BASE64Encoder;
 public final class ReceivingRemapsEntryTag
   extends SingleValueTag {
 
-  private static final String KEY = "metavize.remapping.ReceivingRemapsEntryTag";
+  private static final String KEY = "untangle.remapping.ReceivingRemapsEntryTag";
 
   private boolean m_encoded = false;
 

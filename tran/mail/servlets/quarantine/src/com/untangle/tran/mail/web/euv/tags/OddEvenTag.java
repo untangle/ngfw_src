@@ -21,7 +21,7 @@ import javax.servlet.jsp.PageContext;
 public final class OddEvenTag
   extends SingleValueTag {
 
-  public static final String IS_EVEN_KEY = "metavize.isEven";
+  public static final String IS_EVEN_KEY = "untangle.isEven";
 
   private String m_evenStr;
   private String m_oddStr;
