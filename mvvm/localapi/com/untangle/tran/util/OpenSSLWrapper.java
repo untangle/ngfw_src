@@ -269,7 +269,7 @@ public class OpenSSLWrapper {
    * Create a Cert Sign Request for submission to a CA.
    *
    * @param cn the common name <b>Must be the FQDN if this is for a web cert</b>
-   * @param org "organization" (i.e. "metavize").
+   * @param org "organization" (i.e. "untangle").
    * @param country
    * @param state
    * @param city
@@ -302,7 +302,7 @@ public class OpenSSLWrapper {
    * Create a Cert Sign Request for submission to a CA.
    *
    * @param cn the common name <b>Must be the FQDN if this is for a web cert</b>
-   * @param org "organization" (i.e. "metavize").
+   * @param org "organization" (i.e. "untangle").
    * @param country
    * @param state
    * @param city
