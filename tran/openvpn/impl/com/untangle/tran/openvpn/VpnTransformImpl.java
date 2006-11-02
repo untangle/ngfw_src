@@ -120,11 +120,15 @@ public class VpnTransformImpl extends AbstractTransform
             /* Update the status/generate all of the certificates for clients */
             this.certificateManager.updateCertificateStatus( newSettings );
         }
-        
+
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork( Session s )
                 {
+                    if (null != newSettings.getId()) {
+                        s.update(newSettings);
+                    }
+
                     /* Delete all of the old settings */
                     Query q = null;
                     Long newSettingsId = newSettings.getId();
@@ -136,11 +140,11 @@ public class VpnTransformImpl extends AbstractTransform
                     }
 
                     q.setParameter( "tid", getTid());
-                    
+
                     for ( Object o : q.list()) s.delete((VpnSettings)o );
-                    
+
                     /* Save the new settings */
-                    s.merge( newSettings );
+                    s.saveOrUpdate( newSettings );
                     VpnTransformImpl.this.settings = newSettings;
                     return true;
                 }
