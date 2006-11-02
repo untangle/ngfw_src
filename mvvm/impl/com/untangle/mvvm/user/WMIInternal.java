@@ -11,7 +11,6 @@
 
 package com.untangle.mvvm.user;
 
-
 import javax.wbem.client.PasswordCredential;
 import javax.wbem.client.UserPrincipal;
 
