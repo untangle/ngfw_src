@@ -126,7 +126,7 @@
     <paragraph class="subtitle">Detailed Reports [disabled]</paragraph>
     <paragraph font="small" halign="center">
       To receive detailed reports enable "Include Incident Lists in
-      Emails" in the "Generation" tab of EdgeReport.
+      Emails" in the "Generation" tab of Untangle Reports.
     </paragraph>
   </else>
 
