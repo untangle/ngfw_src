@@ -45,8 +45,8 @@ url = '<%=url%>';
 <table>
 <tbody>
 <tr>
-  <td colspan=1 width="100px">
-<a href="http://www.untangle.com"><img src="/images/LogoNoText96x96.gif" border="0" alt="Untangle Networks logo"/></a>
+  <td colspan=1 width="154px">
+<a href="http://www.untangle.com"><img src="/images/Logo150x96.gif" border="0" alt="Untangle Networks logo"/></a>
   </td>
   <td colspan=1 align=left valign=center>
     <span style="font-family: SansSerif; font-size: 18.0px;">
