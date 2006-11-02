@@ -511,7 +511,7 @@ EOF
 
 generate_summary_entry ()
 {
-# true allows you to print only non EdgeGuard Appliance appliances, false allows you to print only EdgeGuard Appliance
+# true allows you to print only non Untangle Platform software, false allows you to print only Untangle Platform software
 tran_dir=$1
 ls $tran_dir/name >/dev/null 2>&1 || return
 tran_name=$(cat $tran_dir/name)
