@@ -20,7 +20,7 @@
 
 <!-- HEADING -->
   <title>Untangle Networks | Aliases forwarding to <quarantine:currentAddress/></title>
-    <script> 
+    <script>
       function CheckAll() {
         count = document.form1.elements.length;
         isOn = document.form1.checkall.checked;
@@ -42,7 +42,7 @@
     <tr>
       <td id="table_main_top_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
       </td>
-      
+
       <td id="table_main_top" width="100%"><img src="images/spacer.gif" alt=" " height="1" width="1"/><br/>
       </td>
 
@@ -65,9 +65,9 @@
                   <img src="images/Logo150x96.gif" border="0" alt="Untangle Networks logo"/>
                 </a>
               </td>
-              
+
               <td style="padding: 0px 0px 0px 10px;" class="page_header_title" align="left" valign="middle">
-	    Aliases forwarding to:<br/><quarantine:currentAddress/>
+        Aliases forwarding to:<br/><quarantine:currentAddress/>
               </td>
             </tr>
           </tbody>
@@ -80,19 +80,19 @@
     <!-- END MIDDLE THIRD -->
     <!-- CONTENT AREA -->
     <tr>
-      
+
       <td id="table_main_left"></td>
 
-      <!-- CENTER CELL --> 
+      <!-- CENTER CELL -->
       <td id="table_main_center" style="padding: 8px 0px 0px;">
         <hr size="1" width="100%"/>
 
-		<!-- INTRO MESSAGE -->
+        <!-- INTRO MESSAGE -->
     The following is a list of email addresses which have their quarantine emails forwarded to <quarantine:currentAddress/>.  To stop this from happening (to no longer have quarantine mails for one or more of these addresses forwarded), click the checkboxes for one or more addresses and click <code>Remove Selected Addresses</code>.
-    
-		<!-- INITIAL TABLE -->
-		<center>
-		<table>
+
+        <!-- INITIAL TABLE -->
+        <center>
+        <table>
               <quarantine:hasMessages type="info">
               <tr>
                 <td>
@@ -101,13 +101,13 @@
                       <li><quarantine:message/></li>
                     </quarantine:forEachMessage>
                   </ul>
-                </td>              
+                </td>
               </tr>
               </quarantine:hasMessages>
-		</table>
-		</center>
-		<center>
-		<table>
+        </table>
+        </center>
+        <center>
+        <table>
               <quarantine:hasMessages type="error">
               <tr>
                 <td>
@@ -116,13 +116,13 @@
                       <li><quarantine:message/></li>
                     </quarantine:forEachMessage>
                   </ul>
-                </td>              
+                </td>
               </tr>
-              </quarantine:hasMessages>                      
-		</table>
-		</center>
+              </quarantine:hasMessages>
+        </table>
+        </center>
 
-		<!-- INPUT FORM 1 -->
+        <!-- INPUT FORM 1 -->
           <form name="form1" method="POST" action="unmp">
             <input type="hidden"
               name="<quarantine:constants keyName="action"/>"
@@ -155,7 +155,7 @@
                             <quarantine:receivingRemapsEntry encoded="false"/>
                           </td>
                         </tr>
-                      </quarantine:forEachReceivingRemapsEntry>                  
+                      </quarantine:forEachReceivingRemapsEntry>
                     </tbody>
                     <tfoot>
                       <tr>
@@ -171,9 +171,9 @@
           <br><br>
 
 
-		 
-		<br/>
-	<center>Powered by Untangle Networks&reg; EdgeGuard&reg;</center>
+
+        <br/>
+    <center>Powered by Untangle Networks&reg; Platform</center>
 
           <hr size="1" width="100%"/>
         </td>
@@ -181,7 +181,7 @@
       <td id="table_main_right"></td>
     </tr>
     <!-- END CONTENT AREA -->
-    
+
     <!-- BOTTOM THIRD -->
     <tr>
       <td id="table_main_bottom_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>

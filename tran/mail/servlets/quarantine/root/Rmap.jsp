@@ -31,7 +31,7 @@
     <tr>
       <td id="table_main_top_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
       </td>
-      
+
       <td id="table_main_top" width="100%"><img src="images/spacer.gif" alt=" " height="1" width="1"/><br/>
       </td>
 
@@ -54,9 +54,9 @@
                   <img src="images/Logo150x96.gif" border="0" alt="Untangle Networks logo"/>
                 </a>
               </td>
-              
+
               <td style="padding: 0px 0px 0px 10px;" class="page_header_title" align="left" valign="middle">
-	    Redirect Quarantine Emails for <br/><quarantine:currentAddress/>
+        Redirect Quarantine Emails for <br/><quarantine:currentAddress/>
               </td>
             </tr>
           </tbody>
@@ -69,16 +69,16 @@
     <!-- END MIDDLE THIRD -->
     <!-- CONTENT AREA -->
     <tr>
-      
+
       <td id="table_main_left"></td>
 
-      <!-- CENTER CELL --> 
+      <!-- CENTER CELL -->
       <td id="table_main_center" style="padding: 8px 0px 0px;">
         <hr size="1" width="100%"/>
 
         Please provide the email address to-which any quarantined mails <quarantine:currentAddress/> will be managed.  This does <b>not</b> redirect all mails, just quarantine notifications.
-		<center>
-		<table>
+        <center>
+        <table>
               <quarantine:hasMessages type="info">
               <tr>
                 <td>
@@ -87,13 +87,13 @@
                       <li><quarantine:message/></li>
                     </quarantine:forEachMessage>
                   </ul>
-                </td>              
+                </td>
               </tr>
               </quarantine:hasMessages>
-		</table>
-		</center>
-		<center>
-		<table>
+        </table>
+        </center>
+        <center>
+        <table>
               <quarantine:hasMessages type="error">
               <tr>
                 <td>
@@ -102,16 +102,16 @@
                       <li><quarantine:message/></li>
                     </quarantine:forEachMessage>
                   </ul>
-                </td>              
+                </td>
               </tr>
-              </quarantine:hasMessages>                      
-		</table>
-		</center>
+              </quarantine:hasMessages>
+        </table>
+        </center>
 
 
 
 
-	 <!-- INPUT FORM 2 -->
+     <!-- INPUT FORM 2 -->
           <br><br>
           <form name="form2" action="mp">
             <input type="hidden"
@@ -133,11 +133,11 @@
                 </td>
               </tr>
             </table>
-          </form>          
+          </form>
 
-		 
-		<br/>
-	<center>Powered by Untangle Networks&reg; EdgeGuard&reg;</center>
+
+        <br/>
+    <center>Powered by Untangle Networks&reg; Platform</center>
 
           <hr size="1" width="100%"/>
         </td>
@@ -145,7 +145,7 @@
       <td id="table_main_right"></td>
     </tr>
     <!-- END CONTENT AREA -->
-    
+
     <!-- BOTTOM THIRD -->
     <tr>
       <td id="table_main_bottom_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>

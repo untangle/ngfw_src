@@ -29,7 +29,7 @@
     <tr>
       <td id="table_main_top_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
       </td>
-      
+
       <td id="table_main_top" width="100%"><img src="images/spacer.gif" alt=" " height="1" width="1"/><br/>
       </td>
 
@@ -52,7 +52,7 @@
                   <img src="images/Logo150x96.gif" border="0" alt="Untangle Networks logo"/>
                 </a>
               </td>
-              
+
               <td style="padding: 0px 0px 0px 10px;" class="page_header_title" align="left" valign="middle">
                 Request Quarantine Digest Email
               </td>
@@ -67,52 +67,52 @@
     <!-- END MIDDLE THIRD -->
     <!-- CONTENT AREA -->
     <tr>
-      
+
       <td id="table_main_left"></td>
 
-      <!-- CENTER CELL --> 
+      <!-- CENTER CELL -->
       <td id="table_main_center" style="padding: 8px 0px 0px;">
         <hr size="1" width="100%"/>
 
-		<!-- INTRO MESSAGE -->
-		This page is used to request an email to your inbox, listing any quarantined emails.<br/><br/>
+        <!-- INTRO MESSAGE -->
+        This page is used to request an email to your inbox, listing any quarantined emails.<br/><br/>
                 Please enter your email address into the form below.<br/>
-		You will then receive an email with links for you to view your quarantined messages.<br/>
-		You can then release or delete any of your quarantined messages.<br/>
+        You will then receive an email with links for you to view your quarantined messages.<br/>
+        You can then release or delete any of your quarantined messages.<br/>
 
-		<!-- MAIN MESSAGE -->
-		<br/>
-		<center>
-		<table>
+        <!-- MAIN MESSAGE -->
+        <br/>
+        <center>
+        <table>
               <quarantine:hasMessages type="info">
-		<tr><td>
+        <tr><td>
                   <ul class="messageText">
                     <quarantine:forEachMessage type="info">
                       <li><quarantine:message/></li>
                     </quarantine:forEachMessage>
                   </ul>
-		</td></tr>
+        </td></tr>
               </quarantine:hasMessages>
-		</table>
-		</center>
+        </table>
+        </center>
 
-		<center>
-		<table>
+        <center>
+        <table>
               <quarantine:hasMessages type="error">
-		<tr><td>
+        <tr><td>
                   <ul class="errortext">
                     <quarantine:forEachMessage type="error">
                       <li><quarantine:message/></li>
                     </quarantine:forEachMessage>
                   </ul>
-		</td></tr>
-              </quarantine:hasMessages>   
-		</table>
-		</center>
+        </td></tr>
+              </quarantine:hasMessages>
+        </table>
+        </center>
 
-		<!-- INPUT FORM -->
+        <!-- INPUT FORM -->
             <form name="form1" method="POST" action="requestdigest">
-		<center>
+        <center>
                   <table style="border: 1px solid; padding: 10px">
                     <tr>
                       <td>Email Address:&nbsp;
@@ -127,11 +127,11 @@
                       </td>
                     </tr>
                   </table>
-		</center>
+        </center>
             </form>
 
-		<br/>
-	<center>Powered by Untangle Networks&reg; EdgeGuard&reg;</center>
+        <br/>
+    <center>Powered by Untangle Networks&reg; Platform</center>
 
           <hr size="1" width="100%"/>
         </td>
@@ -139,7 +139,7 @@
       <td id="table_main_right"></td>
     </tr>
     <!-- END CONTENT AREA -->
-    
+
     <!-- BOTTOM THIRD -->
     <tr>
       <td id="table_main_bottom_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>

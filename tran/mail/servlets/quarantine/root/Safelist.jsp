@@ -20,7 +20,7 @@
 
 <!-- HEADING -->
   <title>Untangle Networks | Safelist for <quarantine:currentAddress/></title>
-    <script> 
+    <script>
       function CheckAll() {
         count = document.form1.elements.length;
         isOn = document.form1.checkall.checked;
@@ -42,7 +42,7 @@
     <tr>
       <td id="table_main_top_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
       </td>
-      
+
       <td id="table_main_top" width="100%"><img src="images/spacer.gif" alt=" " height="1" width="1"/><br/>
       </td>
 
@@ -65,9 +65,9 @@
                   <img src="images/Logo150x96.gif" border="0" alt="Untangle Networks logo"/>
                 </a>
               </td>
-              
+
               <td style="padding: 0px 0px 0px 10px;" class="page_header_title" align="left" valign="middle">
-	    Safelist for:<br/><quarantine:currentAddress/>
+        Safelist for:<br/><quarantine:currentAddress/>
               </td>
             </tr>
           </tbody>
@@ -80,26 +80,26 @@
     <!-- END MIDDLE THIRD -->
     <!-- CONTENT AREA -->
     <tr>
-      
+
       <td id="table_main_left"></td>
 
-      <!-- CENTER CELL --> 
+      <!-- CENTER CELL -->
       <td id="table_main_center" style="padding: 8px 0px 0px;">
         <hr size="1" width="100%"/>
 
-		<!-- INTRO MESSAGE -->
-		Welcome to your &quot;safelist.&quot;
-		A safelist is a list of email addresses,
-		usually email addresses of your friends and colleagues.
-		Emails, sent by anyone on a safelist, will <i>not</i> be quarantined if the emails are identified as spam or phish.<br><br>
-		To delete any email address on the safelist,
-		click the checkboxes for one or more email addresses and click <code>Remove Selected Addresses</code>.
-		To add an email address to the safelist,
-		enter the email address in the text field and click <code>Submit</code>.<br><br>
+        <!-- INTRO MESSAGE -->
+        Welcome to your &quot;safelist.&quot;
+        A safelist is a list of email addresses,
+        usually email addresses of your friends and colleagues.
+        Emails, sent by anyone on a safelist, will <i>not</i> be quarantined if the emails are identified as spam or phish.<br><br>
+        To delete any email address on the safelist,
+        click the checkboxes for one or more email addresses and click <code>Remove Selected Addresses</code>.
+        To add an email address to the safelist,
+        enter the email address in the text field and click <code>Submit</code>.<br><br>
 
-		<!-- INITIAL TABLE -->
-		<center>
-		<table>
+        <!-- INITIAL TABLE -->
+        <center>
+        <table>
               <quarantine:hasMessages type="info">
               <tr>
                 <td>
@@ -108,13 +108,13 @@
                       <li><quarantine:message/></li>
                     </quarantine:forEachMessage>
                   </ul>
-                </td>              
+                </td>
               </tr>
               </quarantine:hasMessages>
-		</table>
-		</center>
-		<center>
-		<table>
+        </table>
+        </center>
+        <center>
+        <table>
               <quarantine:hasMessages type="error">
               <tr>
                 <td>
@@ -123,13 +123,13 @@
                       <li><quarantine:message/></li>
                     </quarantine:forEachMessage>
                   </ul>
-                </td>              
+                </td>
               </tr>
-              </quarantine:hasMessages>                      
-		</table>
-		</center>
+              </quarantine:hasMessages>
+        </table>
+        </center>
 
-		<!-- INPUT FORM 1 -->
+        <!-- INPUT FORM 1 -->
           <form name="form1" method="POST" action="safelist">
             <input type="hidden"
               name="<quarantine:constants keyName="action"/>"
@@ -162,7 +162,7 @@
                             <quarantine:safelistEntry encoded="false"/>
                           </td>
                         </tr>
-                      </quarantine:forEachSafelistEntry>                  
+                      </quarantine:forEachSafelistEntry>
                     </tbody>
                     <tfoot>
                       <tr>
@@ -176,7 +176,7 @@
             </table>
           </form>
 
-	  <!-- INPUT FORM 2 -->
+      <!-- INPUT FORM 2 -->
           <br><br>
           <form name="form2" action="safelist">
             <input type="hidden"
@@ -198,11 +198,11 @@
                 </td>
               </tr>
             </table>
-          </form>          
+          </form>
 
-		 
-		<br/>
-	<center>Powered by Untangle Networks&reg; EdgeGuard&reg;</center>
+
+        <br/>
+    <center>Powered by Untangle Networks&reg; Platform</center>
 
           <hr size="1" width="100%"/>
         </td>
@@ -210,7 +210,7 @@
       <td id="table_main_right"></td>
     </tr>
     <!-- END CONTENT AREA -->
-    
+
     <!-- BOTTOM THIRD -->
     <tr>
       <td id="table_main_bottom_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>

@@ -33,7 +33,7 @@
                         <img src="images/Logo150x96.gif"/>
                       </td>
                       <td class="logotext">
-                        &nbsp;&nbsp;Untangle Networks EdgeGuard
+                        &nbsp;&nbsp;Untangle Networks Platform
                       </td>
                     </tr>
                   </table>
@@ -57,14 +57,14 @@
           <td>
           </td>
           <td></td>
-        </tr> 
+        </tr>
         <TR>
         <TD valign="bottom">
           <IMG SRC="images/bl.gif" WIDTH="20" HEIGHT="20">
         </TD>
         <td class="smallLogo" height="100%">
           Powered by <br>
-          Untangle Networks EdgeGuard
+          Untangle Networks Platform
         </td>
         <TD valign="bottom" align="right">
           <IMG SRC="images/br.gif" WIDTH="20" HEIGHT="20">

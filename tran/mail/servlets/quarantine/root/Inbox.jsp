@@ -19,7 +19,7 @@
 
 <!-- HEADING -->
   <title>Untangle Networks | Quarantine Digest for <quarantine:currentAddress/></title>
-    <script> 
+    <script>
       function CheckAll() {
         count = document.form1.elements.length;
         isOn = document.form1.checkall.checked;
@@ -30,23 +30,23 @@
 
       function uncheckMaster() {
         document.form1.checkall.checked = false;
-      }      
+      }
 
       function doRefresh() {
         document.form1.<quarantine:constants keyName="action"/>.value = "<quarantine:constants valueName="refresh"/>";
         document.form1.submit();
       }
-      
+
       function doPurge() {
         document.form1.<quarantine:constants keyName="action"/>.value = "<quarantine:constants valueName="purge"/>";
         document.form1.submit();
       }
-      
+
       function doRescue() {
         document.form1.<quarantine:constants keyName="action"/>.value = "<quarantine:constants valueName="rescue"/>";
         document.form1.submit();
-      }      
-      
+      }
+
       function doResort(newSort) {
         var nextAscend = "true"
         if(document.form1.<quarantine:constants keyName="sort"/>.value == newSort) {
@@ -62,7 +62,7 @@
           nextAscend = "true";
         }
         document.form1.<quarantine:constants keyName="ascend"/>.value = nextAscend;
-        document.form1.submit();        
+        document.form1.submit();
       }
 
       function doResortByInternDate() {
@@ -87,17 +87,17 @@
 
       function doResortByAttachmentCount() {
         doResort("5");
-      }      
+      }
 
       function mv_doNext() {
         document.form1.<quarantine:constants keyName="first"/>.value = <quarantine:pagnationProperties propName="nextId"/>;
-        document.form1.submit();        
+        document.form1.submit();
       }
       function mv_doPrev() {
         document.form1.<quarantine:constants keyName="first"/>.value = <quarantine:pagnationProperties propName="prevId"/>;
-        document.form1.submit();      
-      }    
-      
+        document.form1.submit();
+      }
+
 
     </script>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
@@ -114,7 +114,7 @@
     <tr>
       <td id="table_main_top_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
       </td>
-      
+
       <td id="table_main_top" width="100%"><img src="images/spacer.gif" alt=" " height="1" width="1"/><br/>
       </td>
 
@@ -137,9 +137,9 @@
                   <img src="images/Logo150x96.gif" border="0" alt="Untangle Networks logo"/>
                 </a>
               </td>
-              
+
               <td style="padding: 0px 0px 0px 10px;" class="page_header_title" align="left" valign="middle">
-		Quarantine Digest for:<br/><quarantine:currentAddress/>
+        Quarantine Digest for:<br/><quarantine:currentAddress/>
               </td>
             </tr>
           </tbody>
@@ -152,10 +152,10 @@
     <!-- END MIDDLE THIRD -->
     <!-- CONTENT AREA -->
     <tr>
-      
+
       <td id="table_main_left"></td>
 
-      <!-- CENTER CELL --> 
+      <!-- CENTER CELL -->
       <td id="table_main_center" style="padding: 8px 0px 0px;">
         <hr size="1" width="100%"/>
 
@@ -165,10 +165,10 @@
           Quarantined emails for <quarantine:currentAddress/> are being sent to the inbox of <quarantine:remappedTo encoded="false"/>.  If you believe this to be an error, please contact either your system administrator or <a href="mailto:<quarantine:remappedTo encoded="false"/>"><quarantine:remappedTo encoded="false"/></a> directly.
         </div>
       </quarantine:isRemapped>
-      
+
       <quarantine:isRemapped includeIfTrue="false">
         <!-- INTRO MESSAGE -->
-        The emails listed below have been quarantined by Untangle Networks EdgeGuard.
+        The emails listed below have been quarantined by Untangle Networks Platform.
         These emails will be deleted automatically after 20 days.
         <br><br>
         To release any email from the quarantine and deliver the email to your inbox,
@@ -179,12 +179,12 @@
         <quarantine:hasSafelist includeIfTrue="true">
           You may also view your <a href="/quarantine/safelist?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="slview"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="true"/>">safelist</a>
         of email senders whose emails you do not want to quarantine.
-        <br><br>        
+        <br><br>
         </quarantine:hasSafelist>
 
         <quarantine:isReceivesRemaps includeIfTrue="true">
           <!--
-            This address received remaps.  Do not offer to let them pass 
+            This address received remaps.  Do not offer to let them pass
             their account along until all inbound remaps are empty
           -->
           Note that emails for <quarantine:currentAddress/> as well as:
@@ -203,39 +203,39 @@
           <br><br>
         </quarantine:isReceivesRemaps>
       </quarantine:isRemapped>
-      
-		<!-- MAIN MESSAGE -->
-		<br/>
-		<center>
-		<table>
+
+        <!-- MAIN MESSAGE -->
+        <br/>
+        <center>
+        <table>
               <quarantine:hasMessages type="info">
-		<tr><td>
+        <tr><td>
                   <ul class="messageText">
                     <quarantine:forEachMessage type="info">
                       <li><quarantine:message/></li>
                     </quarantine:forEachMessage>
                   </ul>
-		</td></tr>
+        </td></tr>
               </quarantine:hasMessages>
-		</table>
-		</center>
+        </table>
+        </center>
 
-		<center>
-		<table>
+        <center>
+        <table>
               <quarantine:hasMessages type="error">
-		<tr><td>
+        <tr><td>
                   <ul class="errortext">
                     <quarantine:forEachMessage type="error">
                       <li><quarantine:message/></li>
                     </quarantine:forEachMessage>
                   </ul>
-		</td></tr>
-              </quarantine:hasMessages>                      
-		</table>
-		</center>
+        </td></tr>
+              </quarantine:hasMessages>
+        </table>
+        </center>
 
-		<!-- MAIN TABLE -->
-	<center>
+        <!-- MAIN TABLE -->
+    <center>
           <quarantine:hasInboxRecords includeIfTrue="true">
           <form name="form1" method="POST" action="manageuser">
             <input type="hidden"
@@ -266,7 +266,7 @@
                       <tbody>
                         <tr>
                           <td>
-                            <input name="Release" value="Release" onclick="doRescue()" type="button">  
+                            <input name="Release" value="Release" onclick="doRescue()" type="button">
                             <input name="Delete" value="Delete" onclick="doPurge()" type="button">
                           </td>
                           <td>
@@ -284,7 +284,7 @@
                                 |Next
                               </quarantine:hasPagnation>
                             </div>
-                          </td>                                
+                          </td>
                        </tr>
                       </tbody>
                     </table>
@@ -323,7 +323,7 @@
                                 <option value="<quarantine:rPPOption/>"><quarantine:rPPOption/></option>
                               </quarantine:isRPPOptionSelected>
                             </quarantine:forEachRPPOption>
-                            </select>                            
+                            </select>
                           </td>
 
                           <th scope="row" align=left>TOTALS</th>
@@ -383,10 +383,10 @@
             </table>
           </form>
           </quarantine:hasInboxRecords>
-	</center>
+    </center>
 
-		<br/>
-	<center>Powered by Untangle Networks&reg; EdgeGuard&reg;</center>
+        <br/>
+    <center>Powered by Untangle Networks&reg; Platform</center>
 
           <hr size="1" width="100%"/>
         </td>
@@ -394,7 +394,7 @@
       <td id="table_main_right"></td>
     </tr>
     <!-- END CONTENT AREA -->
-    
+
     <!-- BOTTOM THIRD -->
     <tr>
       <td id="table_main_bottom_left"><img src="images/spacer.gif" alt=" " height="23" width="23"/><br/>
