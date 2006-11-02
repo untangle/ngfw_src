@@ -56,7 +56,7 @@
               <textElement>
                 <font fontName="SansSerif" size="18" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
               </textElement>
-              <text><![CDATA[EdgeReport]]></text>
+              <text><![CDATA[Untangle Reports]]></text>
             </staticText>
 
             <textField pattern="">
