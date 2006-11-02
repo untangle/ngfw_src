@@ -61,16 +61,16 @@ public abstract class VirusTransformImpl extends AbstractTransform
     // private static final String OUT_MOD_BODY_TEMPLATE =
     // "The attached message from $MIMEMessage:FROM$ was found to contain\r\n" +
     // "the virus \"$VirusReport:VIRUS_NAME$\".  The infected portion of the attached email was removed\r\n" +
-    // "by Untangle Networks EdgeGuard.\r\n";
+    // "by Untangle Networks Virus Blocker.\r\n";
 
     private static final String OUT_MOD_BODY_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$\r\n" +
         "was found to contain the virus \"$VirusReport:VIRUS_NAME$\".\r\n"+
-        "The infected portion of the message was removed by Untangle Networks EdgeGuard.\r\n";
+        "The infected portion of the message was removed by Untangle Networks Virus Blocker.\r\n";
     private static final String OUT_MOD_BODY_SMTP_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
         "was found to contain the virus \"$VirusReport:VIRUS_NAME$\".\r\n"+
-        "The infected portion of the message was removed by Untangle Networks EdgeGuard.\r\n";
+        "The infected portion of the message was removed by Untangle Networks Virus Blocker.\r\n";
 
     private static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
     private static final String IN_MOD_BODY_TEMPLATE = OUT_MOD_BODY_TEMPLATE;
@@ -83,7 +83,7 @@ public abstract class VirusTransformImpl extends AbstractTransform
         "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)" + CRLF +
         "was received by $SMTPTransaction:TO$.  The message was found" + CRLF +
         "to contain the virus \"$VirusReport:VIRUS_NAME$\"." + CRLF +
-        "The infected portion of the message was removed by Untangle Networks EdgeGuard";
+        "The infected portion of the message was removed by Untangle Networks Virus Blocker";
 
     private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
     private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;
@@ -126,7 +126,7 @@ public abstract class VirusTransformImpl extends AbstractTransform
                     testClientPort(client.clientPort()) || testServerPort(server.serverPort())) {
                     return true;
                 }
-                
+
                 return false;
             }
 
@@ -146,12 +146,12 @@ public abstract class VirusTransformImpl extends AbstractTransform
                 if (serverPort == 21 || serverPort == 80 || serverPort == 20) {
                     return true;
                 }
-                
+
                 /* email SMTP (25) / POP3 (110) / IMAP (143) */
                 if (serverPort == 25 || serverPort == 110 || serverPort == 143) {
                     return true;
                 }
-                
+
                 return false;
             }
         };
@@ -214,8 +214,8 @@ public abstract class VirusTransformImpl extends AbstractTransform
 
     public VirusSettings getVirusSettings()
     {
-	if( settings == null )
-	    logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+    if( settings == null )
+        logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
         return settings;
     }
 
