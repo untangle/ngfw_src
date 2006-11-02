@@ -6,7 +6,7 @@
  * Untangle Networks, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
- * $Id: IPSessionDesc.java 6765 2006-08-10 23:25:26Z rbscott $
+ * $Id$
  */
 
 package com.untangle.mvvm.api;

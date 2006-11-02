@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Id: mvvm.sh,v 1.8 2005/03/22 18:46:43 cng Exp $
+# $Id$
 
 MVVM_CONSOLE_LOG=${MVVM_CONSOLE_LOG:-"@PREFIX@/var/log/mvvm/console.log"}
 MVVM_MVVM_LOG=${MVVM_MVVM_LOG:-"@PREFIX@/var/log/mvvm/mvvm.log"}

@@ -6,7 +6,7 @@
  * Untangle Networks, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
- * $Id: NetworkManagerImpl.java 6411 2006-07-13 06:56:10Z inieves $
+ * $Id$
  */
 
 package com.untangle.mvvm.networking;

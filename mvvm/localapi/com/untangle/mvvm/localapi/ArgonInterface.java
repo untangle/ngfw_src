@@ -6,7 +6,7 @@
  * Untangle Networks, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
- * $Id: ArgonInterface.java 7128 2006-09-06 17:32:14Z rbscott $
+ * $Id$
  */
 
 package com.untangle.mvvm.localapi;

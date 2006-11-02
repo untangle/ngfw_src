@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
-<!-- $Id: log4j-reporter.xml,v 1.2 2005/02/10 06:43:11 dmorris Exp $ -->
+<!-- $Id$ -->
 
 <!--
 | For more configuration infromation and examples see the Jakarta Log4j
