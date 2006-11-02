@@ -69,6 +69,7 @@ public class WorkerRunner
 
         while ( true ) {
             try {
+                if ( currentThread == null ) break;
                 currentThread.interrupt();
 
                 /* Calculate much more time to wait for the helper thread to die */

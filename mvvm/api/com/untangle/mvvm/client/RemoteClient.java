@@ -218,9 +218,9 @@ public class RemoteClient
             shieldReconfigure();
         } else if (args[0].equalsIgnoreCase("updateAddress")) {
             updateAddress();
-        } else if (args[0].equalsIgnoreCase("pppoe")) {
+        } else if (false && args[0].equalsIgnoreCase("pppoe")) { /* For debugging/development */
             pppoe(args);
-        } else if (args[0].equalsIgnoreCase("wmi")) {
+        } else if (false && args[0].equalsIgnoreCase("wmi")) { /* For debugging/development */
             wmi(args);
         } else if (args[0].equalsIgnoreCase("gc")) {
             doFullGC();

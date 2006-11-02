@@ -91,8 +91,7 @@ class WMIAssistant implements Assistant
 
     /* matches machines that are currently on the private network, this is essentially
      * used to determine which machines can be queried. */
-
-    /* this will have to change */
+    /* this may have to change */
     private IPMatcher privateNetwork = IPMatcherFactory.getInstance().getInternalMatcher();
 
     /* cache of the results */
@@ -210,8 +209,7 @@ class WMIAssistant implements Assistant
     /* true if the address is able to be queried */
     private boolean isOnPrivateNetwork( UserInfo info )
     {
-        return true;
-        // XXX return this.privateNetwork.isMatch( info.getAddress());
+        return this.privateNetwork.isMatch( info.getAddress());
     }
 
     /* attempt to lookup the response from the cache */

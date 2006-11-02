@@ -40,6 +40,9 @@ import com.untangle.mvvm.logging.EventLoggerFactory;
 import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.ValidateException;
 
+import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
+import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
+
 import com.untangle.mvvm.util.TransactionWork;
 import com.untangle.mvvm.util.Worker;
 import com.untangle.mvvm.util.WorkerRunner;
@@ -66,6 +69,9 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     private EventLogger<LookupLogEvent> eventLogger;
 
     private long lifetimeMillis = UserInfo.DEFAULT_LIFETIME_MILLIS;
+
+    /* this may have to change */
+    private IPMatcher privateNetwork = IPMatcherFactory.getInstance().getInternalMatcher();
 
     /* This is a list of all of the assistants */
     private List<Assistant> assistantList = new LinkedList<Assistant>();
@@ -115,7 +121,7 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     public UserInfo lookup( InetAddress address )
     {
         /* XXXX returns null */
-        if ( !this.isRunning ) return null;
+        if ( !this.isRunning || !isOnPrivateNetwork( address )) return null;
 
         UserInfo info = addressMap.get( address );
 
@@ -383,6 +389,11 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     }
 
     /* ----------------- Private ----------------- */
+    private boolean isOnPrivateNetwork( InetAddress address )
+    {
+        return this.privateNetwork.isMatch( address );
+    }
+
     private UserInfo executeLookup( InetAddress address )
     {
         UserInfo info = null;
