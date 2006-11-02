@@ -122,11 +122,9 @@ if (targetstr == null) {
     <homepage href="http://www.untangle.com"/>
     <description>Remote Desktop Client @ <%=host%>  </description>
     <description kind="short">The graphical client for remote desktop access via RDP.</description>
-    <icon href="images/LogoNoText96x96.gif" kind="splash" width="96" height="96"/>
-    <icon href="images/LogoNoText32x32.gif" width="32" height="32"/>
-    <icon href="images/LogoNoText64x64.gif" width="64" height="64"/>
-    <icon href="images/LogoNoText16x16.gif" width="16" height="16"/>
-    <icon href="images/LogoNoText128x128.gif" width="128" height="128"/>
+    <icon href="images/Logo32x32.gif" width="32" height="32"/>
+    <icon href="images/Logo64x64.gif" kind="splash" width="64" height="64"/>
+    <icon href="images/Logo128x128.gif" width="128" height="128"/>
   </information>
   <security>
     <all-permissions/>
