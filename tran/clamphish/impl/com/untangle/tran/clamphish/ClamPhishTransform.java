@@ -25,18 +25,18 @@ public class ClamPhishTransform extends SpamImpl
       "[PHISH] $MIMEMessage:SUBJECT$";
     private static final String OUT_MOD_BODY_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$\r\n" +
-        "was determined by Untangle Networks EdgeGuard to be PHISH (a fraudulent email\r\n" +
-        "intended to steal information).  The kind of PHISH that was found was\r\n" +
-        "$SPAMReport:FULL$";
-  
+        "was determined by Untangle Networks Identity Theft Blocker to be PHISH (a\r\n" +
+        "fraudulent email intended to steal information).  The kind of PHISH that was\r\n" +
+        "found was $SPAMReport:FULL$";
+
     private static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
     private static final String IN_MOD_BODY_TEMPLATE = OUT_MOD_BODY_TEMPLATE;
 
     private static final String OUT_MOD_BODY_SMTP_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
-        "was determined by Untangle Networks EdgeGuard to be PHISH (a fraudulent email\r\n" +
-        "intended to steal information).  The kind of PHISH that was found was\r\n" +
-        "$SPAMReport:FULL$";
+        "was determined by Untangle Networks Identity Theft Blocker to be PHISH (a\r\n" +
+        "fraudulent email intended to steal information).  The kind of PHISH that was\r\n" +
+        "found was $SPAMReport:FULL$";
 
     private static final String IN_MOD_BODY_SMTP_TEMPLATE = OUT_MOD_BODY_SMTP_TEMPLATE;
 
@@ -44,16 +44,16 @@ public class ClamPhishTransform extends SpamImpl
 
     private static final String OUT_NOTIFY_SUB_TEMPLATE =
       "[PHISH NOTIFICATION] re: $MIMEMessage:SUBJECT$";
-  
+
     private static final String OUT_NOTIFY_BODY_TEMPLATE =
         "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
         "was received by $SMTPTransaction:TO$.  The message was determined\r\n" +
-        "by Untangle Networks EdgeGuard to be PHISH (a fraudulent email intended\r\n" +
-        "to steal information).  The kind of PHISH that was found was\r\n" +
+        "by Untangle Networks Identity Theft Blocker to be PHISH (a fraudulent\r\n" +
+        "email intended to steal information).  The kind of PHISH that was found was\r\n" +
         "$SPAMReport:FULL$";
-  
+
     private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
-    private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;    
+    private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;
 
     // We want to make sure that phish is before spam,
     // before virus in the pipeline (towards the client for smtp,
@@ -79,7 +79,7 @@ public class ClamPhishTransform extends SpamImpl
     public String getDefaultSubjectWrapperTemplate(boolean inbound) {
       return inbound?IN_MOD_SUB_TEMPLATE:OUT_MOD_SUB_TEMPLATE;
     }
-    
+
     @Override
     public String getDefaultBodyWrapperTemplate(boolean inbound) {
       return inbound?IN_MOD_BODY_TEMPLATE:OUT_MOD_BODY_TEMPLATE;
@@ -108,6 +108,6 @@ public class ClamPhishTransform extends SpamImpl
     @Override
     public String getDefaultNotifyBodyTemplate(boolean inbound) {
       return inbound?IN_NOTIFY_BODY_TEMPLATE:OUT_NOTIFY_BODY_TEMPLATE;
-    }     
+    }
 
 }

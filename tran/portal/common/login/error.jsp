@@ -77,7 +77,7 @@ if (null == text) {
       <br/>
       <br/>
       <div style="font-style: italic; font-size: 80%;">
-      <a href="<%=scheme%>://<%=host%>/webstart">EdgeGuard Administration</a>
+      <a href="<%=scheme%>://<%=host%>/webstart">Untangle Platform Administration</a>
       </div>
       </center>
       </div>
