@@ -63,7 +63,8 @@ public interface AdminManager
     /**
      * Returns the current time that the MVVM is set to
      *
-     * @return a <code>Date</code> giving the current time as seen by EdgeGuard
+     * @return a <code>Date</code> giving the current time as seen by
+     * Untangle Server.
      */
     Date getDate();
 

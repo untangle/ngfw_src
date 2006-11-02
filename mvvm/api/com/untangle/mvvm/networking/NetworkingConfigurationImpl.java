@@ -11,38 +11,34 @@
 
 package com.untangle.mvvm.networking;
 
+import java.io.Serializable;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
-
-import java.io.Serializable;
-
-import java.net.Inet4Address;
-import java.net.InetAddress;
 
 import com.untangle.mvvm.InterfaceAlias;
 import com.untangle.mvvm.IntfConstants;
 import com.untangle.mvvm.NetworkingConfiguration;
-
+import com.untangle.mvvm.networking.NetworkUtil;
 import com.untangle.mvvm.tran.AddressValidator;
-import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.Equivalence;
 import com.untangle.mvvm.tran.HostName;
+import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.Validatable;
 import com.untangle.mvvm.tran.ValidateException;
 
-import com.untangle.mvvm.networking.NetworkUtil;
-
-public class NetworkingConfigurationImpl 
+public class NetworkingConfigurationImpl
     implements Validatable, Serializable, NetworkingConfiguration, Equivalence
 {
     // private static final long serialVersionUID = 172494253701617361L;
 
     public static final HostName  DEFAULT_HOSTNAME = NetworkUtil.DEFAULT_HOSTNAME;
-    
+
     public static final boolean DEF_IS_DHCP_EN            = false;
     public static final boolean DEF_IS_INSIDE_INSECURE_EN = true;
     public static final boolean DEF_IS_OUTSIDE_EN         = false;
@@ -56,7 +52,7 @@ public class NetworkingConfigurationImpl
 
     /* Default custom rules are empty */
     public static final String DEF_CUSTOM_RULES = "";
-    
+
     /**
      * True if DHCP is enabled
      */
@@ -68,10 +64,10 @@ public class NetworkingConfigurationImpl
     private boolean isHostnamePublic = false;
 
     /**
-     * Hostname, Host and Netmask of the EdgeGuard GSP
+     * Hostname, Host and Netmask of the Untangle Server
      */
     private HostName hostname = DEFAULT_HOSTNAME;
-    
+
     private boolean isPublicAddressEnabled = false;
     private boolean isPublicAddressSetup = false;
     private IPaddr publicIPaddr = null;
@@ -86,7 +82,7 @@ public class NetworkingConfigurationImpl
     private List<InterfaceAlias> aliasList = new LinkedList<InterfaceAlias>();
 
     /**
-     * Default route/gateway for the EdgeGuard GSP
+     * Default route/gateway for the Untangle Server
      */
     private IPaddr gateway = NetworkUtil.EMPTY_IPADDR;
 
@@ -109,7 +105,7 @@ public class NetworkingConfigurationImpl
      * True if exception emails are to be emailed
      */
     private boolean isExceptionReportingEnabled = DEF_IS_EXCEPTION_REPORTING_EN;
-    
+
     /**
      * True if TCP Window Scaling is enabled.
      * disabled by default.
@@ -123,7 +119,7 @@ public class NetworkingConfigurationImpl
 
     private IPaddr outsideNetwork = NetworkUtil.DEF_OUTSIDE_NETWORK;
     private IPaddr outsideNetmask = NetworkUtil.DEF_OUTSIDE_NETMASK;
-    
+
     private int httpsPort = DEF_HTTPS_PORT;
 
     /* This is a script that gets executed after the bridge configuration runs */
@@ -142,7 +138,7 @@ public class NetworkingConfigurationImpl
     public NetworkingConfigurationImpl()
     {
     }
-    
+
     public void isDhcpEnabled( boolean isEnabled )
     {
         this.isDhcpEnabled = isEnabled;
@@ -166,8 +162,8 @@ public class NetworkingConfigurationImpl
     public void setHostname( HostName hostname )
     {
         if ( hostname == null ) hostname = DEFAULT_HOSTNAME;
-	// do some shizzle 'n checks here
-	this.hostname = hostname;
+    // do some shizzle 'n checks here
+    this.hostname = hostname;
     }
 
     /* Returns if the hostname for this box is publicly resolvable to this box */
@@ -175,7 +171,7 @@ public class NetworkingConfigurationImpl
     {
         return this.isHostnamePublic;
     }
-    
+
     public void setIsHostnamePublic( boolean newValue )
     {
         this.isHostnamePublic = newValue;
@@ -239,7 +235,7 @@ public class NetworkingConfigurationImpl
     /* Return true if the current settings have a public address */
     public boolean hasPublicAddress()
     {
-        return (( this.publicIPaddr != null ) &&  !this.publicIPaddr.isEmpty());                
+        return (( this.publicIPaddr != null ) &&  !this.publicIPaddr.isEmpty());
     }
 
     /**
@@ -274,7 +270,7 @@ public class NetworkingConfigurationImpl
     }
 
     /**
-     * Gateway of the EdgeGuard GSP
+     * Gateway of the Untangle Server
      */
     public void gateway( IPaddr gateway )
     {
@@ -290,24 +286,24 @@ public class NetworkingConfigurationImpl
         return this.gateway;
     }
 
-    public void dns1( IPaddr dns1 ) 
+    public void dns1( IPaddr dns1 )
     {
         if ( dns1 == null ) dns1 = NetworkUtil.EMPTY_IPADDR;
 
         this.dns1 = dns1;
     }
 
-    public IPaddr dns1() 
+    public IPaddr dns1()
     {
         if ( this.dns1 == null ) this.dns1 = NetworkUtil.EMPTY_IPADDR;
-        
+
         return this.dns1;
     }
 
     public void dns2( IPaddr dns2 )
     {
         if ( dns2 == null ) dns2 = NetworkUtil.EMPTY_IPADDR;
-        
+
         this.dns2 = dns2;
     }
 
@@ -317,7 +313,7 @@ public class NetworkingConfigurationImpl
         return this.dns2;
     }
 
-    public boolean hasDns2() 
+    public boolean hasDns2()
     {
         return ( this.dns2 != null && !this.dns2.equals( NetworkUtil.EMPTY_IPADDR ));
     }
@@ -328,7 +324,7 @@ public class NetworkingConfigurationImpl
         if ( this.aliasList == null ) this.aliasList = new LinkedList<InterfaceAlias>();
         return this.aliasList;
     }
-         
+
     /* Set the current list of interface aliaes */
     public void setAliasList( List<InterfaceAlias> aliasList )
     {
@@ -342,7 +338,7 @@ public class NetworkingConfigurationImpl
         if ( this.postConfigurationScript == null ) this.postConfigurationScript = DEF_POST_CONFIGURATION;
         return this.postConfigurationScript;
     }
-    
+
     /* XXXX This should be validated */
     public void setPostConfigurationScript( String script )
     {
@@ -356,7 +352,7 @@ public class NetworkingConfigurationImpl
         if ( this.customRulesScript == null ) this.customRulesScript = DEF_CUSTOM_RULES;
         return this.customRulesScript;
     }
-    
+
     /* XXXX This should be validated */
     public void setCustomRules( String newValue )
     {
@@ -369,7 +365,7 @@ public class NetworkingConfigurationImpl
         return this.isSshEnabled;
     }
 
-    public void isSshEnabled( boolean isEnabled ) 
+    public void isSshEnabled( boolean isEnabled )
     {
         this.isSshEnabled = isEnabled;
     }
@@ -378,12 +374,12 @@ public class NetworkingConfigurationImpl
     {
         return this.isExceptionReportingEnabled;
     }
-    
+
     public void isExceptionReportingEnabled( boolean isEnabled )
     {
         this.isExceptionReportingEnabled = isEnabled;
     }
-    
+
     public void isTcpWindowScalingEnabled( boolean isEnabled )
     {
         this.isTcpWindowScalingEnabled = isEnabled;
@@ -444,7 +440,7 @@ public class NetworkingConfigurationImpl
      */
     public void outsideNetwork( IPaddr network )
     {
-        if ( network == null ) network = NetworkUtil.DEF_OUTSIDE_NETWORK;            
+        if ( network == null ) network = NetworkUtil.DEF_OUTSIDE_NETWORK;
 
         this.outsideNetwork = network;
     }
@@ -487,7 +483,7 @@ public class NetworkingConfigurationImpl
     {
         /* Make sure that it is a valid port */
         if ( httpsPort == 0 || httpsPort > 0xFFFF || httpsPort == 80 ) httpsPort = DEF_HTTPS_PORT;
-        
+
         this.httpsPort = httpsPort;
     }
 
@@ -506,7 +502,7 @@ public class NetworkingConfigurationImpl
     {
         return this.isOutsideQuarantineEnabled;
     }
-    
+
     public void setIsOutsideQuarantineEnabled( boolean newValue )
     {
         this.isOutsideQuarantineEnabled = newValue;
@@ -516,7 +512,7 @@ public class NetworkingConfigurationImpl
     {
         return this.isOutsideReportingEnabled;
     }
-    
+
     public void setIsOutsideReportingEnabled( boolean newValue )
     {
         this.isOutsideReportingEnabled = newValue;
@@ -528,7 +524,7 @@ public class NetworkingConfigurationImpl
         if ( null == this.pppoeSettings ) this.pppoeSettings = getDefaultPPPoESettings();
         return this.pppoeSettings;
     }
-    
+
     /* Set the settings PPPoE settings for the external interface. */
     public void setPPPoESettings( PPPoEConnectionRule newValue )
     {
@@ -546,26 +542,26 @@ public class NetworkingConfigurationImpl
         if ( !isDhcpEnabled ) {
             InetAddress defaultRoute = gateway().getAddr();
             InetAddress host = host().getAddr();
-                        
+
             if ( host.equals( defaultRoute )) {
                 throw new ValidateException( "The \"Default Route\" and \"IP Address\" are the same." );
             }
-            
+
             addressSet.add( host );
-            
+
             if ( av.isIllegalAddress( host )) {
                 throw new ValidateException( "\"IP Address\" is invalid." );
             }
-            
+
             if ( av.isIllegalAddress( defaultRoute )) {
                 throw new ValidateException( "\"Default Route\" is invalid." );
             }
-            
+
             if ( av.isIllegalAddress( dns1.getAddr())) {
                 throw new ValidateException( "\"Primary DNS\" is invalid." );
             }
-            
-            if (( this.dns2 != null ) && ( !this.dns2.isEmpty()) && 
+
+            if (( this.dns2 != null ) && ( !this.dns2.isEmpty()) &&
                 av.isIllegalAddress( this.dns2.getAddr())) {
                 throw new ValidateException( "\"Secondary DNS\" is invalid." );
             }
@@ -574,16 +570,16 @@ public class NetworkingConfigurationImpl
         int index = 0;
         for ( InterfaceAlias alias : getAliasList()) {
             index++;
-            
+
             InetAddress address = alias.getAddress().getAddr();
 
             if ( av.isIllegalAddress( address )) {
                 throw new ValidateException( "\"External Address Alias\" at index " + index + " is invalid." );
             }
-            
+
             /* Check if the address is already used */
             if ( !addressSet.add( address )) {
-                throw new ValidateException( "\"External Address Alias\" " + address.getHostAddress() + 
+                throw new ValidateException( "\"External Address Alias\" " + address.getHostAddress() +
                                              " is duplicated.\n" );
             }
 
@@ -624,7 +620,7 @@ public class NetworkingConfigurationImpl
 
         if (!curNC.getCustomRules().equals(newNC.getCustomRules())) {
             return false;
-        }        
+        }
 
         if ( curNC.httpsPort() != newNC.httpsPort()) {
             return false;
@@ -708,7 +704,7 @@ public class NetworkingConfigurationImpl
         if (curNC.getIsOutsideAdministrationEnabled() != newNC.getIsOutsideAdministrationEnabled()) {
             return false;
         }
-        
+
         if (curNC.getIsOutsideQuarantineEnabled() != newNC.getIsOutsideQuarantineEnabled()) {
             return false;
         }
@@ -722,11 +718,11 @@ public class NetworkingConfigurationImpl
 
     public String toString()
     {
-        /* The networking configuration could be rewritten as the composition of 
+        /* The networking configuration could be rewritten as the composition of
          * a BasicNetworkSettingsImpl(doesn't exist yet) and a RemoteSettingsImpl.
          * this would make this function a lot shorter */
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append( "dhcp:        "   + isDhcpEnabled());
         sb.append( "\nhostname:    " + hostname());
         sb.append( "\nhost:        " + host());
@@ -741,7 +737,7 @@ public class NetworkingConfigurationImpl
         sb.append( "\nexceptions:  " + isExceptionReportingEnabled());
         sb.append( "\ntcp window:  " + isTcpWindowScalingEnabled());
         sb.append( "\ninside in:   " + isInsideInsecureEnabled());
-        sb.append( "\noutside:     " + isOutsideAccessEnabled()); 
+        sb.append( "\noutside:     " + isOutsideAccessEnabled());
         sb.append( "\nrestriced:   " + isOutsideAccessRestricted());
         sb.append( "\nrestriction: " + outsideNetwork() + "/" + outsideNetmask());
         sb.append( "\nHTTPS:       " + httpsPort());

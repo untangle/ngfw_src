@@ -23,22 +23,22 @@ public interface NetworkSpacesSettings
     /** Retrieve whether or not the settings are enabled */
     public boolean getIsEnabled();
 
-    /** Retrieve whether or not the EdgeGuard has completed the setup wizard */
+    /** Retrieve whether or not the Untangle Platform has completed the setup wizard */
     public boolean getHasCompletedSetup();
 
-    /** Set whether this EdgeGuard has completed setup */
+    /** Set whether this Untangle Server has completed setup */
     public void setHasCompletedSetup( boolean newValue );
 
     public void setIsEnabled( boolean newValue );
 
     /** Retrieve a list of interfaces */
     public List<Interface> getInterfaceList();
-    
+
     public void setInterfaceList( List<Interface> newValue );
 
     /** The list of network spaces for the box. */
     public List<NetworkSpace> getNetworkSpaceList();
-    
+
     public void setNetworkSpaceList( List<NetworkSpace> newValue );
 
     /** The routing table for the box. */
@@ -53,10 +53,10 @@ public interface NetworkSpacesSettings
 
     /** IP address of the default route. */
     public IPaddr getDefaultRoute();
-    
+
     public void setDefaultRoute( IPaddr newValue );
-    
-    
+
+
     /** IP address of the primary dns server, may be empty (dhcp is enabled) */
     public IPaddr getDns1();
 

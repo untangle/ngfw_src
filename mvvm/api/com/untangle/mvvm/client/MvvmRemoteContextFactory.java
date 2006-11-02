@@ -170,7 +170,7 @@ public class MvvmRemoteContextFactory
     }
 
     /**
-     * Activates the EdgeGuard using the given key.
+     * Activates the Untangle Server using the given key.
      *
      * @param host the host of the Mvvm.
      * @param key a <code>String</code> giving the key to be activated under
@@ -193,7 +193,7 @@ public class MvvmRemoteContextFactory
     }
 
     /**
-     * Activates the EdgeGuard using the given key.
+     * Activates the Untangle Server using the given key.
      *
      * @param host the host of the Mvvm.
      * @param port the the port the server is on.

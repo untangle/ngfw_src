@@ -96,7 +96,7 @@ if (!( isIndex || isDownload)) isIndex = true;
                 <br/>
                 <br/>
                 <span style="font-weight: bold;">
-                  Untangle Networks EdgeGuard
+                  Untangle Networks Portal
                 </span>
                 <br/>
                 <br/>
@@ -165,20 +165,20 @@ if (!( isIndex || isDownload)) isIndex = true;
                <% if ( !isDownload ) { %>
                  <a href="download.html">Download Java&trade; v1.5 (Online)</a><br/>
                <% } %>
-	
+
               </div>
             </td>
           </tr>
         </tbody>
       </table>
 
-	<br/>
-	<table style="color:#444444" border="0" cellpadding="2">
-	<tr><td>Command Key:</td></tr>
-	<tr><td>Ctrl+Alt+End</td><td>Open Windows NT security dialog</td></tr>
-	<tr><td>Alt+Insert</td><td>Cycle through most recently used windows</td></tr>
-	<tr><td>Alt+Home</td><td>Show start menu</td></tr>
-	</table>
+    <br/>
+    <table style="color:#444444" border="0" cellpadding="2">
+    <tr><td>Command Key:</td></tr>
+    <tr><td>Ctrl+Alt+End</td><td>Open Windows NT security dialog</td></tr>
+    <tr><td>Alt+Insert</td><td>Cycle through most recently used windows</td></tr>
+    <tr><td>Alt+Home</td><td>Show start menu</td></tr>
+    </table>
     </center>
     <br/>
     <br/>

@@ -46,7 +46,7 @@ $numRecsNotShown - Number of records which could not be shown for space reasons
 $totalNumRecords - total number of records (because this Velocity junk would
                    not understand "$inboxrecords.length")
 
-$jsEscaper - Instance which can escape JavaScript if found in subject                   
+$jsEscaper - Instance which can escape JavaScript if found in subject
 
 
 2) Conditionals
@@ -112,7 +112,7 @@ table.outertable {
 }
 
 .logoTable {
-  padding-left: 15; 
+  padding-left: 15;
   padding-top: 15;
 }
 
@@ -202,7 +202,7 @@ table.topofsl {
   width: 98%;
   margin-left:1%;
   margin-right:1%;
-  background-color: #34609B;  
+  background-color: #34609B;
 }
 
 
@@ -373,7 +373,7 @@ body {
      margin: 15px;
      background: #FFFFFF url($image_root/background_body.gif) repeat-x top left;
      text-align: center;
-}  
+}
 
 table {
     font: normal normal normal 10pt/14pt Arial,Sans-Serif;
@@ -509,7 +509,7 @@ hr {
     <tr>
       <td id="table_main_top_left"><img src="$image_root/spacer.gif" alt=" " height="23" width="23"/><br/>
       </td>
-      
+
       <td id="table_main_top" width="100%"><img src="$image_root/spacer.gif" alt=" " height="1" width="1"/><br/>
       </td>
 
@@ -532,7 +532,7 @@ hr {
                   <img src="$image_root/logo_no_text_shiny_96x96.gif" border="0" alt="Untangle Networks logo"/>
                 </a>
               </td>
-              
+
               <td style="padding: 0px 0px 0px 10px;" class="page_header_title" align="left" valign="middle">
                 Quarantine Digest for<br/>$user_email
               </td>
@@ -547,25 +547,25 @@ hr {
     <!-- END MIDDLE THIRD -->
     <!-- CONTENT AREA -->
     <tr>
-      
+
       <td id="table_main_left"></td>
 
-      <!-- CENTER CELL --> 
+      <!-- CENTER CELL -->
       <td id="table_main_center" style="padding: 8px 0px 0px;">
         <hr size="1" width="100%"/>
 
-		<!-- INTRO MESSAGE -->
-		  The emails listed below have been quarantined by Untangle Networks EdgeGuard.
-		  These emails will be deleted automatically after 20 days.<br><br>
-		  To release a specific email from the quarantine and deliver the email to your inbox,
-		  click <code>Release</code>.
-		  To delete a specific email from the quarantine,
-		  click <code>Delete</code>.
+        <!-- INTRO MESSAGE -->
+          The emails listed below have been quarantined by Untangle Networks Spam Blocker.
+          These emails will be deleted automatically after 20 days.<br><br>
+          To release a specific email from the quarantine and deliver the email to your inbox,
+          click <code>Release</code>.
+          To delete a specific email from the quarantine,
+          click <code>Delete</code>.
       <br><br>
       You may also choose to <a href="$linkgenerator.generateInboxLink()">visit your Inbox</a> online for more options.
       <br><br>
 
-		<!-- MAIN MESSAGE -->
+        <!-- MAIN MESSAGE -->
           #if ($hasRecords)
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tbody>
@@ -581,9 +581,9 @@ hr {
                         </td>
                         <td>
                           <div class="msiehack1">
-<!--                          
+<!--
                             <a href="$linkgenerator.generateHelpLink()">Help</a>
--->                            
+-->
                           </div>
                         </td>
                       </tr>
@@ -666,8 +666,8 @@ hr {
             There are no quarantined emails, but you may visit your <a href="$linkgenerator.generateInboxLink()"> online inbox</a> for more options
           #end
 
-		<br/>
-	<center>Powered by Untangle Networks&reg; EdgeGuard&reg;</center>
+        <br/>
+    <center>Powered by the Untangle Networks&reg; Platform;</center>
 
           <hr size="1" width="100%"/>
         </td>
@@ -675,7 +675,7 @@ hr {
       <td id="table_main_right"></td>
     </tr>
     <!-- END CONTENT AREA -->
-    
+
     <!-- BOTTOM THIRD -->
     <tr>
       <td id="table_main_bottom_left"><img src="$image_root/spacer.gif" alt=" " height="23" width="23"/><br/>
