@@ -218,7 +218,7 @@ function generateEmail()
     
     ## Generate the file list
     cat > ${t_arguments} <<EOF
--s "Untangle Networks EdgeReport (${REPORT_TYPE})"
+-s "Untangle Reports (${REPORT_TYPE})"
 ${t_email}
 ${OUTPUT_FILE} 
 EOF
