@@ -267,7 +267,7 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 logRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DMZ Host Logging", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jTextArea4.setEditable(false);
                 jTextArea4.setLineWrap(true);
-                jTextArea4.setText("If DMZ Host Logging is enabled, then all traffic inbound to the DMZ Host will be logged.  This information will then appear in the Event Log as well as in EdgeReport reports.");
+                jTextArea4.setText("If DMZ Host Logging is enabled, then all traffic inbound to the DMZ Host will be logged.  This information will then appear in the Event Log as well as in Untangle Reports.");
                 jTextArea4.setWrapStyleWord(true);
                 jTextArea4.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();

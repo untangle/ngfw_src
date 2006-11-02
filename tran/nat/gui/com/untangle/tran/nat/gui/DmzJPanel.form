@@ -231,7 +231,7 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="If DMZ Host Logging is enabled, then all traffic inbound to the DMZ Host will be logged.  This information will then appear in the Event Log as well as in EdgeReport reports."/>
+            <Property name="text" type="java.lang.String" value="If DMZ Host Logging is enabled, then all traffic inbound to the DMZ Host will be logged.  This information will then appear in the Event Log as well as in Untangle Reports."/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
