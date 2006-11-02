@@ -234,6 +234,8 @@ EOF
 
 generate_user_content_area ()
 {
+ucnt=0
+
 while read line
 do
 if [ "${line}" = "" ]; then
@@ -278,11 +280,30 @@ cat >> $base_file <<EOF
 EOF
 
 fi
+
+ucnt=$((ucnt+1))
+
 done < $base_dir/uname.lst
+
+if (( ucnt == 0 )); then
+
+cat >> $base_file <<EOF
+<tr valign=top>
+  <td><img src="../images/px" style="width: 20px; height: 13px"></td>
+  <td colspan=12><span style="font-family: SansSerif; font-size: 9.0px;">
+  &lt;No user events were detected during this time period.&gt;
+  </span></td>
+  <td colspan=9><img src="../images/px" style="width: 316px; height: 13px"></td>
+</tr>
+EOF
+
+fi
 }
 
 generate_hname_content_area ()
 {
+hcnt=0
+
 while read line
 do
 if [ "${line}" = "" ]; then
@@ -327,7 +348,24 @@ cat >> $base_file <<EOF
 EOF
 
 fi
+
+hcnt=$((hcnt+1))
+
 done < $base_dir/hname.lst
+
+if (( hcnt == 0 )); then
+
+cat >> $base_file <<EOF
+<tr valign=top>
+  <td><img src="../images/px" style="width: 20px; height: 13px"></td>
+  <td colspan=12><span style="font-family: SansSerif; font-size: 9.0px;">
+  &lt;No client events were detected during this time period.&gt;
+  </span></td>
+  <td colspan=9><img src="../images/px" style="width: 316px; height: 13px"></td>
+</tr>
+EOF
+
+fi
 }
 
 generate_page
