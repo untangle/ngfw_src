@@ -96,7 +96,7 @@ if (!( isIndex || isDownload)) isIndex = true;
                 <br/>
                 <br/>
                 <span style="font-weight: bold;">
-                  Untangle Networks EdgeGuard
+                  Untangle Networks Platform
                 </span>
                 <br/>
                 <br/>

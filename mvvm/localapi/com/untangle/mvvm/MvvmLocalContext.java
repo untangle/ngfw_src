@@ -200,8 +200,9 @@ public interface MvvmLocalContext
     boolean isActivated();
 
     /**
-     * Activates the EdgeGuard using the given key.  Returns true if
-     * the activation succeeds, false otherwise (if the key is bogus).
+     * Activates the Untangle Server using the given key.  Returns
+     * true if the activation succeeds, false otherwise (if the key is
+     * bogus).
      *
      * @param key a <code>String</code> giving the key to be activated
      * under

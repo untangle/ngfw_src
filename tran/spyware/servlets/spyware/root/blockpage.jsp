@@ -85,7 +85,7 @@ url = '<%=url%>';
 <td><hr></td>
 </tr>
 <tr>
-<td><address>Untangle Networks EdgeGuard</address></td>
+<td><address>Untangle Networks Spyware Blocker</address></td>
 </tr>
 </tfoot>
 </table>

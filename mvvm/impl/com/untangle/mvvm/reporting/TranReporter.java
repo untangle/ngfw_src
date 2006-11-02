@@ -114,7 +114,7 @@ public class TranReporter {
         // Icons.  We have to be a bit tricky to get the name right.
         String tname = tctx.getTransformDesc().getClassName().replace('.', '/');
         String rdir = tname.substring(0, tname.lastIndexOf("/")) + "/gui/";
-        
+
         is = tcl.getResourceAsStream(rdir + ICON_ORG);
         if (is == null) {
             logger.warn("No icon_org for: " + rdir + ICON_ORG);
@@ -331,7 +331,7 @@ public class TranReporter {
         String mktName = mth.getTransformDesc(new Tid()).getDisplayName();
         // HACK O RAMA XXXXXXXXX
         if (mktName.startsWith("EdgeReport"))
-            mktName = "EdgeGuard Appliance";
+            mktName = "Untangle Platform Appliance";
         logger.debug("Writing transform name: " + mktName);
         FileOutputStream fos = new FileOutputStream(new File(tranDir, "name"));
         PrintWriter pw = new PrintWriter(fos);

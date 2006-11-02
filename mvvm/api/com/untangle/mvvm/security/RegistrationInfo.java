@@ -17,7 +17,7 @@ import java.net.URLEncoder;
 import java.util.Hashtable;
 
 /**
- * The registration info for the EdgeGuard customer
+ * The registration info for the Untangle customer
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
