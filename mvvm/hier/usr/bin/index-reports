@@ -52,7 +52,7 @@ fi
 
 
 if [ "$generate_email_index" != false ]; then
-    echo "-s \"Untangle Networks EdgeReport ($period)\"" >> $mail_reports_arguments
+    echo "-s \"Untangle Reports ($period)\"" >> $mail_reports_arguments
     echo "./$index" >> $mail_reports_arguments
     find ./images/* -type f >> $mail_reports_arguments
 fi
@@ -65,7 +65,7 @@ cat > $main_index <<EOF
 
   <!-- HEADING -->
   <head>
-    <title>Untangle Networks EdgeReport</title>
+    <title>Untangle Reports</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
 
 
@@ -214,9 +214,9 @@ h4 {
             <table width="100%">
               <tr>
               <td width="96" valign="middle">
-                <img src="$web_base/images/logo_no_text_shiny_96x96.gif" alt="Untangle Networks logo" width="96" height="96"/>
+                <img src="$web_base/images/Logo150x96.gif" alt="Untangle Networks logo" width="150" height="96"/>
               </td>
-              <td style="padding: 0px 0px 0px 10px" class="page_header_title" align="left" valign="middle">Untangle Networks<br/>EdgeReport</td>
+              <td style="padding: 0px 0px 0px 10px" class="page_header_title" align="left" valign="middle">Untangle<br/>Reports</td>
               <td align="right">
               <table width="100%">
                 <tr><td class="page_header_alternate" align="right">
