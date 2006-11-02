@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 
 public class LogMailer implements Runnable
 {
-    public static final String SUBJECT_BASE = "EdgeGuard Logs";
+    public static final String SUBJECT_BASE = "Untangle Platform Logs";
     public static final String BODY_BASE = "Error Logs";
 
     // Generate no more than one email per this long (5 minutes).
