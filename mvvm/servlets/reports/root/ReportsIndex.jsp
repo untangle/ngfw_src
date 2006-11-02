@@ -58,7 +58,7 @@
 
   <!-- HEADING -->
   <head>
-    <title>Untangle Networks EdgeReport</title>
+    <title>Untangle Reports</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
     <style type="text/css">
     <!--
@@ -206,10 +206,10 @@ h4 {
             <table width="100%">
               <tr>
               <td width="96" valign="middle">
-                <img src="./images/logo_no_text_shiny_96x96.gif" alt="Untangle Networks logo" width="96" height="96"/>
+                <img src="./images/Logo150x96.gif" alt="Untangle Networks logo" width="150" height="96"/>
               </td>
               <td style="padding: 0px 0px 0px 10px" class="page_header_title" align="left" valign="middle">
-		Untangle Networks EdgeReport
+		Untangle Reports
               </td>
 	      <td align="right">
 		<table width="100%">
