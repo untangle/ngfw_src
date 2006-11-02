@@ -20,7 +20,7 @@ MvvmLocalContext mvvm = MvvmContextFactory.context();
 
   <!-- HEADING -->
   <head>
-    <title>Untangle Networks EdgeReport</title>
+    <title>Untangle Reports</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
     <style type="text/css">
     <!--
@@ -164,10 +164,10 @@ h4 {
             <table>
               <tr>
               <td valign="middle">
-                <img src="./images/logo_no_text_shiny_96x96.gif" alt="Untangle Networks logo" width="96" height="96"/>
+                <img src="./images/Logo150x96.gif" alt="Untangle Networks logo" width="150" height="96"/>
               </td>
               <td style="padding: 0px 0px 0px 10px" valign="middle">
-                <span class="page_header_title">Untangle Networks EdgeReport</span>
+                <span class="page_header_title">Untangle Reports</span>
               </td>
               </tr>
             </table>
@@ -232,7 +232,7 @@ h4 {
 
 %>
 
-<html><head><title>Untangle Networks EdgeReport</title>
+<html><head><title>Untangle Reports</title>
 <STYLE><!---
 H1{font-family : sans-serif,Arial,Tahoma;color : white;
   background-color : #0086b2;}
@@ -240,7 +240,7 @@ BODY{font-family : sans-serif,Arial,Tahoma;color : black;
   background-color : white;}
 B{color : white;background-color : #0086b2;} HR{color : #0086b2;}
 --></STYLE> </head><body>
-<h1>Untangle Networks EdgeReport - HTTP Status 302 - Moved Temporarily</h1>
+<h1>Untangle Reports - HTTP Status 302 - Moved Temporarily</h1>
 <HR size="1" noshade><p><b>type</b> Status report</p>
 <p><b>message</b> <u>Moved Temporarily</u></p>
 <p><b>description</b>
