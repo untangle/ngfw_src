@@ -68,7 +68,7 @@ public class BrowserLaunchJPanel extends JPanel implements ActionListener {
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
         }
         catch(Exception f){
-            Util.handleExceptionNoRestart("error launching browser for EdgeReport", f);
+            Util.handleExceptionNoRestart("error launching browser for Untangle Reports", f);
         }
 
     }

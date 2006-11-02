@@ -17,7 +17,7 @@
     <table-row>
       <cell>
         <paragraph font="title" halign="left">
-          EdgeReport ${type} Briefings
+          Untangle Reports ${type} Briefings
         </paragraph>
       </cell>
     

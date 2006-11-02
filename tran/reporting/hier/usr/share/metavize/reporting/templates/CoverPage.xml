@@ -27,7 +27,7 @@
       <image source="${imageDirectory + 'images/Logo450x300.png'}" width="200"/>
     </paragraph>
     
-    <paragraph font="title" halign="center" spacing-after="20">Untangle Networks EdgeReport</paragraph>
+    <paragraph font="title" halign="center" spacing-after="20">Untangle Reports</paragraph>
     <paragraph font="subtitle" halign="center" line-spacing="1.0">
       ${period}<br/>
       ${type} Report
