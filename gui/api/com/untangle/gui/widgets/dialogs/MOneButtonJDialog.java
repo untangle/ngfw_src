@@ -107,7 +107,7 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
 
         messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        messageJLabel.setText("<html><center>\nYou must now shut down the Untangle Networks EdgeGuard Client.<br>\n<br>\nYou can log in again after shutting down, after a brief period.<br>\n</center></html>");
+        messageJLabel.setText("<html><center>\nYou must now shut down the Untangle Client.<br>\n<br>\nYou can log in again after shutting down, after a brief period.<br>\n</center></html>");
         messageJLabel.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

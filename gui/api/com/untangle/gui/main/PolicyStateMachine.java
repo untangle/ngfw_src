@@ -1541,7 +1541,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 		MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
 					  "A problem occurred while trying to access Store."
 					  + "<br>Please contact Untangle Networks support.",
-					  "Untangle Networks Store Warning", "");
+					  "Untangle Store Warning", "");
 	    }
 
         }

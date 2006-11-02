@@ -73,7 +73,7 @@ if (!( isIndex || isDownload)) isIndex = true;
 
     <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"/>
     <title>
-      Untangle Platform Client
+      Untangle Client Launcher
     </title>
   </head>
   <body LINK="#0000EE" VLINK="#0000EE" style="background-image: url(images/DarkBackground1600x100.jpg);">
@@ -92,11 +92,6 @@ if (!( isIndex || isDownload)) isIndex = true;
                 <img alt="" src="images/Logo150x96.gif"
                      style="border: 0px solid ; width: 150px; height: 96px;" align="top"
                      hspace="0" vspace="0"/>
-                <br/>
-                <br/>
-                <span style="font-weight: bold;">
-                  Untangle Networks Platform
-                </span>
                 <br/>
                 <br/>
                 <% if ( host.equalsIgnoreCase( "egdemo.untangle.com" )  && !isDownload ) { %>
@@ -151,8 +146,7 @@ if (!( isIndex || isDownload)) isIndex = true;
               </script>
               <% if ( !isDownload ) { %>
                 <div style="text-align: center;">
-                  <a href="gui.jnlp">Launch Untangle Platform Client</a><br>
-
+                  <a href="gui.jnlp">Launch Untangle Client</a><br>
                   <% if (reportingEnabled) { %>
                     <br><a href="<%=scheme%>://<%=host%>/reports">View EdgeReports</a>
                   <% } %>

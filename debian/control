@@ -10,16 +10,16 @@ Architecture: any
 Depends: mvvm
 XB-Display-Name: File Transfer
 XB-Is-Service: true
-Description: The Untangle Networks File Transfer/FTP Decoder
- The Untangle Networks File Transfer/FTP Decoder.
+Description: The Untangle File Transfer/FTP Decoder
+ The Untangle File Transfer/FTP Decoder.
 
 Package: http-casing
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Web
 XB-Is-Service: true
-Description: The Untangle Networks Web Decoder
- The Untangle Networks Web Decoder.
+Description: The Untangle Web Decoder
+ The Untangle Web Decoder.
 
 Package: mail-casing
 Architecture: any
@@ -29,8 +29,8 @@ Provides: email-transform
 Depends: mvvm
 XB-Display-Name: Email
 XB-Is-Service: true
-Description: The Untangle Networks Email Decoder
- The Untangle Networks Email Decoder.
+Description: The Untangle Email Decoder
+ The Untangle Email Decoder.
 
 Package: airgap-transform
 Architecture: any
@@ -140,7 +140,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  jP5/n47IHTnb+aVRzChGFcieTBYZDm8iFwJtMEo9mv5bf//NdiRq+Es9wwm3yLXAooahnnuZ
  QdxsLPxXDxw5/j7RBinaTy/EXwisAmjbSWR6+zAwlMNjj38ieCD2fwIMANZG+Ft4BQz8AAAA
 Description: Untangle Attack Blocker
- The Untangle Networks Attack Blocker.
+ The Untangle Attack Blocker.
 
 Package: spyware-transform
 Architecture: any
@@ -226,7 +226,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  73LcRSZkLGKH/REnyfG0lONnPR/5uuRksvDJPrb/abw/B5zrN+guuOXxZRNDd9Zq1QnYEOXj71ey
  +PfGcHg3h7iLr16RWb+Q1R/2aQ8mqjheqF8wvO3WUPf+R4ABACEcfkAFMtTiAAAAAElFTkSuQmCC
 Description: Untangle Spyware Blocker
- The Untangle Networks Spyware Blocker.
+ The Untangle Spyware Blocker.
 
 Package: httpblocker-transform
 Architecture: any
@@ -323,7 +323,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  +1nH0ufnBbLGWduFUqXpn6ZVni9WNfB/TqKdLXQoddk5/ipGzKowLKETWaMN5ivbxR/E/ifA
  ACBNCbEqfhTsAAAAAElFTkSuQmCC
 Description: Untangle Web Content Control
- Untangle Networks Web Content Control.
+ Untangle Web Content Control.
 
 Package: hauri-transform
 Architecture: any
@@ -436,7 +436,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  t7a2iKH5xJlHJgYQTXoFZcjFxUUlDK3e8ZE4m35tbY0cx1GAw4BMUgKhGBh4DPkrH9WzEs1O
  4vuVlZXPTaVhwzLg7OwsLS0t0fLyMq2vryvO/wQYAP5qirM6mBOTAAAAAElFTkSuQmCC
 Description: Untangle Hauri Virus Blocker
- The Untangle Networks Hauri Virus Blocker.
+ The Untangle Hauri Virus Blocker.
 
 Package: kav-transform
 Architecture: any
@@ -516,7 +516,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  t7a2iKH5xJlHJgYQTXoFZcjFxUUlDK3e8ZE4m35tbY0cx1GAw4BMUgKhGBh4DPkrH9WzEs1O
  4vuVlZXPTaVhwzLg7OwsLS0t0fLyMq2vryvO/wQYAP5qirM6mBOTAAAAAElFTkSuQmCC
 Description: Untangle Kaspersky Virus Blocker
- The Untangle Networks Kaspersky Virus Blocker.
+ The Untangle Kaspersky Virus Blocker.
 
 Package: clam-transform
 Architecture: any
@@ -621,7 +621,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  t7a2iKH5xJlHJgYQTXoFZcjFxUUlDK3e8ZE4m35tbY0cx1GAw4BMUgKhGBh4DPkrH9WzEs1O
  4vuVlZXPTaVhwzLg7OwsLS0t0fLyMq2vryvO/wQYAP5qirM6mBOTAAAAAElFTkSuQmCC
 Description: Untangle Virus Blocker
- The Untangle Networks Virus Blocker.
+ The Untangle Virus Blocker.
 
 Package: protofilter-transform
 Architecture: any
@@ -742,7 +742,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  2tifbwr1VLtn9G935xN+znHG/arjXPYPRVt53HzZvynJzzTaKFBpwLTxwIsWGlcGHRei85f/
  /qR+EPs/AQYALpz0b9lClG4AAAAASUVORK5CYII=
 Description: Untangle Protocol Control
- The Untangle Networks Protocol Control.
+ The Untangle Protocol Control.
 
 Package: nat-transform
 Architecture: any
@@ -835,7 +835,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  zYu28/m48eumeSM2sZU0C0mzhm1HVVVisRiaplFeXv71g9wrRRzHIZVKkUqlBkfjLq5wOcej
  +/fvv9Ix0wA4V/LlOA7/GQCfi3hGQX94NwAAAABJRU5ErkJggg==
 Description: Untangle Router
- The Untangle Networks Router.
+ The Untangle Router.
 
 Package: firewall-transform
 Architecture: any
@@ -921,7 +921,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  zc2FabY4d/MK1zzQlDRpVyz53X379hnAfCLf07SOhrSOXtye9ILVeHNzM//v50Axw74c1xjD
  fwYAMCLoUqhkh6IAAAAASUVORK5CYII=
 Description: Untangle Firewall
- The Untangle Networks Firewall.
+ The Untangle Firewall.
 
 Package: spamassassin-transform
 Architecture: any
@@ -1035,7 +1035,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  7ecbjiWKg52kQksZPHS58yyBNmiZiJP+/Re/svPTyfv0y81tv46IkqxIuSdiaPf5D4YGWh7D
  zpbjLtD367cmAc5kRUrTokJw339vj/xB7P8FGACNK2N4xeErDQAAAABJRU5ErkJggg==
 Description: Untangle SpamGuard
- The Untangle Networks SpamGuard.
+ The Untangle SpamGuard.
 
 Package: clamphish-transform
 Architecture: any
@@ -1163,7 +1163,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  k2CFwI0uw5UGmqYjhJgEO3kPJb3c0CFdxgf60NxeIoGxv9v3NzTIj0BpAdTEYcMHgTVS/M8A
  nY2oOxX/HXgAAAAASUVORK5CYII=
 Description: Untangle Identity Theft Blocker
- The Untangle Networks Identity Theft Blocker.
+ The Untangle Identity Theft Blocker.
 
 Package: test-transform
 Architecture: any
@@ -1514,7 +1514,7 @@ XB-Desc-Icon:  iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YM
  mExNXuhQ/BtEgBH2fmScSohAwURrcxNoxyhJknjKMYj2QfR48tXf/Y78W45z586Rf9OBcv9D
  gAEA/vR7Rb8zHBYAAAAASUVORK5CYII=
 Description: Untangle Remote Access Portal
- The Untangle Networks Remote Access Portal.
+ The Untangle Remote Access Portal.
 
 Package: ids-transform
 Architecture: any
@@ -1619,7 +1619,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  dt1hz+oW0X4R2L/+xQ72f/+aKQFxz7/f+fpfFP00yKQAP7JF/ft5GLHDLCq9/aj7R7+mbO3J
  3QCjv/Lrm/0vGAYPf3Cgs7LEXqJSDBdeyxQVZw9vy/8MAIKemQqNP8+BAAAAAElFTkSuQmCC
 Description: Untangle Intrusion Prevention
- Untangle Networks Intrusion Prevention.
+ Untangle Intrusion Prevention.
 
 Package: reporting-transform
 Architecture: any
@@ -1704,7 +1704,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  Gwe/++1vGj/fcKBvrfF6FVHvq8rfvQzlN83+/j9Ov3D2DdYAKX9oYI1fKPoxJMDBwSCGhg9j
  9KkxvPWjn6ofxP4nwAB2T5Rklk6b3gAAAABJRU5ErkJggg==
 Description: Untangle Reports
- Untangle Networks Reports.
+ Untangle Reports.
 
 Package: boxbackup-transform
 Architecture: any
@@ -1823,21 +1823,21 @@ XB-Desc-Icon:  iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YM
  AWk1QmLfV3ukhaYK9I4Wfe83CCwb8LTUuhOUECxqyCoy+D/E/leAAQDhy3XsyDOL8wAAAABJ
  RU5ErkJggg==
 Description: Untangle 24-Hour Replacement
- Untangle Networks 24-Hour Replacement.
+ Untangle 24-Hour Replacement.
 
 Package: virus-base
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Virus Blocker Base
 Description: Untangle Virus Blocker Base
- The Untangle Networks Virus Blocker Base.
+ The Untangle Virus Blocker Base.
 
 Package: spam-base
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Spam Blocker Base
 Description: Untangle Spam Blocker Base
- The Untangle Networks Spam Blocker Base.
+ The Untangle Spam Blocker Base.
 
 Package: metavize-client
 Depends: untangle-client
@@ -1850,7 +1850,7 @@ Depends: mvvm
 Provides: metavize-client
 Conflicts: metavize-client (<< 4.1)
 Replaces: metavize-client (<< 4.1)
-XB-Display-Name: Untangle Networks Client
+XB-Display-Name: Untangle Client
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
@@ -1911,24 +1911,24 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMg
  Rn8jUL2jDkb0Yh8fPPOvznpAoloLKep19N9/1ORUg8xUZ98P+tZvdm/5WQNVNVXnEPeADytp
  qeI2NTVV5rnD3YvTGFJGFIie2kybsf7rTv7Gs/NrHv4jv4mJCcoq9ceyNmt2bXSr+sK1/2fC
  8fFxQUGBTa+YTKarqyt2YDQa1b8XvsYI+rvZxM+Vb07/kf0SvX2q/d/bXwIMAJ+e3tKQEpgP
-Description: Untangle Networks Client
- The Untangle Networks Networks Client.
+Description: Untangle Client
+ The Untangle Client.
 
 Package: libmvvm-thirdparty
 Architecture: any
 Depends: jre-mv
 Conflicts: mvvm (<< 3.0.0-39)
 Replaces: mvvm (<< 3.0.0-39)
-XB-Display-Name: Untangle Networks Server Thirdparty Libraries
-Description: Untangle Networks Server Thirdparty Libraries
- The Untangle Networks Server Thirdparty Libraries.
+XB-Display-Name: Untangle Server Thirdparty Libraries
+Description: Untangle Server Thirdparty Libraries
+ The Untangle Server Thirdparty Libraries.
 
 Package: mvvm
 Architecture: any
 Depends: jre-mv, libmvvm-thirdparty, sudo, iptables (>= 1.3.3-mv1), restore-mv, libxml2, kernel-mv, pump-mv, ntp-simple, snmpd, snmp, sg3-utils, ddclient, slapd, ldap-utils, libnfnetlink0, libnetfilter-queue0, db4.2-util, ujac-to-pdf, at, ebtables, atop, mime-support
 Pre-Depends: postgresql-mv
 Conflicts: xenon, xenon-dbg
-XB-Display-Name: Untangle Networks Server
+XB-Display-Name: Untangle Server
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
  03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
@@ -1989,5 +1989,5 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMg
  Rn8jUL2jDkb0Yh8fPPOvznpAoloLKep19N9/1ORUg8xUZ98P+tZvdm/5WQNVNVXnEPeADytp
  qeI2NTVV5rnD3YvTGFJGFIie2kybsf7rTv7Gs/NrHv4jv4mJCcoq9ceyNmt2bXSr+sK1/2fC
  8fFxQUGBTa+YTKarqyt2YDQa1b8XvsYI+rvZxM+Vb07/kf0SvX2q/d/bXwIMAJ+e3tKQEpgP
-Description: Untangle Networks Server
- The Untangle Networks Server.
+Description: Untangle Server
+ The Untangle Server.

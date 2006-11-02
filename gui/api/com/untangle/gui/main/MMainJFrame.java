@@ -136,7 +136,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 getContentPane().setLayout(new java.awt.GridBagLayout());
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-                setTitle("Untangle Networks EdgeGuard Client");
+                setTitle("Untangle Client");
                 setFocusCycleRoot(false);
                 setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/untangle/gui/main/Logo16x16.png"))).getImage());
                 addComponentListener(new java.awt.event.ComponentAdapter() {

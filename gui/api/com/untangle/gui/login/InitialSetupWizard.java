@@ -43,7 +43,7 @@ public class InitialSetupWizard extends MWizardJDialog {
 
     public InitialSetupWizard() {
 	setModal(true);
-        setTitle("Untangle Networks EdgeGuard Setup Wizard");
+        setTitle("Untangle Setup Wizard");
         addWizardPageJPanel(new InitialSetupWelcomeJPanel(),         "1. Welcome", false, false);
         addWizardPageJPanel(new InitialSetupLicenseJPanel(),         "2. License Agreement", false, false);
         addWizardPageJPanel(new InitialSetupContactJPanel(),         "3. Contact Information", false, false);

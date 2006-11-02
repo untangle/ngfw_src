@@ -80,7 +80,7 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
                 maintainRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Support", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 sshButtonGroup.add(sshEnabledRadioButton);
                 sshEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                sshEnabledRadioButton.setText("<html><b>Allow</b> secure remote support of EdgeGuard, by Untangle Networks, for troubleshooting and assistance purposes.</html>");
+                sshEnabledRadioButton.setText("<html><b>Allow</b> secure remote support of Untangle for troubleshooting and assistance purposes.</html>");
                 sshEnabledRadioButton.setFocusPainted(false);
                 sshEnabledRadioButton.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
