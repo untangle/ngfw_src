@@ -187,14 +187,14 @@ h4 {
         <br/>
 
         <% if(!reportingEnabled){ %>
-            EdgeReport is not installed into your rack or it is not turned on.<br/>
-            Reports are only generated when EdgeReport is installed and turned on.
+            Untangle Reports is not installed into your rack or it is not turned on.<br/>
+            Reports are only generated when Untangle Reports is installed and turned on.
         <% } else{ %>
             When daily, weekly, and/or monthly Reports are scheduled,<br/>
             please check back the morning after the scheduled day<br/>
             for daily, weekly, and/or monthly Reports.<br/>
             <br/>
-            When scheduled, EdgeReport automatically generates<br/>
+            When scheduled, Untangle Reports automatically generates<br/>
             the requested Reports during the preceeding night.
         <% } %>
 

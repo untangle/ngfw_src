@@ -43,7 +43,7 @@ import org.hibernate.SessionFactory;
 /**
  * Note that this class is designed to be used <b>BOTH</b> inside the MVVM and
  * as a stand-alone application. The stand-alone mode is used for mailing out
- * EdgeReports.
+ * Untangle Reports.
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
