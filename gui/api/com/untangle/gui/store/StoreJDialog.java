@@ -291,7 +291,7 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
 	    ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
 	}
 	catch(Exception f){
-            Util.handleExceptionNoRestart("error launching browser for EdgeReport", f);
+            Util.handleExceptionNoRestart("error launching browser for Untangle Reports", f);
 	}
     }//GEN-LAST:event_moreJButtonActionPerformed
 

@@ -592,7 +592,7 @@ public class MMainJFrame extends javax.swing.JFrame {
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
         }
         catch(Exception f){
-            Util.handleExceptionNoRestart("Error showing help for EdgeReport", f);
+            Util.handleExceptionNoRestart("Error showing help for Untangle Reports", f);
         }
     }//GEN-LAST:event_helpJButtonActionPerformed
 

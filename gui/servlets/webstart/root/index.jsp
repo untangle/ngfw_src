@@ -148,7 +148,7 @@ if (!( isIndex || isDownload)) isIndex = true;
                 <div style="text-align: center;">
                   <a href="gui.jnlp">Launch Untangle Client</a><br>
                   <% if (reportingEnabled) { %>
-                    <br><a href="<%=scheme%>://<%=host%>/reports">View EdgeReports</a>
+                    <br><a href="<%=scheme%>://<%=host%>/reports">View Untangle Reports</a>
                   <% } %>
                 </div>
                 <% } %>
