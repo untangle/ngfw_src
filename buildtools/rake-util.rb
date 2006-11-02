@@ -443,7 +443,7 @@ class EmptyTarget < Target
 end
 
 class CopyFiles < Target
-  @ignored_extensions = /(jpe?g|png|gif)$/
+  @ignored_extensions = /(jpe?g|png|gif|exe|ico)$/
 
   def initialize(package, moveSpecs, taskName, filterset = nil, destBase = nil)
     @targetName = "copyfiles:#{package.name}-#{taskName}"

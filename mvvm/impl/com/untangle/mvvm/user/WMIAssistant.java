@@ -49,10 +49,10 @@ import static com.untangle.mvvm.user.UserInfo.LookupState;
 class WMIAssistant implements Assistant
 {
     /* This is the maximum time to wait to connect to the server */
-    private static final String PROPERTY_CONNECT_TIMEOUT = "javax.wbem.client.adapter.http.transport.connect-timeout";
+    private static final String PROPERTY_CONNECT_TIMEOUT = "javax.wbem.client.adapter.http.transport.timeout-connect";
 
     /* This is the maxiumum amount of time to wait for a read from the server */
-    private static final String PROPERTY_READ_TIMEOUT = "javax.wbem.client.adapter.http.transport.read-timeout";
+    private static final String PROPERTY_READ_TIMEOUT = "javax.wbem.client.adapter.http.transport.timeout-read";
 
     /* default connection timeout to connect to server(millis) */
     private static final int DEFAULT_CONNECT_TIMEOUT = 4000;
