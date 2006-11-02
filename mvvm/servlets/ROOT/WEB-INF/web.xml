@@ -5,6 +5,6 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
          version="2.4">
 
-  <display-name>Welcome to Untangle Networks</display-name>
-  <description> Welcome to Untangle Networks</description>
+  <display-name>Welcome to Untangle Platform</display-name>
+  <description> Welcome to Untangle Platform</description>
 </web-app>
