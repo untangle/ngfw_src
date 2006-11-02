@@ -50,7 +50,7 @@ public class BlockTemplate implements Serializable
     private static String BLOCK_TEMPLATE;
 
     private Long id;
-    private String header = "Untangle Networks Content Filter";
+    private String header = "Untangle Networks Content Filter" ;
     private String contact = "your network administrator";
 
     // constructor ------------------------------------------------------------
