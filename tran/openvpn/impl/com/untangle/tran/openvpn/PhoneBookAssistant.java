@@ -81,7 +81,7 @@ class PhoneBookAssistant implements Assistant
             this.isVpnEnabled = false;
         } else {
             newMap = new HashMap<InetAddress,Data>();
-            for ( VpnClient client : settings.getClientList()) {
+            for ( VpnClientBase client : settings.getClientList()) {
                 /* ignore the disabled rules */
                 if ( !client.isEnabled()) continue;
                 

@@ -23,7 +23,7 @@ import java.awt.Window;
 
 public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
-    private VpnClient vpnClient;
+    private VpnClientBase vpnClient;
 
     private boolean isProceeding = false;
     private boolean isUsbSelected;
@@ -31,7 +31,7 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
 
     private String message;
     
-    public static KeyJDialog factory(Container topLevelContainer, VpnClient vpnClient){
+    public static KeyJDialog factory(Container topLevelContainer, VpnClientBase vpnClient){
 	KeyJDialog keyJDialog;
 	if(topLevelContainer instanceof Frame)
 	    keyJDialog = new KeyJDialog((Frame)topLevelContainer, vpnClient);
@@ -40,18 +40,18 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
 	return keyJDialog;
     }
     
-    public KeyJDialog(Dialog topLevelDialog, VpnClient vpnClient) {
+    public KeyJDialog(Dialog topLevelDialog, VpnClientBase vpnClient) {
         super( topLevelDialog, true);
 	init( topLevelDialog, vpnClient );
 	
     }
     
-    public KeyJDialog(Frame topLevelFrame, VpnClient vpnClient) {
+    public KeyJDialog(Frame topLevelFrame, VpnClientBase vpnClient) {
         super( topLevelFrame, true);
 	init( topLevelFrame, vpnClient );
     }
     
-    private void init(Window topLevelWindow, VpnClient vpnClient) {
+    private void init(Window topLevelWindow, VpnClientBase vpnClient) {
 	this.vpnClient = vpnClient;
 	message = "<html>\nPlease choose how you would like to distribute your digital key.  "
 	    + "Note: If you choose to send via email, you must supply an email address to send the email to.  "

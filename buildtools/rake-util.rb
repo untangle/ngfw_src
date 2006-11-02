@@ -443,9 +443,10 @@ class EmptyTarget < Target
 end
 
 class CopyFiles < Target
-  @ignored_extensions = /(jpe?g|png|gif|exe|ico)$/
+  @@ignored_extensions = /(jpe?g|png|gif|exe|ico|lib|jar)$/
 
   def initialize(package, moveSpecs, taskName, filterset = nil, destBase = nil)
+
     @targetName = "copyfiles:#{package.name}-#{taskName}"
     deps = [];
 
@@ -457,7 +458,7 @@ class CopyFiles < Target
 
           file dest => src do
             ensureDirectory(File.dirname(dest))
-            File.symlink(File.readlink(src), dest)
+            File.symlink(File.readlink(src), dest) if !File.exist?(dest)
           end
         elsif File.directory?(src)
           deps << dest
@@ -470,7 +471,7 @@ class CopyFiles < Target
 
           file dest => src do
             FileUtils.mkdir_p(File.dirname(dest))
-            if (filterset && !(src =~ @ignored_extensions))
+            if (filterset && ( src.to_s !~ @@ignored_extensions))
               filtercopy(src, dest, filterset)
             else
               FileUtils.cp(src, dest)

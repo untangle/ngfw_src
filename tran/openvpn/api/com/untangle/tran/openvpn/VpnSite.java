@@ -36,7 +36,7 @@ import org.hibernate.annotations.IndexColumn;
  */
 @Entity
 @Table(name="tr_openvpn_site", schema="settings")
-public class VpnSite extends VpnClient
+public class VpnSite extends VpnClientBase
 {
     // XXX Fixme
     // private static final long serialVersionUID = -3950973798403822835L;

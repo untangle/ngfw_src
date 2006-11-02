@@ -20,7 +20,7 @@ import javax.swing.CellEditor;
 
 public class KeyButtonRunnable implements ButtonRunnable {
     private boolean isEnabled;
-    private VpnClient vpnClient;
+    private VpnClientBase vpnClient;
     private static VpnTransform vpnTransform;
     private Window topLevelWindow;
     public KeyButtonRunnable(String isEnabled){
@@ -35,7 +35,7 @@ public class KeyButtonRunnable implements ButtonRunnable {
     public boolean isEnabled(){ return isEnabled; }
     public void setEnabled(boolean isEnabled){ this.isEnabled = isEnabled; }
     public boolean valueChanged(){ return false; }
-    public void setVpnClient(VpnClient vpnClient){ this.vpnClient = vpnClient; }
+    public void setVpnClient(VpnClientBase vpnClient){ this.vpnClient = vpnClient; }
     public static void setVpnTransform(VpnTransform vpnTransformX){ vpnTransform = vpnTransformX; }
     public void setCellEditor(CellEditor cellEditor){}
     public void setTopLevelWindow(Window topLevelWindow){ this.topLevelWindow = topLevelWindow; }
@@ -47,9 +47,9 @@ public class KeyButtonRunnable implements ButtonRunnable {
 
     class DistributeKeyThread extends Thread {
 	private KeyJDialog keyJDialog;
-	private VpnClient vpnClient;
+	private VpnClientBase vpnClient;
 	private VpnTransform vpnTransform;
-	public DistributeKeyThread(VpnClient vpnClient, VpnTransform vpnTransform){
+	public DistributeKeyThread(VpnClientBase vpnClient, VpnTransform vpnTransform){
 	    setDaemon(true);
 	    setName("MV-CLIENT: DistributeKeyThread");
 	    this.vpnClient = vpnClient;

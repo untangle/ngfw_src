@@ -324,10 +324,10 @@ public class VpnSettings implements Serializable, Validatable
      * sites. A VpnSite is a subclass of a VpnClient.
      */
     @Transient
-    public List<VpnClient> getCompleteClientList()
+    public List<VpnClientBase> getCompleteClientList()
     {
         /* ??? Is there a better way to do this */
-        List<VpnClient> completeList = new LinkedList<VpnClient>();
+        List<VpnClientBase> completeList = new LinkedList<VpnClientBase>();
         completeList.addAll( getClientList());
         completeList.addAll( getSiteList());
         return completeList;

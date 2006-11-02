@@ -128,7 +128,7 @@ class Sandbox
 
     void downloadConfigUsb( String name ) throws Exception
     {
-        VpnClient.validateName( name );
+        VpnClientBase.validateName( name );
         execDownloadScript( true, name, "" );
     }
 
@@ -240,7 +240,7 @@ class Sandbox
     private void fixGroups( List newClientList )
         throws ValidateException
     {
-        for ( VpnClient client : (List<VpnClient>)newClientList ) {
+        for ( VpnClientBase client : (List<VpnClientBase>)newClientList ) {
             String name = client.getGroup().getName();
             VpnGroup newGroup = resolveGroupMap.get( name );
             if ( newGroup == null ) {

@@ -182,7 +182,7 @@ public class VpnTransformImpl extends AbstractTransform
         return this.settings;
     }
 
-    public VpnClient generateClientCertificate( VpnSettings settings, VpnClient client )
+    public VpnClientBase generateClientCertificate( VpnSettings settings, VpnClientBase client )
     {
         try {
             certificateManager.createClient( client );
@@ -193,7 +193,7 @@ public class VpnTransformImpl extends AbstractTransform
         return client;
     }
 
-    public VpnClient revokeClientCertificate( VpnSettings settings, VpnClient client )
+    public VpnClientBase revokeClientCertificate( VpnSettings settings, VpnClientBase client )
     {
         try {
             certificateManager.revokeClient( client );
@@ -206,18 +206,18 @@ public class VpnTransformImpl extends AbstractTransform
 
     private void distributeAllClientFiles( VpnSettings settings ) throws TransformException
     {
-        for ( VpnClient client : (List<VpnClient>)settings.getCompleteClientList()) {
+        for ( VpnClientBase client : (List<VpnClientBase>)settings.getCompleteClientList()) {
             if ( !client.getDistributeClient()) continue;
             distributeRealClientConfig( client );
         }
     }
 
-    public void distributeClientConfig( VpnClient client )
+    public void distributeClientConfig( VpnClientBase client )
         throws TransformException
     {
         /* Retrieve the client configuration object from the settings */
         boolean foundRealClient = false;
-        for ( VpnClient realClient : (List<VpnClient>)settings.getCompleteClientList()) {
+        for ( VpnClientBase realClient : (List<VpnClientBase>)settings.getCompleteClientList()) {
             if ( client.getInternalName().equals( realClient.getInternalName())) {
                 realClient.setDistributionEmail( client.getDistributionEmail());
                 realClient.setDistributeUsb( client.getDistributeUsb());
@@ -232,7 +232,7 @@ public class VpnTransformImpl extends AbstractTransform
     }
 
     /** The client config is the same client configuration object that is in settings */
-    private void distributeRealClientConfig( final VpnClient client )
+    private void distributeRealClientConfig( final VpnClientBase client )
         throws TransformException
     {
         /* this client may already have a key, the key may have
@@ -280,13 +280,13 @@ public class VpnTransformImpl extends AbstractTransform
         else distributeClientConfigEmail( client, client.getDistributionEmail());
     }
 
-    private void distributeClientConfigUsb( VpnClient client )
+    private void distributeClientConfigUsb( VpnClientBase client )
         throws TransformException
     {
         /* XXX Nothing to do here, it is copied in writeConfigurationFiles */
     }
 
-    private void distributeClientConfigEmail( VpnClient client, String email )
+    private void distributeClientConfigEmail( VpnClientBase client, String email )
         throws TransformException
     {
         try {
@@ -336,14 +336,14 @@ public class VpnTransformImpl extends AbstractTransform
         }
 
         /* Could use a hash map, but why bother ? */
-        for ( final VpnClient client : ((List<VpnClient>)this.settings.getCompleteClientList())) {
+        for ( final VpnClientBase client : ((List<VpnClientBase>)this.settings.getCompleteClientList())) {
             if ( lookupClientDistributionKey( key, clientAddress, client )) return client.getInternalName();
         }
 
         return null;
     }
 
-    private boolean lookupClientDistributionKey( String key, IPaddr clientAddress, final VpnClient client )
+    private boolean lookupClientDistributionKey( String key, IPaddr clientAddress, final VpnClientBase client )
     {
         String clientKey = client.getDistributionKey();
 

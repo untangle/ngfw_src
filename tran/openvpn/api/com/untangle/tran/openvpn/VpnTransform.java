@@ -29,16 +29,16 @@ public interface VpnTransform extends Transform
 
     /* Create a client certificate, if the client already has a certificate
      * this will automatically revoke their old one */
-    public VpnClient generateClientCertificate( VpnSettings settings, VpnClient client );
+    public VpnClientBase generateClientCertificate( VpnSettings settings, VpnClientBase client );
 
     /* Revoke a client license */
-    public VpnClient revokeClientCertificate( VpnSettings settings, VpnClient client );
+    public VpnClientBase revokeClientCertificate( VpnSettings settings, VpnClientBase client );
 
     /* Need the address to log where the request came from */
     public String lookupClientDistributionKey( String key, IPaddr address );
 
     /* Send out the client distribution */
-    public void distributeClientConfig( VpnClient client ) throws TransformException;
+    public void distributeClientConfig( VpnClientBase client ) throws TransformException;
 
     public enum ConfigState { UNCONFIGURED, CLIENT, SERVER_BRIDGE, SERVER_ROUTE }
     public ConfigState getConfigState();

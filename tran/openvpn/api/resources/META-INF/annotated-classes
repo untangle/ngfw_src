@@ -3,6 +3,7 @@ com.untangle.tran.openvpn.ClientDistributionEvent
 com.untangle.tran.openvpn.ClientSiteNetwork
 com.untangle.tran.openvpn.ServerSiteNetwork
 com.untangle.tran.openvpn.VpnClient
+com.untangle.tran.openvpn.VpnClientBase
 com.untangle.tran.openvpn.VpnGroup
 com.untangle.tran.openvpn.VpnSettings
 com.untangle.tran.openvpn.VpnSite

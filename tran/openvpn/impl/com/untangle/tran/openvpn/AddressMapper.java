@@ -45,23 +45,23 @@ class AddressMapper
     void assignAddresses( VpnSettings settings ) throws TransformException
     {
         /* A mapping from a group to its list of clients */
-        Map<VpnGroup,List<VpnClient>> groupToClientList = new HashMap<VpnGroup,List<VpnClient>>();
+        Map<VpnGroup,List<VpnClientBase>> groupToClientList = new HashMap<VpnGroup,List<VpnClientBase>>();
 
         /* Create a new list that combines the clients and the sites */
-        List<VpnClient> clientList = new LinkedList((List<VpnClient>)settings.getClientList());
+        List<VpnClientBase> clientList = new LinkedList<VpnClientBase>( settings.getClientList());
         clientList.addAll(settings.getSiteList());
 
         if ( settings.getGroupList().size() == 0 ) throw new TransformException( "No groups" );
 
-        VpnGroup serverGroup = (VpnGroup)settings.getGroupList().get( 0 );
+        VpnGroup serverGroup = settings.getGroupList().get( 0 );
 
         /* Create a mapping from the group to its list of clients */
 
         /* Always add the first group, even if there aren't any clients in it,
          * this is where the server pulls its address from */
-        groupToClientList.put( serverGroup, new LinkedList());
+        groupToClientList.put( serverGroup, new LinkedList<VpnClientBase>());
 
-        for ( VpnClient client : clientList ) {
+        for ( VpnClientBase client : clientList ) {
             VpnGroup group = client.getGroup();
             if ( group == null ) {
                 logger.error( "NULL group for client [" + client.getName() + "]" );
@@ -69,7 +69,7 @@ class AddressMapper
             }
 
             /* Retrieve the group list this client belongs on */
-            List<VpnClient> groupClientList = groupToClientList.get( group );
+            List<VpnClientBase> groupClientList = groupToClientList.get( group );
 
             /* If a list hasn't been created yet, then create one */
             if ( groupClientList == null ) {
@@ -84,9 +84,9 @@ class AddressMapper
         /* Iterate each group list assigning all of the clients IP addresses */
         final boolean isBridge = settings.isBridgeMode();
 
-        for ( Map.Entry<VpnGroup,List<VpnClient>> entry  : groupToClientList.entrySet()) {
+        for ( Map.Entry<VpnGroup,List<VpnClientBase>> entry  : groupToClientList.entrySet()) {
             VpnGroup group = entry.getKey();
-            List<VpnClient> clients = entry.getValue();
+            List<VpnClientBase> clients = entry.getValue();
 
             List addrs = new LinkedList();
             boolean isServerGroup = group.equals( serverGroup );
@@ -149,7 +149,7 @@ class AddressMapper
     }
 
     /** These are addresses that are already assigned upon starting */
-    void removeDuplicateAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList,
+    void removeDuplicateAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClientBase> clientList,
                                    boolean assignServer )
     {
         Set<IPaddr> addressSet = new HashSet<IPaddr>();
@@ -165,7 +165,7 @@ class AddressMapper
         }
 
         /* Check to see if each client has a unique address */
-        for ( VpnClient client : clientList ) {
+        for ( VpnClientBase client : clientList ) {
             IPaddr address = client.getAddress();
             /* If the address is already isn't set, it isn't in the current address group
              * or it is already taken, then clear the address */
@@ -176,7 +176,7 @@ class AddressMapper
     }
 
     /* Remove the addresses that are taken in the address pool to be distributed to clients */
-    void removeTakenAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClient> clientList,
+    void removeTakenAddresses( VpnSettings settings, IPMatcher matcher, List<VpnClientBase> clientList,
                                Set<IPaddr> addressSet, boolean assignServer )
     {
         /* First check the server address */
@@ -189,7 +189,7 @@ class AddressMapper
             }
         }
 
-        for ( VpnClient client : clientList ) {
+        for ( VpnClientBase client : clientList ) {
             IPaddr address = client.getAddress();
             if (( null != address ) && matcher.isMatch( address.getAddr())) {
                 /* The return code doesn't really matter */
@@ -202,7 +202,7 @@ class AddressMapper
         }
     }
 
-    void assignRemainingClients( VpnSettings settings, List<VpnClient> clientList,
+    void assignRemainingClients( VpnSettings settings, List<VpnClientBase> clientList,
                                  Set<IPaddr> addressSet, boolean assignServer )
     {
         Iterator<IPaddr> iter = addressSet.iterator();
@@ -214,7 +214,7 @@ class AddressMapper
         }
 
         /* Assign each client an address */
-        for ( VpnClient client : clientList ) {
+        for ( VpnClientBase client : clientList ) {
             /* Nothing to do for this clients that current have addresses or there aren't more
              * more available addresses */
             if ( client.getAddress() != null || !iter.hasNext()) continue;

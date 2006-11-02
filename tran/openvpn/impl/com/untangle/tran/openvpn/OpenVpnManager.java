@@ -299,7 +299,7 @@ class OpenVpnManager
     /**
      * Create all of the client configuration files
      */
-    void writeClientConfigurationFiles( VpnSettings settings, VpnClient client )
+    void writeClientConfigurationFiles( VpnSettings settings, VpnClientBase client )
         throws TransformException
     {
         NetworkManager nm = MvvmContextFactory.context().networkManager();
@@ -331,7 +331,7 @@ class OpenVpnManager
     /*
      * Write a client configuration file (unix or windows)
      */
-    private void writeClientConfigurationFile( VpnSettings settings, VpnClient client,
+    private void writeClientConfigurationFile( VpnSettings settings, VpnClientBase client,
                                                String[] defaults, String extension )
     {
         ScriptWriter sw = new VpnScriptWriter();
@@ -389,7 +389,7 @@ class OpenVpnManager
         ServicesInternalSettings sis = MvvmContextFactory.context().
             networkManager().getServicesInternalSettings();
 
-        for ( VpnClient client : (List<VpnClient>)settings.getClientList()) {
+        for ( VpnClient client : settings.getClientList()) {
             if ( !client.isEnabled()) continue;
 
             ScriptWriter sw = new VpnScriptWriter();

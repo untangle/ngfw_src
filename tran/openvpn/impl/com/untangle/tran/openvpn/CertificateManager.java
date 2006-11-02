@@ -137,7 +137,7 @@ class CertificateManager
         Map<String,Boolean> certificateStatusMap = generateCertificateStatusMap();
         Set<String> usedNameSet = new HashSet<String>();
 
-        for ( VpnClient client : (List<VpnClient>)settings.getCompleteClientList()) {
+        for ( VpnClientBase client : (List<VpnClientBase>)settings.getCompleteClientList()) {
             updateClientCertificateStatus( settings, client, certificateStatusMap, usedNameSet );
         }
         
@@ -158,7 +158,7 @@ class CertificateManager
         }
     }
 
-    private void updateClientCertificateStatus( VpnSettings settings, VpnClient client, 
+    private void updateClientCertificateStatus( VpnSettings settings, VpnClientBase client, 
                                                 Map<String,Boolean> certificateStatusMap,
                                                 Set<String> usedNameSet )
     {
@@ -242,15 +242,15 @@ class CertificateManager
 
     void createAllClientCertificates( VpnSettings settings ) throws TransformException
     {
-        for ( VpnClient client : (List<VpnClient>)settings.getCompleteClientList()) createClient( client );
+        for ( VpnClientBase client : (List<VpnClientBase>)settings.getCompleteClientList()) createClient( client );
     }
 
-    void createClient( VpnClient client ) throws TransformException
+    void createClient( VpnClientBase client ) throws TransformException
     {
         callCreateClientScript( client.getInternalName());
     }
 
-    void revokeClient( VpnClient client ) throws TransformException
+    void revokeClient( VpnClientBase client ) throws TransformException
     {
         callRevokeClientScript( client.getInternalName());
     }
