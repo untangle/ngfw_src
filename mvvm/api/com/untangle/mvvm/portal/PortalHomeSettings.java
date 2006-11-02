@@ -33,7 +33,7 @@ public class PortalHomeSettings implements Serializable
     private Long id;
 
     private String homePageTitle = "Remote Access Portal";
-    private String homePageText = "Welcome to the Untangle Networks Remote Access Portal.";
+    private String homePageText = "Welcome to the Untangle Networks Remote Access Portal." ;
     private String bookmarkTableTitle = "Bookmarks";
     private boolean showExploder = true;
     private boolean showBookmarks = true;
