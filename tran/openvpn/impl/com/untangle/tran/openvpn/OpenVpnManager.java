@@ -213,7 +213,7 @@ class OpenVpnManager
     void configure( VpnSettings settings ) throws TransformException
     {
         /* Nothing to start */
-        if ( settings.getIsEdgeGuardClient()) return;
+        if ( settings.isUntanglePlatform()) return;
 
         writeSettings( settings );
         writeClientFiles( settings );

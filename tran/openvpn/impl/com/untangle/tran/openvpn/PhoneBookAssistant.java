@@ -75,7 +75,7 @@ class PhoneBookAssistant implements Assistant
     {
         Map<InetAddress,Data> newMap = null;
 
-        if ( !isEnabled || settings.getIsEdgeGuardClient()) {
+        if ( !isEnabled || settings.isUntanglePlatform()) {
             /* If dns is disabled, then the dns addresses don't really matter */
             newMap = Collections.emptyMap();
             this.isVpnEnabled = false;

@@ -262,11 +262,11 @@ class Sandbox
             // break;
         case SERVER_ROUTE:
             settings.setBridgeMode( false );
-            settings.setIsEdgeGuardClient( false );
+            settings.setUntanglePlatform( false );
             break;
 
         case CLIENT:
-            settings.setIsEdgeGuardClient( true );
+            settings.setUntanglePlatform( true );
             settings.setBridgeMode( false ); /* This would come from the other box */
             settings.setServerAddress( vpnServerAddress );
 

@@ -34,7 +34,7 @@ class EventHandler extends AbstractEventHandler
     private boolean isBridge = false;
 
     /* Is this a VPN client, a VPN client passes all traffic */
-    private boolean isEdgeGuardClient = false;
+    private boolean isUntanglePlatform = false;
 
     /* Any client can connect to any exported address and vice versa */
     private List <IPMatcher> clientAddressList = new LinkedList<IPMatcher>();
@@ -97,7 +97,7 @@ class EventHandler extends AbstractEventHandler
         boolean isValid = false;
 
         /* Clients pass all traffic */
-        if ( this.isEdgeGuardClient ) {
+        if ( this.isUntanglePlatform ) {
             transform.incrementCount( Constants.PASS_COUNTER );
             request.release();
 
@@ -167,8 +167,8 @@ class EventHandler extends AbstractEventHandler
     {
         logger.debug( "Configuring handler" );
 
-        if ( settings.getIsEdgeGuardClient()) {
-            isEdgeGuardClient = settings.getIsEdgeGuardClient();
+        if ( settings.isUntanglePlatform()) {
+            isUntanglePlatform = settings.isUntanglePlatform();
             return;
         }
 
