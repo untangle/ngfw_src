@@ -331,7 +331,7 @@ public class TranReporter {
         String mktName = mth.getTransformDesc(new Tid()).getDisplayName();
         // HACK O RAMA XXXXXXXXX
         if (mktName.startsWith("EdgeReport"))
-            mktName = "Untangle Platform Appliance";
+            mktName = "Untangle Platform";
         logger.debug("Writing transform name: " + mktName);
         FileOutputStream fos = new FileOutputStream(new File(tranDir, "name"));
         PrintWriter pw = new PrintWriter(fos);

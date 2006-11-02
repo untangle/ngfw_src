@@ -517,11 +517,11 @@ ls $tran_dir/name >/dev/null 2>&1 || return
 tran_name=$(cat $tran_dir/name)
 
 if [ "$2" = false ]; then
-    if [ "$tran_name" != "EdgeGuard Appliance" ]; then
+    if [ "$tran_name" != "Untangle Platform" ]; then
     return
     fi
 else
-    if [ "$tran_name" = "EdgeGuard Appliance" ]; then
+    if [ "$tran_name" = "Untangle Platform" ]; then
     return
     fi
 fi
@@ -551,7 +551,7 @@ cat >> $main_index <<EOF
                   <td style="padding: 0px 4px 0px 3px"><img src="$web_base/$rel_dir/images/IconOrg42x42.png" width="42" height="42"/></td>
 EOF
 
-if [ "$tran_name" != "EdgeGuard Appliance" ]; then
+if [ "$tran_name" != "Untangle Platform" ]; then
     cat >> $main_index <<EOF
                   <td style="padding: 0px 4px 0px 0px"><img src="$web_base/$rel_dir/images/IconDesc42x42.png" width="42" height="42"/></td>
 EOF
@@ -647,7 +647,7 @@ generate_visual_summary ()
 cat >>$main_index <<EOF
 <!-- VISUAL SUMMARY -->
 <center>
-<img src="$rel_dir/$graph_name--${period}.png" width="600" height="200" alt="Visual Summary may take some additional time to load.  If it does not load, it may not viewable from this email client.  Please use your browser to view reports directly from EdgeGuard."/>
+<img src="$rel_dir/$graph_name--${period}.png" width="600" height="200" alt="Visual Summary may take some additional time to load.  If it does not load, it may not viewable from this email client.  Please use your browser to view reports directly from the Untangle Server."/>
 </center>
 <!-- END VISUAL SUMMARY -->
 EOF
