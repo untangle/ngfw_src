@@ -145,7 +145,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
                 setTitle("Untangle Networks EdgeGuard " + Version.getVersion());
-                setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/untangle/gui/icons/LogoNoText16x16.gif"))).getImage());
+                setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/untangle/gui/main/Logo16x16.png"))).getImage());
                 setName("loginJFrame");
                 setResizable(false);
                 addWindowListener(new java.awt.event.WindowAdapter() {
