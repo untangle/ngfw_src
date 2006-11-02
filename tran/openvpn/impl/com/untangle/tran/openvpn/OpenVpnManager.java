@@ -213,7 +213,7 @@ class OpenVpnManager
     void configure( VpnSettings settings ) throws TransformException
     {
         /* Nothing to start */
-        if ( settings.isUntanglePlatform()) return;
+        if ( settings.isUntanglePlatformClient()) return;
 
         writeSettings( settings );
         writeClientFiles( settings );

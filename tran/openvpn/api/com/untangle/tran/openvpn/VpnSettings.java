@@ -62,7 +62,7 @@ public class VpnSettings implements Serializable, Validatable
     private Tid tid;
 
     private boolean isBridgeMode = false;
-    private boolean isUntanglePlatform = false;
+    private boolean isUntanglePlatformClient = false;
 
     /* The virtual address of the vpn server */
     private IPaddr serverAddress;
@@ -110,7 +110,7 @@ public class VpnSettings implements Serializable, Validatable
         /* XXXXXXXXXXX */
 
         /* That is the only setting required for edgeguard client */
-        if ( isUntanglePlatform ) return;
+        if ( isUntanglePlatformClient ) return;
 
         if (( groupList == null ) || ( groupList.size() == 0 )) throw new ValidateException( "No groups" );
 
@@ -189,14 +189,14 @@ public class VpnSettings implements Serializable, Validatable
      * @return whether this is an openvpn of another edgeguard client.
      */
     @Column(name="is_edgeguard_client", nullable=false)
-    public boolean isUntanglePlatform()
+    public boolean isUntanglePlatformClient()
     {
-        return this.isUntanglePlatform;
+        return this.isUntanglePlatformClient;
     }
 
-    public void setUntanglePlatform( boolean isUntanglePlatform )
+    public void setUntanglePlatformClient( boolean isUntanglePlatformClient )
     {
-        this.isUntanglePlatform = isUntanglePlatform;
+        this.isUntanglePlatformClient = isUntanglePlatformClient;
     }
 
     /**
@@ -544,7 +544,7 @@ public class VpnSettings implements Serializable, Validatable
     @Transient
     boolean isConfigured()
     {
-        if ( isUntanglePlatform ) return true;
+        if ( isUntanglePlatformClient ) return true;
         return ( !( this.organizationUnit == null ) && ( this.organizationUnit.length() > 0 ));
     }
 

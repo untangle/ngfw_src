@@ -109,14 +109,14 @@ public class VpnTransformImpl extends AbstractTransform
 
         /* Attempt to assign all of the clients addresses only if in server mode */
         try {
-            if ( !newSettings.isUntanglePlatform() && newSettings.isConfigured()) {
+            if ( !newSettings.isUntanglePlatformClient() && newSettings.isConfigured()) {
                 addressMapper.assignAddresses( newSettings );
             }
         } catch ( TransformException exn ) {
             logger.warn( "Could not assign client addresses, continuing", exn );
         }
 
-        if ( !newSettings.isUntanglePlatform()) {
+        if ( !newSettings.isUntanglePlatformClient()) {
             /* Update the status/generate all of the certificates for clients */
             this.certificateManager.updateCertificateStatus( newSettings );
         }
@@ -155,7 +155,7 @@ public class VpnTransformImpl extends AbstractTransform
                 this.openVpnManager.restart( this.settings );
                 this.handler.configure( this.settings );
 
-                if ( this.settings.isUntanglePlatform()) {
+                if ( this.settings.isUntanglePlatformClient()) {
                     this.openVpnMonitor.disable();
                     this.openVpnCaretaker.start();
                 } else {
@@ -483,7 +483,7 @@ public class VpnTransformImpl extends AbstractTransform
         deployWebApp();
 
         /* Only start the monitor for servers */
-        if ( settings.isUntanglePlatform()) {
+        if ( settings.isUntanglePlatformClient()) {
             this.openVpnMonitor.disable();
             this.openVpnCaretaker.start();
         } else {
@@ -577,7 +577,7 @@ public class VpnTransformImpl extends AbstractTransform
     {
         if ( settings == null || !settings.isConfigured()) return ConfigState.UNCONFIGURED;
 
-        if ( settings.isUntanglePlatform()) return ConfigState.CLIENT;
+        if ( settings.isUntanglePlatformClient()) return ConfigState.CLIENT;
 
         return ( settings.isBridgeMode() ? ConfigState.SERVER_BRIDGE : ConfigState.SERVER_ROUTE );
     }
@@ -614,7 +614,7 @@ public class VpnTransformImpl extends AbstractTransform
         VpnSettings newSettings = this.sandbox.completeConfig( this.getTid());
 
         /* Generate new settings */
-        if ( newSettings.isUntanglePlatform()) {
+        if ( newSettings.isUntanglePlatformClient()) {
             /* Finish the configuration for clients, nothing left to do,
              * it is all done at download time */
         } else {
