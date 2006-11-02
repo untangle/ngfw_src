@@ -318,7 +318,7 @@ class OpenVpnManager
             ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName(),
                                              key, publicAddress,
                                              String.valueOf( client.getDistributeUsb()),
-                                             String.valueOf( client.getIsEdgeGuard()));
+                                             String.valueOf( client.isUntanglePlatform()));
         } catch ( ScriptException e ) {
             if ( e.getCode() == Constants.USB_ERROR_CODE ) {
                 throw new UsbUnavailableException( "Unable to connect or write to USB device" );

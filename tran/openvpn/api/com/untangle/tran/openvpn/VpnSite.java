@@ -48,7 +48,7 @@ public class VpnSite extends VpnClient
     // initially, may not be supported, just use one address.
     private List    exportedAddressList;
 
-    private boolean isEdgeGuard = false;
+    private boolean isUntanglePlatform = false;
 
     public VpnSite()
     {
@@ -83,14 +83,14 @@ public class VpnSite extends VpnClient
      * @return whether the other side is an edgeguard.
      */
     @Column(name="is_edgeguard", nullable=false)
-    public boolean getIsEdgeGuard()
+    public boolean isUntanglePlatform()
     {
-        return this.isEdgeGuard;
+        return this.isUntanglePlatform;
     }
 
-    public void setIsEdgeGuard( boolean isEdgeGuard )
+    public void setUntanglePlatform( boolean isUntanglePlatform )
     {
-        this.isEdgeGuard = isEdgeGuard;
+        this.isUntanglePlatform = isUntanglePlatform;
     }
 
     /**

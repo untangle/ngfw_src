@@ -248,7 +248,7 @@ public class VpnTransformImpl extends AbstractTransform
 
             /* Only generate a new key if the key has been modified */
             if ( key == null || key.length() == 0 ) {
-                if ( client.getIsEdgeGuard()) {
+                if ( client.isUntanglePlatform()) {
                     /* Use a shorter key for edge guard clients since they have to be
                      * typed in manually */
                     key = String.format( "%08x", random.nextInt());

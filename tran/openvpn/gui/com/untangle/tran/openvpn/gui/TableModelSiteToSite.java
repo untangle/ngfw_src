@@ -33,7 +33,7 @@ public class TableModelSiteToSite extends MSortedTableModel<Object>{
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # */
     private static final int C2_MW = 65;  /* enabled */
-    private static final int C3_MW = 70;  /* isEdgeGuard */
+    private static final int C3_MW = 70;  /* isUntanglePlatform */
     private static final int C4_MW = 150; /* name */
     private static final int C5_MW = 150; /* group */
     private static final int C6_MW = 120; /* network address */
@@ -89,7 +89,7 @@ public class TableModelSiteToSite extends MSortedTableModel<Object>{
 	    rowIndex++;
             newElem = (VpnSite) rowVector.elementAt(10);
 	    newElem.setLive( (Boolean) rowVector.elementAt(2) );
-            newElem.setIsEdgeGuard( (Boolean) rowVector.elementAt(3) );
+            newElem.setUntanglePlatform( (Boolean) rowVector.elementAt(3) );
 	    newElem.setName( (String) rowVector.elementAt(4) );
 	    newElem.setGroup( (VpnGroup) ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem() );
 	    IPaddr network;
@@ -126,7 +126,7 @@ public class TableModelSiteToSite extends MSortedTableModel<Object>{
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
 	    tempRow.add( vpnSite.isLive() );
-            tempRow.add( vpnSite.getIsEdgeGuard() );
+            tempRow.add( vpnSite.isUntanglePlatform() );
 	    tempRow.add( vpnSite.getName() );
 	    ComboBoxModel groupComboBoxModel = super.copyComboBoxModel(groupModel);
 	    groupComboBoxModel.setSelectedItem( vpnSite.getGroup() );

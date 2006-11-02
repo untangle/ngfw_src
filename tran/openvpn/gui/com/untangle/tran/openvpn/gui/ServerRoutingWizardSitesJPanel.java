@@ -77,7 +77,7 @@ public class ServerRoutingWizardSitesJPanel extends MWizardPageJPanel {
 		newElem = new VpnSite();
 		newElem.setDistributeClient(false);
 		newElem.setLive( (Boolean) rowVector.elementAt(2) );
-                newElem.setIsEdgeGuard( (Boolean) rowVector.elementAt(3) );
+                newElem.setUntanglePlatform( (Boolean) rowVector.elementAt(3) );
 		newElem.setName( (String) rowVector.elementAt(4) );
 		newElem.setGroup( (VpnGroup) ((ComboBoxModel) rowVector.elementAt(5)).getSelectedItem() );
 		IPaddr network;

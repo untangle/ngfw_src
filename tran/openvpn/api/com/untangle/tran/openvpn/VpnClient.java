@@ -221,7 +221,7 @@ public class VpnClient extends Rule implements Validatable
     }
 
     @Transient
-    public boolean getIsEdgeGuard()
+    public boolean isUntanglePlatform()
     {
         /* A single client can never be an edgeguard */
         return false;
