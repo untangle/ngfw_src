@@ -60,7 +60,7 @@
         <set-property name="template" type="String" value="${row.detailedTemplate}"/>
       </if>
 
-      <if cond="${row.detailed} == 'true'}">
+      <if cond="${row.detailed == 'true'}">
         <insert-sub-document source="${templateDirectory + template}" 
                              properties="${propertiesDirectory + row.properties}"/>
       </if>

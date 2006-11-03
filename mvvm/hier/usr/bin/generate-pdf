@@ -171,7 +171,6 @@ pdfDirectory=${DIRECTORY_PDF}/
 
 ## Description of the report
 transformName=${t_name}
-transformDir=${t_key}/
 type=${reportType}
 start=${REPORT_START}
 end=${REPORT_END}
@@ -236,80 +235,80 @@ function generateUserSummary()
 
     local t_properties="${3}"
 
-while read line
-do
-    base_name=$(echo $line | cut -d: -f2)
+    while read line
+    do
+        local base_name=$(echo $line | cut -d: -f2)
 
-if [ xuserSummary = "x$base_name" ] ; then
-    rep_base=$(echo $line | cut -d: -f3-)
-    break
-fi
+        if [ xuserSummary = "x$base_name" ] ; then
+            local rep_base=$(echo $line | cut -d: -f3-)
+            break
+        fi
 
-done < ${t_baseDir}/report-files
+    done < ${t_baseDir}/report-files
 
-if [ x = "x$rep_base" ] ; then
-    return
-fi
+    if [ x = "x$rep_base" ] ; then
+        return
+    fi
 
     echo -e "\nunamesum.fields='userName:string','filename:string'" >> ${t_properties}
 
-ucnt=0
+    local ucnt=0
 
-while read line
-do
-if [ "${line}" = "" ]; then
-    # skip blank lines
-    continue
-fi
+    while read line
+    do
+        if [ "${line}" = "" ]; then
+            # skip blank lines
+            continue
+        fi
 
-    UNAME=$line
-    UNAMESUM=${UNAME}--${REPORT_TYPE}
-    UNAMESUM_PDF=`echo ${rep_base}--${UNAMESUM}.pdf`
+        local UNAME=$line
+        local UNAMESUM=${UNAME}--${REPORT_TYPE}
+        local UNAMESUM_PDF=`echo ${rep_base}--${UNAMESUM}.pdf`
 
-    if [ ! -f ${t_baseDir}/${UNAMESUM_PDF} ] ; then
-        # for this time period, no data was associated with this username
-        # (no report was generated) so skip username
-        continue
-    fi
+        if [ ! -f ${t_baseDir}/${UNAMESUM_PDF} ] ; then
+            # for this time period, no data was associated with this username
+            # (no report was generated) so skip username
+            continue
+        fi
 
-    ## Insert the data for each report
-    echo "unamesum.${ucnt}='${UNAME}','${UNAMESUM_PDF}'" >> ${t_properties}
+        ## Insert the data for each report
+        echo "unamesum.${ucnt}='${UNAME}','${t_key}/${UNAMESUM_PDF}'" >> ${t_properties}
 
-ucnt=$((ucnt+1))
+        ucnt=$((ucnt+1))
 
-done < $DIRECTORY_PDF/uname.lst
+    done < $DIRECTORY_PDF/uname.lst
 
     echo -e "\nhnamesum.fields='userName:string','filename:string'" >> ${t_properties}
 
-hcnt=0
+    local hcnt=0
 
-while read line
-do
-if [ "${line}" = "" ]; then
-    # skip blank lines
-    continue
-fi
+    while read line
+    do
+        if [ "${line}" = "" ]; then
+            # skip blank lines
+            continue
+        fi
 
-    HNAME=$line
-    HNAMESUM=${HNAME}--${REPORT_TYPE}
-    HNAMESUM_PDF=`echo ${rep_base}--${HNAMESUM}.pdf`
+        local HNAME=$line
+        local HNAMESUM=${HNAME}--${REPORT_TYPE}
+        local HNAMESUM_PDF=`echo ${rep_base}--${HNAMESUM}.pdf`
 
-    if [ ! -f ${t_baseDir}/${HNAMESUM_PDF} ] ; then
-        # for this time period, no data was associated with this hostname
-        # (no report was generated) so skip hostname
-        continue
-    fi
+        if [ ! -f ${t_baseDir}/${HNAMESUM_PDF} ] ; then
+            # for this time period, no data was associated with this hostname
+            # (no report was generated) so skip hostname
+            continue
+        fi
 
-    ## Insert the data for each report
-    echo "hnamesum.${hcnt}='${HNAME}','${HNAMESUM_PDF}'" >> ${t_properties}
+        ## Insert the data for each report
+        echo "hnamesum.${hcnt}='${HNAME}','${t_key}/${HNAMESUM_PDF}'" >> ${t_properties}
 
-hcnt=$((hcnt+1))
+        hcnt=$((hcnt+1))
 
-done < $DIRECTORY_PDF/hname.lst
+    done < $DIRECTORY_PDF/hname.lst
 
-## Now actually generate the user summary PDF
-USUMOUTPUT_FILE=`echo ${rep_base}--${REPORT_TYPE}.pdf`
-ujac-to-pdf "${DIRECTORY_TEMPLATES}/${TEMPLATE_UNAMESUM}" ${t_properties} ${t_key}/${USUMOUTPUT_FILE}
+    ## Now actually generate the user summary PDF
+    local USUMOUTPUT_FILE=`echo ${rep_base}--${REPORT_TYPE}.pdf`
+    ujac-to-pdf "${DIRECTORY_TEMPLATES}/${TEMPLATE_UNAMESUM}" ${t_properties} ${t_key}/${USUMOUTPUT_FILE}
 }
 
 function generateEmail()

@@ -26,7 +26,7 @@
       <!-- Page ${pageNumber} of ${pageCount} -->
     </footer-part>
   </footer>
-    
+
   <!-- Now iterate all detailed reports and insert them at the end -->
   <foreach sequence="${detailed}" loop-variable="row">
     <insert-document source="${pdfDirectory + row.filename}" name='${linkPrefix + row.filename}'/>
