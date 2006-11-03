@@ -255,19 +255,19 @@ public abstract class SpamProtoConfig implements Serializable
     }
 
     // Help for the UI follows.
-    public static final int VERY_LOW_STRENGTH = 80;
-    public static final int LOW_STRENGTH = 65;
-    public static final int MEDIUM_STRENGTH = 50;
-    public static final int HIGH_STRENGTH = 43;
-    public static final int VERY_HIGH_STRENGTH = 35;
+    public static final int LOW_STRENGTH = 50;
+    public static final int MEDIUM_STRENGTH = 43;
+    public static final int HIGH_STRENGTH = 35;
+    public static final int VERY_HIGH_STRENGTH = 33;
+    public static final int EXTREME_STRENGTH = 30;
     public static final Map<String, Integer> scanStrengthEnumeration
         = new LinkedHashMap<String, Integer>();
     static {
-        scanStrengthEnumeration.put("very low",  VERY_LOW_STRENGTH);
         scanStrengthEnumeration.put("low",       LOW_STRENGTH);
         scanStrengthEnumeration.put("medium",    MEDIUM_STRENGTH);
         scanStrengthEnumeration.put("high",      HIGH_STRENGTH);
         scanStrengthEnumeration.put("very high", VERY_HIGH_STRENGTH);
+        scanStrengthEnumeration.put("extreme", EXTREME_STRENGTH);
     }
 
     @Transient
