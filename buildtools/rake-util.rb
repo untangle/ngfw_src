@@ -7,7 +7,7 @@ $DevelBuild = true
 ARGV.each do |arg|
   if "pkgs" == arg then
     $DevelBuild = false
-  elsif arg =~ /release=?(.+)?/
+  elsif arg =~ /release_?(.+)?/
     # XXX release the hoonds!
     releaseName = $1 || ENV["USER"]
     $DevelBuild = false
