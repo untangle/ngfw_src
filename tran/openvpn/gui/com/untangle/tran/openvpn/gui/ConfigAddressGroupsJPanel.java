@@ -93,7 +93,7 @@ class TableModelAddressGroups extends MSortedTableModel<Object>{
 	    String rowState = (String) tempGroup.elementAt(0);
 	    if( !ROW_REMOVE.equals(rowState) )
 		continue;
-	    VpnGroup vpnGroup = (VpnGroup) tempGroup.elementAt(7);
+	    VpnGroup vpnGroup = (VpnGroup) tempGroup.elementAt(8);
 	    if( groupClientHashtable.containsKey(vpnGroup.getName()) )
 		throw new Exception("The group \"" 
 				    + vpnGroup.getName() 
