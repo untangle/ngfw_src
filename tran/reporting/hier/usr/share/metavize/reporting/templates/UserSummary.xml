@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE document
+	PUBLIC "-//UJAC.org//Print Document//EN" 
+	"http://ujac.sourceforge.net/ujac-print-document.dtd">
+
+<document size="LETTER" margin-left="25" margin-right="25" margin-top="25" margin-bottom="25">
+  <set-property name="linkPrefix"     type="String" value="link-"/>
+
+  <font-def name="title"       family="Helvetica" size="16" style="normal"/>
+  <font-def name="normal"      family="Helvetica" size="12" style="normal"/>
+  <font-def name="link"        family="Helvetica" size="12" style="italic"/>
+  <font-def name="small"       family="Helvetica" size="9"  style="normal"/>
+
+  <style-def name="table.bordered" 
+             border-style="top|bottom|left|right" border-width="0.5" font="normal"/>
+
+  <!-- Calculate the date period -->
+  <if cond="${type == 'Daily'}">
+    <set-property name="period" type="String" value="${start}"/>
+  </if>
+  <else>
+    <set-property name="period" type="String" value="${start + ' to ' + end}"/>
+  </else>
+
+  <header font="small">
+    <header-part halign="left">
+      <!-- ${reportTitle} -->
+    </header-part>
+  </header>
+
+  <footer font="small">
+    <footer-part padding-top="10" halign="center">
+      <!-- Page ${pageNumber} of ${pageCount} -->
+    </footer-part>
+  </footer>
+  
+  <table halign="center" widths="60,40" width="90" spacing-after="20">
+    <table-row>
+      <cell>
+        <paragraph font="title" halign="left">
+          ${transformName} User Summary
+        </paragraph>
+      </cell>
+    
+      <cell>
+        <paragraph font="small" halign="right">
+          ${period}
+        </paragraph>
+      </cell>
+    </table-row>
+  </table>
+
+  <if cond="${unamesum isDefined}">
+    <set-property name="nameColor" type="String" value="eeeeee"/>
+    <set-property name="linkColor" type="String" value="e4e4e4"/>
+
+    <table class="bordered" halign="center" widths="72,28" width="90" leading="0">
+
+      <table-row padding-bottom="7" padding-top="2" leading="0" valign="middle">
+        <cell padding-left="10" font="normal">User</cell>
+        <cell/>
+      </table-row>
+
+      <foreach sequence="${unamesum}" loop-variable="row">
+
+        <table-row padding-bottom="7" padding-top="2" leading="0" valign="middle">
+          <!-- Cell for the name -->
+          <cell padding-left="10" font="normal" bgcolor="${nameColor}">${row.userName}</cell>
+
+          <!-- Cell for the link to the document -->
+          <cell halign="center" font="link" bgcolor="${linkColor}">
+            <anchor reference="${'#' + linkPrefix + row.filename}">
+              click here
+            </anchor>
+          </cell>
+        </table-row>
+
+        <toggle-property name="nameColor" type="String" a="eeeeee" b="dddddd"/>
+        <toggle-property name="linkColor" type="String" a="e4e4e4" b="d4d4d4"/>
+
+      </foreach>
+    </table>
+  </if>
+  <else>
+    <table class="bordered" halign="center" widths="100" width="90" leading="0">
+      <table-row padding-bottom="7" padding-top="2" leading="0" valign="middle">
+        <cell padding-left="10" halign="center" font="normal">
+        &lt;No user events were detected during this time period.&gt;
+        </cell>
+      </table-row>
+    </table>
+  </else>
+
+  <br/>
+  <br/>
+
+  <if cond="${hnamesum isDefined}">
+    <set-property name="nameColor" type="String" value="eeeeee"/>
+    <set-property name="linkColor" type="String" value="e4e4e4"/>
+
+    <table class="bordered" halign="center" widths="72,28" width="90" leading="0">
+
+      <table-row padding-bottom="7" padding-top="2" leading="0" valign="middle">
+        <cell padding-left="10" font="normal">User</cell>
+        <cell/>
+      </table-row>
+
+      <foreach sequence="${hnamesum}" loop-variable="row">
+
+        <table-row padding-bottom="7" padding-top="2" leading="0" valign="middle">
+          <!-- Cell for the name -->
+          <cell padding-left="10" font="normal" bgcolor="${nameColor}">${row.userName}</cell>
+
+          <!-- Cell for the link to the document -->
+          <cell halign="center" font="link" bgcolor="${linkColor}">
+            <anchor reference="${'#' + linkPrefix + row.filename}">
+              click here
+            </anchor>
+          </cell>
+        </table-row>
+
+        <toggle-property name="nameColor" type="String" a="eeeeee" b="dddddd"/>
+        <toggle-property name="linkColor" type="String" a="e4e4e4" b="d4d4d4"/>
+
+      </foreach>
+    </table>
+  </if>
+  <else>
+    <table class="bordered" halign="center" widths="100" width="90" leading="0">
+      <table-row padding-bottom="7" padding-top="2" leading="0" valign="middle">
+        <cell padding-left="10" halign="center" font="normal">
+        &lt;No client events were detected during this time period.&gt;
+        </cell>
+      </table-row>
+    </table>
+  </else>
+
+  <new-page>
+    <header/>
+    <footer/>
+  </new-page>
+  
+  <!-- insert each user summary report at the end
+       - unlike summary and detail reports,
+         user summary reports are not explicitly listed in report-files and
+         may not be automatically included with them
+         - the "top" user summary report is listed in report-files and
+           is automatically included with the other reports
+         - the "sub" user summary reports are generated as necessary and
+           are manually included (right now)
+  -->
+  <foreach sequence="${unamesum}" loop-variable="row">
+    <insert-document source="${pdfDirectory + transformDir + row.filename}" name='${linkPrefix + row.filename}'/>
+  </foreach>
+  <foreach sequence="${hnamesum}" loop-variable="row">
+    <insert-document source="${pdfDirectory + transformDir + row.filename}" name='${linkPrefix + row.filename}'/>
+  </foreach>
+
+</document>

@@ -244,11 +244,11 @@ if [ "${line}" = "" ]; then
 fi
 
     USERNAME=$line
-    USERSUM_HTML=`echo ${rep_base}--${USERNAME}--${period}.html`
-    USERSUM_PDF=`echo ${rep_base}--${USERNAME}--${period}.pdf`
+    UNAMESUM_HTML=`echo ${rep_base}--${USERNAME}--${period}.html`
+    UNAMESUM_PDF=`echo ${rep_base}--${USERNAME}--${period}.pdf`
 
 if [ "$generate_email_index" = true ]; then
-    if [ ! -f ${tran_dir}/${USERSUM_PDF} ] ; then
+    if [ ! -f ${tran_dir}/${UNAMESUM_PDF} ] ; then
         # for this time period, no data was associated with this username
         # (no report was generated) so skip username
         continue
@@ -258,13 +258,13 @@ cat >> $base_file <<EOF
 <tr valign=top>
   <td><img src="../images/px" style="width: 20px; height: 13px"></td>
   <td colspan=4><span style="font-family: SansSerif; font-size: 9.0px;">$USERNAME</span></td>
-  <td colspan=6><span style="font-family: SansSerif; font-size: 9.0px; text-align: right">(<a href="$USERSUM_PDF">PDF</a>)&nbsp;</span></td>
+  <td colspan=6><span style="font-family: SansSerif; font-size: 9.0px; text-align: right">(<a href="$UNAMESUM_PDF">PDF</a>)&nbsp;</span></td>
   <td colspan=9><img src="../images/px" style="width: 316px; height: 13px"></td>
 </tr>
 EOF
 
 else
-    if [ ! -f ${tran_dir}/${USERSUM_HTML} ] ; then
+    if [ ! -f ${tran_dir}/${UNAMESUM_HTML} ] ; then
         # for this time period, no data was associated with this username
         # (no report was generated) so skip username
         continue
@@ -274,7 +274,7 @@ cat >> $base_file <<EOF
 <tr valign=top>
   <td><img src="../images/px" style="width: 20px; height: 13px"></td>
   <td colspan=4><span style="font-family: SansSerif; font-size: 9.0px;">$USERNAME</span></td>
-  <td colspan=6><span style="font-family: SansSerif; font-size: 9.0px; text-align: right">(<a href="$USERSUM_HTML">HTML</a> | <a href="$USERSUM_PDF">PDF</a>)&nbsp;</span></td>
+  <td colspan=6><span style="font-family: SansSerif; font-size: 9.0px; text-align: right">(<a href="$UNAMESUM_HTML">HTML</a> | <a href="$UNAMESUM_PDF">PDF</a>)&nbsp;</span></td>
   <td colspan=9><img src="../images/px" style="width: 316px; height: 13px"></td>
 </tr>
 EOF

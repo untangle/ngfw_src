@@ -139,8 +139,10 @@
       </footer-part>
     </footer>
   </new-page>
-  
+
+<!--
   <if cond='${summary isDefined}'>
     <insert-document source="${pdfDirectory + summary}"/>
   </if>
+-->
 </document>
