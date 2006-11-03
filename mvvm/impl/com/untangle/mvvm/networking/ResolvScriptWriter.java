@@ -11,8 +11,11 @@
 
 package com.untangle.mvvm.networking;
 
+import java.net.UnknownHostException;
+
 import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.script.ScriptWriter;
 import org.apache.log4j.Logger;
 
@@ -21,13 +24,15 @@ import static com.untangle.mvvm.tran.script.ScriptWriter.METAVIZE_HEADER;
 
 class ResolvScriptWriter extends ScriptWriter
 {
+    private static final IPaddr LOCALHOST;
+
     private final Logger logger = Logger.getLogger(getClass());
 
     static final String NS_PARAM = "nameserver";
 
     private static final String RESOLV_HEADER =
         COMMENT + METAVIZE_HEADER +
-        COMMENT + " name resolution settings\n";
+        COMMENT + " name resolution settings.\n";
 
     private final NetworkSpacesInternalSettings settings;
 
@@ -41,7 +46,9 @@ class ResolvScriptWriter extends ScriptWriter
     {
         // ???? Just always write the file, just in case
         // if ( this.settings.isDhcpEnabled()) return;
-
+        
+        /* insert localhost */
+        addDns( LOCALHOST );
         addDns( settings.getDns1());
         addDns( settings.getDns2());
     }
@@ -74,5 +81,22 @@ class ResolvScriptWriter extends ScriptWriter
     protected String header()
     {
         return RESOLV_HEADER;
+    }
+
+    static 
+    {
+        IPaddr addr = null;
+        try {
+            addr = IPaddr.parse( "127.0.0.1" );
+        } catch ( ParseException e ) {
+            System.out.println( "unable to parse localhost, not binding to local dns server" );
+            addr = null;
+        } catch ( UnknownHostException e ) {
+            System.out.println( "unable to parse localhost, not binding to local dns server" );
+            addr = null;
+        }
+
+        LOCALHOST = addr;
+
     }
 }

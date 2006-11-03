@@ -15,3 +15,7 @@ exec >> @MVVM_LOG@/iptables.log 2>&1
 ## Run mcli update address
 echo "[DEBUG] `date` running mcli update address"
 @USR_BIN@/mcli updateAddress
+
+
+sed -i -e '/127.0.0.1/d' -e '1inameserver 127.0.0.1' /etc/resolv.conf
+

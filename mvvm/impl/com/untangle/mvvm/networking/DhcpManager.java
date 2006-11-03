@@ -464,8 +464,8 @@ class DhcpManager
 
         if ( !settings.getIsDnsEnabled()) {
             /* Cannot bind to localhost, because that will also disable DHCP */
-            comment( sb, "DNS is disabled, binding to port 54" );
-            sb.append( FLAG_DNS_LISTEN_PORT + "=54\n\n" );
+            comment( sb, "DNS is disabled, running without domain name." );
+            /* sb.append( FLAG_DNS_LISTEN_PORT + "=54\n\n" ); */
         } else {
             HostName localDomain = settings.getDnsLocalDomain();
             /* Write out the localdomain */
