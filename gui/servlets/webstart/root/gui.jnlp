@@ -25,7 +25,7 @@ MackageDesc[] mds = mvvm.toolboxManager().installed();
 <!-- JNLP File for Untangle Platform -->
 <jnlp spec="1.0+" codebase="<%=cb%>" href="<%=href%>">
   <information>
-    <title>Untangle @ <%=host%>  </title>
+    <title>Untangle Server @ <%=host%>  </title>
     <vendor>Untangle Networks</vendor>
     <homepage href="http://www.untangle.com"/>
     <description>Untangle @ <%=host%>  </description>

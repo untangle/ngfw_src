@@ -31,7 +31,8 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private static final String EXCEPTION_LOGIN_MISSING = "A \"Login\" must be specified if a \"Password\" is specified.";
     private static final String EXCEPTION_HOSTNAME_MISSING = "A \"Hostname\" must be specified if \"Login\" or \"Password\" are specified.";
     private static final String EXCEPTION_DOMAIN_MISSING = "A \"Search Base\" must be specified.";
-    
+    private static final String EXCEPTION_SERVER_ADDRESS = "You must specify a valid IP address for your Lookup Server.";
+
     public DirectoryRemoteADJPanel() {
         initComponents();
 	Util.setPortView(portJSpinner, 25);
@@ -95,7 +96,21 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 		baseJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 		throw new Exception(EXCEPTION_DOMAIN_MISSING);
 	    }
-	}
+    }
+        
+        // SERVER ENABLED
+        boolean serverEnabled = serverEnabledJRadioButton.isSelected();
+
+        // SERVER ADDRESS
+        IPaddr serverIPaddr = null;
+        serverIPJTextField.setBackground( Color.WHITE );
+        if( enabled && serverEnabled ){
+            try{ serverIPaddr = IPaddr.parse(serverIPJTextField.getText()); }
+            catch(Exception e){ throw new Exception (EXCEPTION_SERVER_ADDRESS); }
+            if( serverIPaddr.isEmpty() )
+                throw new Exception(EXCEPTION_SERVER_ADDRESS);
+        }
+
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){	    
@@ -108,18 +123,16 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 		repositorySettings.setLDAPPort( port );
 		repositorySettings.setDomain( domain );
 		repositorySettings.setOUFilter( org );
-
+        
                 WMISettings wmiSettings = directoryCompoundSettings.getWMISettings();
-                /* xxx rbscott to inieves need a boolean here xxx */
-                wmiSettings.setIsEnabled( false );
-                wmiSettings.setUsername( login );
-                wmiSettings.setPassword( password );
-                // xxx rbscott to inieves insert ip address here: 
-                // wmiSettings.setAddress(  );
-                // xxx end msg to inieves
-
-                // rbs unecessary: wmiSettings.setPort( wmiPort );
-                // rbs unecessary: wmiSettings.setScheme( "https" );
+                wmiSettings.setIsEnabled( serverEnabled );
+                if( serverEnabled ){
+                    wmiSettings.setUsername( login );
+                    wmiSettings.setPassword( password );
+                    wmiSettings.setAddress( serverIPaddr );
+                    // rbs unecessary: wmiSettings.setPort( wmiPort );
+                    // rbs unecessary: wmiSettings.setScheme( "https" );
+                }
 	    }
 	    else{
 		directoryCompoundSettings.setAddressBookConfiguration( AddressBookConfiguration.LOCAL_ONLY );
@@ -135,12 +148,15 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private String passwordCurrent;
     private String domainCurrent;
     private String orgCurrent;
+    private boolean serverEnabledCurrent;
+    private String serverAddressCurrent;
+    private String serverURLCurrent;
 
     public void doRefresh(DirectoryCompoundSettings directoryCompoundSettings){
 	RepositorySettings repositorySettings = directoryCompoundSettings.getAddressBookSettings().getADRepositorySettings();
 	AddressBookConfiguration addressBookConfiguration = directoryCompoundSettings.getAddressBookConfiguration();
 
-	// ENABLED //
+	// AD ENABLED //
 	enabledCurrent = addressBookConfiguration.equals( AddressBookConfiguration.AD_AND_LOCAL );
 	if( enabledCurrent )
 	    adEnabledJRadioButton.setSelected( true );
@@ -183,6 +199,20 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     if( enabledCurrent )
         adTestJButton.setEnabled( true );
 
+    // SERVER ENABLED
+	serverEnabledCurrent = directoryCompoundSettings.getWMISettings().getIsEnabled();
+	if( serverEnabledCurrent )
+	    serverEnabledJRadioButton.setSelected( true );
+	else
+	    serverDisabledJRadioButton.setSelected( true );
+	serverEnabledDependency( serverEnabledCurrent );
+    
+    // SERVER ADDRESS
+    serverIPJTextField.setText( directoryCompoundSettings.getWMISettings().getAddress().toString() );
+    serverIPJTextField.setBackground( Color.WHITE );
+
+    // SERVER URL
+    urlJTextField.setText( directoryCompoundSettings.getWMISettings().getUrl() );
     }
     
     
@@ -190,8 +220,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 java.awt.GridBagConstraints gridBagConstraints;
 
                 adButtonGroup = new javax.swing.ButtonGroup();
+                serverButtonGroup = new javax.swing.ButtonGroup();
                 externalRemoteJPanel = new javax.swing.JPanel();
                 enableRemoteJPanel = new javax.swing.JPanel();
+                serverJLabel1 = new javax.swing.JLabel();
                 adDisabledJRadioButton = new javax.swing.JRadioButton();
                 adEnabledJRadioButton = new javax.swing.JRadioButton();
                 restrictIPJPanel = new javax.swing.JPanel();
@@ -211,18 +243,36 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 orgJTextField = new javax.swing.JTextField();
                 orgOptionalJLabel = new javax.swing.JLabel();
                 jSeparator3 = new javax.swing.JSeparator();
-                jLabel10 = new javax.swing.JLabel();
+                testJLabel = new javax.swing.JLabel();
                 adTestJButton = new javax.swing.JButton();
+                jSeparator4 = new javax.swing.JSeparator();
+                serverJLabel = new javax.swing.JLabel();
+                serverDisabledJRadioButton = new javax.swing.JRadioButton();
+                serverEnabledJRadioButton = new javax.swing.JRadioButton();
+                restrictIPJPanel2 = new javax.swing.JPanel();
+                serverIPJLabel = new javax.swing.JLabel();
+                serverIPJTextField = new javax.swing.JTextField();
+                urlJLabel = new javax.swing.JLabel();
+                urlJTextField = new javax.swing.JTextField();
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMaximumSize(new java.awt.Dimension(563, 339));
-                setMinimumSize(new java.awt.Dimension(563, 339));
-                setPreferredSize(new java.awt.Dimension(563, 339));
+                setMaximumSize(new java.awt.Dimension(563, 555));
+                setMinimumSize(new java.awt.Dimension(563, 555));
+                setPreferredSize(new java.awt.Dimension(563, 555));
                 externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
                 externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Active Directory (AD) Server", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 enableRemoteJPanel.setLayout(new java.awt.GridBagLayout());
+
+                serverJLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+                serverJLabel1.setText("<html>This allows Untangle to connect to an <b>Active Directory Server</b> in order to recognize various users for use in reporting, firewall, router, policies, etc.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 0);
+                enableRemoteJPanel.add(serverJLabel1, gridBagConstraints);
 
                 adButtonGroup.add(adDisabledJRadioButton);
                 adDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -445,14 +495,14 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 enableRemoteJPanel.add(jSeparator3, gridBagConstraints);
 
-                jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel10.setText("<html>The <b>Active Directory Test</b> can be used to test that your settings above are correct.  If you have made changes to the above settings, you must save them before this button will be enabled.</html>");
+                testJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                testJLabel.setText("<html>The <b>Active Directory Test</b> can be used to test that your settings above are correct.  If you have made changes to the above settings, you must save them before this button will be enabled.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
-                enableRemoteJPanel.add(jLabel10, gridBagConstraints);
+                enableRemoteJPanel.add(testJLabel, gridBagConstraints);
 
                 adTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 adTestJButton.setText("Run Active Directory Test");
@@ -468,6 +518,103 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
                 enableRemoteJPanel.add(adTestJButton, gridBagConstraints);
+
+                jSeparator4.setForeground(new java.awt.Color(200, 200, 200));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                enableRemoteJPanel.add(jSeparator4, gridBagConstraints);
+
+                serverJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                serverJLabel.setText("<html>The <b>Active Directory Lookup Server</b> can be used to determine which users are logged into which machines for policies, reporting, etc.  You must download the installer using the URL below, install the server, and then specify the IP address of the server in the field below.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
+                enableRemoteJPanel.add(serverJLabel, gridBagConstraints);
+
+                serverButtonGroup.add(serverDisabledJRadioButton);
+                serverDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                serverDisabledJRadioButton.setText("<html><b>Disabled</b></html>");
+                serverDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
+                serverDisabledJRadioButton.setFocusPainted(false);
+                serverDisabledJRadioButton.setFocusable(false);
+                serverDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                serverDisabledJRadioButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
+                enableRemoteJPanel.add(serverDisabledJRadioButton, gridBagConstraints);
+
+                serverButtonGroup.add(serverEnabledJRadioButton);
+                serverEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                serverEnabledJRadioButton.setText("<html><b>Enabled</b></html>");
+                serverEnabledJRadioButton.setFocusPainted(false);
+                serverEnabledJRadioButton.setFocusable(false);
+                serverEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                serverEnabledJRadioButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 50, 0, 0);
+                enableRemoteJPanel.add(serverEnabledJRadioButton, gridBagConstraints);
+
+                restrictIPJPanel2.setLayout(new java.awt.GridBagLayout());
+
+                serverIPJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                serverIPJLabel.setText("Server IP Address:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel2.add(serverIPJLabel, gridBagConstraints);
+
+                serverIPJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
+                serverIPJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
+                serverIPJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+                restrictIPJPanel2.add(serverIPJTextField, gridBagConstraints);
+
+                urlJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                urlJLabel.setText("URL to download installer:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                restrictIPJPanel2.add(urlJLabel, gridBagConstraints);
+
+                urlJTextField.setMaximumSize(new java.awt.Dimension(250, 19));
+                urlJTextField.setMinimumSize(new java.awt.Dimension(250, 19));
+                urlJTextField.setPreferredSize(new java.awt.Dimension(250, 19));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+                restrictIPJPanel2.add(urlJTextField, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 80, 5, 0);
+                enableRemoteJPanel.add(restrictIPJPanel2, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -487,6 +634,14 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 add(externalRemoteJPanel, gridBagConstraints);
 
         }//GEN-END:initComponents
+
+		private void serverEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverEnabledJRadioButtonActionPerformed
+            serverEnabledDependency(true);        
+		}//GEN-LAST:event_serverEnabledJRadioButtonActionPerformed
+
+		private void serverDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverDisabledJRadioButtonActionPerformed
+            serverEnabledDependency(false);        
+		}//GEN-LAST:event_serverDisabledJRadioButtonActionPerformed
 
 		private void orgJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_orgJTextFieldCaretUpdate
             if( !orgJTextField.getText().trim().equals( orgCurrent ) )
@@ -552,8 +707,24 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 	baseJLabel.setEnabled( enabled );
 	orgJTextField.setEnabled( enabled );
 	orgJLabel.setEnabled( enabled );
+    orgOptionalJLabel.setEnabled( enabled );
     if(!enabled)
         adTestJButton.setEnabled( false );
+    
+    serverEnabledJRadioButton.setEnabled( enabled );
+    serverDisabledJRadioButton.setEnabled( enabled );
+    if( !enabled )
+        serverEnabledDependency( false );
+    else if( serverEnabledJRadioButton.isSelected() )
+        serverEnabledDependency( true );
+    }
+
+    private void serverEnabledDependency(boolean enabled){        
+        serverJLabel.setEnabled( enabled );
+        serverIPJLabel.setEnabled( enabled );
+        serverIPJTextField.setEnabled( enabled );
+        urlJLabel.setEnabled( enabled );
+        urlJTextField.setEnabled( enabled );
     }
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -567,9 +738,9 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         private javax.swing.JPanel externalRemoteJPanel;
         private javax.swing.JLabel hostJLabel;
         public javax.swing.JTextField hostJTextField;
-        private javax.swing.JLabel jLabel10;
         private javax.swing.JSeparator jSeparator2;
         private javax.swing.JSeparator jSeparator3;
+        private javax.swing.JSeparator jSeparator4;
         private javax.swing.JLabel loginJLabel;
         public javax.swing.JTextField loginJTextField;
         private javax.swing.JLabel orgJLabel;
@@ -581,6 +752,17 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         private javax.swing.JSpinner portJSpinner;
         private javax.swing.JPanel restrictIPJPanel;
         private javax.swing.JPanel restrictIPJPanel1;
+        private javax.swing.JPanel restrictIPJPanel2;
+        private javax.swing.ButtonGroup serverButtonGroup;
+        public javax.swing.JRadioButton serverDisabledJRadioButton;
+        public javax.swing.JRadioButton serverEnabledJRadioButton;
+        private javax.swing.JLabel serverIPJLabel;
+        public javax.swing.JTextField serverIPJTextField;
+        private javax.swing.JLabel serverJLabel;
+        private javax.swing.JLabel serverJLabel1;
+        private javax.swing.JLabel testJLabel;
+        private javax.swing.JLabel urlJLabel;
+        public javax.swing.JTextField urlJTextField;
         // End of variables declaration//GEN-END:variables
     
 

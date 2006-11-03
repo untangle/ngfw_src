@@ -48,7 +48,7 @@ public class DirectoryJDialog extends MConfigJDialog {
 
 	// REMOTE ACTIVE DIRECTORY ////////
 	DirectoryRemoteADJPanel directoryRemoteADJPanel = new DirectoryRemoteADJPanel();
-	addTab(NAME_REMOTE_ACTIVE_DIRECTORY, null, directoryRemoteADJPanel);
+	addScrollableTab(null, NAME_REMOTE_ACTIVE_DIRECTORY, null, directoryRemoteADJPanel, false, true);
 	addSavable(NAME_REMOTE_ACTIVE_DIRECTORY, directoryRemoteADJPanel);
 	addRefreshable(NAME_REMOTE_ACTIVE_DIRECTORY, directoryRemoteADJPanel);
     }
