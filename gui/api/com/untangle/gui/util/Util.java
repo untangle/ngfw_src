@@ -56,6 +56,8 @@ import com.untangle.mvvm.portal.RemotePortalManager;
 import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.toolbox.ToolboxManager;
 import com.untangle.mvvm.tran.*;
+import com.untangle.mvvm.user.RemotePhoneBook;
+import com.untangle.mvvm.user.WMISettings;
 
 public class Util {
 
@@ -155,6 +157,7 @@ public class Util {
     private static LoggingManager loggingManager;
     private static RemoteAppServerManager appServerManager;
     private static AddressBook addressBook;
+    private static RemotePhoneBook phoneBook;
     private static RemotePortalManager remotePortalManager;
     private static RemoteIntfManager remoteIntfManager;
     private static PingManager pingManager;
@@ -170,6 +173,7 @@ public class Util {
             loggingManager = mvvmContext.loggingManager();
             appServerManager = mvvmContext.appServerManager();
             addressBook = mvvmContext.appAddressBook();
+            phoneBook = mvvmContext.phoneBook();
             remotePortalManager = mvvmContext.portalManager();
             remoteIntfManager = mvvmContext.intfManager();
             pingManager = mvvmContext.pingManager();
@@ -183,6 +187,7 @@ public class Util {
             loggingManager = null;
             appServerManager = null;
             addressBook = null;
+            phoneBook = null;
             remotePortalManager = null;
             remoteIntfManager = null;
             pingManager = null;
@@ -200,6 +205,7 @@ public class Util {
     public static LoggingManager getLoggingManager(){ return loggingManager; }
     public static RemoteAppServerManager getAppServerManager(){ return appServerManager; }
     public static AddressBook getAddressBook(){ return addressBook; }
+    public static RemotePhoneBook getPhoneBook(){ return phoneBook; }
     public static RemotePortalManager getRemotePortalManager(){ return remotePortalManager; }
     public static PingManager getPingManager(){ return pingManager; }
     ///////////////////////////////////

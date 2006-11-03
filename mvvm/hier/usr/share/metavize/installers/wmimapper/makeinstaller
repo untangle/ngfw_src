@@ -2,6 +2,12 @@
 
 exec >> @MVVM_LOG@/wrapper.log 2>&1
 
+## nothing to do
+if [ -f /tmp/setup-wmi.exe ]; then 
+    exit 0
+fi
+    
+
 OPENSSL_CMD=openssl
 
 BASE_DIR="@MVVM_HOME@/installers/wmimapper"
@@ -37,3 +43,4 @@ rm -f ${KEY_FILE}
 rm -f ${CERT_FILE}
 rm -f ${CSR_FILE}
 
+true

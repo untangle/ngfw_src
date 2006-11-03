@@ -19,6 +19,7 @@ import com.untangle.mvvm.snmp.*;
 import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.*;
 import com.untangle.mvvm.tran.*;
+import com.untangle.mvvm.user.WMISettings;
 
 import java.awt.*;
 import javax.swing.*;
@@ -107,6 +108,18 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 		repositorySettings.setLDAPPort( port );
 		repositorySettings.setDomain( domain );
 		repositorySettings.setOUFilter( org );
+
+                WMISettings wmiSettings = directoryCompoundSettings.getWMISettings();
+                /* xxx rbscott to inieves need a boolean here xxx */
+                wmiSettings.setIsEnabled( false );
+                wmiSettings.setUsername( login );
+                wmiSettings.setPassword( password );
+                // xxx rbscott to inieves insert ip address here: 
+                // wmiSettings.setAddress(  );
+                // xxx end msg to inieves
+
+                // rbs unecessary: wmiSettings.setPort( wmiPort );
+                // rbs unecessary: wmiSettings.setScheme( "https" );
 	    }
 	    else{
 		directoryCompoundSettings.setAddressBookConfiguration( AddressBookConfiguration.LOCAL_ONLY );

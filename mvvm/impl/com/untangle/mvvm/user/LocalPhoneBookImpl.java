@@ -33,6 +33,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.mvvm.NetworkManager;
 
 import com.untangle.mvvm.logging.EventLogger;
 import com.untangle.mvvm.logging.EventLoggerFactory;
@@ -43,6 +44,7 @@ import com.untangle.mvvm.tran.ValidateException;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
 
+import com.untangle.mvvm.util.OutsideValve;
 import com.untangle.mvvm.util.TransactionWork;
 import com.untangle.mvvm.util.Worker;
 import com.untangle.mvvm.util.WorkerRunner;
@@ -55,6 +57,10 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
 {
     /* properties */
     private static final String PROPERTY_LIFETIME = "com.untangle.mvvm.user.phonebook.lifetime";
+
+    private static final String WEB_APP = "wmi";
+    private static final String WEB_APP_PATH = "/" + WEB_APP;
+    
 
     /* ??? */
     private static final int DEFAULT_QUEUE_LENGTH = 384;
@@ -94,6 +100,8 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
 
     private boolean isRunning = false;
 
+    private boolean isWebAppDeployed = false;
+
     private LocalPhoneBookImpl()
     {
         /* create the utility to cleanup */
@@ -108,7 +116,14 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     /* retrieve the WMI settings */
     public WMISettings getWMISettings()
     {
-        return this.wmiAssistant.getSettings();
+        WMISettings settings = this.wmiAssistant.getSettings();
+        /* insert the url */
+        /* VPN configuratoins needs information from the networking settings. */
+        NetworkManager networkManager = MvvmContextFactory.context().networkManager();        
+        
+        settings.setUrl( "https://" + networkManager.getPublicAddress() + "/wmi/installer.html" );
+
+        return settings;
     }
 
     /* set the WMI settings */
@@ -215,6 +230,9 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
         /* load the initial key */
         loadCurrentKey();
 
+        /* start the web app */
+        loadWebApp();
+
         /* create an event logger */
         this.eventLogger = EventLoggerFactory.factory().getEventLogger();
 
@@ -244,6 +262,9 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     public void destroy()
     {
         this.isRunning = false;
+
+        /* start the web app */
+        unloadWebApp();
 
         /* Clear the assistants */
         clearAssistants();
@@ -466,6 +487,28 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
         return ++currentKey;
     }
 
+    private synchronized void loadWebApp()
+    {
+        if ( !this.isWebAppDeployed ) {
+            if ( MvvmContextFactory.context().appServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP, new OutsideAccessValve())) {
+                logger.debug( "Deployed ", WEB_APP, " web app" );
+            }
+            else logger.warn( "Unable to deploy ", WEB_APP," web app" );
+        }
+
+        this.isWebAppDeployed = true;
+    }
+
+    private synchronized void unloadWebApp()
+    {
+        if ( this.isWebAppDeployed ) {
+            if( MvvmContextFactory.context().appServerManager().unloadWebApp(WEB_APP_PATH)) {
+                logger.debug( "Unloaded ", WEB_APP," web app" );
+            } else logger.warn( "Unable to unload ", WEB_APP," web app" );
+        }
+        this.isWebAppDeployed = false;
+    }
+
     private class Cleaner implements Worker
     {
         private final List<UserInfo> infoList = new LinkedList<UserInfo>();
@@ -516,5 +559,23 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
                 }
             }
         }
+    }
+
+    private class OutsideAccessValve extends OutsideValve
+    {
+        OutsideAccessValve()
+        {
+        }
+
+        protected boolean isOutsideAccessAllowed()
+        {
+            return false;
+        }
+        
+        protected String errorMessage()
+        {
+            return "Offsite downloading of the WMI Installer is not allowed.";
+        }
+
     }
 }

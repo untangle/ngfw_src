@@ -17,6 +17,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.untangle.mvvm.networking.NetworkUtil;
 import com.untangle.mvvm.tran.IPaddr;
@@ -49,6 +50,9 @@ public class WMISettings implements Serializable, Validatable
     private IPaddr address;
 
     private int port = DEFAULT_WMI_PORT;
+
+    /* this is the url where the file should be accessed from (not saved in the database) */
+    private String url;
 
     public WMISettings()
     {
@@ -171,6 +175,26 @@ public class WMISettings implements Serializable, Validatable
         this.scheme = newValue;
     }
 
+    /**
+     * URL Where you can access the file from.
+     *
+     * @return URL Where you can access the file from.
+     */
+    @Transient
+    public String getUrl()
+    {
+        if ( this.url == null ) this.url = "";
+        return this.url;
+    }
+
+    void setUrl( String newValue )
+    {
+        newValue = ( null == newValue ) ? "" : newValue;
+        this.url = newValue.trim();
+    }
+
+
+    @Transient
     public void validate() throws ValidateException
     {
         if ( !"https".equals( this.scheme ) && !"http".equals( this.scheme )) {
