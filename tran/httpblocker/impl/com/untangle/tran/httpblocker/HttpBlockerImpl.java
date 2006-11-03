@@ -41,6 +41,8 @@ import org.hibernate.Session;
 
 public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 {
+    private static boolean webappDeployed = false;
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private final HttpBlockerFactory factory = new HttpBlockerFactory(this);
@@ -419,7 +421,11 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         }
     }
 
-    private void deployWebAppIfRequired(Logger logger) {
+    private static synchronized void deployWebAppIfRequired(Logger logger) {
+        if (webappDeployed) {
+            return;
+        }
+
         MvvmLocalContext mctx = MvvmContextFactory.context();
         LocalAppServerManager asm = mctx.appServerManager();
 
@@ -443,9 +449,15 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         } else {
             logger.error("Unable to deploy HttpBlocker WebApp");
         }
+
+        webappDeployed = true;
     }
 
-    private void unDeployWebAppIfRequired(Logger logger) {
+    private static synchronized void unDeployWebAppIfRequired(Logger logger) {
+        if (!webappDeployed) {
+            return;
+        }
+
         MvvmLocalContext mctx = MvvmContextFactory.context();
         LocalAppServerManager asm = mctx.appServerManager();
 
@@ -454,6 +466,8 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         } else {
             logger.warn("Unable to unload HttpBlocker WebApp");
         }
+
+        webappDeployed = false;
     }
 
     // XXX soon to be deprecated ----------------------------------------------
