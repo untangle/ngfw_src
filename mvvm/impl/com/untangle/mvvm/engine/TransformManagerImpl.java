@@ -450,9 +450,9 @@ class TransformManagerImpl implements LocalTransformManager
                             tc.init(args);
                             logger.info("Restarted: " + tid);
                         } catch (Exception exn) {
-                            logger.warn("Could not restart: " + tid, exn);
+                            logger.error("Could not restart: " + tid, exn);
                         } catch (LinkageError err) {
-                            logger.warn("Could not restart: " + tid, err);
+                            logger.error("Could not restart: " + tid, err);
                         }
                         if (null != tc && null == tc.transform()) {
                             tids.remove(tid);
