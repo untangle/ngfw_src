@@ -7,13 +7,13 @@ $DevelBuild = true
 ARGV.each do |arg|
   if "pkgs" == arg then
     $DevelBuild = false
-  elsif arg =~ /release_?(.+)?/
+  elsif arg =~ /release=?(.+)?/
     # XXX release the hoonds!
     releaseName = $1 || ENV["USER"]
     $DevelBuild = false
 
     task arg.to_sym => :pkgs do
-      Kernel.system("./buildtools/release.sh", releaseName)
+      Kernel.system('./buildtools/release.sh', 'all', releaseName)
     end
   end
 end

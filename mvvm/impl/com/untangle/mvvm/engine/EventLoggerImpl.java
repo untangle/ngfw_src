@@ -359,12 +359,12 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
                 if (null == transformContext) {
                     boolean s = MvvmContextFactory.context().runTransaction(tw);
                     if (!s) {
-                        logger.warn("could not log events for MVVM");
+                        logger.error("could not log events for MVVM");
                     }
                 } else {
                     boolean s = transformContext.runTransaction(tw);
                     if (!s) {
-                        logger.warn("could not log events for: "
+                        logger.error("could not log events for: "
                                     + transformContext.getTid()
                                     + "("
                                     + transformContext.getMackageDesc().getName()
