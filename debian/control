@@ -1841,7 +1841,7 @@ Description: Untangle Spam Blocker Base
 
 Package: metavize-client
 Depends: untangle-client
-Architecture: All
+Architecture: all
 Description: transitional dummy package
 
 Package: untangle-client
