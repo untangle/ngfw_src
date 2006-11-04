@@ -70,12 +70,11 @@ public class UpgradeProcessJPanel extends JPanel
 	    //                                 #  min  rsz    edit   remv   desc   typ            def
 	    addTableColumn( tableColumnModel,  0,  30, false, false, false, false, Integer.class, null, "#");
 	    addTableColumn( tableColumnModel,  1,  49, false, false, false, false, ImageIcon.class, null, "");
-	    addTableColumn( tableColumnModel,  2,  49, false, false, false, false, ImageIcon.class, null, "");
-	    addTableColumn( tableColumnModel,  3, 150, true,  false, false, false, String.class, null, "name");
-	    addTableColumn( tableColumnModel,  4,  75, false, false, false, false, String.class, null, sc.html("new<br>version"));
-	    addTableColumn( tableColumnModel,  5, 125, false, false, false, false, String.class, null, "type");
-	    addTableColumn( tableColumnModel,  6,  70, true,  false, false, false, Integer.class, null, sc.html("size<br>(KB)"));
-	    addTableColumn( tableColumnModel,  7, 125, false, false, true,  true,  String.class, null, "description");	    
+	    addTableColumn( tableColumnModel,  2, 150, true,  false, false, false, String.class, null, "name");
+	    addTableColumn( tableColumnModel,  3,  75, false, false, false, false, String.class, null, sc.html("new<br>version"));
+	    addTableColumn( tableColumnModel,  4, 125, false, false, false, false, String.class, null, "type");
+	    addTableColumn( tableColumnModel,  5,  70, true,  false, false, false, Integer.class, null, sc.html("size<br>(KB)"));
+	    addTableColumn( tableColumnModel,  6, 125, false, false, true,  true,  String.class, null, "description");	    
 	    return tableColumnModel;
 	}
 	
@@ -101,12 +100,7 @@ public class UpgradeProcessJPanel extends JPanel
 		    tempRow = new Vector(7);
 		    tempRow.add( rowIndex );
 		    
-		    byte[] orgIcon = mackageDesc.getOrgIcon();
 		    byte[] descIcon = mackageDesc.getDescIcon();
-		    if( orgIcon != null)
-			tempRow.add( new ImageIcon(orgIcon) );
-		    else
-			tempRow.add( new ImageIcon(getClass().getResource("/com/untangle/gui/transform/IconOrgUnknown42x42.png"))) ;
 		    
 		    if( descIcon != null)
 			tempRow.add( new ImageIcon(descIcon) );
