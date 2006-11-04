@@ -202,7 +202,7 @@ file mvvm_cacerts => [ java_cacerts, mv_ca, ut_ca ] do
                 mv_ca, '-alias', 'metavizeprivateca')
   Kernel.system("#{$BuildEnv.javahome}/bin/keytool", '-import', '-noprompt',
                 '-keystore', mvvm_cacerts, '-storepass', 'changeit', '-file',
-                ut_ca, '-alias', 'metavizeprivateca')
+                ut_ca, '-alias', 'untangleprivateca')
 end
 
 if $BuildEnv.isDevel
