@@ -82,14 +82,15 @@ public class MTransformJButton extends JButton {
         //descriptionIconJLabel.setDisabledIcon(this.descIcon);
         descriptionIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         descriptionIconJLabel.setFocusable(false);
-        descriptionIconJLabel.setPreferredSize(new java.awt.Dimension(42, 42));
+        descriptionIconJLabel.setPreferredSize(new java.awt.Dimension(42, 48));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.CENTER;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(2, 4, 2, 4);
+        gridBagConstraints.weightx = 0.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 2);
         contentJPanel.add(descriptionIconJLabel, gridBagConstraints);
 
         //DISPLAY NAME
@@ -99,16 +100,18 @@ public class MTransformJButton extends JButton {
 	    tempName = mackageDesc.getDisplayName() + "<br>(30 Day Trial)";
 	else
 	    tempName = mackageDesc.getDisplayName();
-        nameJLabel.setText( "<html><b><center>" + Util.wrapString(tempName, 19) + "</center></b></html>");
+        nameJLabel.setText( "<html><b>" + Util.wrapString(tempName, 19) + "</b></html>");
         nameJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        nameJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        nameJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         nameJLabel.setFocusable(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.CENTER;
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         contentJPanel.add(nameJLabel, gridBagConstraints);
 	try{ ((JComponent)nameJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
@@ -130,17 +133,17 @@ public class MTransformJButton extends JButton {
         statusJProgressBar.setMinimumSize(new java.awt.Dimension(130, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         contentJPanel.add(statusJProgressBar, gridBagConstraints);
 
         // TOOLTIP
         toolTipString = Util.wrapString( mackageDesc.getLongDescription(), 80);
 
-        setMargin(new Insets(6,0,4,0));
+        setMargin(new Insets(6,0,6,0));
         setFocusPainted(false);
-	setFocusable(false);
+        setFocusable(false);
         setOpaque(false);
 
     }

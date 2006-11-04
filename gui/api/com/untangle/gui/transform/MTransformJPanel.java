@@ -299,7 +299,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
                         }
                 });
 
-                add(controlsJToggleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(106, 60, 120, 25));
+                add(controlsJToggleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 60, 120, 25));
 
                 descriptionIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconDesc42x42.png")));
