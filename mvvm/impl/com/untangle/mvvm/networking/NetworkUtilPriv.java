@@ -757,7 +757,11 @@ class NetworkUtilPriv extends NetworkUtil
             while (( str = in.readLine()) != null ) {
                 str = str.trim();
                 if ( str.startsWith( ResolvScriptWriter.NS_PARAM )) {
-                    dnsServers.add( IPaddr.parse( str.substring( ResolvScriptWriter.NS_PARAM.length())));
+                    String server = str.substring( ResolvScriptWriter.NS_PARAM.length()).trim();
+                    
+                    /* ignore anything that uses the localhost */
+                    if ( "127.0.0.1".equals( server )) continue;
+                    dnsServers.add( IPaddr.parse( server ));
                 }
             }
         } catch ( Exception ex ) {
