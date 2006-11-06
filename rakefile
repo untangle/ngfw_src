@@ -10,7 +10,6 @@ ARGV.each do |arg|
     $DevelBuild = false
 
     task arg.to_sym => :pkgs do
-      Kernel.system('./buildtools/incVersion.sh', 'all')
       Kernel.system('./buildtools/release.sh', 'all', releaseName)
     end
   end
@@ -51,6 +50,7 @@ task :pkgs => Package['install'] do
     FileUtils.cp(f, "./debian/#{File.basename(f)}.init")
   end
 
+  Kernel.system('./buildtools/incVersion.sh', 'all')
   Kernel.system(*%w(fakeroot ./debian/rules binary))
 end
 
