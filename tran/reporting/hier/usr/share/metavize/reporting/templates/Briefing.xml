@@ -81,7 +81,7 @@
     
     <!-- Iterate all of the data -->
     <foreach sequence="${statistics}" loop-variable="row">
-      <if cond="${row.indent==1}">
+      <if cond="${row.indent == 1}">
         <set-property name="rowClass" type="String" value="indented"/>
       </if>
       <else>
@@ -111,12 +111,25 @@
         <table-row>
           <cell class="normal" bgcolor="${descriptionColor}">${row.description}:</cell>
           <cell halign="center" class="link"   bgcolor="${percentColor}">
-            <anchor reference='${"#"+ linkPrefix + row.filename}'>
-              click here
-            </anchor>
+            <if cond="${row.userSummaryLink == ''}">
+              <!-- these reports are pre-generated pdf files
+                   (for more info, see DetailedReport.xml)
+               -->
+              <anchor reference='${"#"+ linkPrefix + row.filename}'>
+                click here
+              </anchor>
+            </if>
+            <else>
+              <!-- the "top" user summary report is not a pre-generated pdf file
+                   (for more info, see DetailedReport.xml)
+               -->
+              <anchor reference='${"#"+ row.userSummaryLink}'>
+                click here
+              </anchor>
+            </else>
           </cell>
         </table-row>
-        
+
         <toggle-property name="descriptionColor" type="String" a="eeeeee" b="dddddd"/>
         <toggle-property name="percentColor"     type="String" a="e4e4e4" b="d4d4d4"/>
       </foreach>
@@ -139,10 +152,4 @@
       </footer-part>
     </footer>
   </new-page>
-
-<!--
-  <if cond='${summary isDefined}'>
-    <insert-document source="${pdfDirectory + summary}"/>
-  </if>
--->
 </document>

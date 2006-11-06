@@ -61,6 +61,7 @@ pdfDirectory=${DIRECTORY_PDF}/
 coverPageTemplate=${TEMPLATE_COVERPAGE}
 tocTemplate=${TEMPLATE_TOC}
 defaultBriefingTemplate=${TEMPLATE_BRIEFING}
+usersummaryTemplate=${TEMPLATE_UNAMESUM}
 defaultDetailedTemplate=${TEMPLATE_DETAILED}
 
 ## Flag for whether or not to show
@@ -112,7 +113,7 @@ function generateSubReports()
         echo "reports.${t}='${t_name}','${t_key}${SUFFIX_PROPERTIES}','${t_template}','${t_detailedTemplate}','${t_iconDesc}','${t_iconOrg}','${LINK_PREFIX}${t_key}','${t_hasDetailed}'" >> ${topLevel}
 
         ## Create the sub properties
-        generateSubProperties ${t_reportDir} ${t_key} "${t_name}"
+        generateSubProperties ${t_reportDir} ${t_key} ${t_name}
 
         ## Increment the index
         t=$(( t + 1 ))
@@ -135,8 +136,9 @@ function generateSubProperties()
     
     ## Name of the file containing the summary pdf.
     local t_summary=""
-    
-    local t_properties="${DIRECTORY_PROPERTIES}/${t_key}${SUFFIX_PROPERTIES}"
+
+    local t_propfile="${t_key}${SUFFIX_PROPERTIES}"
+    local t_properties="${DIRECTORY_PROPERTIES}/${t_propfile}"
 
     ## Check if there is a file for the graph
     t_graph=`find ${t_baseDir} -name "*Summary_Graph--${REPORT_TYPE}.png" | head -n 1 | xargs -r basename`
@@ -146,37 +148,17 @@ function generateSubProperties()
         echo "There is no graph for '${t_name}'"
     fi
 
-    t_summary=`find ${t_baseDir} -name "*Summary--${REPORT_TYPE}.pdf" | head -n 1 | xargs -r basename`
-    if [ -n "${t_summary}" ]; then
-        t_summary="summary=${t_key}/${t_summary}"
-    else
-        echo "There is no summary for '${t_name}'"
-    fi
-
     cat > ${t_properties} <<EOF
 reportTitle=${t_name}
 ${t_graph}
-${t_summary}
 EOF
 
-    ## Create the user summary pdf file too if the html one exists
+    ## Need to create the user summary pdf file too if the html one exists
     t_usersummary=`find ${t_baseDir} -name "*UserSummary--${REPORT_TYPE}.html" | head -n 1 | xargs -r basename`
     if [ -n "${t_usersummary}" ]; then
-
-        cat >> ${t_properties} <<EOF
-## Directory configuration
-templateDirectory=${DIRECTORY_TEMPLATES}/
-propertiesDirectory=${DIRECTORY_PROPERTIES}/
-pdfDirectory=${DIRECTORY_PDF}/
-
-## Description of the report
-transformName=${t_name}
-type=${reportType}
-start=${REPORT_START}
-end=${REPORT_END}
-EOF
-
         generateUserSummary ${t_baseDir} ${t_key} ${t_properties}
+    else
+        echo "There is no user summary report for '${t_name}'"
     fi
 
     echo -e "\nstatistics.fields='description:string','data:string','percent:string','indent:int'" >> ${t_properties}
@@ -204,24 +186,26 @@ EOF
         | awk 'BEGIN { n = 0 }; { print "statistics." n++ "=" $0 }' >> ${t_properties} 
 
     ## Insert the detailed reports
-    echo -e "\ndetailed.fields='description:string','filename:string'" >> ${t_properties}
+    echo -e "\ndetailed.fields='description:string','filename:string','userSummaryLink:string','properties:string'" >> ${t_properties}
 
     ## 1. Ignore summary graphs
     ## 2. Ignore summarizers
     ## 3. Ignore hostname summary (because it duplicates user summary)
     ## 4. Ignore parameters
     ## 5. Get rid of the path to the thing that generates the report
-    ## 6. Shift position of report name field (from position 2 to position 1) for user summary line and replace userSummary title with more friendly "User Summary" title (so that the user summary line can be processed in step 7) (index-report also replaces userSummary title with "User Summary" title)
-    ## 7. Swap the order of the title, and description, and add quotes, and prefix the directory.
-    ## 8. Number all of the lines with AWK.
+    ## 6. Append two default field values ('' = user summary link, '' = properties (e.g., no user summary link, no properties file)) 
+    ## 7. Swap position of report name field (from position 2 to position 1) for user summary report and replace userSummary title with more friendly "User Summary" title (so that the user summary report can be processed in step 8) (index-report also replaces userSummary title with "User Summary" title) and replace two default field values ('AAA.pdf' = user summary link, 'BBB.properties' = properties)
+    ## 8. Swap the order of the title, and description, and add quotes, and prefix the directory.
+    ## 9. Number all of the lines with AWK.
     grep '\.jasper' "${t_baseDir}/report-files" \
         | sed -e '/SummaryGraph/d' \
         -e '/Summarizer/d' \
         -e '/hNameSummary/d' \
         -e '/:parameter:/d' \
         -e 's|^[^:]*:||' \
-        -e 's|\(userSummary\):\(.*\)|\2:User Summary|' \
-        -e "s|\(.*\):\(.*\)|'\2','${t_key}/\1--${REPORT_TYPE}.pdf'|" \
+        -e "s|\(.*\):\(.*\)|\1:\2::|" \
+        -e "s|\(userSummary\):\(.*\):\(.*\):\(.*\)|\2:User Summary:\2--${REPORT_TYPE}.pdf:${t_propfile}|" \
+        -e "s|\(.*\):\(.*\):\(.*\):\(.*\)|'\2','${t_key}/\1--${REPORT_TYPE}.pdf','\3','\4'|" \
         | awk 'BEGIN { n = 0 }; { print "detailed." n++ "=" $0 }' >> ${t_properties}
 }
 
@@ -305,10 +289,6 @@ function generateUserSummary()
         hcnt=$((hcnt+1))
 
     done < $DIRECTORY_PDF/hname.lst
-
-    ## Now actually generate the user summary PDF
-    local USUMOUTPUT_FILE=`echo ${rep_base}--${REPORT_TYPE}.pdf`
-    ujac-to-pdf "${DIRECTORY_TEMPLATES}/${TEMPLATE_UNAMESUM}" ${t_properties} ${t_key}/${USUMOUTPUT_FILE}
 }
 
 function generateEmail()

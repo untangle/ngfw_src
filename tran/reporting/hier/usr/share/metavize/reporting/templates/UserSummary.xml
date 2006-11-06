@@ -38,7 +38,7 @@
     <table-row>
       <cell>
         <paragraph font="title" halign="left">
-          ${transformName} User Summary
+          ${reportTitle} User Summary
         </paragraph>
       </cell>
     
@@ -134,27 +134,4 @@
       </table-row>
     </table>
   </else>
-
-  <new-page>
-    <header/>
-    <footer/>
-  </new-page>
-  
-  <!--
-  insert each user summary report at the end
-   - unlike summary and detail reports,
-     user summary reports are not explicitly listed in report-files and
-     may not be automatically included with them
-     - the "top" user summary report is listed in report-files and
-       is automatically included with the other reports
-     - the "sub" user summary reports are generated as necessary and
-       are manually included (right now)
-  -->
-  <foreach sequence="${unamesum}" loop-variable="row">
-    <insert-document source="${pdfDirectory + row.filename}" name='${linkPrefix + row.filename}'/>
-  </foreach>
-  <foreach sequence="${hnamesum}" loop-variable="row">
-    <insert-document source="${pdfDirectory + row.filename}" name='${linkPrefix + row.filename}'/>
-  </foreach>
-
 </document>

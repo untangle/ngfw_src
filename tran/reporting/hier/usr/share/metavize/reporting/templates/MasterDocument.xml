@@ -54,7 +54,7 @@
 
       <set-property name="iconOrganization" type="String" value="${row.iconOrganization}"/>
       <set-property name="iconDescription" type="String" value="${row.iconDescription}"/>
-      
+
       <!-- If the row overrides the template, use its template -->
       <if cond="${row.detailedTemplate != ''}">
         <set-property name="template" type="String" value="${row.detailedTemplate}"/>
