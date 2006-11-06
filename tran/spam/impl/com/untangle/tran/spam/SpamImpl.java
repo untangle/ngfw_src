@@ -316,7 +316,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                              getDefaultIndicatorHeaderValue(false),
                              getDefaultNotifySubjectTemplate(true),
                              getDefaultNotifyBodyTemplate(true),
-                             true,
+                             false,
                              15));
 
         zTmpSpamSettings.setSMTPOutbound(
