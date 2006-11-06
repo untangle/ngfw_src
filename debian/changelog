@@ -1,3 +1,9 @@
+untangle-java (0.2.0-968) stable; urgency=low
+
+  * auto build
+
+ -- Aaron Read <amread@bebe.metavize.com>  Mon,  6 Nov 2006 11:48:24 -0800
+
 untangle-java (0.2.0-967) stable; urgency=low
 
   * auto build
