@@ -585,7 +585,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
                     // (UPDATE GUI) tell the user we are about to see the gui
                     SwingUtilities.invokeAndWait( new Runnable(){ public void run (){
-                        statusJProgressBar.setString("Showing EdgeGuard Client...");
+                        statusJProgressBar.setString("Showing Untangle Client...");
                         statusJProgressBar.setValue(100);
                     }});
 

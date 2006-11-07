@@ -26,7 +26,7 @@ public class AboutRegistrationJPanel extends JPanel
     private static final String EXCEPTION_FIRST_NAME_MISSING = "You must fill out your first name.";
     private static final String EXCEPTION_LAST_NAME_MISSING = "You must fill out your last name.";
     private static final String EXCEPTION_EMAIL_MISSING = "You must fill out your email address.";
-    private static final String EXCEPTION_COMPUTER_COUNT_MISSING = "You must fill out the number of computers protected by EdgeGuard.";
+    private static final String EXCEPTION_COMPUTER_COUNT_MISSING = "You must fill out the number of computers protected by Untangle.";
 
     public AboutRegistrationJPanel() {
         initComponents();
@@ -391,7 +391,7 @@ public class AboutRegistrationJPanel extends JPanel
 
                 jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                jLabel16.setText("<html>Number of computers<br>protected by EdgeGuard:</html>");
+                jLabel16.setText("<html>Number of computers<br>protected by Untangle:</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 10;

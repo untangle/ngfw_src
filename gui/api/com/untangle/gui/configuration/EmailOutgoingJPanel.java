@@ -186,7 +186,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 
                 externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Outgoing Email Server (SMTP)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jLabel13.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel13.setText("<html>The Outgoing Email Server is used to send emails from EdgeGuard, such as email reports, etc.  In most cases, automatic settings should work, but if they do not, you should specify the settings manually.</html>");
+                jLabel13.setText("<html>The Outgoing Email Server is used to send emails from Untangle, such as email reports, etc.  In most cases, automatic settings should work, but if they do not, you should specify the settings manually.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -198,7 +198,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 smtpButtonGroup.add(smtpDisabledJRadioButton);
                 smtpDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 smtpDisabledJRadioButton.setText("<html>Send Email Directly</html>");
-                smtpDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
+                smtpDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
                 smtpDisabledJRadioButton.setFocusPainted(false);
                 smtpDisabledJRadioButton.setFocusable(false);
                 smtpDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {

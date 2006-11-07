@@ -154,7 +154,7 @@ public class NetworkPPPOEJPanel extends javax.swing.JPanel
                 pppoeButtonGroup.add(pppoeDisabledJRadioButton);
                 pppoeDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 pppoeDisabledJRadioButton.setText("<html><b>Disable</b>  PPPoE.  (This is the default setting)</html>");
-                pppoeDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
+                pppoeDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
                 pppoeDisabledJRadioButton.setFocusPainted(false);
                 pppoeDisabledJRadioButton.setFocusable(false);
                 pppoeDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {

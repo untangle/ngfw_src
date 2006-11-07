@@ -207,7 +207,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Outside Access", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 externalAdminButtonGroup.add(externalAccessDisabledRadioButton);
                 externalAccessDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                externalAccessDisabledRadioButton.setText("<html><b>Disable</b> access to EdgeGuard outside the local network.  This will prevent any outside communication such as remote administration, remote report viewing, remote quarantine access, etc.</html>");
+                externalAccessDisabledRadioButton.setText("<html><b>Disable</b> access to Untangle outside the local network.  This will prevent any outside communication such as remote administration, remote report viewing, remote quarantine access, etc.</html>");
                 externalAccessDisabledRadioButton.setFocusPainted(false);
                 externalAccessDisabledRadioButton.setFocusable(false);
                 externalAccessDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
@@ -224,7 +224,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 
                 externalAdminButtonGroup.add(externalAccessEnabledRadioButton);
                 externalAccessEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                externalAccessEnabledRadioButton.setText("<html><b>Enable</b> access to EdgeGuard outside the local network, via secure http (https).(This is the default setting)</html>");
+                externalAccessEnabledRadioButton.setText("<html><b>Enable</b> access to Untangle outside the local network, via secure http (https).(This is the default setting)</html>");
                 externalAccessEnabledRadioButton.setFocusPainted(false);
                 externalAccessEnabledRadioButton.setFocusable(false);
                 externalAccessEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
@@ -270,7 +270,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 
                 restrictAdminButtonGroup.add(externalAdminRestrictDisabledRadioButton);
                 externalAdminRestrictDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                externalAdminRestrictDisabledRadioButton.setText("<html><b>Allow</b> any outside IP address to communicate with EdgeGuard.</html>");
+                externalAdminRestrictDisabledRadioButton.setText("<html><b>Allow</b> any outside IP address to communicate with Untangle.</html>");
                 externalAdminRestrictDisabledRadioButton.setFocusPainted(false);
                 externalAdminRestrictDisabledRadioButton.setFocusable(false);
                 externalAdminRestrictDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
@@ -287,7 +287,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 
                 restrictAdminButtonGroup.add(externalAdminRestrictEnabledRadioButton);
                 externalAdminRestrictEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                externalAdminRestrictEnabledRadioButton.setText("<html><b>Restrict</b> the IP address(es) that can communicate with EdgeGuard to:</html>");
+                externalAdminRestrictEnabledRadioButton.setText("<html><b>Restrict</b> the IP address(es) that can communicate with Untangle to:</html>");
                 externalAdminRestrictEnabledRadioButton.setFocusPainted(false);
                 externalAdminRestrictEnabledRadioButton.setFocusable(false);
                 externalAdminRestrictEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {

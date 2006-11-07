@@ -79,7 +79,7 @@ public class InstallDiskJPanel extends MWizardPageJPanel {
 	}
 	else{
 	    MOneButtonJDialog dialog = MOneButtonJDialog.factory(InstallDiskJPanel.this.getTopLevelAncestor(), "Install Wizard",
-								 "You must select a boot disk which you would like to install EdgeGuard onto.",
+								 "You must select a boot disk which you would like to install Untangle onto.",
 								 "Install Wizard Message", "Message");
 	    return false;
 	}
@@ -123,7 +123,7 @@ public class InstallDiskJPanel extends MWizardPageJPanel {
 	    super.setAuxJPanelEnabled(true);
 
 	    // add a basic description
-	    JLabel descriptionJLabel = new JLabel("<html>This table shows the boot disks that were found.  You must choose a boot disk that you would like to install EdgeGuard onto.  <font color=\"FF0000\">Warning, all the data on the boot disk you select will be deleted after this wizard.</font></html>");
+	    JLabel descriptionJLabel = new JLabel("<html>This table shows the boot disks that were found.  You must choose a boot disk that you would like to install Untangle onto.  <font color=\"FF0000\">Warning, all the data on the boot disk you select will be deleted after this wizard.</font></html>");
 	    descriptionJLabel.setFont(new Font("Default", 0, 12));
 	    auxJPanel.setLayout(new BorderLayout());
 	    auxJPanel.add(descriptionJLabel);

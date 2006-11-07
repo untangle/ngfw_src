@@ -145,7 +145,7 @@
                 </Property>
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Automatically&lt;/b&gt; through DHCP. (Use this if unsure)&lt;/html&gt;"/>
-                <Property name="actionCommand" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Use DHCP&lt;/b&gt; to automatically set EdgeGuard&apos;s IP address from the network&apos;s DHCP server.&lt;/html&gt;"/>
+                <Property name="actionCommand" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Use DHCP&lt;/b&gt; to automatically set Untangle&apos;s IP address from the network&apos;s DHCP server.&lt;/html&gt;"/>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
               <Events>
@@ -383,7 +383,7 @@
                 </Property>
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Disable&lt;/b&gt;  PPPoE.  (This is the default setting)&lt;/html&gt;"/>
-                <Property name="actionCommand" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Use DHCP&lt;/b&gt; to automatically set EdgeGuard&apos;s IP address from the network&apos;s DHCP server.&lt;/html&gt;"/>
+                <Property name="actionCommand" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Use DHCP&lt;/b&gt; to automatically set Untangle&apos;s IP address from the network&apos;s DHCP server.&lt;/html&gt;"/>
                 <Property name="focusPainted" type="boolean" value="false"/>
                 <Property name="focusable" type="boolean" value="false"/>
                 <Property name="opaque" type="boolean" value="false"/>

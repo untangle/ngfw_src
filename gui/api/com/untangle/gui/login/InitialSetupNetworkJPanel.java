@@ -31,7 +31,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
     private static final String EXCEPTION_DHCP_GATEWAY = "You have manually specified an invalid \"Default Route\".  Please correct this before proceeding.";
     private static final String EXCEPTION_DHCP_DNS_1 = "You have manually specified an invalid \"Primary DNS\".  Please correct this before proceeding.";
     private static final String EXCEPTION_DHCP_DNS_2 = "You have manually specified an invalid \"Secondary DNS\".  Please correct this before proceeding.";
-    private static final String EXCEPTION_HOSTNAME = "You must specify a dotted hostname for your EdgeGuard.  Please correct this before proceeding.";
+    private static final String EXCEPTION_HOSTNAME = "You must specify a dotted hostname for your Untangle.  Please correct this before proceeding.";
     private static final String EXCEPTION_PPPOE_NAME     = "You must specify a PPPoE Name.";
     private static final String EXCEPTION_PPPOE_PASSWORD = "You must specify a PPPoE Password.";
 
@@ -349,7 +349,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 dhcpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dhcpEnabledRadioButton.setSelected(true);
                 dhcpEnabledRadioButton.setText("<html><b>Automatically</b> through DHCP. (Use this if unsure)</html>");
-                dhcpEnabledRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
+                dhcpEnabledRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
                 dhcpEnabledRadioButton.setOpaque(false);
                 dhcpEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -518,7 +518,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 pppoeDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 pppoeDisabledJRadioButton.setSelected(true);
                 pppoeDisabledJRadioButton.setText("<html><b>Disable</b>  PPPoE.  (This is the default setting)</html>");
-                pppoeDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
+                pppoeDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
                 pppoeDisabledJRadioButton.setFocusPainted(false);
                 pppoeDisabledJRadioButton.setFocusable(false);
                 pppoeDisabledJRadioButton.setOpaque(false);

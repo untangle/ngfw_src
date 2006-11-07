@@ -277,7 +277,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 adButtonGroup.add(adDisabledJRadioButton);
                 adDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 adDisabledJRadioButton.setText("<html><b>Disabled</b></html>");
-                adDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
+                adDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
                 adDisabledJRadioButton.setFocusPainted(false);
                 adDisabledJRadioButton.setFocusable(false);
                 adDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
@@ -537,7 +537,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 serverButtonGroup.add(serverDisabledJRadioButton);
                 serverDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 serverDisabledJRadioButton.setText("<html><b>Disabled</b></html>");
-                serverDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
+                serverDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
                 serverDisabledJRadioButton.setFocusPainted(false);
                 serverDisabledJRadioButton.setFocusable(false);
                 serverDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {

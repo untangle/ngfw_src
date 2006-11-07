@@ -179,7 +179,7 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
 
                 hostnameJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Hostname", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel10.setText("<html>The Hostname is the name that EdgeGuard will be known as on your network.</html>");
+                jLabel10.setText("<html>The Hostname is the name that Untangle will be known as on your network.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -221,7 +221,7 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
                 hostnameJPanel.add(jSeparator4, gridBagConstraints);
 
                 jLabel11.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel11.setText("<html>If your hostname resolves publicly (the name resolves to an IP address from anywhere on the Internet), then EdgeGuard can make use of its hostname when generating emails, etc.  This will make contacting EdgeGuard easier.  (If you enable Dynamic DNS, then your hostname automatically resolves publicly.)</html>");
+                jLabel11.setText("<html>If your hostname resolves publicly (the name resolves to an IP address from anywhere on the Internet), then Untangle can make use of its hostname when generating emails, etc.  This will make contacting Untangle easier.  (If you enable Dynamic DNS, then your hostname automatically resolves publicly.)</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -251,7 +251,7 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
 
                 dynamicDNSJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Dynamic DNS", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jLabel9.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel9.setText("<html> By using a Dynamic DNS service provider, EdgeGuard can have a specific hostname assigned to a dynamically changing public IP address.</html>");
+                jLabel9.setText("<html> By using a Dynamic DNS service provider, Untangle can have a specific hostname assigned to a dynamically changing public IP address.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -263,7 +263,7 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
                 dnsButtonGroup.add(disabledJRadioButton);
                 disabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 disabledJRadioButton.setText("<html><b>Disabled</b></html>");
-                disabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set EdgeGuard's IP address from the network's DHCP server.</html>");
+                disabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
                 disabledJRadioButton.setFocusPainted(false);
                 disabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

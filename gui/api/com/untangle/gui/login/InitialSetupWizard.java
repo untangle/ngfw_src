@@ -27,7 +27,7 @@ public class InitialSetupWizard extends MWizardJDialog {
     private boolean isRegistered = false;
     
     private static final String MESSAGE_DIALOG_TITLE   = "Setup Wizard Warning";
-    private static final String MESSAGE_NOT_REGISTERED = "You have not registered your EdgeGuard.  Please run the Setup Wizard again.";
+    private static final String MESSAGE_NOT_REGISTERED = "You have not registered your Untangle.  Please run the Setup Wizard again.";
     private static final String MESSAGE_NO_PASSWORD    = "You have not set the Admin account password.  <b>The default login/password is: admin/passwd</b>";
 
     // SHARED DATA //

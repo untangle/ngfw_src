@@ -141,7 +141,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 contentJPanel.setLayout(new java.awt.GridBagLayout());
 
                 jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel1.setText("<html>\nYou can backup your current system configuration to Hard Disk for later restoration, in the event that you would like to replace new settings with your current settings.<br>\n<br>\nAfter backing up your current system configuration to Hard Disk, you can then restore that configuration through the <b>Backup and Restore Utilities</b>.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into EdgeGuard when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt. \n</html>");
+                jLabel1.setText("<html>\nYou can backup your current system configuration to Hard Disk for later restoration, in the event that you would like to replace new settings with your current settings.<br>\n<br>\nAfter backing up your current system configuration to Hard Disk, you can then restore that configuration through the <b>Backup and Restore Utilities</b>.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into Untangle when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt. \n</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
@@ -197,7 +197,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 contentJPanel1.setLayout(new java.awt.GridBagLayout());
 
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>\nYou can backup your current system configuration to USB Key for later restoration, in the event that you would like to replace new settings with your current settings.<br>\n<br>\nAfter backing up your current system configuration to USB Key, you can then restore that configuration through the <b>Backup and Restore Utilities</b>.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into EdgeGuard when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt.<br>\n<br>\n<b>Note: You must insert your USB Key into a valid USB port on the back of the EdgeGuard before pressing the button.  You must not remove the USB Key from the USB port until after the process is complete.  The progress bar will inform you when the process is complete.</b> \n</html>");
+                jLabel2.setText("<html>\nYou can backup your current system configuration to USB Key for later restoration, in the event that you would like to replace new settings with your current settings.<br>\n<br>\nAfter backing up your current system configuration to USB Key, you can then restore that configuration through the <b>Backup and Restore Utilities</b>.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into Untangle when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt.<br>\n<br>\n<b>Note: You must insert your USB Key into a valid USB port on the back of the Untangle before pressing the button.  You must not remove the USB Key from the USB port until after the process is complete.  The progress bar will inform you when the process is complete.</b> \n</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
@@ -329,7 +329,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 contentJPanel2.setLayout(new java.awt.GridBagLayout());
 
                 jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel3.setText("<html>\nAfter backing up your system configuration, you can restore that configuration through the <b>Restore Utilities</b> on EdgeGuard once it is done booting.\n<br>\n<br>To access the <b>Restore Utilities</b>, you must have a monitor and keyboard physically plugged into the EdgeGuard, and then right click on the desktop when it is done booting... select \"Advanced\" from the menu... select \"EdgeGuard Recovery\", and proceed from there. \n</html>");
+                jLabel3.setText("<html>\nAfter backing up your system configuration, you can restore that configuration through the <b>Restore Utilities</b> on Untangle once it is done booting.\n<br>\n<br>To access the <b>Restore Utilities</b>, you must have a monitor and keyboard physically plugged into the Untangle, and then right click on the desktop when it is done booting... select \"Advanced\" from the menu... select \"Untangle Recovery\", and proceed from there. \n</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
@@ -647,7 +647,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 		return false;
 	}
 	public String getDescription(){
-	    return "EdgeGuard Backup Files (*" + BACKUP_EXTENSION + ")";
+	    return "Untangle Backup Files (*" + BACKUP_EXTENSION + ")";
 	}
     }
 	

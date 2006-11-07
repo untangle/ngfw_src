@@ -23,7 +23,7 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
     private static final String EXCEPTION_FIRST_NAME_MISSING = "You must fill out your first name.";
     private static final String EXCEPTION_LAST_NAME_MISSING = "You must fill out your last name.";
     private static final String EXCEPTION_EMAIL_MISSING = "You must fill out your email address.";
-    private static final String EXCEPTION_COMPUTER_COUNT_MISSING = "You must fill out the number of computers protected by EdgeGuard.";
+    private static final String EXCEPTION_COMPUTER_COUNT_MISSING = "You must fill out the number of computers protected by Untangle.";
 
     public InitialSetupContactJPanel() {
         initComponents();

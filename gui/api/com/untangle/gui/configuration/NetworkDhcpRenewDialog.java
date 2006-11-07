@@ -27,7 +27,7 @@ final public class NetworkDhcpRenewDialog extends MOneButtonProgressJDialog {
 	super(parentDialog);
         this.setTitle("Renewing DHCP Lease");
         this.labelJLabel.setText("Renewing DHCP Lease");
-        this.messageJLabel.setText("<html><center>You have requested that EdgeGuard contact the network's DHCP<br>server in order to renew its lease on DHCP settings.</center></html>");
+        this.messageJLabel.setText("<html><center>You have requested that Untangle contact the network's DHCP<br>server in order to renew its lease on DHCP settings.</center></html>");
         new DhcpLeaseRenewThread();
         this.setVisible(true);
     }

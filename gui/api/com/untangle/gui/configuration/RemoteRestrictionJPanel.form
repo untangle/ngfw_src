@@ -58,7 +58,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Disable&lt;/b&gt; access to EdgeGuard outside the local network.  This will prevent any outside communication such as remote administration, remote report viewing, remote quarantine access, etc.&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Disable&lt;/b&gt; access to Untangle outside the local network.  This will prevent any outside communication such as remote administration, remote report viewing, remote quarantine access, etc.&lt;/html&gt;"/>
             <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="focusable" type="boolean" value="false"/>
           </Properties>
@@ -82,7 +82,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Enable&lt;/b&gt; access to EdgeGuard outside the local network, via secure http (https).(This is the default settings)&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Enable&lt;/b&gt; access to Untangle outside the local network, via secure http (https).(This is the default settings)&lt;/html&gt;"/>
             <Property name="focusPainted" type="boolean" value="false"/>
             <Property name="focusable" type="boolean" value="false"/>
           </Properties>
@@ -164,7 +164,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Allow&lt;/b&gt; any outside IP address to communicate with EdgeGuard.&lt;/html&gt;"/>
+                <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Allow&lt;/b&gt; any outside IP address to communicate with Untangle.&lt;/html&gt;"/>
                 <Property name="focusPainted" type="boolean" value="false"/>
                 <Property name="focusable" type="boolean" value="false"/>
               </Properties>
@@ -188,7 +188,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Restrict&lt;/b&gt; the IP address(es) that can communicate with EdgeGuard to:&lt;/html&gt;"/>
+                <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Restrict&lt;/b&gt; the IP address(es) that can communicate with Untangle to:&lt;/html&gt;"/>
                 <Property name="focusPainted" type="boolean" value="false"/>
                 <Property name="focusable" type="boolean" value="false"/>
               </Properties>
