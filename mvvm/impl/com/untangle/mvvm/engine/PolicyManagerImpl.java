@@ -209,7 +209,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
                 {
                     public boolean doWork(Session s)
                     {
-                        s.merge(p);
+                        s.saveOrUpdate(p);
                         return true;
                     }
 
@@ -255,7 +255,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
                                 rule.setPolicy(p);
                                 rule.setInbound(inbound);
                                 rule.setDescription(description);
-                                s.merge(rule);
+                                s.saveOrUpdate(rule);
                                 return true;
                             }
 
@@ -282,7 +282,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
                         urs.clear();
                         urs.addAll(rules);
                         userRules = (UserPolicyRule[])rules.toArray(new UserPolicyRule[] { });
-                        s.merge(userRuleSet);
+                        s.saveOrUpdate(userRuleSet);
                         return true;
                     }
 
@@ -476,13 +476,13 @@ class PolicyManagerImpl implements PolicyManagerPriv
                                 if (!foundForward) {
                                     logger.info("Adding new default inbound SystemPolicyRule for ci: " + firstIntf + ", si: " + secondIntf);
                                     SystemPolicyRule newInRule = new SystemPolicyRule(firstIntf, secondIntf, defaultPolicy, true);
-                                    s.merge(newInRule);
+                                    s.saveOrUpdate(newInRule);
                                     goodSys.add(newInRule);
                                 }
                                 if (!foundBackward) {
                                     logger.info("Adding new default outbound SystemPolicyRule for ci: " + secondIntf + ", si: " + firstIntf);
                                     SystemPolicyRule newOutRule = new SystemPolicyRule(secondIntf, firstIntf, defaultPolicy, false);
-                                    s.merge(newOutRule);
+                                    s.saveOrUpdate(newOutRule);
                                     goodSys.add(newOutRule);
                                 }
 
@@ -505,7 +505,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
                         // Get rid of the extra user rules.
                         existingUser.retainAll(goodUser);
                         uprs.setRules(existingUser);
-                        s.merge(uprs);
+                        s.saveOrUpdate(uprs);
 
                         // Finally, get rid of the extra system ones.
                         existingSys.removeAll(goodSys);
@@ -518,6 +518,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
                         userRuleSet = uprs;
                         userRules = (UserPolicyRule[]) existingUser.toArray(new UserPolicyRule[] { });
                         sysRules = (SystemPolicyRule[]) goodSys.toArray(new SystemPolicyRule[] { });
+
                         return true;
                     }
 
