@@ -148,7 +148,7 @@ public class UpgradeProcessJPanel extends JPanel
                 actionJPanel.setLayout(new java.awt.GridBagLayout());
 
                 upgradeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Upgrade_EdgeGuard_130x17.png")));
+                upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Upgrade_Untangle_130x17.png")));
                 upgradeJButton.setDoubleBuffered(true);
                 upgradeJButton.setFocusPainted(false);
                 upgradeJButton.setFocusable(false);
