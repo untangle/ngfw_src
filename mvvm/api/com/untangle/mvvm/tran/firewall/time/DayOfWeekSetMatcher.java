@@ -71,7 +71,7 @@ public final class DayOfWeekSetMatcher extends DayOfWeekDBMatcher
 
         for ( String dayOfWeek  : dayOfWeekSet ) {
             if ( value.length() != 0 ) value += " " + DayOfWeekMatcherConstants.MARKER_SEPERATOR + " ";
-            value += value;
+            value += dayOfWeek;
         }
 
         dayOfWeekSet = Collections.unmodifiableSet( dayOfWeekSet );
