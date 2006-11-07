@@ -145,7 +145,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 
                 contentJPanel.setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>How would you like to use your EdgeGuard?</html>");
+                jLabel2.setText("<html>How would you like to use Untangle?</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -176,7 +176,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                 contentJPanel.add(natEnabledJRadioButton, gridBagConstraints);
 
                 questionJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                questionJLabel.setText("What is EdgeGuard's address on the internal network?");
+                questionJLabel.setText("What is Untangle's address on the internal network?");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;

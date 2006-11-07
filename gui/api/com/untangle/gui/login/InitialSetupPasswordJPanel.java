@@ -204,7 +204,7 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
                 contentJPanel.add(jSeparator1, gridBagConstraints);
 
                 jLabel6.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel6.setText("<html>Please choose the timezone your EdgeGuard is operating in.<br>This is necessary for report generation and logging purposes.</html>");
+                jLabel6.setText("<html>Please choose the timezone Untangle is operating in.<br>This is necessary for report generation and logging purposes.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

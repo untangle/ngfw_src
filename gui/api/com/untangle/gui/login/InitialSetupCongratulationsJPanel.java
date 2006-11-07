@@ -63,7 +63,7 @@ public class InitialSetupCongratulationsJPanel extends MWizardPageJPanel {
                 contentJPanel.setOpaque(false);
                 jLabel1.setFont(new java.awt.Font("Dialog", 1, 18));
                 jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                jLabel1.setText("<html>Congratulations!<br>Your EdgeGuard is configured.</html>");
+                jLabel1.setText("<html>Congratulations!<br>Untangle is configured.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -84,7 +84,7 @@ public class InitialSetupCongratulationsJPanel extends MWizardPageJPanel {
                 contentJPanel.add(messageJLabel, gridBagConstraints);
 
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>Use your newly created \"admin\" account with the<br>password you have chosen to login to EdgeGuard.</html>");
+                jLabel2.setText("<html>Use your newly created \"admin\" account with the<br>password you have chosen to login to Untangle.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 2;

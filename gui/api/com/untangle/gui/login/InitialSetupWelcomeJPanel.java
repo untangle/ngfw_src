@@ -47,7 +47,7 @@ public class InitialSetupWelcomeJPanel extends MWizardPageJPanel {
                 contentJPanel.add(jLabel1, gridBagConstraints);
 
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>This wizard will help guide you through<br> initial setup and configuration of your EdgeGuard.</html>");
+                jLabel2.setText("<html>This wizard will help guide you through<br> initial setup and configuration of Untangle.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;

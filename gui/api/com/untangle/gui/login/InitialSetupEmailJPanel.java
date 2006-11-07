@@ -193,7 +193,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 
                 contentJPanel.setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>Which email server (SMTP) should EdgeGuard use to send emails, reports, etc?<br><b>This information is optional.</b></html>");
+                jLabel2.setText("<html>Which email server (SMTP) should Untangle use to send emails, reports, etc?<br><b>This information is optional.</b></html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -205,7 +205,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 smtpButtonGroup.add(smtpDisabledJRadioButton);
                 smtpDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 smtpDisabledJRadioButton.setText("<html>Send Email Directly (default)</html>");
-                smtpDisabledJRadioButton.setActionCommand("<html>Send Email Directly (default)</html>");
+                smtpDisabledJRadioButton.setActionCommand("<html>Send Email Directly</html>");
                 smtpDisabledJRadioButton.setFocusPainted(false);
                 smtpDisabledJRadioButton.setFocusable(false);
                 smtpDisabledJRadioButton.setOpaque(false);
@@ -224,7 +224,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 
                 smtpButtonGroup.add(smtpEnabledJRadioButton);
                 smtpEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                smtpEnabledJRadioButton.setText("<html>Send Email using the specified SMTP Server</html>");
+                smtpEnabledJRadioButton.setText("<html><Send Email using the specified SMTP Server</html>");
                 smtpEnabledJRadioButton.setFocusPainted(false);
                 smtpEnabledJRadioButton.setFocusable(false);
                 smtpEnabledJRadioButton.setOpaque(false);
@@ -345,7 +345,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 contentJPanel.add(jSeparator1, gridBagConstraints);
 
                 jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel3.setText("<html>Please choose the \"From Address\" of emails sent from EdgeGuard.</html>");
+                jLabel3.setText("<html>Please choose the \"From Address\" of emails sent from Untangle.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

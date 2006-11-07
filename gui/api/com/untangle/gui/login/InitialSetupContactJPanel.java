@@ -175,7 +175,7 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
 
                 contentJPanel.setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>Please take a moment to register yourself as the operator of the EdgeGuard.<br>  <b>This information is required.</b></html>");
+                jLabel2.setText("<html>Please take a moment to register yourself as the operator of Untangle.<br>  <b>This information is required.</b></html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -364,7 +364,7 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
 
                 jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                jLabel16.setText("<html>Number of computers<br>protected by EdgeGuard:</html>");
+                jLabel16.setText("<html>Number of computers<br>protected by Untangle:</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 10;

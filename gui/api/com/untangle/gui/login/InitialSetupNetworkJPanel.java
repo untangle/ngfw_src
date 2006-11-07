@@ -280,7 +280,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 
                 hostJPanel.setOpaque(false);
                 jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel4.setText("<html>Please specify EdgeGuard's hostname on your network.</html>");
+                jLabel4.setText("<html>Please specify Untangle's hostname on your network.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -336,7 +336,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 
                 dhcpJPanel.setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>How should EdgeGuard will get its external network settings?</html>");
+                jLabel2.setText("<html>How should Untangle get its external network settings?</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

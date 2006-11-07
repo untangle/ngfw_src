@@ -48,7 +48,7 @@ public class InitialSetupConnectivityJPanel extends MWizardPageJPanel {
 
                 contentJPanel.setOpaque(false);
                 jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel10.setText("<html>The <b>Connectivity Test is optional</b>, but it can tell you if EdgeGuard can contact DNS and the internet with the settings you have just saved.</html>");
+                jLabel10.setText("<html>The <b>Connectivity Test is optional</b>, but it can tell you if Untangle can contact DNS and the internet with the settings you have just saved.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
