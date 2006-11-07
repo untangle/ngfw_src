@@ -106,9 +106,9 @@ needToRestart() {
     MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
     
     if [ $MEM -lt 1000000 ] ; then
-      VSZ=85000
+      VSZ=850000
     else
-      VSZ=95000
+      VSZ=950000
     fi
 
     cheaphigh=`head -3 /proc/$pid/maps | tail -1 | awk '{ high=split($1, arr, "-"); print arr[2]; }'`
