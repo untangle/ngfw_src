@@ -116,7 +116,14 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         ProtoFilterSettings settings = new ProtoFilterSettings(this.getTid());
         logger.info("INIT: Importing patterns...");
         TreeMap factoryPatterns = LoadPatterns.getPatterns(); /* Global List of Patterns */
-        settings.setPatterns(new ArrayList(factoryPatterns.values()));
+        // Turn on the Instant Messenger ones so it does something by default:
+        ArrayList pats = new ArrayList(factoryPatterns.values());
+        for (Object pat : pats) {
+            ProtoFilterPattern pfp = (ProtoFilterPattern)pat;
+            if (pfp.category.equalsIgnoreCase("Instant Messenger"))
+                pfp.setLog(true);
+        }
+        settings.setPatterns(pats);
         setProtoFilterSettings(settings);
     }
 
