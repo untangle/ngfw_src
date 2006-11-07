@@ -35,6 +35,8 @@ class SyslogManagerImpl implements SyslogManager
     private final ThreadLocal<SyslogSender> syslogSenders;
     private final Logger logger = Logger.getLogger(getClass());
 
+    private long nextTimeMS = 0;
+
     private DatagramSocket syslogSocket;
 
     private volatile int facility;
@@ -120,8 +122,6 @@ class SyslogManagerImpl implements SyslogManager
 
     private class SyslogSender
     {
-        private long nextTimeMS = 0;
-
         private final SyslogBuilderImpl sb = new SyslogBuilderImpl();
 
         // public methods -----------------------------------------------------
