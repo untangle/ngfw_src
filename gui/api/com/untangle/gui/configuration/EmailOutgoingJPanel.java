@@ -11,7 +11,7 @@
 
 package com.untangle.gui.configuration;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.transfrm.*;
 import com.untangle.gui.util.*;
 import com.untangle.mvvm.snmp.*;
 import com.untangle.mvvm.security.*;
@@ -186,7 +186,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 
                 externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Outgoing Email Server (SMTP)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jLabel13.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel13.setText("<html>The Outgoing Email Server is used to send emails afrom EdgeGuard, such as email reports, etc.  In most cases, automatic settings should work, but if they do not, you should specify the settings manually.</html>");
+                jLabel13.setText("<html>The Outgoing Email Server is used to send emails from EdgeGuard, such as email reports, etc.  In most cases, automatic settings should work, but if they do not, you should specify the settings manually.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
