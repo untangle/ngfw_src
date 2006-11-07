@@ -11,15 +11,15 @@
 
 package com.untangle.gui.configuration;
 
-import com.untangle.gui.transfrm.*;
-import com.untangle.gui.util.*;
-import com.untangle.mvvm.snmp.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
-
 import java.awt.*;
 import javax.swing.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.mvvm.*;
+import com.untangle.mvvm.security.*;
+import com.untangle.mvvm.snmp.*;
+import com.untangle.mvvm.tran.*;
 
 public class EmailOutgoingJPanel extends javax.swing.JPanel
     implements Savable<EmailCompoundSettings>, Refreshable<EmailCompoundSettings> {
@@ -28,75 +28,75 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
     private static final String EXCEPTION_LOGIN_MISSING = "A \"Login\" must be specified if a \"Password\" is specified.";
     private static final String EXCEPTION_HOSTNAME_MISSING = "A \"Hostanme\" must be specified if \"Login\" or \"Password\" are specified.";
     private static final String EXCEPTION_ADDRESS_MISSING = "A \"From Address\" must be specified.";
-    
+
     public EmailOutgoingJPanel() {
         initComponents();
-	Util.setPortView(portJSpinner, 25);
+    Util.setPortView(portJSpinner, 25);
     }
 
     public void doSave(EmailCompoundSettings emailCompoundSettings, boolean validateOnly) throws Exception {
 
-	// ENABLED //
-	boolean useMxRecords = smtpDisabledJRadioButton.isSelected();
+    // ENABLED //
+    boolean useMxRecords = smtpDisabledJRadioButton.isSelected();
 
-	// HOSTNAME ///////
-	String host = hostJTextField.getText();
+    // HOSTNAME ///////
+    String host = hostJTextField.getText();
 
-	// PORT //////
-	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
-	int port = 0;
-	try{ portJSpinner.commitEdit(); }
-	catch(Exception e){ 
-	    ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
-	    throw new Exception(Util.EXCEPTION_PORT_RANGE);
-	}
+    // PORT //////
+    ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+    int port = 0;
+    try{ portJSpinner.commitEdit(); }
+    catch(Exception e){
+        ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+        throw new Exception(Util.EXCEPTION_PORT_RANGE);
+    }
         port = (Integer) portJSpinner.getValue();
 
-	// SMTP LOGIN /////
-	String login = smtpLoginJTextField.getText();
+    // SMTP LOGIN /////
+    String login = smtpLoginJTextField.getText();
 
-	// SMTP PASSWORD /////
-	String password = new String(smtpPasswordJPasswordField.getPassword());
+    // SMTP PASSWORD /////
+    String password = new String(smtpPasswordJPasswordField.getPassword());
 
         // FROM ADDRESS /////
         String address = addressJTextField.getText();
 
-	// CHECK THAT BOTH PASSWORD AND LOGIN ARE FILLED OR UNFILLED /////
-	smtpPasswordJPasswordField.setBackground( Color.WHITE );
-	smtpLoginJTextField.setBackground( Color.WHITE );
-	if( (login.length() > 0) && (password.length() == 0) ){
-	    smtpPasswordJPasswordField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-	    throw new Exception(EXCEPTION_PASSWORD_MISSING);
-	}
-	else if( (login.length() == 0) && (password.length() > 0) ){
-	    smtpLoginJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-	    throw new Exception(EXCEPTION_LOGIN_MISSING);
-	}
+    // CHECK THAT BOTH PASSWORD AND LOGIN ARE FILLED OR UNFILLED /////
+    smtpPasswordJPasswordField.setBackground( Color.WHITE );
+    smtpLoginJTextField.setBackground( Color.WHITE );
+    if( (login.length() > 0) && (password.length() == 0) ){
+        smtpPasswordJPasswordField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+        throw new Exception(EXCEPTION_PASSWORD_MISSING);
+    }
+    else if( (login.length() == 0) && (password.length() > 0) ){
+        smtpLoginJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+        throw new Exception(EXCEPTION_LOGIN_MISSING);
+    }
 
-	// CHECK THAT IF EITHER LOGIN OR PASSWORD ARE FILLED, A HOSTNAME IS GIVEN
-	hostJTextField.setBackground( Color.WHITE );
-	if( (login.length() > 0) && (password.length() > 0) && (host.length() == 0) ){
-	    hostJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-	    throw new Exception(EXCEPTION_HOSTNAME_MISSING);
-	}
+    // CHECK THAT IF EITHER LOGIN OR PASSWORD ARE FILLED, A HOSTNAME IS GIVEN
+    hostJTextField.setBackground( Color.WHITE );
+    if( (login.length() > 0) && (password.length() > 0) && (host.length() == 0) ){
+        hostJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+        throw new Exception(EXCEPTION_HOSTNAME_MISSING);
+    }
 
-	// CHECK THAT A FROM ADDRESS IS SUPPLIED
-	addressJTextField.setBackground( Color.WHITE );
-	if( address.length() == 0 ){
-	    addressJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-	    throw new Exception(EXCEPTION_ADDRESS_MISSING);
-	}
+    // CHECK THAT A FROM ADDRESS IS SUPPLIED
+    addressJTextField.setBackground( Color.WHITE );
+    if( address.length() == 0 ){
+        addressJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+        throw new Exception(EXCEPTION_ADDRESS_MISSING);
+    }
 
-	// SAVE SETTINGS ////////////
-	if( !validateOnly ){
+    // SAVE SETTINGS ////////////
+    if( !validateOnly ){
             MailSettings mailSettings = emailCompoundSettings.getMailSettings();
-	    mailSettings.setUseMxRecords( useMxRecords );
-	    if( !useMxRecords ){
-		mailSettings.setSmtpHost( host );
-		mailSettings.setSmtpPort( port );
-		mailSettings.setAuthUser( login );
-		mailSettings.setAuthPass( password );
-	    }
+        mailSettings.setUseMxRecords( useMxRecords );
+        if( !useMxRecords ){
+        mailSettings.setSmtpHost( host );
+        mailSettings.setSmtpPort( port );
+        mailSettings.setAuthUser( login );
+        mailSettings.setAuthPass( password );
+        }
             mailSettings.setFromAddress( address );
         }
 
@@ -110,47 +110,47 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
     private String addressCurrent;
 
     public void doRefresh(EmailCompoundSettings emailCompoundSettings){
-	MailSettings mailSettings = emailCompoundSettings.getMailSettings();
+    MailSettings mailSettings = emailCompoundSettings.getMailSettings();
 
-	// ENABLED //
-	useMxRecordsCurrent = mailSettings.isUseMxRecords();
-	setMxRecordsEnabledDependency( useMxRecordsCurrent );
-	if( useMxRecordsCurrent )
-	    smtpDisabledJRadioButton.setSelected( true );
-	else
-	    smtpEnabledJRadioButton.setSelected( true );	
-	
-	// HOST /////
-	hostCurrent = mailSettings.getSmtpHost();
-	hostJTextField.setText( hostCurrent );
-	hostJTextField.setBackground( Color.WHITE );
+    // ENABLED //
+    useMxRecordsCurrent = mailSettings.isUseMxRecords();
+    setMxRecordsEnabledDependency( useMxRecordsCurrent );
+    if( useMxRecordsCurrent )
+        smtpDisabledJRadioButton.setSelected( true );
+    else
+        smtpEnabledJRadioButton.setSelected( true );
 
-	// PORT /////
-	portCurrent = mailSettings.getSmtpPort();
-	portJSpinner.setValue( portCurrent );
-	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(portCurrent));
-	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+    // HOST /////
+    hostCurrent = mailSettings.getSmtpHost();
+    hostJTextField.setText( hostCurrent );
+    hostJTextField.setBackground( Color.WHITE );
 
-	// LOGIN //////
-	loginCurrent = mailSettings.getAuthUser();
-	smtpLoginJTextField.setText( loginCurrent );
-	smtpLoginJTextField.setBackground( Color.WHITE );
+    // PORT /////
+    portCurrent = mailSettings.getSmtpPort();
+    portJSpinner.setValue( portCurrent );
+    ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(portCurrent));
+    ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
 
-	// PASSWORD /////
-	passwordCurrent = mailSettings.getAuthPass();
-	smtpPasswordJPasswordField.setText( passwordCurrent );
-	smtpPasswordJPasswordField.setBackground( Color.WHITE );
+    // LOGIN //////
+    loginCurrent = mailSettings.getAuthUser();
+    smtpLoginJTextField.setText( loginCurrent );
+    smtpLoginJTextField.setBackground( Color.WHITE );
 
-	// FROM ADDRESS //////
-	addressCurrent = mailSettings.getFromAddress();
-	addressJTextField.setText( addressCurrent );	
-	addressJTextField.setBackground( Color.WHITE );
+    // PASSWORD /////
+    passwordCurrent = mailSettings.getAuthPass();
+    smtpPasswordJPasswordField.setText( passwordCurrent );
+    smtpPasswordJPasswordField.setBackground( Color.WHITE );
 
-	// CONNECTIVITY TEST //
-	connectivityTestJButton.setEnabled(true);
+    // FROM ADDRESS //////
+    addressCurrent = mailSettings.getFromAddress();
+    addressJTextField.setText( addressCurrent );
+    addressJTextField.setBackground( Color.WHITE );
+
+    // CONNECTIVITY TEST //
+    connectivityTestJButton.setEnabled(true);
     }
-    
-    
+
+
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
 
@@ -425,63 +425,63 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 add(externalRemoteJPanel, gridBagConstraints);
 
         }//GEN-END:initComponents
-    
+
     private void smtpEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smtpEnabledJRadioButtonActionPerformed
-	setMxRecordsEnabledDependency(false);
+    setMxRecordsEnabledDependency(false);
     }//GEN-LAST:event_smtpEnabledJRadioButtonActionPerformed
-    
+
     private void smtpDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_smtpDisabledJRadioButtonActionPerformed
-	setMxRecordsEnabledDependency(true);
+    setMxRecordsEnabledDependency(true);
     }//GEN-LAST:event_smtpDisabledJRadioButtonActionPerformed
-    
+
     private void portJSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_portJSpinnerStateChanged
-	connectivityTestJButton.setEnabled(false);
+    connectivityTestJButton.setEnabled(false);
     }//GEN-LAST:event_portJSpinnerStateChanged
-    
+
     private void hostJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_hostJTextFieldCaretUpdate
-	if( !hostJTextField.getText().equals(hostCurrent) )
-	    connectivityTestJButton.setEnabled(false);
+    if( !hostJTextField.getText().equals(hostCurrent) )
+        connectivityTestJButton.setEnabled(false);
     }//GEN-LAST:event_hostJTextFieldCaretUpdate
-    
+
     private void smtpLoginJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_smtpLoginJTextFieldCaretUpdate
-	if( !smtpLoginJTextField.getText().equals(loginCurrent) )
-	    connectivityTestJButton.setEnabled(false);
+    if( !smtpLoginJTextField.getText().equals(loginCurrent) )
+        connectivityTestJButton.setEnabled(false);
     }//GEN-LAST:event_smtpLoginJTextFieldCaretUpdate
-    
+
     private void smtpPasswordJPasswordFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_smtpPasswordJPasswordFieldCaretUpdate
-	if( !(new String(smtpPasswordJPasswordField.getPassword()).equals(passwordCurrent)) )	
-	    connectivityTestJButton.setEnabled(false);
+    if( !(new String(smtpPasswordJPasswordField.getPassword()).equals(passwordCurrent)) )
+        connectivityTestJButton.setEnabled(false);
     }//GEN-LAST:event_smtpPasswordJPasswordFieldCaretUpdate
-    
+
     private void addressJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_addressJTextFieldCaretUpdate
-	if( !addressJTextField.getText().equals(addressCurrent) )
-	    connectivityTestJButton.setEnabled(false);
+    if( !addressJTextField.getText().equals(addressCurrent) )
+        connectivityTestJButton.setEnabled(false);
     }//GEN-LAST:event_addressJTextFieldCaretUpdate
-    
+
     private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
-	if( Util.getIsDemo() )
-	    return;
-	try{
-	    EmailConnectivityTestJDialog connectivityJDialog = new EmailConnectivityTestJDialog((JDialog)this.getTopLevelAncestor());
-	    connectivityJDialog.setVisible(true);
-	}
-	catch(Exception e){
-	    try{ Util.handleExceptionWithRestart("Error showing connectivity tester", e); }
-	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing connectivity tester", f); }
-	}
-    }//GEN-LAST:event_connectivityTestJButtonActionPerformed
-    
-    private void setMxRecordsEnabledDependency(boolean enabled){
-	hostJTextField.setEnabled( !enabled );
-	hostJLabel.setEnabled( !enabled );
-	portJSpinner.setEnabled( !enabled );
-	portJLabel.setEnabled( !enabled );
-	smtpLoginJTextField.setEnabled( !enabled );
-	smtpLoginJLabel.setEnabled( !enabled );
-	smtpPasswordJPasswordField.setEnabled( !enabled );
-	smtpPasswordJLabel.setEnabled( !enabled );
+    if( Util.getIsDemo() )
+        return;
+    try{
+        EmailConnectivityTestJDialog connectivityJDialog = new EmailConnectivityTestJDialog((JDialog)this.getTopLevelAncestor());
+        connectivityJDialog.setVisible(true);
     }
-    
+    catch(Exception e){
+        try{ Util.handleExceptionWithRestart("Error showing connectivity tester", e); }
+        catch(Exception f){ Util.handleExceptionNoRestart("Error showing connectivity tester", f); }
+    }
+    }//GEN-LAST:event_connectivityTestJButtonActionPerformed
+
+    private void setMxRecordsEnabledDependency(boolean enabled){
+    hostJTextField.setEnabled( !enabled );
+    hostJLabel.setEnabled( !enabled );
+    portJSpinner.setEnabled( !enabled );
+    portJLabel.setEnabled( !enabled );
+    smtpLoginJTextField.setEnabled( !enabled );
+    smtpLoginJLabel.setEnabled( !enabled );
+    smtpPasswordJPasswordField.setEnabled( !enabled );
+    smtpPasswordJLabel.setEnabled( !enabled );
+    }
+
         // Variables declaration - do not modify//GEN-BEGIN:variables
         public javax.swing.JTextField addressJTextField;
         private javax.swing.JButton connectivityTestJButton;
@@ -506,6 +506,6 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
         private javax.swing.JLabel smtpPasswordJLabel;
         private javax.swing.JPasswordField smtpPasswordJPasswordField;
         // End of variables declaration//GEN-END:variables
-    
+
 
 }

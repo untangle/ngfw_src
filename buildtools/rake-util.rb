@@ -3,21 +3,6 @@
 require "tempfile"
 require "ftools"
 
-$DevelBuild = true
-ARGV.each do |arg|
-  if "pkgs" == arg then
-    $DevelBuild = false
-  elsif arg =~ /release_?(.+)?/
-    # XXX release the hoonds!
-    releaseName = $1 || ENV["USER"]
-    $DevelBuild = false
-
-    task arg.to_sym => :pkgs do
-      Kernel.system('./buildtools/release.sh', 'all', releaseName)
-    end
-  end
-end
-
 ## This is overly complicated
 class DebugLevel
   include Comparable
