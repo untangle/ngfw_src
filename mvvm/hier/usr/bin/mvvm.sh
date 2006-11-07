@@ -181,6 +181,7 @@ while true; do
     restartServiceIfNeeded clamav-freshclam /var/run/clamd/freshclam.pid
     restartServiceIfNeeded clamav-daemon /var/run/clamd/clamd.pid
     restartServiceIfNeeded spamassassin /var/run/spamd.pid
+    restartServiceIfNeeded slapd /var/run/slapd/slapd.pid
 
     $MVVM_LAUNCH $* >>$MVVM_CONSOLE_LOG 2>&1 &
 
