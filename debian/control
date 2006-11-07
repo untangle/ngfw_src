@@ -328,7 +328,7 @@ Description: Untangle Web Content Control
 Package: hauri-transform
 Architecture: any
 Depends: mvvm, virus-base, hauri-mv, http-casing, ftp-casing, mail-casing
-XB-Display-Name: Hauri Virus Blocker
+XB-Display-Name: Dual Virus Blocker
 XB-View-Position: 60
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwY
@@ -435,8 +435,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  bo4dB1m4/4mJCZqZmTkOure3Rw3Moe3tbdrf36epqamhgXK/DDo/P08LCws0NzfXelcoFJTJ
  t7a2iKH5xJlHJgYQTXoFZcjFxUUlDK3e8ZE4m35tbY0cx1GAw4BMUgKhGBh4DPkrH9WzEs1O
  4vuVlZXPTaVhwzLg7OwsLS0t0fLyMq2vryvO/wQYAP5qirM6mBOTAAAAAElFTkSuQmCC
-Description: Untangle Hauri Virus Blocker
- The Untangle Hauri Virus Blocker.
+Description: Untangle Dual Virus Blocker
+ The Untangle Dual Virus Blocker.
 
 Package: kav-transform
 Architecture: any
@@ -926,7 +926,7 @@ Description: Untangle Firewall
 Package: spamassassin-transform
 Architecture: any
 Depends: mvvm, spam-base, spamc-mv, mail-casing
-XB-Display-Name: SpamGuard
+XB-Display-Name: Spam Blocker
 XB-View-Position: 15
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
