@@ -419,6 +419,13 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
             bc = new BlacklistCategory("proxy", "Anonymous Surfing", "Anonymous Web Surfing");
             settings.addBlacklistCategory(bc);
         }
+        if (curCategories.size() < 14) {
+            /*
+             * First time or upgrade from 4.0 to 4.1
+             */
+            BlacklistCategory bc = new BlacklistCategory("dating", "Dating", "Online Dating");
+            settings.addBlacklistCategory(bc);
+        }
     }
 
     private static synchronized void deployWebAppIfRequired(Logger logger) {
