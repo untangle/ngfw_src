@@ -120,7 +120,7 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
         ArrayList pats = new ArrayList(factoryPatterns.values());
         for (Object pat : pats) {
             ProtoFilterPattern pfp = (ProtoFilterPattern)pat;
-            if (pfp.category.equalsIgnoreCase("Instant Messenger"))
+            if (pfp.getCategory().equalsIgnoreCase("Instant Messenger"))
                 pfp.setLog(true);
         }
         settings.setPatterns(pats);
