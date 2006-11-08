@@ -159,6 +159,9 @@ static netcap_intf_info_t* _get_intf_info  ( netcap_intf_db_t* db, char* name );
  */
 static void _empty_garbage       ( void* arg );
 
+/* return 1 if this interface should be ignored */
+static int _is_ignore_interface( char* name );
+
 /**
  *
  */
@@ -487,8 +490,7 @@ static int _update_intf_info( void )
                 continue;
             }
 
-            if (( strncmp( in->name.s, "sit",   3 ) == 0 )  ||
-                ( strncmp( in->name.s, "dummy", 5 ) == 0 )) {
+            if ( _is_ignore_interface( in->name.s ) == 1 ) {
                 debug( 10, "INTERFACE: skipping %s\n", in->name.s );
                 continue;
             }
@@ -702,7 +704,9 @@ static int _get_interface_list       ( _intf_index_name_t* intf_array, int size 
         while (( dir_entry = readdir( interface_directory )) != NULL ) {
             /* Ignore the . and .. directories */
             if (( strncmp( dir_entry->d_name, ".", sizeof( "." ) + 1 ) == 0 ) ||
-                ( strncmp( dir_entry->d_name, "..", sizeof( ".." ) + 1 ) == 0 )) {
+                ( strncmp( dir_entry->d_name, "..", sizeof( ".." ) + 1 ) == 0 ) ||
+                ( dir_entry->d_type != DT_DIR ) || 
+                ( _is_ignore_interface( dir_entry->d_name ) == 1 )) {
                 continue;
             }
 
@@ -716,7 +720,6 @@ static int _get_interface_list       ( _intf_index_name_t* intf_array, int size 
             }
 
             if ( sysfs_read_attribute( attribute ) < 0 ) return perrlog( "sysfs_read_attribute" );
-
 
             /* Convert the value to an int, (assuming no errors) */
             ifindex = atoi( attribute->value );
@@ -847,6 +850,24 @@ static netcap_intf_info_t* _get_intf_info( netcap_intf_db_t* db, char* name )
     }
 
     return intf_info;
+}
+
+static int _is_ignore_interface( char* intf_name )
+{
+    if (( strncmp( intf_name, "sit",   3 ) == 0 ) ||
+        ( strncmp( intf_name, "dummy", 5 ) == 0 ) ||
+        ( strncmp( intf_name, "bc", 2 ) == 0 ) ||
+        ( strncmp( intf_name, "bond", 4 ) == 0 ) ||
+        ( strncmp( intf_name, "yam", 3 ) == 0 ) ||
+        ( strncmp( intf_name, "scc", 3 ) == 0 ) ||
+        ( strncmp( intf_name, "shaper", 6 ) == 0 ) ||
+        ( strncmp( intf_name, "sdla", 4 ) == 0 ) ||
+        ( strncmp( intf_name, "eql", 3 ) == 0 )) {
+        debug( 10, "INTERFACE: skipping %s\n", intf_name );
+        return 1;
+    }
+    
+    return 0;
 }
 
 static void _empty_garbage       ( void* arg )
