@@ -13,6 +13,10 @@ package com.untangle.mvvm.tran.firewall.ip;
 
 import java.net.InetAddress;
 
+import java.util.List;
+
+import com.untangle.mvvm.networking.IPNetwork;
+
 import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.ParseException;
 
@@ -76,6 +80,11 @@ public class IPMatcherFactory
             IPLocalMatcher.getInstance().setAddress( primaryAddress );
             IPAllPublicMatcher.getInstance().setAddresses( addressArray );
         }
+    }
+
+    public final void setInternalNetworks( List<IPNetwork> networkList )
+    {
+        IPInternalMatcher.getInternalMatcher().setInternalNetworks( networkList );
     }
 
     public final IPDBMatcher getAllMatcher()

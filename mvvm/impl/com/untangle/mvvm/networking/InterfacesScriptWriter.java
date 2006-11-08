@@ -170,27 +170,32 @@ class InterfacesScriptWriter extends ScriptWriter
 
         /* Add the primary address */
         if ( space.getIsDhcpEnabled()) {
-            /* This jibberish guarantees that if the device doesn't come up, it still
-             * gets an address */
-            String flags = "";
-
-            /* If this is not the primary space, then the gateway and
-             * /etc/resolv.conf should not be updated. */
-            /* XXXX Presently not supported, I believe dhclient only works
-             * with one call for all of them */
-            // if ( !isFirst ) flags = DHCP_FLAG_ADDRESS_ONLY;
-
-            String command = "up ";
-
-            if ( isBridge ) {
-                /* Give some time for the bridge to come alive */
-                command += "sleep 5;  ";
+            /* only output the DHCP stuff if pppoe is disabled */
+            if ( !NetworkManagerImpl.getInstance().getPPPoEManager().getExternalSettings().isLive()) {
+                /* This jibberish guarantees that if the device doesn't come up, it still
+                 * gets an address */
+                String flags = "";
+                
+                /* If this is not the primary space, then the gateway and
+                 * /etc/resolv.conf should not be updated. */
+                /* XXXX Presently not supported, I believe dhclient only works
+                 * with one call for all of them */
+                // if ( !isFirst ) flags = DHCP_FLAG_ADDRESS_ONLY;
+                
+                String command = "up ";
+                
+                if ( isBridge ) {
+                    /* Give some time for the bridge to come alive */
+                    command += "sleep 5;  ";
+                }
+                
+                command += " dhclient " + flags + " " + name;
+                
+                appendCommands( command );
+                appendCommands( "up ifconfig " + name + " mtu " + mtu );
+            } else {
+                logger.debug( "ignoring dhcp because pppoe is enabled" );
             }
-
-            command += " dhclient " + flags + " " + name;
-
-            appendCommands( command );
-            appendCommands( "up ifconfig " + name + " mtu " + mtu );
         } else {
             primaryAddress = space.getPrimaryAddress();
             appendCommands( "up ifconfig " + name + " " + primaryAddress.getNetwork() +

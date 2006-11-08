@@ -13,6 +13,11 @@ package com.untangle.mvvm.tran.firewall.ip;
 
 import java.net.InetAddress;
 
+import java.util.List;
+import java.util.LinkedList;
+
+import com.untangle.mvvm.networking.IPNetwork;
+
 import com.untangle.mvvm.tran.IPaddr;
 
 import com.untangle.mvvm.tran.ParseException;
@@ -24,8 +29,8 @@ public final class IPInternalMatcher implements IPMatcher
     private static final String MARKER_INTERNAL = "internal";
     private static final String MARKER_EXTERNAL = "external";
     
-    private static final IPMatcher MATCHER_INTERNAL = new IPInternalMatcher( true );
-    private static final IPMatcher MATCHER_EXTERNAL = new IPInternalMatcher( false );
+    private static final IPInternalMatcher MATCHER_INTERNAL = new IPInternalMatcher( true );
+    private static final IPInternalMatcher MATCHER_EXTERNAL = new IPInternalMatcher( false );
     
     private static IPMatcher matcher = IPSimpleMatcher.getNilMatcher();
 
@@ -55,7 +60,7 @@ public final class IPInternalMatcher implements IPMatcher
         return (( this.isInternal ) ? MARKER_INTERNAL : MARKER_EXTERNAL );
     }
     
-    public synchronized void setAddress( InetAddress internalNetwork, InetAddress internalSubnet )
+    public synchronized void setInternalNetwork( InetAddress internalNetwork, InetAddress internalSubnet )
     {
         if (( internalNetwork == null ) || ( internalSubnet == null )) {
             matcher = IPSimpleMatcher.getNilMatcher();
@@ -64,12 +69,49 @@ public final class IPInternalMatcher implements IPMatcher
         }
     }
 
-    public static IPMatcher getInternalMatcher()
+    
+    public synchronized void setInternalNetworks( List<IPNetwork> networkList )
+    {
+        switch ( networkList.size()) {
+        case 0:
+            this.matcher = IPSimpleMatcher.getNilMatcher();
+            break;
+
+        case 1: {
+            IPNetwork network = networkList.get( 0 );
+            setInternalNetwork( network.getNetwork().getAddr(), network.getNetmask().getAddr());
+            break;
+        }
+            
+        default:
+            final List<IPMatcher> matcherList = new LinkedList<IPMatcher>();
+            for ( IPNetwork network : networkList ) {
+                matcherList.add( IPSubnetMatcher.makeInstance( network.getNetwork(), network.getNetmask()));
+            }
+            
+            this.matcher = new IPMatcher() {
+                    public boolean isMatch( InetAddress address ) {
+                        /* iterate all of the matchers and check if any of them match */
+                        for ( IPMatcher matcher : matcherList ) {
+                            if ( matcher.isMatch( address )) return true;
+                        }
+                        /* otherwise return false */
+                        return false;
+                    }
+
+                    public String toDatabaseString() {
+                        return "never will i ever";
+                    }
+                };
+        }
+    }
+
+    public static IPInternalMatcher getInternalMatcher()
     {
         return MATCHER_INTERNAL;
     }
 
-    public static IPMatcher getExternalMatcher()
+    public static IPInternalMatcher getExternalMatcher()
     {
         return MATCHER_EXTERNAL;
     }

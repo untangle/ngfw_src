@@ -30,6 +30,7 @@ import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.NetworkManager;
 import com.untangle.mvvm.NetworkingConfiguration;
 import com.untangle.mvvm.ArgonException;
+import com.untangle.mvvm.networking.internal.InterfaceInternal;
 import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.untangle.mvvm.networking.internal.RemoteInternalSettings;
@@ -1241,6 +1242,21 @@ public class NetworkManagerImpl implements LocalNetworkManager
             logger.debug( "Setting public address array to: " + Arrays.toString( addressArray ));
 
             ipmf.setLocalAddresses( primaryAddress, addressArray );
+
+            /* Set the IP address(es) for the private matcher */
+            NetworkSpaceInternal internal = primary;
+            boolean isFound = false;
+            for ( InterfaceInternal intf : settings.getInterfaceList()) {
+                if ( intf.getArgonIntf().getArgon() == IntfConstants.INTERNAL_INTF ) {
+                    internal = intf.getNetworkSpace();
+                    isFound = true;
+                    break;
+                }
+            }
+            
+            if ( !isFound ) logger.warn( "unable to find internal interface, using primary interface" );
+            
+            ipmf.setInternalNetworks( internal.getNetworkList());
         }
     }
 
