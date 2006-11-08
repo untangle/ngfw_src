@@ -29,24 +29,13 @@
     </table-row>
   </table>
 
-  <table class="bordered" halign="center" widths="10,10,62,18" width="90" leading="0">
+  <table class="bordered" halign="center" widths="10,72,18" width="90" leading="0">
     <foreach sequence="${reports}" loop-variable="row">
       <!-- Toggle the colors back and forth -->
       <toggle-property name="mainColor" type="String" a="eeeeee" b="dddddd"/>
       <toggle-property name="linkColor" type="String" a="e4e4e4" b="d4d4d4"/>
-
-      <!-- Get the icon for the organization, use the default if necessary -->
-      <set-property name="iconOrganization" type="String" value="${defaultOrganizationIcon}"/>
-      <if cond='${row.iconOrganization != ""}'>
-        <set-property name="iconOrganization" type="String" value="${row.iconOrganization}"/>
-      </if>
       
       <table-row padding-bottom="7" padding-top="2" leading="0" valign="middle">
-        <!-- Cell for the organization icon -->
-        <cell bgcolor="${mainColor}" halign="center">
-          <image source="${imageDirectory + iconOrganization}" height="30"/>
-        </cell>
-
         <!-- Cell for the description icon -->
         <cell bgcolor="${mainColor}" halign="center">
           <image source="${imageDirectory + row.iconDescription}" height="30"/>

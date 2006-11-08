@@ -43,10 +43,7 @@
     </footer-part>
   </footer>
   
-  <table halign="center" widths="9.5,9.5,41,40" width="90">
-    <cell>
-      <image source="${imageDirectory + iconOrganization}"/>
-    </cell>
+  <table halign="center" widths="9.5,50.5,40" width="90">
     <cell>
       <image source="${imageDirectory + iconDescription}"/>
     </cell>
