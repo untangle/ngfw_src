@@ -548,14 +548,12 @@ cat >> $main_index <<EOF
                 <tr><td colspan="2" bgcolor="cccccc">
                   <table>
                   <tr>
-                  <td style="padding: 0px 4px 0px 3px"><img src="$web_base/$rel_dir/images/IconOrg42x42.png" width="42" height="42"/></td>
 EOF
 
-if [ "$tran_name" != "Untangle Platform" ]; then
-    cat >> $main_index <<EOF
+cat >> $main_index <<EOF
                   <td style="padding: 0px 4px 0px 0px"><img src="$web_base/$rel_dir/images/IconDesc42x42.png" width="42" height="42"/></td>
 EOF
-fi
+
 
 cat >> $main_index <<EOF
                   <td><h3><b>$tran_name Report</b></h3></td>
