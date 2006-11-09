@@ -14,13 +14,13 @@ package com.untangle.tran.boxbackup;
 import java.util.Date;
 import java.util.Iterator;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.untangle.mvvm.logging.LogEvent;
 import com.untangle.mvvm.logging.SyslogBuilder;
 import com.untangle.mvvm.logging.SyslogPriority;
-import javax.persistence.Entity;
 
 /**
  * ...name says it all...
@@ -59,6 +59,7 @@ public class BoxBackupEvent extends LogEvent {
      * Detail.  Only really interesting if
      * things fail.
      */
+    @Column(name="description")
     public String getDetail() {
         return m_detail;
     }
