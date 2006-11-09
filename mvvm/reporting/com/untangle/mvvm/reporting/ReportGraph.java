@@ -74,7 +74,7 @@ public abstract class ReportGraph
         try {
             Class.forName("org.postgresql.Driver");
             con = DriverManager.getConnection("jdbc:postgresql://localhost/mvvm",
-                                              "untangle", "foo");
+                                              "postgres", "foo");
             JFreeChart chart = doInternal(con, ourScriptlet);
             ourScriptlet.setVariableValue("Traffic", new JCommonDrawableRenderer(chart));
         } catch (SQLException x) {

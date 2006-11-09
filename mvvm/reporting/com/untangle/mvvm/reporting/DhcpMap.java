@@ -144,7 +144,7 @@ public class DhcpMap
             BasicConfigurator.configure();
 
             Class.forName( "org.postgresql.Driver" );
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost/mvvm", "untangle", "foo");
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost/mvvm", "postgres", "foo");
 
             /* Regenerate address map */
             INSTANCE.generateAddressMap(conn, Timestamp.valueOf(args[0]), Timestamp.valueOf(args[1]));

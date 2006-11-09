@@ -91,7 +91,7 @@ REPORT_DIR=@MVVM_WEB@/reports
 # roll up logs, deleting any more than 31 days old (and thus unreportable  on)
 @USR_BIN@/rollup-logs $midnight 31
 
-echo "VACUUM ANALYZE;" | psql -U untangle mvvm
+echo "VACUUM ANALYZE;" | psql -U postgres mvvm
 
 # END CLEANUP SECTION
 ################################################################################
@@ -120,18 +120,18 @@ if [ $is_reporting_enabled == 'true' ]; then
         # Build pre-joined reports tables
         while read dayname daybegin dayend; do
             for c in @MVVM_SCHEMA@/*/report-add-day.sql; do
-                psql -U untangle -v dayname="$dayname" -v daybegin="'$daybegin'" -v dayend="'$dayend'" -f $c mvvm
+                psql -U postgres -v dayname="$dayname" -v daybegin="'$daybegin'" -v dayend="'$dayend'" -f $c mvvm
             done
-            psql -U untangle -v dayname="'$dayname'" -v daybegin="'$daybegin'" mvvm <<EOF
+            psql -U postgres -v dayname="'$dayname'" -v daybegin="'$daybegin'" mvvm <<EOF
 insert into reports.report_data_days values (:dayname, DATE :daybegin);
 EOF
         done < $REPORT_DIR/current/daystoadd
 
-        echo "ANALYZE;" | psql -U untangle mvvm
+        echo "ANALYZE;" | psql -U postgres mvvm
 
         # create files w/ username and hostname lists for usersummary-reports
-        psql -qt -U untangle mvvm -c "SELECT DISTINCT username FROM mvvm_lookup_evt;" -o $REPORT_DIR/current/uname.lst
-        psql -qt -U untangle mvvm -c "SELECT DISTINCT COALESCE(NULLIF(name, ''), HOST(addr)) FROM merged_address_map;" -o $REPORT_DIR/current/hname.lst
+        psql -qt -U postgres mvvm -c "SELECT DISTINCT username FROM mvvm_lookup_evt;" -o $REPORT_DIR/current/uname.lst
+        psql -qt -U postgres mvvm -c "SELECT DISTINCT COALESCE(NULLIF(name, ''), HOST(addr)) FROM merged_address_map;" -o $REPORT_DIR/current/hname.lst
 
         @USR_BIN@/mcli -t 3600 startReports
         exitOnMvvmError $? reporter
@@ -197,7 +197,7 @@ EOF
     fi
 
 # No need for this at the end anymore.
-#    echo "VACUUM ANALYZE;" | psql -U untangle mvvm
+#    echo "VACUUM ANALYZE;" | psql -U postgres mvvm
 else
     echo "reporting is disabled"
 fi

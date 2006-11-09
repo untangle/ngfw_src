@@ -33,7 +33,7 @@ public class DataSourceFactory
             throw new RuntimeException(exn); // won't happen
         }
         dataSource.setJdbcUrl("jdbc:postgresql://localhost/mvvm?charset=unicode");
-        dataSource.setUser("untangle");
+        dataSource.setUser("postgres");
         dataSource.setPassword("foo");
         dataSource.setMaxStatements(180);
         dataSource.setMinPoolSize(5);
