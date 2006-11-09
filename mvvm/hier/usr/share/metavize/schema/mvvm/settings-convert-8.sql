@@ -42,9 +42,9 @@ DROP TABLE settings.policy_tmp;
 
 CREATE TABLE settings.policy_tmp AS
     SELECT rule_id, protocol_matcher, client_ip_matcher, server_ip_matcher,
-         client_port_matcher, server_port_matcher,
-        case client_intf when 0 then 'External' when 1 then 'Internal' when 2 then 'DMZ' when 3 then 'VPN' end as client_intf_matcher,
-        case server_intf when 0 then 'External' when 1 then 'Internal' when 2 then 'DMZ' when 3 then 'VPN' end as server_intf_matcher,
+             client_port_matcher, server_port_matcher,
+        case client_intf when 0 then 'O' when 1 then 'I' when 2 then 'D' when 3 then 'V' end as client_intf_matcher,
+        case server_intf when 0 then 'O' when 1 then 'I' when 2 then 'D' when 3 then 'V' end as server_intf_matcher,
         policy_id, is_inbound, name, category, description, live, alert, log, set_id,
         position, time '00:00:00' as start_time, time '23:59:00' as end_time, 'all'::text as day_of_week_matcher, 'all'::text as user_matcher, false as invert_entire_duration
     FROM settings.user_policy_rule;
