@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.addrbook.AddressBook;
 import com.untangle.mvvm.addrbook.UserEntry;
 import com.untangle.mvvm.portal.PortalLogin;
@@ -47,6 +49,7 @@ public abstract class MaintenenceControlerBase
     extends HttpServlet {
 
     Logger logger = Logger.getLogger(getClass());
+
 
     protected void service(HttpServletRequest req,
                            HttpServletResponse resp)
@@ -80,7 +83,19 @@ public abstract class MaintenenceControlerBase
         try {
             //Attempt to decrypt their token
             if (authTkn.equals("PU")) {
-                account = "amread@untangle.com";
+                PortalLogin pl = (PortalLogin)req.getUserPrincipal();
+                if (null != pl) {
+                    MvvmLocalContext mctx = MvvmContextFactory.context();
+                    AddressBook ab = mctx.appAddressBook();
+                    UserEntry ue = ab.getEntry(pl.getUser());
+                    if (null != ue) {
+                        account = ue.getEmail();
+                    }
+                }
+
+                if (null == account) {
+                    throw new BadTokenException("portal user does not have email");
+                }
             } else {
                 account = quarantine.getAccountFromToken(authTkn);
             }
