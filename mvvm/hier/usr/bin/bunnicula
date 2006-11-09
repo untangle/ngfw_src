@@ -64,9 +64,7 @@ if [ ! -e @MVVM_CONF@/keystore ]; then
 fi
 
 # add user and mvvm database just in case
-su postgres -c "psql -U postgres -c 'ALTER USER metavize RENAME TO untangle' template1" &>/dev/null || true
-su postgres -c "createuser --createdb --no-adduser untangle" 2>/dev/null
-createdb -O untangle -U postgres mvvm 2>/dev/null
+createdb -O postgres -U postgres mvvm 2>/dev/null
 
 # This parameter comes from the MVVM_PARAMS_FILE
 if [ -f /proc/sys/net/ipv4/tcp_window_scaling ] ; then
