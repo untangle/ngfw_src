@@ -144,7 +144,7 @@ public class MailTransformImpl extends AbstractTransform
         LocalApplicationManager lam = lpm.applicationManager();
         quarantineApp = lam.registerApplication("Quarantine",
                                                 "Email Quarantine",
-                                                "Access to email quarantine.",
+                                                "Allows you to access to email quarantine.",
                                                 null, null, 0,
                                                 QUARANTINE_JS_URL);
     }

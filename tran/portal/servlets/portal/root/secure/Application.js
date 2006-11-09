@@ -43,7 +43,12 @@ Application.prototype.getTooltipFunction = function()
 Application.prototype.getTargetExample = function()
 {
     return this._appCode ? this._appCode.targetExample : null;
-}
+};
+
+Application.prototype.isBookmarkable = function()
+{
+    return this._appCode ? (this._appCode.openBookmark != undefined) : false;
+};
 
 Application.prototype.openBookmark = function()
 {

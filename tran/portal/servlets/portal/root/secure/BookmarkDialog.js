@@ -55,7 +55,10 @@ function BookmarkDialogPanel(parent, apps, bm)
 
     this._apps = [];
     for (var i = 0; i < apps.length; i++) {
-        this._apps.push(new DwtSelectOption(apps[i], false, apps[i].description));
+        var app = apps[i];
+        if (app.isBookmarkable()) {
+            this._apps.push(new DwtSelectOption(app, false, app.description));
+        }
     }
 
     this._init();
