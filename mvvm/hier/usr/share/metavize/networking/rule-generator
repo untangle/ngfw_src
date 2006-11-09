@@ -363,6 +363,12 @@ function antisubscribeRules() {
     ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m state -m mark -p ! tcp --mark 0/${MARK_ANTISUB} \
         --state related,established -j MARK --or-mark ${MARK_ANTISUB}
 
+    ## antisubscribe to ping packet with a length of 37(actual 65 because 37 + 8 + 20),
+    ## these are used by the GUI
+    ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p icmp --icmp-type echo-reply  -m length --length 65 \
+        -m mark --mark ${MARK_LOCAL}/$(( ${MARK_LOCAL} | ${MARK_ANTISUB} )) \
+        -j MARK --or-mark ${MARK_ANTISUB}
+
     ## Antisubscribe to localhost
     ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -m mark --mark 0/${MARK_ANTISUB} \
         --source 127.0.0.0/8 --destination 127.0.0.0/8 -j MARK --or-mark ${MARK_ANTISUB}

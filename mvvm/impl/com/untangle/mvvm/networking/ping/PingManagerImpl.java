@@ -47,6 +47,20 @@ public class PingManagerImpl implements PingManager
 
     /* Flag to indicate how long to wait after the last ping */
     private static final String PING_WAIT_FLAG  = "-W";
+
+    /* Flag to indicate that ping packets should be a certain length */
+    private static final String PING_SIZE_FLAG  = "-s";
+
+    /* The size of the ping packets (+20 IP header, +8 ICMP header). */
+    /* logic, windows by default uses 32, linux 64, hopefully this
+     * won't conflict with anything else */
+    private static final int PING_PACKET_SIZE = 37;
+
+    /* Flag for the packet pattern */
+    private static final String PING_PATTERN_FLAG  = "-p";
+
+    /* the word "untangle" in hex */
+    private static final String PING_PATTERN = "756e74616e676c65";
     
     /* Flag to indicate how long to wait after the last ping */
     private static final int PING_WAIT_DEF  = 2;
@@ -142,15 +156,20 @@ public class PingManagerImpl implements PingManager
 
     private Helper go( String addressString, InetAddress address, int count ) throws IOException
     {
-        /* args: ping, -c, count, ip */
-        String args[] = new String[6];
+        /* args: ping, -c, <count>, -s, <size>, -W, <maxwait>, -p, <pattern>, ip */
+        String args[] = new String[10];
 
-        args[0] = PING_COMMAND;
-        args[1] = PING_COUNT_FLAG;
-        args[2] = String.valueOf( count );
-        args[3] = PING_WAIT_FLAG;
-        args[4] = String.valueOf( PING_WAIT_DEF );
-        args[5] = address.getHostAddress();
+        int arg = 0;
+        args[arg++] = PING_COMMAND;
+        args[arg++] = PING_COUNT_FLAG;
+        args[arg++] = String.valueOf( count );
+        args[arg++] = PING_WAIT_FLAG;
+        args[arg++] = String.valueOf( PING_WAIT_DEF );
+        args[arg++] = PING_SIZE_FLAG;
+        args[arg++] = String.valueOf( PING_PACKET_SIZE );
+        args[arg++] = PING_PATTERN_FLAG;
+        args[arg++] = PING_PATTERN;
+        args[arg++] = address.getHostAddress();
 
         Process p = MvvmContextFactory.context().exec( args );
 
