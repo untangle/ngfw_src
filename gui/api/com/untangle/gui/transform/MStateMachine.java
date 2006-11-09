@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -268,7 +268,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                         action = "turned off";
                     MOneButtonJDialog.factory((Window)mTransformJPanel.getTopLevelAncestor(), displayName,
                                               displayName + " could not be " + action + "." +
-                                              "  Please contact Untangle Networks for further support.", displayName + " Warning", "Warning");
+                                              "  Please contact Untangle for further support.", displayName + " Warning", "Warning");
                 }
             }
         }

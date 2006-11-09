@@ -7,7 +7,7 @@
 
   @JSP_PRE_COMPILED_SERVLETS@
 
-  <display-name>Untangle Networks OpenVPN</display-name>
+  <display-name>Untangle OpenVPN</display-name>
 
   <description>
     OpenVPN client download utility

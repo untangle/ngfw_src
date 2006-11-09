@@ -62,7 +62,7 @@ response.setStatus( HttpServletResponse.SC_FORBIDDEN );
             <tr>
               <td valign="middle" width="150">
                 <a href="http://www.untangle.com">
-                  <img src="images/Logo150x96.gif" border="0" alt="Untangle Networks logo"/>
+                  <img src="images/Logo150x96.gif" border="0" alt="Untangle logo"/>
                 </a>
               </td>
 

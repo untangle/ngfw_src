@@ -1,10 +1,10 @@
 <%
 /*
- * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -17,7 +17,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Untangle Networks | Redirect Quarantine Emails for <quarantine:currentAddress/></title>
+  <title>Untangle | Redirect Quarantine Emails for <quarantine:currentAddress/></title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
   <link rel="stylesheet" href="styles/style.css" type="text/css"/>
 </head>
@@ -51,7 +51,7 @@
             <tr>
               <td valign="middle" width="150">
                 <a href="http://www.untangle.com">
-                  <img src="images/Logo150x96.gif" border="0" alt="Untangle Networks logo"/>
+                  <img src="images/Logo150x96.gif" border="0" alt="Untangle logo"/>
                 </a>
               </td>
 
@@ -137,7 +137,7 @@
 
 
         <br/>
-    <center>Powered by Untangle Networks&reg; Platform</center>
+    <center>Powered by Untangle&reg; Platform</center>
 
           <hr size="1" width="100%"/>
         </td>

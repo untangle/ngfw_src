@@ -12,7 +12,7 @@ TransformContext tctx = tman.transformContext(tid);
 Spyware tran = (Spyware)tctx.transform();
 BlockDetails bd = tran.getBlockDetails(nonce);
 
-String header = "Untangle Networks Spyware Blocker";
+String header = "Untangle Spyware Blocker";
 String host = bd.getHost();
 String url = bd.getUrl();
 %>
@@ -21,7 +21,7 @@ String url = bd.getUrl();
   <head>
     <link href="/main.css" rel="stylesheet" type="text/css"/>
 
-<title>Untangle Networks Warning</title>
+<title>Untangle Warning</title>
 <script language="JavaScript">
 nonce = '<%=nonce%>';
 tid = '<%=tidStr%>';
@@ -46,7 +46,7 @@ url = '<%=url%>';
 <tbody>
 <tr>
   <td colspan=1 width="154px">
-<a href="http://www.untangle.com"><img src="/images/Logo150x96.gif" border="0" alt="Untangle Networks logo"/></a>
+<a href="http://www.untangle.com"><img src="/images/Logo150x96.gif" border="0" alt="Untangle logo"/></a>
   </td>
   <td colspan=1 align=left valign=center>
     <span style="font-family: SansSerif; font-size: 18.0px;">
@@ -85,7 +85,7 @@ url = '<%=url%>';
 <td><hr></td>
 </tr>
 <tr>
-<td><address>Untangle Networks Spyware Blocker</address></td>
+<td><address>Untangle Spyware Blocker</address></td>
 </tr>
 </tfoot>
 </table>

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -54,7 +54,7 @@ class VirusHttpHandler extends HttpStateMachine
         + "<p>URI: %s</p>"
         + "<p>Please contact your network administrator</p>"
         + "<HR>"
-        + "<ADDRESS>Untangle Networks Virus Blocker</ADDRESS>"
+        + "<ADDRESS>Untangle Virus Blocker</ADDRESS>"
         + "</BODY></HTML>";
 
     private static final int SCAN_COUNTER  = Transform.GENERIC_0_COUNTER;

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -54,7 +54,7 @@ public class ServerRoutingWizard extends MWizardJDialog {
 
     private void init(MTransformControlsJPanel mTransformControlsJPanel, VpnTransform vpnTransform){
 	this.mTransformControlsJPanel = mTransformControlsJPanel;
-        setTitle("Untangle Networks OpenVPN Server Routing Setup Wizard");
+        setTitle("Untangle OpenVPN Server Routing Setup Wizard");
         addWizardPageJPanel(new ServerRoutingWizardWelcomeJPanel(vpnTransform),         "1. Welcome", false, true);
         addWizardPageJPanel(new ServerRoutingWizardCertificateJPanel(vpnTransform),     "2. Generate Certificate", false, true);
         addWizardPageJPanel(new ServerRoutingWizardGroupsJPanel(vpnTransform),          "3. Add Address Pools", false, true);

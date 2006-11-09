@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -45,12 +45,12 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     // "$SPAMReport:FULL$";
      private static final String OUT_MOD_BODY_TEMPLATE =
          "The attached message from $MIMEMessage:FROM$\r\n" +
-         "was determined by Untangle Networks Spam Blocker to be spam based on a score\r\n" +
+         "was determined by Untangle Spam Blocker to be spam based on a score\r\n" +
          "of $SPAMReport:SCORE$ where anything above $SPAMReport:THRESHOLD$ is spam.\r\n";
 
     private static final String OUT_MOD_BODY_SMTP_TEMPLATE =
          "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
-         "was determined by Untangle Networks Spam Blocker to be spam based on a score\r\n" +
+         "was determined by Untangle Spam Blocker to be spam based on a score\r\n" +
          "of $SPAMReport:SCORE$ where anything above $SPAMReport:THRESHOLD$ is spam.\r\n";
 
     private static final String IN_MOD_SUB_TEMPLATE = OUT_MOD_SUB_TEMPLATE;
@@ -67,7 +67,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     private static final String OUT_NOTIFY_BODY_TEMPLATE =
         "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)" + CRLF +
         "was received by $SMTPTransaction:TO$.  The message was determined" + CRLF +
-        "by Untangle Networks Spam Blocker to be spam based on a score of $SPAMReport:SCORE$ where anything" + CRLF +
+        "by Untangle Spam Blocker to be spam based on a score of $SPAMReport:SCORE$ where anything" + CRLF +
         "above $SPAMReport:THRESHOLD$ is spam.  The details of the report are as follows:" + CRLF + CRLF +
         "$SPAMReport:FULL$";
 

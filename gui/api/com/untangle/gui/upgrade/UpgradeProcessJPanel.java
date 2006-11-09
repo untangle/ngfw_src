@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -238,7 +238,7 @@ public class UpgradeProcessJPanel extends JPanel
                 ((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Upgrade Failure");
                 MOneButtonJDialog.factory(UpgradeProcessJPanel.this.getTopLevelAncestor(), "",
 					  "The upgrade procedure did not finish properly.  " +
-					  "Please contact Untangle Networks technical support.",
+					  "Please contact Untangle technical support.",
 					  "Upgrade Failure Warning", "");
             }
             finally{

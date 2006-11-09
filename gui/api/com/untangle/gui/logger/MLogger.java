@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -357,7 +357,7 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        setTitle("Untangle Networks Logger by Ian");
+        setTitle("Untangle Logger by Ian");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 exitForm(evt);

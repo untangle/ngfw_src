@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -86,7 +86,7 @@ public class MaintenanceSecretJPanel extends javax.swing.JPanel
                 externalRemoteJPanel.setMinimumSize(new java.awt.Dimension(88, 323));
                 externalRemoteJPanel.setPreferredSize(new java.awt.Dimension(730, 323));
                 jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel1.setText("<html><b><font color=\"#ff0000\">Warning: Do not make any changes to the text below unless told to do so explicitly by Untangle Networks Technical Support.</b></font></html>");
+                jLabel1.setText("<html><b><font color=\"#ff0000\">Warning: Do not make any changes to the text below unless told to do so explicitly by Untangle Technical Support.</b></font></html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;

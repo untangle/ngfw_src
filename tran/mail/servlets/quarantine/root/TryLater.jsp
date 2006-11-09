@@ -1,9 +1,9 @@
 <!--
- * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -33,7 +33,7 @@
                         <img src="images/Logo150x96.gif"/>
                       </td>
                       <td class="logotext">
-                        &nbsp;&nbsp;Untangle Networks Platform
+                        &nbsp;&nbsp;Untangle Platform
                       </td>
                     </tr>
                   </table>
@@ -64,7 +64,7 @@
         </TD>
         <td class="smallLogo" height="100%">
           Powered by <br>
-          Untangle Networks Platform
+          Untangle Platform
         </td>
         <TD valign="bottom" align="right">
           <IMG SRC="images/br.gif" WIDTH="20" HEIGHT="20">

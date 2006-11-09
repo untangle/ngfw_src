@@ -17,7 +17,7 @@ if (null == title) {
 }
 String text = pg.getLoginPageText();
 if (null == text) {
-    text = "Welcome to the Untangle Networks Remote Access Portal";
+    text = "Welcome to the Untangle Remote Access Portal";
 }
 %>
 

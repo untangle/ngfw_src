@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -580,7 +580,7 @@ public class RemoteClient
             if (password == null)
                 password = readPassword();
             if (addUser) {
-                users.add(new User(login, password, "[created by Untangle Networks support]", false));
+                users.add(new User(login, password, "[created by Untangle support]", false));
                 mc.adminManager().setAdminSettings(as);
                 System.out.println("Created new user with login: " + login);
             } else {

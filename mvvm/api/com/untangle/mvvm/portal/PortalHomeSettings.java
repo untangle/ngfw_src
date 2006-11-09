@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -33,7 +33,7 @@ public class PortalHomeSettings implements Serializable
     private Long id;
 
     private String homePageTitle = "Remote Access Portal";
-    private String homePageText = "Welcome to the Untangle Networks Remote Access Portal." ;
+    private String homePageText = "Welcome to the Untangle Remote Access Portal." ;
     private String bookmarkTableTitle = "Bookmarks";
     private boolean showExploder = true;
     private boolean showBookmarks = true;

@@ -1,9 +1,9 @@
 ## ######################################################################
-## Copyright (c) 2003-2006 Untangle Networks, Inc.
+## Copyright (c) 2003-2006 Untangle, Inc.
 ## All rights reserved.
 ##
 ## This software is the confidential and proprietary information of
-## Untangle Networks, Inc. ("Confidential Information"). You shall
+## Untangle, Inc. ("Confidential Information"). You shall
 ## not disclose such Confidential Information.
 ##
 ## $Id$
@@ -96,7 +96,7 @@ Where "$record" will be replaced with the "current" record while iterating over 
 ##
 <html>
   <head>
-    <title>Untangle Networks | Quarantine Digest for $user_email</title>
+    <title>Untangle | Quarantine Digest for $user_email</title>
   <style>
 table.outertable {
   background:#FFFFFF;
@@ -529,7 +529,7 @@ hr {
             <tr>
               <td valign="middle" width="150">
                 <a href="http://www.untangle.com">
-                  <img src="$image_root/Logo150x96.gif" border="0" alt="Untangle Networks logo"/>
+                  <img src="$image_root/Logo150x96.gif" border="0" alt="Untangle logo"/>
                 </a>
               </td>
 
@@ -555,7 +555,7 @@ hr {
         <hr size="1" width="100%"/>
 
         <!-- INTRO MESSAGE -->
-          The emails listed below have been quarantined by Untangle Networks Spam Blocker.
+          The emails listed below have been quarantined by Untangle Spam Blocker.
           These emails will be deleted automatically after 20 days.<br><br>
           To release a specific email from the quarantine and deliver the email to your inbox,
           click <code>Release</code>.
@@ -667,7 +667,7 @@ hr {
           #end
 
         <br/>
-    <center>Powered by the Untangle Networks&reg; Platform;</center>
+    <center>Powered by the Untangle&reg; Platform;</center>
 
           <hr size="1" width="100%"/>
         </td>

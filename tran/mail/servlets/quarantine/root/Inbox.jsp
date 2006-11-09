@@ -1,10 +1,10 @@
 <%
 /*
- * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -18,7 +18,7 @@
 <head>
 
 <!-- HEADING -->
-  <title>Untangle Networks | Quarantine Digest for <quarantine:currentAddress/></title>
+  <title>Untangle | Quarantine Digest for <quarantine:currentAddress/></title>
     <script>
       function CheckAll() {
         count = document.form1.elements.length;
@@ -134,7 +134,7 @@
             <tr>
               <td valign="middle" width="150">
                 <a href="http://www.untangle.com">
-                  <img src="images/Logo150x96.gif" border="0" alt="Untangle Networks logo"/>
+                  <img src="images/Logo150x96.gif" border="0" alt="Untangle logo"/>
                 </a>
               </td>
 
@@ -168,7 +168,7 @@
 
       <quarantine:isRemapped includeIfTrue="false">
         <!-- INTRO MESSAGE -->
-        The emails listed below have been quarantined by Untangle Networks Platform.
+        The emails listed below have been quarantined by Untangle Platform.
         These emails will be deleted automatically after 20 days.
         <br><br>
         To release any email from the quarantine and deliver the email to your inbox,
@@ -386,7 +386,7 @@
     </center>
 
         <br/>
-    <center>Powered by Untangle Networks&reg; Platform</center>
+    <center>Powered by Untangle&reg; Platform</center>
 
           <hr size="1" width="100%"/>
         </td>

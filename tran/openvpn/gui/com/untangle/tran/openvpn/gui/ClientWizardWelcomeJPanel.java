@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -41,7 +41,7 @@ public class ClientWizardWelcomeJPanel extends MWizardPageJPanel {
                 setOpaque(false);
                 jLabel1.setFont(new java.awt.Font("Dialog", 1, 18));
                 jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                jLabel1.setText("<html>Welcome to the<br>Untangle Networks OpenVPN Setup Wizard!</html>");
+                jLabel1.setText("<html>Welcome to the<br>Untangle OpenVPN Setup Wizard!</html>");
                 add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, -1, -1));
 
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));

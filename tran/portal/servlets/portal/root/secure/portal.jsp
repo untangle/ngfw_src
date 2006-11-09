@@ -7,7 +7,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-<title>Untangle Networks Portal</title>
+<title>Untangle Portal</title>
 <style type="text/css">
 <!--
 @import url(/AjaxTk/img/dwtimgs.css);

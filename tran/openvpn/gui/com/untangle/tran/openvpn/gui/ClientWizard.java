@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -53,7 +53,7 @@ public class ClientWizard extends MWizardJDialog {
     
     private void init(MTransformControlsJPanel mTransformControlsJPanel, VpnTransform vpnTransform){
 	this.mTransformControlsJPanel = mTransformControlsJPanel;
-        setTitle("Untangle Networks OpenVPN Client Setup Wizard");
+        setTitle("Untangle OpenVPN Client Setup Wizard");
         addWizardPageJPanel(new ClientWizardWelcomeJPanel(vpnTransform), "1. Welcome", false, true);
         addWizardPageJPanel(new ClientWizardServerJPanel(vpnTransform), "2. Download Configuration", false, true);
         addWizardPageJPanel(new ClientWizardCongratulationsJPanel(vpnTransform), "3. Congratulations", false, true);

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -50,7 +50,7 @@ public class BlockTemplate implements Serializable
     private static String BLOCK_TEMPLATE;
 
     private Long id;
-    private String header = "Untangle Networks Content Filter" ;
+    private String header = "Untangle Content Filter" ;
     private String contact = "your network administrator";
 
     // constructor ------------------------------------------------------------

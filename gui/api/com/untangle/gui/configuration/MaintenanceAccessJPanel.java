@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2003-2006 Untangle Networks, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
- * Untangle Networks, Inc. ("Confidential Information"). You shall
+ * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
  * $Id$
@@ -108,7 +108,7 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
                 maintainRemoteJPanel.add(jSeparator2, gridBagConstraints);
 
                 reportJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
-                reportJCheckBox.setText("<html><b>Report</b> any unexpected problems to Untangle Networks.  An email will be sent to Untangle Networks if an unexpected condition occurs.  No information about your network traffic will be transmitted.  (This is disabled by default)</html>");
+                reportJCheckBox.setText("<html><b>Report</b> any unexpected problems to Untangle.  An email will be sent to Untangle if an unexpected condition occurs.  No information about your network traffic will be transmitted.  (This is disabled by default)</html>");
                 reportJCheckBox.setFocusPainted(false);
                 reportJCheckBox.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();

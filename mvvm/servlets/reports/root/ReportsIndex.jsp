@@ -206,7 +206,7 @@ h4 {
             <table width="100%">
               <tr>
               <td width="96" valign="middle">
-                <img src="./images/Logo150x96.gif" alt="Untangle Networks logo" width="150" height="96"/>
+                <img src="./images/Logo150x96.gif" alt="Untangle logo" width="150" height="96"/>
               </td>
               <td style="padding: 0px 0px 0px 10px" class="page_header_title" align="left" valign="middle">
 		Untangle Reports

@@ -114,11 +114,11 @@ if (targetstr == null) {
 %>
 
 <?xml version="1.0" encoding="utf-8"?>
-<!-- JNLP File for Untangle Networks Application -->
+<!-- JNLP File for Untangle Application -->
 <jnlp spec="1.0+" codebase="<%=cb%>" href="<%=href%>">
   <information>
     <title>Remote Desktop Client @ <%=host%>  </title>
-    <vendor>Untangle Networks</vendor>
+    <vendor>Untangle</vendor>
     <homepage href="http://www.untangle.com"/>
     <description>Remote Desktop Client @ <%=host%>  </description>
     <description kind="short">The graphical client for remote desktop access via RDP.</description>
