@@ -112,8 +112,8 @@ function generateSubReports()
         ## Insert the data for each report
         echo "reports.${t}='${t_name}','${t_key}${SUFFIX_PROPERTIES}','${t_template}','${t_detailedTemplate}','${t_iconDesc}','${t_iconOrg}','${LINK_PREFIX}${t_key}','${t_hasDetailed}'" >> ${topLevel}
 
-        ## Create the sub properties
-        generateSubProperties ${t_reportDir} ${t_key} ${t_name}
+        ## Create the sub properties (t_name may contain spaces so quote it)
+        generateSubProperties ${t_reportDir} ${t_key} "${t_name}"
 
         ## Increment the index
         t=$(( t + 1 ))

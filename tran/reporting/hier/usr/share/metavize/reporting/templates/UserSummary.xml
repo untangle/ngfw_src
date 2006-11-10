@@ -6,7 +6,7 @@
 <document size="LETTER" margin-left="25" margin-right="25" margin-top="25" margin-bottom="25">
   <set-property name="linkPrefix"     type="String" value="link-"/>
 
-  <font-def name="title"       family="Helvetica" size="16" style="normal"/>
+  <font-def name="title"       family="Helvetica" size="14" style="normal"/>
   <font-def name="normal"      family="Helvetica" size="12" style="normal"/>
   <font-def name="link"        family="Helvetica" size="12" style="italic"/>
   <font-def name="small"       family="Helvetica" size="9"  style="normal"/>
@@ -34,8 +34,12 @@
     </footer-part>
   </footer>
   
-  <table halign="center" widths="60,40" width="90" spacing-after="20">
+  <table halign="center" widths="10,50,40" width="90" spacing-after="20">
     <table-row>
+      <cell>
+        <image source="${imageDirectory + iconDescription}"/>
+      </cell>
+
       <cell>
         <paragraph font="title" halign="left">
           ${reportTitle} User Summary
