@@ -15,16 +15,8 @@ import com.untangle.gui.transform.*;
 import com.untangle.mvvm.tran.TransformContext;
 import com.untangle.mvvm.tran.TransformDesc;
 
-
-
 public class MTransformJPanel extends com.untangle.gui.transform.MTransformJPanel{
-    
-    
-    
     public MTransformJPanel(TransformContext transformContext, TransformDesc transformDesc) {
         super(transformContext, transformDesc);
     } 
-    
-
-    
 }

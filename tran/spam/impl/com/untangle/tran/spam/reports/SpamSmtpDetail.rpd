@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=SpamSmtpDetail
-REPORT_TITLE=SpamGuard - SMTP Spam Incidents
+REPORT_TITLE=Spam Blocker - SMTP Spam Incidents
 
 EXTRA_PARAM_1.name=spamVendor
 EXTRA_PARAM_1.type=java.lang.String

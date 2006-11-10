@@ -13,7 +13,7 @@ $Id$
 
 <mvvm-transform>
   <transform-desc name="spamassassin-transform"
-                  display-name="SpamGuard"
+                  display-name="Spam Blocker"
                   classname="com.untangle.tran.spamassassin.SpamAssassinTransform"
                   gui-classname="com.untangle.tran.spamassassin.gui.MTransformJPanel"
                   transform-base="spam-base"/>

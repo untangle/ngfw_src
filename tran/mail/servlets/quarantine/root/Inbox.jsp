@@ -168,7 +168,7 @@
 
       <quarantine:isRemapped includeIfTrue="false">
         <!-- INTRO MESSAGE -->
-        The emails listed below have been quarantined by Untangle Platform.
+        The emails listed below have been quarantined by the Untangle Server.
         These emails will be deleted automatically after 20 days.
         <br><br>
         To release any email from the quarantine and deliver the email to your inbox,
@@ -386,7 +386,7 @@
     </center>
 
         <br/>
-    <center>Powered by Untangle&reg; Platform</center>
+    <center>Powered by Untangle&reg; Server</center>
 
           <hr size="1" width="100%"/>
         </td>

@@ -29,7 +29,7 @@ PortalPanel.prototype.constructor = PortalPanel;
 PortalPanel.prototype.setMotd = function(motd)
 {
     this._welcomePanel.getHtmlElement().innerHTML = motd
-    || "Welcome to the Remote Access Portal";
+    || "Welcome to the Untangle Remote Access Portal";
 };
 
 PortalPanel.prototype.showApplicationPanel = function(show)

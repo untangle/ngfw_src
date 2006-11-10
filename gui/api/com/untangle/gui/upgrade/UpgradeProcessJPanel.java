@@ -238,7 +238,7 @@ public class UpgradeProcessJPanel extends JPanel
                 ((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Upgrade Failure");
                 MOneButtonJDialog.factory(UpgradeProcessJPanel.this.getTopLevelAncestor(), "",
 					  "The upgrade procedure did not finish properly.  " +
-					  "Please contact Untangle technical support.",
+					  "Please contact Untangle support.",
 					  "Upgrade Failure Warning", "");
             }
             finally{

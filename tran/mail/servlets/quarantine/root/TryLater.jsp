@@ -33,7 +33,7 @@
                         <img src="images/Logo150x96.gif"/>
                       </td>
                       <td class="logotext">
-                        &nbsp;&nbsp;Untangle Platform
+                        &nbsp;&nbsp;Untangle Server
                       </td>
                     </tr>
                   </table>
@@ -64,7 +64,7 @@
         </TD>
         <td class="smallLogo" height="100%">
           Powered by <br>
-          Untangle Platform
+          Untangle Server
         </td>
         <TD valign="bottom" align="right">
           <IMG SRC="images/br.gif" WIDTH="20" HEIGHT="20">

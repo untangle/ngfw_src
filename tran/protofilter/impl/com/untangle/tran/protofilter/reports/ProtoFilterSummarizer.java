@@ -61,7 +61,7 @@ public class ProtoFilterSummarizer extends BaseSummarizer {
         addEntry("&nbsp;&nbsp;&nbsp;Passed sessions", Util.trimNumber("",logCount - blockCount), Util.percentNumber(logCount-blockCount,logCount));
 
         // XXXX
-        String tranName = "Rogue Protocol Control";
+        String tranName = "Protocol Control";
 
         return summarizeEntries(tranName);
     }

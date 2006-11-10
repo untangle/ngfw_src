@@ -13,7 +13,7 @@ $Id$
 
 <mvvm-transform>
   <transform-desc name="clam-transform"
-                  display-name="Clam AntiVirus Scanner"
+                  display-name="Virus Blocker"
                   classname="com.untangle.tran.clam.ClamTransform"
                   gui-classname="com.untangle.tran.clam.gui.MTransformJPanel"
                   transform-base="virus-base"/>

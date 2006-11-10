@@ -52,14 +52,13 @@ public class SigmaSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
-        addEntry("Detected rogue protocol sessions", Util.trimNumber("",logCount));
+        addEntry("Detected sigma sessions", Util.trimNumber("",logCount));
         addEntry("&nbsp;&nbsp;&nbsp;Blocked sessions", Util.trimNumber("",blockCount));
         addEntry("&nbsp;&nbsp;&nbsp;Passed sessions", Util.trimNumber("",logCount - blockCount));
 
         // XXXX
-        String tranName = "Rogue Protocol Control";
+        String tranName = "Sigma";
 
         return summarizeEntries(tranName);
     }
 }
-

@@ -39,7 +39,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
     private long totalProcessTime = 0l;
 
     public SummaryGraph(){          // out, in, total
-        this("Traffic", true, true, "Clean/Passed", "Rogue Protocols Detected/Blocked", "Total", "Detected Protocols/min.");
+        this("Traffic", true, true, "Clean/Passed", "Detected/Blocked", "Total", "Detected Protocols/min.");
     }
 
     // Produces a single line graph of one series

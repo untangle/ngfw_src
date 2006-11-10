@@ -604,8 +604,6 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 	    }
 	}
     }
-    
-
 
     private class StoreMessageVisitor implements ToolboxMessageVisitor {
         public void visitMackageInstallRequest(MackageInstallRequest req) {
@@ -796,7 +794,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 			    MOneButtonJDialog.factory(Util.getMMainJFrame(), "",						  
 						      "A problem occurred while purchasing:<br>"
 						      + mTransformJButton.getDisplayName()
-						      + "<br>Please try again or contact Untangle for assistance.",
+						      + "<br>Please try again or contact Untangle support for assistance.",
 						      mTransformJButton.getDisplayName() + " Warning", "");
 			}});
 		    }
@@ -1543,9 +1541,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 					  + "<br>Please contact Untangle support.",
 					  "Untangle Store Warning", "");
 	    }
-
         }
     }
+
     private class ToolboxActionListener implements java.awt.event.ActionListener {
         private Policy policy;
         private MTransformJButton mTransformJButton;

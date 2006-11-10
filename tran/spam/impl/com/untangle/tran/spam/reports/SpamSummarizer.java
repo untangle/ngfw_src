@@ -153,7 +153,7 @@ public class SpamSummarizer extends BaseSummarizer {
         addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",popimapScanned-totalSpam), Util.percentNumber(popimapScanned-totalSpam, popimapScanned));
 
         // XXXX
-        String tranName = "SpamGuard";
+        String tranName = "Spam Blocker";
 
         return summarizeEntries(tranName);
     }

@@ -1034,8 +1034,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  BKrSAH7zsCoUU01hotVpyZBWzBOosKrYaJBp4U5Si82nbJpKvekm4RPXjyQ/EqKRY1dQLbrv
  7ecbjiWKg52kQksZPHS58yyBNmiZiJP+/Re/svPTyfv0y81tv46IkqxIuSdiaPf5D4YGWh7D
  zpbjLtD367cmAc5kRUrTokJw339vj/xB7P8FGACNK2N4xeErDQAAAABJRU5ErkJggg==
-Description: Untangle SpamGuard
- The Untangle SpamGuard.
+Description: Untangle Spam Blocker
+ The Untangle Spam Blocker.
 
 Package: clamphish-transform
 Architecture: any

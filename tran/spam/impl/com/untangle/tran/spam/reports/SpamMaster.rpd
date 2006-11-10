@@ -1,6 +1,6 @@
 TEMPLATE=MasterOfFourChildren
 REPORT_NAME=SpamMaster
-REPORT_TITLE=SpamGuard - Summary
+REPORT_TITLE=Spam Blocker - Summary
 EXTRA_PARAM_1.name=spamVendor
 EXTRA_PARAM_1.type=java.lang.String
 EXTRA_PARAM_2.name=reportTitlePrefix

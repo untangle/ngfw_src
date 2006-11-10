@@ -13,7 +13,7 @@ $Id$
 
 <mvvm-transform>
   <transform-desc name="protofilter-transform"
-                  display-name="Rogue Protocol Control"
+                  display-name="Protocol Control"
                   classname="com.untangle.tran.protofilter.ProtoFilterImpl"
                   gui-classname="com.untangle.tran.protofilter.gui.MTransformJPanel"/>
 </mvvm-transform>

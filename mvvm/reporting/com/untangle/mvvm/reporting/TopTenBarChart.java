@@ -11,16 +11,8 @@
 
 package com.untangle.mvvm.reporting;
 
-
 import java.sql.*;
-import java.sql.*;
-import java.sql.*;
-
-
-
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
-
-
 
 public abstract class TopTenBarChart extends ReportGraph
 {

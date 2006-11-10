@@ -2,7 +2,7 @@
 
 <mvvm-transform>
   <transform-desc name="airgap-transform"
-                  display-name="Attack Shield"
+                  display-name="Attack Blocker"
                   classname="com.untangle.tran.airgap.AirgapTransformImpl"
                   gui-classname="com.untangle.tran.airgap.gui.MTransformJPanel"/>
 </mvvm-transform>

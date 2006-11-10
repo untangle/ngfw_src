@@ -311,7 +311,7 @@ ${OUTPUT_FILE}
 EOF
     
     ## Find all of the images that are for the email
-    find "${DIRECTORY_IMAGES}/images" -type f -name 'eml_*.*' -exec basename \{\} \; \
+    find "${DIRECTORY_IMAGES}/images" -type f -name 'Logo150x96.gif' -exec basename \{\} \; \
         | sed "s|\(.*\)|images/\1|" \
         >> ${t_arguments}
 }

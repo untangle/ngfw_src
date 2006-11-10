@@ -434,7 +434,7 @@ EOF
 
 cat >> $main_index <<EOF
                   <tr><td>
-                    &gt; <a href="#Untangle Server">Untangle Server</a>
+                    &gt; <a href="#Untangle Platform">Untangle Platform</a>
                   </td></tr>
 EOF
 
@@ -473,7 +473,7 @@ tran_dir=$1
 ls $tran_dir/name >/dev/null 2>&1 || return
 tran_name=$(cat $tran_dir/name)
 
-if [ "$tran_name" = "Untangle Server" ]; then
+if [ "$tran_name" = "Untangle Platform" ]; then
     return;
 fi
 
@@ -626,12 +626,10 @@ EOF
     cat $rel_dir/sum-monthly.html | cat >> $main_index
     fi
 
-
 cat >>$main_index <<EOF
 </table>
 <!-- END VITAL STATISTICS -->
 EOF
-
 }
 
 
@@ -645,7 +643,7 @@ generate_visual_summary ()
 cat >>$main_index <<EOF
 <!-- VISUAL SUMMARY -->
 <center>
-<img src="$rel_dir/$graph_name--${period}.png" width="600" height="200" alt="Visual Summary may take some additional time to load.  If it does not load, it may not viewable from this email client.  Please use your browser to view reports directly from the Untangle Server."/>
+<img src="$rel_dir/$graph_name--${period}.png" width="600" height="200" alt="Visual Summary may take some additional time to load.  If it does not load, it may not viewable from this email client.  Please use your browser to view reports directly from the Untangle Platform."/>
 </center>
 <!-- END VISUAL SUMMARY -->
 EOF
@@ -653,7 +651,6 @@ EOF
             if [ "$generate_email_index" = true ]; then
                 echo "$rel_dir/$graph_name--${period}.png" >> $mail_reports_arguments
             fi
-
         fi
     done
 }
@@ -686,7 +683,6 @@ cat >>$main_index <<EOF
 <td width="*" align="right" colspan="4"><i>monthly&nbsp;</i></td>
 EOF
     fi
-
 
 cat >>$main_index <<EOF
 </tr>

@@ -13,7 +13,7 @@ $Id$
 
 <mvvm-transform>
   <transform-desc name="hauri-transform"
-                  display-name="Hauri AntiVirus Scanner"
+                  display-name="Dual Virus Blocker"
                   classname="com.untangle.tran.hauri.HauriTransform"
                   gui-classname="com.untangle.tran.hauri.gui.MTransformJPanel"
                   transform-base="virus-base"/>

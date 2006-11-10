@@ -27,7 +27,7 @@ public class PhishSummarizer extends BaseSummarizer {
         // XXX shouldn't have this constant here.
         String spamVendor = (String) extraParams.get("spamVendor");
 
-        logger.info("Phish Vendor: " + spamVendor);
+        logger.info("Identity Theft Blocker Vendor: " + spamVendor);
 
         int smtpScanned = 0;
         int smtpMarked = 0;
@@ -151,7 +151,7 @@ public class PhishSummarizer extends BaseSummarizer {
         totalSpam = popimapMarked + popimapPassed;
         addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",popimapScanned-totalSpam), Util.percentNumber(popimapScanned-totalSpam, popimapScanned));
 
-        String tranName = "PhishNet";
+        String tranName = "Identity Theft Blocker";
 
         return summarizeEntries(tranName);
     }

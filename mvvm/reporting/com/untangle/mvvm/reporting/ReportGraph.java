@@ -62,10 +62,8 @@ public abstract class ReportGraph
     this.extraParams = new HashMap<String,Object>(extraParams); // Make a copy just in case
     }
 
-
     protected ReportGraph()
     {
-
     }
 
     public void doIt(JRDefaultScriptlet ourScriptlet) throws JRScriptletException
