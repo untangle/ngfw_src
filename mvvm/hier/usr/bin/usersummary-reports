@@ -103,13 +103,13 @@ cat > $base_file <<EOF
 </tr>
 <tr valign=top>
   <td><img src="../images/px" style="width: 20px; height: 24px"></td>
-  <td colspan=2 rowspan=9><img src="../images/img_0_0_0" border=0 style="height: 96px"></td>
+  <td colspan=2 rowspan=9><img src="../images/Logo150x96.gif" border=0 style="width: 150px; height: 96px"></td>
   <td colspan=17><img src="../images/px" style="width: 496px; height: 24px"></td>
 </tr>
 <tr valign=top>
   <td><img src="../images/px" style="width: 20px; height: 6px"></td>
   <td><img src="../images/px" style="width: 4px; height: 6px"></td>
-  <td colspan=3 rowspan=2><span style="font-family: SansSerif; font-size: 18.0px;">Untangle</span></td>
+  <td colspan=3 rowspan=2><span style="font-family: SansSerif; font-size: 18.0px;"></span></td>
   <td colspan=13><img src="../images/px" style="width: 382px; height: 6px"></td>
 </tr>
 <tr valign=top>
@@ -131,7 +131,7 @@ cat > $base_file <<EOF
 <tr valign=top>
   <td><img src="../images/px" style="width: 20px; height: 1px"></td>
   <td><img src="../images/px" style="width: 4px; height: 1px"></td>
-  <td colspan=3 rowspan=3><span style="font-family: SansSerif; font-size: 18.0px;">Untangle Reports</span></td>
+  <td colspan=3 rowspan=3><span style="font-family: SansSerif; font-size: 18.0px;"></span></td>
   <td colspan=13><img src="../images/px" style="width: 382px; height: 1px"></td>
 </tr>
 <tr valign=top>
