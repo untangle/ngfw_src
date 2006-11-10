@@ -597,7 +597,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 		    MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
 					      "A problem occurred while removing from the toolbox:<br>"
 					      + mTransformJButton.getDisplayName()
-					      + "<br>Please contact Untangle support.",
+					      + "<br>Please contact Untangle Networks support.",
 					      mTransformJButton.getDisplayName() + " Warning", "");
 		    return;
 		}
@@ -794,7 +794,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 			    MOneButtonJDialog.factory(Util.getMMainJFrame(), "",						  
 						      "A problem occurred while purchasing:<br>"
 						      + mTransformJButton.getDisplayName()
-						      + "<br>Please try again or contact Untangle support for assistance.",
+						      + "<br>Please try again or contact Untangle Networks for assistance.",
 						      mTransformJButton.getDisplayName() + " Warning", "");
 			}});
 		    }
@@ -1604,7 +1604,6 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 		focusMTransformJButton = null;
 	    }
 	    if( focusMTransformJButton == null )
-		System.err.println("--> (warning): " + mTransformJButton.getMackageDesc().getName() );
 
             actionJTabbedPane.setSelectedIndex(1);
             toolboxJScrollPane.getViewport().validate();

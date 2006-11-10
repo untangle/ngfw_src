@@ -62,7 +62,7 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
 
 	    if( !acceptJRadioButton.isSelected() ){
 		if( declineJRadioButton.isSelected() ){
-		    MOneButtonJDialog.factory(topLevelWindow,"","<html>You have declined the Untangle License Agreement.  The setup wizard will now exit.  You may run the setup wizard again later.</html>","Setup Wizard Warning","Warning");
+		    MOneButtonJDialog.factory(topLevelWindow,"","<html>You have declined the Untangle Networks License Agreement.  The setup wizard will now exit.  You may run the setup wizard again later.</html>","Setup Wizard Warning","Warning");
 		    System.exit(0);
 		    return;		
 		}

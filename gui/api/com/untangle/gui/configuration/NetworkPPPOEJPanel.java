@@ -245,7 +245,7 @@ public class NetworkPPPOEJPanel extends javax.swing.JPanel
                 dhcpJPanel.add(jSeparator4, gridBagConstraints);
 
                 optionalJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                optionalJLabel.setText("<html>The <b>Optional Command</b> allows you to specify more PPPoE related options.  This should only be changed if told to do so by an Administrator, ISP, or Untangle.</html>");
+                optionalJLabel.setText("<html>The <b>Optional Command</b> allows you to specify more PPPoE related options.  This should only be changed if told to do so by an Administrator, ISP, or Untangle Technical Support.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

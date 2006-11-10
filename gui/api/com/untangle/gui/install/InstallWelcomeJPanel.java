@@ -36,7 +36,7 @@ public class InstallWelcomeJPanel extends MWizardPageJPanel {
                 contentJPanel.setOpaque(false);
                 jLabel1.setFont(new java.awt.Font("Dialog", 1, 18));
                 jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                jLabel1.setText("<html>Welcome to the<br>Untangle CD Install Wizard!</html>");
+                jLabel1.setText("<html>Welcome to the<br>Untangle Platform CD Install Wizard!</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -46,7 +46,7 @@ public class InstallWelcomeJPanel extends MWizardPageJPanel {
                 contentJPanel.add(jLabel1, gridBagConstraints);
 
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>This wizard will take you step-by-step through<br>\nthe Untangle CD installation process.</html>");
+                jLabel2.setText("<html>This wizard will take you step-by-step through<br>\nthe Untangle Platform CD installation process.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;

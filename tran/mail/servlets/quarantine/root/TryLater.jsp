@@ -64,7 +64,7 @@
         </TD>
         <td class="smallLogo" height="100%">
           Powered by <br>
-          Untangle Server
+          Untangle&reg; Server
         </td>
         <TD valign="bottom" align="right">
           <IMG SRC="images/br.gif" WIDTH="20" HEIGHT="20">

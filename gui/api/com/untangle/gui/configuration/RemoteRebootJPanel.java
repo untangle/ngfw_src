@@ -29,7 +29,7 @@ public class RemoteRebootJPanel extends JPanel implements ActionListener {
 	this.setLayout(new GridBagLayout());
         
         JButton rebootJButton;
-        rebootJButton = new JButton("Reboot Untangle");
+        rebootJButton = new JButton("Reboot");
         rebootJButton.setFocusPainted(false);
         rebootJButton.setFont(new java.awt.Font("Arial", 0, 11));
         rebootJButton.setPreferredSize(new Dimension(225, 25));
@@ -43,7 +43,7 @@ public class RemoteRebootJPanel extends JPanel implements ActionListener {
 	rebootJLabel.setFont(new java.awt.Font("Arial", 0, 11));
 	rebootJLabel.setHorizontalAlignment(SwingConstants.CENTER);
 	rebootJLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-	rebootJLabel.setText("<html><center><b>Warning: </b>Clicking this button will reboot Untangle, temporarily<br>interrupting network activity.</center></html>");
+	rebootJLabel.setText("<html><center><b>Warning: </b>Clicking this button will reboot the Untangle Server, temporarily<br>interrupting network activity.</center></html>");
 	this.add(rebootJLabel, rebootJLabelConstraints);
 
 							    
@@ -53,8 +53,8 @@ public class RemoteRebootJPanel extends JPanel implements ActionListener {
 	if( Util.getIsDemo() )
 	    return;
 	MTwoButtonJDialog warningJDialog = MTwoButtonJDialog.factory((Window)this.getTopLevelAncestor(), "",
-				  "You are about to manually reboot Untangle.  This will interrupt normal network operations" +
-				  " until Untangle is finished automatically restarting.  This may take up to several minutes to complete.",
+				  "You are about to manually reboot.  This will interrupt normal network operations" +
+				  " until the Untangle Server is finished automatically restarting.  This may take up to several minutes to complete.",
 				  "Manual Reboot Warning", "Warning");
 	warningJDialog.setVisible(true);
 	if( warningJDialog.isProceeding() ){
@@ -62,7 +62,7 @@ public class RemoteRebootJPanel extends JPanel implements ActionListener {
 		Util.getMvvmContext().rebootBox();
 	    }
 	    catch(Exception e){
-		Util.handleExceptionNoRestart("Error: Unable to reboot Untangle", e);
+		Util.handleExceptionNoRestart("Error: Unable to reboot Untangle Server", e);
 	    }
 	    Util.exit(0);
 	}

@@ -229,7 +229,7 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
                 dnsJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DNS Override", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jTextArea2.setEditable(false);
                 jTextArea2.setLineWrap(true);
-                jTextArea2.setText("DNS Override allows you to specify up to two IP addresses of DNS servers which you would like to export to your VPN clients.  These addresses will be used instead of Untangle's own DNS settings.  This can be useful if you need to make an Active Directory server available to your VPN clients.");
+                jTextArea2.setText("DNS Override allows you to specify up to two IP addresses of DNS servers which you would like to export to your VPN clients.  These addresses will be used instead of the Untangle Server's own DNS settings.  This can be useful if you need to make an Active Directory server available to your VPN clients.");
                 jTextArea2.setWrapStyleWord(true);
                 jTextArea2.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();

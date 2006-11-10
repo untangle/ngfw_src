@@ -735,7 +735,6 @@ public class MMainJFrame extends javax.swing.JFrame {
         private javax.swing.JPanel mPipelineJPanel;
         private javax.swing.JTabbedPane mTabbedPane;
         private javax.swing.JButton maintenanceJButton;
-        private javax.swing.JButton untangleJButton;
         private javax.swing.JButton networkJButton;
         private javax.swing.JPanel policyToolboxJPanel;
         private javax.swing.JButton remoteJButton;
@@ -747,6 +746,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         private javax.swing.JScrollPane toolboxJScrollPane;
         private javax.swing.JPanel toolboxScrollJPanel;
         private javax.swing.JPanel toolboxSpacerJPanel;
+        private javax.swing.JButton untangleJButton;
         private javax.swing.JButton upgradeJButton;
         private javax.swing.JPanel utilToolboxJPanel;
         // End of variables declaration//GEN-END:variables

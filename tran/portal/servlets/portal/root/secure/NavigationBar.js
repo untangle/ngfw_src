@@ -18,7 +18,7 @@ function NavigationBar(parent)
     var html = [];
     html.push("<table style='padding: 0px 0px 0px 0px' width='100%' border='0' cellpadding='0' cellspacing='0'>");
     html.push("<tr style='height: 48px'>");
-    html.push("<td width='57px'><img src='/images/LogoNoText48x48.gif'></td>");
+    html.push("<td width='57px'><img src='/images/Logo64x48.gif'></td>");
 
     html.push("<td>");
     html.push("<table width='100%' height='100%' border=0>");

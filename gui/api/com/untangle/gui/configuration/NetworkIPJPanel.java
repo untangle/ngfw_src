@@ -232,7 +232,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 
                 dhcpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External IP Settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jLabel11.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel11.setText("<html>The External IP Settings are used to configure Untangle's \"External\" network interface to communicate with the Internet or some other external network.</html>");
+                jLabel11.setText("<html>The External IP Settings are used to configure the \"External\" network interface to communicate with the Internet or some other external network.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -411,7 +411,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 dhcpJPanel.add(jSeparator4, gridBagConstraints);
 
                 jLabel9.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel9.setText("<html><b>Renew DHCP Lease</b> tells Untangle to request new IP settings from the DHCP server.  This button is enabled only if your saved settings specify that External IP Settings are being Automatically Set from the network's DHCP server.</html>");
+                jLabel9.setText("<html><b>Renew DHCP Lease</b> requests a new IP settings from the DHCP server.  This button is enabled only if your saved settings specify that External IP Settings are being Automatically Set from the network's DHCP server.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -441,7 +441,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 dhcpJPanel.add(jSeparator3, gridBagConstraints);
 
                 jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel10.setText("<html><b>Connectivity Test</b> tells you if Untangle can contact DNS and the internet, using your currently saved settings.  If you have made changes to the above settings, you must save them before this button will be enabled.</html>");
+                jLabel10.setText("<html><b>Connectivity Test</b> tells you if the Untangle Server can contact DNS and the internet, using your currently saved settings.  If you have made changes to the above settings, you must save them before this button will be enabled.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

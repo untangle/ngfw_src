@@ -31,7 +31,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
     private static final String EXCEPTION_DHCP_GATEWAY = "You have manually specified an invalid \"Default Route\".  Please correct this before proceeding.";
     private static final String EXCEPTION_DHCP_DNS_1 = "You have manually specified an invalid \"Primary DNS\".  Please correct this before proceeding.";
     private static final String EXCEPTION_DHCP_DNS_2 = "You have manually specified an invalid \"Secondary DNS\".  Please correct this before proceeding.";
-    private static final String EXCEPTION_HOSTNAME = "You must specify a dotted hostname for your Untangle.  Please correct this before proceeding.";
+    private static final String EXCEPTION_HOSTNAME = "You must specify a dotted hostname for your Untangle Server.  Please correct this before proceeding.";
     private static final String EXCEPTION_PPPOE_NAME     = "You must specify a PPPoE Name.";
     private static final String EXCEPTION_PPPOE_PASSWORD = "You must specify a PPPoE Password.";
 
@@ -43,7 +43,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
     }
 
     public void initialFocus(){
-        hostnameJTextField.setText( "edgeguard" + "." + MailSender.DEFAULT_LOCAL_DOMAIN );
+        hostnameJTextField.setText( "untangle" + "." + MailSender.DEFAULT_LOCAL_DOMAIN );
         hostnameJTextField.requestFocus();
     }
 	
@@ -280,7 +280,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 
                 hostJPanel.setOpaque(false);
                 jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel4.setText("<html>Please specify Untangle's hostname on your network.</html>");
+                jLabel4.setText("<html>Please specify the Untangle Server's hostname on your network.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -336,7 +336,7 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 
                 dhcpJPanel.setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>How should Untangle get its external network settings?</html>");
+                jLabel2.setText("<html>How should the Untangle Server get its external network settings?</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

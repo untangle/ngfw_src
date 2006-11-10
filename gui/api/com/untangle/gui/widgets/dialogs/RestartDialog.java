@@ -80,7 +80,7 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
 
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                messageJLabel.setText("<html><center>\nYou must now exit this program.<br>\nYou can log in again after a brief period.<br>\n<font color=\"FF0000\"><b>DO NOT MANUALLY SHUTDOWN OR RESTART EDGEGUARD WHILE IT IS UPGRADING!</b></font>\n</center></html>");
+                messageJLabel.setText("<html><center>\nYou must now exit this program.<br>\nYou can log in again after a brief period.<br>\n<font color=\"FF0000\"><b>DO NOT MANUALLY SHUTDOWN OR RESTART THE UNTANGLE SERVER WHILE IT IS UPGRADING!</b></font>\n</center></html>");
                 messageJLabel.setDoubleBuffered(true);
                 messageJLabel.setPreferredSize(new java.awt.Dimension(400, 45));
                 gridBagConstraints = new java.awt.GridBagConstraints();

@@ -21,7 +21,7 @@ String url = bd.getUrl();
   <head>
     <link href="/main.css" rel="stylesheet" type="text/css"/>
 
-<title>Untangle Warning</title>
+<title>Untangle Spyware Blocker Warning</title>
 <script language="JavaScript">
 nonce = '<%=nonce%>';
 tid = '<%=tidStr%>';

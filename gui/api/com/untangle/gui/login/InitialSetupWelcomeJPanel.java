@@ -37,7 +37,7 @@ public class InitialSetupWelcomeJPanel extends MWizardPageJPanel {
                 contentJPanel.setOpaque(false);
                 jLabel1.setFont(new java.awt.Font("Dialog", 1, 18));
                 jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                jLabel1.setText("<html>Welcome to the<br>Untangle Setup Wizard!</html>");
+                jLabel1.setText("<html>Welcome to the<br>Untangle Server Setup Wizard!</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -47,7 +47,7 @@ public class InitialSetupWelcomeJPanel extends MWizardPageJPanel {
                 contentJPanel.add(jLabel1, gridBagConstraints);
 
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>This wizard will help guide you through<br> initial setup and configuration of Untangle.</html>");
+                jLabel2.setText("<html>This wizard will help guide you through<br> initial setup and configuration of the Untangle Server.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;

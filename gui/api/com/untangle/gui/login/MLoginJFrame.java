@@ -600,7 +600,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                         else
                             securedString = "  |  Connection: http (standard)";
 
-                        mMainJFrame.setTitle( "Untangle " +
+                        mMainJFrame.setTitle( "Untangle Client" +
                                               Version.getVersion() + "  |  Login: " +
                                               loginJTextField.getText() + "  |  Server: " +
                                               Util.getServerCodeBase().getHost() + securedString );

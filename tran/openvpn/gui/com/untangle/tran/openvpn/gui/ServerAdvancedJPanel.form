@@ -137,7 +137,7 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="DNS Override allows you to specify up to two IP addresses of DNS servers which you would like to export to your VPN clients.  These addresses will be used instead of Untangle&apos;s own DNS settings.  This can be useful if you need to make an Active Directory server available to your VPN clients."/>
+            <Property name="text" type="java.lang.String" value="DNS Override allows you to specify up to two IP addresses of DNS servers which you would like to export to your VPN clients.  These addresses will be used instead of the Untangle Server&apos;s own DNS settings.  This can be useful if you need to make an Active Directory server available to your VPN clients."/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>

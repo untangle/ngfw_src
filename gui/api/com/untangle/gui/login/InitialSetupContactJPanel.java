@@ -23,7 +23,7 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
     private static final String EXCEPTION_FIRST_NAME_MISSING = "You must fill out your first name.";
     private static final String EXCEPTION_LAST_NAME_MISSING = "You must fill out your last name.";
     private static final String EXCEPTION_EMAIL_MISSING = "You must fill out your email address.";
-    private static final String EXCEPTION_COMPUTER_COUNT_MISSING = "You must fill out the number of computers protected by Untangle.";
+    private static final String EXCEPTION_COMPUTER_COUNT_MISSING = "You must fill out the number of computers protected by the Untangle Server.";
 
     public InitialSetupContactJPanel() {
         initComponents();
@@ -175,7 +175,7 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
 
                 contentJPanel.setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>Please take a moment to register yourself as the operator of Untangle.<br>  <b>This information is required.</b></html>");
+                jLabel2.setText("<html>Please take a moment to register yourself as the operator of the Untangle Server.<br>  <b>This information is required.</b></html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -364,7 +364,7 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
 
                 jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                jLabel16.setText("<html>Number of computers<br>protected by Untangle:</html>");
+                jLabel16.setText("<html>Number of computers protected<br>by the Untangle Server:</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 10;

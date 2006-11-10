@@ -24,7 +24,7 @@ String url = bd.getUrl().toString();
   <head>
     <link href="/main.css" rel="stylesheet" type="text/css"/>
 
-<title>Untangle Warning</title>
+<title>Untangle Web Content Control Warning</title>
 <script language="JavaScript">
 nonce = '<%=nonce%>';
 tid = '<%=tidStr%>';
