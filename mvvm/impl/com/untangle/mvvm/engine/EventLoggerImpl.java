@@ -37,6 +37,8 @@ import org.hibernate.Session;
 
 class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 {
+    private static final boolean LOGGING_DISABLED;
+
     private static final int QUEUE_SIZE = 10000;
     private static final int BATCH_SIZE = QUEUE_SIZE;
     private static final int DEFAULT_SYNC_TIME = 120000; /* 2 minutes */
@@ -178,6 +180,10 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 
     public void log(E e)
     {
+        if (LOGGING_DISABLED) {
+            return;
+        }
+
         if (null == inputQueue || !inputQueue.offer(new EventDesc(this, e))) {
             logger.warn("dropping logevent: " + e);
         }
@@ -185,6 +191,10 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 
     public void start()
     {
+        if (LOGGING_DISABLED) {
+            return;
+        }
+
         Tid tid = null == transformContext ? null : transformContext.getTid();
         synchronized (WORKERS) {
             Worker w = WORKERS.get(tid);
@@ -463,6 +473,8 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
     // static initialization --------------------------------------------------
 
     static {
+        LOGGING_DISABLED = Boolean.parseBoolean(System.getProperty("mvvm.logging.disabled"));
+
         String p = System.getProperty("mvvm.logging.synctime");
         if (null == p) {
             SYNC_TIME = DEFAULT_SYNC_TIME;
