@@ -263,7 +263,7 @@ class InboxIndexDriver
     }
 
     writeMultilineEntry(pw, summary.getSender());
-    writeMultilineEntry(pw, summary.getSubject());
+    writeMultilineEntry(pw, summary.getSubject()); // write non-truncated value
     writeMultilineEntry(pw, summary.getQuarantineCategory());
     writeMultilineEntry(pw, summary.getQuarantineDetail());
     pw.println(Long.toString(summary.getAttachmentCount()));

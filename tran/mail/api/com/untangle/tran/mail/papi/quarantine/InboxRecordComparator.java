@@ -178,10 +178,10 @@ public final class InboxRecordComparator {
     protected int compareImpl(InboxRecord o1, InboxRecord o2) {
     
       String subject1 = o1.getMailSummary()==null?
-        null:o1.getMailSummary().getSubject();
+        null:o1.getMailSummary().getTruncatedSubject();
         
       String subject2 = o2.getMailSummary()==null?
-        null:o2.getMailSummary().getSubject();
+        null:o2.getMailSummary().getTruncatedSubject();
         
       return subject1==null?
         (subject2==null?0:-1)://Subject1 null

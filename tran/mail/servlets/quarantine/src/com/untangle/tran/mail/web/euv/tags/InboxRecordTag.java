@@ -68,7 +68,7 @@ public final class InboxRecordTag
       return record.getMailSummary().getSender();
     }
     if(name.equals(SUBJECT_PROP)) {
-      return record.getMailSummary().getSubject();
+      return record.getMailSummary().getTruncatedSubject();
     }
     if(name.equals(SCORE_PROP)) {
         return record.getMailSummary().getFormattedQuarantineDetail();

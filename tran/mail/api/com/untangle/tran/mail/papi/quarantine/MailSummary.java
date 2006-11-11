@@ -12,12 +12,15 @@
 package com.untangle.tran.mail.papi.quarantine;
 
 import java.io.Serializable;
+import java.lang.StringBuffer;
 
 /**
  * Summary of a mail within the Quarantine.
  */
 public final class MailSummary
   implements Serializable {
+
+  private static final int SUBJECT_MAX_LENGTH = 50;
 
   private String m_sender;
   private String m_subject;
@@ -64,6 +67,13 @@ public final class MailSummary
   public void setSender(String sender) {
     m_sender = sender;
   }
+  public String getTruncatedSubject() {
+      StringBuffer truncatedSubject = new StringBuffer(m_subject);
+      if (SUBJECT_MAX_LENGTH < truncatedSubject.length()) {
+          truncatedSubject.setLength(SUBJECT_MAX_LENGTH);
+      }
+      return truncatedSubject.toString();
+  }
   public String getSubject() {
     return m_subject;
   }
@@ -109,7 +119,7 @@ public final class MailSummary
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("Sender: ").append(getSender()).
-      append(", Subject: ").append(getSubject()).
+      append(", Subject: ").append(getTruncatedSubject()).
       append(", Cat: ").append(getQuarantineCategory()).
       append(", AttachCount: ").append(getAttachmentCount()).
       append(", Detail: ").append(getQuarantineDetail()).
