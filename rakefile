@@ -88,7 +88,7 @@ archives.each do |n|
 end
 
 file libalpine_so do
-  compilerEnv = CCompilerEnv.new()
+  compilerEnv = CCompilerEnv.new( { "flags" => "-pthread #{CCompilerEnv.defaultDebugFlags}" } )
   archivesFiles = archives.map { |n| Package[n]['archive'].filename }
 
   CBuilder.new(compilerEnv).makeSharedLibrary(archivesFiles, libalpine_so, [],

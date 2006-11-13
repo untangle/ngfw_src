@@ -255,6 +255,24 @@ public class Argon
         activeThreads   = 0;
         Netcap.getInstance().setSessionLimit( this.sessionThreadLimit );
 
+        /* Just create a few threads that sleep forever */
+        /* this will test if java threads are afflicted by the same problem */
+        Runnable runnable = new Runnable() {
+                public void run()
+                {
+                    while ( true ) {
+                        try {
+                            Thread.sleep( 1000 );
+                        } catch ( InterruptedException e ) {
+                            /* ignored, this is test shite */
+                        }
+                    }
+                }
+            };
+        int c = Integer.getInteger( "mvvm.test.numthreads", 0 );
+        System.out.println( "starting: " + c + " test threads." );
+        for (  ; c-- >= 0 ; ) new Thread( runnable ).start();        
+
         /* Initialize the InterfaceOverride table, this is just so the logger doesn't get into the NAT
          * transform context */
         InterfaceOverride.getInstance().clearOverrideList();

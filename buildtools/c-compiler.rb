@@ -48,14 +48,14 @@ class CCompilerEnv
 
     includes = includeDirectories.map{ |d| "-I#{d}" }
     
-    [ defines, warnings, optimizations, includes, flags ].flatten.join( " " )
+    [ flags, defines, warnings, optimizations, includes ].flatten.join( " " )
   end
 
   def linkerFlags( libDirectories, libArray )
     directories = libDirectories.map{ |d| "-L#{d}" }
     libs = libArray.map{ |l| "-l#{l}" }
     
-    [ warnings, optimizations, directories, libs ].flatten.join( " " )
+    [ flags, warnings, optimizations, directories, libs ].flatten.join( " " )
   end
 
   def defines
