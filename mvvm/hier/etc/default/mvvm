@@ -119,12 +119,17 @@ MVVM_ARGS="${MVVM_ARGS} -Dcom.untangle.mvvm.memmonitor.enabled=true"
 # JAVA_HOME=/usr/lib/j2se/1.4/jre
 JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
 
-# THe maximum heap size depends on the memory available
+# The maximum heap/virtual sizes depend on the memory available
 MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
-if [ $MEM -gt 1000000 ] ; then
+if [ $MEM -gt 2000000 ] ; then
+  MAX_HEAP_SIZE=640m
+  MAX_VIRTUAL_SIZE=1500000
+else if [ $MEM -gt 1000000 ] ; then
   MAX_HEAP_SIZE=320m
+  MAX_VIRTUAL_SIZE=950000
 else
-  MAX_HEAP_SIZE=200m  
+  MAX_HEAP_SIZE=200m
+  MAX_VIRTUAL_SIZE=850000
 fi
 
 if [ "x$USE_THROUGHPUT_COLLECTOR" = "xyes" ] ; then

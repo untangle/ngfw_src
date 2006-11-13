@@ -1,6 +1,9 @@
 #! /bin/sh
 # $Id$
 
+# get a bunch of default values
+source /etc/defaults/mvvm
+
 MVVM_CONSOLE_LOG=${MVVM_CONSOLE_LOG:-"@PREFIX@/var/log/mvvm/console.log"}
 MVVM_MVVM_LOG=${MVVM_MVVM_LOG:-"@PREFIX@/var/log/mvvm/mvvm.log"}
 MVVM_GC_LOG=${MVVM_GC_LOG:-"@PREFIX@/var/log/mvvm/gc.log"}
@@ -103,14 +106,6 @@ restartServiceIfNeeded() {
     
 # Return true (0) when we need to reap and restart the mvvm.
 needToRestart() {
-    MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
-    
-    if [ $MEM -lt 1000000 ] ; then
-      VSZ=850000
-    else
-      VSZ=950000
-    fi
-
     cheaphigh=`head -3 /proc/$pid/maps | tail -1 | awk '{ high=split($1, arr, "-"); print arr[2]; }'`
     if [ -z $cheaphigh ]; then
         # not fatal, process has probably just died, which we'll catch soon.
@@ -150,7 +145,7 @@ needToRestart() {
     if [ `date +%H` -eq 1 ]; then
         # VSZ greater than 1.1 gigs reboot
         VIRT="`cat /proc/$pid/status | grep VmSize | awk '{print $2}'`"
-        if [ $VIRT -gt $VSZ ] ; then
+        if [ $VIRT -gt $MAX_VIRTUAL_SIZE ] ; then
             echo "*** Virt Size too high ($VIRT) on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
             return 0;
         fi
