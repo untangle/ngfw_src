@@ -2,7 +2,7 @@
 # $Id$
 
 # get a bunch of default values
-source /etc/defaults/mvvm
+source @PREFIX@/etc/defaults/mvvm
 
 MVVM_CONSOLE_LOG=${MVVM_CONSOLE_LOG:-"@PREFIX@/var/log/mvvm/console.log"}
 MVVM_MVVM_LOG=${MVVM_MVVM_LOG:-"@PREFIX@/var/log/mvvm/mvvm.log"}
@@ -103,7 +103,7 @@ restartServiceIfNeeded() {
     /etc/init.d/$serviceName start
   fi
 }
-    
+
 # Return true (0) when we need to reap and restart the mvvm.
 needToRestart() {
     cheaphigh=`head -3 /proc/$pid/maps | tail -1 | awk '{ high=split($1, arr, "-"); print arr[2]; }'`
@@ -118,10 +118,10 @@ needToRestart() {
                 ;;
             2)
                 # 384Meg < native heap < 640Meg
-	        if [ $MEM -lt 1000000 ] || [ `date +%H` -eq 1 ] ; then
+            if [ $MEM -lt 1000000 ] || [ `date +%H` -eq 1 ] ; then
                     echo "*** bunnicula heap soft limit on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
                     return 0;
-		fi
+        fi
                 ;;
             3 | 4 | 5 | 6 | 7 | 8 | 9)
                 # native heap > 640Meg
