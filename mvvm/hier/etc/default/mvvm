@@ -13,7 +13,7 @@ MVVM_LOGDIR=@PREFIX@/var/log/mvvm
 MVVM_RUNDIR=@PREFIX@/var/run
 MVVM_RESTART_PIDFILE=$MVVM_RUNDIR/mvvm-restart.pid
 MVVM_REBOOT_PIDFILE=$MVVM_RUNDIR/mvvm-reboot.pid
-MVVM_CONSOLE_LOG=$MVVM_LOGDIR/console.log
+MVVM_CONSOLE_LOG=${MVVM_CONSOLE_LOG:-$MVVM_LOGDIR/console.log}
 MVVM_WRAPPER_LOG=$MVVM_LOGDIR/wrapper.log
 MVVM_GC_LOG=$MVVM_LOGDIR/gc.log
 MVVM_CMD=@PREFIX@/usr/bin/mvvm.sh
@@ -124,7 +124,7 @@ MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
 if [ $MEM -gt 2000000 ] ; then
   MAX_HEAP_SIZE=640m
   MAX_VIRTUAL_SIZE=1500000
-else if [ $MEM -gt 1000000 ] ; then
+elif [ $MEM -gt 1000000 ] ; then
   MAX_HEAP_SIZE=320m
   MAX_VIRTUAL_SIZE=950000
 else
