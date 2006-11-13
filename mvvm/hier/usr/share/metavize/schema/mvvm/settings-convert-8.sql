@@ -63,3 +63,7 @@ ALTER TABLE settings.user_policy_rule
 ALTER TABLE settings.user_policy_rule
     ADD CONSTRAINT fk_user_policy_rule_policy
     FOREIGN KEY (policy_id) REFERENCES settings.policy;
+
+UPDATE settings.portal_home_settings
+    SET home_page_text='Welcome to the Untangle Remote Access Portal'
+     WHERE home_page_text like '%Metavize%';
