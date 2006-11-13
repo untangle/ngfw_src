@@ -2,7 +2,7 @@
 # $Id$
 
 # get a bunch of default values
-source @PREFIX@/etc/defaults/mvvm
+source @PREFIX@/etc/default/mvvm
 
 MVVM_CONSOLE_LOG=${MVVM_CONSOLE_LOG:-"@PREFIX@/var/log/mvvm/console.log"}
 MVVM_MVVM_LOG=${MVVM_MVVM_LOG:-"@PREFIX@/var/log/mvvm/mvvm.log"}
