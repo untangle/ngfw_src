@@ -15,7 +15,7 @@
 <head>
 
 <!-- HEADING -->
-  <title>Untangle | Request Quarantine Digest Email</title>
+  <title>Untangle | Invalid Remote Access Portal Email</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
   <link rel="stylesheet" href="styles/style.css" type="text/css"/>
 </head>
@@ -54,7 +54,7 @@
               </td>
 
               <td style="padding: 0px 0px 0px 10px;" class="page_header_title" align="left" valign="middle">
-                Request Quarantine Digest Email
+                Invalid Remote Access Portal Email
               </td>
             </tr>
           </tbody>
@@ -75,9 +75,13 @@
         <hr size="1" width="100%"/>
 
         <!-- INTRO MESSAGE -->
-        You can request that an email message, of your quarantined email messages, be sent to your inbox.
+        Your Remote Access Portal login has been configured without an email address or with an incorrect email address.
         <br/><br/>
-        Please enter your email address into the form below and click <code>Submit</code>.
+        If your company uses Active Directory, please contact your system administrator to configure your Active Directory Server account with your correct email address.
+        <br/>
+        If your company uses Local LDAP Directory, please contact your system administrator to configure your Local LDAP Directory account with your correct email address.
+        <br/>
+        Alternatively, please enter your email address into the form below and click <code>Submit</code>.
         You will receive an email message containing a list of your recent quarantined messages and a link to your quarantined message page.
         When you receive this email message, you can delete or release your quarantined messages from this list or access your quarantined message page from your browser to delete or release your quarantined messages.
         <br/>
@@ -161,6 +165,3 @@
 
 </body>
 </html>
-
-
-

@@ -50,7 +50,6 @@ public abstract class MaintenenceControlerBase
 
     Logger logger = Logger.getLogger(getClass());
 
-
     protected void service(HttpServletRequest req,
                            HttpServletResponse resp)
         throws ServletException, IOException {
@@ -93,8 +92,12 @@ public abstract class MaintenenceControlerBase
                     }
                 }
 
-                if (null == account) {
-                    throw new BadTokenException("portal user does not have email");
+                if (null == account ||
+                    false == account.contains("@") ||
+                    true == account.equalsIgnoreCase("user@localhost")) {
+                    log("[MaintenenceControlerBase] (quarantine access through portal) email address is invalid: " + account);
+                    req.getRequestDispatcher(Constants.INVALID_PORTAL_EMAIL).forward(req, resp);
+                    return;
                 }
             } else {
                 account = quarantine.getAccountFromToken(authTkn);

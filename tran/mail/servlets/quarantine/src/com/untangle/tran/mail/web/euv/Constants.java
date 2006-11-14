@@ -41,6 +41,7 @@ public final class Constants
    * View for requesting a digest email/login
    */
   public static final String REQ_DIGEST_VIEW = "/ReqLogin.jsp";
+  public static final String INVALID_PORTAL_EMAIL = "/InvalidPortalEmail.jsp";
 
   public static final String INBOX_VIEW = "/Inbox.jsp";
 
