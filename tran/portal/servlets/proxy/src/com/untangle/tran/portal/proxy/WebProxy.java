@@ -40,12 +40,14 @@ import com.untangle.mvvm.tran.IPaddr;
 import org.apache.commons.fileupload.MultipartStream;
 import org.apache.commons.fileupload.ParameterParser;
 import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.log4j.Logger;
 import org.htmlparser.Node;
 import org.htmlparser.lexer.Lexer;
@@ -75,6 +77,8 @@ public class WebProxy extends HttpServlet
         mvvmContext = MvvmContextFactory.context();
         portalManager = mvvmContext.portalManager();
         netManager = mvvmContext.networkManager();
+        Protocol p = new Protocol("https", new TrustingSslSocketFactory(), 443);
+        Protocol.registerProtocol("https", p);
         logger = Logger.getLogger(getClass());
     }
 
