@@ -195,6 +195,8 @@ class InterfacesScriptWriter extends ScriptWriter
                 appendCommands( "up ifconfig " + name + " mtu " + mtu );
             } else {
                 logger.debug( "ignoring dhcp because pppoe is enabled" );
+                
+                appendCommands( "up ifconfig " + name + " up " );
             }
         } else {
             primaryAddress = space.getPrimaryAddress();

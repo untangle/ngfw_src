@@ -13,7 +13,7 @@ exec >> @MVVM_LOG@/iptables.log 2>&1
 
 
 ## Run mcli update address
-echo "[DEBUG] `date` running mcli update address"
+echo "[DEBUG] `date` running mcli update address, reason pppoe"
 @USR_BIN@/mcli updateAddress
 
 
