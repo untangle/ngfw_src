@@ -62,7 +62,7 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
         addTableColumn( tableColumnModel,  3,  100, true,  true,  false, false, String.class,     sc.EMPTY_NAME, "first name");
         addTableColumn( tableColumnModel,  4,  100, true,  true,  false, false, String.class,     sc.EMPTY_NAME, "last name");
         addTableColumn( tableColumnModel,  5,  250, true,  true,  false, false, String.class,     "[no email]", "email address");
-        addTableColumn( tableColumnModel,  6,  150, true,  true,  false, false, MPasswordField.class, "aabbccdd", "password");
+        addTableColumn( tableColumnModel,  6,  150, true,  true,  false, false, MPasswordField.class, "", "password");
         //addTableColumn( tableColumnModel,  7,  150, true,  true,  false, false, DirectoryBookmarksButtonRunnable.class, "true", "bookmarks");
         //addTableColumn( tableColumnModel,  7,  150, true,  true,  false, true,  String.class,     sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  7,  10,  false, false, true,  false, UserEntry.class,  null, "");
