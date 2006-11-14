@@ -120,6 +120,8 @@ class RewriteVisitor extends NodeVisitor
                         sb.deleteCharAt(sb.length() - 1);
                     }
                     a.setValue(sb.toString());
+                } else if (name.equalsIgnoreCase("action") && tagName.equalsIgnoreCase("form")) {
+                    a.setValue(rewriter.rewriteUrl(a.getValue()));
                 }
             }
         }

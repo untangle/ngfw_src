@@ -143,7 +143,12 @@ class UrlRewriter
         if (v.startsWith(absPrefix)) {
             return "http://" + host + v.substring(absPrefix.length() - 1);
         } else {
-            return v;
+            absPrefix = HTTPS + localHost + contextBaseProtoHost;
+            if (v.startsWith(absPrefix)) {
+                return "https://" + host + v.substring(absPrefix.length() - 1);
+            } else {
+                return v;
+            }
         }
     }
 
