@@ -152,7 +152,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 	setDhcpEnabledDependency( isDhcpEnabledCurrent );
 
         /* rbs: only enable the dhcp renew button if dhcp is enabled and pppoe is disabled */
-        renewDhcpLeaseJButton.setEnabled( isDhcpEnabledCurrent && !networkConfiguration.getPPPoESettings().isLive());
+        renewDhcpLeaseJButton.setEnabled( isDhcpEnabledCurrent && !networkingConfiguration.getPPPoESettings().isLive());
 	if( isDhcpEnabledCurrent )
             dhcpEnabledRadioButton.setSelected(true);
         else
