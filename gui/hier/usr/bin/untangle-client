@@ -14,10 +14,11 @@ JAVA_HOME=${JAVA_HOME:-/opt/java}
 
 export JAVA_HOME
 
-if [ $# != 1 ] ; then
-    HOST="localhost"
-else
-    HOST="$1"
+HOST=${1:-localhost}
+
+if ps aux -w -w | grep -q -E 'bin/java.+http://'$HOST'/webstart/.+\.jnlp$' ; then
+  echo "Untangle Client already running, aborting..."
+  exit 1
 fi
 
 echo "Initializing Webstart configuration: ${HOME}/.java/.deployment/deployment.properties"
@@ -26,11 +27,14 @@ ${JAVA_HOME}/bin/javaws -updateVersions
 #echo "Attempting to clear Webstart cache"
 #${JAVA_HOME}/bin/javaws -Xclearcache
 
-echo "Webstarting Untangle Client.  Connecting to: http://$HOST/webstart/gui-local.jnlp"
 if [ -f /usr/share/metavize/.cdinstall ] ; then
-  exec ${JAVA_HOME}/bin/javaws -Xnosplash http://$HOST/webstart/gui-local-cd.jnlp
+  jnlpFile=gui-local-cd.jnlp
 else
-  exec ${JAVA_HOME}/bin/javaws -Xnosplash http://$HOST/webstart/gui-local.jnlp
+  jnlpFile=gui-local.jnlp
 fi
 
+webstartURL=http://$HOST/webstart/$jnlpFile
+
+echo "Webstarting Untangle Client.  Connecting to: $webstartURL"
+exec ${JAVA_HOME}/bin/javaws -Xnosplash $webstartURL
 
