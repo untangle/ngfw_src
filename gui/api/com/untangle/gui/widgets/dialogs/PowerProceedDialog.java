@@ -27,7 +27,7 @@ final public class PowerProceedDialog extends MTwoButtonJDialog {
         else{
             cancelJButton.setIcon(Util.getButtonCancelPowerOff());
             proceedJButton.setIcon(Util.getButtonContinuePowerOff());
-            messageJLabel.setText("<html><center>" + applianceName + " is about to be powered off.<br><font color=\"FF0000\">This may halt your network, and disconnect you.</font><br>Untangle will act as a Transparent Bridge.<br><b>Would you like to proceed?<b></center></html>");
+            messageJLabel.setText("<html><center>" + applianceName + " is about to be powered off.<br><font color=\"FF0000\">This may halt your network, and disconnect you.</font><br>Untangle Server will act as a Transparent Bridge.<br><b>Would you like to proceed?<b></center></html>");
         }
         
         this.setVisible(true);
