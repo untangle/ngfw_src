@@ -2,12 +2,6 @@
 
 exec >> @MVVM_LOG@/wrapper.log 2>&1
 
-## nothing to do
-if [ -f /tmp/setup-wmi.exe ]; then 
-    exit 0
-fi
-    
-
 OPENSSL_CMD=openssl
 
 BASE_DIR="@MVVM_HOME@/installers/wmimapper"
@@ -15,6 +9,13 @@ BASE_DIR="@MVVM_HOME@/installers/wmimapper"
 NSIS_SCRIPT="${BASE_DIR}/wmimapper-installer.nsi"
 
 CNF_FILE="${BASE_DIR}/ssl.cnf"
+
+## nothing to do
+OUTPUT_FILE="/tmp/setup-wmi.exe"
+if [ -f "${OUTPUT_FILE}" ] && [ "${OUTPUT_FILE}" -nt "${NSIS_SCRIPT}" ] && 
+    [ "${OUTPUT_FILE}" -nt "${CNF_FILE}" ]; then 
+    exit 0
+fi
 
 KEY_FILE=`mktemp`
 CRT_FILE=`mktemp`

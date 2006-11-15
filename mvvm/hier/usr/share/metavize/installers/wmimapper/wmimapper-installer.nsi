@@ -66,7 +66,10 @@ Name "${PRODUCT_NAME} ${VERSION}"
 
 !define MUI_WELCOMEPAGE_TITLE "Welcome to the ${PRODUCT_NAME} Setup Wizard"
 
-!define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of:\r\n\rThe WMI Mapper.\r\n\r\n"
+!define MUI_WELCOMEPAGE_TEXT "This wizard will guide you through the installation of the\r\n${PRODUCT_NAME}."
+
+!define MUI_FINISHPAGE_TITLE "Installation Successful"
+!define MUI_FINISHPAGE_TEXT "Congratulations, you have completed the installation of the\r\n${PRODUCT_NAME}."
 
 !define MUI_COMPONENTSPAGE_TEXT_TOP "Select the components to install/upgrade."
 
