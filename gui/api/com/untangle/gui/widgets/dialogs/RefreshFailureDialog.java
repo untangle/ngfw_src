@@ -37,7 +37,12 @@ final public class RefreshFailureDialog extends MOneButtonJDialog {
 
     private void init(String applianceName){
         setTitle(applianceName + " Warning");
-        messageJLabel.setText("<html><center>" + applianceName + " was unable to properly refresh all settings.<br>Please try again later.</center></html>");
+
+        if ( applianceName == null || applianceName.length() == 0 ) {
+            messageJLabel.setText("<html><center>Unable to properly refresh all settings.<br>Please try again later.</center></html>");
+        } else {
+            messageJLabel.setText("<html><center>" + applianceName + " was unable to properly refresh all settings.<br>Please try again later.</center></html>");
+        }
         setVisible(true);
     }
 

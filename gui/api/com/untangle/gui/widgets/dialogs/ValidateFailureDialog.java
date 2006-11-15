@@ -36,10 +36,18 @@ final public class ValidateFailureDialog extends MOneButtonJDialog {
     }
 
     private void init(String applianceName, String componentName, String failureMessage) {
-        setTitle(applianceName + " Warning");
+        if (null == applianceName) applianceName = "";
+        applianceName = applianceName.trim();
+        
+        if (applianceName.length() > 0) {
+            setTitle(applianceName + " Warning");
+        } else {
+            setTitle("Warning");
+        }
+        
         messageJLabel.setText("<html><center>" 
-			      + applianceName 
-			      + " was unable to save settings in<br>"
+			      + (( applianceName.length() > 0 ) ? applianceName + " was u" : "U" )
+			      + "nable to save settings in<br>"
 			      + componentName
 			      + " for the following reason:<br><br><b>" 
 			      + failureMessage 

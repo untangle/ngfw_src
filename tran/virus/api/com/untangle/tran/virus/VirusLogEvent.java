@@ -19,7 +19,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.tran.PipelineEndpoints;
 import org.hibernate.annotations.Columns;
 import javax.persistence.Entity;

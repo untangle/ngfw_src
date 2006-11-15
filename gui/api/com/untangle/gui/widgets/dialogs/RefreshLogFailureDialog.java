@@ -36,8 +36,19 @@ final public class RefreshLogFailureDialog extends MOneButtonJDialog {
     }
 
     private void init(String applianceName){
+        if (null == applianceName) applianceName = "";
+        applianceName = applianceName.trim();
+
+        if (applianceName.length() > 0) {
+            setTitle(applianceName + " Warning");
+        } else {
+            setTitle("Warning");
+        }
+
         setTitle(applianceName + " Warning");
-        messageJLabel.setText("<html><center>" + applianceName + " was unable to properly refresh its event log.<br>Please try again later.</center></html>");
+        messageJLabel.setText("<html><center>" 
+                              + (( applianceName.length() > 0 ) ? applianceName + " was u" : "U" )
+                              + "nable to properly refresh its event log.<br>Please try again later.</center></html>");
         setVisible(true);
     }
     
