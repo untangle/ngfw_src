@@ -1,6 +1,6 @@
 # Gkrellm - a system monitor - http://gkrellm.net
 # Pattern attributes: great veryfast
-# Protocol groups: monitoring
+# Protocol groups: monitoring open_source
 # Wiki: http://www.protocolinfo.org/wiki/Gkrellm
 # 
 # This pattern has been tested and is believed to work well.

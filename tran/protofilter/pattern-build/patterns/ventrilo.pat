@@ -1,6 +1,6 @@
 # Ventrilo - VoIP - http://ventrilo.com
 # Pattern attributes: good veryfast
-# Protocol groups: proprietary voip
+# Protocol groups: voip proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Ventrilo
 #
 # I have tested this with Ventrilo client 2.3.0 on Windows talking to

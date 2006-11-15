@@ -1,6 +1,6 @@
 # ZMAAP - Zeroconf Multicast Address Allocation Protocol
 # Pattern attributes: ok veryfast
-# Protocol groups: ietf_draft_standard networking
+# Protocol groups: networking ietf_draft_standard
 # Wiki: http://www.protocolinfo.org/wiki/ZMAAP
 #
 # http://files.zeroconf.org/draft-ietf-zeroconf-zmaap-02.txt

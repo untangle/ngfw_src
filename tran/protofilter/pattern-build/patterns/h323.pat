@@ -1,6 +1,6 @@
 # H.323 - Voice over IP.
 # Pattern attributes: ok veryfast
-# Protocol groups: voip
+# Protocol groups: voip itu-t_standard
 # Wiki: http://www.protocolinfo.org/wiki/H.323
 #
 # This pattern is written without knowledge of the principles of H.323.

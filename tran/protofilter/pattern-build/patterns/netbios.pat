@@ -1,6 +1,6 @@
 # NetBIOS - Network Basic Input Output System
 # Pattern attributes: marginal fast
-# Protocol groups: ietf_internet_standard proprietary networking
+# Protocol groups: networking ietf_internet_standard proprietary
 # Wiki: http://www.protocolinfo.org/wiki/NetBIOS
 #
 # As mentioned in smb.pat:

@@ -1,6 +1,6 @@
 # SSDP - Simple Service Discovery Protocol - easy discovery of network devices
 # Pattern attributes: good notsofast
-# Protocol groups: ietf_draft_standard networking
+# Protocol groups: networking ietf_draft_standard
 # Wiki: http://www.protocolinfo.org/wiki/SSDP
 
 # This pattern was tested only by listening to a Linksys WRT54G. However,

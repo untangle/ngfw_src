@@ -1,6 +1,6 @@
 # DNS - Domain Name System - RFC 1035
 # Pattern attributes: great notsofast
-# Protocol groups: ietf_internet_standard networking
+# Protocol groups: networking ietf_internet_standard
 # Wiki: http://www.protocolinfo.org/wiki/DNS
 
 # Thanks to Sebastien Bechet <s.bechet AT av7.net> for TLD detection

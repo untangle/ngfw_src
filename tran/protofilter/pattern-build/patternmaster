@@ -59,7 +59,8 @@
 520|: KuGoo|: Peer to Peer
 530|: live365|: Music
 540|: LPD|: Printing
-550|: MSN (Microsoft Network) Messenger Filetransfers (MSNFTP and MSNSLP)|: Instant Messenger
+545|: Medal of Honor Allied Assault|: Video Game
+550|: MSN (Microsoft Network) Messenger file transfers (MSNFTP and MSNSLP)|: Instant Messenger
 560|: MSN Messenger|: Instant Messenger
 570|: MUTE|: Peer to Peer
 580|: NBNS|: Networking
@@ -89,6 +90,7 @@
 820|: SOCKS Version 5|: Networking
 830|: SSDP|: Networking
 840|: SSH|: System Administration
+845|: STUN|: Networking
 850|: Subspace|: Video Game
 855|: Subversion|: Software Development
 860|: TeamSpeak|: Voice over IP
@@ -96,6 +98,7 @@
 890|: Tesla Advanced Communication|: Peer to Peer
 900|: TFTP|: File Transfer
 910|: The Circle|: Peer to Peer
+920|: Tor|: Networking
 930|: Ventrilo|: Voice over IP
 940|: VNC|: Remote Desktop
 950|: World of Warcraft|: Video Game

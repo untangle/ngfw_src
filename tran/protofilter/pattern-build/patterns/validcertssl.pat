@@ -1,6 +1,6 @@
 # Valid certificate SSL 
 # Pattern attributes: good notsofast subset
-# Protocol groups: ietf_proposed_standard secure
+# Protocol groups: secure ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/SSL
 
 # This matches anything claiming to use a valid certificate from a well 

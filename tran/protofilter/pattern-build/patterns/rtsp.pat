@@ -1,6 +1,6 @@
 # RTSP - Real Time Streaming Protocol - http://www.rtsp.org - RFC 2326
 # Pattern attributes: good fast
-# Protocol groups: ietf_proposed_standard streaming_video
+# Protocol groups: streaming_video ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/RTSP
 #
 # usually runs on port 554

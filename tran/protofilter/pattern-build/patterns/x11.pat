@@ -1,6 +1,6 @@
 # X Windows Version 11 - Networked GUI system used in most Unices
 # Pattern attributes: good veryfast
-# Protocol groups: x_consortium_standard remote_access
+# Protocol groups: remote_access x_consortium_standard
 # Wiki: http://www.protocolinfo.org/wiki/X11
 #
 # It is common for X to be tunneled through SSH.  Then obviously this pattern

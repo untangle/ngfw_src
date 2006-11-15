@@ -1,6 +1,6 @@
 # Quake 1 - A popular computer game.
 # Pattern attributes: marginal veryfast
-# Protocol groups: proprietary game
+# Protocol groups: game proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Quake
 #
 # This pattern is untested and unconfirmed.

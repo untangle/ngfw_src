@@ -1,6 +1,6 @@
 # Bittorrent - P2P filesharing / publishing tool - http://www.bittorrent.com
 # Pattern attributes: good veryfast undermatch
-# Protocol groups: p2p
+# Protocol groups: p2p open_source
 # Wiki: http://www.protocolinfo.org/wiki/Bittorrent
 #
 # This pattern has been tested and is believed to work well.

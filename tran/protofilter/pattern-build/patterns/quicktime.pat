@@ -1,6 +1,6 @@
 # Quicktime HTTP 
 # Pattern attributes: good fast subset
-# Protocol groups: ietf_draft_standard streaming_video streaming_audio
+# Protocol groups: streaming_video streaming_audio ietf_draft_standard
 # Wiki: http://protocolinfo.org/wiki/HTTP
 #
 # This pattern has been tested and is believed to work well.  

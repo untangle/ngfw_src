@@ -1,6 +1,6 @@
 # MSN Messenger - Microsoft Network chat client
 # Pattern attributes: good notsofast
-# Protocol groups: proprietary chat
+# Protocol groups: chat proprietary
 # Wiki: http://www.protocolinfo.org/wiki/MSN_Messenger
 #
 # Usually uses TCP port 1863

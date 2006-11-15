@@ -1,6 +1,6 @@
 # Battlefield 1942 - An EA game
 # Pattern attributes: ok veryfast
-# Protocol groups: proprietary game
+# Protocol groups: game proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Battlefield_1942
 #
 # Contributed by Myles Uyema <mylesuyema AT gmail.com>

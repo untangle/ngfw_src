@@ -1,6 +1,6 @@
 # Doom 3 - computer game
 # Pattern attributes: good veryfast
-# Protocol groups: proprietary game
+# Protocol groups: game proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Doom
 #
 # Thanks to Clayton Macleod (cherrytwist at gmail.com).

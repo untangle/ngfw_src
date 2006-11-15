@@ -1,6 +1,6 @@
 # Gnutella - P2P filesharing
 # Pattern attributes: good fast
-# Protocol groups: p2p
+# Protocol groups: p2p open_source
 # Wiki: http://www.protocolinfo.org/wiki/Gnutella
 #
 # This should match both Gnutella and "Gnutella2" ("Mike's protocol")

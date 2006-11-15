@@ -1,6 +1,6 @@
 # pressplay - A legal music distribution site - http://pressplay.com
 # Pattern attributes: ok fast
-# Protocol groups: proprietary document_retrieval obsolete
+# Protocol groups: document_retrieval obsolete proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Pressplay
 #
 # This pattern was "contributed" (taken with permission) by the bandwidth 

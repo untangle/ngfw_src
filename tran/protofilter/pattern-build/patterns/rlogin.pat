@@ -1,6 +1,6 @@
 # rlogin - remote login - RFC 1282
 # Pattern attributes: ok veryfast
-# Protocol groups: ietf_rfc_documented remote_access
+# Protocol groups: remote_access ietf_rfc_documented
 # Wiki: http://www.protocolinfo.org/wiki/Rlogin
 #
 # usually runs on port 443

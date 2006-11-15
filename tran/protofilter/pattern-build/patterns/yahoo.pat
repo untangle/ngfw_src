@@ -1,6 +1,6 @@
 # Yahoo messenger - an instant messenger protocol - http://yahoo.com
 # Pattern attributes: good veryfast
-# Protocol groups: proprietary chat
+# Protocol groups: chat proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Yahoo_Messenger
 #
 # Usually runs on port 5050 

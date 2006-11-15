@@ -1,6 +1,6 @@
 # SSL and TLS - Secure Socket Layer / Transport Layer Security - RFC 2246
 # Pattern attributes: good fast superset
-# Protocol groups: ietf_proposed_standard secure
+# Protocol groups: secure ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/SSL
 #
 # Usually runs on port 443

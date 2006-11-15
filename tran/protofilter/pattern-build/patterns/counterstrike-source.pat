@@ -1,6 +1,6 @@
 # Counterstrike (using the new "Source" engine) - network game 
 # Pattern attributes: good veryfast
-# Protocol groups: proprietary game
+# Protocol groups: game proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Counter-Strike
 #
 # By adam.randazzoATgmail.com

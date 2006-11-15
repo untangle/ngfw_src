@@ -1,6 +1,6 @@
 # NCP - Novell Core Protocol
 # Pattern attributes: good veryfast
-# Protocol groups: networking
+# Protocol groups: networking proprietary
 # Wiki: http://www.protocolinfo.org/wiki/NCP
 #
 # This pattern has been tested and is believed to work well.

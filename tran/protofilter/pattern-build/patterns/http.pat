@@ -1,6 +1,6 @@
 # HTTP - HyperText Transfer Protocol - RFC 2616
 # Pattern attributes: great notsofast superset
-# Protocol groups: ietf_draft_standard document_retrieval
+# Protocol groups: document_retrieval ietf_draft_standard
 # Wiki: http://protocolinfo.org/wiki/HTTP
 #
 # Usually runs on port 80

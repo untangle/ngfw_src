@@ -1,6 +1,6 @@
 # Battlefield 2 - An EA game.
 # Pattern attributes: ok notsofast
-# Protocol groups: proprietary game
+# Protocol groups: game proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Battlefield_2
 #
 # This pattern is unconfirmed.

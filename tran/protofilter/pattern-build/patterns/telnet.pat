@@ -1,6 +1,6 @@
 # Telnet - Insecure remote login - RFC 854
 # Pattern attributes: good veryfast
-# Protocol groups: ietf_internet_standard remote_access obsolete
+# Protocol groups: remote_access obsolete ietf_internet_standard
 # Wiki: http://www.protocolinfo.org/wiki/Telnet
 #
 # Usually runs on port 23

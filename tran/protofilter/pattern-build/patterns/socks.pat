@@ -1,6 +1,6 @@
 # SOCKS Version 5 - Firewall traversal protocol - RFC 1928
 # Pattern attributes: ok fast
-# Protocol groups: ietf_proposed_standard networking
+# Protocol groups: networking ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/SOCKS
 #
 # Usually runs on port 1080

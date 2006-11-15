@@ -1,6 +1,6 @@
 # Ident - Identification Protocol - RFC 1413
 # Pattern attributes: good veryfast
-# Protocol groups: ietf_proposed_standard networking
+# Protocol groups: networking ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/Ident
 #
 # Usually runs on port 113

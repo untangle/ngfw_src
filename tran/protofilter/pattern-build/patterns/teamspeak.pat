@@ -1,6 +1,6 @@
 # TeamSpeak - VoIP application - http://goteamspeak.com
 # Pattern attributes: good veryfast
-# Protocol groups: proprietary voip
+# Protocol groups: voip proprietary
 # Wiki: http://www.protocolinfo.org/wiki/TeamSpeak
 #
 # This pattern has been tested by Matthew Strait and verified by packet

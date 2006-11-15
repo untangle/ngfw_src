@@ -1,6 +1,6 @@
 # XBox Live - Console gaming
 # pattern attributes: marginal notsofast
-# Protocol groups: proprietary game
+# Protocol groups: game proprietary
 # Wiki: http://www.protocolinfo.org/wiki/XBox_Live
 #
 # This may match all XBox traffic, or may only match Halo 2 traffic.  

@@ -1,6 +1,6 @@
 # OpenFT - P2P filesharing (implemented in giFT library)
 # Pattern attributes: good fast
-# Protocol groups: p2p
+# Protocol groups: p2p open_source
 # Wiki: http://www.protocolinfo.org/wiki/OpenFT
 
 # Ben Efros <ben AT xgendev.com> says:

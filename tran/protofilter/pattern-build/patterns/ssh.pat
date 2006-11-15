@@ -1,6 +1,6 @@
 # SSH - Secure SHell
 # Pattern attributes: great veryfast
-# Protocol groups: ietf_draft_standard remote_access secure
+# Protocol groups: remote_access secure ietf_draft_standard
 # Wiki: http://www.protocolinfo.org/wiki/SSH
 #
 # usually runs on port 22

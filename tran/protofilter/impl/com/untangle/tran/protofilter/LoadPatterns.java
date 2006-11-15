@@ -75,7 +75,8 @@ public class LoadPatterns {
 	pats.put(520, new ProtoFilterPattern(520, "KuGoo", "Peer to Peer", " a Chinese P2P program - http://www.kugoo.com", "^\\x31..\\x8e", "ok veryfast", false,false,false));
 	pats.put(530, new ProtoFilterPattern(530, "live365", "Music", " An Internet radio site - http://live365.com", "membername.*session.*player", "marginal fast", false,false,false));
 	pats.put(540, new ProtoFilterPattern(540, "LPD", "Printing", " Line Printer Daemon Protocol (old-style UNIX printing) - RFC 1179", "^(\\x01[!-~]+|\\x02[!-~]+\\x0a.[\\x01\\x02\\x03][\\x01-\\x0a -~]*|[\\x03\\x04][!-~]+[\\x09-\\x0d]+[a-z][\\x09-\\x0d -~]*|\\x05[!-~]+[\\x09-\\x0d]+([a-z][!-~]*[\\x09-\\x0d]+[1-9][0-9]?[0-9]?|root[\\x09-\\x0d]+[!-~]+).*)\\x0a$", "ok veryfast", false,false,false));
-	pats.put(550, new ProtoFilterPattern(550, "MSN (Microsoft Network) Messenger Filetransfers (MSNFTP and MSNSLP)", "Instant Messenger", "MSN (Microsoft Network) Messenger Filetransfers (MSNFTP and MSNSLP)", "^(ver [ -~]*msnftp\\x0d\\x0aver msnftp\\x0d\\x0ausr|method msnmsgr:)", "good veryfast", false,false,false));
+	pats.put(545, new ProtoFilterPattern(545, "Medal of Honor Allied Assault", "Video Game", " an Electronic Arts game", "^\\xff\\xff\\xff\\xffgetstatus\\x0a", "good veryfast", false,false,false));
+	pats.put(550, new ProtoFilterPattern(550, "MSN (Microsoft Network) Messenger file transfers (MSNFTP and MSNSLP)", "Instant Messenger", "MSN (Microsoft Network) Messenger file transfers (MSNFTP and MSNSLP)", "^(ver [ -~]*msnftp\\x0d\\x0aver msnftp\\x0d\\x0ausr|method msnmsgr:)", "good veryfast", false,false,false));
 	pats.put(560, new ProtoFilterPattern(560, "MSN Messenger", "Instant Messenger", " Microsoft Network chat client", "ver [0-9]+ msnp[1-9][0-9]? [\\x09-\\x0d -~]*cvr0\\x0d\\x0a$|usr 1 [!-~]+ [0-9. ]+\\x0d\\x0a$|ans 1 [!-~]+ [0-9. ]+\\x0d\\x0a$", "good notsofast", false,false,false));
 	pats.put(570, new ProtoFilterPattern(570, "MUTE", "Peer to Peer", " P2P filesharing - http://mute-net.sourceforge.net", "^(Public|AES)Key: [0-9a-f]*\\x0aEnd(Public|AES)Key\\x0a$", "marginal veryfast", false,false,false));
 	pats.put(590, new ProtoFilterPattern(590, "Napster", "Peer to Peer", " P2P filesharing", "^(.[\\x02\\x06][!-~]+ [!-~]+ [0-9][0-9]?[0-9]?[0-9]?[0-9]? \"[\\x09-\\x0d -~]+\" ([0-9]|10)|1(send|get)[!-~]+ \"[\\x09-\\x0d -~]+\")", "good veryfast", false,false,false));
@@ -105,6 +106,7 @@ public class LoadPatterns {
 	pats.put(810, new ProtoFilterPattern(810, "Soulseek", "Peer to Peer", " P2P filesharing - http://slsknet.org", "^(\\x05..?|.\\x01.[ -~]+\\x01F..?.?.?.?.?.?.?)$", "good veryfast", false,false,false));
 	pats.put(830, new ProtoFilterPattern(830, "SSDP", "Networking", " Simple Service Discovery Protocol - easy discovery of network devices", "^notify[\\x09-\\x0d ]\\*[\\x09-\\x0d ]http/1\\.1[\\x09-\\x0d -~]*ssdp:(alive|byebye)|^m-search[\\x09-\\x0d ]\\*[\\x09-\\x0d ]http/1\\.1[\\x09-\\x0d -~]*ssdp:discover", "good notsofast", false,false,false));
 	pats.put(840, new ProtoFilterPattern(840, "SSH", "System Administration", " Secure SHell", "^ssh-[12]\\.[0-9]", "great veryfast", false,false,false));
+	pats.put(845, new ProtoFilterPattern(845, "STUN", "Networking", " Simple Traversal of UDP Through NAT - RFC 3489", "^[\\x01\\x02]................?$", "ok veryfast", false,false,false));
 	pats.put(850, new ProtoFilterPattern(850, "Subspace", "Video Game", " 2D asteroids-style space game - http://sscentral.com", "^\\x01....\\x11\\x10........\\x01$", "marginal veryfast", false,false,false));
 	pats.put(855, new ProtoFilterPattern(855, "Subversion", "Software Development", " a version control system", "^\\( success \\( 1 2 \\(", "ok veryfast", false,false,false));
 	pats.put(860, new ProtoFilterPattern(860, "TeamSpeak", "Voice over IP", " VoIP application - http://goteamspeak.com", "^\\xf4\\xbe\\x03.*teamspeak", "good veryfast", false,false,false));
@@ -113,6 +115,7 @@ public class LoadPatterns {
 	pats.put(900, new ProtoFilterPattern(900, "TFTP", "File Transfer", " Trivial File Transfer Protocol - used for bootstrapping - RFC 1350", "^(\\x01|\\x02)[ -~]*(netascii|octet|mail)", "marginal veryfast", false,false,false));
 	pats.put(910, new ProtoFilterPattern(910, "The Circle", "Peer to Peer", " P2P application - http://thecircle.org.au", "^t\\x03ni.?[\\x01-\\x06]?t[\\x01-\\x05]s[\\x0a\\x0b](glob|who are you$|query data)", "ok veryfast", false,false,false));
 	pats.put(150, new ProtoFilterPattern(150, "SSL and TLS", "Networking", " Secure Socket Layer / Transport Layer Security - RFC 2246", "^(.?.?\\x16\\x03.*\\x16\\x03|.?.?\\x01\\x03\\x01?.*\\x0b)", "good fast superset", false,false,false));
+	pats.put(920, new ProtoFilterPattern(920, "Tor", "Networking", " The Onion Router - used for anonymization - http://tor.eff.org", "TOR1.*<identity>", "good fast", false,false,false));
 	pats.put(140, new ProtoFilterPattern(140, "Valid certificate SSL", "Networking", "Valid certificate SSL", "^.?.?\\x01\\x03\\x01?.*\\x0b.*(thawte|equifax secure certificate authority|rsa data security, inc|verisign, inc|gte cybertrust root|entrust\\.net limited)", "good notsofast subset", false,false,false));
 	pats.put(930, new ProtoFilterPattern(930, "Ventrilo", "Voice over IP", " VoIP - http://ventrilo.com", "^..?v\\$\\xcf", "good veryfast", false,false,false));
 	pats.put(940, new ProtoFilterPattern(940, "VNC", "Remote Desktop", " Virtual Network Computing. Also known as RFB - Remote Frame Buffer", "^rfb 00[1-9]\\.00[0-9]\\x0a$", "good fast", false,false,false));
@@ -122,6 +125,17 @@ public class LoadPatterns {
 	pats.put(980, new ProtoFilterPattern(980, "Xunlei", "Peer to Peer", " Chinese P2P filesharing - http://xunlei.com", "^[()]...?.?.?(reg|get|query)", "good veryfast", false,false,false));
 	pats.put(990, new ProtoFilterPattern(990, "Yahoo messenger", "Instant Messenger", " an instant messenger protocol - http://yahoo.com", "^(ymsg|ypns|yhoo).?.?.?.?.?.?.?[lwt].*\\xc0\\x80", "good veryfast", false,false,false));
 	pats.put(1000, new ProtoFilterPattern(1000, "ZMAAP", "Networking", " Zeroconf Multicast Address Allocation Protocol", "^\\x1b\\xd7\\x3b\\x48[\\x01\\x02]\\x01?\\x01", "ok veryfast", false,false,false));
+/*
+ * Copyright (c) 2003-2006 Untangle, Inc.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Untangle, Inc. ("Confidential Information"). You shall
+ * not disclose such Confidential Information.
+ *
+ * $Id$
+ */
+
 	return pats;
     }
 }

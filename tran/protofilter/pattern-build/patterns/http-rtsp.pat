@@ -1,6 +1,6 @@
 # RTSP tunneled within HTTP
 # Pattern attributes: ok notsofast subset
-# Protocol groups: ietf_draft_standard streaming_audio streaming_video
+# Protocol groups: streaming_audio streaming_video ietf_draft_standard
 # Wiki: http://www.protocolinfo.org/wiki/RTSP
 #
 # Apple's documentation on what Quicktime does:

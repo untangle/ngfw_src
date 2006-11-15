@@ -1,6 +1,6 @@
 # World of Warcraft - popular network game - http://blizzard.com/
 # Pattern attributes: ok veryfast
-# Protocol groups: proprietary game
+# Protocol groups: game proprietary
 # Wiki: http://www.protocolinfo.org/wiki/World_of_Warcraft
 
 worldofwarcraft

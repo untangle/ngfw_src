@@ -1,6 +1,6 @@
 # The Circle - P2P application - http://thecircle.org.au
 # Pattern attributes: ok veryfast
-# Protocol groups: open_source p2p
+# Protocol groups: p2p open_source
 # Wiki: http://www.protocolinfo.org/wiki/The_Circle
 
 # This is tested with The Circle 0.41c on Linux.

@@ -1,6 +1,6 @@
 # NBNS - NetBIOS name service
 # Pattern attributes: good notsofast
-# Protocol groups: networking
+# Protocol groups: networking proprietary
 # Wiki: http://www.protocolinfo.org/wiki/NBNS
 #
 # This pattern has been tested and is believed to work well.

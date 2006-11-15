@@ -1,6 +1,6 @@
 # Half-Life 2 Deathmatch - popular computer game
 # Pattern attributes: good veryfast
-# Protocol groups: proprietary game
+# Protocol groups: game proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Half-Life
 # 
 # By Clayton Macleod <cherrytwist TA gmail.com>

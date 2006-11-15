@@ -1,6 +1,6 @@
 # Samba/SMB - Server Message Block - Microsoft Windows filesharing
 # Pattern attributes: good fast
-# Protocol groups: proprietary document_retrieval networking
+# Protocol groups: document_retrieval networking proprietary
 # Wiki: http://www.protocolinfo.org/wiki/SMB
 #
 # "This protocol is sometimes also referred to as the Common Internet File 

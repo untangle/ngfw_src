@@ -1,6 +1,6 @@
 # Jabber (XMPP) - open instant messenger protocol - RFC 3920 - http://jabber.org
 # Pattern attributes: good fast
-# Protocol groups: ietf_proposed_standard chat
+# Protocol groups: chat ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/Jabber
 #
 # This pattern has been tested with Gaim and Gabber.  It is only tested 

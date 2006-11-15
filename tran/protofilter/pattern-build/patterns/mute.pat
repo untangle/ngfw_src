@@ -1,6 +1,6 @@
 # MUTE - P2P filesharing - http://mute-net.sourceforge.net
 # Pattern attributes: marginal veryfast
-# Protocol groups: p2p
+# Protocol groups: p2p open_source
 # Wiki: http://www.protocolinfo.org/wiki/MUTE
 #
 # This pattern is lightly tested.  I don't know for sure that it will 

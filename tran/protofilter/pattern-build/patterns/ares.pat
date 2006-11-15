@@ -1,6 +1,6 @@
 # Ares - P2P filesharing - http://aresgalaxy.sf.net
 # Pattern attributes: good veryfast undermatch
-# Protocol groups: p2p
+# Protocol groups: p2p open_source
 # Wiki: http://www.protocolinfo.org/wiki/Ares
 
 # This pattern catches only client-server connect messages.  This is

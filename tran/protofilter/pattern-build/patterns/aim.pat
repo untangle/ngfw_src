@@ -1,6 +1,6 @@
 # AIM - AOL instant messenger (OSCAR and TOC)
 # Pattern attributes: good notsofast
-# Protocol groups: proprietary chat
+# Protocol groups: chat proprietary
 # Wiki: http://www.protocolinfo.org/wiki/AIM
 #
 # Usually runs on port 5190
