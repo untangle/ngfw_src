@@ -39,12 +39,15 @@ import com.untangle.mvvm.portal.LocalPortalManager;
 import com.untangle.mvvm.tran.IPaddr;
 import org.apache.commons.fileupload.MultipartStream;
 import org.apache.commons.fileupload.ParameterParser;
+import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.Protocol;
@@ -62,10 +65,14 @@ public class WebProxy extends HttpServlet
     private static final String HTML_READER = "org.htmlparser.sax.XMLReader";
     private static final String HTTP_CLIENT = "httpClient";
 
+    private static final String PERMISSIVE_COOKIE_POLICY = "PermissiveCookiePolicy";
+    static {
+        CookiePolicy.registerCookieSpec(PERMISSIVE_COOKIE_POLICY, PermissiveCookieSpec.class);
+    }
+
     private static final Pattern CONTENT_TYPE_PATTERN
         = Pattern.compile("^Content-Type:\\s*(.*)$",
                           Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-
     private MvvmLocalContext mvvmContext;
     private NetworkManager netManager;
     private LocalPortalManager portalManager;
@@ -127,6 +134,8 @@ public class WebProxy extends HttpServlet
                       HttpMethod method, UrlRewriter rewriter)
         throws ServletException
     {
+        method.getParams().setCookiePolicy(PERMISSIVE_COOKIE_POLICY);
+
         HttpSession s = req.getSession();
 
         portalManager.incrementStatCounter(LocalPortalManager.PROXY_COUNTER);
@@ -209,6 +218,8 @@ public class WebProxy extends HttpServlet
             } else if (name.equalsIgnoreCase("location")
                        || name.equalsIgnoreCase("content-location")) {
                 resp.setHeader(name, rewriter.rewriteUrl(value));
+            } else if (name.equalsIgnoreCase("set-cookie")) {
+                // don't forward
             } else {
                 resp.setHeader(name, value);
             }
