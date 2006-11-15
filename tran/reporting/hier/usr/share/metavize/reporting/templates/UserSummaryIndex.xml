@@ -138,4 +138,17 @@
       </table-row>
     </table>
   </else>
+
+  <new-page>
+    <header/>
+    <footer/>
+  </new-page>
+  
+  <!-- insert each user summary report at the end -->
+  <foreach sequence="${unamesum}" loop-variable="row">
+    <insert-document source="${pdfDirectory + row.filename}" name='${linkPrefix + row.filename}'/>
+  </foreach>
+  <foreach sequence="${hnamesum}" loop-variable="row">
+    <insert-document source="${pdfDirectory + row.filename}" name='${linkPrefix + row.filename}'/>
+  </foreach>
 </document>

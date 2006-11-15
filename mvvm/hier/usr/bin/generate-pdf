@@ -35,6 +35,8 @@ TEMPLATE_TOC="TableOfContents.xml"
 TEMPLATE_BRIEFING="Briefing.xml"
 TEMPLATE_DETAILED="DetailedReport.xml"
 TEMPLATE_UNAMESUM="UserSummary.xml"
+# template to generate pdf file attachment for index html files
+TEMPLATE_UNAMESUM_INDEX="UserSummaryIndex.xml"
 TEMPLATE_MASTER="MasterDocument.xml"
 
 ## This is where the images for the email are stored.
@@ -156,6 +158,23 @@ EOF
     ## Need to create the user summary pdf file too if the html one exists
     t_usersummary=`find ${t_baseDir} -name "*UserSummary--${REPORT_TYPE}.html" | head -n 1 | xargs -r basename`
     if [ -n "${t_usersummary}" ]; then
+        # we need to duplicate some topLevel properties because
+        # we need to generate standalone user summary PDFs
+        # for the index html files
+        cat >> ${t_properties} <<EOF
+## Directory configuration
+templateDirectory=${DIRECTORY_TEMPLATES}/
+propertiesDirectory=${DIRECTORY_PROPERTIES}/
+imageDirectory=${DIRECTORY_IMAGES}/
+pdfDirectory=${DIRECTORY_PDF}/
+
+## Description of the report
+iconDescription=${t_key}/images/IconDesc42x42.png
+type=${reportType}
+start=${REPORT_START}
+end=${REPORT_END}
+EOF
+
         generateUserSummary ${t_baseDir} ${t_key} ${t_properties}
     else
         echo "There is no user summary report for '${t_name}'"
@@ -289,6 +308,11 @@ function generateUserSummary()
         hcnt=$((hcnt+1))
 
     done < $DIRECTORY_PDF/hname.lst
+
+    ## Now actually generate standalone user summary PDFs
+    ## for the index html files
+    local USUMOUTPUT_FILE=`echo ${rep_base}--${REPORT_TYPE}.pdf`
+    ujac-to-pdf "${DIRECTORY_TEMPLATES}/${TEMPLATE_UNAMESUM_INDEX}" ${t_properties} ${t_key}/${USUMOUTPUT_FILE}
 }
 
 function generateEmail()
@@ -311,7 +335,8 @@ ${OUTPUT_FILE}
 EOF
     
     ## Find all of the images that are for the email
-    find "${DIRECTORY_IMAGES}/images" -type f -name 'Logo150x96.gif' -exec basename \{\} \; \
+    find "${DIRECTORY_IMAGES}/images" -type f -exec basename \{\} \; \
+        | grep 'Logo150x96.gif' \
         | sed "s|\(.*\)|images/\1|" \
         >> ${t_arguments}
 }

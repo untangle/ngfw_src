@@ -191,6 +191,11 @@ cat >> $base_file <<EOF
 <tr valign=top>
   <td colspan=20><img src="../images/px" style="width: 612px; height: 5px"></td>
 </tr>
+
+<tr valign=top>
+  <td><img src="../images/px" style="width: 20px; height: 13px"></td>
+  <td colspan=4><span style="font-family: SansSerif; font-size: 9.0px; font-style: italic;">Client</span></td>
+</tr>
 EOF
 
 generate_hname_content_area
