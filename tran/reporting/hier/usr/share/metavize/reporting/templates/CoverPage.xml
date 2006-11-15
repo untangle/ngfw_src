@@ -4,15 +4,16 @@
 	"http://ujac.sourceforge.net/ujac-print-document.dtd">
 
 <document size="LETTER" margin-left="25" margin-right="25" margin-top="50" margin-bottom="50">
-  <font-def name="title"       family="Helvetica" size="32" style="normal" color="747474"/>
+  <font-def name="title"       family="Helvetica" size="30" style="normal" color="747474"/>
   <font-def name="subtitle"    family="Helvetica" size="12" style="normal"/>
   <font-def name="subsubtitle" family="Helvetica" size="9"  style="normal"/>
+  <font-def name="medium" family="Helvetica" size="9"  style="normal"/>
 
   <!-- I believe this is the size of the type letter -->
   <set-property name="pageWidth" type="int" value="612"/>
   <set-property name="boxWidth"  type="int" value="386"/>
   <set-property name="boxHeight" type="int" value="445"/>
-  
+ 
   <set-property name="boxX"  type="int" value="${ pageWidth/2  - boxWidth/2 }"/>
   <set-property name="boxY"  type="int" value="175"/>
 
@@ -27,10 +28,11 @@
       <image source="${imageDirectory + 'images/Logo450x300.png'}" width="200"/>
     </paragraph>
     
-    <paragraph font="title" halign="center" spacing-after="20">Untangle Reports</paragraph>
-    <paragraph font="subtitle" halign="center" line-spacing="1.0">
-      ${period}<br/>
+    <paragraph font="title" halign="center" spacing-after="20">
       ${type} Report
+    </paragraph>
+    <paragraph font="medium" halign="center" line-spacing="1.0">
+      ${period}
     </paragraph>
     
     <paragraph font="subsubtitle" halign="center" spacing-after="20">Prepared: ${prepared}</paragraph>

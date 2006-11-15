@@ -9,7 +9,8 @@
   <font-def name="header"    family="Helvetica" size="12" style="bold"/>
   <font-def name="normal"    family="Helvetica" size="12" style="normal"/>
   <font-def name="statistic" family="Helvetica" size="11" style="normal"/>
-  <font-def name="small"     family="Helvetica" size="9"  style="normal"/>
+  <font-def name="medium"    family="Helvetica" size="9"  style="normal"/>
+  <font-def name="small"     family="Helvetica" size="8"  style="normal"/>
   <font-def name="title"     family="Helvetica" size="16" style="bold"/>
   <font-def name="subtitle"  family="Helvetica" size="12" style="bold"/>
   <font-def name="link"      family="Helvetica" size="12" style="italic"/>
@@ -31,13 +32,13 @@
              padding-top="2" padding-bottom="7" padding-right="5" padding-left="5"/>
 
 
-  <header font="small">
+  <header font="medium">
     <header-part halign="left">
       <!-- ${reportTitle} -->
     </header-part>
   </header>
 
-  <footer font="small">
+  <footer font="medium">
     <footer-part padding-top="10" halign="center">
       Page ${pageNumber} of ${pageCount}
     </footer-part>
@@ -134,7 +135,7 @@
   </if>
   <else>
     <paragraph class="subtitle">Detailed Reports [disabled]</paragraph>
-    <paragraph font="small" halign="center">
+    <paragraph font="medium" halign="center">
       To receive detailed reports enable "Include Incident Lists in
       Emails" in the "Generation Settings" tab of Untangle Reports.
     </paragraph>

@@ -9,7 +9,7 @@
   <font-def name="title"       family="Helvetica" size="14" style="normal"/>
   <font-def name="normal"      family="Helvetica" size="12" style="normal"/>
   <font-def name="link"        family="Helvetica" size="12" style="italic"/>
-  <font-def name="small"       family="Helvetica" size="9"  style="normal"/>
+  <font-def name="small"       family="Helvetica" size="8"  style="normal"/>
 
   <style-def name="table.bordered" 
              border-style="top|bottom|left|right" border-width="0.5" font="normal"/>
