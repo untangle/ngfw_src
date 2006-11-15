@@ -53,7 +53,8 @@ cookie-init-%: domains.clean
 	@( cd ./files ; wget http://www.geocities.com/spywarekilla/autoinstaller.zip  && unzip autoinstaller.zip)
 	@cat ./files/Spyware\ blacklist\ auto-installer.reg | tr -d '\377' | tr -d '\376' | tr -d '\000' >| ./files/cookies
 	@cat ./files/cookies | grep HKEY | sed 's/^.*History\\\(.*\)\]/\1/' | grep -v HKEY > ./files/cookie.txt.tmp
-	@cat ./files/cookie.txt.tmp | grep -vwf domains.clean | sort > $@
+	@cat domains.clean | grep -vwf cookies.dirty > ./files/clean.tmp
+	@cat ./files/cookie.txt.tmp | grep -vwf files/clean.tmp | sort > $@
 
 cookie-diff-%: cookie-init-%
 	if diff cookie-init-$(shell expr $* - 1) $< >$@; then \
