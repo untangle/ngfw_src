@@ -39,7 +39,7 @@ public abstract class SpamProtoConfig implements Serializable
     public static final int DEFAULT_MESSAGE_SIZE_LIMIT = 1 << 18;
     public static final String NO_NOTES = "no description";
 
-    public static final int DEFAULT_STRENGTH = 50;
+    public static final int DEFAULT_STRENGTH = 43;
     private Long id;
 
     /* settings */
