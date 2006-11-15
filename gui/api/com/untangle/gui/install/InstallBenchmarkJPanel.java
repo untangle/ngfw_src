@@ -154,7 +154,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 		    testPassed = true;
 		}
 		MOneButtonJDialog dialog = MOneButtonJDialog.factory(InstallBenchmarkJPanel.this.getTopLevelAncestor(), "Install Wizard", resultMessage,
-								     "Install Wizard Warning", "Warning");
+								     "Install Wizard", "Result");
 	    }
 	    catch(Exception e){
 		e.printStackTrace();
