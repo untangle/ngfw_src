@@ -38,12 +38,11 @@ CREATE TABLE newpages AS
 
 INSERT INTO webpages_:dayname
   SELECT evt.request_id, evt.time_stamp, COALESCE(NULLIF(name, ''), HOST(c_client_addr)) AS hname,
-         case floor(random() * 10) when 0 then 'jdi' when 1 then 'jdi' when 2 then 'dmorris'
-         when 3 then 'cng' when 4 then 'cng' when 5 then 'cng' when 6 then 'amread' else null end,
-         c_client_addr, c_server_addr, c_server_port, evt.host, evt.content_length
+         stats.uid, c_client_addr, c_server_addr, c_server_port, evt.host, evt.content_length
     FROM newpages evt
       JOIN tr_http_req_line line USING (request_id)
       JOIN pl_endp endp ON (line.pl_endp_id = endp.event_id)
+      JOIN pl_stats stats ON (line.pl_endp_id = stats.pl_endp_id)
       LEFT OUTER JOIN merged_address_map mam ON (endp.c_client_addr = mam.addr AND
                  evt.time_stamp >= mam.start_time AND evt.time_stamp < mam.end_time);
 

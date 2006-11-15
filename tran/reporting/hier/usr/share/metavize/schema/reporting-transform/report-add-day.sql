@@ -42,9 +42,7 @@ CREATE TABLE newsessions AS
 INSERT INTO sessions_:dayname
   SELECT ses.event_id, ses.time_stamp,
          COALESCE(NULLIF(ses.name, ''), HOST(ses.c_client_addr)) AS hname,
-         CASE FLOOR(RANDOM() * 10) WHEN 0 THEN 'jdi' WHEN 1 THEN 'jdi' WHEN 2 THEN 'dmorris'
-         WHEN 3 THEN 'cng' WHEN 4 THEN 'cng' WHEN 5 THEN 'cng' WHEN 6 THEN 'amread' ELSE null END,
-         c_client_addr, c_server_addr, c_server_port, client_intf,
+         stats.uid, c_client_addr, c_server_addr, c_server_port, client_intf,
          stats.c2p_bytes, stats.p2c_bytes, stats.s2p_bytes, stats.p2s_bytes
     FROM newsessions ses
     JOIN pl_stats stats ON (ses.event_id = stats.pl_endp_id);
