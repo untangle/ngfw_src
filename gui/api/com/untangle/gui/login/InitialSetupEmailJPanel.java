@@ -224,7 +224,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 
                 smtpButtonGroup.add(smtpEnabledJRadioButton);
                 smtpEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                smtpEnabledJRadioButton.setText("<html><Send Email using the specified SMTP Server</html>");
+                smtpEnabledJRadioButton.setText("<html>Send Email using the specified SMTP Server</html>");
                 smtpEnabledJRadioButton.setFocusPainted(false);
                 smtpEnabledJRadioButton.setFocusable(false);
                 smtpEnabledJRadioButton.setOpaque(false);
