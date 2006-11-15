@@ -11,9 +11,10 @@
 
 package com.untangle.mvvm.tapi.client;
 
-import com.untangle.mvvm.tapi.TCPSessionDesc;
+import com.untangle.mvvm.api.SessionEndpoints;
+
 import com.untangle.mvvm.tapi.SessionStats;
-import com.untangle.mvvm.argon.SessionEndpoints;
+import com.untangle.mvvm.tapi.TCPSessionDesc;
 import java.net.InetAddress;
 
 public class TCPSessionDescImpl extends IPSessionDescImpl implements TCPSessionDesc {

@@ -11,8 +11,10 @@
 
 package com.untangle.mvvm.tapi.client;
 
-import com.untangle.mvvm.tapi.*;
-import com.untangle.mvvm.argon.SessionEndpoints;
+import com.untangle.mvvm.api.SessionEndpoints;
+
+import com.untangle.mvvm.tapi.SessionStats;
+import com.untangle.mvvm.tapi.UDPSessionDesc;
 import java.net.InetAddress;
 
 public class UDPSessionDescImpl extends IPSessionDescImpl implements UDPSessionDesc {

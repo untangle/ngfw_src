@@ -87,7 +87,7 @@ class InterfaceTester
             intf.setCurrentMedia( UNKNOWN );
 
             if ( null == intfStatus ) {
-                logger.warn( "Unable to update the status for interface: " + intfName );
+                logger.warn( "Unable to update the status for interface: '" + intfName + "'" );
                 continue;
             }
 
