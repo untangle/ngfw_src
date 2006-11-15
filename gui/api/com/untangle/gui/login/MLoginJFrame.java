@@ -144,7 +144,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 getContentPane().setLayout(new java.awt.GridBagLayout());
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-                setTitle("Untangle " + Version.getVersion());
+                setTitle("Untangle Client " + Version.getVersion());
                 setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/untangle/gui/main/Logo16x16.png"))).getImage());
                 setName("loginJFrame");
                 setResizable(false);
@@ -600,7 +600,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                         else
                             securedString = "  |  Connection: http (standard)";
 
-                        mMainJFrame.setTitle( "Untangle Client" +
+                        mMainJFrame.setTitle( "Untangle Client " +
                                               Version.getVersion() + "  |  Login: " +
                                               loginJTextField.getText() + "  |  Server: " +
                                               Util.getServerCodeBase().getHost() + securedString );
