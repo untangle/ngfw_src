@@ -116,7 +116,7 @@ class RewriteVisitor extends NodeVisitor
                         logger.error("this won't happen", exn);
                     }
                     StringBuffer sb = w.getBuffer();
-                    while (Character.isWhitespace(sb.charAt(sb.length() - 1))) {
+                    while (0 < sb.length() && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
                         sb.deleteCharAt(sb.length() - 1);
                     }
                     a.setValue(sb.toString());
