@@ -16,6 +16,8 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.untangle.mvvm.util.AdministrationOutsideAccessValve;
+import com.untangle.mvvm.util.ReportingOutsideAccessValve;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
@@ -34,9 +36,6 @@ import org.apache.catalina.startup.Embedded;
 import org.apache.coyote.http11.Http11BaseProtocol;
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.util.AdministrationOutsideAccessValve;
-import com.untangle.mvvm.util.ReportingOutsideAccessValve;
-
 /**
  * Wrapper around the Tomcat server embedded within the MVVM.
  */
@@ -47,7 +46,7 @@ class TomcatManager
     private static final long REBIND_SLEEP_TIME = 1 * 1000; // 1 second
     private static final int NUM_REBIND_RETRIES = 5; //  10 seconds
 
-    private static final String STANDARD_WELCOME = "./webstart/";
+    private static final String STANDARD_WELCOME = "webstart";
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -303,7 +302,7 @@ class TomcatManager
 
             /* Add a valve to block outside access */
             ctx.addValve(new AdministrationOutsideAccessValve());
-            
+
             /* Moved after adding the valve */
             baseHost.addChild(ctx);
             ctx.getServletContext().setAttribute("invoker", invokerBase);
@@ -431,7 +430,7 @@ class TomcatManager
         final boolean allowLinking;
         final int sessionTimeout; // Minutes
         final Valve valve;
-        
+
         WebAppOptions() {
             this(false, DEFAULT_SESSION_TIMEOUT);
         }
@@ -451,7 +450,7 @@ class TomcatManager
         WebAppOptions(boolean allowLinking, int sessionTimeout) {
             this(allowLinking, sessionTimeout, null);
         }
-        
+
         WebAppOptions(boolean allowLinking, int sessionTimeout, Valve valve) {
             this.allowLinking = allowLinking;
             this.sessionTimeout = sessionTimeout;
@@ -519,11 +518,11 @@ class TomcatManager
            if (null != realm) {
                 ctx.setRealm(realm);
             }
-           
+
             StandardManager mgr = new StandardManager();
             mgr.setPathname(null); /* disable session persistence */
             ctx.setManager(mgr);
-            
+
             /* This should be the first valve */
             if (null != options.valve) ctx.addValve(options.valve);
 
