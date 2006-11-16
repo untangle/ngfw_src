@@ -7,7 +7,7 @@ function PortalPanel(parent)
         return;
     }
 
-    DwtComposite.call(this, parent, "PortalPanel", DwtControl.RELATIVE_STYLE);
+    DwtComposite.call(this, parent, "PortalPanel", DwtControl.STATIC_STYLE);
 
     this.bookmarkPanel = new BookmarkPanel(this);
     this.applicationPanel = new ApplicationPanel(this);
@@ -144,7 +144,7 @@ PortalPanel.prototype._init = function()
     this.setContent(html.join(""));
 
 
-    this._welcomePanel = this._welcomePanel || new DwtComposite(this, "WelcomePanel", DwtControl.RELATIVE_STYLE);
+    this._welcomePanel = this._welcomePanel || new DwtComposite(this, "WelcomePanel", DwtControl.STATIC_STYLE);
     this._welcomePanel.reparentHtmlElement(this._welcomePanelId);
     this._welcomePanel.setVisible(true);
     this._welcomePanel.zShow(true);

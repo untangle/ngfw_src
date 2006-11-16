@@ -66,7 +66,7 @@ Portal.prototype.showApplicationUrl = function(url, application, bookmark)
     html.push(url);
     html.push("' height='100%' width='100%'/>");
     this._mainPanel = new DwtComposite(this, "ApplicationIframe",
-                                       DwtControl.RELATIVE_STYLE);
+                                       DwtControl.STATIC_STYLE);
     this._mainPanel.reparentHtmlElement(this._mainPanelId);
     this._mainPanel.setContent(html.join(""));
     this._mainPanel.setVisible(true);
