@@ -482,7 +482,6 @@ class OpenVpnMonitor implements Runnable
                 this.statistics.incrBytesTx( stats.bytesTxTotal - stats.bytesTxLast );
                 this.statistics.incrBytesRx( stats.bytesRxTotal - stats.bytesRxLast );
                 stats.fillEvent( now );
-
                 if ( logger.isDebugEnabled()) logger.debug( "Logging " + stats.key );
                 logClientConnectEvent(stats);
             }
@@ -576,6 +575,7 @@ class OpenVpnMonitor implements Runnable
                 stats.isNew = true;
                 stats.updated = true;
                 activeMap.put( name, stats );
+                statusMap.put( key, stats );
             } else {
                 /* This is a new session */
                 if ( stats.key.start.after( start )) {
@@ -649,10 +649,8 @@ class OpenVpnMonitor implements Runnable
     }
 
     private void logClientConnectEvent(Stats stats) {
-      if(stats.isActive || stats.logged) {
-        return;
-      }
-      clientConnectLogger.log(stats.sessionEvent);
+      if( stats.logged ) return;
+      clientConnectLogger.log( stats.sessionEvent );
       stats.logged = true;
     }
 
@@ -679,7 +677,7 @@ class OpenVpnMonitor implements Runnable
         public List<ClientConnectEvent> getEvents() {
           List<ClientConnectEvent> list = getOpenConnectionsAsEvents();
           Collections.sort(list,
-            ClientConnectEventComparator.getComparator(ClientConnectEventComparator.SortBy.END_DATE, true));
+            ClientConnectEventComparator.getComparator(ClientConnectEventComparator.SortBy.END_DATE, false));
           int maxLen = eventLogger.getLimit();
           if(list.size() > maxLen) {
             list = list.subList(0, maxLen);
@@ -713,7 +711,7 @@ class OpenVpnMonitor implements Runnable
           openList.addAll(closedList);
 
           Collections.sort(openList,
-            ClientConnectEventComparator.getComparator(ClientConnectEventComparator.SortBy.END_DATE, true));
+            ClientConnectEventComparator.getComparator(ClientConnectEventComparator.SortBy.END_DATE, false));
 
           int maxLen = eventLogger.getLimit();
           if(openList.size() > maxLen) {
