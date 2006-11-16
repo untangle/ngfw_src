@@ -13,7 +13,7 @@ function BookmarkDialog(parent, apps, bm)
 
     var className = null; // XXX
 
-    DwtDialog.call(this, parent, className, "Add Bookmark");
+    DwtDialog.call(this, parent, className, (bm ? "Edit" : "Add") + " Bookmark");
 
     this._panel = new BookmarkDialogPanel(this, apps, bm);
     this.addListener(DwtEvent.ONFOCUS, new AjxListener(this, this._focusListener));
