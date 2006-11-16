@@ -98,7 +98,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 		else
 		    cpuMultiplier = 3f;
 		final int logicalCpuSpeed = (int)((float)cpuSpeed * cpuMultiplier);
-		final float disk   = SystemStats.getDiskGigs();
+		final float disk   = SystemStats.getDiskGigs(InstallWizard.getTargetDisk());
 		final int nics     = SystemStats.getNumNICs();
 		// COMPUTE RESULTS	       
 		final Object memoryResults[] = computeNormalResults((float)memory,
