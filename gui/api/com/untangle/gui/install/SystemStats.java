@@ -31,7 +31,9 @@ public class SystemStats
         System.out.println("Logical  CPU(s): " + getLogicalCPU());
         System.out.println("Clock Speed: " + getClockSpeed() + " MHz" );
         System.out.println("BogoMIPS: " + getBogoMIPS());
-        System.out.println("DiskSize: " + getDiskGigs() + "GB");
+	for (String disk : getAvailableDisks()) {
+	    System.out.println(disk + " : " + getDiskGigs(disk) + "GB");
+	}
         System.out.println("Network Cards: " + getNumNICs());
     }
 
@@ -121,10 +123,10 @@ public class SystemStats
         return -1;
     }
 
-    public static float getDiskGigs(String diskstr)
+    public static float getDiskGigs(String disk)
     {
         try {
-            String[] args = {"/bin/sh","-c"," cat /proc/partitions | egrep '" + diskstr + "' | egrep -v 'sda[1-9]|hda[1-9]|uba[1-9]' | awk '{print $3*512/1000000000}'"};
+            String[] args = {"/bin/sh","-c"," fdisk -l /dev/" + disk + " | awk '/Disk/ { print $3}'"};
             Process proc = Runtime.getRuntime().exec(args);
             BufferedReader input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             try {
@@ -137,17 +139,12 @@ public class SystemStats
         return -1f;
     }
 
-    public static float getDiskGigs()
-    {
-        return getDiskGigs("sda|hda|uba");
-    }
-
-    public static List<String> getAvailableDisks(String subset)
+    public static List<String> getAvailableDisks()
     {
         LinkedList<String> avail = new LinkedList();
         
         try {
-            String[] args = {"/bin/sh","-c"," cat /proc/partitions | egrep '" + subset + "' | egrep -v 'sda[1-9]|hda[1-9]|uba[1-9]' | awk '{print $4}'"};
+            String[] args = {"/bin/sh","-c"," fdisk -l | awk '/Disk/ { gsub(/(\\/dev\\/|:)/, \"\", $2) ; print $2}'"};
             Process proc = Runtime.getRuntime().exec(args);
             BufferedReader input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             String line = null;
@@ -158,11 +155,6 @@ public class SystemStats
         catch (IOException e) {}
         
         return avail;
-    }
-
-    public static List<String> getAvailableDisks()
-    {
-        return getAvailableDisks("sda|hda|uba");
     }
 
     public static int getNumNICs()
