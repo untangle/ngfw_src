@@ -128,13 +128,13 @@ elif [ $MEM -gt 1000000 ] ; then
   MAX_HEAP_SIZE=320m
   MAX_VIRTUAL_SIZE=950000
 else
-  MAX_HEAP_SIZE=200m
+  MAX_HEAP_SIZE=240m
   MAX_VIRTUAL_SIZE=850000
 fi
 
 if [ "x$USE_THROUGHPUT_COLLECTOR" = "xyes" ] ; then
-# Goals: 20ms maximum pause time, 95% throughput, finally minimum footprint
-    JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+UseParallelGC -XX:MaxGCPauseMillis=20 -XX:GCTimeRatio=19"
+# Goals: 85% throughput (don't set maxpausegcmillis here, you'll regret it)
+    JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+UseParallelGC -XX:GCTimeRatio=6"
 else
     JAVA_OPTS_SUN="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:+CMSIncrementalPacing -XX:CMSIncrementalDutyCycleMin=0 -XX:CMSIncrementalDutyCycle=10 -XX:+UseParNewGC -XX:NewRatio=4"
 fi
