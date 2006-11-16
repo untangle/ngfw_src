@@ -11,6 +11,10 @@
 
 package com.untangle.mvvm.networking;
 
+import java.net.InetAddress;
+
+import com.untangle.mvvm.api.IPSessionDesc;
+
 import com.untangle.mvvm.NetworkManager;
 
 import com.untangle.mvvm.tran.ValidateException;
@@ -35,6 +39,10 @@ public interface LocalNetworkManager extends NetworkManager
 
     public void setServicesSettings( DhcpServerSettings dhcp, DnsServerSettings dns )
         throws NetworkException;
+
+    /* This returns an address where the host should be able to access HTTP.  if HTTP is
+     * not reachable, this returns NULL */
+    public InetAddress getInternalHttpAddress( IPSessionDesc session );
 
     /* Insert all of the dynamic leases with their current values */
     public void updateLeases( DhcpServerSettings settings );

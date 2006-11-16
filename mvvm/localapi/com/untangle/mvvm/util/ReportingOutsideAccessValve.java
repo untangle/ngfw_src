@@ -21,8 +21,13 @@ public class ReportingOutsideAccessValve extends OutsideValve
         return getRemoteSettings().getIsOutsideReportingEnabled();
     }
 
-    protected String errorMessage()
+    protected String outsideErrorMessage()
     {
         return "Off-site access to reporting is disabled.";
+    }
+
+    protected String httpErrorMessage()
+    {
+        return "Standard access to reporting is disabled.";
     }
 }

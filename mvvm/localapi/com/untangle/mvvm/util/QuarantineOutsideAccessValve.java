@@ -21,8 +21,14 @@ public class QuarantineOutsideAccessValve extends OutsideValve
         return getRemoteSettings().getIsOutsideQuarantineEnabled();
     }
 
-    protected String errorMessage()
+    protected String outsideErrorMessage()
     {
         return "Off-site access to quarantine is disabled.";
     }
+
+    protected String httpErrorMessage()
+    {
+        return "Standard access to quarantine is disabled.";
+    }
+
 }

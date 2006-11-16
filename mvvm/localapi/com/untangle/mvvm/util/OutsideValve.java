@@ -28,6 +28,7 @@ import org.apache.catalina.connector.Response;
 import org.apache.catalina.valves.ValveBase;
 import org.apache.log4j.Logger;
 
+/* the name outside valve is no longer legit, since this controls access to port 80 on the inside */
 public abstract class OutsideValve extends ValveBase
 {
     private static final int DEFAULT_HTTP_PORT = 80;
@@ -45,7 +46,13 @@ public abstract class OutsideValve extends ValveBase
                 logger.debug( "The request: " + request + " caught by OutsideValve." );
             }
 
-            request.setAttribute( "com.untangle.mvvm.util.errorpage.error-message", errorMessage());
+            if (request.getLocalPort() == DEFAULT_HTTP_PORT) {
+                request.setAttribute( "com.untangle.mvvm.util.errorpage.error-message",
+                                      httpErrorMessage());
+            } else {
+                request.setAttribute( "com.untangle.mvvm.util.errorpage.error-message", 
+                                      outsideErrorMessage());
+            }
 
             response.sendError( response.SC_FORBIDDEN );
             return;
@@ -63,20 +70,27 @@ public abstract class OutsideValve extends ValveBase
     protected RemoteInternalSettings getRemoteSettings()
     {
         return MvvmContextFactory.context().networkManager().getRemoteInternalSettings();
+    }
 
+    /* Unified way to determine if access to port 80 is allowed, override if behavior is different */
+    protected boolean isInsecureAccessAllowed()
+    {
+        return getRemoteSettings().isInsideInsecureEnabled();
     }
 
     /* Unified way to determine which parameter to check */
     protected abstract boolean isOutsideAccessAllowed();
 
-    /* Unified way to determine which parameter to check */
-    protected abstract String errorMessage();
+    /* Unified way to get an error string */
+    protected abstract String outsideErrorMessage();
+
+    protected abstract String httpErrorMessage();
 
     private boolean isAccessAllowed(boolean isOutsideAccessAllowed, ServletRequest request)
     {
         String address = request.getRemoteAddr();
 
-        if (isOutsideAccessAllowed) return true;
+        if (isOutsideAccessAllowed && isInsecureAccessAllowed()) return true;
 
         try {
             if (null != address && InetAddress.getByName( address ).isLoopbackAddress()) return true;
@@ -87,7 +101,7 @@ public abstract class OutsideValve extends ValveBase
 
         int port = request.getLocalPort();
 
-        if (port == DEFAULT_HTTP_PORT) return true;
+        if (port == DEFAULT_HTTP_PORT) return isInsecureAccessAllowed();
         if (port == NetworkUtil.INTERNAL_OPEN_HTTPS_PORT) return true;
 
         return false;

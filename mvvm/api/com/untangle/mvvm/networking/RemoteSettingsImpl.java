@@ -26,12 +26,12 @@ import com.untangle.mvvm.tran.ValidateException;
 public class RemoteSettingsImpl implements Serializable, RemoteSettings, Equivalence
 {
     // private static final long serialVersionUID = 172494253701617361L;    
-    public static final boolean DEF_IS_INSIDE_INSECURE_EN = true;
-    public static final boolean DEF_IS_OUTSIDE_EN         = false;
-    public static final boolean DEF_IS_OUTSIDE_RESTRICTED = false;
-    public static final boolean DEF_IS_SSH_EN             = false;
-    public static final boolean DEF_IS_EXCEPTION_REPORTING_EN = false;
-    public static final boolean DEF_IS_TCP_WIN_EN         = false;
+    public static final boolean DEF_IS_INSIDE_INSECURE_EN = NetworkUtil.DEF_IS_INSIDE_INSECURE_EN;
+    public static final boolean DEF_IS_OUTSIDE_EN         = NetworkUtil.DEF_IS_OUTSIDE_EN;
+    public static final boolean DEF_IS_OUTSIDE_RESTRICTED = NetworkUtil.DEF_IS_OUTSIDE_RESTRICTED;
+    public static final boolean DEF_IS_SSH_EN             = NetworkUtil.DEF_IS_SSH_EN;
+    public static final boolean DEF_IS_EXCEPTION_REPORTING_EN = NetworkUtil.DEF_IS_EXCEPTION_REPORTING_EN;
+    public static final boolean DEF_IS_TCP_WIN_EN         = NetworkUtil.DEF_IS_TCP_WIN_EN;
 
     /* Post configuration script is empty */
     public static final String DEF_POST_CONFIGURATION = "";

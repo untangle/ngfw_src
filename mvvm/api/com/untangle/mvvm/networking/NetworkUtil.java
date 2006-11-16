@@ -58,9 +58,16 @@ public class NetworkUtil
 
     public static final int    DEF_HTTPS_PORT = 443;
 
+    public static final boolean DEF_IS_INSIDE_INSECURE_EN = true;
+    public static final boolean DEF_IS_OUTSIDE_EN         = true;
+    public static final boolean DEF_IS_OUTSIDE_RESTRICTED = false;
+    public static final boolean DEF_IS_SSH_EN             = false;
+    public static final boolean DEF_IS_EXCEPTION_REPORTING_EN = false;
+    public static final boolean DEF_IS_TCP_WIN_EN         = false;
+
     public static final boolean DEF_OUTSIDE_ADMINISTRATION = false;
     public static final boolean DEF_OUTSIDE_QUARANTINE = true;
-    public static final boolean DEF_OUTSIDE_REPORTING = true;
+    public static final boolean DEF_OUTSIDE_REPORTING = false;
     
     private static final String PRIVATE_NETWORK_STRINGS[] = 
     {

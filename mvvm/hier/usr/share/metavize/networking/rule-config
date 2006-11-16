@@ -94,8 +94,8 @@ else
     ANTISUBSCRIBES_LOCAL_TCP_PORTS="${ANTISUBSCRIBES_LOCAL_TCP_PORTS} ${HTTPS_PORT}_inside"
 fi
 
-# enabled by default
-if [ "x$MVVM_ALLOW_IN_HTTP" = "xfalse" ]; then
+# HTTP is always enabled, using valves to control access.
+if [ "x$MVVM_ALLOW_IN_HTTP" = "xnevertrue" ]; then
     GUARD_INSIDE_TCP_PORTS="${GUARD_INSIDE_TCP_PORTS} 80"
 fi
 

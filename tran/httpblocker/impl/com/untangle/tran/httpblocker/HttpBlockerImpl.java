@@ -438,6 +438,11 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
         Valve v = new OutsideValve()
             {
+                protected boolean isInsecureAccessAllowed()
+                {
+                    return true;
+                }
+
                 /* Unified way to determine which parameter to check */
                 protected boolean isOutsideAccessAllowed()
                 {
@@ -445,9 +450,15 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
                 }
 
                 /* Unified way to determine which parameter to check */
-                protected String errorMessage()
+                protected String outsideErrorMessage()
                 {
                     return "Off-site access prohibited";
+                }
+
+                /* Unified way to determine which parameter to check */
+                protected String httpErrorMessage()
+                {
+                    return "Standard access prohibited";
                 }
             };
 

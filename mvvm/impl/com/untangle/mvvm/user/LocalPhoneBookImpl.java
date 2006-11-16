@@ -572,10 +572,15 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
             return false;
         }
         
-        protected String errorMessage()
+        protected String outsideErrorMessage()
         {
-            return "Offsite downloading of the WMI Installer is not allowed.";
+            return "Off-site downloading of the WMI Installer is not allowed.";
         }
 
+        protected String httpErrorMessage()
+        {
+            return "Standard access to the WMI Installer is disabled.";
+        }
+        
     }
 }

@@ -362,7 +362,6 @@ class NetworkConfigurationLoader
                 remote.httpsPort( su.parseInt( properties.getProperty( PROPERTY_HTTPS_PORT ), 
                                                NetworkUtil.DEF_HTTPS_PORT ));
                 
-                
                 if ( properties.getProperty( PROPERTY_OUTSIDE_ADMINISTRATION ) == null ) {
                     logger.debug( "Outside administration is not set, using defaults." );
                     if ( isOutsideAccessEnabled ) {

@@ -40,12 +40,16 @@ public class NetworkingConfigurationImpl
     public static final HostName  DEFAULT_HOSTNAME = NetworkUtil.DEFAULT_HOSTNAME;
 
     public static final boolean DEF_IS_DHCP_EN            = false;
-    public static final boolean DEF_IS_INSIDE_INSECURE_EN = true;
-    public static final boolean DEF_IS_OUTSIDE_EN         = false;
-    public static final boolean DEF_IS_OUTSIDE_RESTRICTED = false;
-    public static final boolean DEF_IS_SSH_EN             = false;
-    public static final boolean DEF_IS_EXCEPTION_REPORTING_EN = false;
-    public static final boolean DEF_IS_TCP_WIN_EN         = false;
+    public static final boolean DEF_IS_INSIDE_INSECURE_EN = NetworkUtil.DEF_IS_INSIDE_INSECURE_EN;
+    public static final boolean DEF_IS_OUTSIDE_EN         = NetworkUtil.DEF_IS_OUTSIDE_EN;
+    public static final boolean DEF_IS_OUTSIDE_RESTRICTED = NetworkUtil.DEF_IS_OUTSIDE_RESTRICTED;
+    public static final boolean DEF_IS_SSH_EN             = NetworkUtil.DEF_IS_SSH_EN;
+    public static final boolean DEF_IS_EXCEPTION_REPORTING_EN = NetworkUtil.DEF_IS_EXCEPTION_REPORTING_EN;
+    public static final boolean DEF_IS_TCP_WIN_EN         = NetworkUtil.DEF_IS_TCP_WIN_EN;
+    
+    public static final boolean DEF_IS_OUTSIDE_ADMIN_EN   = NetworkUtil.DEF_OUTSIDE_ADMINISTRATION;
+    public static final boolean DEF_IS_OUTSIDE_QUARAN_EN  = NetworkUtil.DEF_OUTSIDE_QUARANTINE;
+    public static final boolean DEF_IS_OUTSIDE_REPORT_EN  = NetworkUtil.DEF_OUTSIDE_REPORTING;
 
     /* Post configuration script is empty */
     public static final String DEF_POST_CONFIGURATION = "";
@@ -128,9 +132,9 @@ public class NetworkingConfigurationImpl
     /* This is a script that is executed after the rule generator */
     private String customRulesScript = DEF_CUSTOM_RULES;
 
-    private boolean isOutsideAdministrationEnabled;
-    private boolean isOutsideQuarantineEnabled;
-    private boolean isOutsideReportingEnabled;
+    private boolean isOutsideAdministrationEnabled = DEF_IS_OUTSIDE_ADMIN_EN;
+    private boolean isOutsideQuarantineEnabled = DEF_IS_OUTSIDE_QUARAN_EN;
+    private boolean isOutsideReportingEnabled = DEF_IS_OUTSIDE_REPORT_EN;
 
     /* These are the PPPoE Settings for the external interface */
     private PPPoEConnectionRule pppoeSettings = getDefaultPPPoESettings();

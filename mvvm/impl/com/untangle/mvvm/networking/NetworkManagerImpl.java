@@ -30,6 +30,7 @@ import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.NetworkManager;
 import com.untangle.mvvm.NetworkingConfiguration;
 import com.untangle.mvvm.ArgonException;
+import com.untangle.mvvm.api.IPSessionDesc;
 import com.untangle.mvvm.networking.internal.InterfaceInternal;
 import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
@@ -268,7 +269,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     public synchronized void setRemoteSettings( RemoteSettings newSettings )
         throws NetworkException
     {
-        if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings:\n" + newSettings );
+        if ( logger.isDebugEnabled()) logger.debug( "new remote settings:\n" + newSettings );
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
 
         this.remote = nup.makeRemoteInternal( this.networkSettings, newSettings, this.ddnsSettings );
@@ -714,7 +715,33 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.ruleManager.subscribeLocalOutside( newValue );
     }
 
-    /** Public (private, only in impl) methods  */
+    /* This returns an address where the host should be able to access HTTP.  if HTTP is
+     * not reachable, this returns NULL */
+    public InetAddress getInternalHttpAddress( IPSessionDesc session )
+    {
+        byte argonIntf = session.clientIntf();
+
+        /* ignore everything on the external or DMZ interface */
+        if ( argonIntf == IntfConstants.EXTERNAL_INTF || argonIntf == IntfConstants.DMZ_INTF ) return null;
+        
+        /* attempt to retrieve the network space */
+        NetworkSpacesInternalSettings networkSettings = this.networkSettings;
+
+        NetworkSpaceInternal sessionSpace = null;
+        for ( InterfaceInternal intf : networkSettings.getInterfaceList()) {
+            if ( intf.getArgonIntf().getArgon() == IntfConstants.INTERNAL_INTF ) {
+                sessionSpace = intf.getNetworkSpace();
+                break;
+            }
+        }
+        
+        if ( sessionSpace == null ) {
+            logger.info( "unable to find space for internal interface." );
+            return null;
+        }
+
+        return sessionSpace.getPrimaryAddress().getNetwork().getAddr();
+    }
 
     /* Update all of the iptables rules and the inside address database */
     private void generateRules() throws NetworkException
@@ -913,11 +940,10 @@ public class NetworkManagerImpl implements LocalNetworkManager
             /* Save the network settings */
             setNetworkSettings( internal );
             
-            /* Default to HTTPs on */
-            configuration.isOutsideAccessEnabled( true );
-            configuration.setIsOutsideAdministrationEnabled( false );
-            configuration.setIsOutsideQuarantineEnabled( true );
-            configuration.setIsOutsideReportingEnabled( false );
+            configuration.isOutsideAccessEnabled( NetworkUtil.DEF_IS_OUTSIDE_EN );
+            configuration.setIsOutsideAdministrationEnabled( NetworkUtil.DEF_OUTSIDE_ADMINISTRATION );
+            configuration.setIsOutsideQuarantineEnabled( NetworkUtil.DEF_OUTSIDE_QUARANTINE );
+            configuration.setIsOutsideReportingEnabled( NetworkUtil.DEF_OUTSIDE_REPORTING );
 
             /* Save the remote settings */
             setRemoteSettings( configuration );

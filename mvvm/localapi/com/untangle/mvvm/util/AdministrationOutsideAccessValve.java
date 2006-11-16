@@ -21,8 +21,13 @@ public class AdministrationOutsideAccessValve extends OutsideValve
         return getRemoteSettings().getIsOutsideAdministrationEnabled();
     }
 
-    protected String errorMessage()
+    protected String outsideErrorMessage()
     {
         return "Off-site Administration is disabled.";
+    }
+
+    protected String httpErrorMessage()
+    {
+        return "Standard Administration is disabled.";
     }
 }
