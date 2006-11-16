@@ -12,7 +12,7 @@ TransformContext tctx = tman.transformContext(tid);
 Spyware tran = (Spyware)tctx.transform();
 BlockDetails bd = tran.getBlockDetails(nonce);
 
-String header = "Untangle Spyware Blocker";
+String header = "Spyware Blocker";
 String host = bd.getHost();
 String url = bd.getUrl();
 %>
