@@ -185,6 +185,7 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
                     Util.setUpgradeCount(0);
                     SwingUtilities.invokeLater( new Runnable(){ public void run(){
                         StoreCheckJDialog.this.jProgressBar.setIndeterminate(false);
+                        StoreCheckJDialog.this.jProgressBar.setValue(1);
                         StoreCheckJDialog.this.jProgressBar.setString("No upgrades found.  Proceeding.");
                     }});
                     Thread.sleep(2000l);
@@ -195,6 +196,7 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
                     Util.setUpgradeCount(mackageDescs.length);
                     SwingUtilities.invokeLater( new Runnable(){ public void run(){
                         StoreCheckJDialog.this.jProgressBar.setIndeterminate(false);
+                        StoreCheckJDialog.this.jProgressBar.setValue(1);
                         StoreCheckJDialog.this.jProgressBar.setString("Upgrades found.  Please perform upgrades.");
                     }});
                 }
