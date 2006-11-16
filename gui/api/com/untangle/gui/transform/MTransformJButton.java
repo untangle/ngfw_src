@@ -96,9 +96,6 @@ public class MTransformJButton extends JButton {
         //DISPLAY NAME
         nameJLabel = new JLabel();
 	String tempName;
-	if(isTrial)
-	    tempName = mackageDesc.getDisplayName() + "<br>(30 Day Trial)";
-	else
 	    tempName = mackageDesc.getDisplayName();
         nameJLabel.setText( "<html><b>" + Util.wrapString(tempName, 19) + "</b></html>");
         nameJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -167,7 +164,15 @@ public class MTransformJButton extends JButton {
     }
 
     public boolean getIsTrial(){ return isTrial; }
-    public void setIsTrial(boolean isTrial){ this.isTrial = isTrial; }
+    public void setIsTrial(boolean isTrial){
+        this.isTrial = isTrial;
+        String tempName;
+    	if(isTrial)
+            tempName = mackageDesc.getDisplayName() + " (Trial)";
+        else
+            tempName = mackageDesc.getDisplayName();
+        nameJLabel.setText( "<html><b>" + Util.wrapString(tempName, 19) + "</b></html>");
+}
 
     // CONVENIENCE WRAPPERS FOR MACKAGE /////////
     public MackageDesc getMackageDesc(){ return mackageDesc; }
@@ -180,10 +185,7 @@ public class MTransformJButton extends JButton {
 	return name;
     }
     public String getDisplayName(){
-	String displayName = mackageDesc.getDisplayName();
-	if(isTrial)
-	    displayName += " (30 Day Trial)";
-	return displayName;
+        return mackageDesc.getDisplayName();
     }
     public int    getViewPosition(){ return mackageDesc.getViewPosition(); }
     public String getPrice(){ return mackageDesc.getPrice(); }
