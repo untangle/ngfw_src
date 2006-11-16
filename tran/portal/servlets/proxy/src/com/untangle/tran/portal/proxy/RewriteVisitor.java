@@ -34,7 +34,6 @@ class RewriteVisitor extends NodeVisitor
     private final Logger logger = Logger.getLogger(getClass());
 
     private boolean seenBody = false;
-    private boolean inScript = false;
 
     // constructs -------------------------------------------------------------
 
@@ -70,13 +69,6 @@ class RewriteVisitor extends NodeVisitor
         if (tagName.equalsIgnoreCase("script")) {
             String type = tag.getAttribute("type");
             String language = tag.getAttribute("language");
-            if (null != type
-                && (type.equalsIgnoreCase("text/javascript")
-                    || type.equalsIgnoreCase("application/x-javascript"))) {
-                inScript = true;
-            } else if (null != language && language.equalsIgnoreCase("javascript")) {
-                inScript = true;
-            }
         }
 
         for (Attribute a : (List<Attribute>)tag.getAttributesEx()) {
@@ -86,40 +78,6 @@ class RewriteVisitor extends NodeVisitor
                 if (name.equalsIgnoreCase("href")
                     || name.equalsIgnoreCase("src")) {
                     a.setValue(rewriter.rewriteUrl(a.getValue()));
-                } else if (name.equalsIgnoreCase("onload")
-                           || name.equalsIgnoreCase("onunload")
-                           || name.equalsIgnoreCase("onclick")
-                           || name.equalsIgnoreCase("ondblclick")
-                           || name.equalsIgnoreCase("onmousedown")
-                           || name.equalsIgnoreCase("onmouseup")
-                           || name.equalsIgnoreCase("onmouseover")
-                           || name.equalsIgnoreCase("onmousemove")
-                           || name.equalsIgnoreCase("onmouseout")
-                           || name.equalsIgnoreCase("onfocus")
-                           || name.equalsIgnoreCase("onblur")
-                           || name.equalsIgnoreCase("onkeypress")
-                           || name.equalsIgnoreCase("onkeydown")
-                           || name.equalsIgnoreCase("onkeyup")
-                           || name.equalsIgnoreCase("onsubmit")
-                           || name.equalsIgnoreCase("onreset")
-                           || name.equalsIgnoreCase("onselect")
-                           || name.equalsIgnoreCase("onchange")) {
-                    String s = a.getValue();
-                    if (!s.endsWith(";")) {
-                        s += ";";
-                    }
-                    Reader r = new StringReader(s);
-                    StringWriter w = new StringWriter(s.length());
-                    try {
-                        rewriter.filterJavaScript(r, w);
-                    } catch (IOException exn) {
-                        logger.error("this won't happen", exn);
-                    }
-                    StringBuffer sb = w.getBuffer();
-                    while (0 < sb.length() && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
-                        sb.deleteCharAt(sb.length() - 1);
-                    }
-                    a.setValue(sb.toString());
                 } else if (name.equalsIgnoreCase("action") && tagName.equalsIgnoreCase("form")) {
                     a.setValue(rewriter.rewriteUrl(a.getValue()));
                 }
@@ -137,10 +95,6 @@ class RewriteVisitor extends NodeVisitor
     @Override
     public void visitEndTag(Tag tag)
     {
-        if (tag.getTagName().equalsIgnoreCase("script")) {
-            inScript = false;
-        }
-
         writer.print(tag.toHtml());
     }
 
@@ -148,18 +102,7 @@ class RewriteVisitor extends NodeVisitor
     public void visitStringNode(Text string)
     {
         String text = string.getText();
-        if (inScript) {
-            Reader r = new StringReader(text);
-            Writer w = new StringWriter(text.length());
-            try {
-                rewriter.filterJavaScript(r, w);
-            } catch (IOException exn) {
-                logger.error("this won't happen", exn);
-            }
-            writer.print(w.toString());
-        } else {
-            writer.print(text);
-        }
+        writer.print(text);
     }
 
     @Override

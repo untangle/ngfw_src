@@ -192,8 +192,8 @@ public class WebProxy extends HttpServlet
             } else if (k.equalsIgnoreCase("referer")) {
                 String v = req.getHeader(k);
                 method.addRequestHeader("Referer", rewriter.unwriteUrl(v));
-            } else if (k.equalsIgnoreCase("user-agent")) {
-                method.addRequestHeader("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8) Gecko/20051111 Firefox/1.5");
+             } else if (k.equalsIgnoreCase("user-agent")) {
+                method.addRequestHeader("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8) Gecko/20051111 ]Firefox/1.5");
             } else {
                 for (Enumeration f = req.getHeaders(k); f.hasMoreElements(); ) {
                     String v = (String)f.nextElement();
@@ -247,11 +247,6 @@ public class WebProxy extends HttpServlet
             Reader r = new InputStreamReader(is);
             Writer w = resp.getWriter();
             rewriter.filterCss(r, w);
-        } else if (contentType.startsWith("text/javascript")
-                   || contentType.startsWith("application/x-javascript")) {
-            Reader r = new InputStreamReader(is);
-            Writer w = resp.getWriter();
-            rewriter.filterJavaScript(r, w);
         } else {
             OutputStream os = resp.getOutputStream();
             copyStream(is, os);

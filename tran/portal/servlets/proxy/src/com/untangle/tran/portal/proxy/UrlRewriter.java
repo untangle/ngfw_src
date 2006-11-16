@@ -36,10 +36,6 @@ class UrlRewriter
         = Pattern.compile("url\\s*\\(\\s*(('[^']*')|(\"[^\"]*\"))\\s*\\)",
                           Pattern.CASE_INSENSITIVE);
 
-    private static final Pattern JS_HREF_PATTERN
-        = Pattern.compile("(((location\\.\\S+)|(\\S+\\.location))\\s*=\\s*)(.*);",
-                          Pattern.CASE_INSENSITIVE);
-
     private final String localHost;
     private final String contextBase;
     private final String proto;
@@ -189,28 +185,6 @@ class UrlRewriter
                 String rep = m.group(1);
                 rep = rewriteUrl(rep.substring(1, rep.length() - 1));
                 m.appendReplacement(sb, "url('" + rep + "')");
-            }
-            m.appendTail(sb);
-            l = sb;
-
-            w.append(l);
-            w.append("\n");
-        }
-    }
-
-    void filterJavaScript(Reader r, Writer w)
-        throws IOException
-    {
-        BufferedReader br = new BufferedReader(r);
-
-        CharSequence l;
-        while (null != (l = br.readLine())) {
-            Matcher m = JS_HREF_PATTERN.matcher(l);
-
-            StringBuffer sb = new StringBuffer();
-            while (m.find()) {
-                String rep = m.group(1) + "mv_repl(" + m.group(5) + ");";
-                m.appendReplacement(sb, rep);
             }
             m.appendTail(sb);
             l = sb;
