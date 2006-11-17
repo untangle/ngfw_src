@@ -153,8 +153,8 @@ public class UpgradeProcessJPanel extends JPanel
                 upgradeJButton.setFocusable(false);
                 upgradeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 upgradeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                upgradeJButton.setMaximumSize(null);
-                upgradeJButton.setMinimumSize(null);
+                upgradeJButton.setMaximumSize(new java.awt.Dimension(100, 25));
+                upgradeJButton.setMinimumSize(new java.awt.Dimension(100, 25));
                 upgradeJButton.setPreferredSize(new java.awt.Dimension(100, 25));
                 upgradeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
