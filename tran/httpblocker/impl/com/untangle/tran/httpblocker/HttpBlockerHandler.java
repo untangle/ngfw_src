@@ -11,6 +11,7 @@
 
 package com.untangle.tran.httpblocker;
 
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import com.untangle.mvvm.MvvmContextFactory;
@@ -27,6 +28,20 @@ import org.apache.log4j.Logger;
 
 public class HttpBlockerHandler extends HttpStateMachine
 {
+    private static final String BLOCK_TEMPLATE
+        = "<HTML><HEAD>"
+        + "<TITLE>403 Forbidden</TITLE>"
+        + "</HEAD><BODY>"
+        + "<center><b>%s</b></center>"
+        + "<p>This site blocked because of inappropriate content</p>"
+        + "<p>Host: %s</p>"
+        + "<p>URI: %s</p>"
+        + "<p>Category: %s</p>"
+        + "<p>Please contact %s</p>"
+        + "<HR>"
+        + "<ADDRESS>Metavize EdgeGuard</ADDRESS>"
+        + "</BODY></HTML>";
+
     private static final int SCAN = Transform.GENERIC_0_COUNTER;
     private static final int BLOCK = Transform.GENERIC_1_COUNTER;
     private static final int PASS = Transform.GENERIC_2_COUNTER;
@@ -131,9 +146,50 @@ public class HttpBlockerHandler extends HttpStateMachine
 
     private Token[] generateResponse(BlockDetails details, boolean persistent)
     {
-        String hostname = MvvmContextFactory.context().networkManager()
-            .getPublicAddress();
-        String blockPageUrl = "http://" + hostname
+        InetAddress addr = MvvmContextFactory.context().networkManager()
+            .getInternalHttpAddress(getSession());
+        if (null == addr) {
+            return generateSimplePage(details, persistent);
+        } else {
+            String host = addr.getHostAddress();
+            System.out.print("REDIRECT HOST: " + host);
+            return generateRedirect(host, details, persistent);
+        }
+    }
+
+    private Token[] generateSimplePage(BlockDetails details, boolean persistent)
+    {
+        Token response[] = new Token[4];
+
+        String replacement = String.format(BLOCK_TEMPLATE, details.getHeader(),
+                                           details.getHost(), details.getUri(),
+                                           details.getReason(),
+                                           details.getContact());
+
+        ByteBuffer buf = ByteBuffer.allocate(replacement.length());
+        buf.put(replacement.getBytes()).flip();
+
+        StatusLine sl = new StatusLine("HTTP/1.1", 403, "Forbidden");
+        response[0] = sl;
+
+        Header h = new Header();
+        h.addField("Content-Length", Integer.toString(buf.remaining()));
+        h.addField("Content-Type", "text/html");
+        h.addField("Connection", persistent ? "Keep-Alive" : "Close");
+        response[1] = h;
+
+        Chunk c = new Chunk(buf);
+        response[2] = c;
+
+        response[3] = EndMarker.MARKER;
+
+        return response;
+    }
+
+    private Token[] generateRedirect(String host, BlockDetails details,
+                                     boolean persistent)
+    {
+        String blockPageUrl = "http://" + host
             + "/httpblocker/blockpage.jsp?nonce=" + details.getNonce()
             + "&tid=" + transform.getTid();
 

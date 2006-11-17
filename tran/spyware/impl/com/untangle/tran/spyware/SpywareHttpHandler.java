@@ -62,7 +62,7 @@ public class SpywareHttpHandler extends HttpStateMachine
             0x01, 0x00, 0x3b
         };
 
-    private static final String BLOCK_TEMPLATE
+    private static final String REDIRECT_BLOCK_TEMPLATE
         = "<HTML><HEAD>"
         + "<TITLE>403 Forbidden</TITLE>"
         + "</HEAD><BODY>"
@@ -70,6 +70,25 @@ public class SpywareHttpHandler extends HttpStateMachine
         + "var e = document.getElementById(\"untangleDetect\")\n"
         + "if (window == window.top && e.parentNode.tagName == \"BODY\") {\n"
         + "  window.location.href = '%s';"
+        + "}\n"
+        + "</script>"
+        + "</BODY></HTML>";
+
+    // XXX, someone,, make, this, pretty,
+    private static final String SIMPLE_BLOCK_TEMPLATE
+        = "<HTML><HEAD>"
+        + "<TITLE>403 Forbidden</TITLE>"
+        + "</HEAD><BODY>"
+        + "<script id='metavizeDetect' type='text/javascript'>\n"
+        + "var e = document.getElementById(\"metavizeDetect\")\n"
+        + "if (window == window.top && e.parentNode.tagName == \"BODY\") {\n"
+        + "  document.writeln(\"<center><b>Metavize Spyware Blocker</b></center>\")\n"
+        + "  document.writeln(\"<p>This site blocked because it may be a spyware site.</p>\")\n"
+        + "  document.writeln(\"<p>Host: %s</p>\")\n"
+        + "  document.writeln(\"<p>URI: %s</p>\")\n"
+        + "  document.writeln(\"<p>Please contact your network administrator.</p>\")\n"
+        + "  document.writeln(\"<HR>\")\n"
+        + "  document.writeln(\"<ADDRESS>Metavize EdgeGuard</ADDRESS>\")\n"
         + "}\n"
         + "</script>"
         + "</BODY></HTML>";
@@ -246,18 +265,41 @@ public class SpywareHttpHandler extends HttpStateMachine
         return bb;
     }
 
+
     private ByteBuffer generateHtml(String host, String uri)
+    {
+        InetAddress addr = MvvmContextFactory.context().networkManager()
+            .getInternalHttpAddress(getSession());
+        if (null == addr) {
+            return generateSimplePage(host, uri);
+        } else {
+            String redirectHost = addr.getHostAddress();
+            System.out.print("REDIRECT HOST: " + redirectHost);
+            return generateRedirect(redirectHost, host, uri);
+        }
+    }
+
+    private ByteBuffer generateSimplePage(String host, String uri)
+    {
+        String replacement = String.format(SIMPLE_BLOCK_TEMPLATE, host, uri);
+
+        ByteBuffer buf = ByteBuffer.allocate(replacement.length());
+        buf.put(replacement.getBytes()).flip();
+
+        return buf;
+    }
+
+    private ByteBuffer generateRedirect(String redirectHost, String host, String uri)
     {
         InetAddress addr = session.clientAddr();
         String nonce = NonceFactory.factory().generateNonce(host, uri, addr);
 
         String tidStr = transform.getTid().toString();
-        String hostname = MvvmContextFactory.context().networkManager()
-            .getPublicAddress();
-        String url = "http://" + hostname + "/spyware/blockpage.jsp?nonce="
+
+        String url = "http://" + redirectHost + "/spyware/blockpage.jsp?nonce="
             + nonce + "&tid=" + tidStr;
 
-        String replacement = String.format(BLOCK_TEMPLATE, url);
+        String replacement = String.format(REDIRECT_BLOCK_TEMPLATE, url);
 
         ByteBuffer buf = ByteBuffer.allocate(replacement.length());
         buf.put(replacement.getBytes()).flip();

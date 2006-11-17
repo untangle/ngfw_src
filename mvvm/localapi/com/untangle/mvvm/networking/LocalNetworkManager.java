@@ -13,20 +13,17 @@ package com.untangle.mvvm.networking;
 
 import java.net.InetAddress;
 
-import com.untangle.mvvm.api.IPSessionDesc;
-
 import com.untangle.mvvm.NetworkManager;
-
-import com.untangle.mvvm.tran.ValidateException;
-
+import com.untangle.mvvm.api.IPSessionDesc;
 import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.untangle.mvvm.networking.internal.RemoteInternalSettings;
 import com.untangle.mvvm.networking.internal.ServicesInternalSettings;
+import com.untangle.mvvm.tran.ValidateException;
 
 public interface LocalNetworkManager extends NetworkManager
 {
     public RemoteInternalSettings getRemoteInternalSettings();
-    
+
     public NetworkSpacesInternalSettings getNetworkInternalSettings();
 
     public ServicesInternalSettings getServicesInternalSettings();
@@ -40,8 +37,8 @@ public interface LocalNetworkManager extends NetworkManager
     public void setServicesSettings( DhcpServerSettings dhcp, DnsServerSettings dns )
         throws NetworkException;
 
-    /* This returns an address where the host should be able to access HTTP.  if HTTP is
-     * not reachable, this returns NULL */
+    /* This returns an address where the host should be able to access
+     * HTTP.  if HTTP is not reachable, this returns NULL */
     public InetAddress getInternalHttpAddress( IPSessionDesc session );
 
     /* Insert all of the dynamic leases with their current values */
@@ -52,7 +49,7 @@ public interface LocalNetworkManager extends NetworkManager
     public void stopServices();
 
     public void disableNetworkSpaces() throws NetworkException;
-    
+
     public void enableNetworkSpaces() throws NetworkException;
 
     public void registerListener( NetworkSettingsListener networkListener );
