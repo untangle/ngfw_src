@@ -24,7 +24,9 @@ if (null == text) {
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-<title>Remote Access Portal Login</title>
+<title>
+      <%=title%>
+</title>
 </head>
 
 <body LINK="#0000EE" VLINK="#0000EE" style="background-image: url(<%=scheme%>://<%=host%>/images/DarkBackground1600x100.jpg);">
