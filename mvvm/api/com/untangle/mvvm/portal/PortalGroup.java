@@ -121,7 +121,7 @@ public class PortalGroup implements Serializable
      * @return the PortalHomeSettings.
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="home_settings_id", nullable=false)
+    @JoinColumn(name="home_settings_id")
     public PortalHomeSettings getPortalHomeSettings()
     {
         return portalHomeSettings;

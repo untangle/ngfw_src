@@ -89,8 +89,9 @@ public class PortalSettings implements Serializable
     @IndexColumn(name="position")
     public List<PortalUser> getUsers()
     {
-        if (users == null)
+        if (users == null) {
             users = new ArrayList<PortalUser>();
+        }
 
         return this.users;
     }
