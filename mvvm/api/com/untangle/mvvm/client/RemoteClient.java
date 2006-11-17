@@ -388,7 +388,7 @@ public class RemoteClient
         for (int i = 0; i < mkgs.length; i++) {
             System.out.println(pad(mkgs[i].getName())
                                + "extraName: " + mkgs[i].getExtraName()
-                               + "installed: " + mkgs[i].getInstalledVersion()
+                               + "\tinstalled: " + mkgs[i].getInstalledVersion()
                                + "\tavailable: "
                                + mkgs[i].getAvailableVersion());
         }
@@ -400,7 +400,7 @@ public class RemoteClient
         for (int i = 0; i < mkgs.length; i++) {
             System.out.println(pad(mkgs[i].getName())
                                + "extraName: " + mkgs[i].getExtraName()
-                               + "installed: " + mkgs[i].getInstalledVersion()
+                               + "\tinstalled: " + mkgs[i].getInstalledVersion()
                                + "\tavailable: " + mkgs[i].getAvailableVersion()
                                + "\ttype: " + mkgs[i].getType());
         }
@@ -412,7 +412,7 @@ public class RemoteClient
         for (int i = 0; i < mkgs.length; i++) {
             System.out.println(pad(mkgs[i].getName())
                                + "extraName: " + mkgs[i].getExtraName()
-                               + "installed: " + mkgs[i].getInstalledVersion()
+                               + "\tinstalled: " + mkgs[i].getInstalledVersion()
                                + "\tavailable: " + mkgs[i].getAvailableVersion());
         }
     }
@@ -423,7 +423,7 @@ public class RemoteClient
         for (int i = 0; i < mkgs.length; i++) {
             System.out.println(pad(mkgs[i].getName())
                                + "extraName: " + mkgs[i].getExtraName()
-                               + "installed: " + mkgs[i].getInstalledVersion()
+                               + "\tinstalled: " + mkgs[i].getInstalledVersion()
                                + "\tavailable: " + mkgs[i].getAvailableVersion());
         }
     }
