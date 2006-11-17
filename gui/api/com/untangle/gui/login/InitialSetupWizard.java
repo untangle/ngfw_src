@@ -68,9 +68,17 @@ public class InitialSetupWizard extends MWizardJDialog {
     }
     
     protected void wizardFinishedAbnormal(int currentPage){
-        if( currentPage == 9 ){
-            wizardFinishedNormal();
-            return;
+        if( Util.getIsCD() ){
+            if( currentPage == 10 ){
+                wizardFinishedNormal();
+                return;
+            }
+        }
+        else{
+            if( currentPage == 9 ){
+                wizardFinishedNormal();
+                return;
+            }
         }
 
         MTwoButtonJDialog dialog = MTwoButtonJDialog.factory(this, "Setup Wizard", "If you exit now, " +
