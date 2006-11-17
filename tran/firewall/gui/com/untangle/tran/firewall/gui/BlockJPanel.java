@@ -144,9 +144,6 @@ class BlockTableModel extends MSortedTableModel<Object>{
         tempRow.add( firewallRule.isLive() );
         tempRow.add( super.generateComboBoxModel( FirewallRule.getActionEnumeration(), firewallRule.getAction().toString() ) );
         tempRow.add( firewallRule.getLog() );
-        System.out.println("PROTO ENUM: " + ProtocolMatcherFactory.getProtocolEnumeration());
-        System.out.println("FR RULE: " + firewallRule);
-        System.out.println("FR PROTO: " + firewallRule.getProtocol());
         tempRow.add( super.generateComboBoxModel( ProtocolMatcherFactory.getProtocolEnumeration(), firewallRule.getProtocol().toString() ) );
         tempRow.add( super.generateComboBoxModel( TrafficDirectionRule.getDirectionEnumeration(), firewallRule.getDirection().toString() ) );
         tempRow.add( firewallRule.getSrcAddress().toString() );
