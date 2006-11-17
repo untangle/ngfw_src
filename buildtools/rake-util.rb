@@ -428,7 +428,7 @@ class EmptyTarget < Target
 end
 
 class CopyFiles < Target
-  @@ignored_extensions = /(jpe?g|png|gif|exe|ico|lib|jar)$/
+  @@ignored_extensions = /(jpe?g|png|gif|exe|ico|lib|jar|sys|bmp|dll)$/
 
   def initialize(package, moveSpecs, taskName, filterset = nil, destBase = nil)
 
