@@ -23,12 +23,12 @@ function NavigationBar(parent)
     html.push("<td>");
     html.push("<table width='100%' height='100%' border=0>");
     html.push("<tr><td>");
-    html.push("<div style='font: bold normal normal 15pt Arial,Sans-Serif; color: #777777;' id='");
+    html.push("<div style='padding: 0px 0px 0px 10px; font: bold normal normal 15pt Arial,Sans-Serif; color: #777777;' id='");
     html.push(titleId);
     html.push("'/>");
     html.push("</td></tr>");
     html.push("<tr><td>");
-    html.push("<div style='font: bold normal normal 8pt Arial,Sans-Serif; color: #777777;' id='");
+    html.push("<div style='padding: 0px 0px 0px 10px; font: bold normal normal 8pt Arial,Sans-Serif; color: #777777;' id='");
     html.push(usernameId);
     html.push("'/>");
     html.push("</td></tr>");
