@@ -74,7 +74,8 @@ public class InitialSetupInterfaceJPanel extends MWizardPageJPanel {
 	return true;
     }
     public void finishedAbnormal(){
-	interfaceDetectThread.stopDetection();
+        if(interfaceDetectThread != null)
+            interfaceDetectThread.stopDetection();
     }
 
     private class InterfaceDetectThread extends Thread {
