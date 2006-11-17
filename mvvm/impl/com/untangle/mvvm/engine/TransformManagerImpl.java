@@ -435,6 +435,7 @@ class TransformManagerImpl implements LocalTransformManager
             final MackageDesc mackageDesc = tbm.mackageDesc(name);
             URL[] urls = tbm.resources(name);
             final URLClassLoader cl = getClassLoader(tDesc, urls);
+            logger.info("Starting transform: " + name + " with ClassLoader: " + cl);
 
             Thread t = MvvmContextFactory.context().newThread(new Runnable()
                 {
@@ -477,6 +478,7 @@ class TransformManagerImpl implements LocalTransformManager
                                                        Set<String> loadedParents)
     {
         List<TransformPersistentState> l = new ArrayList<TransformPersistentState>(unloaded.size());
+        Set<String> thisPass = new HashSet<String>(unloaded.size());
 
         for (Iterator<TransformPersistentState> i = unloaded.iterator(); i.hasNext(); ) {
             TransformPersistentState tps = i.next();
@@ -497,9 +499,16 @@ class TransformManagerImpl implements LocalTransformManager
                 if (false == parentsLoaded) { break; }
             }
 
-            if (parentsLoaded) {
+            String name = tDesc.getName();
+
+            // all parents loaded and another instance of this
+            // transform not loading this pass or already loaded in
+            // previous pass (prevents classloader race).
+            if (parentsLoaded
+                && (!thisPass.contains(name) || loadedParents.contains(name))) {
                 i.remove();
                 l.add(tps);
+                thisPass.add(name);
             }
         }
 
