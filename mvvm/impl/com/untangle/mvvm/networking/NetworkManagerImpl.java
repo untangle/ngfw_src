@@ -120,6 +120,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* the netcap  */
     private final Netcap netcap = Netcap.getInstance();
 
+    /* the address of the internal interface, used for the web address */
+    private InetAddress internalAddress;
+
     /* Flag to indicate when the MVVM has been shutdown */
     private boolean isShutdown = false;
 
@@ -724,23 +727,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         /* ignore everything on the external or DMZ interface */
         if ( argonIntf == IntfConstants.EXTERNAL_INTF || argonIntf == IntfConstants.DMZ_INTF ) return null;
         
-        /* attempt to retrieve the network space */
-        NetworkSpacesInternalSettings networkSettings = this.networkSettings;
-
-        NetworkSpaceInternal sessionSpace = null;
-        for ( InterfaceInternal intf : networkSettings.getInterfaceList()) {
-            if ( intf.getArgonIntf().getArgon() == IntfConstants.INTERNAL_INTF ) {
-                sessionSpace = intf.getNetworkSpace();
-                break;
-            }
-        }
-        
-        if ( sessionSpace == null ) {
-            logger.info( "unable to find space for internal interface." );
-            return null;
-        }
-
-        return sessionSpace.getPrimaryAddress().getNetwork().getAddr();
+        return internalAddress;
     }
 
     /* Update all of the iptables rules and the inside address database */
@@ -1281,8 +1268,18 @@ public class NetworkManagerImpl implements LocalNetworkManager
             }
             
             if ( !isFound ) logger.warn( "unable to find internal interface, using primary interface" );
-            
+
             ipmf.setInternalNetworks( internal.getNetworkList());
+
+            /* somewhat of a hack, because this is where the internal space is looked up */
+            try { 
+                IPaddr addr = internal.getPrimaryAddress().getNetwork();
+                if ( addr.isEmpty()) internalAddress = null;
+                else internalAddress = addr.getAddr();
+            } catch ( Exception e ) {
+                logger.warn( "unable to properly update the internal address, using null", e );
+                internalAddress = null;
+            }            
         }
     }
 

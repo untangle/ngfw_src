@@ -18,7 +18,7 @@
 !define CERT_FILES "@MVVM_CONF@/certs"
 
 ## Product information
-!define PRODUCT_NAME "WMI Mapper"
+!define PRODUCT_NAME "Active Directory Lookup Server"
 !define VERSION "2.5.3"
 
 ## The service name
@@ -92,7 +92,7 @@ Name "${PRODUCT_NAME} ${VERSION}"
 ##--------------------------------
 ## Language Strings
 
-  LangString DESC_SecInstallWMIMapper ${LANG_ENGLISH} "Install WMI Mapper, including necessary configuration files."
+  LangString DESC_SecInstallWMIMapper ${LANG_ENGLISH} "Install ${PRODUCT_NAME}, including necessary configuration files."
 
 ##--------------------------------
 ## Functions
@@ -102,7 +102,7 @@ Function QuitWMIServer
   pop $5
   IntCmp $5 0 killdone
 
-  DetailPrint "Exiting the remaining WMI Mapper processes."
+  DetailPrint "Exiting the remaining ${PRODUCT_NAME} processes."
   push "${PROCESS_NAME}"
   processwork::KillProcess 
   pop $5
@@ -120,7 +120,7 @@ FunctionEnd
 ##--------------------------------
 ## Installer Sections
 
-Section "WMIMapper" SecInstallWMIMapper
+Section "${PRODUCT_NAME}" SecInstallWMIMapper
   Call QuitWMIServer
 
   SetOverwrite on
@@ -129,8 +129,22 @@ Section "WMIMapper" SecInstallWMIMapper
   File "${HOME}\${PROGRAM_NAME}"
   File "${HOME}\cimserver_current.conf"
   File "${HOME}\cimserver_planned.conf"
-  File "${HOME}\libeay32.lib"
-  File "${HOME}\ssleay32.lib"
+  File "${HOME}\libeay32.dll"
+  File "${HOME}\libssl32.dll"
+  File "${HOME}\pegauthentication.dll"
+  File "${HOME}\pegclient.dll"
+  File "${HOME}\pegcommon.dll"
+  File "${HOME}\pegconfig.dll"
+  File "${HOME}\pegexportserver.dll"
+  File "${HOME}\pegquerycommon.dll"
+  File "${HOME}\pegrepository.dll"
+  File "${HOME}\pegservice.dll"
+  File "${HOME}\pegslp_client.dll"
+  File "${HOME}\pegslp.dll"
+  File "${HOME}\peguser.dll"
+  File "${HOME}\pegwmiserver.dll"
+  File "${HOME}\ssleay32.dll"
+  File "${HOME}\WMIProvider.dll"
   File /oname=server.key "${KEY_FILE}"
   File /oname=server.crt "${CRT_FILE}"
 SectionEnd
@@ -154,12 +168,12 @@ Section -post
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
 ##installservice:
-  DetailPrint "Installing the WMI Mapper Service."
+  DetailPrint "Installing the ${PRODUCT_NAME} Service."
   nsExec::ExecToLog '"$INSTDIR\${PROGRAM_NAME}" -install ${SERVICE_NAME}'
   Pop $R0 # return value/error/timeout
 
 ## updateregistry:
-  DetailPrint "Updating the registry for the WMI Server"
+  DetailPrint "Updating the registry for the ${PRODUCT_NAME}"
   ## Set to automatically start at startup
   WriteRegDWORD HKLM "${SERVICE_REG}" "Start" 0x2
   ## Set to the correct home
@@ -168,7 +182,7 @@ Section -post
   WriteRegExpandStr HKLM "${SERVICE_REG}" "ImagePath" '"$INSTDIR\${PROGRAM_NAME}" -D "$INSTDIR"'
 
 ## Start the service
-  DetailPrint "Starting the WMI Mapper Service."
+  DetailPrint "Starting the ${PRODUCT_NAME} Service."
   nsExec::ExecToLog '"$INSTDIR\${PROGRAM_NAME}" -start ${SERVICE_NAME}'
   Pop $R0 # return value/error/timeout
 

@@ -5,7 +5,7 @@
 <head>
 
 <!-- HEADING -->
-  <title>WMI Mapper Installer</title>
+  <title>Active Directory Lookup Server Installer</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
 
   <link rel="stylesheet" href="style.css" type="text/css"/>
@@ -45,7 +45,7 @@
               </td>
 
               <td style="padding: 0px 0px 0px 10px;" class="page_header_title" align="left" valign="middle">
-                WMI Installer<br/>
+                Active Directory Lookup Server<br/>
                 Download Utility
               </td>
             </tr>
