@@ -373,7 +373,7 @@ public class UserHomeSettingsJPanel extends javax.swing.JPanel implements Savabl
                 restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
 
                 explorerJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                explorerJLabel.setText("Show Network File Browser: ");
+                explorerJLabel.setText("Show Application List: ");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
