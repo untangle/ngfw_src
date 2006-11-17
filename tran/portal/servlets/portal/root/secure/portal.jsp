@@ -57,7 +57,7 @@
 function launch() {
 DBG = new AjxDebug(AjxDebug.NONE, null, false);
 
-var shell = new DwtShell(null, false);
+var shell = new DwtShell(null, !AjxEnv.isIE);
 var portal = new Portal(shell);
 portal.setZIndex(Dwt.Z_VIEW);
 }

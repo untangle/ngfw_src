@@ -131,7 +131,9 @@ BookmarkPanel.prototype._init = function()
     this._toolbar.reparentHtmlElement(toolbarId);
 
     this._bookmarkList = new BookmarkList(this);
-    this._bookmarkList.setScrollStyle(DwtControl.SCROLL);
+    if (AjxEnv.isIE) {
+        this._bookmarkList.setScrollStyle(DwtControl.SCROLL);
+    }
     this._bookmarkList.reparentHtmlElement(listId);
     var l = new AjxListener(this, this._listSelectionListener);
     this._bookmarkList.addSelectionListener(l);
