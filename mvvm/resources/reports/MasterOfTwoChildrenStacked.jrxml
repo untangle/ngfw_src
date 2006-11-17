@@ -32,14 +32,14 @@
         </band>
     </background>
     <title>
-        <!-- 96 (logo) + 240 (2 subreports) + spacing -->
-        <band height="370"  isSplitAllowed="true" >
+        <!-- 96 (logo) + 13 (userName) + 240 (2 subreports) + spacing -->
+        <band height="380"  isSplitAllowed="true" >
 
             <image>
-              <reportElement key="image" positionType="Float" mode="Opaque" x="0" y="0" width="128" height="92"/>
+              <reportElement key="image" positionType="Float" mode="Opaque" x="0" y="0" width="150" height="96"/>
               <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#FFFFFF"/>
               <graphicElement/>
-              <imageExpression class="java.lang.String"><![CDATA["com/untangle/gui/icons/Logo128x92.gif"]]></imageExpression>
+              <imageExpression class="java.lang.String"><![CDATA["com/untangle/gui/icons/Logo150x96.gif"]]></imageExpression>
             </image>
 
             <textField pattern="">
@@ -67,8 +67,18 @@
               <graphicElement pen="Thin" fill="Solid"/>
             </line>
 
+            <textField pattern="">
+              <reportElement positionType="Float" x="0" y="106" width="572" height="13"/>
+              <textElement textAlignment="Center">
+                <font fontName="SansSerif" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded="false" pdfEncoding="Cp1252" isStrikeThrough="false" />
+              </textElement>
+              <textFieldExpression class="java.lang.String">
+                <![CDATA[null != $P{userName} ? new String($P{userName}) : new String("")]]>
+              </textFieldExpression>
+            </textField>
+
             <subreport>
-                <reportElement key="subreport-1" positionType="Float" mode="Opaque" x="0" y="106" width="276" height="120"/>
+                <reportElement key="subreport-1" positionType="Float" mode="Opaque" x="0" y="123" width="276" height="120"/>
                 <subreportParameter name="userName">
                     <subreportParameterExpression><![CDATA[$P{userName}]]></subreportParameterExpression>
                 </subreportParameter>
@@ -83,7 +93,7 @@
                 <subreportExpression class="java.lang.String"><![CDATA["@SUBREPORT_1@"]]></subreportExpression>
             </subreport>
             <subreport>
-                <reportElement key="subreport-2" positionType="Float" mode="Opaque" x="0" y="237" width="276" height="120"/>
+                <reportElement key="subreport-2" positionType="Float" mode="Opaque" x="0" y="254" width="276" height="120"/>
                 <subreportParameter name="userName">
                     <subreportParameterExpression><![CDATA[$P{userName}]]></subreportParameterExpression>
                 </subreportParameter>
