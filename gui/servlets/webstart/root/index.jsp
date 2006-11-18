@@ -112,7 +112,7 @@ if (!( isIndex || isDownload)) isIndex = true;
                   <param name="back" value="true"/>
                 </object>
                 <!-- Alternate HTML for browsers which cannot instantiate the object -->
-                <a href="http://java.sun.com/cgi-bin/javawebstart-platform.sh?">
+                <a href="http://www.untangle.com/javainstaller.html">
                   Download Java&trade; v1.5
                 </a>
                 <% } %>
