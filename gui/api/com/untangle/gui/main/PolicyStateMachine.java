@@ -1507,6 +1507,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private boolean isMackageTrial(MackageDesc mackageDesc){
         if( mackageDesc.getName().endsWith("-trial30-storeitem") )
             return true;
+        else if( (mackageDesc.getExtraName()!=null) && (mackageDesc.getExtraName().contains("Trial")) )
+            return true;
         else
             return false;
     }
@@ -1610,10 +1612,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             else if( mTransformJButton.getMackageDesc().isCore() ){
                 focusMTransformJButton = coreToolboxMap.get(buttonKey);
             }
-	    else{
-		focusMTransformJButton = null;
-	    }
-	    if( focusMTransformJButton == null )
+            else{
+                focusMTransformJButton = null;
+            }
+	    if( focusMTransformJButton != null )
 
             actionJTabbedPane.setSelectedIndex(1);
             toolboxJScrollPane.getViewport().validate();
