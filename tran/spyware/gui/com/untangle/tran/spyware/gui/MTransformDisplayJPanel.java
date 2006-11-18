@@ -21,10 +21,9 @@ public class MTransformDisplayJPanel extends com.untangle.gui.transform.MTransfo
     public MTransformDisplayJPanel(MTransformJPanel mTransformJPanel){
         super(mTransformJPanel);
 
-        super.activity0JLabel.setText("BLOCK");
-        super.activity1JLabel.setText("ADDRESS");
-        super.activity2JLabel.setText("ACTIVEX");
-        super.activity3JLabel.setText("COOKIE");
+        super.activity0JLabel.setText("SCAN");
+        super.activity1JLabel.setText("BLOCK");
+        super.activity2JLabel.setText("PASS");
 
     }
 

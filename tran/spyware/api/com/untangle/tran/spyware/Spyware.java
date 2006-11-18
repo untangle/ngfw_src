@@ -16,10 +16,9 @@ import com.untangle.mvvm.tran.Transform;
 
 public interface Spyware extends Transform
 {
-    static final int BLOCK = Transform.GENERIC_0_COUNTER;
-    static final int ADDRESS = Transform.GENERIC_1_COUNTER;
-    static final int ACTIVE_X = Transform.GENERIC_2_COUNTER;
-    static final int COOKIE = Transform.GENERIC_3_COUNTER;
+    static final int SCAN = Transform.GENERIC_0_COUNTER;
+    static final int BLOCK = Transform.GENERIC_1_COUNTER;
+    static final int PASS = Transform.GENERIC_2_COUNTER;
 
     SpywareSettings getSpywareSettings();
     void setSpywareSettings(SpywareSettings settings);

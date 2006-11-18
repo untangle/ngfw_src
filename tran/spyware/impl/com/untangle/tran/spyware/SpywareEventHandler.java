@@ -126,7 +126,7 @@ public class SpywareEventHandler extends AbstractEventHandler
             logger.debug("Subnet scan: " + ipm.toString() + " -> DETECTED.");
         }
 
-        transform.incrementCount(Spyware.ADDRESS);
+        transform.incrementCount(Spyware.SCAN);
 
         if (logger.isInfoEnabled()) {
             logger.info("-------------------- Detected Spyware --------------------");
