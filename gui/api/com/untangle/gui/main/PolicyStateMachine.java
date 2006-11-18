@@ -610,12 +610,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             String purchasedMackageName = req.getMackageName();
             MTransformJButton mTransformJButton = null;
             for( MTransformJButton storeButton : storeMap.values() ){
-		String storeButtonName = storeButton.getName();
-		storeButtonName = storeButtonName.substring(0, storeButtonName.indexOf('-'));
+                String storeButtonName = storeButton.getName();
+                storeButtonName = storeButtonName.substring(0, storeButtonName.indexOf('-'));
                 if( purchasedMackageName.startsWith(storeButtonName) ){
                     mTransformJButton = storeButton;
-		    if( purchasedMackageName.endsWith(TRIAL_EXTENSION) )
-			mTransformJButton.setIsTrial(true);
+                    //if( purchasedMackageName.endsWith(TRIAL_EXTENSION) )  dont need this anymore
+                    //    mTransformJButton.setIsTrial(true);
                     break;
                 }
             }
@@ -747,62 +747,70 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 // ADD TO TOOLBOX
                 List<MackageDesc> newMackageDescs = computeNewMackageDescs(originalInstalledMackages,
 									   currentInstalledMackages);
+                Policy currentPolicy = (Policy) viewSelector.getSelectedItem();
                 for( MackageDesc newMackageDesc : newMackageDescs ){
                     if( !isMackageStoreItem(newMackageDesc) && isMackageVisible(newMackageDesc) ){
-                        MTransformJButton newMTransformJButton = new MTransformJButton(newMackageDesc);
-			if( isMackageTrial(newMackageDesc) )
-			    newMTransformJButton.setIsTrial(true);
-                        if( newMTransformJButton.getMackageDesc().isUtil() 
-			    || newMTransformJButton.getMackageDesc().isService()){
-                            addToToolbox(null,newMTransformJButton.getMackageDesc(),false,false);
+                        MTransformJButton newMTransformJButton = null; //new MTransformJButton(newMackageDesc);
+                        if( newMackageDesc.isUtil() || newMackageDesc.isService()){
+                            newMTransformJButton = addToToolbox(null,newMackageDesc,false,false);
                         }
-                        else if(newMTransformJButton.getMackageDesc().isSecurity()){
-                            for( Policy policy : policyToolboxMap.keySet() )
-                                addToToolbox(policy,newMTransformJButton.getMackageDesc(),false,false);
+                        else if(newMackageDesc.isSecurity()){
+                            for( Policy policy : policyToolboxMap.keySet() ){
+                                MTransformJButton tempMTransformJButton = addToToolbox(policy,newMackageDesc,false,false);
+                                if( policy.equals(currentPolicy) ){
+                                    newMTransformJButton = tempMTransformJButton;
+                                }
+                            }
                         }
-			else if( newMTransformJButton.getMackageDesc().isCore() ){
-                            addToToolbox(null,newMTransformJButton.getMackageDesc(),false,false);
+                        else if( newMackageDesc.isCore() ){
+                            newMTransformJButton = addToToolbox(null,newMackageDesc,false,false);
                         }
-
+                        if( isMackageTrial(newMackageDesc) ){
+                            newMTransformJButton.setIsTrial(true);
+                            System.out.println("added trial: " + newMTransformJButton.getName());
+                        }
+                        else{
+                            System.out.println("added regular: " + newMTransformJButton.getName());
+                        }
                         revalidateToolboxes();
                         focusInToolbox(newMTransformJButton, true); // focus and highlight in current toolbox
                     }
                 }
-		// REFRESH STATE OF ALL EXISTING APPLIANCES
-		for(Policy policy : policyRackMap.keySet()){
-		    for(MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values()){
-			mTransformJPanel.doRefreshState();
-		    }
-		}
-		for(MTransformJPanel mTransformJPanel : utilRackMap.values()){
-		    mTransformJPanel.doRefreshState();
-		}
-		for(MTransformJPanel mTransformJPanel : coreRackMap.values()){
-		    mTransformJPanel.doRefreshState();
-		}
+                // REFRESH STATE OF ALL EXISTING APPLIANCES
+                for(Policy policy : policyRackMap.keySet()){
+                    for(MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values()){
+                        mTransformJPanel.doRefreshState();
+                    }
+                }
+                for(MTransformJPanel mTransformJPanel : utilRackMap.values()){
+                    mTransformJPanel.doRefreshState();
+                }
+                for(MTransformJPanel mTransformJPanel : coreRackMap.values()){
+                    mTransformJPanel.doRefreshState();
+                }
             }
-	    catch(InterruptedException e){ throw e; }
+            catch(InterruptedException e){ throw e; }
             catch(Exception e){
-		if( !isInterrupted() ){
-		    try{
-			Util.handleExceptionWithRestart("Error purchasing: " +  mTransformJButton.getName(),  e);
-		    }
-		    catch(Exception f){
-			Util.handleExceptionNoRestart("Error purchasing:", f);
-			mTransformJButton.setFailedProcureView();
-			SwingUtilities.invokeLater( new Runnable(){ public void run(){
-			    MOneButtonJDialog.factory(Util.getMMainJFrame(), "",						  
-						      "A problem occurred while purchasing:<br>"
-						      + mTransformJButton.getDisplayName()
-						      + "<br>Please try again or contact Untangle Networks for assistance.",
-						      mTransformJButton.getDisplayName() + " Warning", "");
-			}});
-		    }
-		}
+                if( !isInterrupted() ){
+                    try{
+                        Util.handleExceptionWithRestart("Error purchasing: " +  mTransformJButton.getName(),  e);
+                    }
+                    catch(Exception f){
+                        Util.handleExceptionNoRestart("Error purchasing:", f);
+                        mTransformJButton.setFailedProcureView();
+                        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                            MOneButtonJDialog.factory(Util.getMMainJFrame(), "",						  
+                                                      "A problem occurred while purchasing:<br>"
+                                                      + mTransformJButton.getDisplayName()
+                                                      + "<br>Please try again or contact Untangle Networks for assistance.",
+                                                      mTransformJButton.getDisplayName() + " Warning", "");
+                        }});
+                    }
+                }
             }
-	    finally{
-		mTransformJButton.setIsTrial(false);
-	    }
+            finally{
+                //mTransformJButton.setIsTrial(false);  dont need this shite
+            }
         }
     }
     private List<MackageDesc> computeNewMackageDescs(MackageDesc[] originalInstalledMackages, MackageDesc[] currentInstalledMackages){
@@ -1311,12 +1319,13 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             coreToolboxJPanel.revalidate();
         }});
     }
-    private void addToToolbox(final Policy policy, final MackageDesc mackageDesc, final boolean isDeployed, final boolean doRevalidate){
+    private MTransformJButton addToToolbox(final Policy policy, final MackageDesc mackageDesc,
+                                          final boolean isDeployed, final boolean doRevalidate){
         // ONLY UPDATE GUI MODELS IF THIS IS VISIBLE
         if( !isMackageVisible(mackageDesc) )
-            return;
+            return null;
         else if( isMackageStoreItem(mackageDesc) )
-            return;
+            return null;
         final ButtonKey buttonKey = new ButtonKey(mackageDesc);
         final MTransformJButton mTransformJButton = new MTransformJButton(mackageDesc);
         if( isDeployed )
@@ -1357,6 +1366,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     coreToolboxJPanel.revalidate();
             }
         }});
+        return mTransformJButton;
     }
     private void revalidateRacks(){
         SwingUtilities.invokeLater( new Runnable() { public void run() {
