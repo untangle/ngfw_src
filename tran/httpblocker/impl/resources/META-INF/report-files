@@ -1,7 +1,7 @@
 reports/HttpMaster.jasper:Web_Content_Control--Summary:Summary
 reports/HttpUserMaster.jasper:userSummary:Web_Content_Control--UserSummary
 reports/HttpHNameMaster.jasper:hNameSummary:Web_Content_Control--UserSummary
-reports/HttpBlockDetail.jasper:Web_Content_Control--Policy_Violations:Policy Violations
+reports/HttpBlockDetail.jasper:Web_Content_Control--Logged_Violations:Logged Violations
 com.untangle.tran.httpblocker.reports.HttpBlockerSummarizer:summarizer:Summarizer
 com.untangle.tran.httpblocker.reports.SummaryGraph:summaryGraph:Web_Content_Control--Summary_Graph
 reportTitlePrefix:parameter:none

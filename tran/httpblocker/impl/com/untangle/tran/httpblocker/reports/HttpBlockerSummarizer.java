@@ -71,9 +71,9 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
 
         addEntry("&nbsp;", "&nbsp;");
 
-        addEntry("Scanned domain visits", Util.trimNumber("",hitCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Blocked domain visits", Util.trimNumber("",blockCount), Util.percentNumber(blockCount,hitCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Passed domain visits", Util.trimNumber("",hitCount-blockCount), Util.percentNumber(hitCount-blockCount,hitCount));
+        addEntry("Scanned web visits", Util.trimNumber("",hitCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Logged web visits", Util.trimNumber("",blockCount), Util.percentNumber(blockCount,hitCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Passed web visits", Util.trimNumber("",hitCount-blockCount), Util.percentNumber(hitCount-blockCount,hitCount));
 
         // XXXX
         String tranName = "Web Content Control";
