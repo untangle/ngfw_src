@@ -20,7 +20,7 @@ import java.lang.StringBuffer;
 public final class MailSummary
   implements Serializable {
 
-  private static final int SUBJECT_MAX_LENGTH = 50;
+  private static final int SUBJECT_MAX_LENGTH = 45;
 
   private String m_sender;
   private String m_subject;
@@ -107,7 +107,13 @@ public final class MailSummary
       return String.format("%03.1f", f);
     }
     catch(Exception ex) {
-      return m_quarantineDetail;
+      if (true == m_quarantineDetail.equals("Message determined to be a fraud attempt"))
+      {
+          //no conversion script so catch and change for display purposes here
+          return "Identity Theft";
+      } else {
+          return m_quarantineDetail;
+      }
     }
   }
 

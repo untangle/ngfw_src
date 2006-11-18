@@ -308,7 +308,7 @@ class QuarantineUserTableModel extends MSortedTableModel<MailTransformCompoundSe
         addTableColumn( tableColumnModel,  3, 150, true,  false,  false, false, Date.class,   null, sc.html("Date") );
         addTableColumn( tableColumnModel,  4, 150, true,  false,  false, false, String.class, null, sc.html("Sender") );
         addTableColumn( tableColumnModel,  5, 150, true,  false,  false, true,  String.class, null, sc.html("Subject") );
-        addTableColumn( tableColumnModel,  6,  85, true,  false,  false, false, Long.class,   null, sc.html("Size (kB)") );
+        addTableColumn( tableColumnModel,  6,  85, true,  false,  false, false, Long.class,   null, sc.html("Size (KB)") );
         addTableColumn( tableColumnModel,  7,  85, true,  false,  false, false, String.class, null, sc.html("Category") );
         addTableColumn( tableColumnModel,  8,  85, true,  false,  false, false, String.class, null, sc.html("Detail") );
         return tableColumnModel;
@@ -333,7 +333,7 @@ class QuarantineUserTableModel extends MSortedTableModel<MailTransformCompoundSe
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( inboxRecord.getMailID() );
-            tempRow.add( new Date(inboxRecord.getInternDate()) );
+            tempRow.add( inboxRecord.getFormattedDate() );
             tempRow.add( mailSummary.getSender() );
             tempRow.add( mailSummary.getTruncatedSubject() );            
             tempRow.add( inboxRecord.getFormattedSize() );

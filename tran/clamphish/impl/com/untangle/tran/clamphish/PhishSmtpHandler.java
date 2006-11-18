@@ -41,6 +41,6 @@ public class PhishSmtpHandler extends com.untangle.tran.spam.SmtpSessionHandler 
   @Override
   protected String getQuarantineDetail(SpamReport report) {
     //TODO bscott Do something real here
-    return "Message determined to be a fraud attempt";
+    return "Identity Theft";
   }  
 }

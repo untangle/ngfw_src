@@ -108,7 +108,7 @@ public abstract class InboxRecord
   public final String getFormattedDate() {
       try {
           Date iDate = new Date(getInternDate());
-          SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm z");
+          SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yy HH:mm");
           return dateFormat.format(iDate).toString();
       } catch(Exception ex) { return "<unknown>"; }
   }
@@ -121,7 +121,7 @@ public abstract class InboxRecord
   public final String getFormattedSize() {
       try {
         // in kilobytes
-        return String.format("%01.3f", new Float(getSize() / 1024.0));
+        return String.format("%01.1f", new Float(getSize() / 1024.0));
       } catch(Exception ex) { return "<unknown>"; }
   }
 
