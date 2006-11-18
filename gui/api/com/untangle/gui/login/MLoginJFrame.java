@@ -48,9 +48,9 @@ public class MLoginJFrame extends javax.swing.JFrame {
         }});
         resetLogin("Please enter your login and password.");
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-            if( Util.getServerCodeBase().getHost().equals("egdemo.untangle.com") ){
-                loginJTextField.setText("egdemo");
-                passJPasswordField.setText("egdemo");
+            if( Util.getServerCodeBase().getHost().equals("untangledemo.untangle.com") ){
+                loginJTextField.setText("untangledemo");
+                passJPasswordField.setText("untangledemo");
             }
 	    dropdownLoginTask = new DropdownLoginTask(MLoginJFrame.this, contentJPanel);
         }});
@@ -496,7 +496,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     Util.addShutdownable("KeepAliveThread", keepAliveThread);
 
                     // EGDEMO ////////////////
-                    if( loginJTextField.getText().equals("egdemo") )
+                    if( loginJTextField.getText().equals("untangledemo") )
                         Util.setIsDemo(true);
                     else			
                         Util.setIsDemo(false);
@@ -605,7 +605,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                                               loginJTextField.getText() + "  |  Server: " +
                                               Util.getServerCodeBase().getHost() + securedString );
                         if(Util.getIsDemo()){
-			    if( loginJTextField.getText().equals("egdemo") )
+			    if( loginJTextField.getText().equals("untangledemo") )
 				mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [DEMO MODE]" );
 			    else
 				mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [READ-ONLY MODE]" );
