@@ -367,7 +367,7 @@ public class TranReporter {
     private String[] getUserNames(Connection conn, Timestamp startTime, Timestamp endTime) throws Exception
     {
         ArrayList<String> uNameList = new ArrayList();
-        String sql = "SELECT DISTINCT username AS uname FROM mvvm_lookup_evt WHERE time_stamp >= ? AND time_stamp < ?";
+        String sql = "SELECT DISTINCT username FROM events.mvvm_lookup_evt WHERE time_stamp >= ? AND time_stamp < ?";
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -391,7 +391,7 @@ public class TranReporter {
     private String[] getHostNames(Connection conn, Timestamp startTime, Timestamp endTime) throws Exception
     {
         ArrayList<String> hNameList = new ArrayList();
-        String sql = "SELECT DISTINCT COALESCE(NULLIF(name, ''), HOST(addr)) AS hname FROM merged_address_map WHERE start_time >= ? AND end_time < ?";
+        String sql = "SELECT DISTINCT hname FROM reports.sessions WHERE time_stamp >= ? AND time_stamp < ? AND client_intf=1";
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
