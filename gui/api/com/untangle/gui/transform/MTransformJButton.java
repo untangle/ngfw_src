@@ -95,8 +95,10 @@ public class MTransformJButton extends JButton {
 
         //DISPLAY NAME
         nameJLabel = new JLabel();
-	String tempName;
+        String tempName;
 	    tempName = mackageDesc.getDisplayName();
+        if( (mackageDesc.getExtraName()!=null) && (mackageDesc.getExtraName().contains("Trial")) )
+            tempName += " (Trial)";
         nameJLabel.setText( "<html><b>" + Util.wrapString(tempName, 19) + "</b></html>");
         nameJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         nameJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -166,23 +168,28 @@ public class MTransformJButton extends JButton {
     public boolean getIsTrial(){ return isTrial; }
     public void setIsTrial(boolean isTrial){
         this.isTrial = isTrial;
+        /*
         String tempName;
     	if(isTrial)
             tempName = mackageDesc.getDisplayName() + " (Trial)";
         else
             tempName = mackageDesc.getDisplayName();
         nameJLabel.setText( "<html><b>" + Util.wrapString(tempName, 19) + "</b></html>");
-}
+        */
+    }
+
+
 
     // CONVENIENCE WRAPPERS FOR MACKAGE /////////
     public MackageDesc getMackageDesc(){ return mackageDesc; }
     public String getFullDescription(){ return new String( mackageDesc.getLongDescription() ); }
     public String getShortDescription(){ return new String( mackageDesc.getShortDescription() ); }
+    public String getExtraName(){ return mackageDesc.getExtraName(); }
     public String getName(){
-	String name = mackageDesc.getName();
-	if(isTrial)
-	    name = name.replace("-storeitem", "-trial30-storeitem");
-	return name;
+        String name = mackageDesc.getName();
+        //if(isTrial)
+        //    name = name.replace("-storeitem", "-trial30-storeitem");
+        return name;
     }
     public String getDisplayName(){
         return mackageDesc.getDisplayName();

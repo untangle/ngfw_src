@@ -608,14 +608,19 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private class StoreMessageVisitor implements ToolboxMessageVisitor {
         public void visitMackageInstallRequest(MackageInstallRequest req) {
             String purchasedMackageName = req.getMackageName();
+            // FIND THE BUTTON THAT WOULD HAVE BEEN CLICKED
             MTransformJButton mTransformJButton = null;
             for( MTransformJButton storeButton : storeMap.values() ){
                 String storeButtonName = storeButton.getName();
                 storeButtonName = storeButtonName.substring(0, storeButtonName.indexOf('-'));
                 if( purchasedMackageName.startsWith(storeButtonName) ){
                     mTransformJButton = storeButton;
-                    //if( purchasedMackageName.endsWith(TRIAL_EXTENSION) )  dont need this anymore
-                    //    mTransformJButton.setIsTrial(true);
+                    if( purchasedMackageName.endsWith(TRIAL_EXTENSION) ){
+                        mTransformJButton.setIsTrial(true);
+                    }
+                    else{
+                        mTransformJButton.setIsTrial(false);
+                    }
                     break;
                 }
             }
@@ -682,7 +687,11 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     return;
 		//// DO THE DOWNLOAD
                 MackageDesc[] originalInstalledMackages = Util.getToolboxManager().installed(); // for use later
-                long key = Util.getToolboxManager().install(mTransformJButton.getName());
+                String installName = mTransformJButton.getName();
+                if(mTransformJButton.getIsTrial()){
+                    installName = installName.replace("-storeitem", "-trial30-storeitem");
+                }
+                long key = Util.getToolboxManager().install(installName);
                 com.untangle.gui.util.Visitor visitor = new com.untangle.gui.util.Visitor(mTransformJButton);
                 while (true) {
                     java.util.List<InstallProgress> lip = Util.getToolboxManager().getProgress(key);
@@ -711,7 +720,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 		       ((System.currentTimeMillis() - installStartTime) < INSTALL_CHECK_TIMEOUT_MILLIS) ){
                     currentInstalledMackages = Util.getToolboxManager().installed();
                     for( MackageDesc mackageDesc : currentInstalledMackages ){
-                        if(mackageDesc.getName().equals(mTransformJButton.getName())){
+                        if(mackageDesc.getName().equals(installName)){
                             mackageInstalled = true;
                             SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                                 mTransformJButton.setProgress("Success", 100);
@@ -725,32 +734,38 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 if( !mackageInstalled )
                     throw new Exception();
                 Thread.currentThread().sleep(INSTALL_FINAL_PAUSE_MILLIS);
-                // REMOVE FROM STORE
-		MackageDesc[] currentUninstalledMackages = Util.getToolboxManager().uninstalled();
+                // REMOVE FROM STORE / UPDATE STORE MODEL
+                updateStoreModel();
+                /*
+                MackageDesc[] currentUninstalledMackages = Util.getToolboxManager().uninstalled();
                 List<MackageDesc> purchasedMackageDescs = computeNewMackageDescs(currentUninstalledMackages,
-										 originalUninstalledMackages);
+                                                                                 originalUninstalledMackages);
+                System.out.println("purchased: " + purchasedMackageDescs.size());
                 for( MackageDesc purchasedMackageDesc : purchasedMackageDescs ){
-		    if( isMackageTrial(purchasedMackageDesc) ){
-			SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-			    mTransformJButton.setProgress("", -1);
-			}});
-		    }
+                    if( isMackageTrial(purchasedMackageDesc) ){
+                        System.out.println("stopping progress");
+                        SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+                            mTransformJButton.setProgress("", -1);
+                        }});
+                    }
                     else if( isMackageStoreItem(purchasedMackageDesc) ){
+                        System.out.println("removing from store");
                         removeFromStore(purchasedMackageDesc);
                     }
                 }
-		// BRING MAIN WINDOW TO FRONT
+                */
+                // BRING MAIN WINDOW TO FRONT
                 SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		    Util.getMMainJFrame().setVisible(true);
-		    Util.getMMainJFrame().toFront();
-		}});
+                    Util.getMMainJFrame().setVisible(true);
+                    Util.getMMainJFrame().toFront();
+                }});
                 // ADD TO TOOLBOX
                 List<MackageDesc> newMackageDescs = computeNewMackageDescs(originalInstalledMackages,
 									   currentInstalledMackages);
                 Policy currentPolicy = (Policy) viewSelector.getSelectedItem();
                 for( MackageDesc newMackageDesc : newMackageDescs ){
                     if( !isMackageStoreItem(newMackageDesc) && isMackageVisible(newMackageDesc) ){
-                        MTransformJButton newMTransformJButton = null; //new MTransformJButton(newMackageDesc);
+                        MTransformJButton newMTransformJButton = null;
                         if( newMackageDesc.isUtil() || newMackageDesc.isService()){
                             newMTransformJButton = addToToolbox(null,newMackageDesc,false,false);
                         }
@@ -765,15 +780,18 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         else if( newMackageDesc.isCore() ){
                             newMTransformJButton = addToToolbox(null,newMackageDesc,false,false);
                         }
-                        if( isMackageTrial(newMackageDesc) ){
-                            newMTransformJButton.setIsTrial(true);
-                            System.out.println("added trial: " + newMTransformJButton.getName());
-                        }
-                        else{
-                            System.out.println("added regular: " + newMTransformJButton.getName());
+                        else{ // assume its a storeitem
+                            SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                                actionJTabbedPane.setSelectedIndex(1);
+                            }});
                         }
                         revalidateToolboxes();
                         focusInToolbox(newMTransformJButton, true); // focus and highlight in current toolbox
+                    }
+                    else if(isMackageStoreItem(newMackageDesc)){
+                        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                            actionJTabbedPane.setSelectedIndex(1);
+                        }});
                     }
                 }
                 // REFRESH STATE OF ALL EXISTING APPLIANCES
@@ -855,10 +873,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 	private volatile boolean stop = false;
         public StoreModelThread(){
             setDaemon(true);
-	    setName("MVCLIENT-StoreModelThread");
+            setName("MVCLIENT-StoreModelThread");
             storeProgressBar = new JProgressBar();
             storeProgressBar.setStringPainted(true);
-	    storeProgressBar.setOpaque(true);
+            storeProgressBar.setOpaque(true);
             //storeProgressBar.setForeground(new java.awt.Color(68, 91, 255));
             //storeProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
             storeProgressBar.setPreferredSize(new java.awt.Dimension(130, 20));
@@ -923,6 +941,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 storeProgressBar.setString("Connecting...");
                 storeJPanel.add(storeProgressBar, storeProgressGridBagConstraints);
                 storeJPanel.revalidate();
+                storeJPanel.repaint();
             }});
             // CHECK FOR STORE CONNECTIVITY AND AVAILABLE ITEMS
             boolean connectedToStore = false;
@@ -942,10 +961,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     storeProgressBar.setValue(1);
                     storeProgressBar.setIndeterminate(false);
                     storeProgressBar.setString("No Connection");
-		    if(firstRun){
-			actionJTabbedPane.setSelectedIndex(0);
-			firstRun = false;
-		    }
+                    if(firstRun){
+                        actionJTabbedPane.setSelectedIndex(0);
+                        firstRun = false;
+                    }
                 }});
             }
             else{
@@ -955,10 +974,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         storeProgressBar.setValue(1);
                         storeProgressBar.setIndeterminate(false);
                         storeProgressBar.setString("No New Items");
-			if(firstRun){
-			    actionJTabbedPane.setSelectedIndex(1);			
-			    firstRun = false;
-			}
+                        if(firstRun){
+                            actionJTabbedPane.setSelectedIndex(1);			
+                            firstRun = false;
+                        }
                     }});
                 }
                 else{
@@ -970,10 +989,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         storeJPanel.add(storeSpacerJPanel, storeSpacerGridBagConstraints, 0);
                         storeJPanel.revalidate();
                         storeJPanel.repaint();
-			if(firstRun){
-			    actionJTabbedPane.setSelectedIndex(0);
-			    firstRun = false;
-			}
+                        if(firstRun){
+                            actionJTabbedPane.setSelectedIndex(0);
+                            firstRun = false;
+                        }
                     }});
 
 		    // REMOVE TRIAL IF THE ACTUAL THING WAS PURCHASED (IS NO LONGER IN THE STORE)
@@ -1552,7 +1571,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 					  "A problem occurred while trying to access Store."
 					  + "<br>Please contact Untangle support.",
 					  "Untangle Store Warning", "");
-	    }
+    }
         }
     }
 
