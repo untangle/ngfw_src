@@ -265,8 +265,8 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMinimumSize(new java.awt.Dimension(530, 621));
-                setPreferredSize(new java.awt.Dimension(530, 621));
+                setMinimumSize(new java.awt.Dimension(530, 638));
+                setPreferredSize(new java.awt.Dimension(530, 638));
                 explanationJPanel1.setLayout(new java.awt.GridBagLayout());
 
                 explanationJPanel1.setBorder(new javax.swing.border.TitledBorder(null, "Daily Report Delivery", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
