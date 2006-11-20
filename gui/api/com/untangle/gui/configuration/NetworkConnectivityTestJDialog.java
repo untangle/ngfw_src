@@ -82,7 +82,7 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
 
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                messageJLabel.setText("<html><center> This test can take up to 20 seconds to perform.  This will<br> determine if DNS can be reached and if TCP connectivity works.<br> <br> </center></html>");
+                messageJLabel.setText("<html><center> This test can take up to 40 seconds to complete.  This will<br> determine if DNS and TCP connectivity are working.<br> <br> </center></html>");
                 messageJLabel.setDoubleBuffered(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -223,7 +223,7 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
             final String result;
             if( status.isDnsWorking() ){
                 if( status.isTcpWorking() ){
-                    result = "Success!  Internet and DNS are both contactable.";
+                    result = "Success!  Internet and DNS are both working.";
                 }
                 else{
                     result = "Warning!  DNS is contactable, but the Internet cannot be contacted.";
