@@ -6,7 +6,6 @@ if [ $# -lt 2 ]; then
 fi
 
 cutoff="date '$1' - interval '$2 days'"
-dayname=$(echo "$1" | sed -e "s/-/_/g")
 
 echo "Purging all base events older than $cutoff"
 
@@ -23,9 +22,9 @@ EOF
 for day in `cat $daystoremove`; do
     echo "Purging report data for $day"
     for c in @MVVM_SCHEMA@/*/report-remove-day.sql; do
-        psql -U postgres -v dayname="$dayname" -f $c mvvm
+        psql -U postgres -v dayname="$day" -f $c mvvm
     done
-    psql -U postgres -v dayname="'$dayname'" mvvm <<EOF
+    psql -U postgres -v dayname="'$day'" mvvm <<EOF
 delete from reports.report_data_days where day_name = :dayname ;
 EOF
 done
