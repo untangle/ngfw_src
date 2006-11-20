@@ -30,9 +30,9 @@ public class InstallWizard extends MWizardJDialog {
     public InstallWizard(String[] args) {
 	this.args = args;
 	setModal(true);
-        setTitle("Untangle Platform CD Install Wizard");
+        setTitle("Untangle Platform Install Wizard");
         addWizardPageJPanel(new InstallWelcomeJPanel(),       "1. Welcome", false, false);
-        addWizardPageJPanel(new InstallDiskJPanel(this),      "2. Choose Install Disk", false, false);
+        addWizardPageJPanel(new InstallDiskJPanel(this),      "2. Choose Disk", false, false);
         addWizardPageJPanel(new InstallBenchmarkJPanel(this), "3. Hardware Test", false, false);
         addWizardPageJPanel(new InstallWarningJPanel(),       "4. Final Warning", false, false);
     }

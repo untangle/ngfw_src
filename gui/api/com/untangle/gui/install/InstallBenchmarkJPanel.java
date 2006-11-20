@@ -181,14 +181,20 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 	}
 	else if(score < good ){
 	    resultString = "Warning";
-	    resultValue = 25 + (int) (25f*(score/((float)good)));
+	    resultValue = 25 + (int) (25f*((score-(float)min)/((float)good-(float)min)));
 	    resultR = 255;
 	    resultG = 155;
 	    resultB = 0;
 	}
 	else if(score < great){
 	    resultString = "Good";
-	    resultValue = 50 + (int) (25f*(score/((float)great)));
+	    resultValue = 50 + (int) (25f*((score-(float)good)/((float)great-(float)good)));
+	    resultG = 255;
+	    resultR = resultB = 0;
+	}
+	else if(score == (float)great){
+	    resultString = "Excellent";
+	    resultValue = 75;
 	    resultG = 255;
 	    resultR = resultB = 0;
 	}
@@ -219,6 +225,12 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 	}
 	else if(score < great){
 	    resultString = "Good";
+	    resultValue = 50;
+	    resultG = 255;
+	    resultR = resultB = 0;
+	}
+	else if(score == (float)great){
+	    resultString = "Excellent";
 	    resultValue = 75;
 	    resultG = 255;
 	    resultR = resultB = 0;
