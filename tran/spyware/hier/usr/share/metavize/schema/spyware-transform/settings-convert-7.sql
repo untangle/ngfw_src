@@ -1,9 +1,9 @@
 -- convert script for release 4.1
 
 ALTER TABLE settings.tr_spyware_settings
-      ADD COLUMN enable_user_whitelisting bool;
+      ADD COLUMN user_whitelist_mode text;
 
-UPDATE settings.tr_spyware_settings SET enable_user_whitelisting = true;
+UPDATE settings.tr_spyware_settings SET user_whitelist_mode = 'USER_ONLY';
 
 ALTER TABLE settings.tr_spyware_settings
-      ALTER COLUMN enable_user_whitelisting SET NOT NULL;
+      ALTER COLUMN user_whitelist_mode SET NOT NULL;

@@ -8,7 +8,7 @@
 CREATE TABLE settings.tr_spyware_settings (
     settings_id int8 NOT NULL,
     tid int8 NOT NULL UNIQUE,
-    enable_user_whitelisting bool NOT NULL,
+    user_whitelist_mode text NOT NULL,
     activex_enabled bool,
     cookie_enabled bool,
     spyware_enabled bool,

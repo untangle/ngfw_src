@@ -17,6 +17,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -47,7 +49,7 @@ public class SpywareSettings implements Serializable
 
     private Long id;
     private Tid tid;
-    private boolean enableUserWhitelisting = true;
+    private UserWhitelistMode userWhitelistMode = UserWhitelistMode.USER_ONLY;
     private boolean activeXEnabled = true;
     private boolean cookieBlockerEnabled = true;
     private boolean spywareEnabled = true;
@@ -109,15 +111,16 @@ public class SpywareSettings implements Serializable
         this.tid = tid;
     }
 
-    @Column(name="enable_user_whitelisting", nullable=false)
-    public boolean getEnableUserWhitelisting()
+    @Enumerated(EnumType.STRING)
+    @Column(name="user_whitelist_mode", nullable=false)
+    public UserWhitelistMode getUserWhitelistMode()
     {
-        return enableUserWhitelisting;
+        return userWhitelistMode;
     }
 
-    public void setEnableUserWhitelisting(boolean enableUserWhitelisting)
+    public void setUserWhitelistMode(UserWhitelistMode userWhitelistMode)
     {
-        this.enableUserWhitelisting = enableUserWhitelisting;
+        this.userWhitelistMode = userWhitelistMode;
     }
 
     /**

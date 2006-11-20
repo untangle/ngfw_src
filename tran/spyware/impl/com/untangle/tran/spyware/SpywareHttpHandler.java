@@ -278,7 +278,6 @@ public class SpywareHttpHandler extends HttpStateMachine
             return generateSimplePage(host, uri);
         } else {
             String redirectHost = addr.getHostAddress();
-            System.out.print("REDIRECT HOST: " + redirectHost);
             return generateRedirect(redirectHost, host, uri);
         }
     }
