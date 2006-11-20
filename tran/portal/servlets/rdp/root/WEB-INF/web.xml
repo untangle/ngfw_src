@@ -9,6 +9,11 @@
 
   <display-name>Remote Desktop Client</display-name>
 
+  <servlet-mapping>
+    <servlet-name>com.untangle.tran.portal.rdp.jsp.rdp_jsp</servlet-name>
+    <url-pattern>*.html</url-pattern>
+  </servlet-mapping>
+
   <security-constraint>
     <web-resource-collection>
       <http-method>GET</http-method>

@@ -9,6 +9,11 @@
 
   <display-name>VNC Remote Desktop Client</display-name>
 
+  <servlet-mapping>
+    <servlet-name>com.untangle.tran.portal.vnc.jsp.vnc_jsp</servlet-name>
+    <url-pattern>*.html</url-pattern>
+  </servlet-mapping>
+
   <security-constraint>
     <web-resource-collection>
       <http-method>GET</http-method>
