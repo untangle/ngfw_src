@@ -67,16 +67,25 @@ public final class DayOfWeekSetMatcher extends DayOfWeekDBMatcher
     {
         if ( dayOfWeekSet == null ) return DayOfWeekSimpleMatcher.getNilMatcher();
                 
-        String value = "";
+	// Unsorted, so we must sort here.
+	StringBuilder sb = new StringBuilder();
+	boolean doneOne = false;
+	// Locale prob. XXX
+	String[] sortedDays = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
-        for ( String dayOfWeek  : dayOfWeekSet ) {
-            if ( value.length() != 0 ) value += " " + DayOfWeekMatcherConstants.MARKER_SEPERATOR + " ";
-            value += dayOfWeek;
+        for ( String dayOfWeek  : sortedDays ) {
+	    if (dayOfWeekSet.contains(dayOfWeek)) {
+              if (doneOne)
+		  sb.append(" ").append(DayOfWeekMatcherConstants.MARKER_SEPERATOR).append(" ");
+	      else
+		  doneOne = true;
+              sb.append(dayOfWeek);
+	    }
         }
 
         dayOfWeekSet = Collections.unmodifiableSet( dayOfWeekSet );
     
-        return new DayOfWeekSetMatcher( dayOfWeekSet, value );
+        return new DayOfWeekSetMatcher( dayOfWeekSet, sb.toString() );
     }
 
     /* This is just for matching a list of interfaces */
