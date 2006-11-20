@@ -47,6 +47,7 @@ public class SpywareSettings implements Serializable
 
     private Long id;
     private Tid tid;
+    private boolean enableUserWhitelisting = true;
     private boolean activeXEnabled = true;
     private boolean cookieBlockerEnabled = true;
     private boolean spywareEnabled = true;
@@ -106,6 +107,17 @@ public class SpywareSettings implements Serializable
     public void setTid(Tid tid)
     {
         this.tid = tid;
+    }
+
+    @Column(name="enable_user_whitelisting", nullable=false)
+    public boolean getEnableUserWhitelisting()
+    {
+        return enableUserWhitelisting;
+    }
+
+    public void setEnableUserWhitelisting(boolean enableUserWhitelisting)
+    {
+        this.enableUserWhitelisting = enableUserWhitelisting;
     }
 
     /**
