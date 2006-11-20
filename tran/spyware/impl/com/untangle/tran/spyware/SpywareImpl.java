@@ -150,6 +150,11 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         reconfigure();
     }
 
+    public UserWhitelistMode getUserWhitelistMode()
+    {
+        return settings.getUserWhitelistMode();
+    }
+
     public BlockDetails getBlockDetails(String nonce)
     {
         return NonceFactory.factory().getBlockDetails(nonce);
@@ -159,7 +164,25 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     {
         BlockDetails bd = NonceFactory.factory().removeBlockDetails(nonce);
 
+        switch (settings.getUserWhitelistMode()) {
+        case NONE:
+            logger.debug("attempting to unblock in UserWhitelistMode.NONE");
+            return false;
+        case USER_ONLY:
+            if (global) {
+                logger.debug("attempting to unblock global in UserWhitelistMode.USER_ONLY");
+                return false;
+            }
+        case USER_AND_GLOBAL:
+            // its all good
+            break;
+        default:
+            logger.error("missing case: " + settings.getUserWhitelistMode());
+            break;
+        }
+
         if (null == bd) {
+            logger.debug("no BlockDetails for nonce");
             return false;
         } else if (global) {
             String site = bd.getWhitelistHost();

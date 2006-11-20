@@ -26,5 +26,7 @@ public interface Spyware extends Transform
     BlockDetails getBlockDetails(String nonce);
     boolean unblockSite(String nonce, boolean global);
 
+    UserWhitelistMode getUserWhitelistMode();
+
     EventManager<SpywareEvent> getEventManager();
 }

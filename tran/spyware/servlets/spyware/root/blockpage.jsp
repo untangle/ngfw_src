@@ -10,6 +10,7 @@ Tid tid = new Tid(Long.parseLong(tidStr));
 
 TransformContext tctx = tman.transformContext(tid);
 Spyware tran = (Spyware)tctx.transform();
+UserWhitelistMode mode = tran.getUserWhitelistMode();
 BlockDetails bd = tran.getBlockDetails(nonce);
 
 String header = "Spyware Blocker";
@@ -72,10 +73,20 @@ url = '<%=url%>';
 </tr>
 <tr>
 <td>
+  <%
+  if (UserWhitelistMode.NONE != mode) {
+  %>
       <input id="unblockNowButton" type="button" value="Unblock For Now"
       onclick="unblockSite(false)"/>
+  <%
+  if (UserWhitelistMode.USER_AND_GLOBAL == mode) {
+  %>
       <input id="unblockGlobalButton" type="button" value="Unblock Permanently"
       onclick="unblockSite(true)"/>
+  <%
+  }
+  }
+  %>
 </td>
 </tr>
 </tbody>
