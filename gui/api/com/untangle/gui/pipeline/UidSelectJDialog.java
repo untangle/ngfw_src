@@ -176,7 +176,7 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
                 getContentPane().add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 456, 333));
 
                 java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-                setBounds((screenSize.width-456)/2, (screenSize.height-355)/2, 456, 355);
+                setBounds((screenSize.width-456)/2, (screenSize.height-379)/2, 456, 379);
         }//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed

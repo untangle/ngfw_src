@@ -226,9 +226,9 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMaximumSize(new java.awt.Dimension(460, 969));
-                setMinimumSize(new java.awt.Dimension(460, 969));
-                setPreferredSize(new java.awt.Dimension(460, 969));
+                setMaximumSize(new java.awt.Dimension(460, 1000));
+                setMinimumSize(new java.awt.Dimension(460, 1000));
+                setPreferredSize(new java.awt.Dimension(460, 1000));
                 protocolJPanel.setLayout(new java.awt.GridBagLayout());
 
                 protocolJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Protocol", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
