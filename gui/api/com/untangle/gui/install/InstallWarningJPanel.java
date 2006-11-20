@@ -12,8 +12,10 @@
 package com.untangle.gui.install;
 
 import com.untangle.gui.widgets.wizard.*;
+import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.util.*;
 import javax.swing.SwingUtilities;
+import java.awt.Window;
 
 public class InstallWarningJPanel extends MWizardPageJPanel {
 
@@ -22,6 +24,20 @@ public class InstallWarningJPanel extends MWizardPageJPanel {
         initComponents();
     }
 
+    protected boolean leavingForwards(){
+        MTwoButtonJDialog dialog = MTwoButtonJDialog.factory((Window) this.getTopLevelAncestor(), "Install Wizard",
+                                                             "Your selected disk will be erased"
+                                                             + " if you continue installation.  Would you like to continue?",
+                                                             "Install Wizard Warning",
+                                                             "Warning");
+        dialog.setProceedText("<html><b>Continue</b></html>");
+        dialog.setCancelText("<html><b>Dont Continue</b></html>");
+        dialog.setVisible(true);
+        if( dialog.isProceeding() )
+            return true;
+        else
+            return false;
+    }
 
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
