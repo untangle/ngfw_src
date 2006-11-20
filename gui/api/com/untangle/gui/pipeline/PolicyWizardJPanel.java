@@ -83,26 +83,44 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
             timeModel.setSelectedItem("Normal day/time");
         newRow.setElementAt( timeModel, 13);
 
+        boolean allDaysSelected = true;
         String dayString = new String();
         if( sundayJCheckBox.isSelected() )
             dayString += "Sunday, ";
+        else
+            allDaysSelected &= false;
         if( mondayJCheckBox.isSelected() )
             dayString += "Monday, ";
+        else
+            allDaysSelected &= false;
         if( tuesdayJCheckBox.isSelected() )
             dayString += "Tuesday, ";
+        else
+            allDaysSelected &= false;
         if( wednesdayJCheckBox.isSelected() )
             dayString += "Wednesday, ";
+        else
+            allDaysSelected &= false;
         if( thursdayJCheckBox.isSelected() )
             dayString += "Thursday, ";
+        else
+            allDaysSelected &= false;
         if( fridayJCheckBox.isSelected() )
             dayString += "Friday, ";
+        else
+            allDaysSelected &= false;
         if( saturdayJCheckBox.isSelected() )
             dayString += "Saturday, ";
+        else
+            allDaysSelected &= false;
 
         if( dayString.length() == 0 )
             throw new Exception("You must select at least one day for this policy to be active.");
         dayString = dayString.substring(0, dayString.length()-2);
-        newRow.setElementAt(dayString, 16);
+        if(allDaysSelected)
+            newRow.setElementAt("all", 16);
+        else
+            newRow.setElementAt(dayString, 16);
 
         newRow.setElementAt(rackSelectJComboBox.getModel(), 4);
         newRow.setElementAt(rackDescJTextField.getText(), 17);
@@ -141,13 +159,46 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
         boolean invertTime = ((ComboBoxModel) newRow.elementAt(13)).getSelectedItem().equals("Invert day/time"); // comes from policy custom panel
         timeInvertJCheckBox.setSelected(invertTime);
 
-        sundayJCheckBox.setSelected(true);
-        mondayJCheckBox.setSelected(true);
-        tuesdayJCheckBox.setSelected(true);
-        wednesdayJCheckBox.setSelected(true);
-        thursdayJCheckBox.setSelected(true);
-        fridayJCheckBox.setSelected(true);
-        saturdayJCheckBox.setSelected(true);
+        String dayString = (String) newRow.elementAt(16);
+
+        if(dayString.contains("Sunday"))
+            sundayJCheckBox.setSelected(true);
+        else
+            sundayJCheckBox.setSelected(false);
+        if(dayString.contains("Monday"))
+            mondayJCheckBox.setSelected(true);
+        else
+            mondayJCheckBox.setSelected(false);
+        if(dayString.contains("Tuesday"))
+            tuesdayJCheckBox.setSelected(true);
+        else
+            tuesdayJCheckBox.setSelected(false);
+        if(dayString.contains("Wednesday"))
+            wednesdayJCheckBox.setSelected(true);
+        else
+            wednesdayJCheckBox.setSelected(false);
+        if(dayString.contains("Thursday"))
+            thursdayJCheckBox.setSelected(true);
+        else
+            thursdayJCheckBox.setSelected(false);
+        if(dayString.contains("Friday"))
+            fridayJCheckBox.setSelected(true);
+        else
+            fridayJCheckBox.setSelected(false);
+        if(dayString.contains("Saturday"))
+            saturdayJCheckBox.setSelected(true);
+        else
+            saturdayJCheckBox.setSelected(false);
+
+        if(dayString.contains("all")){
+            sundayJCheckBox.setSelected(true);
+            mondayJCheckBox.setSelected(true);
+            tuesdayJCheckBox.setSelected(true);
+            wednesdayJCheckBox.setSelected(true);
+            thursdayJCheckBox.setSelected(true);
+            fridayJCheckBox.setSelected(true);
+            saturdayJCheckBox.setSelected(true);
+        }
         
         ComboBoxModel policyModel = (ComboBoxModel) newRow.elementAt(4);
         rackSelectJComboBox.setModel(policyModel);
