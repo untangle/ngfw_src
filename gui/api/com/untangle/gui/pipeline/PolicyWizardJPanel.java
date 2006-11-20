@@ -20,6 +20,7 @@ import com.untangle.mvvm.tran.*;
 
 import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
+import com.untangle.mvvm.tran.firewall.time.DayOfWeekMatcherConstants;
 import java.text.SimpleDateFormat;
 
 import java.awt.*;
@@ -88,37 +89,37 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
         if( sundayJCheckBox.isSelected() )
             dayString += "Sunday, ";
         else
-            allDaysSelected &= false;
+            allDaysSelected = false;
         if( mondayJCheckBox.isSelected() )
             dayString += "Monday, ";
         else
-            allDaysSelected &= false;
+            allDaysSelected = false;
         if( tuesdayJCheckBox.isSelected() )
             dayString += "Tuesday, ";
         else
-            allDaysSelected &= false;
+            allDaysSelected = false;
         if( wednesdayJCheckBox.isSelected() )
             dayString += "Wednesday, ";
         else
-            allDaysSelected &= false;
+            allDaysSelected = false;
         if( thursdayJCheckBox.isSelected() )
             dayString += "Thursday, ";
         else
-            allDaysSelected &= false;
+            allDaysSelected = false;
         if( fridayJCheckBox.isSelected() )
             dayString += "Friday, ";
         else
-            allDaysSelected &= false;
+            allDaysSelected = false;
         if( saturdayJCheckBox.isSelected() )
             dayString += "Saturday, ";
         else
-            allDaysSelected &= false;
+            allDaysSelected = false;
 
         if( dayString.length() == 0 )
             throw new Exception("You must select at least one day for this policy to be active.");
         dayString = dayString.substring(0, dayString.length()-2);
         if(allDaysSelected)
-            newRow.setElementAt("all", 16);
+            newRow.setElementAt("any", 16);
         else
             newRow.setElementAt(dayString, 16);
 
@@ -190,7 +191,7 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
         else
             saturdayJCheckBox.setSelected(false);
 
-        if(dayString.contains("all")){
+        if(dayString.contains("any")){
             sundayJCheckBox.setSelected(true);
             mondayJCheckBox.setSelected(true);
             tuesdayJCheckBox.setSelected(true);
