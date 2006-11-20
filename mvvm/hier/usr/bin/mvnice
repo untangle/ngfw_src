@@ -1,3 +1,10 @@
 #!/bin/sh
 
-exec nice -n $(expr 0 - $(nice)) "$@"
+# Modified for 4.1 to work in new fork system.
+
+newnice=$(expr 0 - $(nice))
+
+nice -n $newnice "$@" 2>&1
+result=$?
+echo "$result" 1>&2
+exit $result
