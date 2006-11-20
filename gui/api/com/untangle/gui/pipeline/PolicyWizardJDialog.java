@@ -54,8 +54,8 @@ public class PolicyWizardJDialog extends MConfigJDialog {
     
     protected void saveAll() throws Exception{
         super.saveAll();
-        setVisible(false);
         isProceeding = true;
+        setVisible(false);
     }
 
     private boolean isProceeding = false;

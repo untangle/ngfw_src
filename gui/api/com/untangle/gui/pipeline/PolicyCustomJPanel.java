@@ -60,7 +60,9 @@ public class PolicyCustomJPanel extends MEditTableJPanel {
             getTableModel().insertNewRow(selectedModelRow, newRow);
             return true;
         }
-        else return false;
+        else{
+            return false;
+        }
     }
 
 }
