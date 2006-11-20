@@ -123,7 +123,7 @@ public class InstallDiskJPanel extends MWizardPageJPanel {
 	    super.setAuxJPanelEnabled(true);
 
 	    // add a basic description
-	    JLabel descriptionJLabel = new JLabel("<html>This table shows the boot disks that were found.  Please choose a disk for the Untangle Platform installation.  <font color=\"FF0000\">Warning, all the data on the boot disk you select will be deleted.</font></html>");
+	    JLabel descriptionJLabel = new JLabel("<html>This table shows the boot disks that were found.  <font color=\"FF0000\">Please choose a disk for the Untangle Platform installation.  Warning, all the data on the boot disk you select will be deleted.</font></html>");
 	    descriptionJLabel.setFont(new Font("Default", 0, 12));
 	    auxJPanel.setLayout(new BorderLayout());
 	    auxJPanel.add(descriptionJLabel);
