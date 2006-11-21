@@ -51,7 +51,7 @@ fi
 
 # Extract the activation key if we were installed by a version older than 3.1
 if [ ! -f /usr/share/metavize/activation.key ]; then
-    grep -sq "release.*\.metavize\.com" /etc/apt/sources.list && grep "release.*\.metavize\.com" /etc/apt/sources.list | sed -e "s|^.*http://||" -e "s|:.*||" > /usr/share/metavize/activation.key
+    grep -sq "release.*\.untangle\.com" /etc/apt/sources.list && grep "release.*\.untangle\.com" /etc/apt/sources.list | sed -e "s|^.*http://||" -e "s|:.*||" > /usr/share/metavize/activation.key
 fi
 
 # Fix up older production boxes
