@@ -136,14 +136,14 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 		    nicResultJLabel.setText(nics + " interface" + (nics==1?"":"s"));
 		}});
 		String resultMessage;
-		if(((Integer)memoryResults[1]<=25) || ((Integer)cpuResults[1]<=25)
-		   || ((Integer)diskResults[1]<=25) || ((Integer)nicsResults[1]<=25)){
+		if(((Integer)memoryResults[1]<25) || ((Integer)cpuResults[1]<25)
+		   || ((Integer)diskResults[1]<25) || ((Integer)nicsResults[1]<=25)){
 		    resultMessage = FAILURE_MESSAGE;
 		    //resultJLabel.setText(FAILURE_MESSAGE);
 		    testPassed = false;
 		}
-		else if(((Integer)memoryResults[1]<=50) || ((Integer)cpuResults[1]<=50)
-			|| ((Integer)diskResults[1]<=50) || ((Integer)nicsResults[1]<=50)){
+		else if(((Integer)memoryResults[1]<50) || ((Integer)cpuResults[1]<50)
+			|| ((Integer)diskResults[1]<50)){
 		    resultMessage = WARNING_MESSAGE;
 		    //resultJLabel.setText(WARNING_MESSAGE);
 		    testPassed = true;
@@ -157,7 +157,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 								     "Install Wizard", "Result");
 	    }
 	    catch(Exception e){
-		e.printStackTrace();
+            e.printStackTrace();
 	    }
 	}
     }

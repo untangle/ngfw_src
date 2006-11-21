@@ -404,65 +404,66 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
         public NextPageThread(){
 	    super("MVCLIENT-WizardNextPageThread");
             setDaemon(true);
-	    updateButtonState(true);
+            updateButtonState(true);
             start();
         }
         public void run(){
-	    boolean changePage = true;
+            boolean changePage = true;
             // VALIDATE AND SAVE CURRENT PAGE
-	    MWizardPageJPanel currentWizardPageJPanel = (MWizardPageJPanel) wizardPageMap.values().toArray()[currentPage];
+            MWizardPageJPanel currentWizardPageJPanel = (MWizardPageJPanel) wizardPageMap.values().toArray()[currentPage];
             try{
-		currentWizardPageJPanel.doSave(null, true);  // validate
-		if( saveVector.elementAt(currentPage) ){
-		    currentWizardPageJPanel.doSave(null, false);  // save
-		    int i=1;
-		    while( (currentPage-i >= 0) && !saveVector.elementAt(currentPage-i) ){ // save all previous
-			previousWizardPageJPanel = (MWizardPageJPanel) wizardPageMap.values().toArray()[currentPage-i];
-			previousWizardPageJPanel.doSave(null, false);
-			i++;
-		    }
-		}
+                currentWizardPageJPanel.doSave(null, true);  // validate
+                if( saveVector.elementAt(currentPage) ){
+                    currentWizardPageJPanel.doSave(null, false);  // save
+                    int i=1;
+                    while( (currentPage-i >= 0) && !saveVector.elementAt(currentPage-i) ){ // save all previous
+                        previousWizardPageJPanel = (MWizardPageJPanel) wizardPageMap.values().toArray()[currentPage-i];
+                        previousWizardPageJPanel.doSave(null, false);
+                        i++;
+                    }
+                }
             }
             catch(Exception e){		
                 // REMOVED BECAUSE ITS SCARY Util.handleExceptionNoRestart("Error validating: ", e);
                 MOneButtonJDialog.factory(MWizardJDialog.this, "", e.getMessage(), "Wizard", "");
-		changePage &= false;
+                changePage &= false;
             }
-	    // SEND LEAVING EVENT TO CURRENT PAGE
-	    if( changePage ){
-		changePage &= currentWizardPageJPanel.leavingForwards();
-	    }
-	    // SEND ENTERING EVENT TO NEXT PAGE
-	    if( changePage && (currentPage < wizardPageMap.size()-1) ){
-		nextWizardPageJPanel = (MWizardPageJPanel) wizardPageMap.values().toArray()[currentPage+1];
-		changePage &= nextWizardPageJPanel.enteringForwards();
-	    }
-	    // UPDATE CURRENT PAGE
-	    if( currentPage < wizardPageMap.size()-1 ){
-		if( changePage  ){
-		    currentPage++;
-		}
-		// UPDATE VIEW OF CURRENT PAGE
-		try{
-		    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-			updateButtonState(false);
-			updateLabelState();
-			updatePageState();
-			nextJButton.requestFocus();
-			nextWizardPageJPanel.initialFocus();
-		    }});
-		}catch(Exception e){ Util.handleExceptionNoRestart("Error updating wizard on move next", e); }
-		// FINISH WIZARD
-	    }
-	    else{
-		wizardFinishedNormal();
-	    }
-
-	}
+            // SEND LEAVING EVENT TO CURRENT PAGE
+            if( changePage ){
+                changePage &= currentWizardPageJPanel.leavingForwards();
+            }
+            // SEND ENTERING EVENT TO NEXT PAGE
+            if( changePage && (currentPage < wizardPageMap.size()-1) ){
+                nextWizardPageJPanel = (MWizardPageJPanel) wizardPageMap.values().toArray()[currentPage+1];
+                changePage &= nextWizardPageJPanel.enteringForwards();
+            }
+            // UPDATE CURRENT PAGE
+            if( currentPage < wizardPageMap.size()-1 ){
+                if( changePage  ){
+                    currentPage++;
+                }
+                // UPDATE VIEW OF CURRENT PAGE
+                try{
+                    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+                        updateButtonState(false);
+                        updateLabelState();
+                        updatePageState();
+                        nextJButton.requestFocus();
+                        nextWizardPageJPanel.initialFocus();
+                    }});
+                }catch(Exception e){ Util.handleExceptionNoRestart("Error updating wizard on move next", e); }
+                // FINISH WIZARD
+            }
+            else{
+                if( changePage )
+                    wizardFinishedNormal();
+            }
+            
+        }
     }
         
     protected void closeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeJButtonActionPerformed
-	wizardFinishedAbnormal(currentPage);
+        wizardFinishedAbnormal(currentPage);
     }//GEN-LAST:event_closeJButtonActionPerformed
     
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
