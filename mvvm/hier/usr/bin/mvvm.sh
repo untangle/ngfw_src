@@ -90,7 +90,8 @@ raiseFdLimit() {
 }
 
 isServiceRunning() {
-  ps aux -w -w | grep -v "grep $1" | grep -q "$1"
+  ps aux -w -w | grep -v "grep -q $1" | grep -q "$1"
+  return $?
 }
 
 restartServiceIfNeeded() {
@@ -116,12 +117,12 @@ restartServiceIfNeeded() {
       [ -f $confFile ] && grep -q ENABLED=1 $confFile && needToRun=yes
       ;;
     clamav-daemon)
-      pidFile="/var/run/clamd/clamd.pid"
+      pidFile="/var/run/clamav/clamd.pid"
       isServiceRunning clamd && return
       dpkg -l clamav-daemon | grep -q -E '^ii' && needToRun=yes
       ;;
     clamav-freshclam)
-      pidFile="/var/run/clamd/freshclam.pid"
+      pidFile="/var/run/clamav/freshclam.pid"
       isServiceRunning freshclam && return
       dpkg -l clamav-freshclam | grep -q -E '^ii' && needToRun=yes
       ;;
