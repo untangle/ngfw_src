@@ -28,6 +28,7 @@ import javax.swing.table.*;
 import java.util.Vector;
 import javax.swing.event.*;
 
+
 public class GeneralConfigJPanel extends MEditTableJPanel {
     
     
@@ -76,14 +77,20 @@ class GeneralTableModel extends MSortedTableModel<Object>{
                 
         // blockAllActiveX
         tempRowVector = tableVector.elementAt(0);
-	boolean blockAllActiveX = (Boolean) tempRowVector.elementAt(3);
-	String blockAllActiveXDetails = (String) tempRowVector.elementAt(4);
+        boolean blockAllActiveX = (Boolean) tempRowVector.elementAt(3);
+        String blockAllActiveXDetails = (String) tempRowVector.elementAt(4);
+
+        // user white list mode
+        tempRowVector = tableVector.elementAt(1);
+        UserWhitelistMode userWhitelistMode = (UserWhitelistMode) ((ComboBoxModel)tempRowVector.elementAt(3)).getSelectedItem();
+        
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
 	    SpywareSettings spywareSettings = (SpywareSettings) settings;
 	    spywareSettings.setBlockAllActiveX( blockAllActiveX );
 	    spywareSettings.setBlockAllActiveXDetails( blockAllActiveXDetails );
+        spywareSettings.setUserWhitelistMode( userWhitelistMode );
         }
       
     }
@@ -92,10 +99,10 @@ class GeneralTableModel extends MSortedTableModel<Object>{
         SpywareSettings spywareSettings = (SpywareSettings) settings;
         Vector<Vector> allRows = new Vector<Vector>(1);
         Vector tempRow = null;
-	int rowIndex = 0;
+        int rowIndex = 0;
                        
         // blockAllActiveX
-	rowIndex++;
+        rowIndex++;
         tempRow = new Vector(5);
         tempRow.add( super.ROW_SAVED );
         tempRow.add( rowIndex );
@@ -104,6 +111,21 @@ class GeneralTableModel extends MSortedTableModel<Object>{
         tempRow.add( "This settings allows you to block ActiveX from being transferred, regardless of if the ActiveX is known to the ActiveX Block List or not." );//spywareSettings.getBlockAllActiveXDetails());
         allRows.add( tempRow );
   
+        // user white list
+        rowIndex++;
+        tempRow = new Vector(5);
+        tempRow.add( super.ROW_SAVED );
+        tempRow.add( rowIndex );
+        tempRow.add( "quick-whitelist" );
+        DefaultComboBoxModel whitelistComboBoxModel = new DefaultComboBoxModel();
+        whitelistComboBoxModel.addElement(UserWhitelistMode.NONE);
+        whitelistComboBoxModel.addElement(UserWhitelistMode.USER_ONLY);
+        whitelistComboBoxModel.addElement(UserWhitelistMode.USER_AND_GLOBAL);
+        whitelistComboBoxModel.setSelectedItem(spywareSettings.getUserWhitelistMode());
+        tempRow.add( whitelistComboBoxModel );
+        tempRow.add( "This setting allows a user to unblock a webpage that was blocked by Spyware Blocker.  The blocked webpage will have buttons that can be clieked." );
+        allRows.add( tempRow );
+
         return allRows;
     }
 }
