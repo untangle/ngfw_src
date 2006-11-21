@@ -52,6 +52,7 @@ task :pkgs => Package['install'] do
 
   Kernel.system('./buildtools/incVersion.sh', 'all')
   Kernel.system(*%w(fakeroot ./debian/rules binary))
+  Kernel.system(*%w(sudo ./buildtools/rebuildmvvm.sh))
 end
 
 task Package['mvvm'] => [:structure]
