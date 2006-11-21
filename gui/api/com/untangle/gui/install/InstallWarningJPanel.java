@@ -31,7 +31,7 @@ public class InstallWarningJPanel extends MWizardPageJPanel {
                                                              "Install Wizard Warning",
                                                              "Warning");
         dialog.setProceedText("<html><b>Continue</b></html>");
-        dialog.setCancelText("<html><b>Dont Continue</b></html>");
+        dialog.setCancelText("<html><b>Don't Continue</b></html>");
         dialog.setVisible(true);
         if( dialog.isProceeding() )
             return true;
