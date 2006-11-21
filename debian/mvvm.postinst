@@ -9,6 +9,9 @@ APT_CACHE_DIR="/var/cache/apt/archives"
 USER=root
 GROUP=adm
 
+# fix sources.list
+sed -i -e 's/metavize/untangle/g' /etc/apt/sources.list
+
 # modify limit to support many file descriptors
 LIMITS_FILE=/etc/security/limits.conf
 LIMITS_LINE="${USER}    soft    nofile  128000"
