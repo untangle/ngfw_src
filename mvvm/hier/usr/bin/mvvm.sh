@@ -89,17 +89,48 @@ raiseFdLimit() {
     ulimit -n 1024000
 }
 
+isServiceRunning() {
+  ps aux -w -w | grep -v "grep $1" | grep -q "$1"
+}
+
 restartServiceIfNeeded() {
-  # if the PID file is present but the corresponding process is not running,
-  # wipe out the obsolete PID file and restart the service.
-
   serviceName=$1
-  pidFile=$2
 
-  if [ -f "$pidFile" -a ! -d /proc/`cat "$pidFile"` ] ; then
+  needToRun=no
+
+  case $serviceName in
+    postgresql)
+      pidFile=$PGDATE/postmaster.pid
+      isServiceRunning postmaster && return
+      needToRun=yes # always has to run
+      ;;
+    slapd)
+      pidFile=/var/run/slapd/slapd.pid
+      isServiceRunning slapd && return
+      needToRun=yes # always has to run
+      ;;
+    spamassassin)
+      pidFile=/var/run/spamd.pid
+      isServiceRunning spamd && return
+      confFile=/etc/default/spamassassin
+      [ -f $confFile ] && grep -q ENABLED=1 $confFile && needToRun=yes
+      ;;
+    clamav-daemon)
+      pidFile="/var/run/clamd/clamd.pid"
+      isServiceRunning clamd && return
+      dpkg -l clamav-daemon | grep -q -E '^ii' && needToRun=yes
+      ;;
+    clamav-freshclam)
+      pidFile="/var/run/clamd/freshclam.pid"
+      isServiceRunning freshclam && return
+      dpkg -l clamav-freshclam | grep -q -E '^ii' && needToRun=yes
+      ;;
+  esac
+
+  if [ $needToRun == "yes" ] ; then
     echo "*** restarting missing $serviceName on `date` ***" >> $MVVM_WRAPPER_LOG
     rm -f $pidFile
-    /etc/init.d/$serviceName stop
+#    /etc/init.d/$serviceName stop
     /etc/init.d/$serviceName start
   fi
 }
@@ -172,11 +203,6 @@ while true; do
 
     raiseFdLimit
     flushIptables
-    restartServiceIfNeeded postgresql $PGDATE/postmaster.pid
-    restartServiceIfNeeded clamav-freshclam /var/run/clamd/freshclam.pid
-    restartServiceIfNeeded clamav-daemon /var/run/clamd/clamd.pid
-    restartServiceIfNeeded spamassassin /var/run/spamd.pid
-    restartServiceIfNeeded slapd /var/run/slapd/slapd.pid
 
     $MVVM_LAUNCH $* >>$MVVM_CONSOLE_LOG 2>&1 &
 
@@ -195,6 +221,11 @@ while true; do
             nukeIt
             break
         fi
+	restartServiceIfNeeded postgresql
+	restartServiceIfNeeded clamav-freshclam
+	restartServiceIfNeeded clamav-daemon
+	restartServiceIfNeeded spamassassin
+	restartServiceIfNeeded slapd
     done
 
 # Clean up the zombie.  Risky? XXX
