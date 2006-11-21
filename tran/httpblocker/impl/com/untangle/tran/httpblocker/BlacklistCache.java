@@ -188,7 +188,6 @@ class BlacklistCache
         public void run()
         {
             synchronized (BlacklistCache.this) {
-                timer.cancel();
                 nonces.remove(nonce);
                 if (0 == nonces.size()) {
                     timer.cancel();
