@@ -116,14 +116,14 @@ class GeneralTableModel extends MSortedTableModel<Object>{
         tempRow = new Vector(5);
         tempRow.add( super.ROW_SAVED );
         tempRow.add( rowIndex );
-        tempRow.add( "quick-whitelist" );
+        tempRow.add( "quick-passlist" );
         DefaultComboBoxModel whitelistComboBoxModel = new DefaultComboBoxModel();
         whitelistComboBoxModel.addElement(UserWhitelistMode.NONE);
         whitelistComboBoxModel.addElement(UserWhitelistMode.USER_ONLY);
         whitelistComboBoxModel.addElement(UserWhitelistMode.USER_AND_GLOBAL);
         whitelistComboBoxModel.setSelectedItem(spywareSettings.getUserWhitelistMode());
         tempRow.add( whitelistComboBoxModel );
-        tempRow.add( "This setting allows a user to unblock a webpage that was blocked by Spyware Blocker.  The blocked webpage will have buttons that can be clieked." );
+        tempRow.add( "This setting allows a user to unblock a webpage that was blocked by Spyware Blocker.  The blocked webpage will have buttons that can be clicked." );
         allRows.add( tempRow );
 
         return allRows;
