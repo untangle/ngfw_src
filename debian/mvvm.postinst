@@ -10,7 +10,7 @@ USER=root
 GROUP=adm
 
 # fix sources.list
-sed -i -e 's/metavize/untangle/g' /etc/apt/sources.list
+sed -i -e 's/\([^:]\)metavize/\1untangle/g' /etc/apt/sources.list
 
 # modify limit to support many file descriptors
 LIMITS_FILE=/etc/security/limits.conf
