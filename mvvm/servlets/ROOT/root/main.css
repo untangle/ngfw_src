@@ -5,10 +5,20 @@ body {
  text-align: center;
 }
 
+.page_header_title { 
+ font: bold normal normal 25pt Arial,Sans-Serif;
+ color: #777777; 
+}
+
+.page_sub_title {
+ font: bold normal normal 17pt Arial.Sans-Serif;
+ color: #777777;
+}
+
 table {
-    font: 10pt Sans-Serif;
-    text-align: left;
-    color: #606060;
+ font: 10pt Sans-Serif;
+ text-align: left;
+ color: #606060;
 }
 
 table.main
@@ -35,4 +45,40 @@ td.main-bottom
 {
  background: url(/images/background/bottom.gif) repeat-x;
  height: 23px;
+}
+
+#table_main_center {
+ background: url(/images/background/background_table_main_center.gif) repeat;
+}
+
+#table_main_top {
+ background: url(/images/background/background_table_main_top.gif) repeat-x;
+}
+
+#table_main_top_left {
+ background: url(/images/background/rounded_corner_main_top_left.gif) no-repeat;
+}
+
+#table_main_top_right {
+ background: url(/images/background/rounded_corner_main_top_right.gif) no-repeat;
+}
+
+#table_main_right {
+ background: url(/images/background/background_table_main_right.gif) repeat-y;
+}
+
+#table_main_bottom {
+ background: url(/images/background/background_table_main_bottom.gif) repeat-x;
+}
+
+#table_main_bottom_left {
+ background: url(/images/background/rounded_corner_main_bottom_left.gif) no-repeat;
+}
+
+#table_main_bottom_right {
+ background: url(/images/background/rounded_corner_main_bottom_right.gif) no-repeat;
+}
+
+#table_main_left {
+ background: url(/images/background/background_table_main_left.gif) repeat-y;
 }

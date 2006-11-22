@@ -34,42 +34,43 @@ url = '<%=url%>';
   </head>
 
   <body>
-    <table cellspacing="0" cellpadding="0" border="0" align="center" class="main">
+    <table cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="padding: 20px 20px 20px 20px">
       <tbody>
         <tr>
-          <td class="main-top">
-          </td>
+          <td id="table_main_top_left"><img src="/images/background/spacer.gif" alt=" " height="23" width="23"/></td>
+          <td id="table_main_top" width="100%"><img src="/images/background/spacer.gif" alt=" " height="1" width="1"/></td>
+          <td id="table_main_top_right"> <img src="/images/background/spacer.gif" alt=" " height="23" width="23"/></td>
         </tr>
         <tr>
-          <td class="main-middle">
+          <td id="table_main_left"><img src="/images/background/spacer.gif" alt=" " height="1" width="1"/></td>
+          <td id="table_main_center">
 
 <table>
 <tbody>
 <tr>
   <td colspan=1 width="154px">
-<a href="http://www.untangle.com"><img src="/images/Logo150x96.gif" border="0" alt="Untangle logo"/></a>
+<a href="http://www.untangle.com"><img src="/images/Logo150x96.gif" border="0" alt="Untangle logo" width="150" height="96"/></a>
   </td>
-  <td colspan=1 align=left valign=center>
-    <span style="font-family: SansSerif; font-size: 18.0px;">
-<%=header%>
-    </span></td>
+  <td style="padding: 0px 0px 0px 10px" class="page_header_title" align="left" valign="middle">
+  <%=header%>
+  </td>
 </tr>
 </tbody>
 </table>
 
-<table>
+<table width="100%">
 <tbody>
 <tr>
-<td><hr></td>
+<td><hr width="100%" size="1" color="#969696"/></td>
 </tr>
 <tr>
 <td>This web page was blocked because it may contain spyware.</td>
 </tr>
 <tr>
-<td>Host: <%=host%></td>
+<td><b>Host:</b> <%=host%></td>
 </tr>
 <tr>
-<td>URL: <%=url%></td>
+<td><b>URL:</b> <%=url%></td>
 </tr>
 <tr>
 <td>
@@ -93,7 +94,7 @@ url = '<%=url%>';
 
 <tfoot>
 <tr>
-<td><hr></td>
+<td><hr width="100%" size="1" color="#969696"/></td>
 </tr>
 <tr>
 <td><address>Untangle Spyware Blocker</address></td>
@@ -102,9 +103,12 @@ url = '<%=url%>';
 </table>
 
           </td>
+          <td id="table_main_right"><img src="/images/background/spacer.gif" alt=" " height="1" width="1"/></td>        
         </tr>
         <tr>
-          <td class="main-bottom">
+          <td id="table_main_bottom_left"><img src="/images/background/spacer.gif" alt=" " height="23" width="23"/></td>
+          <td id="table_main_bottom"><img src="/images/background/spacer.gif" alt=" " height="1" width="1"/></td>
+          <td id="table_main_bottom_right"> <img src="/images/background/spacer.gif" alt=" " height="23" width="23"/></td>
           </td>
         </tr>
       </tbody>
