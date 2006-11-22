@@ -89,7 +89,8 @@ class Util
             try {
                 /* XXX Should this be cached?? */
                 IPaddr address = IPaddr.parse( request.getRemoteAddr());
-                MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().systemLogin(0);
+                MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().
+                    systemLogin(0, Thread.currentThread().getContextClassLoader());
                 Tid tid = ctx.transformManager().transformInstances( "openvpn-transform" ).get( 0 );
                 TransformContext tc = ctx.transformManager().transformContext( tid );
                 commonName = ((VpnTransform)tc.transform()).lookupClientDistributionKey( key, address );
