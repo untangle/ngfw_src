@@ -183,6 +183,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
     public synchronized void setSetupNetworkingConfiguration( NetworkingConfiguration configuration ) 
         throws NetworkException, ValidateException
     {
+        this.pppoeManager.setExternalSettings( configuration.getPPPoESettings());
+
         setNetworkSettings( NetworkUtilPriv.getPrivInstance().
                             toInternal( configuration, this.networkSettings, false ));
         setRemoteSettings( configuration );
