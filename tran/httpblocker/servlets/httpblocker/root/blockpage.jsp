@@ -15,7 +15,6 @@ BlockDetails bd = tran.getDetails(nonce);
 String header = bd.getHeader();
 String contact = bd.getContact();
 String host = bd.getHost();
-String uri = bd.getUri().toString();
 String reason = bd.getReason();
 String url = bd.getUrl().toString();
 %>

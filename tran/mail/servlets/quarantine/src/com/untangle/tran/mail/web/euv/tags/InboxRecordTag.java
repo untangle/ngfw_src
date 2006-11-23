@@ -65,7 +65,7 @@ public final class InboxRecordTag
       return record.getMailID();
     }
     if(name.equals(FROM_PROP)) {
-      return record.getMailSummary().getSender();
+      return record.getMailSummary().getTruncatedSender();
     }
     if(name.equals(SUBJECT_PROP)) {
       return record.getMailSummary().getTruncatedSubject();

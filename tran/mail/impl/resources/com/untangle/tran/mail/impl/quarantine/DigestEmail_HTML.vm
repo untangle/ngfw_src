@@ -639,14 +639,14 @@ hr {
                             <td class="first">
                               <a href="$linkgenerator.generatePurgeLink($record.getMailID())">Delete</a>&nbsp;|
                               &nbsp;<a href="$linkgenerator.generateRescueLink($record.getMailID())">Release</a></td>
-                            <td>$jsEscaper.escapeJS($record.getMailSummary().Sender)</td>
+                            <td>$jsEscaper.escapeJS($record.getMailSummary().TruncatedSender)</td>
                             <td>
                             #if ($record.getMailSummary().hasAttachments())
                               <img src="$image_root/with_attach.png"/>
                             #end
                             </td>
                             <td>$record.getMailSummary().FormattedQuarantineDetail</td>
-                            <td>$jsEscaper.escapeJS($record.getMailSummary().Subject)</td>
+                            <td>$jsEscaper.escapeJS($record.getMailSummary().TruncatedSubject)</td>
                             <td>$record.FormattedDate</td>
                             <td>$record.FormattedSize</td>
                           </tr>

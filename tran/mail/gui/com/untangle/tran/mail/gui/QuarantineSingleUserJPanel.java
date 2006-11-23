@@ -335,7 +335,7 @@ class QuarantineUserTableModel extends MSortedTableModel<MailTransformCompoundSe
             tempRow.add( inboxRecord.getMailID() );
             tempRow.add( inboxRecord.getFormattedDate() );
             tempRow.add( mailSummary.getSender() );
-            tempRow.add( mailSummary.getTruncatedSubject() );            
+            tempRow.add( mailSummary.getSubject() );            
             tempRow.add( inboxRecord.getFormattedSize() );
             tempRow.add( mailSummary.getQuarantineCategory() );   
             tempRow.add( mailSummary.getFormattedQuarantineDetail() );   

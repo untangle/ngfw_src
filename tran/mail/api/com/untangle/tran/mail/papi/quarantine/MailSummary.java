@@ -20,7 +20,9 @@ import java.lang.StringBuffer;
 public final class MailSummary
   implements Serializable {
 
-  private static final int SUBJECT_MAX_LENGTH = 45;
+  private static final int SENDER_MAX_LENGTH = 32; // plus ellipse
+  private static final int SUBJECT_MAX_LENGTH = 42; // plus ellipse
+  private static final String ELLIPSE_STR = "...";
 
   private String m_sender;
   private String m_subject;
@@ -61,6 +63,9 @@ public final class MailSummary
     return getAttachmentCount()>0;
   }
   
+  public String getTruncatedSender() {
+      return truncate(m_sender, SENDER_MAX_LENGTH);
+  }
   public String getSender() {
     return m_sender;
   }
@@ -68,11 +73,7 @@ public final class MailSummary
     m_sender = sender;
   }
   public String getTruncatedSubject() {
-      StringBuffer truncatedSubject = new StringBuffer(m_subject);
-      if (SUBJECT_MAX_LENGTH < truncatedSubject.length()) {
-          truncatedSubject.setLength(SUBJECT_MAX_LENGTH);
-      }
-      return truncatedSubject.toString();
+      return truncate(m_subject, SUBJECT_MAX_LENGTH);
   }
   public String getSubject() {
     return m_subject;
@@ -116,16 +117,24 @@ public final class MailSummary
       }
     }
   }
-
   public void setFormattedQuarantineDetail(String detail) {
     m_quarantineDetail = detail;
+  }
+
+  private String truncate(String source, int maxLength) {
+      StringBuffer truncateSource = new StringBuffer(source);
+      if (maxLength < truncateSource.length()) {
+          truncateSource.setLength(maxLength);
+          truncateSource.append(ELLIPSE_STR);
+      }
+      return truncateSource.toString();
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("Sender: ").append(getSender()).
-      append(", Subject: ").append(getTruncatedSubject()).
+      append(", Subject: ").append(getSubject()).
       append(", Cat: ").append(getQuarantineCategory()).
       append(", AttachCount: ").append(getAttachmentCount()).
       append(", Detail: ").append(getQuarantineDetail()).

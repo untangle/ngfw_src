@@ -88,7 +88,7 @@ public final class InboxIndexImpl
       System.out.println("\tID: " + record.getMailID());
       System.out.println("\tDate: " + record.getInternDate());
       System.out.println("\tSize: " + record.getSize());
-      System.out.println("\tSender: " + record.getMailSummary().getSender());
+      System.out.println("\tSender: " + record.getMailSummary().getTruncatedSender());
       System.out.println("\tSubject: " + record.getMailSummary().getTruncatedSubject());
       System.out.println("\tAttchCount: " + record.getMailSummary().getAttachmentCount());
       System.out.println("\tCat: " + record.getMailSummary().getQuarantineCategory());

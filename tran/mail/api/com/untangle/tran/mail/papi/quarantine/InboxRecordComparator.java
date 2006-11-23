@@ -155,7 +155,9 @@ public final class InboxRecordComparator {
     //Null is less than not null
   
     protected int compareImpl(InboxRecord o1, InboxRecord o2) {
-    
+
+      // compare on original sender (not truncated sender)
+      // because truncation may drop uniqueness
       String sender1 = o1.getMailSummary()==null?
         null:o1.getMailSummary().getSender();
         
@@ -176,12 +178,14 @@ public final class InboxRecordComparator {
     //Null is less than not null
   
     protected int compareImpl(InboxRecord o1, InboxRecord o2) {
-    
+
+      // compare on original subject (not truncated subject)
+      // because truncation may drop uniqueness
       String subject1 = o1.getMailSummary()==null?
-        null:o1.getMailSummary().getTruncatedSubject();
+        null:o1.getMailSummary().getSubject();
         
       String subject2 = o2.getMailSummary()==null?
-        null:o2.getMailSummary().getTruncatedSubject();
+        null:o2.getMailSummary().getSubject();
         
       return subject1==null?
         (subject2==null?0:-1)://Subject1 null

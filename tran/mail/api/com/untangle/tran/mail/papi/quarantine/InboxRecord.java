@@ -33,9 +33,7 @@ public abstract class InboxRecord
 
   public InboxRecord() {}
   
-  public InboxRecord(String mailID,
-    long addedOn,
-    MailSummary summary,
+  public InboxRecord(String mailID, long addedOn, MailSummary summary,
     String[] recipients) {
 
     m_mailID = mailID;
@@ -108,7 +106,7 @@ public abstract class InboxRecord
   public final String getFormattedDate() {
       try {
           Date iDate = new Date(getInternDate());
-          SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yy HH:mm");
+          SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/yy H:mm");
           return dateFormat.format(iDate).toString();
       } catch(Exception ex) { return "<unknown>"; }
   }
