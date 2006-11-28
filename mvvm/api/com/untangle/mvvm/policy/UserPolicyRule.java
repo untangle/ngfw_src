@@ -112,7 +112,7 @@ public class UserPolicyRule extends PolicyRule
 
     public boolean matches(IPSessionDesc sd)
     {
-        boolean temp = 
+        boolean basicOk = 
             isLive()
             && clientIntf.isMatch(sd.clientIntf())
             && serverIntf.isMatch(sd.serverIntf())
@@ -122,32 +122,56 @@ public class UserPolicyRule extends PolicyRule
             && clientPort.isMatch(sd.clientPort())
             && serverPort.isMatch(sd.serverPort());
 
-        if (temp == false)
-            return temp;
+        if (!basicOk)
+            return false;
 
-        // Note that we assume we get back something from the database with meaningless
-        // fields other than time ones.
+	boolean invertDuration = false;
+        // Note that we assume we get back something from the database with
+        // meaningless fields other than time ones.
         Calendar now = Calendar.getInstance();
-        Date dnow = now.getTime();
-        int nowhour = now.get(Calendar.HOUR_OF_DAY);
         Calendar start = Calendar.getInstance();
+        Calendar end = Calendar.getInstance();
         start.setTime(startTime);
+        start.set(Calendar.YEAR, now.get(Calendar.YEAR));
+        start.set(Calendar.MONTH, now.get(Calendar.MONTH));
+        start.set(Calendar.DAY_OF_MONTH, now.get(Calendar.DAY_OF_MONTH));
+        end.setTime(endTime);
+        end.set(Calendar.YEAR, now.get(Calendar.YEAR));
+        end.set(Calendar.MONTH, now.get(Calendar.MONTH));
+        end.set(Calendar.DAY_OF_MONTH, now.get(Calendar.DAY_OF_MONTH));
+
+	// Special case to handle 3:00 -> 2:59, for instance.
+	if (end.before(start)) {
+	    Calendar temp = end;
+	    end = start;
+	    start = temp;
+	    start.add(Calendar.MINUTE, 1);
+            end.add(Calendar.MINUTE, -1);
+	    invertDuration = true;
+	}
+
+        int nowhour = now.get(Calendar.HOUR_OF_DAY);
         int starthour = start.get(Calendar.HOUR_OF_DAY);
+        int endhour = end.get(Calendar.HOUR_OF_DAY);
+
         boolean outsideDuration =
+            // Check the start
             (nowhour < starthour ||
              (nowhour == starthour && now.get(Calendar.MINUTE) < start.get(Calendar.MINUTE)));
+        outsideDuration = outsideDuration ^ invertDuration;
 
         // Check the end.
         if (!outsideDuration) {
-            Calendar end = Calendar.getInstance();
-            end.setTime(endTime);
-            int endhour = end.get(Calendar.HOUR_OF_DAY);
             outsideDuration =
                 (nowhour > endhour ||
                  (nowhour == endhour && now.get(Calendar.MINUTE) > end.get(Calendar.MINUTE)));
         }
-        if (!outsideDuration)
+        outsideDuration = outsideDuration ^ invertDuration;
+
+        if (!outsideDuration) {
+            Date dnow = now.getTime();
             outsideDuration = !dayOfWeek.isMatch(dnow);
+	}
 
         boolean durationTest = invertEntireDuration ? outsideDuration : !outsideDuration;
 
