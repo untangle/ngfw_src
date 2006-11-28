@@ -147,7 +147,7 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="The internal address is EdgeGuard&apos;s address on the internal network, which computers will use as their gateway.  This address is also used to contact EdgeGuard for configuration."/>
+            <Property name="text" type="java.lang.String" value="The internal address is the address on the internal network, which computers will use as their gateway.  This address is also used to contact the Untangle Server for configuration."/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
@@ -298,7 +298,7 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="The external address is EdgeGuard&apos;s address on the external network.  This is specified through the &quot;Networking&quot; Config Panel."/>
+            <Property name="text" type="java.lang.String" value="The external address is the Untangle Server&apos;s address on the external network.  This is specified through the &quot;Networking&quot; Config Panel."/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>

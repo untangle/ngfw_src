@@ -244,7 +244,7 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Internal Address (Gateway)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jTextArea3.setEditable(false);
                 jTextArea3.setLineWrap(true);
-                jTextArea3.setText("The internal address is EdgeGuard's address on the internal network, which computers will use as their gateway.  This address is also used to contact EdgeGuard for configuration.");
+                jTextArea3.setText("The internal address is the address on the internal network which computers will use as their gateway.  This address is also used to contact the Untangle Server for configuration.");
                 jTextArea3.setWrapStyleWord(true);
                 jTextArea3.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -344,7 +344,7 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 internalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "External Address (Public Address)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jTextArea1.setEditable(false);
                 jTextArea1.setLineWrap(true);
-                jTextArea1.setText("The external address is EdgeGuard's address on the external network.  This is specified through the \"Networking\" Config Panel.");
+                jTextArea1.setText("The external address is the Untangle Server's address on the external network.  This is specified through the \"Networking\" Config Panel.");
                 jTextArea1.setWrapStyleWord(true);
                 jTextArea1.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();

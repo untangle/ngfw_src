@@ -134,7 +134,7 @@ class GeneralTableModel extends MSortedTableModel<Object>{
         tempRow.add( rowIndex );
         tempRow.add( "scan trickle rate (percent)" );
         tempRow.add( new SpinnerNumberModel( virusSettings.getTricklePercent(), 1, 99, 1) );
-        tempRow.add( "This setting specifies the rate the user will download a file (which is being scanned), relative to the rate the EdgeGuard is receiving the actual file." ); //virusSettings.getTricklePercentDetails() );
+        tempRow.add( "This setting specifies the rate the user will download a file (which is being scanned), relative to the rate the Untangle Server is receiving the actual file." ); //virusSettings.getTricklePercentDetails() );
         allRows.add( tempRow );
 
         return allRows;

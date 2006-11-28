@@ -113,7 +113,7 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 nameserversJPanel.setBorder(new javax.swing.border.TitledBorder(null, "DNS Forwarding", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jTextArea1.setEditable(false);
                 jTextArea1.setLineWrap(true);
-                jTextArea1.setText("DNS Forwarding allows EdgeGuard to act as a DNS server for the internal network.  (Note: This will also serve hostnames from the DHCP Address map and the DNS Forwarding Address Map, if they are enabled.)");
+                jTextArea1.setText("DNS Forwarding allows your Untangle Server to act as a DNS server for the internal network.  (Note: This will also serve hostnames from the DHCP Address map and the DNS Forwarding Address Map, if they are enabled.)");
                 jTextArea1.setWrapStyleWord(true);
                 jTextArea1.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();

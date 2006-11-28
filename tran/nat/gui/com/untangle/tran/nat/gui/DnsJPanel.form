@@ -44,7 +44,7 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="DNS Forwarding allows EdgeGuard to act as a DNS server for the internal network.  (Note: This will also serve hostnames from the DHCP Address map and the DNS Forwarding Address Map, if they are enabled.)"/>
+            <Property name="text" type="java.lang.String" value="DNS Forwarding allows your Untangle Server to act as a DNS server for the internal network.  (Note: This will also serve hostnames from the DHCP Address map and the DNS Forwarding Address Map, if they are enabled.)"/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>

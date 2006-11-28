@@ -116,7 +116,7 @@ public class PrimarySpaceJPanel extends javax.swing.JPanel implements Savable<Ob
                 natJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Public Space", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jTextArea2.setEditable(false);
                 jTextArea2.setLineWrap(true);
-                jTextArea2.setText("The Public Space is the Space that is bound to EdgeGuard's External network interface.  Most of its settings are configured through a config panel in Config -> Networking.  However, for advanced purposes, you may specify the MTU here.");
+                jTextArea2.setText("The Public Space is the Space that is bound to the External network interface.  Most of its settings are configured through a config panel in Config -> Networking.  However, for advanced purposes, you may specify the MTU here.");
                 jTextArea2.setWrapStyleWord(true);
                 jTextArea2.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();

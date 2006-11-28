@@ -131,7 +131,7 @@ public class WizardJPanel extends javax.swing.JPanel implements Refreshable<Obje
                 clientJPanel.add(clientJButton, gridBagConstraints);
 
                 jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel1.setText("<html>This allows your EdgeGuard to connect to a remote EdgeGuard, so they can share exported hosts or exported networks.</html>");
+                jLabel1.setText("<html>This allows your Untangle Server to connect to a remote Untangle Server, so they can share exported hosts or exported networks.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
@@ -176,7 +176,7 @@ public class WizardJPanel extends javax.swing.JPanel implements Refreshable<Obje
                 serverRoutingJPanel.add(serverRoutingJButton, gridBagConstraints);
 
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>This allows your EdgeGuard to allow VPN clients to connect to it.  You can export hosts and networks, that will then be accessible to connected clients.</html>");
+                jLabel2.setText("<html>This lets your Untangle Server allow VPN clients to connect to it.  You can export hosts and networks, that will then be accessible to connected clients.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;

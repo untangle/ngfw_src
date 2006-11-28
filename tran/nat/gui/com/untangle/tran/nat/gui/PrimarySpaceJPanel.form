@@ -43,7 +43,7 @@
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
             <Property name="lineWrap" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="The Public Space is the Space that is bound to EdgeGuard&apos;s External network interface.  Most of its settings are configured through a config panel in Config -&gt; Networking.  However, for advanced purposes, you may specify the MTU here."/>
+            <Property name="text" type="java.lang.String" value="The Public Space is the Space that is bound to the External network interface.  Most of its settings are configured through a config panel in Config -&gt; Networking.  However, for advanced purposes, you may specify the MTU here."/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>

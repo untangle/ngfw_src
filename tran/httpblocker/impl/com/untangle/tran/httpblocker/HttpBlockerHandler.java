@@ -39,7 +39,7 @@ public class HttpBlockerHandler extends HttpStateMachine
         + "<p>Category: %s</p>"
         + "<p>Please contact %s</p>"
         + "<HR>"
-        + "<ADDRESS>Metavize EdgeGuard</ADDRESS>"
+        + "<ADDRESS>Untangle</ADDRESS>"
         + "</BODY></HTML>";
 
     private static final int SCAN = Transform.GENERIC_0_COUNTER;

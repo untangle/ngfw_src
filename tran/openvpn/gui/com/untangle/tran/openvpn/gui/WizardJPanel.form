@@ -124,7 +124,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;This allows your EdgeGuard to connect to a remote EdgeGuard, so they can share exported hosts or exported networks.&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;This allows your Untangle Server to connect to a remote Untangle Server, so they can share exported hosts or exported networks.&lt;/html&gt;"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -188,7 +188,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;This allows your EdgeGuard to allow VPN clients to connect to it.  You can export hosts and networks, that will then be accessible to connected clients.&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;This lets your Untangle Server allow VPN clients to connect to it.  You can export hosts and networks, that will then be accessible to connected clients.&lt;/html&gt;"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">

@@ -88,7 +88,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         + "  document.writeln(\"<p>URI: %s</p>\")\n"
         + "  document.writeln(\"<p>Please contact your network administrator.</p>\")\n"
         + "  document.writeln(\"<HR>\")\n"
-        + "  document.writeln(\"<ADDRESS>Metavize EdgeGuard</ADDRESS>\")\n"
+        + "  document.writeln(\"<ADDRESS>Untangle</ADDRESS>\")\n"
         + "}\n"
         + "</script>"
         + "</BODY></HTML>";
