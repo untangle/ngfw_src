@@ -139,8 +139,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  FOZQpQiJxRPB/uif9lTkHh8l3OVBhq6xsyXQZCqNVKoHdjK1teO8zkSuNnHn52axVkyy44wF
  jP5/n47IHTnb+aVRzChGFcieTBYZDm8iFwJtMEo9mv5bf//NdiRq+Es9wwm3yLXAooahnnuZ
  QdxsLPxXDxw5/j7RBinaTy/EXwisAmjbSWR6+zAwlMNjj38ieCD2fwIMANZG+Ft4BQz8AAAA
-Description: Untangle Attack Blocker
- The Untangle Attack Blocker.
+Description: Attack Blocker
+ The Attack Blocker product.
 
 Package: spyware-transform
 Architecture: any
@@ -225,8 +225,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  IgWqMjYrOOHvOAJkMSxsqyn4gHedmazBrqiqgfBwxU6jaj76SDWsX69qOa2q2FilgoNVcVaW+Y9k
  73LcRSZkLGKH/REnyfG0lONnPR/5uuRksvDJPrb/abw/B5zrN+guuOXxZRNDd9Zq1QnYEOXj71ey
  +PfGcHg3h7iLr16RWb+Q1R/2aQ8mqjheqF8wvO3WUPf+R4ABACEcfkAFMtTiAAAAAElFTkSuQmCC
-Description: Untangle Spyware Blocker
- The Untangle Spyware Blocker.
+Description: Spyware Blocker
+ The Spyware Blocker product.
 
 Package: httpblocker-transform
 Architecture: any
@@ -322,8 +322,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  hv5ibZAOJB+Ky44vFgGhHLnryrk0ZtNIVGdIWXk5HptioXw44eddESL+/vgzcoWKcn5hoPbA
  +1nH0ufnBbLGWduFUqXpn6ZVni9WNfB/TqKdLXQoddk5/ipGzKowLKETWaMN5ivbxR/E/ifA
  ACBNCbEqfhTsAAAAAElFTkSuQmCC
-Description: Untangle Web Content Control
- Untangle Web Content Control.
+Description: Web Content Control
+ The Web Content Control product.
 
 Package: hauri-transform
 Architecture: any
@@ -435,8 +435,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  bo4dB1m4/4mJCZqZmTkOure3Rw3Moe3tbdrf36epqamhgXK/DDo/P08LCws0NzfXelcoFJTJ
  t7a2iKH5xJlHJgYQTXoFZcjFxUUlDK3e8ZE4m35tbY0cx1GAw4BMUgKhGBh4DPkrH9WzEs1O
  4vuVlZXPTaVhwzLg7OwsLS0t0fLyMq2vryvO/wQYAP5qirM6mBOTAAAAAElFTkSuQmCC
-Description: Untangle Dual Virus Blocker
- The Untangle Dual Virus Blocker.
+Description: Dual Virus Blocker
+ The Dual Virus Blocker product.
 
 Package: kav-transform
 Architecture: any
@@ -515,8 +515,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  bo4dB1m4/4mJCZqZmTkOure3Rw3Moe3tbdrf36epqamhgXK/DDo/P08LCws0NzfXelcoFJTJ
  t7a2iKH5xJlHJgYQTXoFZcjFxUUlDK3e8ZE4m35tbY0cx1GAw4BMUgKhGBh4DPkrH9WzEs1O
  4vuVlZXPTaVhwzLg7OwsLS0t0fLyMq2vryvO/wQYAP5qirM6mBOTAAAAAElFTkSuQmCC
-Description: Untangle Kaspersky Virus Blocker
- The Untangle Kaspersky Virus Blocker.
+Description: Kaspersky Virus Blocker
+ The Kaspersky Virus Blocker product.
 
 Package: clam-transform
 Architecture: any
@@ -620,8 +620,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  bo4dB1m4/4mJCZqZmTkOure3Rw3Moe3tbdrf36epqamhgXK/DDo/P08LCws0NzfXelcoFJTJ
  t7a2iKH5xJlHJgYQTXoFZcjFxUUlDK3e8ZE4m35tbY0cx1GAw4BMUgKhGBh4DPkrH9WzEs1O
  4vuVlZXPTaVhwzLg7OwsLS0t0fLyMq2vryvO/wQYAP5qirM6mBOTAAAAAElFTkSuQmCC
-Description: Untangle Virus Blocker
- The Untangle Virus Blocker.
+Description: Virus Blocker
+ The Virus Blocker product.
 
 Package: protofilter-transform
 Architecture: any
@@ -741,8 +741,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  9r+JrLqHcb1/5G+RYmXTPJWlGb3b6BYmf2bKnUk5+TGE7vzZn3kmWHTz5s1//icarfhpzE82
  2tifbwr1VLtn9G935xN+znHG/arjXPYPRVt53HzZvynJzzTaKFBpwLTxwIsWGlcGHRei85f/
  /qR+EPs/AQYALpz0b9lClG4AAAAASUVORK5CYII=
-Description: Untangle Protocol Control
- The Untangle Protocol Control.
+Description: Protocol Control
+ The Protocol Control product.
 
 Package: nat-transform
 Architecture: any
@@ -834,8 +834,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  jV2HqI3cgHe4BtKqxdZ9QVriCq0JdRBkKKPzYVf2kmdOIz57AnivI8PHQYmKIjd+r4u0YpKU
  zYu28/m48eumeSM2sZU0C0mzhm1HVVVisRiaplFeXv71g9wrRRzHIZVKkUqlBkfjLq5wOcej
  +/fvv9Ix0wA4V/LlOA7/GQCfi3hGQX94NwAAAABJRU5ErkJggg==
-Description: Untangle Router
- The Untangle Router.
+Description: Router
+ The Router product.
 
 Package: firewall-transform
 Architecture: any
@@ -920,8 +920,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  m7e0hNP8YP8oT741ya5ry/na+jRz3Z2MjOZ5vs3n+dY803LhsPu+z/DwMEEQUFpaOr/IBTDN
  zc2FabY4d/MK1zzQlDRpVyz53X379hnAfCLf07SOhrSOXtye9ILVeHNzM//v50Axw74c1xjD
  fwYAMCLoUqhkh6IAAAAASUVORK5CYII=
-Description: Untangle Firewall
- The Untangle Firewall.
+Description: Firewall
+ The Firewall product.
 
 Package: spamassassin-transform
 Architecture: any
@@ -1034,8 +1034,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  BKrSAH7zsCoUU01hotVpyZBWzBOosKrYaJBp4U5Si82nbJpKvekm4RPXjyQ/EqKRY1dQLbrv
  7ecbjiWKg52kQksZPHS58yyBNmiZiJP+/Re/svPTyfv0y81tv46IkqxIuSdiaPf5D4YGWh7D
  zpbjLtD367cmAc5kRUrTokJw339vj/xB7P8FGACNK2N4xeErDQAAAABJRU5ErkJggg==
-Description: Untangle Spam Blocker
- The Untangle Spam Blocker.
+Description: Spam Blocker
+ The Spam Blocker product.
 
 Package: clamphish-transform
 Architecture: any
@@ -1162,8 +1162,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  DeWOUVGQk46vEDn3QiJzP5Tv3KHYlomQGTTF/tsucwQoIgfY0ME3uUu7PogA9qxsZpUgB1QR
  k2CFwI0uw5UGmqYjhJgEO3kPJb3c0CFdxgf60NxeIoGxv9v3NzTIj0BpAdTEYcMHgTVS/M8A
  nY2oOxX/HXgAAAAASUVORK5CYII=
-Description: Untangle Identity Theft Blocker
- The Untangle Identity Theft Blocker.
+Description: Identity Theft Blocker
+ The Identity Theft Blocker product.
 
 Package: test-transform
 Architecture: any
@@ -1407,7 +1407,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  p9MbC7m3s67neaFcbRjGLbJ4cIQI3Na9vwzq41aZ3W2cWq1GrVa7VRr/dUfwokDY+r8et1j0
  xIkT/LaPNzYtgL8l0/d9/mcAXb1X7pR/ZiwAAAAASUVORK5CYII=
 Description: OpenVPN
- OpenVPN.
+ The OpenVPN product.
 
 Package: portal-transform
 Architecture: any
@@ -1513,8 +1513,8 @@ XB-Desc-Icon:  iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YM
  EP2bb765i8G3u7vn5Upeez19wXH58uV+f4Bk5G8G4LrKxSWHEZXXCGnA/MBlcE4aa2ERkXMd
  mExNXuhQ/BtEgBH2fmScSohAwURrcxNoxyhJknjKMYj2QfR48tXf/Y78W45z586Rf9OBcv9D
  gAEA/vR7Rb8zHBYAAAAASUVORK5CYII=
-Description: Untangle Remote Access Portal
- The Untangle Remote Access Portal.
+Description: Remote Access Portal
+ The Remote Access Portal product.
 
 Package: ids-transform
 Architecture: any
@@ -1618,8 +1618,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  gsfHQOjn+g6B3IjyCiLKankOYogxYlRxroN4C9+u6Nol3m0Ivh3SMIYO77MjbVPK5v9f/vAv
  dt1hz+oW0X4R2L/+xQ72f/+aKQFxz7/f+fpfFP00yKQAP7JF/ft5GLHDLCq9/aj7R7+mbO3J
  3QCjv/Lrm/0vGAYPf3Cgs7LEXqJSDBdeyxQVZw9vy/8MAIKemQqNP8+BAAAAAElFTkSuQmCC
-Description: Untangle Intrusion Prevention
- Untangle Intrusion Prevention.
+Description: Intrusion Prevention
+ The Intrusion Prevention product.
 
 Package: reporting-transform
 Architecture: any
@@ -1704,7 +1704,7 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YMg
  Gwe/++1vGj/fcKBvrfF6FVHvq8rfvQzlN83+/j9Ov3D2DdYAKX9oYI1fKPoxJMDBwSCGhg9j
  9KkxvPWjn6ofxP4nwAB2T5Rklk6b3gAAAABJRU5ErkJggg==
 Description: Untangle Reports
- Untangle Reports.
+ The Untangle Reports product.
 
 Package: boxbackup-transform
 Architecture: any
@@ -1822,22 +1822,22 @@ XB-Desc-Icon:  iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAABGdBTUEAANbY1E9YM
  UhSjFBXBSZSlEzlQ4Qb8b0QSAyroSUWMCjqU1BjiQBEI87Hw49XvxG34jfnnTR9v2GzFMFBT
  AWk1QmLfV3ukhaYK9I4Wfe83CCwb8LTUuhOUECxqyCoy+D/E/leAAQDhy3XsyDOL8wAAAABJ
  RU5ErkJggg==
-Description: Untangle 24-Hour Replacement
- Untangle 24-Hour Replacement.
+Description: 24-Hour Replacement
+ The 24-Hour Replacement product.
 
 Package: virus-base
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Virus Blocker Base
-Description: Untangle Virus Blocker Base
- The Untangle Virus Blocker Base.
+Description: Virus Blocker Base
+ The Virus Blocker Base.
 
 Package: spam-base
 Architecture: any
 Depends: mvvm
 XB-Display-Name: Spam Blocker Base
-Description: Untangle Spam Blocker Base
- The Untangle Spam Blocker Base.
+Description: Spam Blocker Base
+ The Spam Blocker Base.
 
 Package: metavize-client
 Depends: untangle-client
