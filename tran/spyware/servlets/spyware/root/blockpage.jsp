@@ -14,8 +14,8 @@ UserWhitelistMode mode = tran.getUserWhitelistMode();
 BlockDetails bd = tran.getBlockDetails(nonce);
 
 String header = "Spyware Blocker";
-String host = bd.getHost();
-String url = bd.getUrl();
+String host = bd.getFormattedHost();
+String url = bd.getFormattedUrl();
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
@@ -67,10 +67,10 @@ url = '<%=url%>';
 <td>This web page was blocked because it may contain spyware.</td>
 </tr>
 <tr>
-<td><b>Host:</b> <%=host%></td>
+<td><p><b>Host:</b> <%=host%></p></td>
 </tr>
 <tr>
-<td><b>URL:</b> <%=url%></td>
+<td><p><b>URL:</b> <%=url%></p></td>
 </tr>
 <tr>
 <td>

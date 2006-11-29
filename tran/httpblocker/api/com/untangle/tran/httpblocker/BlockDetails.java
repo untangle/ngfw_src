@@ -12,12 +12,14 @@
 package com.untangle.tran.httpblocker;
 
 import java.io.Serializable;
+import java.lang.StringBuffer;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
 public class BlockDetails implements Serializable
 {
+    private final int SUB_LINE_LEN = 80;
     private final String nonce;
     private final HttpBlockerSettings settings;
     private final String host;
@@ -54,6 +56,11 @@ public class BlockDetails implements Serializable
         return host;
     }
 
+    public String getFormattedHost()
+    {
+        return breakLine(getHost(), SUB_LINE_LEN);
+    }
+
     public String getRuleSite()
     {
         if (host.startsWith("www.") && 4 < host.length()) {
@@ -63,9 +70,19 @@ public class BlockDetails implements Serializable
         }
     }
 
+    public String getFormattedRuleSite()
+    {
+        return breakLine(getRuleSite(), SUB_LINE_LEN);
+    }
+
     public URI getUri()
     {
         return uri;
+    }
+
+    public String getFormattedUri()
+    {
+        return breakLine(getUri().toString(), SUB_LINE_LEN);
     }
 
     public URL getUrl()
@@ -77,8 +94,35 @@ public class BlockDetails implements Serializable
         }
     }
 
+    public String getFormattedUrl()
+    {
+        return breakLine(getUrl().toString(), SUB_LINE_LEN);
+    }
+
     public String getReason()
     {
         return reason;
+    }
+
+    private String breakLine(String orgLine, int subLineLen) {
+        StringBuffer newLine = new StringBuffer(orgLine.length());
+        char chVal;
+        int subLineCnt = 0;
+        subLineLen--;
+        for (int idx = 0; idx < orgLine.length(); idx++) {
+            chVal = orgLine.charAt(idx);
+            if ('\n' == chVal || ' ' == chVal) {
+                newLine.append(chVal);
+                subLineCnt = 1;
+            } else if (subLineLen == subLineCnt) {
+                newLine.append('\n');
+                newLine.append(chVal);
+                subLineCnt = 1;
+            } else {
+                newLine.append(chVal);
+                subLineCnt++;
+            }
+        }
+        return newLine.toString();
     }
 }

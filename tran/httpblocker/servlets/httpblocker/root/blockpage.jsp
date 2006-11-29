@@ -14,9 +14,9 @@ BlockDetails bd = tran.getDetails(nonce);
 
 String header = bd.getHeader();
 String contact = bd.getContact();
-String host = bd.getHost();
+String host = bd.getFormattedHost();
+String url = bd.getFormattedUrl();
 String reason = bd.getReason();
-String url = bd.getUrl().toString();
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
@@ -65,13 +65,13 @@ url = '<%=url%>';
 <td>This web page was blocked because it is considered inappropriate.</td>
 </tr>
 <tr>
-<td><b>Host:</b> <%=host%></td>
+<td><p><b>Host:</b> <%=host%></p></td>
 </tr>
 <tr>
-<td><b>URL:</b> <%=url%></td>
+<td><p><b>URL:</b> <%=url%></p></td>
 </tr>
 <tr>
-<td><b>Category:</b> <%=reason%></td>
+<td><p><b>Category:</b> <%=reason%></p></td>
 </tr>
 <tr>
 <td>Please contact <%=contact%>.</td>

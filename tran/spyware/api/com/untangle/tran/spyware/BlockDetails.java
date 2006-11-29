@@ -12,10 +12,12 @@
 package com.untangle.tran.spyware;
 
 import java.io.Serializable;
+import java.lang.StringBuffer;
 import java.net.InetAddress;
 
 public class BlockDetails implements Serializable
 {
+    private final int SUB_LINE_LEN = 80;
     private final String nonce;
     private final String host;
     private final String uri;
@@ -40,6 +42,11 @@ public class BlockDetails implements Serializable
         return host;
     }
 
+    public String getFormattedHost()
+    {
+        return breakLine(getHost(), SUB_LINE_LEN);
+    }
+
     public String getWhitelistHost()
     {
         if (host.startsWith("www.") && 4 < host.length()) {
@@ -49,14 +56,45 @@ public class BlockDetails implements Serializable
         }
     }
 
+    public String getFormattedWhitelistHost()
+    {
+        return breakLine(getWhitelistHost(), SUB_LINE_LEN);
+    }
+
     public String getUrl()
     {
         return "http://" + host + uri;
+    }
 
+    public String getFormattedUrl()
+    {
+        return breakLine(getUrl(), SUB_LINE_LEN);
     }
 
     public InetAddress getClientAddress()
     {
         return clientAddr;
+    }
+
+    private String breakLine(String orgLine, int subLineLen) {
+        StringBuffer newLine = new StringBuffer(orgLine.length());
+        char chVal;
+        int subLineCnt = 0;
+        subLineLen--;
+        for (int idx = 0; idx < orgLine.length(); idx++) {
+            chVal = orgLine.charAt(idx);
+            if ('\n' == chVal || ' ' == chVal) {
+                newLine.append(chVal);
+                subLineCnt = 1;
+            } else if (subLineLen == subLineCnt) {
+                newLine.append('\n');
+                newLine.append(chVal);
+                subLineCnt = 1;
+            } else {
+                newLine.append(chVal);
+                subLineCnt++;
+            }
+        }
+        return newLine.toString();
     }
 }
