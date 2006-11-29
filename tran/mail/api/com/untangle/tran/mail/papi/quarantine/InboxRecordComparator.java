@@ -166,7 +166,7 @@ public final class InboxRecordComparator {
         
       return sender1==null?
         (sender2==null?0:-1)://Sender1 null
-        (sender2==null?1:sender1.compareTo(sender2));
+        (sender2==null?1:sender1.compareToIgnoreCase(sender2));
     }
   }
 
@@ -189,7 +189,7 @@ public final class InboxRecordComparator {
         
       return subject1==null?
         (subject2==null?0:-1)://Subject1 null
-        (subject2==null?1:subject1.compareTo(subject2));
+        (subject2==null?1:subject1.compareToIgnoreCase(subject2));
     }
   }
 
