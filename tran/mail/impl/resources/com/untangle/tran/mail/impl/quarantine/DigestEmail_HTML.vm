@@ -234,6 +234,18 @@ table.slist tbody td.first {
   padding-left: 20;
 }
 
+table.slist tbody td.first a:link {
+ font: normal normal normal 10pt/14pt Arial,Sans-Serif;
+ color: #1997FE;
+ text-decoration: none;
+}
+
+table.slist tbody td.first a:visited {
+ font: normal normal normal 10pt/14pt Arial,Sans-Serif;
+ color: #1997FE;
+ text-decoration: none;
+}
+
 table.slist thead th {
   background-color: #E0E0E0;
   border-left: 1px solid #666;
@@ -569,7 +581,7 @@ hr {
           #if ($hasRecords)
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tbody>
-              <tr>
+<!--           <tr>
                 <td>
                   <table class="actions" border="0" cellpadding="0" cellspacing="0" width="100%">
                     <tbody>
@@ -581,9 +593,11 @@ hr {
                         </td>
                         <td>
                           <div class="msiehack1">
+-->
 <!--
                             <a href="$linkgenerator.generateHelpLink()">Help</a>
 -->
+<!--
                           </div>
                         </td>
                       </tr>
@@ -591,6 +605,7 @@ hr {
                   </table>
                 </td>
               </tr>
+-->
               <tr>
                 <td>
                   <table class="inbox" width="100%">
@@ -637,8 +652,8 @@ hr {
                           #end
                           <tr class="$parity">
                             <td class="first">
-                              <a href="$linkgenerator.generatePurgeLink($record.getMailID())">Delete</a>&nbsp;|
-                              &nbsp;<a href="$linkgenerator.generateRescueLink($record.getMailID())">Release</a></td>
+                              <a href="$linkgenerator.generatePurgeLink($record.getMailID())">Delete</a><br>
+                              <a href="$linkgenerator.generateRescueLink($record.getMailID())">Release</a></td>
                             <td>$jsEscaper.escapeJS($record.getMailSummary().TruncatedSender)</td>
                             <td>
                             #if ($record.getMailSummary().hasAttachments())
