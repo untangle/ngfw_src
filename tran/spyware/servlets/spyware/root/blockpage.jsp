@@ -33,8 +33,8 @@ url = '<%=url%>';
 
   </head>
 
-  <body>
-    <table cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="padding: 20px 20px 20px 20px">
+  <body style="margin: 20px 20px 20px 20px">
+    <table cellspacing="0" cellpadding="0" border="0" align="center" width="100%">
       <tbody>
         <tr>
           <td id="table_main_top_left"><img src="/images/background/spacer.gif" alt=" " height="23" width="23"/></td>
