@@ -184,7 +184,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         throws NetworkException, ValidateException
     {
         this.pppoeManager.setExternalSettings( configuration.getPPPoESettings());
-
         setNetworkSettings( NetworkUtilPriv.getPrivInstance().
                             toInternal( configuration, this.networkSettings, false ));
         setRemoteSettings( configuration );
@@ -1271,7 +1270,23 @@ public class NetworkManagerImpl implements LocalNetworkManager
             
             if ( !isFound ) logger.warn( "unable to find internal interface, using primary interface" );
 
-            ipmf.setInternalNetworks( internal.getNetworkList());
+            List<IPNetwork> internalNetworkList = new LinkedList<IPNetwork>( internal.getNetworkList());
+
+            /* add the private network, if it is in there twice, it doesn't matter */
+            IPNetwork n =  internal.getPrimaryAddress();
+
+            if ( n != null && n.getNetwork() != null && !n.getNetwork().isEmpty() &&
+                 n.getNetmask() != null && !n.getNetmask().isEmpty()) {
+                internalNetworkList.add( n );
+            }
+
+            if ( internalNetworkList.size() == 0 ) {
+                logger.warn( "no networks for the internal network space: " + internal );
+            }
+
+            for ( IPNetwork network : internalNetworkList ) logger.debug( "internal network: " + network );
+            
+            ipmf.setInternalNetworks( internalNetworkList );
 
             /* somewhat of a hack, because this is where the internal space is looked up */
             try { 

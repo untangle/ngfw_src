@@ -411,10 +411,15 @@ class WMIAssistant implements Assistant
 
                 CIMValue value = clientConnection.getProperty( objectPath, WIN32_LOGIN_PROP );
 
-                logger.debug( "completed lookup for[", address.getHostAddress(), "]: ", value );
-
-                /* should this append the domain? */
-                pass( info, value );
+                /* fail if the value is null */
+                if ( value == null ) {
+                    fail( info );
+                } else {
+                    logger.debug( "completed lookup for[", address.getHostAddress(), "]: ", value );
+                    
+                    /* should this append the domain? */
+                    pass( info, value );
+                }
             } catch ( WMIException e ) {
                 logger.warn( e, "wmi settings are enabled, yet uri is invalid" );
                 fail( info );
