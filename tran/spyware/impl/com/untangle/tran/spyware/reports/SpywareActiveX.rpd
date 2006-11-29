@@ -3,7 +3,7 @@ REPORT_MAX_LENGTH=15
 REPORT_NAME=SpywareActiveX
 REPORT_TITLE=Top @REPORT_MAX_LENGTH@ ActiveX
 
-FIELD_1.name=hname
+FIELD_1.name=name
 FIELD_1.type=String
 FIELD_2.name=count
 FIELD_2.type=Long
@@ -13,31 +13,34 @@ FIELD_4.name=all_count
 FIELD_4.type=Long
 
 QUERY=\
-SELECT hname, count, top_count, all_count \
-  FROM (SELECT hname, COUNT(*) \
+SELECT name, count, top_count, all_count \
+  FROM (SELECT COALESCE(NULLIF(page.uid, ''), page.hname) AS name, \
+               COUNT(*) \
           FROM tr_spyware_evt_activex evt \
                JOIN reports.webpages page USING (request_id) \
           WHERE (evt.time_stamp >= $P{startTime} \
             AND evt.time_stamp < $P{endTime}) \
-          GROUP BY hname \
+          GROUP BY name \
           ORDER BY count DESC \
           LIMIT @REPORT_MAX_LENGTH@) AS foo, \
        (SELECT SUM(count) AS top_count \
-          FROM (SELECT hname, COUNT(*) \
+          FROM (SELECT COALESCE(NULLIF(page.uid, ''), page.hname) AS name, \
+                       COUNT(*) \
                   FROM tr_spyware_evt_activex evt \
                        JOIN reports.webpages page USING (request_id) \
                   WHERE (evt.time_stamp >= $P{startTime} \
                     AND evt.time_stamp < $P{endTime}) \
-                  GROUP BY hname \
+                  GROUP BY name \
                   ORDER BY count DESC \
                   LIMIT @REPORT_MAX_LENGTH@) AS foo2) AS foo3, \
        (SELECT SUM(count) AS all_count \
-          FROM (SELECT hname, COUNT(*) \
+          FROM (SELECT COALESCE(NULLIF(page.uid, ''), page.hname) AS name, \
+                       COUNT(*) \
                   FROM tr_spyware_evt_activex evt \
                        JOIN reports.webpages page USING (request_id) \
                   WHERE (evt.time_stamp >= $P{startTime} \
                     AND evt.time_stamp < $P{endTime}) \
-                  GROUP BY hname \
+                  GROUP BY name \
                   ORDER BY count DESC) AS foo4) AS foo5 \
   ORDER BY count DESC
 
@@ -45,7 +48,7 @@ LEFT.label=User
 MIDDLE.label=Count
 RIGHT.label=%
 
-LEFT.expr=$F{hname}
+LEFT.expr=$F{name}
 MIDDLE.expr=$F{count}
 RIGHT.expr=Math.round($F{count}.doubleValue() / $F{all_count}.doubleValue() * 100) + "%"
 
@@ -57,4 +60,4 @@ LEFT.alltotal=Overall Total:
 MIDDLE.alltotal=$F{all_count}
 RIGHT.alltotal="100%"
 
-UNIQUE_COUNT.expr=$F{hname}
+UNIQUE_COUNT.expr=$F{name}

@@ -7,7 +7,7 @@ EXTRA_PARAM_1.type=java.lang.String
 
 FIELD_1.name=time_stamp
 FIELD_1.type=Timestamp
-FIELD_2.name=hname
+FIELD_2.name=name
 FIELD_2.type=String
 FIELD_3.name=c_client_addr
 FIELD_3.type=String
@@ -21,8 +21,9 @@ FIELD_7.name=to_server
 FIELD_7.type=Boolean
 
 QUERY=\
-SELECT cookie.time_stamp, hname, c_client_addr, c_server_addr, c_server_port, \
-       ident, to_server \
+SELECT cookie.time_stamp, COALESCE(NULLIF(page.uid, ''), page.hname) AS name, \
+       page.c_client_addr, page.c_server_addr, page.c_server_port, \
+       cookie.ident, cookie.to_server \
   FROM tr_spyware_evt_cookie cookie \
        JOIN reports.webpages page USING (request_id) \
   WHERE (cookie.time_stamp >= $P{startTime} \
@@ -38,7 +39,7 @@ TOPRIGHT.label=Server
 BOTRIGHT.label=Port
 
 TOPRMID.expr=$F{ident}
-TOPLMID.expr=$F{hname} == null ? "" : $F{hname}
+TOPLMID.expr=$F{name} == null ? "" : $F{name}
 TOPLEFT.expr=$F{time_stamp}
 BOTRMID.expr=$F{to_server}.booleanValue() ? "to server" : "to client"
 BOTLMID.expr=$F{c_client_addr}

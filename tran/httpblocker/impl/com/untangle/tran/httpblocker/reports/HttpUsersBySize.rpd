@@ -3,7 +3,7 @@ REPORT_MAX_LENGTH=15
 REPORT_NAME=HttpUsersBySize
 REPORT_TITLE=Top @REPORT_MAX_LENGTH@ Web Users (Size)
 
-FIELD_1.name=hname
+FIELD_1.name=name
 FIELD_1.type=String
 FIELD_2.name=size
 FIELD_2.type=Long
@@ -13,28 +13,31 @@ FIELD_4.name=all_size
 FIELD_4.type=Long
 
 QUERY=\
-SELECT hname, size, top_size, all_size \
-  FROM (SELECT hname, SUM(content_length) AS size \
+SELECT name, size, top_size, all_size \
+  FROM (SELECT COALESCE(NULLIF(page.uid, ''), page.hname) AS name, \
+               SUM(content_length) AS size \
           FROM reports.webpages page \
           WHERE page.time_stamp >= $P{startTime} \
             AND page.time_stamp < $P{endTime} \
-          GROUP BY hname \
+          GROUP BY name \
           ORDER BY size DESC \
           LIMIT @REPORT_MAX_LENGTH@) AS foo, \
        (SELECT SUM(size) AS top_size \
-          FROM (SELECT hname, SUM(content_length) AS size \
+          FROM (SELECT COALESCE(NULLIF(page.uid, ''), page.hname) AS name, \
+                       SUM(content_length) AS size \
                   FROM reports.webpages page \
                   WHERE page.time_stamp >= $P{startTime} \
                     AND page.time_stamp < $P{endTime} \
-                  GROUP BY hname \
+                  GROUP BY name \
                   ORDER BY size DESC \
                   LIMIT @REPORT_MAX_LENGTH@) AS foo2) AS foo3, \
        (SELECT SUM(size) AS all_size \
-          FROM (SELECT hname, SUM(content_length) AS size \
+          FROM (SELECT COALESCE(NULLIF(page.uid, ''), page.hname) AS name, \
+                       SUM(content_length) AS size \
                   FROM reports.webpages page \
                   WHERE page.time_stamp >= $P{startTime} \
                     AND page.time_stamp < $P{endTime} \
-                  GROUP BY hname \
+                  GROUP BY name \
                   ORDER BY size DESC) AS foo4) AS foo5 \
   ORDER BY size DESC
 
@@ -42,7 +45,7 @@ LEFT.label=User
 MIDDLE.label=Size (MB)
 RIGHT.label=%
 
-LEFT.expr=$F{hname}
+LEFT.expr=$F{name}
 MIDDLE.expr=(null != $F{size} ? ($F{size}.doubleValue() / 1048576) : 0)
 RIGHT.expr=Math.round($F{size}.doubleValue() / $F{all_size}.doubleValue() * 100) + "%"
 
@@ -54,4 +57,4 @@ LEFT.alltotal=Overall Total:
 MIDDLE.alltotal=(null != $F{all_size} ? ($F{all_size}.doubleValue() / 1048576) : 0)
 RIGHT.alltotal="100%"
 
-UNIQUE_COUNT.expr=$F{hname}
+UNIQUE_COUNT.expr=$F{name}
