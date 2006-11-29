@@ -12,6 +12,7 @@
 package com.untangle.mvvm.reporting;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.io.*;
 import java.sql.*;
 import java.util.Calendar;
@@ -71,15 +72,14 @@ public class Util {
     }
 
 
-    public static String trimNumber(String suffix, long number){
-
+    public static String trimNumber(String suffix, long number) {
 	String returnString;
 
 	if(number < KILOB)
-	    returnString = new String(  Long.toString(number) + (suffix.length()==0?"":" " + suffix) );
-	else if(number < MEGAB){
+	    returnString = new String(  Long.toString(number) + (suffix.length() == 0 ? "" : " " + suffix) );
+	else if(number < MEGAB) {
 	    if( suffix.length() == 0 )
-		returnString = Long.toString(number/KILOB) + "," + String.format("%1$03d", number%KILOB);
+                returnString = NumberFormat.getNumberInstance().format(number);
 	    else
 		returnString = new String(  Long.toString(number/KILOB) + "." + String.format("%1$03d", number%KILOB) + " K" + suffix );
 	}
@@ -94,11 +94,10 @@ public class Util {
 	else
 	    returnString = new String(  Long.toString(number/EXAB) + "." + String.format("%1$03d", (number%EXAB)/PETAB) + " E" + suffix );
 
-	
 	return returnString;
     }
 
-    public static String percentNumber(long number, long total){
+    public static String percentNumber(long number, long total) {
 	if( total < 1 )
 	    return "0.00%";
 	DecimalFormat decimalFormat = new DecimalFormat("#0.00%");
@@ -163,5 +162,4 @@ public class Util {
         // again
         return dir.delete();  
     }
-
 }
