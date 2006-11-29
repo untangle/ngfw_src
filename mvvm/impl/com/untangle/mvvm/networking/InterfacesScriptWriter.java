@@ -49,6 +49,9 @@ class InterfacesScriptWriter extends ScriptWriter
 
     private static final String DHCP_BOGUS_ADDRESS = "169.254.210.5";
 
+    /* default of 900 seconds for the ageing of each interface */
+    private static final int DEFAULT_AGEING_TIME = 900;
+
     /* String used to indicate that pump should only update the address of the interface */
     /* XXX this isn't presently supported, checking the options for dhclient. */
     // static final String DHCP_FLAG_ADDRESS_ONLY = " --no-gateway --no-resolvconf ";
@@ -120,6 +123,7 @@ class InterfacesScriptWriter extends ScriptWriter
         /* If this is a bridge, then add the necessary settings for the bridge */
         if ( isBridge ) {
             appendCommands( "up brctl addbr " + name );
+            appendCommands( "up brctl setageing " + name + " " + DEFAULT_AGEING_TIME );
 
             /* Build a list of all of the ports inside of the bridge */
             for ( InterfaceInternal intf : interfaceList ) {
