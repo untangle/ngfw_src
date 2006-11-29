@@ -55,7 +55,7 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
 	this.vpnClient = vpnClient;
 	message = "<html>\nPlease choose how you would like to distribute your digital key.  "
 	    + "Note: If you choose to send via email, you must supply an email address to send the email to.  "
-	    + "If you choose to download to USB key, the data will be located on the key at: /metavize-data/openvpn/setup-"
+	    + "If you choose to download to USB key, the data will be located on the key at: /untangle-data/openvpn/setup-"
 	    + vpnClient.getInternalName()
 	    + ".exe\n</html>";
         initComponents();

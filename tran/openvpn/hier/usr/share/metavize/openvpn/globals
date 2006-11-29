@@ -25,8 +25,8 @@ OPENVPN_CCD_DIR="${OPENVPN_CONF_DIR}/ccd"
 ## This is the client status file that java uses to check the certificate status for each client
 CLIENT_STATUS_FILE="${MISC_DIR}/client_status.txt"
 
-## Destination on the USB drive for metavize openvpn data
-USB_DEST="metavize-data/openvpn"
+## Destination on the USB drive for untangle openvpn data
+USB_DEST="untangle-data/openvpn"
 
 ## Error code for when something goes wrong with the usb device
 USB_ERROR=4

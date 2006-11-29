@@ -44,7 +44,7 @@ function buildConfigFile() {
 
     ## Done this way so the zip directory is called office-mv
     local outputDir="${tmpDir}/office-mv"
-    local keyDir="${outputDir}/metavize-data"
+    local keyDir="${outputDir}/untangle-data"
 
     mkdir ${outputDir} || exit -4
     mkdir ${keyDir} || exit -4

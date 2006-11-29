@@ -74,7 +74,7 @@ class OpenVpnManager
     private static final String FLAG_KEY          = "key";
 
     /* The directory where the key material ends up for a client */
-    private static final String CLI_KEY_DIR       = "metavize-data";
+    private static final String CLI_KEY_DIR       = "untangle-data";
 
     /* Ping every x seconds */
     private static final int DEFAULT_PING_TIME      = 10;

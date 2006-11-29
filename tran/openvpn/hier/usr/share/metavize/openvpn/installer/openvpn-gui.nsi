@@ -226,8 +226,8 @@ Section "OpenVPN GUI" SecGUI
   SetOutPath "$INSTDIR\config"
   File /oname=office-mv.ovpn "${MV_PACKAGE_DIR}/client-${COMMON_NAME}.ovpn"
 
-  # Named metavize-data so it is safe to overwrite the files in it.
-  SetOutPath "$INSTDIR\config\metavize-data"
+  # Named untangle-data so it is safe to overwrite the files in it.
+  SetOutPath "$INSTDIR\config\untangle-data"
   File /oname=${COMMON_NAME}.crt "${MV_PKI_DIR}/client-${COMMON_NAME}.crt"
   File /oname=${COMMON_NAME}.key "${MV_PKI_DIR}/client-${COMMON_NAME}.key"
   File "${MV_PKI_DIR}/ca.crt"
@@ -237,7 +237,7 @@ Section "OpenVPN GUI" SecGUI
 
   CreateDirectory "$INSTDIR\log"
   CreateDirectory "$INSTDIR\config"
-  CreateDirectory "$INSTDIR\config\metavize-data"
+  CreateDirectory "$INSTDIR\config\untangle-data"
 
 
 SectionEnd
