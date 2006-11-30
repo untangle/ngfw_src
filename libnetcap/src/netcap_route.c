@@ -34,6 +34,9 @@
 /* 10 Seconds, just to make sure it is not iterating through nothing */
 #define NETCAP_ARP_MAX_DELAY 10000000L
 
+/* Flag to indicate that an ARP should be forced even if it is in the ARP cache */
+#define NETCAP_ARP_FORCE     0xD0DAB
+
 // A port that is never actually used, it is just so there is a known value inside of the fake
 // connect socket
 #define NULL_PORT            59999
@@ -94,7 +97,7 @@ static int  _arp_dst_intf      ( netcap_intf_db_t* db, netcap_intf_t* intf, netc
                                  unsigned long* delay_array );
 
 static int  _arp_address       ( netcap_intf_db_t* db, struct in_addr* dst_ip, struct ether_addr* mac, 
-                                 netcap_intf_info_t* intf_info, unsigned long* delays );
+                                 netcap_intf_info_t* intf_info, unsigned long* delays, int force_request );
 
 static int _arp_bridge_intf   ( netcap_intf_db_t* db, netcap_intf_t* out_intf, 
                                 struct ether_addr* mac_address, netcap_intf_info_t* intf_info );
@@ -264,7 +267,7 @@ int netcap_arp_address        ( struct in_addr* dst_ip, struct ether_addr* mac, 
         return errlog( ERR_CRITICAL, "Device index %d is not a bridge\n", bridge_intf_index );
     } 
     
-    return _arp_address( db, dst_ip, mac, intf_info, delays );
+    return _arp_address( db, dst_ip, mac, intf_info, delays, ~NETCAP_ARP_FORCE );
 }
 
 int netcap_arp_bridge_intf    ( netcap_intf_t* out_intf, struct ether_addr* mac_address, 
@@ -342,18 +345,30 @@ static int _arp_dst_intf ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_int
         struct ether_addr mac_address;
         // int src_intf_index = 0;
         // netcap_intf_info_t* src_intf_info = NULL;
+
+        int force = ~NETCAP_ARP_FORCE;
         
-        if (( ret = _arp_address( db, &next_hop, &mac_address, intf_info, delay_array )) < 0 ) {
-            return errlog( ERR_CRITICAL, "_arp_address\n" );
-        }
-        
-        if ( ret == NETCAP_ARP_NOERROR ) {
-            debug( 10, "ROUTE: Unable to resolve the MAC address %s\n", unet_next_inet_ntoa( next_hop.s_addr ));
-            return NETCAP_ARP_NOERROR;
-        }
-        
-        if ( _arp_bridge_intf( db, intf, &mac_address, intf_info ) < 0 ) {
-            return errlog( ERR_CRITICAL, "_arp_bridge_interface\n" );
+        while ( 1 ) {
+            if (( ret = _arp_address( db, &next_hop, &mac_address, intf_info, delay_array, force )) < 0 ) {
+                return errlog( ERR_CRITICAL, "_arp_address\n" );
+            }
+            
+            if ( ret == NETCAP_ARP_NOERROR ) {
+                debug( 10, "ROUTE: Unable to resolve the MAC address %s\n", 
+                       unet_next_inet_ntoa( next_hop.s_addr ));
+                return NETCAP_ARP_NOERROR;
+            }
+            
+            if (( ret = _arp_bridge_intf( db, intf, &mac_address, intf_info )) < 0 ) {
+                if (( force == ~NETCAP_ARP_FORCE ) && ( errno == EINVAL )) {
+                    debug( 10, "ROUTE: Forcing ARP for cached MAC Address.\n" );
+                    force = NETCAP_ARP_FORCE;
+                    continue;
+                }
+                return errlog( ERR_CRITICAL, "_arp_bridge_interface\n" );
+            }
+
+            break;
         }
 
         /* Convert the source interface from a netcap index to a linux index, not necessary,
@@ -398,7 +413,8 @@ static int _arp_dst_intf ( netcap_intf_db_t* db, netcap_intf_t* intf, netcap_int
 }
 
 static int  _arp_address       ( netcap_intf_db_t* db, struct in_addr* dst_ip, struct ether_addr* mac, 
-                                 netcap_intf_info_t* intf_info, unsigned long* delay_array )
+                                 netcap_intf_info_t* intf_info, unsigned long* delay_array, 
+                                 int force_request )
 {
     int c;
     unsigned long delay;
@@ -411,7 +427,11 @@ static int  _arp_address       ( netcap_intf_db_t* db, struct in_addr* dst_ip, s
             return errlog( ERR_CRITICAL, "_get_arp_entry\n" );
         }
         
-        if ( ret == NETCAP_ARP_SUCCESS ) return NETCAP_ARP_SUCCESS;
+        /* If C is nonzero, then at least one ARP request is sent.  If force_request isn't sent
+         * then it doesn't matter if the response comes from the cache */
+        if ((( c != 0 ) || ( force_request != NETCAP_ARP_FORCE )) && ( ret == NETCAP_ARP_SUCCESS )) {
+            return NETCAP_ARP_SUCCESS;
+        }
 
         /* Connect and close so the kernel grabs the source address */
         if (( c == 0 ) && ( _fake_connect( &src_ip, dst_ip, intf_info ) < 0 )) {
@@ -464,9 +484,11 @@ static int _arp_bridge_intf   ( netcap_intf_db_t* db, netcap_intf_t* out_intf,
         
 	if (( ret = ioctl( _netcap_arp.sock, SIOCDEVPRIVATE, &ifr )) < 0 ) {
         if ( errno == EINVAL ) {
-            /* XXXXX This must be delt with later */
+            /* this indicates that the MAC address requested is not in the bridge table.
+             * to solve this, you have to go through a full ARP request. */
             *out_intf = NC_INTF_UNK;
-            return 0;
+            debug ( 10, "ROUTE: Invalid argument, MAC Address is only found in ARP Cache.\n" );
+            return -1;
         } else {
             return perrlog( "ioctl" );
         }
