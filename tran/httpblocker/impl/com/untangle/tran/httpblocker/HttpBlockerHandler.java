@@ -152,7 +152,6 @@ public class HttpBlockerHandler extends HttpStateMachine
             return generateSimplePage(details, persistent);
         } else {
             String host = addr.getHostAddress();
-            System.out.print("REDIRECT HOST: " + host);
             return generateRedirect(host, details, persistent);
         }
     }
