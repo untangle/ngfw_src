@@ -69,7 +69,7 @@ class SmtpTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("scan<br>strength"));
         addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>SPAM detected"));
         addTableColumn( tableColumnModel,  6, C6_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("notification if<br>SPAM detected"));
-        addTableColumn( tableColumnModel,  7, C7_MW, false, true,  false, false, Boolean.class,  null, sc.html("throttle"));
+        addTableColumn( tableColumnModel,  7, C7_MW, false, true,  false, false, Boolean.class,  null, sc.html("tarpit"));
         addTableColumn( tableColumnModel,  8, C8_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  9, 10,    false, false, true,  false, SpamSMTPConfig.class, null, "");
         return tableColumnModel;
