@@ -208,6 +208,16 @@ end
 if $BuildEnv.isDevel
   $InstallTarget.installFiles('debian/control', "#{mvvm.distDirectory}/tmp",
                               'pkg-list')
+
+  activationKey = "#{mvvm.distDirectory}/usr/share/metavize/activation.key"
+
+  ## Insert the activation key if necessary.  Done here to not include
+  ## The file inside of packages
+  file activationKey do
+    File.open( activationKey, "w" ) { |f| f.puts( "0000-0000-0000-0000" ) }
+  end
+
+  $InstallTarget.registerDependency(activationKey)
 end
 
 $InstallTarget.registerDependency(mvvm_cacerts)
