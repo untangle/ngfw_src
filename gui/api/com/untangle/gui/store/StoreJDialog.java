@@ -133,7 +133,7 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
 
                 mTransformJPanel.setLayout(new java.awt.GridBagLayout());
 
-                mTransformJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Software Appliance to Purchase", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
+                mTransformJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Product to Purchase", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
                 mTransformJPanel.setOpaque(false);
                 purchaseJPanel.add(mTransformJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, 210, 150));
 
@@ -183,12 +183,12 @@ public class StoreJDialog extends javax.swing.JDialog implements java.awt.event.
 
                 localJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 localJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                localJLabel.setText("<html><center>(Disabled because there is no browser present.)<br>\nPlease go to http://www.untangle.com to<br>\nlearn about this Software Appliance.\n</center></html>");
+                localJLabel.setText("<html><center>(Disabled because there is no browser present.)<br>\nPlease go to http://www.untangle.com to<br>\nlearn about this Product.\n</center></html>");
                 purchaseJPanel.add(localJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 240, -1, -1));
 
                 jPanel1.add(purchaseJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
-                contentJTabbedPane.addTab("Purchase a Software Appliance", jPanel1);
+                contentJTabbedPane.addTab("Purchase a Product", jPanel1);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;

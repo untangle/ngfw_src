@@ -73,7 +73,7 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
 
         messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        messageJLabel.setText("<html><center>\nYou must perform all possible upgrades<br>\nbefore purchasing a new Software Appliance.<br>\n<br>\nNow checking for available upgrades.<br>\n</center></html>");
+        messageJLabel.setText("<html><center>\nYou must perform all possible upgrades<br>\nbefore purchasing a new Product.<br>\n<br>\nNow checking for available upgrades.<br>\n</center></html>");
         messageJLabel.setDoubleBuffered(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;

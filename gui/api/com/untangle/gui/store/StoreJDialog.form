@@ -48,8 +48,8 @@
           </AuxValues>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Purchase a Software Appliance">
-                <Property name="tabTitle" type="java.lang.String" value="Purchase a Software Appliance"/>
+              <JTabbedPaneConstraints tabName="Purchase a Product">
+                <Property name="tabTitle" type="java.lang.String" value="Purchase a Product"/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -73,7 +73,7 @@
                   <Properties>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                        <TitledBorder title="Software Appliance to Purchase">
+                        <TitledBorder title="Product to Purchase">
                           <Font PropertyName="font" name="Arial" size="11" style="0"/>
                         </TitledBorder>
                       </Border>
@@ -213,7 +213,7 @@
                       <Font name="Dialog" size="12" style="0"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="0"/>
-                    <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;center&gt;(Disabled because there is no browser present.)&lt;br&gt;&#xa;Please go to http://www.untangle.com to&lt;br&gt;&#xa;learn about this Software Appliance.&#xa;&lt;/center&gt;&lt;/html&gt;"/>
+                    <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;center&gt;(Disabled because there is no browser present.)&lt;br&gt;&#xa;Please go to http://www.untangle.com to&lt;br&gt;&#xa;learn about this Product.&#xa;&lt;/center&gt;&lt;/html&gt;"/>
                   </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">

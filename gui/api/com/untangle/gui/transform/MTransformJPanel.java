@@ -335,7 +335,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
                 powerJToggleButton.setFont(new java.awt.Font("Default", 0, 12));
                 powerJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconPowerOffState28x28.png")));
-                powerJToggleButton.setToolTipText("<HTML>\nThe <B>Power Button</B> allows you to turn a Software Appliance \"on\" and \"off\".<br>\n\n</HTML>");
+                powerJToggleButton.setToolTipText("<HTML>\nThe <B>Power Button</B> allows you to turn a Product \"on\" and \"off\".<br>\n\n</HTML>");
                 powerJToggleButton.setAlignmentX(0.5F);
                 powerJToggleButton.setBorderPainted(false);
                 powerJToggleButton.setContentAreaFilled(false);

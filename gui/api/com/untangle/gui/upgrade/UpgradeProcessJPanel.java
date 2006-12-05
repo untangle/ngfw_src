@@ -112,7 +112,7 @@ public class UpgradeProcessJPanel extends JPanel
 		    if( mackageDesc.getType() == MackageDesc.SYSTEM_TYPE )
 			tempRow.add( "System Component" );
 		    else if( mackageDesc.getType() == MackageDesc.TRANSFORM_TYPE )
-			tempRow.add( "Software Appliance" );
+			tempRow.add( "Product" );
 		    else
 			tempRow.add( "Unknown" );
 		    tempRow.add( Integer.toString(mackageDesc.getSize()/1000));
