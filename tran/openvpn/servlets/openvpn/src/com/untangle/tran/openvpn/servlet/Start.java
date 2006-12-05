@@ -12,11 +12,10 @@
 package com.untangle.tran.openvpn.servlet;
 
 import java.io.IOException;
-
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 
 public class Start extends HttpServlet
@@ -27,8 +26,8 @@ public class Start extends HttpServlet
 
         if ( util.requiresSecure( request, response )) return;
 
-        String commonName = util.getCommonName( request );
-        
+        String commonName = util.getCommonName( this, request );
+
         if ( commonName == null ) {
             util.rejectFile( request, response );
         } else {

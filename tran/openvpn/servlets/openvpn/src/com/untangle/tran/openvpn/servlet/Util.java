@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -73,7 +75,7 @@ class Util
     }
 
     /* Returns the commonName for the request, or null if the request is not valid */
-    String getCommonName( HttpServletRequest request )
+    String getCommonName(HttpServlet servlet, HttpServletRequest request )
     {
         String key = request.getParameter( DISTRIBUTION_KEY_PARAM );
 
@@ -89,8 +91,22 @@ class Util
             try {
                 /* XXX Should this be cached?? */
                 IPaddr address = IPaddr.parse( request.getRemoteAddr());
-                MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().
-                    systemLogin(0, Thread.currentThread().getContextClassLoader());
+
+                ServletContext sc = servlet.getServletConfig().getServletContext();
+                MvvmRemoteContext ctx = (MvvmRemoteContext)sc.getAttribute("MVVM_CONTEXT");
+                if (null != ctx) {
+                    try {
+                        ctx.version();
+                    } catch (Exception exn) {
+                        ctx = null;
+                    }
+                }
+
+                if (null == ctx) {
+                    ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
+                    sc.setAttribute("MVVM_CONTEXT", ctx);
+                }
+
                 Tid tid = ctx.transformManager().transformInstances( "openvpn-transform" ).get( 0 );
                 TransformContext tc = ctx.transformManager().transformContext( tid );
                 commonName = ((VpnTransform)tc.transform()).lookupClientDistributionKey( key, address );

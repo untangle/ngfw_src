@@ -1,7 +1,21 @@
 <%@ page language="java" import="com.untangle.mvvm.client.*, com.untangle.mvvm.tran.*, com.untangle.mvvm.security.*, com.untangle.tran.httpblocker.*"%>
 
 <%
-MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
+ServletContext sc = pageContext.getServletContext();
+MvvmRemoteContext ctx = (MvvmRemoteContext)sc.getAttribute("MVVM_CONTEXT");
+if (null != ctx) {
+    try {
+        ctx.version();
+    } catch (Exception exn) {
+        ctx = null;
+    }
+}
+
+if (null == ctx) {
+    ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
+    sc.setAttribute("MVVM_CONTEXT", ctx);
+}
+
 TransformManager tman = ctx.transformManager();
 
 String nonce = request.getParameter("nonce");
@@ -12,11 +26,11 @@ TransformContext tctx = tman.transformContext(tid);
 HttpBlocker tran = (HttpBlocker)tctx.transform();
 BlockDetails bd = tran.getDetails(nonce);
 
-String header = bd.getHeader();
-String contact = bd.getContact();
-String host = bd.getFormattedHost();
-String url = bd.getFormattedUrl();
-String reason = bd.getReason();
+String header = null == bd ? "" : bd.getHeader();
+String contact = null == bd ? "your administrator" : bd.getContact();
+String host = null == bd ? "" : bd.getFormattedHost();
+String url = null == bd ? "" : bd.getFormattedUrl();
+String reason = null == bd ? "" : bd.getReason();
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
@@ -27,7 +41,7 @@ String reason = bd.getReason();
 <script language="JavaScript">
 nonce = '<%=nonce%>';
 tid = '<%=tidStr%>';
-url = '<%=bd.getUrl()%>';
+url = '<%=null == bd ? "javascript:history.back()" : bd.getUrl()%>';
 </script>
 
   </head>
@@ -99,7 +113,3 @@ url = '<%=bd.getUrl()%>';
     </table>
   </body>
 </html>
-
-<%
-MvvmRemoteContextFactory.factory().logout();
-%>

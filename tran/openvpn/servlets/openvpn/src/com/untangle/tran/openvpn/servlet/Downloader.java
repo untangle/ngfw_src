@@ -12,11 +12,10 @@
 package com.untangle.tran.openvpn.servlet;
 
 import java.io.IOException;
-
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.ServletException;
 
 public class Downloader extends HttpServlet
 {
@@ -34,12 +33,12 @@ public class Downloader extends HttpServlet
 
     protected void service( HttpServletRequest request,  HttpServletResponse response )
         throws ServletException, IOException {
-                
+
         Util util = Util.getInstance();
-        
+
         if ( util.requiresSecure( request, response )) return;
 
-        String commonName = util.getCommonName( request );
+        String commonName = util.getCommonName(this, request );
         String fileName = null;
         String download = null;
         String pageName = request.getServletPath();
@@ -57,7 +56,7 @@ public class Downloader extends HttpServlet
             fileName = null;
             download = null;
         }
-        
+
         /* File name shouldn't be null unless the web.xml is misconfigured to force pages
          * that are not supposed to reach here */
         if (( null == commonName ) || ( null == fileName ) || ( null == download )) {

@@ -1,7 +1,21 @@
 <%@ page language="java" import="com.untangle.mvvm.client.*, com.untangle.mvvm.tran.*, com.untangle.mvvm.security.*, com.untangle.tran.spyware.*"%>
 
 <%
-MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
+ServletContext sc = pageContext.getServletContext();
+MvvmRemoteContext ctx = (MvvmRemoteContext)sc.getAttribute("MVVM_CONTEXT");
+if (null != ctx) {
+    try {
+        ctx.version();
+    } catch (Exception exn) {
+        ctx = null;
+    }
+}
+
+if (null == ctx) {
+    ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
+    sc.setAttribute("MVVM_CONTEXT", ctx);
+}
+
 TransformManager tman = ctx.transformManager();
 
 String nonce = request.getParameter("nonce");
@@ -14,8 +28,8 @@ UserWhitelistMode mode = tran.getUserWhitelistMode();
 BlockDetails bd = tran.getBlockDetails(nonce);
 
 String header = "Spyware Blocker";
-String host = bd.getFormattedHost();
-String url = bd.getFormattedUrl();
+String host = null == bd ? "" : bd.getFormattedHost();
+String url = null == bd ? "" : bd.getFormattedUrl();
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
@@ -26,7 +40,7 @@ String url = bd.getFormattedUrl();
 <script language="JavaScript">
 nonce = '<%=nonce%>';
 tid = '<%=tidStr%>';
-url = '<%=bd.getUrl()%>';
+url = '<%=null == bd ? "javascript:history.back()" : bd.getUrl()%>';
 </script>
 
 <script type="text/javascript" src="spyware.js"></script>
@@ -115,7 +129,3 @@ url = '<%=bd.getUrl()%>';
     </table>
   </body>
 </html>
-
-<%
-MvvmRemoteContextFactory.factory().logout();
-%>

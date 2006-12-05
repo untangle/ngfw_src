@@ -13,6 +13,7 @@ package com.untangle.tran.spyware;
 
 import java.io.IOException;
 import javax.security.auth.login.FailedLoginException;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -42,7 +43,21 @@ public class UnblockerServlet extends HttpServlet
         boolean global = Boolean.parseBoolean(req.getParameter("global"));
 
         try {
-            MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
+            ServletContext sc = getServletConfig().getServletContext();
+            MvvmRemoteContext ctx = (MvvmRemoteContext)sc.getAttribute("MVVM_CONTEXT");
+            if (null != ctx) {
+                try {
+                    ctx.version();
+                } catch (Exception exn) {
+                    ctx = null;
+                }
+            }
+
+            if (null == ctx) {
+                ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
+                sc.setAttribute("MVVM_CONTEXT", ctx);
+            }
+
             TransformManager tman = ctx.transformManager();
             Tid tid = new Tid(Long.parseLong(tidStr));
             TransformContext tctx = tman.transformContext(tid);
@@ -59,8 +74,6 @@ public class UnblockerServlet extends HttpServlet
             throw new ServletException(exn);
         } catch (IOException exn) {
             throw new ServletException(exn);
-        } finally {
-            MvvmRemoteContextFactory.factory().logout();
         }
     }
 }
