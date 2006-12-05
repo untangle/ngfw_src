@@ -27,7 +27,7 @@ String reason = bd.getReason();
 <script language="JavaScript">
 nonce = '<%=nonce%>';
 tid = '<%=tidStr%>';
-url = '<%=url%>';
+url = '<%=bd.getUrl()%>';
 </script>
 
   </head>

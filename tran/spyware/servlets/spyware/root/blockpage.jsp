@@ -26,7 +26,7 @@ String url = bd.getFormattedUrl();
 <script language="JavaScript">
 nonce = '<%=nonce%>';
 tid = '<%=tidStr%>';
-url = '<%=url%>';
+url = '<%=bd.getUrl()%>';
 </script>
 
 <script type="text/javascript" src="spyware.js"></script>
@@ -103,7 +103,7 @@ url = '<%=url%>';
 </table>
 
           </td>
-          <td id="table_main_right"><img src="/images/background/spacer.gif" alt=" " height="1" width="1"/></td>        
+          <td id="table_main_right"><img src="/images/background/spacer.gif" alt=" " height="1" width="1"/></td>
         </tr>
         <tr>
           <td id="table_main_bottom_left"><img src="/images/background/spacer.gif" alt=" " height="23" width="23"/></td>
