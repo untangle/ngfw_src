@@ -119,7 +119,7 @@ public abstract class LogEvent implements Comparable, Serializable
     {
         LogEvent le = (LogEvent)o;
 
-        int i = -timeStamp.compareTo(le.timeStamp);
+        int i = -timeStamp.compareTo(le.getTimeStamp());
         if (0 == i) {
             if (le.id == id) {
                 return 0;
