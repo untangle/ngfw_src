@@ -248,9 +248,10 @@ if [ "${line}" = "" ]; then
     continue
 fi
 
-    USERNAME=$line
-    UNAMESUM_HTML=`echo ${rep_base}--${USERNAME}--${period}.html`
-    UNAMESUM_PDF=`echo ${rep_base}--${USERNAME}--${period}.pdf`
+    local UNAME=$(echo ${line} | cut -d' ' -f1)
+    local UNAME_FN=$(echo ${line} | cut -d' ' -f2)
+    local UNAMESUM_HTML=`echo ${rep_base}--${UNAME_FN}--${period}.html`
+    local UNAMESUM_PDF=`echo ${rep_base}--${UNAME_FN}--${period}.pdf`
 
 if [ "$generate_email_index" = true ]; then
     if [ ! -f ${tran_dir}/${UNAMESUM_PDF} ] ; then
@@ -262,7 +263,7 @@ if [ "$generate_email_index" = true ]; then
 cat >> $base_file <<EOF
 <tr valign=top>
   <td><img src="../images/px" style="width: 20px; height: 13px"></td>
-  <td colspan=4><span style="font-family: SansSerif; font-size: 9.0px;">$USERNAME</span></td>
+  <td colspan=4><span style="font-family: SansSerif; font-size: 9.0px;">$UNAME</span></td>
   <td colspan=6><span style="font-family: SansSerif; font-size: 9.0px; text-align: right">(<a href="$UNAMESUM_PDF">PDF</a>)&nbsp;</span></td>
   <td colspan=9><img src="../images/px" style="width: 316px; height: 13px"></td>
 </tr>
@@ -278,7 +279,7 @@ else
 cat >> $base_file <<EOF
 <tr valign=top>
   <td><img src="../images/px" style="width: 20px; height: 13px"></td>
-  <td colspan=4><span style="font-family: SansSerif; font-size: 9.0px;">$USERNAME</span></td>
+  <td colspan=4><span style="font-family: SansSerif; font-size: 9.0px;">$UNAME</span></td>
   <td colspan=6><span style="font-family: SansSerif; font-size: 9.0px; text-align: right">(<a href="$UNAMESUM_HTML">HTML</a> | <a href="$UNAMESUM_PDF">PDF</a>)&nbsp;</span></td>
   <td colspan=9><img src="../images/px" style="width: 316px; height: 13px"></td>
 </tr>
@@ -316,9 +317,10 @@ if [ "${line}" = "" ]; then
     continue
 fi
 
-    HNAME=$line
-    HNAMESUM_HTML=`echo ${rep_base}--${HNAME}--${period}.html`
-    HNAMESUM_PDF=`echo ${rep_base}--${HNAME}--${period}.pdf`
+    local HNAME=$(echo ${line} | cut -d' ' -f1)
+    local HNAME_FN=$(echo ${line} | cut -d' ' -f2)
+    local HNAMESUM_HTML=`echo ${rep_base}--${HNAME_FN}--${period}.html`
+    local HNAMESUM_PDF=`echo ${rep_base}--${HNAME_FN}--${period}.pdf`
 
 if [ "$generate_email_index" = true ]; then
     if [ ! -f ${tran_dir}/${HNAMESUM_PDF} ] ; then

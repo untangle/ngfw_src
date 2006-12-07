@@ -264,8 +264,9 @@ function generateUserSummary()
             continue
         fi
 
-        local UNAME=$line
-        local UNAMESUM=${UNAME}--${REPORT_TYPE}
+        local UNAME=$(echo ${line} | cut -d' ' -f1)
+        local UNAME_FN=$(echo ${line} | cut -d' ' -f2)
+        local UNAMESUM=${UNAME_FN}--${REPORT_TYPE}
         local UNAMESUM_PDF=`echo ${rep_base}--${UNAMESUM}.pdf`
 
         if [ ! -f ${t_baseDir}/${UNAMESUM_PDF} ] ; then
@@ -292,8 +293,9 @@ function generateUserSummary()
             continue
         fi
 
-        local HNAME=$line
-        local HNAMESUM=${HNAME}--${REPORT_TYPE}
+        local HNAME=$(echo ${line} | cut -d' ' -f1)
+        local HNAME_FN=$(echo ${line} | cut -d' ' -f2)
+        local HNAMESUM=${HNAME_FN}--${REPORT_TYPE}
         local HNAMESUM_PDF=`echo ${rep_base}--${HNAMESUM}.pdf`
 
         if [ ! -f ${t_baseDir}/${HNAMESUM_PDF} ] ; then

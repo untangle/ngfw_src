@@ -132,8 +132,19 @@ EOF
         # create files w/ username and hostname lists for usersummary-reports
         rm -f $REPORT_DIR/current/uname.lst
         rm -f $REPORT_DIR/current/hname.lst
-        psql -qt -U postgres mvvm -c "SELECT DISTINCT username FROM events.mvvm_lookup_evt;" -o $REPORT_DIR/current/uname.lst
-        psql -qt -U postgres mvvm -c "SELECT DISTINCT hname FROM reports.sessions WHERE client_intf=1;" -o $REPORT_DIR/current/hname.lst
+        psql -qt -U postgres mvvm -c "SELECT DISTINCT username FROM events.mvvm_lookup_evt;" -o $REPORT_DIR/current/uname.tmp
+        psql -qt -U postgres mvvm -c "SELECT DISTINCT hname FROM reports.sessions WHERE client_intf=1;" -o $REPORT_DIR/current/hname.tmp
+        # strip all dir seps from name b/c name is used in filename
+        while read line
+        do
+            echo ${line} ${line/\//} >> $REPORT_DIR/current/uname.lst
+        done < $REPORT_DIR/current/uname.tmp
+        while read line
+        do
+            echo ${line} ${line/\//} >> $REPORT_DIR/current/hname.lst
+        done < $REPORT_DIR/current/hname.tmp
+        rm -f $REPORT_DIR/current/uname.tmp
+        rm -f $REPORT_DIR/current/hname.tmp
 
         @USR_BIN@/mcli -t 3600 startReports
         exitOnMvvmError $? reporter
