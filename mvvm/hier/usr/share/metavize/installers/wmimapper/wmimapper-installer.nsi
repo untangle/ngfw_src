@@ -76,7 +76,7 @@ Name "${PRODUCT_NAME} ${VERSION}"
 !define MUI_FINISH_PAGE_TITLE "${PRODUCT_NAME} Uninstall Completed."  
 
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "${HOME}\license.txt"
+!insertmacro MUI_PAGE_LICENSE "${HOME}\license.rtf"
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
