@@ -32,7 +32,7 @@ public class Main
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private URLClassLoader ucl;
+    private MvvmClassLoader mcl;
     private Class mvvmPrivClass;
     private MvvmContextBase mvvmContext;
 
@@ -67,7 +67,7 @@ public class Main
      * error.
      *
      * @param x a <code>Throwable</code> giving the related/causing
-     * exception, if any, otherwise null
+     * exception, if any, otherwise null.
      */
     public static void fatalError(String throwingLocation, Throwable x)
     {
@@ -83,6 +83,13 @@ public class Main
         } finally {
             System.exit(-1);
         }
+    }
+
+    // package private methods ------------------------------------------------
+
+    boolean refreshToolbox()
+    {
+        return mcl.refreshToolbox();
     }
 
     // private methods --------------------------------------------------------
@@ -150,7 +157,7 @@ public class Main
         logger.info("bunnicula.data.dir    " + bunniculaData);
         logger.info("bunnicula.web.dir     " + bunniculaWeb);
         logger.info("bunnicula.conf.dir    " + bunniculaConf);
-        logger.info("bunnicula.tmp.dir    " + bunniculaTmp);
+        logger.info("bunnicula.tmp.dir     " + bunniculaTmp);
 
         File f = new File(bunniculaConf + "/mvvm.properties");
         if (f.exists()) {
@@ -169,8 +176,6 @@ public class Main
         } /* This file may not exist */
     }
 
-    // private methods --------------------------------------------------------
-
     // XXX get rid of all these throws
     private void startMvvm() throws Exception
     {
@@ -182,16 +187,17 @@ public class Main
         URL jNetcapJar = new URL("file://" + bunniculaLib + "/jnetcap-impl.jar");
         URL[] urls = new URL[] { mvvmImplJar, mvvmApiJar, mvvmLocalApiJar, mvvmReportingJar,
                                  jVectorJar, jNetcapJar };
-        ucl = new URLClassLoader(urls, getClass().getClassLoader());
+        mcl = new MvvmClassLoader(urls, getClass().getClassLoader(),
+                                  new File(bunniculaToolbox));
 
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
             // Entering MVVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            Thread.currentThread().setContextClassLoader(ucl);
+            Thread.currentThread().setContextClassLoader(mcl);
 
             MvvmRepositorySelector.get().init("mvvm");
 
-            mvvmContext = (MvvmContextBase)ucl
+            mvvmContext = (MvvmContextBase)mcl
                 .loadClass(MVVM_LOCAL_CONTEXT_CLASSNAME)
                 .getMethod("context").invoke(null);
 
@@ -207,7 +213,7 @@ public class Main
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
             // Entering MVVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            Thread.currentThread().setContextClassLoader(ucl);
+            Thread.currentThread().setContextClassLoader(mcl);
 
             mvvmContext.doPostInit();
 
@@ -217,5 +223,3 @@ public class Main
         }
     }
 }
-
-

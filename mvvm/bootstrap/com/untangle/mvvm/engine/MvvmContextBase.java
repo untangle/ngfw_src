@@ -11,6 +11,8 @@
 
 package com.untangle.mvvm.engine;
 
+import java.net.URL;
+
 /**
  * This class is for Main to manipulate MvvmContext without resorting
  * to reflection and allowing package protection for sensitive methods.
@@ -20,16 +22,21 @@ package com.untangle.mvvm.engine;
  */
 public abstract class MvvmContextBase
 {
-    private Main m_main;
+    private Main main;
 
     protected abstract void init();
     protected abstract void destroy();
     protected abstract void postInit();
     protected abstract InvokerBase getInvoker();
 
+    protected boolean doRefreshToolbox()
+    {
+        return main.refreshToolbox();
+    }
+
     void doInit(Main main)
     {
-        m_main = main;
+        this.main = main;
         init();
     }
 
@@ -41,5 +48,10 @@ public abstract class MvvmContextBase
     void doDestroy()
     {
         destroy();
+    }
+
+    protected Main getMain()
+    {
+        return main;
     }
 }

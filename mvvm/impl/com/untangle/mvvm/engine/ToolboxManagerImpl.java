@@ -401,6 +401,11 @@ class ToolboxManagerImpl implements ToolboxManager
         // XXX protect this method
         logger.debug("registering mackage: " + pkgName);
 
+        MvvmContextImpl mctx = MvvmContextImpl.getInstance();
+        if (mctx.refreshToolbox()) {
+            mctx.refreshSessionFactory();
+        }
+
         TransformManagerImpl tm = (TransformManagerImpl)MvvmContextFactory
             .context().transformManager();
         tm.restart(pkgName);

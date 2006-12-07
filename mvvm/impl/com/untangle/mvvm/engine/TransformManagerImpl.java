@@ -70,10 +70,6 @@ class TransformManagerImpl implements LocalTransformManager
     private final ThreadLocal<TransformContext> threadContexts
         = new ThreadLocal<TransformContext>();
 
-    // XXX create new cl on reload all
-    private final CasingClassLoader casingClassLoader
-        = new CasingClassLoader(getClass().getClassLoader());
-
     private boolean live = true;
 
     private TransformManagerImpl()
@@ -123,12 +119,13 @@ class TransformManagerImpl implements LocalTransformManager
                 TransformContextImpl tci2 = tids.get(t2);
                 int rpi1 = tci1.getMackageDesc().getViewPosition();
                 int rpi2 = tci2.getMackageDesc().getViewPosition();
-                if (rpi1 == rpi2)
+                if (rpi1 == rpi2) {
                     return tci1.getMackageDesc().getName().compareToIgnoreCase(tci2.getMackageDesc().getName());
-                else if (rpi1 < rpi2)
+                } else if (rpi1 < rpi2) {
                     return -1;
-                else
+                } else {
                     return 1;
+                }
             }
         });
 
@@ -371,20 +368,6 @@ class TransformManagerImpl implements LocalTransformManager
         }
     }
 
-    // private classes --------------------------------------------------------
-
-    private static class UrlComparator implements Comparator<URL>
-    {
-        public static final UrlComparator COMPARATOR = new UrlComparator();
-
-        private UrlComparator() { }
-
-        public int compare(URL o1, URL o2)
-        {
-            return o1.toString().compareTo(o2.toString());
-        }
-    }
-
     // private methods --------------------------------------------------------
 
     private void restartUnloaded()
@@ -397,9 +380,14 @@ class TransformManagerImpl implements LocalTransformManager
 
         logger.info("Restarting unloaded transforms...");
 
+
         List<TransformPersistentState> unloaded = getUnloaded();
         Map<Tid, TransformDesc> tDescs = loadTransformDescs(unloaded);
         Set<String> loadedParents = new HashSet<String>(unloaded.size());
+
+        MvvmContextImpl mctx = MvvmContextImpl.getInstance();
+
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)mctx.toolboxManager();
 
         while (0 < unloaded.size()) {
             List<TransformPersistentState> startQueue = getLoadable(unloaded,
@@ -424,6 +412,7 @@ class TransformManagerImpl implements LocalTransformManager
         ToolboxManagerImpl tbm = (ToolboxManagerImpl)MvvmContextFactory
             .context().toolboxManager();
 
+
         List<Thread> threads = new ArrayList<Thread>(startQueue.size());
 
         for (TransformPersistentState tps : startQueue) {
@@ -433,9 +422,6 @@ class TransformManagerImpl implements LocalTransformManager
             loadedParents.add(name);
             final String[] args = tps.getArgArray();
             final MackageDesc mackageDesc = tbm.mackageDesc(name);
-            URL[] urls = tbm.resources(name);
-            final URLClassLoader cl = getClassLoader(tDesc, urls);
-            logger.info("Starting transform: " + name + " with ClassLoader: " + cl);
 
             Thread t = MvvmContextFactory.context().newThread(new Runnable()
                 {
@@ -444,7 +430,7 @@ class TransformManagerImpl implements LocalTransformManager
                         logger.info("Restarting: " + tid + " (" + name + ")");
                         TransformContextImpl tc = null;
                         try {
-                            tc = new TransformContextImpl(cl, tDesc,
+                            tc = new TransformContextImpl((URLClassLoader)getClass().getClassLoader(), tDesc,
                                                           mackageDesc.getName(),
                                                           false);
                             tids.put(tid, tc);
@@ -571,20 +557,23 @@ class TransformManagerImpl implements LocalTransformManager
     private Tid instantiate(String transformName, Tid tid, String[] args)
         throws DeployException
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)MvvmContextFactory
-            .context().toolboxManager();
+        MvvmContextImpl mctx = MvvmContextImpl.getInstance();
+
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)mctx.toolboxManager();
 
         URL[] resUrls = tbm.resources(transformName);
 
         MackageDesc mackageDesc = tbm.mackageDesc(transformName);
         if ((mackageDesc.isService() || mackageDesc.isUtil() || mackageDesc.isCore())
-        && tid.getPolicy() != null) {
+            && tid.getPolicy() != null) {
             throw new DeployException("Cannot specify a policy for a service/util/core: "
                                       + transformName);
         }
-        if (mackageDesc.isSecurity() && tid.getPolicy() == null)
+
+        if (mackageDesc.isSecurity() && tid.getPolicy() == null) {
             throw new DeployException("Cannot have null policy for a security: "
                                       + transformName);
+        }
 
         logger.info("initializing transform desc for: " + transformName);
         TransformDesc tDesc = initTransformDesc(mackageDesc, resUrls, tid);
@@ -594,10 +583,12 @@ class TransformManagerImpl implements LocalTransformManager
                 throw new DeployException("TransformManager is shut down");
             }
 
-            URLClassLoader cl = getClassLoader(tDesc, resUrls);
-
+            if (null != tDesc.getTransformBase()) {
+                SchemaUtil.initSchema("settings", tDesc.getTransformBase());
+            }
+            SchemaUtil.initSchema("settings", tDesc.getName());
             TransformContextImpl tc = new TransformContextImpl
-                (cl, tDesc, mackageDesc.getName(), true);
+                ((URLClassLoader)getClass().getClassLoader(), tDesc, mackageDesc.getName(), true);
             tids.put(tid, tc);
             try {
                 tc.init(args);
@@ -609,58 +600,6 @@ class TransformManagerImpl implements LocalTransformManager
         }
 
         return tid;
-    }
-
-    private URLClassLoader getClassLoader(TransformDesc tDesc, URL[] resUrls)
-    {
-        String name = tDesc.getName();
-
-        Arrays.sort(resUrls, UrlComparator.COMPARATOR);
-
-        for (TransformContextImpl tc : tids.values()) {
-            if (name.equals(tc.getTransformDesc().getName())) {
-                URLClassLoader cl = tc.getClassLoader();
-                URL[] clUrls = cl.getURLs();
-                Arrays.sort(clUrls, UrlComparator.COMPARATOR);
-                if (Arrays.equals(resUrls, clUrls)) {
-                    logger.debug(name + " reusing classLoader: " + cl);
-                    return cl;
-                } else {
-                    logger.warn("transform: " + name
-                                + " with different resources");
-                }
-            }
-        }
-
-        logger.debug("creating new ClassLoader for: " + name);
-        for (String export : tDesc.getExports()) {
-            try {
-                logger.debug("exporting: " + export);
-                URL url = new URL(ToolboxManagerImpl.TOOLBOX_URL, export);
-                casingClassLoader.addResource(url);
-            } catch (MalformedURLException exn) {
-                logger.warn("could not add resource: " + export);
-            }
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("CasingClassLoader urls");
-            for (URL url : casingClassLoader.getURLs()) {
-                logger.debug("  " + url);
-            }
-
-            logger.debug("new URLClassLoader:");
-            for (URL url : resUrls) {
-                logger.debug("  " + url);
-            }
-        }
-
-        if (null != tDesc.getTransformBase()) {
-            SchemaUtil.initSchema("settings", tDesc.getTransformBase());
-        }
-        SchemaUtil.initSchema("settings", name);
-
-        return new URLClassLoader(resUrls, casingClassLoader);
     }
 
     /**

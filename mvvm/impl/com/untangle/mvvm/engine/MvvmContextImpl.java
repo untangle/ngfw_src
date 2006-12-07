@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.util.StringTokenizer;
 
 import com.untangle.mvvm.CronJob;
@@ -46,7 +47,6 @@ import com.untangle.mvvm.user.RemotePhoneBook;
 import com.untangle.mvvm.user.RemotePhoneBookImpl;
 import com.untangle.mvvm.util.TransactionRunner;
 import com.untangle.mvvm.util.TransactionWork;
-
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
@@ -62,8 +62,6 @@ public class MvvmContextImpl extends MvvmContextBase
     private static final String ACTIVATION_KEY_FILE;
     private static final String ARGON_FAKE_KEY;
 
-    private final SessionFactory sessionFactory;
-    private final TransactionRunner transactionRunner;
     private final Object startupWaitLock = new Object();
     private final Logger logger = Logger.getLogger(MvvmContextImpl.class);
     private final BackupManager backupManager;
@@ -102,32 +100,31 @@ public class MvvmContextImpl extends MvvmContextBase
     private TomcatManager tomcatManager;
     private HeapMonitor heapMonitor;
 
+    private volatile SessionFactory sessionFactory;
+    private volatile TransactionRunner transactionRunner;
+
     // constructor ------------------------------------------------------------
 
     private MvvmContextImpl()
     {
         EventLoggerImpl.initSchema("mvvm");
-        sessionFactory = Util.makeSessionFactory(getClass().getClassLoader());
-        transactionRunner = new TransactionRunner(sessionFactory);
+        refreshSessionFactory();
+
+        // XXX can we load all transform cl's first?
         state = MvvmState.LOADED;
         backupManager = new BackupManager();
     }
 
     // static factory ---------------------------------------------------------
 
-    public static MvvmLocalContext context()
-    {
-        return CONTEXT;
-    }
-
     static MvvmContextImpl getInstance()
     {
         return CONTEXT;
     }
 
-    public MvvmState state()
+    public static MvvmLocalContext context()
     {
-        return state;
+        return CONTEXT;
     }
 
     // singletons -------------------------------------------------------------
@@ -235,7 +232,8 @@ public class MvvmContextImpl extends MvvmContextBase
 
     RemoteIntfManager remoteIntfManager()
     {
-        /* This doesn't have to be synchronized, because it doesn't matter if two are created */
+        /* This doesn't have to be synchronized, because it doesn't
+         * matter if two are created */
         if (remoteIntfManager == null) {
             // Create the remote interface manager
             LocalIntfManager lim = argonManager.getIntfManager();
@@ -417,6 +415,11 @@ public class MvvmContextImpl extends MvvmContextBase
         } catch (IOException exn) {
             logger.error("Exception during rebooot");
         }
+    }
+
+    public MvvmState state()
+    {
+        return state;
     }
 
     public String version()
@@ -748,6 +751,20 @@ public class MvvmContextImpl extends MvvmContextBase
     }
 
     // package protected methods ----------------------------------------------
+
+    boolean refreshToolbox()
+    {
+        return doRefreshToolbox();
+    }
+
+    void refreshSessionFactory()
+    {
+        synchronized (this) {
+            System.out.println("REMAKING SESSION FACTORY");
+            sessionFactory = Util.makeSessionFactory(getClass().getClassLoader());
+            transactionRunner = new TransactionRunner(sessionFactory);
+        }
+    }
 
     TomcatManager tomcatManager()
     {

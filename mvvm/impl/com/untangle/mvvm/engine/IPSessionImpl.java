@@ -118,8 +118,8 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
     public void release()
     {
-        // 8/8/05 jdi -- default changed to true -- finalization is almost always important
-        // when it is defined.
+        // 8/8/05 jdi -- default changed to true -- finalization is
+        // almost always important when it is defined.
         release(true);
     }
 
@@ -128,7 +128,8 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     {
         cancelTimer();
 
-        // We could theoretically detach the attachment here (maybe only when !needsFinalization) XXX
+        // We could theoretically detach the attachment here (maybe
+        // only when !needsFinalization) XXX
 
         /** Someday...
         try {
@@ -444,7 +445,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         try {
             transformManager.registerThreadContext(tctx);
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
-            
+
             IncomingSocketQueue in = ((com.untangle.mvvm.argon.Session)pSession).clientIncomingSocketQueue();
             if (in != null)
                 in.reset();
@@ -488,7 +489,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         try {
             transformManager.registerThreadContext(tctx);
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
-            
+
             IncomingSocketQueue in = ((com.untangle.mvvm.argon.Session)pSession).serverIncomingSocketQueue();
             if (in != null)
                 in.reset();
@@ -862,6 +863,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     }
 
 
-    // Don't need equal or hashcode since we can only have one of these objects per
-    // session (so the memory address is ok for equals/hashcode).
+    // Don't need equal or hashcode since we can only have one of
+    // these objects per session (so the memory address is ok for
+    // equals/hashcode).
 }

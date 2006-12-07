@@ -31,7 +31,6 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 import org.apache.log4j.Logger;
-import org.dom4j.Document;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.SessionFactory;
@@ -49,25 +48,22 @@ class Util
 {
     private static final Logger logger = Logger.getLogger(Util.class);
 
-    private static final Map<ClassLoader, WeakReference<SessionFactory>> sessionFactories
-        = new WeakHashMap<ClassLoader, WeakReference<SessionFactory>>();
-
     static SessionFactory makeSessionFactory(ClassLoader cl)
     {
         SessionFactory sessionFactory = null;
-        synchronized (sessionFactories) {
-            WeakReference<SessionFactory> wr = sessionFactories.get(cl);
-            if (null != wr) {
-                sessionFactory = wr.get();
-            }
 
-            if (null == sessionFactory) {
-                sessionFactory = createSessionFactory(cl);
-                if (null != sessionFactory) {
-                    sessionFactories.put(cl, new WeakReference(sessionFactory));
-                }
-            }
+        try {
+            AnnotationConfiguration cfg = new AnnotationConfiguration();
+            addAnnotatedClasses(cl, cfg);
+
+            long t0 = System.currentTimeMillis();
+            sessionFactory = cfg.buildSessionFactory();
+            long t1 = System.currentTimeMillis();
+            logger.info("session factory in " + (t1 - t0) + " millis");
+        } catch (HibernateException exn) {
+            logger.warn("could not create SessionFactory", exn);
         }
+
         return sessionFactory;
     }
 
@@ -91,25 +87,6 @@ class Util
     }
 
     // private methods --------------------------------------------------------
-
-    private static SessionFactory createSessionFactory(ClassLoader cl)
-    {
-        SessionFactory sessionFactory = null;
-
-        try {
-            AnnotationConfiguration cfg = new AnnotationConfiguration();
-            addAnnotatedClasses(cl, cfg);
-
-            long t0 = System.currentTimeMillis();
-            sessionFactory = cfg.buildSessionFactory();
-            long t1 = System.currentTimeMillis();
-            logger.info("session factory in " + (t1 - t0) + " millis");
-        } catch (HibernateException exn) {
-            logger.warn("could not create SessionFactory", exn);
-        }
-
-        return sessionFactory;
-    }
 
     private static void addAnnotatedClasses(ClassLoader cl,
                                             AnnotationConfiguration cfg)

@@ -38,14 +38,12 @@ import com.untangle.mvvm.tran.TransformPreferences;
 import com.untangle.mvvm.tran.TransformState;
 import com.untangle.mvvm.tran.TransformStats;
 import com.untangle.mvvm.tran.UndeployException;
-import com.untangle.mvvm.util.TransactionRunner;
 import com.untangle.mvvm.util.TransactionWork;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 
 // XXX decouple from TransformBase
 class TransformContextImpl implements TransformContext
@@ -62,8 +60,6 @@ class TransformContextImpl implements TransformContext
     private final boolean isNew;
 
     private TransformBase transform;
-    private SessionFactory sessionFactory;
-    private TransactionRunner transactionRunner;
     private String mackageName;
 
     private final TransformManagerImpl transformManager = TransformManagerImpl
@@ -138,8 +134,6 @@ class TransformContextImpl implements TransformContext
         ct.setContextClassLoader(classLoader);
         try {
             transformManager.registerThreadContext(this);
-            sessionFactory = Util.makeSessionFactory(classLoader);
-            transactionRunner = new TransactionRunner(sessionFactory);
 
             String tidName = tid.getName();
             logger.debug("setting tran " + tidName + " log4j repository");
@@ -240,9 +234,11 @@ class TransformContextImpl implements TransformContext
         return toolboxManager.mackageDesc(mackageName);
     }
 
+    // XXX remove this method...
+    @Deprecated
     public boolean runTransaction(TransactionWork tw)
     {
-        return transactionRunner.runTransaction(tw);
+        return MvvmContextFactory.context().runTransaction(tw);
     }
 
     public Transform transform()
@@ -296,12 +292,6 @@ class TransformContextImpl implements TransformContext
         }
 
         LogFactory.release(classLoader);
-
-        try {
-            sessionFactory.close();
-        } catch (HibernateException exn) {
-            logger.warn("could not close Hibernate SessionFactory", exn);
-        }
     }
 
     void unload()
