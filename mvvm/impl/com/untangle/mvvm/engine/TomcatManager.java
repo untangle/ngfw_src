@@ -91,6 +91,7 @@ class TomcatManager
         loadSystemApp("/webstart", "webstart", new WebAppOptions(new AdministrationOutsideAccessValve()));
         loadSystemApp("/onlinestore", "onlinestore", new WebAppOptions(new AdministrationOutsideAccessValve()));
         loadSystemApp("/reports", "reports", new WebAppOptions(true,new ReportingOutsideAccessValve()));
+        loadSystemApp("/wmi", "wmi", new WebAppOptions(new ReportingOutsideAccessValve()));
     }
 
     // package protected methods ----------------------------------------------

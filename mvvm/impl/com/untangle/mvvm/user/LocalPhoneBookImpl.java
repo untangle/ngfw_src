@@ -230,9 +230,6 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
         /* load the initial key */
         loadCurrentKey();
 
-        /* start the web app */
-        loadWebApp();
-
         /* create an event logger */
         this.eventLogger = EventLoggerFactory.factory().getEventLogger();
 
@@ -262,9 +259,6 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     public void destroy()
     {
         this.isRunning = false;
-
-        /* start the web app */
-        unloadWebApp();
 
         /* Clear the assistants */
         clearAssistants();
@@ -485,28 +479,6 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     private synchronized long getNextKey()
     {
         return ++currentKey;
-    }
-
-    private synchronized void loadWebApp()
-    {
-        if ( !this.isWebAppDeployed ) {
-            if ( MvvmContextFactory.context().appServerManager().loadInsecureApp( WEB_APP_PATH, WEB_APP, new OutsideAccessValve())) {
-                logger.debug( "Deployed ", WEB_APP, " web app" );
-            }
-            else logger.warn( "Unable to deploy ", WEB_APP," web app" );
-        }
-
-        this.isWebAppDeployed = true;
-    }
-
-    private synchronized void unloadWebApp()
-    {
-        if ( this.isWebAppDeployed ) {
-            if( MvvmContextFactory.context().appServerManager().unloadWebApp(WEB_APP_PATH)) {
-                logger.debug( "Unloaded ", WEB_APP," web app" );
-            } else logger.warn( "Unable to unload ", WEB_APP," web app" );
-        }
-        this.isWebAppDeployed = false;
     }
 
     private class Cleaner implements Worker
