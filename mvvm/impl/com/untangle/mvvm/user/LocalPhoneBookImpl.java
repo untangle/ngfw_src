@@ -44,7 +44,6 @@ import com.untangle.mvvm.tran.ValidateException;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
 
-import com.untangle.mvvm.util.OutsideValve;
 import com.untangle.mvvm.util.TransactionWork;
 import com.untangle.mvvm.util.Worker;
 import com.untangle.mvvm.util.WorkerRunner;
@@ -531,28 +530,5 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
                 }
             }
         }
-    }
-
-    private class OutsideAccessValve extends OutsideValve
-    {
-        OutsideAccessValve()
-        {
-        }
-
-        protected boolean isOutsideAccessAllowed()
-        {
-            return false;
-        }
-        
-        protected String outsideErrorMessage()
-        {
-            return "Off-site downloading of the WMI Installer is not allowed.";
-        }
-
-        protected String httpErrorMessage()
-        {
-            return "Standard access to the WMI Installer is disabled.";
-        }
-        
     }
 }
