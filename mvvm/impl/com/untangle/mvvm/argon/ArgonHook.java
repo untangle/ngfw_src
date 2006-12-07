@@ -112,8 +112,9 @@ abstract class ArgonHook implements Runnable
             }
 
             /* Update the server interface with the override table */
-            byte originalServerIntf = Argon.getInstance().
-                getIntfManager().toArgon( netcapSession.serverSide().interfaceId());
+            byte originalServerNetcapIntf = netcapSession.serverSide().interfaceId();
+            byte originalServerArgonIntf = Argon.getInstance().getIntfManager().toArgon( originalServerNetcapIntf );
+            
             InterfaceOverride.getInstance().updateDestinationInterface( netcapSession );
 
             if ( logger.isDebugEnabled()) logger.debug( netcapSession );
@@ -137,9 +138,9 @@ abstract class ArgonHook implements Runnable
              */
             if (( serverIntf == clientIntf ) && 
                 !isVpnToVpn( clientIntf, serverIntf ) &&
-                !checkIsMirrored( originalServerIntf, serverIntf )) {
+                !checkIsMirrored( originalServerNetcapIntf, serverIntf )) {
                 if ( logger.isInfoEnabled()) {
-                    logger.info( "" + netcapSession + " has matching client and server interface, raze." );
+                    logger.info( "" + netcapSession + " has matching client and server interface, liberate and raze." );
                 }
                 liberate();
                 raze();
@@ -172,7 +173,7 @@ abstract class ArgonHook implements Runnable
             endpoints = pipelineFoundry.createInitialEndpoints(clientSide);
 
             /* Initialize all of the transforms, sending the request events to each in turn */
-            initTransforms( originalServerIntf, endpoints );
+            initTransforms( originalServerArgonIntf, endpoints );
 
             /* Connect to the server */
             boolean serverActionCompleted = connectServer();

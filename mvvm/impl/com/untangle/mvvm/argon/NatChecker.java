@@ -57,15 +57,20 @@ class NatChecker implements NetworkSettingsListener
         logger.info( "Updating the NAT matchers for argon." );
 
         List<NatMatcher> matchers = new LinkedList<NatMatcher>();
-        for ( NetworkSpaceInternal space : settings.getNetworkSpaceList()) {
-            logger.info( "Updating the network space: " + space.getIndex());
-            if ( space.getIsEnabled() && space.getIsNatEnabled()) {
-                for ( IPNetwork network : space.getNetworkList()) {
-                    matchers.add( NatMatcher.makeMatcher( space, network ));
+
+        if ( settings.getIsEnabled()) {
+            for ( NetworkSpaceInternal space : settings.getNetworkSpaceList()) {
+                logger.info( "Updating the network space: " + space.getIndex());
+                if ( space.getIsEnabled() && space.getIsNatEnabled()) {
+                    for ( IPNetwork network : space.getNetworkList()) {
+                        matchers.add( NatMatcher.makeMatcher( space, network ));
+                    }
+                } else {
+                    logger.info( "NAT is disabled for network space:" + space.getIndex());
                 }
-            } else {
-                logger.info( "NAT is disabled for network space:" + space.getIndex());
             }
+        } else {
+            logger.debug( "Network spaces are disabled skipping all network spaces" );
         }
 
         /* Set this list once at the end to avoid locks */
