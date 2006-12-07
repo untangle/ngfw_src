@@ -218,9 +218,9 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 			scale = (float)i / (float)(gradLength); 
 		    else
 			scale = (float)(gradLength-1) / (float)(gradLength); 
-		    int channelR = 68 + (int)(187f * scale);
-		    int channelG = 91 + (int)(164f * scale);
-		    int channelB = 255;
+		    int channelR = 104 + (int)(151f * scale);
+		    int channelG = 189 + (int)(66f  * scale);
+		    int channelB =  73 + (int)(182f * scale);
 		    g2.setColor(new Color(channelR, channelG, channelB, alphaLevel));
 		    //int channel = 224 - 128 / (i + 1);
 		    //g2.setColor(new Color(channel, channel, channel, alphaLevel));

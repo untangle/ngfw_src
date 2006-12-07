@@ -54,7 +54,7 @@ public class MLauncher {
                                                                                    new Color(215,215,215), // BACKGROUND
                                                                                    Color.ORANGE, // NO IDEA
                                                                                    new Color(50,50,50), // RADIO / CHECKBOX
-                                                                                   new Color(68,91,255), // MOUSEOVER
+                                                                                   new Color(104,189,73), // MOUSEOVER
                                                                                    new Color(215,215,215)); // POPUPS
             javax.swing.LookAndFeel alloyLnF = new com.incors.plaf.alloy.AlloyLookAndFeel(theme);
             Util.setLookAndFeel(alloyLnF);
