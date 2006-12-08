@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.gui.login;
+package com.untangle.gui.install;
 
 import com.untangle.gui.widgets.wizard.*;
 import com.untangle.gui.widgets.dialogs.*;
@@ -22,21 +22,21 @@ import java.awt.Window;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements AdjustmentListener {
+public class InstallLicenseJPanel extends MWizardPageJPanel implements AdjustmentListener {
 
     private static final String EXCEPTION_NOT_ACCEPT = "You must accept the license agreement before proceeding.";
     
     private JScrollBar verticalScrollBar;
     private boolean readAgreement = false;
     
-    public InitialSetupLicenseJPanel() {
+    public InstallLicenseJPanel() {
         initComponents();
         
         verticalScrollBar = contentJScrollPane.getVerticalScrollBar();
         verticalScrollBar.addAdjustmentListener(this);
         
         try{
-            InputStream licenseInputStream = Util.getClassLoader().getResourceAsStream("License.txt");
+            InputStream licenseInputStream = getClass().getClassLoader().getResourceAsStream("License.txt");
             InputStreamReader licenseInputStreamReader = new InputStreamReader(licenseInputStream);
             BufferedReader licenseBufferedReader = new BufferedReader(licenseInputStreamReader);
             StringBuilder licenseStringBuilder = new StringBuilder();
@@ -78,7 +78,7 @@ public class InitialSetupLicenseJPanel extends MWizardPageJPanel implements Adju
 
 	    if( !acceptJRadioButton.isSelected() ){
 		if( declineJRadioButton.isSelected() ){
-		    MOneButtonJDialog.factory(topLevelWindow,"","<html>You have declined the Untangle License Agreement.  The setup wizard will now exit.  You may run the setup wizard again later.</html>","Setup Wizard Warning","Warning");
+		    MOneButtonJDialog.factory(topLevelWindow,"","<html>You have declined the Untangle License Agreement.  The install wizard will now exit.  You may run the install wizard again later.</html>","Install Wizard Warning","Warning");
 		    System.exit(0);
 		    return;		
 		}

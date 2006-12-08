@@ -32,9 +32,10 @@ public class InstallWizard extends MWizardJDialog {
 	setModal(true);
         setTitle("Untangle Platform Install Wizard");
         addWizardPageJPanel(new InstallWelcomeJPanel(),       "1. Welcome", false, false);
-        addWizardPageJPanel(new InstallDiskJPanel(this),      "2. Choose Disk", false, false);
-        addWizardPageJPanel(new InstallBenchmarkJPanel(this), "3. Hardware Test", false, false);
-        addWizardPageJPanel(new InstallWarningJPanel(),       "4. Final Warning", false, false);
+        addWizardPageJPanel(new InstallLicenseJPanel(),       "2. License Agreement", false, false);
+        addWizardPageJPanel(new InstallDiskJPanel(this),      "3. Choose Disk", false, false);
+        addWizardPageJPanel(new InstallBenchmarkJPanel(this), "4. Hardware Test", false, false);
+        addWizardPageJPanel(new InstallWarningJPanel(),       "5. Final Warning", false, false);
     }
 
     private static String targetDisk;
