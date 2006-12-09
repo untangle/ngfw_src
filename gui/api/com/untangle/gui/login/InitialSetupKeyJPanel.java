@@ -104,8 +104,7 @@ public class InitialSetupKeyJPanel extends MWizardPageJPanel {
 
                 contentJPanel.setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>Please enter the 16-digit activation key. (With or without dashes) The key can be found on the side of your Untangle hardware, and also on your QuickStart Guide.<br><b>This information is required.</b></html>");
-                jLabel2.setMinimumSize(null);
+                jLabel2.setText("<html>Please enter your 16-digit activation key. (with or without dashes)<br>\nThe key can be found on the side of your Untangle Server, and also on your QuickStart guide.<br>\n<br>\nIf you downloaded the Untangle Platform, you can acquire a key from http://www.untangle.com/download or by emailing support@untangle.com<br>\n<b>This information is required.</b></html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;

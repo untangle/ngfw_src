@@ -33,7 +33,7 @@ public class TableModelSiteToSite extends MSortedTableModel<Object>{
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int C1_MW = Util.LINENO_MIN_WIDTH; /* # */
     private static final int C2_MW = 65;  /* enabled */
-    private static final int C3_MW = 70;  /* isUntanglePlatform */
+    private static final int C3_MW = 85;  /* isUntanglePlatform */
     private static final int C4_MW = 150; /* name */
     private static final int C5_MW = 150; /* group */
     private static final int C6_MW = 120; /* network address */
@@ -56,7 +56,7 @@ public class TableModelSiteToSite extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS);
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, false, true,  false, false, Boolean.class, "true", sc.bold("enabled"));
-        addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, "true", sc.html("is<br>edgeguard"));
+        addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, "true", sc.html("is Untangle<br>Server"));
         addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, false, String.class,  sc.EMPTY_NAME, sc.html("site name") );
         addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, false, ComboBoxModel.class,  groupModel, sc.html("address<br>pool"));
         addTableColumn( tableColumnModel,  6, C6_MW, false, true,  false, false, IPaddrString.class,  "1.2.3.4", sc.html("network<br>address"));

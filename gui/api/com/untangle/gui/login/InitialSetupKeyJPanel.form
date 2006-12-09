@@ -27,10 +27,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;Please enter the 16-digit activation key. (With or without dashes) The key can be found on the side of your Untangle hardware, and also on your QuickStart Guide.&lt;br&gt;&lt;b&gt;This information is required.&lt;/b&gt;&lt;/html&gt;"/>
-            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="null"/>
-            </Property>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;Please enter your 16-digit activation key. (with or without dashes)&lt;br&gt;&#xa;The key can be found on the side of your Untangle Server, and also on your QuickStart guide.&lt;br&gt;&#xa;&lt;br&gt;&#xa;If you downloaded the Untangle Platform, you can acquire a key from http://www.untangle.com/download or by emailing support@untangle.com&lt;br&gt;&#xa;&lt;b&gt;This information is required.&lt;/b&gt;&lt;/html&gt;"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
