@@ -62,7 +62,7 @@ public class AboutCompoundSettings implements CompoundSettings {
 	else
 	    installedVersion = mackageDesc.getInstalledVersion();
 	
-	licenseURL = Util.getClassLoader().getResource("License.rtf");
+	licenseURL = Util.getClassLoader().getResource("License.txt");
 	timeZone = Util.getAdminManager().getTimeZone();
 	date = Util.getAdminManager().getDate();
     }

@@ -73,7 +73,7 @@ public class AboutJDialog extends MConfigJDialog {
 	implements Refreshable<AboutCompoundSettings> {
 	private JScrollPane containingJScrollPane;
 	public AboutLicenseJEditorPane(){
-	    setContentType("text/rtf");
+	    setContentType("text/plain");
 	    setEditable(false);
 	    setFont(new java.awt.Font("Courier", 0, 11));
 	}
