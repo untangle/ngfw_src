@@ -139,7 +139,7 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
             return;
         }
 
-        if (null == inputQueue || !inputQueue.offer(new LogEventDesc(this, e, tag))) {
+        if (!inputQueue.offer(new LogEventDesc(this, e, tag))) {
             logger.warn("dropping logevent: " + e);
         }
     }
