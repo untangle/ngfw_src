@@ -24,15 +24,15 @@ import com.untangle.mvvm.logging.EventLoggerFactory;
 import com.untangle.mvvm.logging.EventManager;
 import com.untangle.mvvm.logging.LogEvent;
 import com.untangle.mvvm.logging.SimpleEventFilter;
-import com.untangle.mvvm.networking.RemoteSettings;
 import com.untangle.mvvm.networking.IPNetwork;
 import com.untangle.mvvm.networking.IPNetworkRule;
-import com.untangle.mvvm.networking.NetworkException;
 import com.untangle.mvvm.networking.LocalNetworkManager;
+import com.untangle.mvvm.networking.NetworkException;
 import com.untangle.mvvm.networking.NetworkSettingsListener;
 import com.untangle.mvvm.networking.NetworkSpace;
 import com.untangle.mvvm.networking.NetworkSpacesSettings;
 import com.untangle.mvvm.networking.NetworkUtil;
+import com.untangle.mvvm.networking.RemoteSettings;
 import com.untangle.mvvm.networking.SetupState;
 import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
@@ -299,7 +299,7 @@ public class NatImpl extends AbstractTransform implements Nat
 
         /* Register a listener, this should hang out until the transform is removed dies. */
         getNetworkManager().registerListener( this.listener );
-        
+
         MvvmContextFactory.context().localPhoneBook().registerAssistant( this.assistant );
 
         /* Check if the settings have been upgraded yet */
@@ -348,8 +348,6 @@ public class NatImpl extends AbstractTransform implements Nat
 
     protected void preStart() throws TransformStartException
     {
-        eventLogger.start();
-
         MvvmLocalContext context = MvvmContextFactory.context();
         MvvmState state = context.state();
         LocalNetworkManager networkManager = getNetworkManager();
@@ -428,8 +426,6 @@ public class NatImpl extends AbstractTransform implements Nat
                 logger.error( "Unable to disable network spaces", e );
             }
         }
-
-        eventLogger.stop();
     }
 
     @Override protected void postDestroy() throws TransformException
@@ -505,7 +501,7 @@ public class NatImpl extends AbstractTransform implements Nat
     private void postInitWizard()
     {
         logger.info( "Settings are not setup yet, using defaults for setup wizard" );
-        
+
         try {
             LocalNetworkManager networkManager = getNetworkManager();
 
@@ -516,7 +512,7 @@ public class NatImpl extends AbstractTransform implements Nat
              * to turn on network spaces at startup. */
             NatBasicSettings defaultSettings =
                 this.settingsManager.getDefaultSettings( this.getTid());
-            
+
             defaultSettings.setNatInternalAddress( NatUtil.SETUP_INTERNAL_ADDRESS );
             defaultSettings.setNatInternalSubnet( NatUtil.SETUP_INTERNAL_SUBNET );
             defaultSettings.setDhcpStartAndEndAddress( NatUtil.SETUP_DHCP_START, NatUtil.SETUP_DHCP_END );
@@ -531,7 +527,7 @@ public class NatImpl extends AbstractTransform implements Nat
             primary.setIsDhcpEnabled( true );
             /* Clear the list of aliases */
             primary.setNetworkList( new LinkedList<IPNetworkRule>());
-            
+
             networkManager.setNetworkSettings( newNetworkSettings, false );
             networkManager.setServicesSettings( defaultSettings );
 
@@ -612,7 +608,7 @@ public class NatImpl extends AbstractTransform implements Nat
         return sessionManager;
     }
 
-    class SettingsListener 
+    class SettingsListener
         implements NetworkSettingsListener, TransformContextSwitcher.Event<NetworkSpacesInternalSettings>
     {
         /* Use this to automatically switch context */
@@ -625,7 +621,7 @@ public class NatImpl extends AbstractTransform implements Nat
         {
             tcs = new TransformContextSwitcher<NetworkSpacesInternalSettings>( getTransformContext());
         }
-        
+
         public void event( NetworkSpacesInternalSettings settings )
         {
             tcs.run( this, settings );

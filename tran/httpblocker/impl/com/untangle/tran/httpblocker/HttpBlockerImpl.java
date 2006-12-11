@@ -333,18 +333,6 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     }
 
     @Override
-    protected void preStart()
-    {
-        eventLogger.start();
-    }
-
-    @Override
-    protected void postStop()
-    {
-        eventLogger.stop();
-    }
-
-    @Override
     protected void postDestroy()
     {
         unDeployWebAppIfRequired(logger);

@@ -11,6 +11,11 @@
 
 package com.untangle.mvvm.engine;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.logging.LogEvent;
 import com.untangle.mvvm.logging.LoggingManager;
@@ -23,13 +28,19 @@ import org.hibernate.Session;
 class LoggingManagerImpl implements LoggingManager
 {
     private static final Object LOCK = new Object();
-    private static final LogEvent[] LOG_PROTO = new LogEvent[0];
+    private static final boolean LOGGING_DISABLED
+        = Boolean.parseBoolean(System.getProperty("mvvm.logging.disabled"));
 
     private static LoggingManagerImpl LOGGING_MANAGER;
+
+    private final List<String> initQueue = new LinkedList<String>();
+    private final LogWorker logWorker = new LogWorker(this);
 
     private final Logger logger = Logger.getLogger(getClass());
 
     private LoggingSettings loggingSettings;
+
+    private volatile boolean conversionComplete = true;
 
     private LoggingManagerImpl()
     {
@@ -62,6 +73,11 @@ class LoggingManagerImpl implements LoggingManager
         }
 
         return LOGGING_MANAGER;
+    }
+
+    static boolean isLoggingDisabled()
+    {
+        return LOGGING_DISABLED;
     }
 
     public LoggingSettings getLoggingSettings()
@@ -101,5 +117,56 @@ class LoggingManagerImpl implements LoggingManager
         }
 
         return;
+    }
+
+    // package protected methods ----------------------------------------------
+
+    void start()
+    {
+        logWorker.start();
+    }
+
+    void stop()
+    {
+        logWorker.stop();
+    }
+
+    BlockingQueue<LogEventDesc> getInputQueue()
+    {
+        return logWorker.getInputQueue();
+    }
+
+    void initSchema(final String name)
+    {
+        synchronized (initQueue) {
+            conversionComplete = false;
+
+            initQueue.add(name);
+        }
+
+        // XXX not using newThread, called from MvvmContextImpl constructor
+        new Thread(new Runnable()
+            {
+                public void run()
+                {
+                        MvvmContextFactory.context().waitForStartup();
+
+                        synchronized (initQueue) {
+                            for (Iterator<String> i = initQueue.iterator(); i.hasNext(); ) {
+                                String n = i.next();
+                                i.remove();
+                                SchemaUtil.initSchema("events", n);
+                            }
+
+                            conversionComplete = true;
+                            initQueue.notifyAll();
+                        }
+                }
+            }).start();
+    }
+
+    boolean isConversionComplete()
+    {
+        return conversionComplete;
     }
 }

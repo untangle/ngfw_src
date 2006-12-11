@@ -131,8 +131,6 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
 
     protected void preStart() throws TransformStartException
     {
-        eventLogger.start();
-
         try {
             reconfigure();
         } catch (Exception e) {

@@ -227,14 +227,12 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
 
     @Override
     protected void postInit(final String[] args) {
-        eventLogger.start();
         registerApps();
     }
 
     @Override
     protected void preDestroy() {
         deregisterApps();
-        eventLogger.stop();
     }
 
     // Portal methods ----------------------------------------------

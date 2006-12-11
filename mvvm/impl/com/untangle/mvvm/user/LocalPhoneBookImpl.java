@@ -11,13 +11,11 @@
 
 package com.untangle.mvvm.user;
 
-import java.net.InetAddress;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-
+import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -25,30 +23,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.NetworkManager;
-
 import com.untangle.mvvm.logging.EventLogger;
 import com.untangle.mvvm.logging.EventLoggerFactory;
-
 import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.ValidateException;
-
 import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
-
 import com.untangle.mvvm.util.TransactionWork;
 import com.untangle.mvvm.util.Worker;
 import com.untangle.mvvm.util.WorkerRunner;
-
 import com.untangle.tran.util.MVLogger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import static com.untangle.mvvm.user.UserInfo.LookupState;
 
@@ -59,16 +50,16 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
 
     private static final String WEB_APP = "wmi";
     private static final String WEB_APP_PATH = "/" + WEB_APP;
-    
+
 
     /* ??? */
     private static final int DEFAULT_QUEUE_LENGTH = 384;
 
     private static final int CLEANUP_DELAY = 120000;
-    
+
     /* Singleton */
     private static final LocalPhoneBookImpl INSTANCE = new LocalPhoneBookImpl();
-    
+
     private final MVLogger logger = new MVLogger( getClass());
 
     private EventLogger<LookupLogEvent> eventLogger;
@@ -105,7 +96,7 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     {
         /* create the utility to cleanup */
         this.runner = new WorkerRunner( new Cleaner(), MvvmContextFactory.context());
-                
+
         /* create a WMI assistant */
         this.wmiAssistant = new WMIAssistant();
     }
@@ -118,8 +109,8 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
         WMISettings settings = this.wmiAssistant.getSettings();
         /* insert the url */
         /* VPN configuratoins needs information from the networking settings. */
-        NetworkManager networkManager = MvvmContextFactory.context().networkManager();        
-        
+        NetworkManager networkManager = MvvmContextFactory.context().networkManager();
+
         settings.setUrl( "https://" + networkManager.getPublicAddress() + "/wmi/installer.html" );
 
         return settings;
@@ -156,12 +147,12 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
         synchronized ( assistantListLock ) {
             /* Wasteful, but this doesn't happen very often */
             List<Assistant> newList = new LinkedList<Assistant>( this.assistantList );
-            
+
             int priority = newAssistant.priority();
-            
+
             /* This is a silly method, but it is simple and it works */
             int c = 0;
-            
+
             for ( Assistant assistant : newList ) {
                 /* This checks if the assistant is already registered */
                 if ( priority == assistant.priority()) {
@@ -169,24 +160,24 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
                         logger.debug( "The assistant: ", assistant, " is already registered" );
                         return;
                     }
-                    
-                    if (( assistant instanceof TransformAssistant ) && 
+
+                    if (( assistant instanceof TransformAssistant ) &&
                         ((TransformAssistant)assistant).getAssistant().equals( newAssistant )) {
                         logger.debug( "The trnasform assistant: ", assistant, " is already registered" );
                         return;
                     }
                 }
-                
+
                 if ( priority < assistant.priority()) break;
                 c++;
             }
-            
+
             /* if necessary convert to a transform assistant */
             newAssistant = TransformAssistant.fixTransformContext( newAssistant );
 
             logger.debug( "registering the new assistant: ", newAssistant );
             newList.add( c, newAssistant );
-            
+
             /* replace the entire list, anything iterating will be just use the old list */
             this.assistantList = Collections.unmodifiableList( newList );
         }
@@ -197,9 +188,9 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     {
         synchronized ( assistantListLock ) {
             List<Assistant> newList = new LinkedList<Assistant>( this.assistantList );
-            
+
             int priority = assistant.priority();
-            
+
             /* This is a silly method, but it is simple and it works */
             for ( Iterator<Assistant> iter = newList.iterator() ; iter.hasNext() ; ) {
                 /* This checks if the assistant is already registered */
@@ -207,23 +198,23 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
 
                 if ( priority == a.priority()) {
                     if ( a.equals( assistant )) iter.remove();
-                    else if (( assistant instanceof TransformAssistant ) && 
+                    else if (( assistant instanceof TransformAssistant ) &&
                              ((TransformAssistant)a).getAssistant().equals( assistant )) {
                         iter.remove();
                     }
                 }
-                
+
                 if ( priority < assistant.priority()) break;
             }
-            
+
             /* Only true if an object hasn't been removed */
             if ( this.assistantList.size() == newList.size()) return;
-        
+
             /* replace the entire list, anything iterating will be just use the old list */
-            this.assistantList = Collections.unmodifiableList( newList );        
+            this.assistantList = Collections.unmodifiableList( newList );
         }
     }
-    
+
     public void init()
     {
         /* load the initial key */
@@ -232,14 +223,11 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
         /* create an event logger */
         this.eventLogger = EventLoggerFactory.factory().getEventLogger();
 
-        /* start the event logger */
-        this.eventLogger.start();
-
         /* Check for a property overriding the timeout. */
         this.lifetimeMillis = Long.getLong( PROPERTY_LIFETIME, this.lifetimeMillis );
 
         logger.debug( "lifetime: ", this.lifetimeMillis );
-        
+
         /* initialize the wmi assistant */
         this.wmiAssistant.init();
 
@@ -277,15 +265,12 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
 
         /* log the current key last */
         saveCurrentKey();
-
-        /* stop the event logger */
-        this.eventLogger.stop();
     }
 
     /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX testing code */
     private static final String DEFAULT_SCHEME = "http";
     private static final int DEFAULT_PORT = 5988;
-    
+
     public void wmi( String args[] ) throws Exception
     {
         String username = null;
@@ -301,14 +286,14 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
             throw new IllegalArgumentException( "requires an even number of arguments" );
         }
 
-        int c = 1; 
+        int c = 1;
 
         for ( ; c < length ; c++ ) {
             String flag = args[c];
             if ( !flag.startsWith( "-" ) || flag.length() != 2 ) {
                 throw new IllegalArgumentException( "no dash" );
             }
-            
+
             switch ( flag.charAt( 1 )) {
             case 'f':
                 Properties properties = new Properties();
@@ -342,11 +327,11 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
             case 's':
                 scheme = args[++c].trim().toLowerCase();
                 break;
-                
+
             case 'r':
                 port = Integer.parseInt( args[++c].trim());
                 break;
-                
+
             default:
                 throw new IllegalArgumentException( "Invalid flag: '" + args[c] + "'" );
             }
@@ -359,9 +344,9 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
         settings.setScheme( scheme );
         settings.setAddress( IPaddr.parse( host ));
         settings.setPort( port );
-        
+
         setWMISettings( settings );
-        
+
         logger.debug( "new settings: ", getWMISettings());
         // return new GetUserInfo( username, password, client, host, scheme, port );
     }
@@ -375,7 +360,7 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     private String parseProperty( Properties p, String name, String currentValue )
     {
         String value = p.getProperty( name );
-        
+
         if ( value == null ) return currentValue;
 
         value = value.trim();
@@ -386,7 +371,7 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
     }
     /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX testing code */
 
-    
+
     /* -------------- Public Static -------------- */
     public static LocalPhoneBookImpl getInstance()
     {
@@ -422,7 +407,7 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
 
             if ( info != null ) {
                 if ( !info.isExpired()) return info;
-                
+
                 logger.debug( "expiring the key: ", info );
                 addressMap.remove( address );
 
@@ -432,7 +417,7 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
                     this.eventLogger.log( new LookupLogEvent( info ));
                 }
                 /* xxxxx log the info */
-            } 
+            }
 
             /* Create a new user info object */
             info = UserInfo.makeInstance( getNextKey(), address, this.lifetimeMillis );
@@ -454,7 +439,7 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
             }
 
             /* stop once something has initiated a lookup for the hostname and the username */
-            if ( info.getHostnameState() != LookupState.UNITITIATED && 
+            if ( info.getHostnameState() != LookupState.UNITITIATED &&
                  info.getUsernameState() != LookupState.UNITITIATED ) {
                 break;
             }
@@ -488,15 +473,15 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
         public void work() throws InterruptedException
         {
             lookupQueue.drainTo( this.infoList );
-            
+
             /* xxxx could make this a little more intelligent, like sleep until the next object
              * is expired xxxx */
             Thread.sleep( CLEANUP_DELAY );
-            
+
             for ( Iterator<UserInfo> iter = this.infoList.iterator() ; iter.hasNext() ; ) {
                 UserInfo info = iter.next();
-                
-                /* these are inserted in order, so the first element that is not expired, 
+
+                /* these are inserted in order, so the first element that is not expired,
                  * means everything passed it is not expired, this will change once things can
                  * be expired out of order */
                 if ( !info.isExpired()) break;
@@ -505,7 +490,7 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
                 iter.remove();
 
                 InetAddress address = info.getAddress();
-                
+
                 UserInfo cachedInfo = addressMap.get( address );
                 /* nothing left to do */
                 if ( cachedInfo == null ) continue;
@@ -517,12 +502,12 @@ public class LocalPhoneBookImpl implements LocalPhoneBook
                 /* check after grabbing the lock */
                 synchronized( address.getHostAddress().intern()) {
                     cachedInfo = addressMap.get( address );
-                    
+
                     if ( cachedInfo != null && cachedInfo.isExpired()) {
                         addressMap.remove( address );
 
                         logger.debug( "logging the event: ", cachedInfo, "<", cachedInfo.hasData(), ">" );
-                        
+
                         if ( cachedInfo.hasData() && ( eventLogger != null )) {
                             eventLogger.log( new LookupLogEvent( cachedInfo ));
                         }

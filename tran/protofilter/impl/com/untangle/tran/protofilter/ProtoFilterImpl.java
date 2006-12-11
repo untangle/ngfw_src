@@ -65,8 +65,8 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
     public ProtoFilterSettings getProtoFilterSettings()
     {
-	if( this.cachedSettings == null )
-	    logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+    if( this.cachedSettings == null )
+        logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
         return this.cachedSettings;
     }
 
@@ -149,18 +149,11 @@ public class ProtoFilterImpl extends AbstractTransform implements ProtoFilter
 
     protected void preStart() throws TransformStartException
     {
-        eventLogger.start();
-
         try {
             reconfigure();
         } catch (Exception e) {
             throw new TransformStartException(e);
         }
-    }
-
-    protected void postStop()
-    {
-        eventLogger.stop();
     }
 
     private void reconfigure() throws TransformException

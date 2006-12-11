@@ -415,17 +415,6 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         return;
     }
 
-    protected void preStart()
-    {
-        eventLogger.start();
-    }
-
-    protected void postStop()
-    {
-        eventLogger.stop();
-    }
-
-
     public SpamScanner getScanner()
     {
         return scanner;

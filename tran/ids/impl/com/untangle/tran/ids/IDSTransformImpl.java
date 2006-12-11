@@ -167,7 +167,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
                 throw new TransformStartException("IDS Test failed"); // */
         }
 
-        eventLogger.start();
         statisticManager.start();
     }
 
@@ -177,7 +176,6 @@ public class IDSTransformImpl extends AbstractTransform implements IDSTransform 
 
     protected void postStop() {
         statisticManager.stop();
-        eventLogger.stop();
         engine.stop();
     }
 

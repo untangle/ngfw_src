@@ -125,7 +125,7 @@ class OpenVpnMonitor implements Runnable
         clientConnectLogger.addEventRepository(new AllEventsCache(clientConnectLogger));//For "all" events
         clientConnectLogger.addEventRepository(new ActiveEventCache(clientConnectLogger));//For "open" events
         clientConnectLogger.addSimpleEventFilter(new ClientConnectEventAllFilter());//For "closed" events
-        
+
         this.localContext = MvvmContextFactory.context();
         this.transform = transform;
     }
@@ -138,7 +138,7 @@ class OpenVpnMonitor implements Runnable
       return clientConnectLogger;
     }
 
-    
+
     /**
      * Accessor for the ClientConnectLogger, for the impl
      * to pass to the UI
@@ -147,7 +147,7 @@ class OpenVpnMonitor implements Runnable
       return vpnStatsDistLogger;
     }
 
-    
+
     /**
      * Accessor for the ClientConnectLogger, for the impl
      * to pass to the UI
@@ -155,7 +155,7 @@ class OpenVpnMonitor implements Runnable
     EventLogger<ClientDistributionEvent> getClientDistLogger() {
       return clientDistLogger;
     }
-    
+
 
     public void run()
     {
@@ -258,9 +258,6 @@ class OpenVpnMonitor implements Runnable
             return;
         }
 
-        clientConnectLogger.start();
-        vpnStatsDistLogger.start();
-        clientDistLogger.start();
         thread = this.localContext.newThread( this );
         thread.start();
     }
@@ -293,10 +290,6 @@ class OpenVpnMonitor implements Runnable
             }
             thread = null;
         }
-
-        clientConnectLogger.stop();
-        vpnStatsDistLogger.stop();
-        clientDistLogger.stop();
     }
 
     TransformStats updateStats( TransformStats stats )
@@ -702,7 +695,7 @@ class OpenVpnMonitor implements Runnable
         }
 
         public List<ClientConnectEvent> getEvents() {
-        
+
           List<ClientConnectEvent> openList =
             eventLogger.getRepository(ACTIVE_SESSIONS_REPO_NAME).getEvents();
           List<ClientConnectEvent> closedList =

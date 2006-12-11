@@ -79,16 +79,6 @@ public class HttpTransformImpl extends AbstractTransform
 
     // Transform methods ------------------------------------------------------
 
-    protected void preStart()
-    {
-        eventLogger.start();
-    }
-
-    protected void postStop()
-    {
-        eventLogger.stop();
-    }
-
     protected void postInit(String[] args)
     {
         TransactionWork tw = new TransactionWork()

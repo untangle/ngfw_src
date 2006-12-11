@@ -107,7 +107,6 @@ public class MvvmContextImpl extends MvvmContextBase
 
     private MvvmContextImpl()
     {
-        EventLoggerImpl.initSchema("mvvm");
         refreshSessionFactory();
 
         // XXX can we load all transform cl's first?
@@ -517,8 +516,9 @@ public class MvvmContextImpl extends MvvmContextBase
         cronManager = new CronManager();
         syslogManager = SyslogManagerImpl.manager();
         loggingManager = LoggingManagerImpl.loggingManager();
+        loggingManager.initSchema("mvvm");
+        loggingManager.start();
         eventLogger = EventLoggerFactory.factory().getEventLogger();
-        eventLogger.start();
 
         // Create the tomcat manager *before* the MVVM, so we can
         // "register" webapps to be started before Tomcat exists.
@@ -715,11 +715,12 @@ public class MvvmContextImpl extends MvvmContextBase
             logger.warn("could not stop tomcat", exn);
         }
 
+        eventLogger = null;
+
         try {
-            eventLogger.stop();
-            eventLogger = null;
+            loggingManager.stop();
         } catch (Exception exn) {
-            logger.error("could not stop EventLogger", exn);
+            logger.error("could not stop LoggingManager", exn);
         }
 
         try {
@@ -760,7 +761,6 @@ public class MvvmContextImpl extends MvvmContextBase
     void refreshSessionFactory()
     {
         synchronized (this) {
-            System.out.println("REMAKING SESSION FACTORY");
             sessionFactory = Util.makeSessionFactory(getClass().getClassLoader());
             transactionRunner = new TransactionRunner(sessionFactory);
         }

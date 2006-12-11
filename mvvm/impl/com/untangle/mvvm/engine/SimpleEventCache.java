@@ -57,7 +57,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
     public List<E> getEvents()
     {
         synchronized (cache) {
-            if (cold && EventLoggerImpl.isConversionComplete()) {
+            if (cold && LoggingManagerImpl.loggingManager().isConversionComplete()) {
                 warm();
             }
             return new ArrayList<E>(cache);

@@ -125,7 +125,6 @@ class PortalManagerImpl implements LocalPortalManager
         portalRealm = new PortalRealm();
 
         portalLogger = EventLoggerFactory.factory().getEventLogger();
-        portalLogger.start();
 
         addressBook = mvvmContext.appAddressBook();
 
@@ -340,8 +339,6 @@ class PortalManagerImpl implements LocalPortalManager
 
     void destroy() {
         reaper.destroy();
-        if (portalLogger != null)
-            portalLogger.stop();
     }
 
     // private methods --------------------------------------------------------

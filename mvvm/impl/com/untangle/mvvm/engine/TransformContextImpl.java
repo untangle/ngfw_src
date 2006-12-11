@@ -71,10 +71,11 @@ class TransformContextImpl implements TransformContext
                          String mackageName, boolean isNew)
         throws DeployException
     {
+        LoggingManagerImpl lm = LoggingManagerImpl.loggingManager();
         if (null != tDesc.getTransformBase()) {
-            EventLoggerImpl.initSchema(tDesc.getTransformBase());
+            lm.initSchema(tDesc.getTransformBase());
         }
-        EventLoggerImpl.initSchema(tDesc.getName());
+        lm.initSchema(tDesc.getName());
 
         this.classLoader = classLoader;
 

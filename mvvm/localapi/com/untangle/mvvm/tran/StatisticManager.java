@@ -86,8 +86,6 @@ public abstract class StatisticManager implements Runnable
     {
         isAlive = true;
 
-        eventLogger.start();
-
         logger.debug( "Starting Statistic Manager" );
 
         /* If thread is not-null, there is a running thread that thinks it is alive */
@@ -116,8 +114,6 @@ public abstract class StatisticManager implements Runnable
             }
             thread = null;
         }
-
-        eventLogger.stop();
     }
 
     protected abstract StatisticEvent getInitialStatisticEvent();

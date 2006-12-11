@@ -503,17 +503,11 @@ public abstract class VirusTransformImpl extends AbstractTransform
     protected void preStart()
     {
         virusReconfigure();
-        eventLogger.start();
     }
 
     protected void postStart()
     {
         shutdownMatchingSessions();
-    }
-
-    protected void postStop()
-    {
-        eventLogger.stop();
     }
 
     // package protected methods ----------------------------------------------

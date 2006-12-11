@@ -267,14 +267,12 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     @Override
     protected void preStart()
     {
-        eventLogger.start();
         statisticManager.start();
     }
 
     @Override
     protected void postStop()
     {
-        eventLogger.stop();
         statisticManager.stop();
     }
 

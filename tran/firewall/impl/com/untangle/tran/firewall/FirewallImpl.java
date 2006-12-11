@@ -15,10 +15,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.NetworkingConfiguration;
 import com.untangle.mvvm.localapi.SessionMatcher;
@@ -42,6 +38,9 @@ import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
 import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcher;
 import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 import com.untangle.mvvm.util.TransactionWork;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 public class FirewallImpl extends AbstractTransform implements Firewall
 {
@@ -155,8 +154,6 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
     protected void preStart() throws TransformStartException
     {
-        eventLogger.start();
-
         try {
             reconfigure();
         } catch (Exception e) {
@@ -178,8 +175,6 @@ public class FirewallImpl extends AbstractTransform implements Firewall
         shutdownMatchingSessions();
 
         statisticManager.stop();
-
-        eventLogger.stop();
     }
 
     private void reconfigure() throws TransformException
@@ -223,7 +218,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
             IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
             PortMatcherFactory pmf = PortMatcherFactory.getInstance();
             ProtocolMatcherFactory prmf = ProtocolMatcherFactory.getInstance();
-            
+
 
             /* A few sample settings */
             settings.setQuickExit( true );
