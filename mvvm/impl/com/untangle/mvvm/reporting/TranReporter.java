@@ -66,7 +66,6 @@ public class TranReporter {
 
         File imagesDir = new File(tranDir, "images");
         File globalImagesDir = new File(tranDir, "../images");
-        MvvmTransformHandler mth = new MvvmTransformHandler(null);
         Scanner scanner = null;
 
         InputStream is = tcl.getResourceAsStream("META-INF/report-files");
@@ -187,8 +186,7 @@ public class TranReporter {
                 } catch (Exception x) {
                     logger.error("Unable to summarize", x);
                 }
-            }
-            else if (type.equalsIgnoreCase("summaryGraph")) {
+            } else if (type.equalsIgnoreCase("summaryGraph")) {
                 String className = resourceOrClassname;
                 String outputName = type;
                 try {
@@ -219,8 +217,7 @@ public class TranReporter {
                     logger.error("Unable to generate summary graph", x);
                     x.printStackTrace();
                 }
-            }
-            else if (type.equalsIgnoreCase("userSummary")) {
+            } else if (type.equalsIgnoreCase("userSummary")) {
                 String resource = resourceOrClassname;
                 if (!tok.hasMoreTokens()) { continue; }
                 String reportName = tok.nextToken();
@@ -242,8 +239,7 @@ public class TranReporter {
                     userNames = getUserNames(conn, Util.lastmonth, Util.midnight);
                     processUserReports(resource, conn, userNames, reportFile, "--monthly", Util.lastmonth, Util.midnight);
                 }
-            }
-            else if (type.equalsIgnoreCase("hNameSummary")) {
+            } else if (type.equalsIgnoreCase("hNameSummary")) {
                 String resource = resourceOrClassname;
                 if (!tok.hasMoreTokens()) { continue; }
                 String reportName = tok.nextToken();
@@ -268,8 +264,7 @@ public class TranReporter {
                     hostNames = getHostNames(conn, Util.lastmonth, Util.midnight);
                     processUserReports(resource, conn, hostNames, reportFile, "--monthly", Util.lastmonth, Util.midnight);
                 }
-            }
-            else {
+            } else {
                 String resource = resourceOrClassname;
                 String outputName = type;
                 String outputFile = new File(tranDir, outputName).getCanonicalPath();
@@ -290,45 +285,7 @@ public class TranReporter {
         }
         is.close();
 
-        /*
-        // We can't use tcl.getResourceAsStream(ICON_ORG); since we don't know the path.
-        for (Enumeration e = jf.entries(); e.hasMoreElements(); ) {
-            JarEntry je = (JarEntry)e.nextElement();
-            String name = je.getName();
-            // System.out.println("Jar contains " + name);
-            if (name.endsWith(File.separator + ICON_ORG)) {
-                is = jf.getInputStream(je);
-                imagesDir.mkdir();
-                FileOutputStream fos = new FileOutputStream(new File(imagesDir, ICON_ORG));
-                byte[] buf = new byte[256];
-                int count;
-                while ((count = is.read(buf)) > 0) {
-                    fos.write(buf, 0, count);
-                }
-                fos.close();
-                is.close();
-            } else if (name.endsWith(File.separator + ICON_DESC)) {
-                is = jf.getInputStream(je);
-                imagesDir.mkdir();
-                FileOutputStream fos = new FileOutputStream(new File(imagesDir, ICON_DESC));
-                byte[] buf = new byte[256];
-                int count;
-                while ((count = is.read(buf)) > 0) {
-                    fos.write(buf, 0, count);
-                }
-                fos.close();
-                is.close();
-            }
-        }
-        */
-
-        is = tcl.getResourceAsStream("META-INF/mvvm-transform.xml");
-        XMLReader xr = XMLReaderFactory.createXMLReader();
-        xr.setContentHandler(mth);
-        xr.parse(new InputSource(is));
-        is.close();
-
-        String mktName = mth.getTransformDesc(new Tid()).getDisplayName();
+        String mktName = tctx.getTransformDesc().getDisplayName();
         // HACK O RAMA XXXXXXXXX
         if (mktName.startsWith("Untangle Reports"))
             mktName = "Untangle Platform";
