@@ -137,11 +137,11 @@ EOF
         # strip all dir seps from name b/c name is used in filename
         while read line
         do
-            echo ${line} ${line/\//} >> $REPORT_DIR/current/uname.lst
+            echo ${line} ${line//\//} >> $REPORT_DIR/current/uname.lst
         done < $REPORT_DIR/current/uname.tmp
         while read line
         do
-            echo ${line} ${line/\//} >> $REPORT_DIR/current/hname.lst
+            echo ${line} ${line//\//} >> $REPORT_DIR/current/hname.lst
         done < $REPORT_DIR/current/hname.tmp
         rm -f $REPORT_DIR/current/uname.tmp
         rm -f $REPORT_DIR/current/hname.tmp
