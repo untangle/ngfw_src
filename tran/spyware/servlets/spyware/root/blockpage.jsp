@@ -1,22 +1,7 @@
-<%@ page language="java" import="com.untangle.mvvm.client.*, com.untangle.mvvm.tran.*, com.untangle.mvvm.security.*, com.untangle.tran.spyware.*"%>
+<%@ page language="java" import="com.untangle.mvvm.*, com.untangle.mvvm.tran.*, com.untangle.mvvm.security.*, com.untangle.tran.spyware.*"%>
 
 <%
-ServletContext sc = pageContext.getServletContext();
-MvvmRemoteContext ctx = (MvvmRemoteContext)sc.getAttribute("MVVM_CONTEXT");
-if (null != ctx) {
-    try {
-        ctx.version();
-    } catch (Exception exn) {
-        ctx = null;
-    }
-}
-
-if (null == ctx) {
-    ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
-    sc.setAttribute("MVVM_CONTEXT", ctx);
-}
-
-TransformManager tman = ctx.transformManager();
+LocalTransformManager tman = MvvmContextFactory.context().transformManager();
 
 String nonce = request.getParameter("nonce");
 String tidStr = request.getParameter("tid");

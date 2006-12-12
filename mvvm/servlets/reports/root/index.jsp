@@ -2,18 +2,11 @@
 
 <%
 MvvmLocalContext mvvm = MvvmContextFactory.context();
-// XXX logins timeout
-//ServletContext sc = getServletContext();
-//MvvmRemoteContext mvvm = (MvvmRemoteContext) sc.getAttribute("mvvm");
-//if (mvvm == null) {
-//    mvvm = MvvmRemoteContextFactory.localLogin();
-//    sc.setAttribute("mvvm", mvvm);
-//}
-  ReportingManager reportingManager = mvvm.reportingManager();
+ReportingManager reportingManager = mvvm.reportingManager();
 
-  boolean reportingEnabled = reportingManager.isReportingEnabled();
-  boolean reportsAvailable = reportingManager.isReportsAvailable();
-  if (!reportsAvailable) {
+boolean reportingEnabled = reportingManager.isReportingEnabled();
+boolean reportsAvailable = reportingManager.isReportsAvailable();
+if (!reportsAvailable) {
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -250,5 +243,5 @@ to a new location.</u></p>
 </body></html>
 
 <%
-    }
+}
 %>

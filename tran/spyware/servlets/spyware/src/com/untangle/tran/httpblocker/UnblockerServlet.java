@@ -20,10 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.client.MvvmConnectException;
-import com.untangle.mvvm.client.MvvmRemoteContext;
-import com.untangle.mvvm.client.MvvmRemoteContextFactory;
 import com.untangle.mvvm.security.Tid;
+import com.untangle.mvvm.tran.LocalTransformManager;
 import com.untangle.mvvm.tran.TransformContext;
 import com.untangle.mvvm.tran.TransformManager;
 
@@ -43,22 +41,7 @@ public class UnblockerServlet extends HttpServlet
         boolean global = Boolean.parseBoolean(req.getParameter("global"));
 
         try {
-            ServletContext sc = getServletConfig().getServletContext();
-            MvvmRemoteContext ctx = (MvvmRemoteContext)sc.getAttribute("MVVM_CONTEXT");
-            if (null != ctx) {
-                try {
-                    ctx.version();
-                } catch (Exception exn) {
-                    ctx = null;
-                }
-            }
-
-            if (null == ctx) {
-                ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
-                sc.setAttribute("MVVM_CONTEXT", ctx);
-            }
-
-            TransformManager tman = ctx.transformManager();
+            LocalTransformManager tman = MvvmContextFactory.context().transformManager();
             Tid tid = new Tid(Long.parseLong(tidStr));
             TransformContext tctx = tman.transformContext(tid);
             Spyware tran = (Spyware)tctx.transform();
@@ -68,10 +51,6 @@ public class UnblockerServlet extends HttpServlet
             } else {
                 resp.getOutputStream().println("<failure/>");
             }
-        } catch (FailedLoginException exn) {
-            throw new ServletException(exn);
-        } catch (MvvmConnectException exn) {
-            throw new ServletException(exn);
         } catch (IOException exn) {
             throw new ServletException(exn);
         }

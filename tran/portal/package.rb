@@ -10,11 +10,11 @@ deps = %w(
          ).map { |f| Jars.downloadTarget(f) }
 
 ServletBuilder.new(portal, 'com.untangle.tran.portal.browser.jsp',
-                   'tran/portal/servlets/browser', deps, [],
+                   'tran/portal/servlets/browser', deps, [], [],
                    [$BuildEnv.servletcommon, 'tran/portal/common'])
 
 ServletBuilder.new(portal, 'com.untangle.tran.portal.portal.jsp',
-                   'tran/portal/servlets/portal', [], [],
+                   'tran/portal/servlets/portal', [], [], [],
                    [$BuildEnv.servletcommon, 'tran/portal/common'])
 
 deps = %w(
@@ -25,11 +25,11 @@ deps = %w(
          ).map { |f| Jars.downloadTarget(f) }
 
 ServletBuilder.new(portal, 'com.untangle.tran.portal.proxy.jsp',
-                   'tran/portal/servlets/proxy', deps, [],
+                   'tran/portal/servlets/proxy', deps, [], [],
                    [$BuildEnv.servletcommon, 'tran/portal/common'])
 
 ServletBuilder.new(portal, 'com.untangle.tran.portal.rdp.jsp',
-                   'tran/portal/servlets/rdp', [portal['gui']], [],
+                   'tran/portal/servlets/rdp', [], [portal['gui']], [],
                    [$BuildEnv.servletcommon, 'tran/portal/common'],
                    false, %w(rdp.jnlp rdp.jsp))
 
@@ -42,6 +42,6 @@ $InstallTarget.installJars(jt, portal_web, 'VncInvoker.jar', true)
 $InstallTarget.installJars(Jars.downloadTarget('tightvnc-1.2.9/classes/VncViewer.jar'), portal_web, nil, true)
 
 ServletBuilder.new(portal, 'com.untangle.tran.portal.vnc.jsp',
-                   'tran/portal/servlets/vnc', [portal['gui']], [],
+                   'tran/portal/servlets/vnc', [], [portal['gui']], [],
                    [$BuildEnv.servletcommon, 'tran/portal/common'],
                    false, %w(vnc.jnlp vnc.jsp))

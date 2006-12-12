@@ -29,7 +29,7 @@ jts << JarTarget.buildTarget(mvvm, deps, 'impl', 'mvvm/impl')
 
 # servlets
 ServletBuilder.new(mvvm, 'com.untangle.mvvm.invoker.jsp',
-                   'mvvm/servlets/http-invoker', [], [],
+                   'mvvm/servlets/http-invoker', [], [], [],
                    [$BuildEnv.servletcommon], true)
 
 deps = %w( commons-httpclient-3.0/commons-httpclient-3.0.jar
@@ -50,7 +50,7 @@ ServletBuilder.new(mvvm, "com.untangle.mvvm.user.servlet","mvvm/servlets/wmi", [
 deps = FileList["#{$BuildEnv.downloads}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
 ms = [ MoveSpec.new("#{$BuildEnv.downloads}/Ajax/WebRoot/js", '**/*', 'AjaxTk')]
 ServletBuilder.new(mvvm, 'com.untangle.mvvm.root.jsp',
-                   'mvvm/servlets/ROOT', deps, ms)
+                   'mvvm/servlets/ROOT', deps, [], ms)
 
 ajaxTkList =
   [

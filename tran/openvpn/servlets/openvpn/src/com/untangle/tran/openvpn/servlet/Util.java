@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.untangle.mvvm.client.MvvmRemoteContext;
-import com.untangle.mvvm.client.MvvmRemoteContextFactory;
+import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.security.Tid;
 import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.TransformContext;
@@ -92,21 +92,7 @@ class Util
                 /* XXX Should this be cached?? */
                 IPaddr address = IPaddr.parse( request.getRemoteAddr());
 
-                ServletContext sc = servlet.getServletConfig().getServletContext();
-                MvvmRemoteContext ctx = (MvvmRemoteContext)sc.getAttribute("MVVM_CONTEXT");
-                if (null != ctx) {
-                    try {
-                        ctx.version();
-                    } catch (Exception exn) {
-                        ctx = null;
-                    }
-                }
-
-                if (null == ctx) {
-                    ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
-                    sc.setAttribute("MVVM_CONTEXT", ctx);
-                }
-
+                MvvmLocalContext ctx = MvvmContextFactory.context();
                 Tid tid = ctx.transformManager().transformInstances( "openvpn-transform" ).get( 0 );
                 TransformContext tc = ctx.transformManager().transformContext( tid );
                 commonName = ((VpnTransform)tc.transform()).lookupClientDistributionKey( key, address );

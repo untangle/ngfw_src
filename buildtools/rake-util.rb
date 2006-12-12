@@ -489,14 +489,16 @@ class CopyFiles < Target
 end
 
 class ServletBuilder < Target
-  JspcClassPath = ['apache-ant-1.6.5/lib/ant.jar'].map { |n| "#{$BuildEnv.downloads}/#{n}" } +
-    ["#{$BuildEnv.javahome}/lib/tools.jar"];
+  JspcClassPath = ['apache-ant-1.6.5/lib/ant.jar'].map { |n|
+    "#{$BuildEnv.downloads}/#{n}"
+  } + ["#{$BuildEnv.javahome}/lib/tools.jar"];
 
-  def initialize(package, pkgname, path, libdeps = [], ms = [],
+  def initialize(package, pkgname, path, libdeps = [], trandeps = [], ms = [],
                  common = [$BuildEnv.servletcommon], requiresBootstrap = false,
                  jsp_list = nil)
     @pkgname = pkgname
     @path = path
+    @trandeps = trandeps
     @jsp_list = jsp_list
     name = File.basename(path)
     @destRoot = package.getWebappDir(name)
@@ -533,7 +535,7 @@ class ServletBuilder < Target
     end
     mvvm = Package["mvvm"]
 
-    jardeps = libdeps + Jars::Base + FileList["#{@destRoot}/WEB-INF/lib/*.jar"]
+    jardeps = libdeps + @trandeps + Jars::Base + FileList["#{@destRoot}/WEB-INF/lib/*.jar"]
     jardeps << mvvm["api"] << mvvm["localapi"]
     if requiresBootstrap
       jardeps << mvvm["bootstrap"]
@@ -561,7 +563,8 @@ class ServletBuilder < Target
     webfrag.close
 
     mvvm = Package["mvvm"]
-    cp = JspcClassPath + Jars::Base.map { |j| j.filename } +
+    cp = @trandeps.map { |j| j.filename } +
+      JspcClassPath + Jars::Base.map { |j| j.filename } +
       [mvvm["api"], mvvm["localapi"]].map { |t| t.filename } +
       Jars::Base.map {|f| f.filename }
 
