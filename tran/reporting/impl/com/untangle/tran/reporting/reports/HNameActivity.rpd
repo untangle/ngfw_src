@@ -38,8 +38,8 @@ LEFT.expr=(null != $F{hname} ? $F{hname} : "<unknown>")
 MIDDLE.expr=(null != $F{size} ? ($F{size}.doubleValue() / 1048576) : 0)
 RIGHT.expr=Math.round($F{size}.doubleValue() / $F{all_size}.doubleValue() * 100) + "%"
 
-LEFT.alltotal=Overall Total:
+LEFT.alltotal=Overall Totals:
 MIDDLE.alltotal=(null != $F{all_size} ? ($F{all_size}.doubleValue() / 1048576) : 0)
-RIGHT.alltotal="100%"
+RIGHT.alltotal=(null == $F{all_size} ? "-%" : "100%")
 
 UNIQUE_COUNT.expr=$F{hname}

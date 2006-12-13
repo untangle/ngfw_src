@@ -40,8 +40,8 @@ LEFT.expr=$F{ident}
 MIDDLE.expr=$F{count}
 RIGHT.expr=Math.round($F{count}.doubleValue() / $F{all_count}.doubleValue() * 100) + "%"
 
-LEFT.alltotal=Overall Total:
+LEFT.alltotal=Overall Totals:
 MIDDLE.alltotal=$F{all_count}
-RIGHT.alltotal="100%"
+RIGHT.alltotal=(null == $F{all_count} ? "-%" : "100%")
 
 UNIQUE_COUNT.expr=$F{ident}

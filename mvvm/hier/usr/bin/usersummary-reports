@@ -176,7 +176,7 @@ cat > $base_file <<EOF
 <!-- user content (start) -->
 EOF
 
-generate_user_content_area
+    generate_user_content_area
 
 # add separater
 cat >> $base_file <<EOF
@@ -198,7 +198,7 @@ cat >> $base_file <<EOF
 </tr>
 EOF
 
-generate_hname_content_area
+    generate_hname_content_area
 
 cat >> $base_file <<EOF
 <!-- user content (end) -->
@@ -239,26 +239,38 @@ EOF
 
 generate_user_content_area ()
 {
-ucnt=0
+    local ucnt=0
 
-while read line
-do
-if [ "${line}" = "" ]; then
-    # skip blank lines
-    continue
-fi
+    while read line
+    do
+        if [ "${line}" = "" ]; then
+            # skip blank lines
+            continue
+        fi
 
-    local UNAME=$(echo ${line} | cut -d' ' -f1)
-    local UNAME_FN=$(echo ${line} | cut -d' ' -f2)
-    local UNAMESUM_HTML=`echo ${rep_base}--${UNAME_FN}--${period}.html`
-    local UNAMESUM_PDF=`echo ${rep_base}--${UNAME_FN}--${period}.pdf`
+        local UNAME=$(echo ${line} | cut -d' ' -f1)
+        local UNAME_FN=$(echo ${line} | cut -d' ' -f2)
+        local UNAMESUM_HTML=`echo ${rep_base}--${UNAME_FN}--${period}.html`
+        local UNAMESUM_PDF=`echo ${rep_base}--${UNAME_FN}--${period}.pdf`
 
-if [ "$generate_email_index" = true ]; then
-    if [ ! -f ${tran_dir}/${UNAMESUM_PDF} ] ; then
-        # for this time period, no data was associated with this username
-        # (no report was generated) so skip username
-        continue
-    fi
+        # XXX hack
+        # if this report has any data associated with this username,
+        # it'll contain the ">100%<" char sequence (at least one copy)
+        # (this test also implicitly checks that the html/pdf reports exists)
+        # grep exit status: 0=match, 1=no match, 2=error (no file)
+        grep ">100%<" ${tran_dir}/${UNAMESUM_HTML} > /dev/null 2>&1
+        local gstat=$?
+        if [ $gstat == 1 ]; then
+            # no data
+            rm -f ${tran_dir}/${UNAMESUM_HTML}
+            rm -f ${tran_dir}/${UNAMESUM_PDF}
+            continue
+        elif [ $gstat == 2 ]; then
+            # no file
+            continue
+        fi
+
+        if [ "$generate_email_index" = true ]; then
 
 cat >> $base_file <<EOF
 <tr valign=top>
@@ -269,12 +281,7 @@ cat >> $base_file <<EOF
 </tr>
 EOF
 
-else
-    if [ ! -f ${tran_dir}/${UNAMESUM_HTML} ] ; then
-        # for this time period, no data was associated with this username
-        # (no report was generated) so skip username
-        continue
-    fi
+        else
 
 cat >> $base_file <<EOF
 <tr valign=top>
@@ -285,13 +292,13 @@ cat >> $base_file <<EOF
 </tr>
 EOF
 
-fi
+        fi
 
-ucnt=$((ucnt+1))
+        ucnt=$((ucnt+1))
 
-done < $base_dir/uname.lst
+    done < $base_dir/uname.lst
 
-if (( ucnt == 0 )); then
+    if (( ucnt == 0 )); then
 
 cat >> $base_file <<EOF
 <tr valign=top>
@@ -303,31 +310,43 @@ cat >> $base_file <<EOF
 </tr>
 EOF
 
-fi
+    fi
 }
 
 generate_hname_content_area ()
 {
-hcnt=0
+    local hcnt=0
 
-while read line
-do
-if [ "${line}" = "" ]; then
-    # skip blank lines
-    continue
-fi
+    while read line
+    do
+        if [ "${line}" = "" ]; then
+            # skip blank lines
+            continue
+        fi
 
-    local HNAME=$(echo ${line} | cut -d' ' -f1)
-    local HNAME_FN=$(echo ${line} | cut -d' ' -f2)
-    local HNAMESUM_HTML=`echo ${rep_base}--${HNAME_FN}--${period}.html`
-    local HNAMESUM_PDF=`echo ${rep_base}--${HNAME_FN}--${period}.pdf`
+        local HNAME=$(echo ${line} | cut -d' ' -f1)
+        local HNAME_FN=$(echo ${line} | cut -d' ' -f2)
+        local HNAMESUM_HTML=`echo ${rep_base}--${HNAME_FN}--${period}.html`
+        local HNAMESUM_PDF=`echo ${rep_base}--${HNAME_FN}--${period}.pdf`
 
-if [ "$generate_email_index" = true ]; then
-    if [ ! -f ${tran_dir}/${HNAMESUM_PDF} ] ; then
-        # for this time period, no data was associated with this hostname
-        # (no report was generated) so skip hostname
-        continue
-    fi
+        # XXX hack
+        # if this report has any data associated with this hostname,
+        # it'll contain the ">100%<" char sequence (at least one copy)
+        # (this test also implicitly checks that the html/pdf reports exists)
+        # grep exit status: 0=match, 1=no match, 2=error (no file)
+        grep ">100%<" ${tran_dir}/${HNAMESUM_HTML} > /dev/null 2>&1
+        local gstat=$?
+        if [ $gstat == 1 ]; then
+            # no data
+            rm -f ${tran_dir}/${HNAMESUM_HTML}
+            rm -f ${tran_dir}/${HNAMESUM_PDF}
+            continue
+        elif [ $gstat == 2 ]; then
+            # no file
+            continue
+        fi
+
+        if [ "$generate_email_index" = true ]; then
 
 cat >> $base_file <<EOF
 <tr valign=top>
@@ -338,12 +357,7 @@ cat >> $base_file <<EOF
 </tr>
 EOF
 
-else
-    if [ ! -f ${tran_dir}/${HNAMESUM_HTML} ] ; then
-        # for this time period, no data was associated with this hostname
-        # (no report was generated) so skip hostname
-        continue
-    fi
+        else
 
 cat >> $base_file <<EOF
 <tr valign=top>
@@ -354,13 +368,13 @@ cat >> $base_file <<EOF
 </tr>
 EOF
 
-fi
+        fi
 
-hcnt=$((hcnt+1))
+        hcnt=$((hcnt+1))
 
-done < $base_dir/hname.lst
+    done < $base_dir/hname.lst
 
-if (( hcnt == 0 )); then
+    if (( hcnt == 0 )); then
 
 cat >> $base_file <<EOF
 <tr valign=top>
@@ -372,7 +386,7 @@ cat >> $base_file <<EOF
 </tr>
 EOF
 
-fi
+    fi
 }
 
 generate_page

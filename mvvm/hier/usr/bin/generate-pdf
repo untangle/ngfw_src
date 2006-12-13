@@ -272,6 +272,7 @@ function generateUserSummary()
         if [ ! -f ${t_baseDir}/${UNAMESUM_PDF} ] ; then
             # for this time period, no data was associated with this username
             # (no report was generated) so skip username
+            # (depends on usersummary-reports executing before generate-pdf)
             continue
         fi
 
@@ -301,6 +302,7 @@ function generateUserSummary()
         if [ ! -f ${t_baseDir}/${HNAMESUM_PDF} ] ; then
             # for this time period, no data was associated with this hostname
             # (no report was generated) so skip hostname
+            # (depends on usersummary-reports executing before generate-pdf)
             continue
         fi
 

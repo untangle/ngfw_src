@@ -53,8 +53,8 @@ LEFT.total=Top @REPORT_MAX_LENGTH@ Totals:
 MIDDLE.total=(null != $F{top_size} ? ($F{top_size}.doubleValue() / 1048576) : 0)
 RIGHT.total=(null != $F{top_size} ? Math.round($F{top_size}.doubleValue() / $F{all_size}.doubleValue() * 100) + "%" : "100%")
 
-LEFT.alltotal=Overall Total:
+LEFT.alltotal=Overall Totals:
 MIDDLE.alltotal=(null != $F{all_size} ? ($F{all_size}.doubleValue() / 1048576) : 0)
-RIGHT.alltotal="100%"
+RIGHT.alltotal=(null == $F{all_size} ? "-%" : "100%")
 
 UNIQUE_COUNT.expr=$F{name}

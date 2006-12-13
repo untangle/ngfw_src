@@ -50,9 +50,9 @@ LEFTMID.expr=(null != $F{count} ? $F{count} + "" : "0")
 MIDDLE.expr=(null != $F{size} ? ($F{size}.doubleValue() / 1048576) : 0)
 RIGHT.expr=Math.round($F{size}.doubleValue() / $F{all_size}.doubleValue() * 100) + "%"
 
-LEFT.alltotal=Overall Total:
+LEFT.alltotal=Overall Totals:
 LEFTMID.alltotal=(null != $F{all_count} ? $F{all_count} + "" : "0")
 MIDDLE.alltotal=(null != $F{all_size} ? ($F{all_size}.doubleValue() / 1048576) : 0)
-RIGHT.alltotal="100%"
+RIGHT.alltotal=(null == $F{all_count} ? "-%" : "100%")
 
 UNIQUE_COUNT.expr=$F{protocol}
