@@ -277,9 +277,7 @@ int netcap_interface_is_broadcast ( in_addr_t addr, int index )
             }
 
             for( d = 0 ; ( info->data != NULL ) && ( d < info->data_count ) ; d++ ) {
-                in_addr_t broadcast = info->data[d].broadcast.s_addr;
-                in_addr_t netmask   = info->data[d].netmask.s_addr;
-                if (( addr == broadcast ) || ( addr & ~netmask ) == ( broadcast & ~netmask )) return 1;
+                if ( addr == info->data[d].broadcast.s_addr ) return 1;
             }
         }
     } else {
@@ -293,9 +291,7 @@ int netcap_interface_is_broadcast ( in_addr_t addr, int index )
         if (( !info->is_valid ) || ( info->data_count <= 0 ) || ( info->data == NULL )) return 0;
 
         for( d = 0 ; ( info->data != NULL ) && ( d < info->data_count ) ; d++ ) {
-            in_addr_t broadcast = info->data[d].broadcast.s_addr;
-            in_addr_t netmask   = info->data[d].netmask.s_addr;
-            if (( addr == broadcast ) || ( addr & ~netmask ) == ( broadcast & ~netmask )) return 1;
+            if ( addr == info->data[d].broadcast.s_addr ) return 1;
         }
     }
     return 0;
