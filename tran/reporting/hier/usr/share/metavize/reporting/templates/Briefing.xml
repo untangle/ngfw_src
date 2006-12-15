@@ -118,7 +118,10 @@
               </anchor>
             </if>
             <else>
-              <!-- the "top" user summary report is not a pre-generated pdf file
+              <!-- although the "top" user summary reports are pre-generated,
+                   we don't use them
+                   because the anchors in the pre-generated pdf files
+                   cannot be merged into another this pdf file
                    (for more info, see DetailedReport.xml)
                -->
               <anchor reference='${"#"+ row.userSummaryLink}'>
@@ -139,6 +142,16 @@
       To receive detailed reports enable "Include Incident Lists in
       Emails" in the "Generation Settings" tab of Untangle Reports.
     </paragraph>
+
+    <!-- Iterate all of the detailed reports and
+         if there is a summary page (not user summary),
+         then also include this page in the briefing
+     -->
+    <foreach sequence="${detailed}" loop-variable="row">
+      <if cond="${row.description == 'Summary'}">
+        <insert-document source="${pdfDirectory + row.filename}"/>
+      </if>
+    </foreach>
   </else>
 
   <!-- Clear the header, leave the footer for the page numbers -->
