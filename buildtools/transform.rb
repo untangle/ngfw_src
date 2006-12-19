@@ -75,7 +75,7 @@ class TransformBuilder
 
     jt = JarTarget.buildTarget(transform, deps, "impl", directories)
 
-    $InstallTarget.installJars(jt, "#{transform.distDirectory}/usr/share/metavize/toolbox")
+    $InstallTarget.installJars(jt, "#{transform.distDirectory}/usr/share/metavize/toolbox", nil, false, true)
 
     ## Only create the GUI api if there are files for the GUI
     if (FileList["tran/#{name}/gui/**/*.java"].length > 0)

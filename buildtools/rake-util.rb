@@ -177,6 +177,18 @@ class JavaCompiler
     dst
   end
 
+  def JavaCompiler.unjar(jt, dest)
+    ensureDirectory(dest)
+    src = File.expand_path(jt.jarFile)
+
+    info "UnJar #{src} -> #{dest}"
+    wd = Dir.pwd
+    Dir.chdir(dest)
+    raise "unjar failed" unless  Kernel.system(JarCommand, "xf", src)
+    Dir.chdir(wd)
+    dest
+  end
+
   def JavaCompiler.jarSigner(jar, keystore, aliaz, storepass)
     raise "JarSigner failed" unless
       Kernel.system(JarSignerCommand, '-keystore', keystore, '-storepass', storepass, jar, aliaz)
@@ -401,16 +413,27 @@ class InstallTarget < Target
     registerInstallTargets(is)
   end
 
-  def installJars(jarTargets, dest, name = nil, sign = false)
-    is = []
+  def installJars(jarTargets, dest, name = nil, sign = false, explode = false)
 
-    [jarTargets].flatten.each do |jt|
-      is << MoveSpec.fileMove(jt.filename, dest, name)
-    end
+    if (explode) then
+      [jarTargets].flatten.each do |jt|
+        d = "#{dest}/#{File.basename(jt.filename, '.jar')}"
+        file d => jt.filename do
+          JavaCompiler.unjar(jt, d)
+        end
+        stamptask self => d
+      end
+    else
+      is = []
 
-    registerInstallTargets(is) do |f|
-      if sign
-        JavaCompiler.jarSigner(f, 'gui/keystore', 'key', 'ohF3deeTjai7Thic')
+      [jarTargets].flatten.each do |jt|
+        is << MoveSpec.fileMove(jt.filename, dest, name)
+      end
+
+      registerInstallTargets(is) do |f|
+        if sign
+          JavaCompiler.jarSigner(f, 'gui/keystore', 'key', 'ohF3deeTjai7Thic')
+        end
       end
     end
   end

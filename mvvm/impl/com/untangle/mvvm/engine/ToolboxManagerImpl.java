@@ -477,7 +477,7 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         try {
             return new URL[]
-                { new URL(TOOLBOX_URL, tranName + "-impl.jar") };
+                { new URL(TOOLBOX_URL, tranName + "-impl/") };
         } catch (MalformedURLException exn) {
             logger.warn(exn); /* should never happen */
             return null;
