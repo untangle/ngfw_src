@@ -285,7 +285,7 @@ class Package
       raise "Target #{name} registered twice" if (@targets[name] != nil)
 
       ## Make the package depend on the target
-      task self => target
+      stamptask self => target
 
       ## Insert the package into the hash
       @targets[name] = target
@@ -383,6 +383,7 @@ end
 class InstallTarget < Target
   def initialize(package, deps, targetName)
     super(package, deps, targetName)
+    @targetName=targetName
   end
 
   def registerInstallTargets(movespecs)
@@ -436,6 +437,10 @@ class InstallTarget < Target
         end
       end
     end
+  end
+
+  def to_s
+    "install-target:#{@targetName}"
   end
 end
 
