@@ -510,7 +510,7 @@ class TransformManagerImpl implements LocalTransformManager
 
         for (TransformPersistentState tps : unloaded) {
             String name = tps.getName();
-            URL[] urls = tbm.resources(name);
+            URL[] urls = new URL[] { tbm.getResourceDir(name) };
             Tid tid = tps.getTid();
             tid.setTransformName(name);
             MackageDesc md = tbm.mackageDesc(name);
@@ -561,7 +561,7 @@ class TransformManagerImpl implements LocalTransformManager
 
         ToolboxManagerImpl tbm = (ToolboxManagerImpl)mctx.toolboxManager();
 
-        URL[] resUrls = tbm.resources(transformName);
+        URL[] resUrls = new URL[] { tbm.getResourceDir(transformName) };
 
         MackageDesc mackageDesc = tbm.mackageDesc(transformName);
         if ((mackageDesc.isService() || mackageDesc.isUtil() || mackageDesc.isCore())

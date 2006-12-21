@@ -473,11 +473,10 @@ class ToolboxManagerImpl implements ToolboxManager
 
     // package private methods ------------------------------------------------
 
-    URL[] resources(String tranName)
+    URL getResourceDir(String tranName)
     {
         try {
-            return new URL[]
-                { new URL(TOOLBOX_URL, tranName + "-impl/") };
+            return new URL(TOOLBOX_URL, tranName + "-impl/");
         } catch (MalformedURLException exn) {
             logger.warn(exn); /* should never happen */
             return null;
