@@ -11,6 +11,8 @@
 
 package com.untangle.mvvm.tran;
 
+import java.io.InputStream;
+
 import com.untangle.mvvm.security.Tid;
 import com.untangle.mvvm.tapi.IPSessionDesc;
 import com.untangle.mvvm.toolbox.MackageDesc;
@@ -59,9 +61,15 @@ public interface TransformContext
      */
     MackageDesc getMackageDesc();
 
+    // XXX should be LocalTransformContext ------------------------------------
+
+    // XXX
     boolean runTransaction(TransactionWork tw);
 
+    // XXX
     ClassLoader getClassLoader();
+
+    InputStream getResourceAsStream(String resource);
 
     // call-through methods ---------------------------------------------------
 

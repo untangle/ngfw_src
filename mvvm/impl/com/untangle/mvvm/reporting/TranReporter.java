@@ -45,7 +45,7 @@ public class TranReporter {
 
     private final TransformContext tctx;
     private final String tranName;
-    private final ClassLoader tcl;
+
     private final Settings settings;
     private final File tranDir;
 
@@ -57,7 +57,6 @@ public class TranReporter {
         this.settings = settings;
         this.tranName = tctx.getTransformDesc().getName();
         this.tranDir = new File(outputDir, tranName);
-        this.tcl = tctx.getClassLoader();
     }
 
     public void process(Connection conn) throws Exception
@@ -68,7 +67,7 @@ public class TranReporter {
         File globalImagesDir = new File(tranDir, "../images");
         Scanner scanner = null;
 
-        InputStream is = tcl.getResourceAsStream("META-INF/report-files");
+        InputStream is = tctx.getResourceAsStream("META-INF/report-files");
         if (null == is) {
             logger.warn("No reports for: " + tranName);
             return;
@@ -96,7 +95,7 @@ public class TranReporter {
             }
             else if (type.equalsIgnoreCase("scanner")) {
                 try {
-                    Class scannerClass = tcl.loadClass(resourceOrClassname);
+                    Class scannerClass = getClass().getClassLoader().loadClass(resourceOrClassname);
                     scanner = (Scanner) scannerClass.newInstance();
                 } catch (Exception x) {
                     logger.warn("No such class: " + resourceOrClassname);
@@ -114,7 +113,7 @@ public class TranReporter {
         String tname = tctx.getTransformDesc().getClassName().replace('.', '/');
         String rdir = tname.substring(0, tname.lastIndexOf("/")) + "/gui/";
 
-        is = tcl.getResourceAsStream(rdir + ICON_ORG);
+        is = tctx.getResourceAsStream(rdir + ICON_ORG);
         if (is == null) {
             logger.warn("No icon_org for: " + rdir + ICON_ORG);
         } else {
@@ -128,7 +127,7 @@ public class TranReporter {
             fos.close();
             is.close();
         }
-        is = tcl.getResourceAsStream(rdir + ICON_DESC);
+        is = tctx.getResourceAsStream(rdir + ICON_DESC);
         if (is == null) {
             logger.warn("No icon_desc for: " + rdir + ICON_DESC);
         } else {
@@ -144,7 +143,7 @@ public class TranReporter {
         }
 
         // Now do everything else.
-        is = tcl.getResourceAsStream("META-INF/report-files");
+        is = tctx.getResourceAsStream("META-INF/report-files");
         br = new BufferedReader(new InputStreamReader(is));
         for (String line = br.readLine(); null != line; line = br.readLine()) {
             if (line.startsWith("#"))
@@ -160,7 +159,7 @@ public class TranReporter {
             } else if (type.equalsIgnoreCase("summarizer")) {
                 String className = resourceOrClassname;
                 try {
-                    Class reportClass = tcl.loadClass(className);
+                    Class reportClass = getClass().getClassLoader().loadClass(className);
                     ReportSummarizer reportSummarizer;
 
                     if (true == settings.getDaily()) {
@@ -190,7 +189,7 @@ public class TranReporter {
                 String className = resourceOrClassname;
                 String outputName = type;
                 try {
-                    Class reportClass = tcl.loadClass(className);
+                    Class reportClass = getClass().getClassLoader().loadClass(className);
                     ReportGraph reportGraph;
                     String name = tok.nextToken();
                     reportGraph = (ReportGraph) reportClass.newInstance();
@@ -296,7 +295,7 @@ public class TranReporter {
         pw.close();
 
         logger.debug("copying report-files");
-        is = tcl.getResourceAsStream("META-INF/report-files");
+        is = tctx.getResourceAsStream("META-INF/report-files");
         br = new BufferedReader(new InputStreamReader(is));
         fos = new FileOutputStream(new File(tranDir, "report-files"));
         pw = new PrintWriter(fos);
@@ -421,7 +420,7 @@ public class TranReporter {
             // JasperReports automatically adds quotes to this literal value
             params.put("userName", userName);
 
-            InputStream jasperIs = tcl.getResourceAsStream(resource);
+            InputStream jasperIs = tctx.getResourceAsStream(resource);
             if (null == jasperIs) {
                 logger.warn("No such resource: " + resource);
                 return;
@@ -453,7 +452,7 @@ public class TranReporter {
     {
         logger.debug("From: " + startTime + " To: " + endTime);
 
-        InputStream jasperIs = tcl.getResourceAsStream(resource);
+        InputStream jasperIs = tctx.getResourceAsStream(resource);
         if (null == jasperIs) {
             logger.warn("No such resource: " + resource);
             return;

@@ -11,9 +11,15 @@
 
 package com.untangle.mvvm.engine;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.lang.IllegalAccessException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashSet;
@@ -235,13 +241,6 @@ class TransformContextImpl implements TransformContext
         return toolboxManager.mackageDesc(mackageName);
     }
 
-    // XXX remove this method...
-    @Deprecated
-    public boolean runTransaction(TransactionWork tw)
-    {
-        return MvvmContextFactory.context().runTransaction(tw);
-    }
-
     public Transform transform()
     {
         return transform;
@@ -265,10 +264,38 @@ class TransformContextImpl implements TransformContext
         return transform.getStats();
     }
 
+    // XXX should be LocalTransformContext ------------------------------------
+
     public URLClassLoader getClassLoader()
     {
         return classLoader;
     }
+
+    // XXX remove this method...
+    @Deprecated
+    public boolean runTransaction(TransactionWork tw)
+    {
+        return MvvmContextFactory.context().runTransaction(tw);
+    }
+
+    public InputStream getResourceAsStream(String res)
+    {
+        try {
+            URL url = new URL(toolboxManager.getResourceDir(mackageName), res);
+            File f = new File(url.toURI());
+            return new FileInputStream(f);
+        } catch (MalformedURLException exn) {
+            logger.warn("could not not be found: " + res, exn);
+            return null;
+        } catch (URISyntaxException exn) {
+            logger.warn("could not not be found: " + res, exn);
+            return null;
+        } catch (FileNotFoundException exn) {
+            logger.warn("could not not be found: " + res, exn);
+            return null;
+        }
+    }
+
 
     // package private methods ------------------------------------------------
 
