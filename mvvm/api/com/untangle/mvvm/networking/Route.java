@@ -58,7 +58,7 @@ public class Route extends Rule
      * be supported until =RELEASE3.3=.
      */
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="network_space", nullable=false)
+    @JoinColumn(name="network_space")
     public NetworkSpace getNetworkSpace()
     {
         return this.networkSpace;
