@@ -44,6 +44,9 @@ end
 task :devel => [Package['install']]
 $InstallTarget = InstallTarget.new(Package['install'], [Package['mvvm'], Package['untangle-client'], Package['tran']], 'install')
 
+task :devel => $InstallTarget
+
+
 # See rake-util.rb, we check the arguments for "pkgs"
 task :pkgs => Package['install'] do
   FileList['./debian/**/etc/init.d/*'].each do |f|
