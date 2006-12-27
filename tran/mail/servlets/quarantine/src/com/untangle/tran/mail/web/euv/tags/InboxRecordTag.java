@@ -24,12 +24,13 @@ public final class InboxRecordTag
 
   private static final String INBOX_RECORD_PS_KEY = "untangle.inbox_record";
 
-  public static final String MID_PROP = "mid";
-  public static final String FROM_PROP = "from";
-  public static final String SUBJECT_PROP = "subject";
-  public static final String SCORE_PROP = "detail";
-  public static final String DATE_PROP = "idate";
-  public static final String SIZE_PROP = "size";
+  public static final String MAILID_PROP = "mailId";
+  public static final String SENDER_PROP = "sender";
+  public static final String TSENDER_PROP = "tsender"; // truncated
+  public static final String TSUBJECT_PROP = "tsubject"; // truncated
+  public static final String FSCORE_PROP = "fdetail"; // formatted
+  public static final String FDATE_PROP = "fdate"; // formatted
+  public static final String FSIZE_PROP = "fsize"; // formatted
 
   private String m_propName;
   private boolean m_jsEscape = true;
@@ -61,22 +62,25 @@ public final class InboxRecordTag
       return null;
     }
     name = name.trim().toLowerCase();
-    if(name.equals(MID_PROP)) {
+    if(name.equals(MAILID_PROP)) {
       return record.getMailID();
     }
-    if(name.equals(FROM_PROP)) {
+    if(name.equals(SENDER_PROP)) {
+      return record.getMailSummary().getSender();
+    }
+    if(name.equals(TSENDER_PROP)) {
       return record.getMailSummary().getTruncatedSender();
     }
-    if(name.equals(SUBJECT_PROP)) {
+    if(name.equals(TSUBJECT_PROP)) {
       return record.getMailSummary().getTruncatedSubject();
     }
-    if(name.equals(SCORE_PROP)) {
+    if(name.equals(FSCORE_PROP)) {
         return record.getMailSummary().getFormattedQuarantineDetail();
     }
-    if(name.equals(DATE_PROP)) {
+    if(name.equals(FDATE_PROP)) {
         return record.getFormattedDate();
     }
-    if(name.equals(SIZE_PROP)) {
+    if(name.equals(FSIZE_PROP)) {
         return record.getFormattedSize();
     }
     return null;          

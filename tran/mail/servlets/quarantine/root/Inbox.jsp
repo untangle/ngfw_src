@@ -353,14 +353,14 @@
                           <tr class="<quarantine:oddEven even="even" odd="odd"/>">
                             <th scope="row">
                               <input type="checkbox"
-                                name="<quarantine:constants keyName="mid"/>"
+                                name="<quarantine:constants keyName="mailId"/>"
                                 onclick="uncheckMaster()"
-                                value="<quarantine:inboxRecord prop="mid"/>"/>
+                                value="<quarantine:inboxRecord prop="mailId"/>"/>
                             </th>
                             <td>
-                              <quarantine:inboxRecord prop="from" JSEscape="true"/>
+                              <quarantine:inboxRecord prop="tsender" JSEscape="true"/>
                               <quarantine:hasSafelist includeIfTrue="true">
-                                <a href="/quarantine/manageuser?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="sladd"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="true"/>&<quarantine:constants keyName="sort"/>=<quarantine:pagnationProperties propName="sorting"/>&<quarantine:constants keyName="ascend"/>=<quarantine:pagnationProperties propName="ascending"/>&<quarantine:constants keyName="first"/>=<quarantine:pagnationProperties propName="thisId"/>&<quarantine:constants keyName="sladdr"/>=<quarantine:inboxRecord prop="from"/>">(Safelist)</a>
+                                <a href="/quarantine/manageuser?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="sladd"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="true"/>&<quarantine:constants keyName="sort"/>=<quarantine:pagnationProperties propName="sorting"/>&<quarantine:constants keyName="ascend"/>=<quarantine:pagnationProperties propName="ascending"/>&<quarantine:constants keyName="first"/>=<quarantine:pagnationProperties propName="thisId"/>&<quarantine:constants keyName="sladdr"/>=<quarantine:inboxRecord prop="sender"/>">(Safelist)</a>
                               </quarantine:hasSafelist>
                             </td>
                             <quarantine:hasAttachments includeIfTrue="true">
@@ -369,10 +369,10 @@
                             <quarantine:hasAttachments includeIfTrue="false">
                               <td><!--<img src="images/no_attach.png" height="16px" width="16px"/>--></td>
                             </quarantine:hasAttachments>
-                            <td><quarantine:inboxRecord prop="detail" JSEscape="true"/></td>
-                            <td><quarantine:inboxRecord prop="subject" JSEscape="true"/></td>
-                            <td><quarantine:inboxRecord prop="idate" JSEscape="true"/></td>
-                            <td><quarantine:inboxRecord prop="size" JSEscape="true"/></td>
+                            <td><quarantine:inboxRecord prop="fdetail" JSEscape="true"/></td>
+                            <td><quarantine:inboxRecord prop="tsubject" JSEscape="true"/></td>
+                            <td><quarantine:inboxRecord prop="fdate" JSEscape="true"/></td>
+                            <td><quarantine:inboxRecord prop="fsize" JSEscape="true"/></td>
                           </tr>
                         </quarantine:forEachInboxRecord>
                       </tbody>
