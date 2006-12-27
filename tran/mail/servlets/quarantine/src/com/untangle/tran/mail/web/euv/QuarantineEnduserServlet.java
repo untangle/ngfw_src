@@ -16,11 +16,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
+import com.untangle.mvvm.client.MvvmRemoteContext;
+import com.untangle.mvvm.client.MvvmRemoteContextFactory;
 import com.untangle.mvvm.security.Tid;
 import com.untangle.mvvm.tran.TransformContext;
 import com.untangle.tran.mail.papi.MailTransform;
+import com.untangle.tran.mail.papi.quarantine.QuarantineSettings;
 import com.untangle.tran.mail.papi.quarantine.QuarantineUserView;
 import com.untangle.tran.mail.papi.safelist.SafelistEndUserView;
 import org.apache.log4j.Logger;
@@ -37,6 +38,7 @@ public class QuarantineEnduserServlet
     private final Logger m_logger = Logger.getLogger(QuarantineEnduserServlet.class);
 
     private static QuarantineEnduserServlet s_instance;
+    private MailTransform m_mailTransform;
     private QuarantineUserView m_quarantine;
     private SafelistEndUserView m_safelist;
     private Exception m_ex;
@@ -45,8 +47,7 @@ public class QuarantineEnduserServlet
         assignInstance(this);
     }
 
-    protected void service(HttpServletRequest req,
-                           HttpServletResponse resp)
+    protected void service(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
 
         resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Not Found");
@@ -73,7 +74,15 @@ public class QuarantineEnduserServlet
         if(m_safelist == null) {
             initRemoteRefs();
         }
-
+        else {
+            try {
+                m_safelist.test();
+            }
+            catch(Exception ex) {
+                m_logger.warn("SafelistEndUserView reference is stale.  Recreating (once)", ex);
+                initRemoteRefs();
+            }
+        }
         return m_safelist;
     }
 
@@ -88,10 +97,39 @@ public class QuarantineEnduserServlet
      * @return the Quarantine.
      */
     public QuarantineUserView getQuarantine() {
-        if (m_quarantine == null) {
+        if(m_quarantine == null) {
             initRemoteRefs();
         }
+        else {
+            try {
+                m_quarantine.test();
+            }
+            catch(Exception ex) {
+                m_logger.warn("QuarantineUserView reference is stale.  Recreating (once)", ex);
+                initRemoteRefs();
+            }
+        }
         return m_quarantine;
+    }
+
+    public String getMaxDaysToIntern() {
+        if (null == m_mailTransform) {
+            initRemoteRefs();
+        }
+        QuarantineSettings qSettings = m_mailTransform.getMailTransformSettings().getQuarantineSettings();
+        String maxDaysToIntern = new Long(qSettings.getMaxMailIntern() / QuarantineSettings.DAY).toString();
+        //m_logger.info("maxDaysToIntern: " + maxDaysToIntern);
+        return maxDaysToIntern;
+    }
+
+    public String getMaxDaysIdleInbox() {
+        if (null == m_mailTransform) {
+            initRemoteRefs();
+        }
+        QuarantineSettings qSettings = m_mailTransform.getMailTransformSettings().getQuarantineSettings();
+        String maxDaysIdleInbox = new Long(qSettings.getMaxIdleInbox() / QuarantineSettings.DAY).toString();
+        //m_logger.info("maxDaysIdleInbox: " + maxDaysIdleInbox);
+        return maxDaysIdleInbox;
     }
 
     /**
@@ -99,22 +137,24 @@ public class QuarantineEnduserServlet
      */
     private void initRemoteRefs() {
         try {
-            MvvmLocalContext ctx = MvvmContextFactory.context();
+            MvvmRemoteContext ctx = MvvmRemoteContextFactory.factory().systemLogin(0, Thread.currentThread().getContextClassLoader());
             Tid tid = ctx.transformManager().transformInstances("mail-casing").get(0);
             TransformContext tc = ctx.transformManager().transformContext(tid);
             MailTransform mt = (MailTransform) tc.transform();
-            m_quarantine =  mt.getQuarantineUserView();
+            m_mailTransform = mt;
+            QuarantineSettings m_qSettings = mt.getMailTransformSettings().getQuarantineSettings();
+
+            m_quarantine = mt.getQuarantineUserView();
             m_safelist = mt.getSafelistEndUserView();
-        } catch(Exception ex) {
+        }
+        catch(Exception ex) {
             m_logger.error("Unable to create reference to Quarantine/Safelist", ex);
         }
     }
 
-
     private static synchronized void assignInstance(QuarantineEnduserServlet servlet) {
-        if (s_instance == null) {
+        if(s_instance == null) {
             s_instance = servlet;
         }
     }
-
 }

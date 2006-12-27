@@ -169,7 +169,7 @@
       <quarantine:isRemapped includeIfTrue="false">
         <!-- INTRO MESSAGE -->
         The emails listed below have been quarantined by the Untangle Server.
-        These emails will be deleted automatically after 20 days.
+        These emails will be deleted automatically after <quarantine:maxDaysToIntern/> days.
         <br><br>
         To release any email from the quarantine and deliver the email to your inbox,
         click the checkboxes for one or more emails and click <code>Release</code>.

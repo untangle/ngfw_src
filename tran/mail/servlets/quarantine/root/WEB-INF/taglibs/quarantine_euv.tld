@@ -9,6 +9,7 @@
  *
  * $Id$
 -->
+<!-- Used by quarantine servlets -->
 
 <!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN" 
 "http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_2.dtd">
@@ -18,8 +19,6 @@
   <jspversion>1.1</jspversion>
   <shortname>quar_end_user</shortname>
   <info>Quarantine End User Application Tag library</info>
-
-
 
   <!--
     Tag used to iterate over a set of messages.  Messages
@@ -229,14 +228,30 @@
     </attribute>  
   </tag>    
   
-
-
   <!--
     Tag outputs the current email address, or null if not set
   -->
   <tag>
     <name>currentAddress</name>
     <tagclass>com.untangle.tran.mail.web.euv.tags.CurrentEmailAddressTag</tagclass>
+    <bodycontent>empty</bodycontent>
+  </tag>
+
+  <!--
+    Tag outputs the max days an inbox record can be interned, or null if not set
+  -->
+  <tag>
+    <name>maxDaysToIntern</name>
+    <tagclass>com.untangle.tran.mail.web.euv.tags.MaxDaysToInternTag</tagclass>
+    <bodycontent>empty</bodycontent>
+  </tag>
+
+  <!--
+    Tag outputs the max days an inbox can remain idle, or null if not set
+  -->
+  <tag>
+    <name>maxDaysIdleInbox</name>
+    <tagclass>com.untangle.tran.mail.web.euv.tags.MaxDaysIdleInboxTag</tagclass>
     <bodycontent>empty</bodycontent>
   </tag>
 
@@ -329,12 +344,6 @@
     </attribute>       
   </tag>
 
-
-
-
-
-
-  
 <!--   For remapping -->
 
   <tag>
@@ -387,8 +396,6 @@
     </attribute>    
   </tag>
 
-
-
   <!-- Rows Per Page "RPP" stuff -->
 
   <!--
@@ -425,5 +432,4 @@
     </attribute>      
   </tag>  
    
-  
 </taglib>

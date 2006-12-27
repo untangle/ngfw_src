@@ -39,13 +39,13 @@ public class QuarantineSettings implements Serializable {
 
     private static final long serialVersionUID = -4387806670497574999L;
 
-    public static final long HOUR = 1000*60*60;
-    public static final long DAY = HOUR*24;
-    public static final long WEEK = DAY*7;
+    public static final long HOUR = 1000L*60L*60L; // millisecs per hour
+    public static final long DAY = HOUR*24L; // millisecs per day
+    public static final long WEEK = DAY*7L; // millisecs per week
 
     private Long m_id;
-    private long m_maxMailIntern = 2*WEEK;
-    private long m_maxIdleInbox = 4*WEEK;
+    private long m_maxMailIntern = 2L*WEEK;
+    private long m_maxIdleInbox = 4L*WEEK;
     private byte[] m_secretKey;
     private int m_digestHOD;//Hour Of Day
     private int m_digestMOD;//Minute Of Day
@@ -233,7 +233,7 @@ public class QuarantineSettings implements Serializable {
     }
 
     /**
-     * Get the longest period of time that a mail may be interned
+     * Get the longest period of time (in ms) that a mail may be interned
      * before it is automagically purged.
      */
     public void setMaxMailIntern(long max) {

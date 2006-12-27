@@ -128,6 +128,9 @@ public class Quarantine
         Period p = new Period(h, m, true);
         m_cronJob.reschedule(p);
     }
+
+    m_digestGenerator.setMaxMailInternInDays(settings.getMaxMailIntern() / QuarantineSettings.DAY);
+    m_digestGenerator.setMaxIdleInboxInDays(settings.getMaxIdleInbox() / QuarantineSettings.DAY);
   }
 
   private boolean m_opened = false;
@@ -535,7 +538,8 @@ public class Quarantine
     //Convert list to form which makes settings happy
     List newMappingsList = toEmailAddressPairRuleList(mappings);
 
-    MailTransformSettings settings = m_impl.getMailTransformSettings();    settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
+    MailTransformSettings settings = m_impl.getMailTransformSettings();
+    settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
 
     m_impl.setMailTransformSettings(settings);
   }
@@ -559,7 +563,8 @@ public class Quarantine
     //Convert list to form which makes settings happy
     List newMappingsList = toEmailAddressPairRuleList(mappings);
 
-    MailTransformSettings settings = m_impl.getMailTransformSettings();    settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
+    MailTransformSettings settings = m_impl.getMailTransformSettings();
+    settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
 
     m_impl.setMailTransformSettings(settings);
 

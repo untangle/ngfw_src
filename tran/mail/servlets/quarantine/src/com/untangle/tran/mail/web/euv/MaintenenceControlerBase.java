@@ -36,22 +36,19 @@ import com.untangle.tran.mail.web.euv.tags.CurrentAuthTokenTag;
 import com.untangle.tran.mail.web.euv.tags.CurrentEmailAddressTag;
 import com.untangle.tran.mail.web.euv.tags.IsReceivesRemapsTag;
 import com.untangle.tran.mail.web.euv.tags.IsRemappedTag;
+import com.untangle.tran.mail.web.euv.tags.MaxDaysIdleInboxTag;
+import com.untangle.tran.mail.web.euv.tags.MaxDaysToInternTag;
 import com.untangle.tran.mail.web.euv.tags.MessagesSetTag;
 import com.untangle.tran.mail.web.euv.tags.ReceivingRemapsListTag;
 import com.untangle.tran.mail.web.euv.tags.RemappedToTag;
 import com.untangle.tran.util.Pair;
-import org.apache.log4j.Logger;
 
 /**
  * Base class for common controler functionality
  */
-public abstract class MaintenenceControlerBase
-    extends HttpServlet {
+public abstract class MaintenenceControlerBase extends HttpServlet {
 
-    Logger logger = Logger.getLogger(getClass());
-
-    protected void service(HttpServletRequest req,
-                           HttpServletResponse resp)
+    protected void service(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
 
         String authTkn = req.getParameter(Constants.AUTH_TOKEN_RP);
@@ -74,6 +71,20 @@ public abstract class MaintenenceControlerBase
             QuarantineEnduserServlet.instance().getQuarantine();
         if(quarantine == null) {
             log("[MaintenenceControlerBase] Quarantine Hosed");
+            req.getRequestDispatcher(Constants.SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
+            return;
+        }
+        String maxDaysToIntern =
+            QuarantineEnduserServlet.instance().getMaxDaysToIntern();
+        if(maxDaysToIntern == null) {
+            log("[MaintenenceControlerBase] Quarantine Settings (days to intern) Hosed");
+            req.getRequestDispatcher(Constants.SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
+            return;
+        }
+        String maxDaysIdleInbox =
+            QuarantineEnduserServlet.instance().getMaxDaysIdleInbox();
+        if(maxDaysIdleInbox == null) {
+            log("[MaintenenceControlerBase] Quarantine Settings (days inbox idle) Hosed");
             req.getRequestDispatcher(Constants.SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
             return;
         }
@@ -130,6 +141,8 @@ public abstract class MaintenenceControlerBase
         }
         CurrentEmailAddressTag.setCurrent(req, account);
         CurrentAuthTokenTag.setCurrent(req, authTkn);
+        MaxDaysToInternTag.setMaxDays(req, maxDaysToIntern);
+        MaxDaysIdleInboxTag.setMaxDays(req, maxDaysIdleInbox);
 
         serviceImpl(req, resp, account, quarantine, safelist);
     }

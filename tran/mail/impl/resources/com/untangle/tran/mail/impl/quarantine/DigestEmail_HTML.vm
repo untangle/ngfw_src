@@ -34,6 +34,8 @@ $image_root - URL root for image sources
 $linkgenerator - An object which creates a URL based on a mail ID  generateInboxLink, generateHelpLink
 $inboxrecords - An array of inbox records.  This array has been trimmed to be the
                 "correct" length of stuff to display
+$daysToIntern - maximum number of days that an inbox record can be interned
+$daysIdleInbox - maximum number of days that an inbox can remain idle
 
 Note that the next few *should* be able to be set from
 Velocity, but I had endless problems with their math
@@ -568,7 +570,7 @@ hr {
 
         <!-- INTRO MESSAGE -->
           The emails listed below have been quarantined by Untangle Spam Blocker.
-          These emails will be deleted automatically after 20 days.<br><br>
+          These emails will be deleted automatically after $daysToIntern days.<br><br>
           To release a specific email from the quarantine and deliver the email to your inbox,
           click <code>Release</code>.
           To delete a specific email from the quarantine,

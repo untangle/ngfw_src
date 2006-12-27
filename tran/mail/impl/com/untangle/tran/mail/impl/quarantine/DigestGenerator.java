@@ -65,6 +65,8 @@ class DigestGenerator {
   private static final String HAS_RECORDS_NOT_SHOWN_VV = "hasRecsNotShown";
   private static final String NUM_RECS_NOT_SHOWN_VV = "numRecsNotShown";
   private static final String TOTAL_NUM_RECORDS_VV = "totalNumRecords";
+  private static final String MAX_DAYS_TO_INTERN_VV = "daysToIntern";
+  private static final String MAX_DAYS_IDLE_INBOX_VV = "daysIdleInbox";
   private static final String JS_ESCAPER = "jsEscaper";
   
   private static final String MAIL_BLAST = "http://www.untangle.com/mail_blast/quarantine/images";
@@ -86,6 +88,8 @@ class DigestGenerator {
   private VelocityEngine m_velocityEngine;
   private Template m_htmlTemplate;
   private Template m_txtTemplate;
+  private long maxMailInternInDays;
+  private long maxIdleInboxInDays;
 
   //Silly little Object needed because Velocity seems to get grumpy with static methods.  It
   //simply acts as an object to wrap the JS escaping calls.
@@ -196,6 +200,13 @@ class DigestGenerator {
     }
   }
 
+  void setMaxMailInternInDays(long maxDays) {
+      maxMailInternInDays = maxDays;
+  }
+  void setMaxIdleInboxInDays(long maxDays) {
+      maxIdleInboxInDays = maxDays;
+  }
+
   MIMEMessage generateMsg(InboxIndex index,
     String serverHost,
     String to,
@@ -272,6 +283,9 @@ the line below is commented-out
       context.put(USER_EMAIL_VV, to);
       context.put(IMAGE_ROOT_VV, MAIL_BLAST);
       context.put(LINK_GENERATOR_VV, new LinkGenerator(serverHost, authToken));
+
+      context.put(MAX_DAYS_TO_INTERN_VV, maxMailInternInDays);
+      context.put(MAX_DAYS_IDLE_INBOX_VV, maxIdleInboxInDays);
 
       InboxRecord[] allRecords = index.getAllRecords();
       //Sort records by date, with "newest" (i.e. greatest numerical value for time)

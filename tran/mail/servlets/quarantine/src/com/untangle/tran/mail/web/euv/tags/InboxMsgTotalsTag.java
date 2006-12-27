@@ -15,7 +15,7 @@ import com.untangle.tran.mail.papi.quarantine.InboxRecordCursor;
 
 /**
  * Outputs the total number and size of records in the current index, or
- * 0 of there is no current index
+ * unknown if there is no current index
  *
  */
 public final class InboxMsgTotalsTag
