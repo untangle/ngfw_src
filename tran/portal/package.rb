@@ -33,7 +33,7 @@ ServletBuilder.new(portal, 'com.untangle.tran.portal.rdp.jsp',
                    [$BuildEnv.servletcommon, 'tran/portal/common'],
                    false, %w(rdp.jnlp rdp.jsp))
 
-$InstallTarget.installJars(%w(dist/properJavaRDP-1.1.jar log4j-1.2.9.jar java-getopt-1.0.12.jar).map!{|a| ThirdpartyJar.get("../pkgs/properJavaRDP/#{a}")}, "#{portal.distDirectory}/usr/share/metavize/web/rdp", nil, true)
+$InstallTarget.installJars(%w(dist/properJavaRDP-1.1.jar java-getopt-1.0.12.jar).map!{|a| ThirdpartyJar.get("../pkgs/properJavaRDP/#{a}")} + Jars::Log4j, "#{portal.distDirectory}/usr/share/metavize/web/rdp", nil, true)
 
 portal_web = "#{portal.distDirectory}/usr/share/metavize/web/vnc"
 deps = %w( tightvnc-1.2.9/classes/VncViewer.jar ).map { |f| Jars.downloadTarget(f) }

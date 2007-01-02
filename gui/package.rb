@@ -35,10 +35,10 @@ $InstallTarget.installJars(Jars::Gui, gui.getWebappDir('webstart'), nil, true)
 
 mini.installJars(Jars::Gui, gui.getWebappDir('webstart'), nil, true)
 
-guiRuntimeJars = ['asm.jar', 'cglib-2.1.3.jar', 'commons-logging-1.0.4.jar',
-                  'log4j-1.2.11.jar' ].map do |f|
+guiRuntimeJars = ['asm.jar', 'cglib-2.1.3.jar', 'commons-logging-1.0.4.jar' ].map do |f|
   Jars.downloadTarget("hibernate-3.2/lib/#{f}")
 end
+guiRuntimeJars += Jars::Log4j;
 guiRuntimeJars << Jars.downloadTarget('hibernate-client/hibernate-client.jar')
 $InstallTarget.installJars(guiRuntimeJars, gui.getWebappDir('webstart'), nil, true)
 

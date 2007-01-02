@@ -51,7 +51,7 @@ MackageDesc[] mds = mc.toolboxManager().installed();
     <jar href="./jfreechart-gui.jar"/>
     <jar href="./jnlp.jar"/>
     <jar href="./alloy.jar"/>
-    <jar href="./log4j-1.2.11.jar"/>
+    <jar href="./log4j-1.2.14.jar"/>
     <jar href="./netbeans-3.5.jar"/>
 
     <%

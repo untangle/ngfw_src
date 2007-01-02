@@ -133,7 +133,7 @@ if (targetstr == null) {
     <j2se version="1.5+"/>
 
     <jar href="./properJavaRDP-1.1.jar" main="true"/>
-    <jar href="./log4j-1.2.9.jar"/>
+    <jar href="./log4j-1.2.14.jar"/>
     <jar href="./java-getopt-1.0.12.jar"/>
 
   </resources>

@@ -39,9 +39,8 @@ deps = %w( commons-httpclient-3.0/commons-httpclient-3.0.jar
 ServletBuilder.new(mvvm, 'com.untangle.mvvm.store.jsp',
                    'mvvm/servlets/onlinestore', deps)
 
-deps = [ 'logging-log4j-1.2.9/dist/lib/log4j-1.2.9.jar' ].map { |n| ThirdpartyJar.get("#{$BuildEnv.downloads}/#{n}") }
 ServletBuilder.new(mvvm, 'com.untangle.mvvm.reports.jsp',
-                   'mvvm/servlets/reports', deps)
+                   'mvvm/servlets/reports')
 
 # wmi installer
 ServletBuilder.new(mvvm, "com.untangle.mvvm.user.servlet","mvvm/servlets/wmi", [])
@@ -174,9 +173,8 @@ file bundledAjx => ajaxTkList do
 end
 $InstallTarget.registerDependency(bundledAjx)
 
-deps = [ 'logging-log4j-1.2.9/dist/lib/log4j-1.2.9.jar' ].map { |n| ThirdpartyJar.get("#{$BuildEnv.downloads}/#{n}") }
 ServletBuilder.new(mvvm, 'com.untangle.mvvm.sessiondumper.jsp',
-                   'mvvm/servlets/session-dumper', deps)
+                   'mvvm/servlets/session-dumper')
 
 ms = MoveSpec.new('mvvm/hier', FileList['mvvm/hier/**/*'], mvvm.distDirectory)
 cf = CopyFiles.new(mvvm, ms, 'hier', $BuildEnv.filterset)
