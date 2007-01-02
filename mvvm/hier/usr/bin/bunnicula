@@ -65,8 +65,8 @@ if [ ! -e @MVVM_CONF@/keystore ]; then
 fi
 
 # add user and mvvm database just in case
-createuser -U postgres metavize 2>/dev/null
-createuser -U postgres untangle 2>/dev/null
+createuser -U postgres -d -A metavize 2>/dev/null
+createuser -U postgres -d -A untangle 2>/dev/null
 createdb -O postgres -U postgres mvvm 2>/dev/null
 
 # This parameter comes from the MVVM_PARAMS_FILE
