@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2003-2006 Untangle, Inc.
+ * Copyright (c) 2003-2007 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -126,7 +126,7 @@ public class LoadPatterns {
 	pats.put(990, new ProtoFilterPattern(990, "Yahoo messenger", "Instant Messenger", " an instant messenger protocol - http://yahoo.com", "^(ymsg|ypns|yhoo).?.?.?.?.?.?.?[lwt].*\\xc0\\x80", "good veryfast", false,false,false));
 	pats.put(1000, new ProtoFilterPattern(1000, "ZMAAP", "Networking", " Zeroconf Multicast Address Allocation Protocol", "^\\x1b\\xd7\\x3b\\x48[\\x01\\x02]\\x01?\\x01", "ok veryfast", false,false,false));
 /*
- * Copyright (c) 2003-2006 Untangle, Inc.
+ * Copyright (c) 2003-2007 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of

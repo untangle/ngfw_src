@@ -1,6 +1,6 @@
  
 /*
- * Copyright (c) 2003-2006 Untangle, Inc.
+ * Copyright (c) 2003-2007 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
