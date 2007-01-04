@@ -67,7 +67,7 @@ public class InstallDiskJPanel extends MWizardPageJPanel {
         // create buttons, put them in a group, put them in jpanel
         for( DiskInfo diskInfo : diskListCompoundSettings.getDiskInfoList() ){
             DiskJRadioButton newButton = new DiskJRadioButton(diskInfo.getName());
-            newButton.setText(diskInfo.getName() + " (size: " + diskInfo.getGigs() + "GB)");
+            newButton.setText(diskInfo.getName() + " (size: " + diskInfo.getSize());
             newButton.setOpaque(false);
             buttonGroup.add(newButton);
             diskJPanel.add(newButton);
@@ -114,13 +114,13 @@ public class InstallDiskJPanel extends MWizardPageJPanel {
 
     class DiskInfo{
         private String name;
-        private float gigs;
-        public DiskInfo(String name, float gigs){
+        private float size;
+        public DiskInfo(String name, float size){
             this.name = name;
-            this.gigs = gigs;
+            this.size = size;
         }
         public String getName(){ return name; }
-        public float getGigs(){ return gigs; }
+        public float getSize(){ return size; }
     }
 
     class DiskJRadioButton extends JRadioButton {

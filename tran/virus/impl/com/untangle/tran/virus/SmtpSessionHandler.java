@@ -16,7 +16,7 @@ import java.util.*;
 
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.tapi.*;
-import com.untangle.tran.mail.*;
+//import com.untangle.tran.mail.*;
 import com.untangle.tran.mail.papi.*;
 import com.untangle.tran.mail.papi.smtp.*;
 import com.untangle.tran.mail.papi.smtp.sapi.*;

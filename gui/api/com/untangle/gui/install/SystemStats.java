@@ -94,7 +94,7 @@ public class SystemStats
     public static int getClockSpeed()
     {
         try {
-            String[] args = {"/bin/sh","-c","cat /proc/cpuinfo | grep MHz | head -n 1 | awk '{print $4}'"};
+            String[] args = {"/bin/sh","-c","cat /proc/cpuinfo | grep -E '^cpu MHz' | head -n 1 | awk '{print $4}'"};
             Process proc = Runtime.getRuntime().exec(args);
             BufferedReader input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             try {
@@ -126,14 +126,30 @@ public class SystemStats
     public static float getDiskGigs(String disk)
     {
         try {
-            String[] args = {"/bin/sh","-c"," fdisk -l /dev/" + disk + " | awk '/Disk/ { print $3}'"};
+            String[] args = {"/bin/sh","-c"," fdisk -l /dev/" + disk + " | awk '/Disk/ { gsub(/,/, \"\") ; print $3$4 }'"};
             Process proc = Runtime.getRuntime().exec(args);
             BufferedReader input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+	    String diskSize = input.readLine();
+
+	    int    len 	    = diskSize.length();
+	    String unit     = diskSize.substring(len - 2);
+	    float  number   = -1f;
+
             try {
-		float num = (float)Float.parseFloat(input.readLine());
-                return num;
-            }
-            catch (java.lang.NumberFormatException e) {}
+		number = (float)Float.parseFloat(diskSize.substring(0, len - 2));
+	    }
+            catch (java.lang.NumberFormatException e) {
+		return -1f;
+	    }
+	    
+	    if (unit.equalsIgnoreCase("GB"))
+		return number;
+	    else if (unit.equalsIgnoreCase("MB"))
+		return number / 1000;
+	    else
+		return -1f;
+
         }
         catch (IOException e) {}
         return -1f;
