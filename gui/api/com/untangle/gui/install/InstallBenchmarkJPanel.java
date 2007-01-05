@@ -62,7 +62,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
     }
 
     protected boolean leavingForwards(){
-	if(!testPassed)
+	if(!testPassed && !installWizard.isShiftDown())
 	    System.exit(1);
 	return true;
     }

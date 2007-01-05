@@ -62,6 +62,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
     protected Map<String, JLabel> labelMap = new LinkedHashMap<String, JLabel>();
     protected Vector<Boolean> checkpointVector = new Vector<Boolean>();
     protected Vector<Boolean> saveVector = new Vector<Boolean>();
+    protected boolean isShiftDown;
 
     // INFINITE PROGRESS INDICATOR //
     private static InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
@@ -212,6 +213,8 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
     }
     public boolean getFinishedNormal(){ return finishedNormal; }
 
+    public boolean isShiftDown(){return isShiftDown; }
+
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
 
@@ -355,6 +358,8 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 
         }//GEN-END:initComponents
 
+
+
     private void previousJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_previousJButtonActionPerformed
 	new PreviousPageThread();
     }//GEN-LAST:event_previousJButtonActionPerformed
@@ -394,6 +399,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
     }
 
     private void nextJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextJButtonActionPerformed
+        isShiftDown = (evt.getModifiers()&java.awt.event.ActionEvent.SHIFT_MASK)>0;
         new NextPageThread();
     }//GEN-LAST:event_nextJButtonActionPerformed
 
