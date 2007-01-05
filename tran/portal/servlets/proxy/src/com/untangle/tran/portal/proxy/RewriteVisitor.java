@@ -11,12 +11,7 @@
 
 package com.untangle.tran.portal.proxy;
 
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -80,6 +75,32 @@ class RewriteVisitor extends NodeVisitor
                     a.setValue(rewriter.rewriteUrl(a.getValue()));
                 } else if (name.equalsIgnoreCase("action") && tagName.equalsIgnoreCase("form")) {
                     a.setValue(rewriter.rewriteUrl(a.getValue()));
+                } else if (name.equalsIgnoreCase("http-equiv") && a.getValue().equalsIgnoreCase("refresh")) {
+                    boolean changed = false;
+
+                    Attribute contentAttr = tag.getAttributeEx("content");
+
+                    String value = contentAttr.getValue();
+                    String[] ca = value.split(";");
+                    for (int i = 0; i < ca.length; i++) {
+                        String s = ca[i];
+                        if (s.trim().toLowerCase().startsWith("url=")) {
+                            int j = s.indexOf('=');
+                            if (s.length() > j + 1) {
+                                ca[i] = s.substring(0, j + 1) + rewriter.rewriteUrl(s.substring(j + 1));
+                                changed = true;
+                            }
+                        }
+                    }
+
+                    if (changed) {
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i < ca.length; i++) {
+                            sb.append(ca[i]);
+                        }
+
+                        contentAttr.setValue(sb.toString());
+                    }
                 }
             }
         }
