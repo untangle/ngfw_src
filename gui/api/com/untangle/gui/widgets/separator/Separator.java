@@ -89,7 +89,7 @@ class SeparatorRenderer implements ListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus){
 	Component tempComponent = listCellRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 	try{ ((JComponent)tempComponent).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
-	catch(Exception e){}
+	catch(Throwable t){}
 	return tempComponent;
     }
 }

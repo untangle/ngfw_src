@@ -189,10 +189,10 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
         // SETUP NAME AND MESSAGE
 	try{ ((JComponent)descriptionTextJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
-	catch(Exception e){}
+	catch(Throwable t){}
 	descriptionTextJLabel.setText( transformDesc.getDisplayName() );
 	try{ ((JComponent)messageTextJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
-	catch(Exception e){}
+	catch(Throwable t){}
 	String extraName = mackageDesc.getExtraName();
 	if( extraName != null )
 	    messageTextJLabel.setText( extraName );

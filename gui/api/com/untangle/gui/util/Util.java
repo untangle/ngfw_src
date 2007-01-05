@@ -618,7 +618,7 @@ public class Util {
     public static void setAAClientProperty(Component parentComponent, boolean isAAEnabled){
     if( parentComponent instanceof JComponent ){
         try{ ((JComponent)parentComponent).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(isAAEnabled)); }
-        catch(Exception e){}
+        catch(Throwable t){}
     }
 
     if( parentComponent instanceof Container ){
