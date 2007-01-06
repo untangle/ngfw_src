@@ -13,13 +13,14 @@ package com.untangle.gui.login;
 
 import com.untangle.gui.widgets.wizard.*;
 import com.untangle.gui.util.Util;
+import com.untangle.gui.util.TimeZone;
 import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.client.MvvmRemoteContextFactory;
 
 import java.util.Set;
 import javax.swing.SwingUtilities;
 import java.awt.Color;
-import java.util.TimeZone;
+
 
 public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
     
@@ -27,14 +28,14 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
     private static final String EXCEPTION_RETYPE_PASSWORD_MISSING = "The confirmation password must be filled in before proceeding.";
     private static final String EXCEPTION_PASSWORD_MISMATCH = "Your password and confirmation password do not match.  They must match before proceeding.";
 
-	private final String[] timezones = {"US/Eastern (GMT-5)", "US/Central (GMT-6)", "US/Mountain (GMT-7)", "US/Pacific (GMT-8)", "US/Alaska (GMT-9)", "US/Hawaii (GMT-10)"};
 	
     public InitialSetupPasswordJPanel() {
         initComponents();
 		SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    for(String timezone : timezones){
-		timezoneJComboBox.addItem(timezone);
+	    for(TimeZone tz : TimeZone.values()){
+            timezoneJComboBox.addItem(tz);
 	    }
+        timezoneJComboBox.setSelectedItem(TimeZone.getDefault());
 	}});
     }
 
@@ -77,8 +78,7 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
 		return;
 	    }
 		
-		timezone = (String) timezoneJComboBox.getSelectedItem();
-		timezone = timezone.substring(0, timezone.indexOf(' '));
+		timezone = ((TimeZone) timezoneJComboBox.getSelectedItem()).getKey();
 	}});
 
         if( exception != null )
@@ -95,7 +95,7 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
 		    if( user.getLogin().equals("admin") )
 			user.setClearPassword(password);
 		Util.getAdminManager().setAdminSettings(adminSettings);
-		Util.getAdminManager().setTimeZone( TimeZone.getTimeZone(timezone) );
+		Util.getAdminManager().setTimeZone( java.util.TimeZone.getTimeZone(timezone) );
 
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
 	    }
@@ -224,8 +224,9 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
                 jPanel2.add(jLabel7, gridBagConstraints);
 
                 timezoneJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-                timezoneJComboBox.setMinimumSize(new java.awt.Dimension(200, 24));
-                timezoneJComboBox.setPreferredSize(new java.awt.Dimension(200, 24));
+                timezoneJComboBox.setMaximumSize(new java.awt.Dimension(425, 24));
+                timezoneJComboBox.setMinimumSize(new java.awt.Dimension(425, 24));
+                timezoneJComboBox.setPreferredSize(new java.awt.Dimension(425, 24));
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;

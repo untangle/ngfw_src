@@ -20,52 +20,45 @@ import com.untangle.mvvm.tran.*;
 
 import java.awt.*;
 import javax.swing.*;
-import java.util.TimeZone;
 import java.text.SimpleDateFormat;
 
 public class AboutTimezoneJPanel extends javax.swing.JPanel
     implements Savable<AboutCompoundSettings>, Refreshable<AboutCompoundSettings> {
 
-	private final String[] timezones = {"US/Eastern (GMT-5)", "US/Central (GMT-6)", "US/Mountain (GMT-7)", "US/Pacific (GMT-8)", "US/Alaska (GMT-9)", "US/Hawaii (GMT-10)"};
 	
     
     public AboutTimezoneJPanel() {
         initComponents();
-	for(String timezone : timezones){
-	    timezoneJComboBox.addItem(timezone);
-	}
+        for(TimeZone tz : TimeZone.values()){
+            timezoneJComboBox.addItem(tz);
+        }
+        
     }
 
     public void doSave(AboutCompoundSettings aboutCompoundSettings, boolean validateOnly) throws Exception {
 
 	// TIMEZONE ///////
-	String timezone = (String) timezoneJComboBox.getSelectedItem();
-	timezone = timezone.substring(0, timezone.indexOf(' '));
+	String timezone = ((TimeZone) timezoneJComboBox.getSelectedItem()).getKey();
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    aboutCompoundSettings.setTimeZone( TimeZone.getTimeZone(timezone) );
+	    aboutCompoundSettings.setTimeZone( java.util.TimeZone.getTimeZone(timezone) );
         }
 
     }
 
     public void doRefresh(AboutCompoundSettings aboutCompoundSettings){
 	
-	// TIMEZONE ////
-	String timezone = aboutCompoundSettings.getTimeZone().getID();
-	for( String tz : timezones ){
-	    if( tz.startsWith(timezone) ){
-		timezone = tz;
-		break;
-	    }
-	}
-	timezoneJComboBox.setSelectedItem(timezone);
+        // TIMEZONE ////
+        TimeZone tz = TimeZone.getValue(aboutCompoundSettings.getTimeZone().getID());
+        timezoneJComboBox.setSelectedItem(tz);
+
 
 	// DATE //
 	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, MMM d yyyy   h:mm a");
 	simpleDateFormat.setTimeZone(aboutCompoundSettings.getTimeZone());
 	String dateString = simpleDateFormat.format(aboutCompoundSettings.getDate());
-	dateString += "   " + timezone;
+	dateString += "   " + tz.getGmtValue();
 	timeJLabel.setText(dateString);
     }
     
@@ -105,9 +98,9 @@ public class AboutTimezoneJPanel extends javax.swing.JPanel
 
                 timezoneJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
                 timezoneJComboBox.setFocusable(false);
-                timezoneJComboBox.setMaximumSize(new java.awt.Dimension(175, 24));
-                timezoneJComboBox.setMinimumSize(new java.awt.Dimension(175, 24));
-                timezoneJComboBox.setPreferredSize(new java.awt.Dimension(175, 24));
+                timezoneJComboBox.setMaximumSize(new java.awt.Dimension(425, 24));
+                timezoneJComboBox.setMinimumSize(new java.awt.Dimension(425, 24));
+                timezoneJComboBox.setPreferredSize(new java.awt.Dimension(425, 24));
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
@@ -116,7 +109,7 @@ public class AboutTimezoneJPanel extends javax.swing.JPanel
                 restrictIPJPanel.add(timezoneJComboBox, gridBagConstraints);
 
                 jLabel6.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel6.setText("Time as of Refresh:");
+                jLabel6.setText("Time at Refresh:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
