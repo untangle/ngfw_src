@@ -157,7 +157,7 @@ if (!( isIndex || isDownload)) isIndex = true;
               <br/>
               <br/>
               <div style="text-align: right; font-style: italic; font-size: 80%;">
-               <a href="jre-1_5_0_07-windows-i586-p.exe">Download Java&trade; v1.5 (Offline)</a><br/>
+               <a href="/java/jre-1_5_0_07-windows-i586-p.exe">Download Java&trade; v1.5 (Offline)</a><br/>
                <% if ( !isDownload ) { %>
                  <a href="download.html">Download Java&trade; v1.5 (Online)</a><br/>
                <% } %>
