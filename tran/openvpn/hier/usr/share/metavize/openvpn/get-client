@@ -54,7 +54,7 @@ function copyFromUsb()
         exit -${USB_ERROR}
     fi
     
-    t_usbDevice="${t_usbDevice}1"
+    t_usbDevice="${t_usbDevice}"
 
     echo "Mounting device ${t_usbDevice}"
     

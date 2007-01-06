@@ -26,8 +26,6 @@ function listUsb()
         exit -${USB_ERROR}
     fi
     
-    t_usbDevice="${t_usbDevice}1"
-
     echo "Mounting device ${t_usbDevice}"
     
     local t_mountPoint=`mktemp -d || exit -3`

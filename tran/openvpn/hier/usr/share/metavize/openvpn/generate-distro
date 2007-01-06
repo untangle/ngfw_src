@@ -96,9 +96,7 @@ function copyToUsb()
         exit -${USB_ERROR}
     fi
 
-    ## Attempt to mount the usb key {dev}1
-    t_usbDevice="${t_usbDevice}1"
-    
+    ## Attempt to mount the usb key
     echo "Mounting device ${t_usbDevice}"
 
     local t_mountPoint=`mktemp -d || exit -3`

@@ -7,6 +7,21 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
+USB_MOUNT_POINT=/mnt/usb-mv-mount
+
+function lookupUsbDevice()
+{
+    local t_sg
+    local t_dev
+
+    ## The sed command just joins every other line
+    t_sg=`sg_scan -i | sed -e '{N;s|\n| |g;}' | grep -v ATA | head -n 1 | sed 's|\(.*\):.*|\1|'`
+    if [ -z "${t_sg}" ]; then return ; fi
+
+    ## Append the one to always try dev 1
+    sg_map | grep ${t_sg} | awk '{ print $2 "1" }'
+}
+
 method=$1
 
 outdir=@MVVM_DUMP@
@@ -18,8 +33,18 @@ mkdir -p $outdir
 
 case $method in
     usb)
-        mount /dev/sda1 /mnt
-        outdir=/mnt
+        usb_device=`lookupUsbDevice`
+
+        if [ -z "${usb_device}" ]; then
+            exit -1
+        fi
+
+        mkdir -p ${USB_MOUNT_POINT}
+        
+        ## ignore errors
+        umount ${USB_MOUNT_POINT} || true
+        mount ${usb_device} ${USB_MOUNT_POINT}
+        outdir=${USB_MOUNT_POINT}
         ;;
 #    local)
 #        outdir=@MVVM_DUMP@
@@ -51,10 +76,10 @@ tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
 
 [ $? -eq 0 ] || exit 1    
 
-mkg installed > $outdir/installed-$datestamp
+@PREFIX@/usr/bin/mkg installed > $outdir/installed-$datestamp
 
 [ $? -eq 0 ] || exit 1
 
 if [ $method = "usb" ]; then
-    umount /mnt
+    umount ${USB_MOUNT_POINT}
 fi

@@ -162,7 +162,7 @@ function lookupUsbDevice()
     if [ -z "${t_sg}" ]; then return ; fi
 
     ## Append the one to always try dev 1
-    sg_map | grep ${t_sg} | awk '{ print $2 }'
+    sg_map | grep ${t_sg} | awk '{ print $2 "1" }'
 }
 
 function usbCleanup()
