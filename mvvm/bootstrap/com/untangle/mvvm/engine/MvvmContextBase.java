@@ -11,7 +11,6 @@
 
 package com.untangle.mvvm.engine;
 
-import java.net.URL;
 
 /**
  * This class is for Main to manipulate MvvmContext without resorting
@@ -22,17 +21,12 @@ import java.net.URL;
  */
 public abstract class MvvmContextBase
 {
-    private Main main;
+    protected Main main;
 
     protected abstract void init();
     protected abstract void destroy();
     protected abstract void postInit();
     protected abstract InvokerBase getInvoker();
-
-    protected boolean doRefreshToolbox()
-    {
-        return main.refreshToolbox();
-    }
 
     void doInit(Main main)
     {

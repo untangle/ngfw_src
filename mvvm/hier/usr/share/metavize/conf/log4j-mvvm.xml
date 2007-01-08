@@ -12,12 +12,6 @@
 
 <!-- $Id$ -->
 
-<!--
-   | For more configuration infromation and examples see the Jakarta Log4j
-   | website: http://jakarta.apache.org/log4j
- -->
-
-
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
                      debug="false">
 
@@ -44,14 +38,32 @@
     <!-- We use the default conversion pattern, so it's omitted. -->
   </appender>
 
-
   <!-- ============================================== -->
   <!-- Categories                                     -->
   <!-- ============================================== -->
 
-  <!-- c3p0 JDBC connection pool -->
   <category name="com.mchange">
     <priority value="INFO"/>
+  </category>
+
+  <category name="org.apache.catalina">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="org.hibernate">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.untangle.mvvm.argon">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.untangle.jnetcap">
+    <priority value="WARN"/>
+  </category>
+
+  <category name="com.untangle.jvector">
+    <priority value="WARN"/>
   </category>
 
   <!-- normal level for engine is INFO -->
@@ -70,27 +82,6 @@
   <category name="com.untangle.mvvm.reporting">
     <priority value="DEBUG"/>
   </category>
-
-  <category name="com.untangle.mvvm.argon">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.jnetcap">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="com.untangle.jvector">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="org.hibernate">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="org.apache.catalina">
-    <priority value="WARN"/>
-  </category>
-
 
   <!-- ============================================== -->
   <!-- The Root Category                              -->

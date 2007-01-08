@@ -12,23 +12,16 @@
 package com.untangle.mvvm.engine;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
-import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.logging.EventLogger;
 import com.untangle.mvvm.logging.EventRepository;
 import com.untangle.mvvm.logging.ListEventFilter;
 import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.LogEvent;
 import com.untangle.mvvm.logging.RepositoryDesc;
 import com.untangle.mvvm.logging.SimpleEventFilter;
-import com.untangle.mvvm.logging.SyslogManager;
-import com.untangle.mvvm.security.Tid;
 import com.untangle.mvvm.tran.TransformContext;
 import org.apache.log4j.Logger;
 
@@ -50,14 +43,16 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
     EventLoggerImpl()
     {
         this.transformContext = null;
-        inputQueue = LoggingManagerImpl.loggingManager().getInputQueue();
+        inputQueue = MvvmContextImpl.getInstance().loggingManager()
+            .getInputQueue();
         this.tag = "mvvm[0]: ";
     }
 
     EventLoggerImpl(TransformContext transformContext)
     {
         this.transformContext = transformContext;
-        inputQueue = LoggingManagerImpl.loggingManager().getInputQueue();
+        inputQueue = MvvmContextImpl.getInstance().loggingManager()
+            .getInputQueue();
         String name = transformContext.getTransformDesc().getSyslogName();
         this.tag = name + "[" + transformContext.getTid().getId() + "]: ";
     }

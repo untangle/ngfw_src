@@ -238,9 +238,8 @@ class TomcatManager
         ClassLoader mvvmCl = Thread.currentThread().getContextClassLoader();
         ClassLoader tomcatParent = new TomClassLoader(mvvmCl);
         try {
-            // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(tomcatParent);
-            MvvmRepositorySelector.get().init("tomcat");
 
             // jdi 8/30/04 -- canonical host name depends on ordering of
             // /etc/hosts

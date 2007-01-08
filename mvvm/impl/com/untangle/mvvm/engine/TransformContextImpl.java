@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.policy.Policy;
 import com.untangle.mvvm.security.Tid;
 import com.untangle.mvvm.tapi.IPSessionDesc;
@@ -47,7 +48,6 @@ import com.untangle.mvvm.tran.UndeployException;
 import com.untangle.mvvm.util.TransactionWork;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -77,7 +77,8 @@ class TransformContextImpl implements TransformContext
                          String mackageName, boolean isNew)
         throws DeployException
     {
-        LoggingManagerImpl lm = LoggingManagerImpl.loggingManager();
+        MvvmContextImpl mctx = MvvmContextImpl.getInstance();
+        LoggingManagerImpl lm = mctx.loggingManager();
         if (null != tDesc.getTransformBase()) {
             lm.initSchema(tDesc.getTransformBase());
         }
@@ -115,10 +116,10 @@ class TransformContextImpl implements TransformContext
 
                     public Object getResult() { return null; }
                 };
-            MvvmContextFactory.context().runTransaction(tw);
+            mctx.runTransaction(tw);
         } else {
             LoadSettings ls = new LoadSettings(tid);
-            MvvmContextFactory.context().runTransaction(ls);
+            mctx.runTransaction(ls);
             this.persistentState = ls.getPersistentState();
             this.transformPreferences = ls.getTransformPreferences();
         }
@@ -139,13 +140,13 @@ class TransformContextImpl implements TransformContext
         ClassLoader oldCl = ct.getContextClassLoader();
         // entering transform ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         ct.setContextClassLoader(classLoader);
+
+        final MvvmLocalContext mctx = MvvmContextFactory.context();
         try {
             transformManager.registerThreadContext(this);
 
             String tidName = tid.getName();
             logger.debug("setting tran " + tidName + " log4j repository");
-            MvvmRepositorySelector.get().init("tran", tidName,
-                                              tidName + "-user");
 
             String className = transformDesc.getClassName();
             transform = (TransformBase)classLoader.loadClass(className)
@@ -172,9 +173,9 @@ class TransformContextImpl implements TransformContext
 
                                     public Object getResult() { return null; }
                                 };
-                            MvvmContextFactory.context().runTransaction(tw);
+                            mctx.runTransaction(tw);
 
-                            MvvmContextFactory.context().eventLogger().log(new TransformStateChange(tid, ts));
+                            mctx.eventLogger().log(new TransformStateChange(tid, ts));
                         }
                     }
                 });
@@ -213,7 +214,7 @@ class TransformContextImpl implements TransformContext
 
                         public Object getResult() { return null; }
                     };
-                MvvmContextFactory.context().runTransaction(tw);
+                mctx.runTransaction(tw);
             }
 
         }

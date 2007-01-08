@@ -14,40 +14,33 @@ package com.untangle.mvvm.engine;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import com.untangle.mvvm.logging.MvvmRepositorySelector;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
 
 public class Main
 {
     private static String MVVM_LOCAL_CONTEXT_CLASSNAME
         = "com.untangle.mvvm.engine.MvvmContextImpl";
 
-    static {
-        MvvmRepositorySelector.get().init("");
-    }
-
     private final Logger logger = Logger.getLogger(getClass());
+
+    private final MvvmRepositorySelector repositorySelector;
 
     private MvvmClassLoader mcl;
     private Class mvvmPrivClass;
     private MvvmContextBase mvvmContext;
 
-    private String bunniculaConf;
-    private String bunniculaData;
-    private String bunniculaHome;
-    private String bunniculaLib;
-    private String bunniculaLog;
-    private String bunniculaToolbox;
-    private String bunniculaWeb;
-    private String bunniculaTmp;
-
     // constructor ------------------------------------------------------------
 
-    private Main() { }
+    private Main()
+    {
+        repositorySelector = new MvvmRepositorySelector();
+        LogManager.setRepositorySelector(repositorySelector, new Object());
+    }
 
     // public static methods --------------------------------------------------
 
@@ -85,6 +78,13 @@ public class Main
         }
     }
 
+    // public methods ---------------------------------------------------------
+
+    public MvvmRepositorySelector getRepositorySelector()
+    {
+        return repositorySelector;
+    }
+
     // package private methods ------------------------------------------------
 
     boolean refreshToolbox()
@@ -106,6 +106,7 @@ public class Main
 
         logger.info("setting up properties");
         setProperties();
+
         logger.info("starting mvvm");
         try {
             startMvvm();
@@ -131,21 +132,21 @@ public class Main
 
     private void setProperties() throws Exception
     {
-        bunniculaHome = System.getProperty("bunnicula.home");
+        String bunniculaHome = System.getProperty("bunnicula.home");
 
-        bunniculaLib = bunniculaHome + "/lib";
+        String bunniculaLib = bunniculaHome + "/lib";
         System.setProperty("bunnicula.lib.dir", bunniculaLib);
-        bunniculaToolbox = bunniculaHome + "/toolbox";
+        String bunniculaToolbox = bunniculaHome + "/toolbox";
         System.setProperty("bunnicula.toolbox.dir", bunniculaToolbox);
-        bunniculaLog = bunniculaHome + "/log";
+        String bunniculaLog = bunniculaHome + "/log";
         System.setProperty("bunnicula.log.dir", bunniculaLog);
-        bunniculaData = bunniculaHome + "/data";
+        String bunniculaData = bunniculaHome + "/data";
         System.setProperty("bunnicula.data.dir", bunniculaData);
-        bunniculaWeb = bunniculaHome + "/web";
+        String bunniculaWeb = bunniculaHome + "/web";
         System.setProperty("bunnicula.web.dir", bunniculaWeb);
-        bunniculaConf = bunniculaHome + "/conf";
+        String bunniculaConf = bunniculaHome + "/conf";
         System.setProperty("bunnicula.conf.dir", bunniculaConf);
-        bunniculaTmp = bunniculaHome + "/tmp";
+        String bunniculaTmp = bunniculaHome + "/tmp";
         System.setProperty("bunnicula.tmp.dir", bunniculaTmp);
 
         System.setProperty("derby.system.home", bunniculaHome + "/db");
@@ -179,6 +180,7 @@ public class Main
     // XXX get rid of all these throws
     private void startMvvm() throws Exception
     {
+        String bunniculaLib = System.getProperty("bunnicula.lib.dir");
         URL mvvmImplJar = new URL("file://" + bunniculaLib + "/mvvm-impl.jar");
         URL mvvmApiJar = new URL("file://" + bunniculaLib + "/mvvm-api.jar");
         URL mvvmLocalApiJar = new URL("file://" + bunniculaLib + "/mvvm-localapi.jar");
@@ -187,6 +189,7 @@ public class Main
         URL jNetcapJar = new URL("file://" + bunniculaLib + "/jnetcap-impl.jar");
         URL[] urls = new URL[] { mvvmImplJar, mvvmApiJar, mvvmLocalApiJar, mvvmReportingJar,
                                  jVectorJar, jNetcapJar };
+        String bunniculaToolbox = System.getProperty("bunnicula.toolbox.dir");
         mcl = new MvvmClassLoader(urls, getClass().getClassLoader(),
                                   new File(bunniculaToolbox));
 
@@ -194,8 +197,7 @@ public class Main
         try {
             // Entering MVVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(mcl);
-
-            MvvmRepositorySelector.get().init("mvvm");
+            repositorySelector.mvvmContext();
 
             mvvmContext = (MvvmContextBase)mcl
                 .loadClass(MVVM_LOCAL_CONTEXT_CLASSNAME)
@@ -204,6 +206,7 @@ public class Main
             mvvmContext.doInit(this);
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
+            repositorySelector.bootstrapContext();
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }
@@ -214,11 +217,13 @@ public class Main
         try {
             // Entering MVVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(mcl);
+            repositorySelector.mvvmContext();
 
             mvvmContext.doPostInit();
 
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
+            repositorySelector.bootstrapContext();
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }

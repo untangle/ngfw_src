@@ -65,10 +65,9 @@ public class SystemStatus
 
         if (JITTER_THREAD) {
             jitter = new JitterThread(JITTER_THREAD_FREQ);
-            Thread newThread = MvvmContextFactory.context().newThread(jitter, "Jitter Thread");
+            Thread newThread = new Thread(jitter, "Jitter Thread");
             newThread.start();
-        }
-        else {
+        } else {
             jitter = null;
         }
     }
@@ -204,7 +203,7 @@ public class SystemStatus
                 proc.destroy();
         }
 
-        
+
         try {
             /**
              * /proc/loadavg

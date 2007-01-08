@@ -15,15 +15,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
 import java.util.StringTokenizer;
 
 import com.untangle.mvvm.CronJob;
-import com.untangle.mvvm.LocalAppServerManager;
 import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.MvvmState;
 import com.untangle.mvvm.Period;
-import com.untangle.mvvm.RemoteAppServerManager;
 import com.untangle.mvvm.api.RemoteIntfManager;
 import com.untangle.mvvm.api.RemoteShieldManager;
 import com.untangle.mvvm.argon.Argon;
@@ -515,7 +512,7 @@ public class MvvmContextImpl extends MvvmContextBase
     {
         cronManager = new CronManager();
         syslogManager = SyslogManagerImpl.manager();
-        loggingManager = LoggingManagerImpl.loggingManager();
+        loggingManager = new LoggingManagerImpl(main.getRepositorySelector());
         loggingManager.initSchema("mvvm");
         loggingManager.start();
         eventLogger = EventLoggerFactory.factory().getEventLogger();
@@ -755,7 +752,7 @@ public class MvvmContextImpl extends MvvmContextBase
 
     boolean refreshToolbox()
     {
-        return doRefreshToolbox();
+        return main.refreshToolbox();
     }
 
     void refreshSessionFactory()

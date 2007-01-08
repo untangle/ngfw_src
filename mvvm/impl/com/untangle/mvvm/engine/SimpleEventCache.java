@@ -40,7 +40,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
 
     private boolean cold = true;
 
-    // constructors -----------------------------------------------------------
+    // constructors ----------------------------------------------------------
 
     SimpleEventCache(ListEventFilter<E> eventFilter)
     {
@@ -52,12 +52,14 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
         this.eventLogger = eventLogger;
     }
 
-    // EventRepository methods ------------------------------------------------
+    // EventRepository methods -----------------------------------------------
 
     public List<E> getEvents()
     {
+        LoggingManagerImpl lm = MvvmContextImpl.getInstance().loggingManager();
+
         synchronized (cache) {
-            if (cold && LoggingManagerImpl.loggingManager().isConversionComplete()) {
+            if (cold && lm.isConversionComplete()) {
                 warm();
             }
             return new ArrayList<E>(cache);
@@ -69,7 +71,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
         return eventFilter.getRepositoryDesc();
     }
 
-    // EventCache methods ----------------------------------------------
+    // EventCache methods ----------------------------------------------------
 
     public void log(E e)
     {
@@ -90,7 +92,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
         }
     }
 
-    // private methods --------------------------------------------------------
+    // private methods -------------------------------------------------------
 
     private void warm()
     {

@@ -11,6 +11,14 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
                      debug="false">
 
+  <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+    <param name="Threshold" value="ALL"/>
+    <layout class="com.untangle.mvvm.logging.MvPatternLayout">
+      <!-- This is actually the default conversion, so we could leave it out... -->
+      <param name="ConversionPattern" value="%D %-5p [%c{1}] %m%n"/>
+    </layout>
+  </appender>
+
   <appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
     <param name="File" value="${bunnicula.home}/log/server.log"/>
     <param name="Append" value="true"/>
@@ -27,12 +35,16 @@
     <priority value="WARN"/>
   </category>
 
-  <category name="net.sf.hibernate">
+  <category name="org.hibernate">
     <priority value="WARN"/>
   </category>
 
+  <category name="com.untangle">
+    <priority value="ALL"/>
+  </category>
+
   <root>
-    <priority value="WARN"/>
+    <priority value="ALL"/>
     <appender-ref ref="FILE"/>
   </root>
 

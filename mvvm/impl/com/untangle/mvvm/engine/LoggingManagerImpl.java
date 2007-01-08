@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.logging.LogEvent;
 import com.untangle.mvvm.logging.LoggingManager;
 import com.untangle.mvvm.logging.LoggingSettings;
+import com.untangle.mvvm.logging.MvvmRepositorySelector;
 import com.untangle.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -35,6 +35,7 @@ class LoggingManagerImpl implements LoggingManager
 
     private final List<String> initQueue = new LinkedList<String>();
     private final LogWorker logWorker = new LogWorker(this);
+    private final MvvmRepositorySelector repositorySelector;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -42,8 +43,10 @@ class LoggingManagerImpl implements LoggingManager
 
     private volatile boolean conversionComplete = true;
 
-    private LoggingManagerImpl()
+    LoggingManagerImpl(MvvmRepositorySelector repositorySelector)
     {
+        this.repositorySelector = repositorySelector;
+
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
@@ -62,17 +65,6 @@ class LoggingManagerImpl implements LoggingManager
         MvvmContextFactory.context().runTransaction(tw);
 
         SyslogManagerImpl.manager().reconfigure(loggingSettings);
-    }
-
-    static LoggingManagerImpl loggingManager()
-    {
-        synchronized (LOCK) {
-            if (null == LOGGING_MANAGER) {
-                LOGGING_MANAGER = new LoggingManagerImpl();
-            }
-        }
-
-        return LOGGING_MANAGER;
     }
 
     static boolean isLoggingDisabled()
@@ -105,7 +97,7 @@ class LoggingManagerImpl implements LoggingManager
 
     public void resetAllLogs()
     {
-        MvvmRepositorySelector.get().reconfigureAll();
+        repositorySelector.reconfigureAll();
     }
 
     public void logError(String errorText)
