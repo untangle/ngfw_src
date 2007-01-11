@@ -24,7 +24,8 @@ public final class InboxRecordTag
 
   private static final String INBOX_RECORD_PS_KEY = "untangle.inbox_record";
 
-  public static final String MAILID_PROP = "mailId";
+  // constant values must be in lower case
+  public static final String MAILID_PROP = "mailid";
   public static final String SENDER_PROP = "sender";
   public static final String TSENDER_PROP = "tsender"; // truncated
   public static final String TSUBJECT_PROP = "tsubject"; // truncated

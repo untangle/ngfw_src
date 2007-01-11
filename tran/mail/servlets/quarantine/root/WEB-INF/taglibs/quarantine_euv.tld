@@ -51,7 +51,7 @@
   </tag>
 
   <!--
-    Used within a "forEachMessage" tag, this derefferences the 
+    Used within a "forEachMessage" tag, this dereferences the 
     "current" message while iterating.  It is replaced by the text
     of the current message
   -->
@@ -115,7 +115,7 @@
   <!--
     Used within an forEachInboxRecord tag, to access the "current"
     InboxRecord.  Valid values for "prop" are:
-    "mid"
+    "mailid"
     "from"
     "subject"
     "score"
@@ -318,15 +318,22 @@
     Valid values for "keyName" include:
 
     "tkn" - key used to hold the "currentAuthToken"
-    "action" - the action to be taken (either "purge", "rescue" or "viewibx")
-    "mid" - the key used to hold the mail ID in forms
+    "action" - the action to be taken (either "purge", "rescue", "rescue" or "viewibx")
+    "mailid" - the key used to hold the mail ID in forms
     "draddr" - the address for requesting a new digest
+    "sort"
+    "ascend"
+    "first"
+    "sladdr"
 
     Valid values for "valueName" include:
 
     "purge" - do the purge action
     "rescue" - do the rescue action
+    "refresh" - do the refresh action
     "viewibx" - do the "view your inbox" action (really - no action)
+    "slview"
+    "sladd"
   -->
   <tag>
     <name>constants</name>

@@ -11,7 +11,6 @@
 package com.untangle.tran.mail.web.euv;
 
 import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
@@ -22,14 +21,11 @@ import com.untangle.tran.mail.papi.quarantine.QuarantineUserActionFailedExceptio
 import com.untangle.tran.mail.papi.quarantine.NoSuchInboxException;
 import com.untangle.tran.mail.papi.quarantine.InboxRecordComparator;
 import com.untangle.tran.mail.papi.quarantine.InboxRecordCursor;
-
 import com.untangle.tran.mail.papi.safelist.SafelistEndUserView;
-
 import com.untangle.tran.mail.web.euv.tags.MessagesSetTag;
 import com.untangle.tran.mail.web.euv.tags.InboxIndexTag;
 import com.untangle.tran.mail.web.euv.tags.HasSafelistTag;
 import com.untangle.tran.mail.web.euv.tags.PagnationPropertiesTag;
-
 import com.untangle.tran.util.Pair;
 
 /**
@@ -73,20 +69,20 @@ public class InboxMaintenenceControler
       InboxIndex index = null;
 
       if(action.equals(Constants.PURGE_RV) ||
-        action.equals(Constants.RESCUE_RV)) {
+         action.equals(Constants.RESCUE_RV)) {
 
         String[] mids = req.getParameterValues(Constants.MAIL_ID_RP);
         log("[InboxMaintenenceControler]" + (mids==null?"0":mids.length) + " Mail IDs");
 
         if(action.equals(Constants.PURGE_RV) &&
-          mids!= null && mids.length > 0) {
+           mids!= null && mids.length > 0) {
           log("[InboxMaintenenceControler] Purge request for account \"" + account + "\"");
           index = quarantine.purge(account, mids);
           MessagesSetTag.addInfoMessage(req,
             mids.length + " message" + (mids.length>1?"s":"") + " deleted");
         }
         else if(action.equals(Constants.RESCUE_RV) &&
-          mids!= null && mids.length > 0) {
+                mids!= null && mids.length > 0) {
           log("[InboxMaintenenceControler] Rescue request for account \"" + account + "\"");
           index = quarantine.rescue(account, mids);
           MessagesSetTag.addInfoMessage(req,

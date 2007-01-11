@@ -353,9 +353,9 @@
                           <tr class="<quarantine:oddEven even="even" odd="odd"/>">
                             <th scope="row">
                               <input type="checkbox"
-                                name="<quarantine:constants keyName="mailId"/>"
+                                name="<quarantine:constants keyName="mailid"/>"
                                 onclick="uncheckMaster()"
-                                value="<quarantine:inboxRecord prop="mailId"/>"/>
+                                value="<quarantine:inboxRecord prop="mailid"/>"/>
                             </th>
                             <td>
                               <quarantine:inboxRecord prop="tsender" JSEscape="true"/>

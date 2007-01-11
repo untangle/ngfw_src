@@ -12,6 +12,7 @@ package com.untangle.tran.mail.papi.quarantine;
 
 public class WebConstants {
 
+  // constant values must be in lower case
   public static final String AUTH_TOKEN_RP = "tkn";
   public static final String ACTION_RP = "action";
   public static final String PURGE_RV = "purge";
@@ -21,7 +22,7 @@ public class WebConstants {
   public static final String SAFELIST_ADD_RV = "sladd";
   public static final String SAFELIST_REMOVE_RV = "slremove";
   public static final String VIEW_INBOX_RV = "viewibx";
-  public static final String MAIL_ID_RP = "mailId";
+  public static final String MAIL_ID_RP = "mailid";
   //When the "action" is "sladd" or "slremove", this is the
   //key for the value of the (base64 encoded) email address
   public static final String SAFELIST_TARGET_ADDR_RP = "sladdr";
