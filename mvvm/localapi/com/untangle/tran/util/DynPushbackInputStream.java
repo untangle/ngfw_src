@@ -85,9 +85,7 @@ public class DynPushbackInputStream
   public int read()
     throws IOException {
     ensureOpen();
-    return m_stack.isEmpty()?
-      super.read():
-      m_stack.pop();
+    return m_stack.isEmpty() ? super.read() : m_stack.pop();
   }
 
   @Override
@@ -216,8 +214,7 @@ public class DynPushbackInputStream
       if(avail == 0) {
         return 0;
       }
-      len = len>avail?
-        avail:len;
+      len = len>avail ? avail : len;
 
       for(int i = 0; i<len; i++) {
         bytes[start+i] = m_buf[--m_head];
@@ -229,13 +226,13 @@ public class DynPushbackInputStream
       m_buf = null;
     }
 
-    private void ensure(int len) {
-      int remaining =
-        m_buf.length - m_head;
-      if(remaining < len) {
-        int newLen = (remaining + m_expandBy) < len?
-          len:m_expandBy;
-        byte[] newArray = new byte[newLen];
+    private void ensure(int addLen) {
+      int curLen = m_buf.length;
+      int remainLen = curLen - m_head;
+      if(remainLen < addLen) {
+        // new buffer needs to grow larger than org buffer by expandLen
+        int expandLen = (remainLen + m_expandBy) < addLen ? addLen : m_expandBy;
+        byte[] newArray = new byte[curLen + expandLen];
         System.arraycopy(m_buf, 0, newArray, 0, m_head);
         m_buf = newArray;
       }

@@ -107,7 +107,6 @@ public class MIMEParsingInputStream extends InputStream {
   public static final BoundaryResult BOUNDARY_NOT_FOUND = new BoundaryResult();
 
 
-
   private final DynPushbackInputStream m_wrapped;
 
   //A bit optimistic on the system to read more than
@@ -275,9 +274,7 @@ public class MIMEParsingInputStream extends InputStream {
     if(count >= maxLen) {
       throw new LineTooLongException(maxLen);
     }
-    return bb.size() == 0?
-      null:
-      new Line(bb.toByteBuffer(), 0);
+    return bb.size() == 0 ? null : new Line(bb.toByteBuffer(), 0);
   }
 
   /**
@@ -354,7 +351,6 @@ public class MIMEParsingInputStream extends InputStream {
     //candidate boundary
     int candidatePos = 0;//In case someone positioned us after a EOL,
                          //start at "0" instead of "-1"
-
 
     long boundaryEnd = 0;
     int boundaryStartEOL = 0;//TODO Make this a symbol
@@ -518,8 +514,6 @@ public class MIMEParsingInputStream extends InputStream {
   }
 
 
-
-
   @Override
   public long skip(long n)
     throws IOException {
@@ -552,7 +546,6 @@ public class MIMEParsingInputStream extends InputStream {
   }
 
 
-
   /**
    * Since marks are not supported, this always throws
    * an exception
@@ -575,7 +568,6 @@ public class MIMEParsingInputStream extends InputStream {
   public boolean markSupported() {
     return false;
   }
-
 
 
   private void uneatEOL(int val)
@@ -647,8 +639,6 @@ public class MIMEParsingInputStream extends InputStream {
     doTest(crlf + "--foo" + crlf + "next line");
     doTest("ABC" + crlf + "--foo" + crlf + "next line");
     doTest("--foo" + crlf + "next line");
-
-
   }
 
   private static void doTest(String str)
@@ -657,10 +647,8 @@ public class MIMEParsingInputStream extends InputStream {
     byte[] bytes = str.getBytes();
     for(int i = 0; i<bytes.length; i++) {
       String toPrint =
-        bytes[i] == CR?
-          "<CR>":
-          bytes[i] == LF?
-            "<LF>":new StringBuilder().append((char) bytes[i]).toString();
+        bytes[i] == CR ? "<CR>" :
+          bytes[i] == LF ? "<LF>" : new StringBuilder().append((char) bytes[i]).toString();
       System.out.println(i + " " + toPrint);
     }
     java.io.ByteArrayInputStream bais =
