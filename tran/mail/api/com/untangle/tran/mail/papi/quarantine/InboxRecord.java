@@ -103,6 +103,14 @@ public abstract class InboxRecord
   }
 
   // need get and set pair prefixes for velocity
+  public final Date getInternDateAsDate() {
+    return new Date(getInternDate());
+  }
+
+  public final void setInternDateAsDate(Date date) {
+    setInternDate(date.getTime());
+  }
+
   public final String getFormattedDate() {
       try {
           Date iDate = new Date(getInternDate());
