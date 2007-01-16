@@ -20,8 +20,8 @@ import java.util.jar.*;
 
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.reporting.summary.*;
 import com.untangle.mvvm.engine.DataSourceFactory;
+import com.untangle.mvvm.reporting.summary.*;
 import com.untangle.mvvm.security.Tid;
 import com.untangle.mvvm.tran.Transform;
 import com.untangle.mvvm.tran.TransformContext;
@@ -50,7 +50,7 @@ public class Reporter implements Runnable
     // This is the current midnight -- we're generating reports up to this time.
     private java.util.Date midnight;
 
-    private int daysToKeep; 
+    private int daysToKeep;
 
     // Today
     private static File outputDir;
@@ -93,8 +93,8 @@ public class Reporter implements Runnable
             existing.add(rs.getString(1));
         rs.close();
         stmt.close();
-            
-        // Go back to lastmonth and add any days missing to reports 
+
+        // Go back to lastmonth and add any days missing to reports
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(Util.lastmonth.getTime());
         while (cal.getTimeInMillis() <= Util.lastday.getTime()) {
@@ -209,7 +209,7 @@ public class Reporter implements Runnable
             envBWriter.close();
             envFWriter.close();
 
-            
+
         } catch (IOException exn) {
             logger.error("Unable to delete old env file, create new env file, or write to new env file for update-reports", exn);
         }
@@ -276,9 +276,6 @@ public class Reporter implements Runnable
     private void generateNewReports(Connection conn, List<TransformContext> toreport)
         throws IOException, JRScriptletException, SQLException, ClassNotFoundException
     {
-        Thread ct = Thread.currentThread();
-        ClassLoader oldCl = ct.getContextClassLoader();
-
         for (TransformContext tctx : toreport) {
             if (needToDie) {
                 logger.warn("exiting early by request");
@@ -286,15 +283,13 @@ public class Reporter implements Runnable
             }
             String tranName = tctx.getTransformDesc().getName();
             try {
-                ClassLoader tcl = tctx.getClassLoader();
-                ct.setContextClassLoader(tcl);
+                // XXX should we set logging context?
                 logger.info("Running TranReporter for " + tranName);
                 TranReporter tranReporter = new TranReporter(outputDir, tctx, settings);
                 tranReporter.process(conn);
             } catch (Exception exn) {
                 logger.warn("bad transform: " + tranName, exn);
             } finally {
-                ct.setContextClassLoader(oldCl);
             }
         }
     }
@@ -309,13 +304,15 @@ public class Reporter implements Runnable
         while (true) {
             String dirName = Util.getDateDirName(c);
             File dir = new File(outputBaseDir, dirName);
-            if (dir.exists())
+            if (dir.exists()) {
                 Util.deleteDir(dir);
-            else
+            } else {
                 missCount++;
-            if (missCount > 100)
+            }
+            if (missCount > 100) {
                 // Allow for 100 missed days, in case they turned off the box for a couple months.
                 break;
+            }
             c.add(Calendar.DAY_OF_YEAR, -1);
         }
     }

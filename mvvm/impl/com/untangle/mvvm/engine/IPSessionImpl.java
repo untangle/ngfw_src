@@ -243,12 +243,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             return;
         }
         TransformContext tctx = xform.getTransformContext();
-        ClassLoader classLoader = tctx.getClassLoader();
-        Thread ct = Thread.currentThread();
-        ClassLoader oldCl = ct.getContextClassLoader();
 
-        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ct.setContextClassLoader(classLoader);
         try {
             transformManager.registerThreadContext(tctx);
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
@@ -267,8 +262,6 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         } finally {
             transformManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
-            ct.setContextClassLoader(oldCl);
-            // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }
 
@@ -284,12 +277,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         }
 
         TransformContext tctx = xform.getTransformContext();
-        ClassLoader classLoader = tctx.getClassLoader();
-        Thread ct = Thread.currentThread();
-        ClassLoader oldCl = ct.getContextClassLoader();
 
-        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ct.setContextClassLoader(classLoader);
         try {
             transformManager.registerThreadContext(tctx);
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
@@ -315,8 +303,6 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         } finally {
             transformManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
-            ct.setContextClassLoader(oldCl);
-            // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }
 
@@ -329,20 +315,13 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             killSession(message);
             return;
         }
-        TransformContext tctx = xform.getTransformContext();
-        ClassLoader classLoader = tctx.getClassLoader();
-        Thread ct = Thread.currentThread();
-        ClassLoader oldCl = ct.getContextClassLoader();
 
-        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ct.setContextClassLoader(classLoader);
+        TransformContext tctx = xform.getTransformContext();
         try {
             transformManager.registerThreadContext(tctx);
             readEvent(CLIENT, in);
         } finally {
             transformManager.deregisterThreadContext();
-            ct.setContextClassLoader(oldCl);
-            // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }
 
@@ -355,20 +334,13 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             killSession(message);
             return;
         }
-        TransformContext tctx = xform.getTransformContext();
-        ClassLoader classLoader = tctx.getClassLoader();
-        Thread ct = Thread.currentThread();
-        ClassLoader oldCl = ct.getContextClassLoader();
 
-        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ct.setContextClassLoader(classLoader);
+        TransformContext tctx = xform.getTransformContext();
         try {
             transformManager.registerThreadContext(tctx);
             readEvent(SERVER, in);
         } finally {
             transformManager.deregisterThreadContext();
-            ct.setContextClassLoader(oldCl);
-            // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }
 
@@ -381,20 +353,13 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             killSession(message);
             return;
         }
-        TransformContext tctx = xform.getTransformContext();
-        ClassLoader classLoader = tctx.getClassLoader();
-        Thread ct = Thread.currentThread();
-        ClassLoader oldCl = ct.getContextClassLoader();
 
-        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ct.setContextClassLoader(classLoader);
+        TransformContext tctx = xform.getTransformContext();
         try {
             transformManager.registerThreadContext(tctx);
             writeEvent(CLIENT, out);
         } finally {
             transformManager.deregisterThreadContext();
-            ct.setContextClassLoader(oldCl);
-            // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }
 
@@ -407,25 +372,19 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             killSession(message);
             return;
         }
-        TransformContext tctx = xform.getTransformContext();
-        ClassLoader classLoader = tctx.getClassLoader();
-        Thread ct = Thread.currentThread();
-        ClassLoader oldCl = ct.getContextClassLoader();
 
-        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ct.setContextClassLoader(classLoader);
+        TransformContext tctx = xform.getTransformContext();
         try {
             transformManager.registerThreadContext(tctx);
             writeEvent(SERVER, out);
         } finally {
             transformManager.deregisterThreadContext();
-            ct.setContextClassLoader(oldCl);
-            // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }
 
-    /** The write side of the client has been closed from underneath the transform,
-     * this is the same as an EPIPE, but is delivered as an event */
+    /** The write side of the client has been closed from underneath
+     * the transform, this is the same as an EPIPE, but is delivered
+     * as an event */
     public void clientOutputResetEvent(OutgoingSocketQueue out)
     {
         Transform xform = mPipe().transform();
@@ -435,13 +394,8 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             // killSession(message);
             return;
         }
-        TransformContext tctx = xform.getTransformContext();
-        ClassLoader classLoader = tctx.getClassLoader();
-        Thread ct = Thread.currentThread();
-        ClassLoader oldCl = ct.getContextClassLoader();
 
-        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ct.setContextClassLoader(classLoader);
+        TransformContext tctx = xform.getTransformContext();
         try {
             transformManager.registerThreadContext(tctx);
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
@@ -463,13 +417,12 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         } finally {
             transformManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
-            ct.setContextClassLoader(oldCl);
-            // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }
 
-    /** The write side of the server has been closed from underneath the transform,
-     * this is the same as an EPIPE, but is delivered as an event */
+    /** The write side of the server has been closed from underneath
+     * the transform, this is the same as an EPIPE, but is delivered
+     * as an event */
     public void serverOutputResetEvent(OutgoingSocketQueue out)
     {
         Transform xform = mPipe().transform();
@@ -479,13 +432,8 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             // killSession(message);
             return;
         }
-        TransformContext tctx = xform.getTransformContext();
-        ClassLoader classLoader = tctx.getClassLoader();
-        Thread ct = Thread.currentThread();
-        ClassLoader oldCl = ct.getContextClassLoader();
 
-        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ct.setContextClassLoader(classLoader);
+        TransformContext tctx = xform.getTransformContext();
         try {
             transformManager.registerThreadContext(tctx);
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
@@ -507,15 +455,12 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         } finally {
             transformManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
-            ct.setContextClassLoader(oldCl);
-            // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }
 
 
     /**
      * This one sets up the socket queues for streaming to begin.
-     *
      */
     private void setupForStreaming()
     {
@@ -547,8 +492,8 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
     }
 
     /**
-     * This one sets up the socket queues for normal operation; used when streaming ends.
-     *
+     * This one sets up the socket queues for normal operation; used
+     * when streaming ends.
      */
     private void setupForNormal()
     {
@@ -558,8 +503,9 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         OutgoingSocketQueue sout = ((com.untangle.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
         assert (streamer == null);
 
-        // We take care not to change the state unless it's really changing, as changing the
-        // state calls notifymvpoll() every time.
+        // We take care not to change the state unless it's really
+        // changing, as changing the state calls notifymvpoll() every
+        // time.
         if (sout != null && !sout.isEnabled())
             sout.enable();
         if (sout == null || (sout.isEmpty() && crumbs2write[SERVER] == null)) {
@@ -593,7 +539,8 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         boolean didSomething = false;
         if (out != null && out.isEmpty()) {
             if (crumbs2write[side] != null) {
-                // Do this first, before checking streamer, so we drain out any remaining buffer.
+                // Do this first, before checking streamer, so we
+                // drain out any remaining buffer.
                 tryWrite(side, out, true);
                 didSomething = true;
             } else if (streamer != null) {

@@ -14,9 +14,8 @@ package com.untangle.mvvm.logging;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.internet.MimeBodyPart;
@@ -26,12 +25,9 @@ import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.MvvmState;
 import com.untangle.mvvm.NetworkingConfiguration;
 import com.untangle.mvvm.Version;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.LocalTransformManager;
-import com.untangle.mvvm.tran.TransformContext;
 import org.apache.log4j.Logger;
 
-public class LogMailer implements Runnable
+public class LogMailerImpl implements LogMailer, Runnable
 {
     public static final String SUBJECT_BASE = "Untangle Platform Logs";
     public static final String BODY_BASE = "Error Logs";
@@ -43,12 +39,9 @@ public class LogMailer implements Runnable
     // for each message
     public static final int OTHER_LOG_LINES = 50;
 
+    private static final int OTHER_BUF_SIZE = 4096;
+
     private final Logger logger = Logger.getLogger(getClass());
-
-    private static final Object LOCK = new Object();
-    private static LogMailer LOGMAILER;
-
-    private final Map<Tid, SMTPAppender> loggers;
 
     private String from;
     private String subject;
@@ -59,27 +52,18 @@ public class LogMailer implements Runnable
     private volatile Thread thread;
 
     private Object sendMonitor = new Object();
-    private Tid sendTriggerer = null;
+    private MvvmLoggingContext sendTriggerer = null;
 
-    private LogMailer()
+    // constructors -----------------------------------------------------------
+
+    public LogMailerImpl()
     {
-        loggers = new HashMap<Tid, SMTPAppender>();
         this.sysstat = new SystemStatus();
         thread = new Thread(this);
         thread.start();
     }
 
-    public static LogMailer get()
-    {
-        if (null == LOGMAILER) {
-            synchronized (LOCK) {
-                if (null == LOGMAILER) {
-                    LOGMAILER = new LogMailer();
-                }
-            }
-        }
-        return LOGMAILER;
-    }
+    // public methods ---------------------------------------------------------
 
     public void stop()
     {
@@ -89,17 +73,62 @@ public class LogMailer implements Runnable
         t.interrupt();
     }
 
-    void register(Tid tid, SMTPAppender appender)
-    {
-        synchronized(loggers) {
-            loggers.put(tid, appender);
+    // LogMailer methods ------------------------------------------------------
+
+    /**
+     * Send the contents of all the cyclic buffers as an e-mail
+     * message.
+     */
+    public void sendMessage(MvvmLoggingContext triggeringCtx) {
+        try {
+            Set<SMTPAppender> appenders = MvvmRepositorySelector.selector().getSmtpAppenders();
+
+            ArrayList<MimeBodyPart> parts = new ArrayList<MimeBodyPart>();
+            for (SMTPAppender appender : appenders) {
+                MvvmLoggingContext ctx = appender.getLoggingContext();
+                String partName = ctx.getName() + ".log";
+                MimeBodyPart part = appender.getPart();
+                if (part != null) {
+                    part.setFileName(partName);
+                    part.setDisposition(Part.INLINE);
+                    if (ctx.equals(triggeringCtx)) {
+                        parts.add(0, part);
+                    } else {
+                        parts.add(part);
+                    }
+                }
+            }
+
+            // Finally, get some of non-log4j logs: console.log and gc.log
+            MimeBodyPart part = getOtherLogPart("console.log");
+            if (part != null) {
+                part.setFileName("console.log");
+                part.setDisposition(Part.INLINE);
+                parts.add(part);
+            }
+
+            part = getOtherLogPart("gc.log");
+            if (part != null) {
+                part.setFileName("gc.log");
+                part.setDisposition(Part.INLINE);
+                parts.add(part);
+            }
+
+            // Send it!
+            doSend(SUBJECT_BASE, BODY_BASE, parts);
+        } catch(Exception e) {
+            logger.warn("Error occured while sending e-mail notification.", e);
         }
     }
 
-    public void unregister(Tid tid)
+    // Called from one of the SMTPAppenders to indicate the need to send.
+    public void sendBuffer(MvvmLoggingContext ctx)
     {
-        synchronized(loggers) {
-            loggers.remove(tid);
+        synchronized(sendMonitor) {
+            // Might just update the value, but that's ok -- we'll
+            // still end up putting an interesting error log first.
+            sendTriggerer = ctx;
+            sendMonitor.notify();
         }
     }
 
@@ -109,7 +138,7 @@ public class LogMailer implements Runnable
     {
         while (null != thread) {
             try {
-                Tid triggerer;
+                MvvmLoggingContext triggerer;
                 synchronized (sendMonitor) {
                     sendMonitor.wait();
                     triggerer = sendTriggerer;
@@ -133,66 +162,7 @@ public class LogMailer implements Runnable
         }
     }
 
-    // Called from one of the SMTPAppenders to indicate the need to send.
-    void sendBuffer(Tid tid)
-    {
-        synchronized(sendMonitor) {
-            // Might just update the value, but that's ok -- we'll
-            // still end up putting an interesting error log first.
-            sendTriggerer = tid;
-            sendMonitor.notify();
-        }
-    }
-
-    /**
-     * Send the contents of all the cyclic buffers as an e-mail
-     * message.
-     */
-    protected void sendMessage(Tid triggeringTid) {
-        try {
-            LocalTransformManager tm = MvvmContextFactory.context().transformManager();
-            ArrayList<MimeBodyPart> parts = new ArrayList<MimeBodyPart>();
-            for (Tid tid : loggers.keySet()) {
-                SMTPAppender sapp = loggers.get(tid);
-                String partName;
-                if (tid.getId() == 0L) {
-                    partName = "mvvm.log";
-                } else {
-                    TransformContext tc = tm.transformContext(tid);
-                    partName = tc.getTransformDesc().getName() + ".log";
-                }
-                MimeBodyPart part = sapp.getPart();
-                if (part != null) {
-                    part.setFileName(partName);
-                    part.setDisposition(Part.INLINE);
-                    if (tid.equals(triggeringTid))
-                        parts.add(0, part);
-                    else
-                        parts.add(part);
-                }
-            }
-            // Finally, get some of non-log4j logs: console.log and gc.log
-
-            MimeBodyPart part = getOtherLogPart("console.log");
-            if (part != null) {
-                part.setFileName("console.log");
-                part.setDisposition(Part.INLINE);
-                parts.add(part);
-            }
-
-            part = getOtherLogPart("gc.log");
-            if (part != null) {
-                part.setFileName("gc.log");
-                part.setDisposition(Part.INLINE);
-                parts.add(part);
-            }
-
-            // Send it!
-            doSend(SUBJECT_BASE, BODY_BASE, parts);
-        } catch(Exception e) {
-            logger.warn("Error occured while sending e-mail notification.", e);
-        }
-    }
+    // private methods --------------------------------------------------------
 
     private void doSend(String subjectBase, String bodyBase,
                         List<MimeBodyPart> parts) {
@@ -214,8 +184,7 @@ public class LogMailer implements Runnable
         ms.sendErrorLogs(subjectText, bodyText, parts);
     }
 
-
-    private static final int OTHER_BUF_SIZE = 4096;
+    // private methods --------------------------------------------------------
 
     // Because we use RandomAccessFile in here, we're using 8-bit
     // chars (not Locale I18N friendly).  XXX

@@ -21,6 +21,7 @@ import com.untangle.mvvm.policy.PolicyManager;
 import com.untangle.mvvm.policy.SystemPolicyRule;
 import com.untangle.mvvm.policy.UserPolicyRule;
 import com.untangle.mvvm.policy.UserPolicyRuleSet;
+import com.untangle.mvvm.tran.LocalTransformManager;
 import com.untangle.mvvm.tran.firewall.intf.IntfMatcher;
 import com.untangle.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
@@ -234,7 +235,8 @@ class PolicyManagerImpl implements PolicyManagerPriv
             }
         }
 
-        return 0 < TransformManagerImpl.manager().transformInstances(p).size();
+        LocalTransformManager tm = MvvmContextFactory.context().transformManager();
+        return 0 < tm.transformInstances(p).size();
     }
 
     public SystemPolicyRule[] getSystemPolicyRules() {

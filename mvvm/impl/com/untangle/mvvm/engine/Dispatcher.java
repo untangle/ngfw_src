@@ -254,12 +254,6 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
     public com.untangle.mvvm.argon.TCPSession newSession(com.untangle.mvvm.argon.TCPNewSessionRequest request,
                                                          boolean isInbound)
     {
-        ClassLoader classLoader = transformContext.getClassLoader();
-        Thread ct = Thread.currentThread();
-        ClassLoader oldCl = ct.getContextClassLoader();
-
-        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ct.setContextClassLoader(classLoader);
         try {
             transformManager.registerThreadContext(transformContext);
             MDC.put(SESSION_ID_MDC_KEY, "NT" + request.id());
@@ -267,20 +261,12 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
         } finally {
             transformManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
-            ct.setContextClassLoader(oldCl);
-            // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }
 
     public com.untangle.mvvm.argon.UDPSession newSession(com.untangle.mvvm.argon.UDPNewSessionRequest request,
                                                          boolean isInbound)
     {
-        ClassLoader classLoader = transformContext.getClassLoader();
-        Thread ct = Thread.currentThread();
-        ClassLoader oldCl = ct.getContextClassLoader();
-
-        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ct.setContextClassLoader(classLoader);
         try {
             transformManager.registerThreadContext(transformContext);
             MDC.put(SESSION_ID_MDC_KEY, "NU" + request.id());
@@ -288,8 +274,6 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
         } finally {
             transformManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
-            ct.setContextClassLoader(oldCl);
-            // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }
 

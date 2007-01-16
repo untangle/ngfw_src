@@ -21,13 +21,11 @@ import com.untangle.mvvm.localapi.SessionMatcher;
 import com.untangle.mvvm.localapi.SessionMatcherFactory;
 import com.untangle.mvvm.policy.Policy;
 import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tapi.MPipe;
 import com.untangle.mvvm.tran.LocalTransformManager;
 import com.untangle.mvvm.tran.Transform;
 import com.untangle.mvvm.tran.TransformContext;
 import com.untangle.mvvm.tran.TransformDesc;
 import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.tran.TransformManager;
 import com.untangle.mvvm.tran.TransformStartException;
 import com.untangle.mvvm.tran.TransformState;
 import com.untangle.mvvm.tran.TransformStats;
@@ -405,21 +403,12 @@ public abstract class TransformBase implements Transform
 
         for (TransformBase parent : parents) {
             if (TransformState.INITIALIZED == parent.getRunState()) {
-                ClassLoader parentCl = parent.getTransformContext()
-                    .getClassLoader();
-
-                Thread ct = Thread.currentThread();
-                ClassLoader oldCl = ct.getContextClassLoader();
-                // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                ct.setContextClassLoader(parentCl);
                 try {
                     TransformContext pCtx = parent.getTransformContext();
                     transformManager.registerThreadContext(pCtx);
                     parent.parentStart();
                 } finally {
-                    transformManager.deregisterThreadContext();
-                    ct.setContextClassLoader(oldCl);
-                    // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    transformManager.registerThreadContext(transformContext);
                 }
             }
         }
@@ -457,22 +446,12 @@ public abstract class TransformBase implements Transform
 
         for (TransformBase parent : parents) {
             if (TransformState.RUNNING == parent.getRunState()) {
-                ClassLoader parentCl = parent.getTransformContext()
-                    .getClassLoader();
-
-                Thread ct = Thread.currentThread();
-                ClassLoader oldCl = ct.getContextClassLoader();
-                // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                ct.setContextClassLoader(parentCl);
-
                 try {
                     TransformContext pCtx = parent.getTransformContext();
                     transformManager.registerThreadContext(pCtx);
                     parent.parentStop();
                 } finally {
-                    transformManager.deregisterThreadContext();
-                    ct.setContextClassLoader(oldCl);
-                    // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    transformManager.registerThreadContext(transformContext);
                 }
             }
         }

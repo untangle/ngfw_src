@@ -13,7 +13,6 @@ package com.untangle.mvvm.security;
 
 import java.io.Serializable;
 import java.security.Principal;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -33,8 +32,8 @@ import com.untangle.mvvm.policy.Policy;
  */
 @Entity
 @Table(name="tid", schema="settings")
-public class Tid implements Principal, Serializable, Comparable{
-
+public class Tid implements Principal, Serializable, Comparable
+{
     private static final long serialVersionUID = -3752177143597737103L;
 
     private Long id;

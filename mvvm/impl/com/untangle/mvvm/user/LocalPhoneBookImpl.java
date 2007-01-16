@@ -17,7 +17,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,12 +33,9 @@ import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.ValidateException;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
-import com.untangle.mvvm.util.TransactionWork;
 import com.untangle.mvvm.util.Worker;
 import com.untangle.mvvm.util.WorkerRunner;
 import com.untangle.tran.util.MVLogger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 import static com.untangle.mvvm.user.UserInfo.LookupState;
 

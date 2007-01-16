@@ -13,12 +13,10 @@ package com.untangle.mvvm.engine;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -33,7 +31,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.api.MvvmTransformHandler;
-import com.untangle.mvvm.logging.LogMailer;
+import com.untangle.mvvm.logging.MvvmLoggingContext;
+import com.untangle.mvvm.logging.MvvmLoggingContextFactory;
+import com.untangle.mvvm.logging.MvvmRepositorySelector;
 import com.untangle.mvvm.policy.Policy;
 import com.untangle.mvvm.security.Tid;
 import com.untangle.mvvm.toolbox.MackageDesc;
@@ -47,6 +47,7 @@ import com.untangle.mvvm.tran.TransformStats;
 import com.untangle.mvvm.tran.UndeployException;
 import com.untangle.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
+import org.apache.log4j.helpers.LogLog;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.xml.sax.InputSource;
@@ -54,7 +55,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-class TransformManagerImpl implements LocalTransformManager
+class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextFactory
 {
     private static final String DESC_PATH = "META-INF/mvvm-transform.xml";
 
@@ -62,18 +63,19 @@ class TransformManagerImpl implements LocalTransformManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static TransformManagerImpl TRANSFORM_MANAGER;
-
     private final TransformManagerState transformManagerState;
     private final Map<Tid, TransformContextImpl> tids
         = new ConcurrentHashMap<Tid, TransformContextImpl>();
     private final ThreadLocal<TransformContext> threadContexts
-        = new ThreadLocal<TransformContext>();
+        = new InheritableThreadLocal<TransformContext>();
+    private final MvvmRepositorySelector repositorySelector;
 
     private boolean live = true;
 
-    private TransformManagerImpl()
+    TransformManagerImpl(MvvmRepositorySelector repositorySelector)
     {
+        this.repositorySelector = repositorySelector;
+
         TransactionWork<TransformManagerState> tw = new TransactionWork<TransformManagerState>()
             {
                 private TransformManagerState tms;
@@ -93,16 +95,6 @@ class TransformManagerImpl implements LocalTransformManager
             };
         MvvmContextFactory.context().runTransaction(tw);
         this.transformManagerState = tw.getResult();
-    }
-
-    static TransformManagerImpl manager()
-    {
-        synchronized (LOCK) {
-            if (null == TRANSFORM_MANAGER) {
-                TRANSFORM_MANAGER = new TransformManagerImpl();
-            }
-        }
-        return TRANSFORM_MANAGER;
     }
 
     // TransformManager -------------------------------------------------------
@@ -199,7 +191,7 @@ class TransformManagerImpl implements LocalTransformManager
     return (List<Tid>) visibleVector;
     }
 
-    public TransformContext transformContext(Tid tid)
+    public TransformContextImpl transformContext(Tid tid)
     {
         return tids.get(tid);
     }
@@ -247,10 +239,6 @@ class TransformManagerImpl implements LocalTransformManager
         }
 
         tc.destroyPersistentState();
-
-        // Free up our logger.  This kind of stuff should be in a hook. XXX
-        LogMailer lm = LogMailer.get();
-        lm.unregister(tid);
     }
 
     public Map<Tid, TransformStats> allTransformStats()
@@ -305,11 +293,59 @@ class TransformManagerImpl implements LocalTransformManager
     public void registerThreadContext(TransformContext ctx)
     {
         threadContexts.set(ctx);
+        repositorySelector.setContextFactory(this);
     }
 
     public void deregisterThreadContext()
     {
         threadContexts.remove();
+        repositorySelector.mvvmContext();
+    }
+
+    // MvvmLoggingContextFactory methods --------------------------------------
+
+    public MvvmLoggingContext get()
+    {
+        final TransformContext tctx = threadContexts.get();
+        if (null == tctx) {
+            LogLog.warn("null transform context in threadContexts");
+        }
+
+        return new MvvmLoggingContext()
+            {
+                public String getConfigName()
+                {
+                    return "log4j-tran.xml";
+                }
+
+                public String getFileName()
+                {
+                    if (null == tctx) {
+                        return "0";
+                    } else {
+                        return tctx.getTid().getName();
+                    }
+                }
+
+                public String getName()
+                {
+                    if (null == tctx) {
+                        return "0";
+                    } else {
+                        return tctx.getTid().getName();
+                    }
+                }
+
+                public boolean equals(Object o)
+                {
+                    return tctx.equals(o);
+                }
+
+                public int hashCode()
+                {
+                    return tctx.hashCode();
+                }
+            };
     }
 
     // package protected methods ----------------------------------------------

@@ -44,6 +44,7 @@ public interface MailSender
      */
     void sendReports(String subject, String bodyHTML, List<String> extraLocations, List<File> extras);
 
+
     /**
      * <code>sendErrorLogs</code> sends an error log email to Untangle.  Each attachment contains
      * the latest events for a particular transform.
@@ -54,7 +55,6 @@ public interface MailSender
      * @param parts a <code>List<MimeBodyPart></code> containing the additional parts.
      */
     void sendErrorLogs(String subject, String bodyText, List<MimeBodyPart> parts);
-
 
     /****************************************************************************
      * BASIC (low-level) METHODS FOLLOW

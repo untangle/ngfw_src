@@ -11,9 +11,7 @@
 
 package com.untangle.mvvm.logging;
 
-public interface MvvmLoggingContext
+public interface MvvmLoggingContextFactory
 {
-    String getConfigName();
-    String getFileName();
-    String getName();
+    MvvmLoggingContext get();
 }

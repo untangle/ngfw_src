@@ -31,6 +31,8 @@ import com.untangle.mvvm.localapi.LocalIntfManager;
 import com.untangle.mvvm.localapi.LocalShieldManager;
 import com.untangle.mvvm.logging.EventLogger;
 import com.untangle.mvvm.logging.EventLoggerFactory;
+import com.untangle.mvvm.logging.LogMailerImpl;
+import com.untangle.mvvm.logging.MvvmRepositorySelector;
 import com.untangle.mvvm.networking.NetworkManagerImpl;
 import com.untangle.mvvm.networking.RemoteNetworkManagerImpl;
 import com.untangle.mvvm.networking.ping.PingManagerImpl;
@@ -76,6 +78,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private PolicyManagerImpl policyManager;
     private MPipeManagerImpl mPipeManager;
     private MailSenderImpl mailSender;
+    private LogMailerImpl logMailer;
     private NetworkManagerImpl networkManager;
     private PingManagerImpl pingManager;
     private RemoteNetworkManagerImpl remoteNetworkManager;
@@ -512,7 +515,8 @@ public class MvvmContextImpl extends MvvmContextBase
     {
         cronManager = new CronManager();
         syslogManager = SyslogManagerImpl.manager();
-        loggingManager = new LoggingManagerImpl(main.getRepositorySelector());
+        MvvmRepositorySelector repositorySelector = MvvmRepositorySelector.selector();
+        loggingManager = new LoggingManagerImpl(repositorySelector);
         loggingManager.initSchema("mvvm");
         loggingManager.start();
         eventLogger = EventLoggerFactory.factory().getEventLogger();
@@ -527,6 +531,9 @@ public class MvvmContextImpl extends MvvmContextBase
         // start services:
         adminManager = new AdminManagerImpl(this);
         mailSender = MailSenderImpl.mailSender();
+
+        logMailer = new LogMailerImpl();
+        repositorySelector.setLogMailer(logMailer);
 
         // Fire up the policy manager.
         policyManager = PolicyManagerImpl.policyManager();
@@ -549,13 +556,13 @@ public class MvvmContextImpl extends MvvmContextBase
 
         // Start the phonebook
         localPhoneBookImpl = LocalPhoneBookImpl.getInstance();
-        remotePhoneBookImpl = new RemotePhoneBookImpl( localPhoneBookImpl );
+        remotePhoneBookImpl = new RemotePhoneBookImpl(localPhoneBookImpl);
 
         portalManager = new PortalManagerImpl(this);
         remotePortalManager = new RemotePortalManagerImpl(portalManager);
 
         // start transforms:
-        transformManager = TransformManagerImpl.manager();
+        transformManager = new TransformManagerImpl(repositorySelector);
         remoteTransformManager = new RemoteTransformManagerImpl(transformManager);
 
         // Retrieve the reporting configuration manager

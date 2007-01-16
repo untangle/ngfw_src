@@ -46,7 +46,6 @@ import com.untangle.mvvm.tran.TransformState;
 import com.untangle.mvvm.tran.TransformStats;
 import com.untangle.mvvm.tran.UndeployException;
 import com.untangle.mvvm.util.TransactionWork;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -62,29 +61,27 @@ class TransformContextImpl implements TransformContext
     private final Tid tid;
     private final TransformPreferences transformPreferences;
     private final TransformPersistentState persistentState;
-    private final URLClassLoader classLoader;
     private final boolean isNew;
 
     private TransformBase transform;
     private String mackageName;
 
-    private final TransformManagerImpl transformManager = TransformManagerImpl
-        .manager();
-    private final ToolboxManagerImpl toolboxManager = ToolboxManagerImpl
-        .toolboxManager();
+    private final TransformManagerImpl transformManager;
+    private final ToolboxManagerImpl toolboxManager;
 
     TransformContextImpl(URLClassLoader classLoader, TransformDesc tDesc,
                          String mackageName, boolean isNew)
         throws DeployException
     {
         MvvmContextImpl mctx = MvvmContextImpl.getInstance();
+        transformManager = mctx.transformManager();
+        toolboxManager = mctx.toolboxManager();
+
         LoggingManagerImpl lm = mctx.loggingManager();
         if (null != tDesc.getTransformBase()) {
             lm.initSchema(tDesc.getTransformBase());
         }
         lm.initSchema(tDesc.getName());
-
-        this.classLoader = classLoader;
 
         this.transformDesc = tDesc;
         this.tid = transformDesc.getTid();
@@ -136,11 +133,6 @@ class TransformContextImpl implements TransformContext
             parentCtxs.add(startParent(parent, tid.getPolicy()));
         }
 
-        Thread ct = Thread.currentThread();
-        ClassLoader oldCl = ct.getContextClassLoader();
-        // entering transform ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ct.setContextClassLoader(classLoader);
-
         final MvvmLocalContext mctx = MvvmContextFactory.context();
         try {
             transformManager.registerThreadContext(this);
@@ -149,8 +141,7 @@ class TransformContextImpl implements TransformContext
             logger.debug("setting tran " + tidName + " log4j repository");
 
             String className = transformDesc.getClassName();
-            transform = (TransformBase)classLoader.loadClass(className)
-                .newInstance();
+            transform = (TransformBase)Class.forName(className).newInstance();
 
             for (TransformContext parentCtx : parentCtxs) {
                 transform.addParent((TransformBase)parentCtx.transform());
@@ -200,8 +191,6 @@ class TransformContextImpl implements TransformContext
             throw new DeployException(exn);
         } finally {
             transformManager.deregisterThreadContext();
-            ct.setContextClassLoader(oldCl);
-            // left transform ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
             if (null == transform) {
                 TransactionWork tw = new TransactionWork()
@@ -267,11 +256,6 @@ class TransformContextImpl implements TransformContext
 
     // XXX should be LocalTransformContext ------------------------------------
 
-    public URLClassLoader getClassLoader()
-    {
-        return classLoader;
-    }
-
     // XXX remove this method...
     @Deprecated
     public boolean runTransaction(TransactionWork tw)
@@ -297,15 +281,10 @@ class TransformContextImpl implements TransformContext
         }
     }
 
-
     // package private methods ------------------------------------------------
 
     void destroy() throws UndeployException
     {
-        Thread ct = Thread.currentThread();
-        ClassLoader oldCl = ct.getContextClassLoader();
-        // entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        ct.setContextClassLoader(classLoader);
         try {
             transformManager.registerThreadContext(this);
             if (transform.getRunState() == TransformState.RUNNING) {
@@ -316,27 +295,17 @@ class TransformContextImpl implements TransformContext
             throw new UndeployException(exn);
         } finally {
             transformManager.deregisterThreadContext();
-            ct.setContextClassLoader(classLoader);
-            // left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
-
-        LogFactory.release(classLoader);
     }
 
     void unload()
     {
         if (transform != null) {
-            Thread ct = Thread.currentThread();
-            ClassLoader oldCl = ct.getContextClassLoader();
-            // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            ct.setContextClassLoader(classLoader);
             try {
                 transformManager.registerThreadContext(this);
                 transform.unload();
             } finally {
                 transformManager.deregisterThreadContext();
-                Thread.currentThread().setContextClassLoader(oldCl);
-                // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             }
         }
     }

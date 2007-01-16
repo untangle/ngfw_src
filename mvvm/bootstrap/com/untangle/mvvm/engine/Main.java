@@ -28,8 +28,6 @@ public class Main
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final MvvmRepositorySelector repositorySelector;
-
     private MvvmClassLoader mcl;
     private Class mvvmPrivClass;
     private MvvmContextBase mvvmContext;
@@ -38,8 +36,8 @@ public class Main
 
     private Main()
     {
-        repositorySelector = new MvvmRepositorySelector();
-        LogManager.setRepositorySelector(repositorySelector, new Object());
+        LogManager.setRepositorySelector(MvvmRepositorySelector.selector(),
+                                         new Object());
     }
 
     // public static methods --------------------------------------------------
@@ -76,13 +74,6 @@ public class Main
         } finally {
             System.exit(-1);
         }
-    }
-
-    // public methods ---------------------------------------------------------
-
-    public MvvmRepositorySelector getRepositorySelector()
-    {
-        return repositorySelector;
     }
 
     // package private methods ------------------------------------------------
@@ -197,7 +188,6 @@ public class Main
         try {
             // Entering MVVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(mcl);
-            repositorySelector.mvvmContext();
 
             mvvmContext = (MvvmContextBase)mcl
                 .loadClass(MVVM_LOCAL_CONTEXT_CLASSNAME)
@@ -206,7 +196,6 @@ public class Main
             mvvmContext.doInit(this);
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
-            repositorySelector.bootstrapContext();
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }
@@ -217,13 +206,11 @@ public class Main
         try {
             // Entering MVVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(mcl);
-            repositorySelector.mvvmContext();
 
             mvvmContext.doPostInit();
 
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
-            repositorySelector.bootstrapContext();
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }

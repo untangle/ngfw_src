@@ -6,14 +6,14 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
- * $Id: MvvmRepositorySelector.java 8515 2007-01-03 00:13:24Z amread $
+ * $Id: LogMailer.java 8515 2007-01-03 00:13:24Z amread $
  */
 
 package com.untangle.mvvm.logging;
 
-public interface MvvmLoggingContext
+
+public interface LogMailer
 {
-    String getConfigName();
-    String getFileName();
-    String getName();
+    void sendBuffer(MvvmLoggingContext ctx);
+    void sendMessage(MvvmLoggingContext ctx);
 }

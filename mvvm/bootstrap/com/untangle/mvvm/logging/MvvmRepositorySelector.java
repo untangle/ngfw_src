@@ -15,7 +15,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Hierarchy;
 import org.apache.log4j.Level;
@@ -31,60 +33,97 @@ public class MvvmRepositorySelector implements RepositorySelector
     public static final String TRAN_LOG_FILE_NAME_TOKEN
         = "TranLogFileName";
 
-    private static final MvvmLoggingContext BOOTSTRAP_CONTEXT = new MvvmLoggingContext()
-        {
-            public String getConfigName() { return "log4j.xml"; }
-            public String getFileName() { return "server.log"; }
-        };
-
     private static final MvvmLoggingContext MVVM_CONTEXT = new MvvmLoggingContext()
         {
             public String getConfigName() { return "log4j-mvvm.xml"; }
-            public String getFileName() { return "mvvm.log"; }
+            public String getFileName() { return "mvvm"; }
+            public String getName() { return "mvvm"; }
+
+            public MvvmLoggingContext get() { return this; }
         };
+
+    private static final MvvmLoggingContextFactory MVVM_CONTEXT_FACTORY = new MvvmLoggingContextFactory()
+        {
+            public MvvmLoggingContext get() { return MVVM_CONTEXT; }
+        };
+
+    private static final LogMailer NULL_LOG_MAILER = new LogMailer()
+        {
+            public void sendBuffer(MvvmLoggingContext ctx) { }
+
+            public void sendMessage(MvvmLoggingContext ctx) { }
+        };
+
+    private static final MvvmRepositorySelector SELECTOR = new MvvmRepositorySelector();
 
     private final Map<MvvmLoggingContext, MvvmHierarchy> repositories
         = new HashMap<MvvmLoggingContext, MvvmHierarchy>();
 
-    private final ThreadLocal<MvvmLoggingContext> currentContext;
+    private final ThreadLocal<MvvmLoggingContextFactory> currentContextFactory;
+    private final Set<SMTPAppender> smtpAppenders = new HashSet<SMTPAppender>();
+
+    private LogMailer logMailer = NULL_LOG_MAILER;
 
     // constructors ----------------------------------------------------------
 
-    public MvvmRepositorySelector()
+    private MvvmRepositorySelector()
     {
-        currentContext = new InheritableThreadLocal<MvvmLoggingContext>();
-        currentContext.set(BOOTSTRAP_CONTEXT);
+        currentContextFactory = new InheritableThreadLocal<MvvmLoggingContextFactory>();
+        currentContextFactory.set(MVVM_CONTEXT_FACTORY);
+    }
+
+    // factories -------------------------------------------------------------
+
+    public static MvvmRepositorySelector selector()
+    {
+        return SELECTOR;
     }
 
     // public methods --------------------------------------------------------
 
     public LoggerRepository getLoggerRepository()
     {
-        MvvmLoggingContext ctx = currentContext.get();
-        if (null == ctx) {
-            LogLog.warn("null logging context, using bootstrap context");
-            ctx = BOOTSTRAP_CONTEXT;
-            currentContext.set(BOOTSTRAP_CONTEXT);
-        }
+        MvvmLoggingContext ctx = getContextFactory().get();
 
         MvvmHierarchy hier;
 
         synchronized (repositories) {
             hier = repositories.get(ctx);
             if (null == hier) {
-                MvvmLoggingContext oldCtx = currentContext.get();
+                MvvmLoggingContextFactory o = currentContextFactory.get();
                 try {
-                    currentContext.set(BOOTSTRAP_CONTEXT);
+                    currentContextFactory.set(MVVM_CONTEXT_FACTORY);
                     hier = new MvvmHierarchy(ctx);
                     hier.configure();
                     repositories.put(ctx, hier);
                 } finally {
-                    currentContext.set(oldCtx);
+                    currentContextFactory.set(o);
                 }
             }
         }
 
         return hier;
+    }
+
+    public void setLogMailer(LogMailer logMailer)
+    {
+        this.logMailer = logMailer;
+    }
+
+    public LogMailer getLogMailer()
+    {
+        return logMailer;
+    }
+
+    public MvvmLoggingContext registerSmtpAppender(SMTPAppender appender)
+    {
+        smtpAppenders.add(appender);
+        return getContextFactory().get();
+    }
+
+    public Set<SMTPAppender> getSmtpAppenders()
+    {
+        return smtpAppenders;
     }
 
     public void remove(MvvmLoggingContext ctx)
@@ -103,14 +142,24 @@ public class MvvmRepositorySelector implements RepositorySelector
         }
     }
 
-    public void bootstrapContext()
-    {
-        currentContext.set(BOOTSTRAP_CONTEXT);
-    }
-
     public void mvvmContext()
     {
-        currentContext.set(MVVM_CONTEXT);
+        currentContextFactory.set(MVVM_CONTEXT_FACTORY);
+    }
+
+    public void setContextFactory(MvvmLoggingContextFactory ctx)
+    {
+        currentContextFactory.set(ctx);
+    }
+
+    public MvvmLoggingContextFactory getContextFactory()
+    {
+        MvvmLoggingContextFactory ctx = currentContextFactory.get();
+        if (null == ctx) {
+            ctx = MVVM_CONTEXT_FACTORY;
+            currentContextFactory.set(MVVM_CONTEXT_FACTORY);
+        }
+        return ctx;
     }
 
     private class MvvmHierarchy extends Hierarchy

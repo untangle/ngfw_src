@@ -66,9 +66,6 @@ public interface TransformContext
     // XXX
     boolean runTransaction(TransactionWork tw);
 
-    // XXX
-    ClassLoader getClassLoader();
-
     InputStream getResourceAsStream(String resource);
 
     // call-through methods ---------------------------------------------------
