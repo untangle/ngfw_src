@@ -19,12 +19,15 @@ import java.net.URL;
 
 public class BlockDetails implements Serializable
 {
-    private final int SUB_LINE_LEN = 80;
+    private static final int SUB_LINE_LEN = 80;
+
     private final String nonce;
     private final HttpBlockerSettings settings;
     private final String host;
     private final URI uri;
     private final String reason;
+
+    // constructor ------------------------------------------------------------
 
     public BlockDetails(String nonce, HttpBlockerSettings settings,
                         String host, URI uri, String reason)
@@ -36,9 +39,16 @@ public class BlockDetails implements Serializable
         this.reason = reason;
     }
 
+    // public methods ---------------------------------------------------------
+
     public String getNonce()
     {
         return nonce;
+    }
+
+    public String getHost()
+    {
+        return null == host ? "" : host;
     }
 
     public String getHeader()
@@ -51,28 +61,9 @@ public class BlockDetails implements Serializable
         return settings.getBlockTemplate().getContact();
     }
 
-    public String getHost()
-    {
-        return host;
-    }
-
     public String getFormattedHost()
     {
-        return breakLine(getHost(), SUB_LINE_LEN);
-    }
-
-    public String getRuleSite()
-    {
-        if (host.startsWith("www.") && 4 < host.length()) {
-            return host.substring(4);
-        } else {
-            return host;
-        }
-    }
-
-    public String getFormattedRuleSite()
-    {
-        return breakLine(getRuleSite(), SUB_LINE_LEN);
+        return null == host ? "" : breakLine(host, SUB_LINE_LEN);
     }
 
     public URI getUri()
@@ -103,6 +94,8 @@ public class BlockDetails implements Serializable
     {
         return reason;
     }
+
+    // private methods --------------------------------------------------------
 
     private String breakLine(String orgLine, int subLineLen) {
         StringBuffer newLine = new StringBuffer(orgLine.length());

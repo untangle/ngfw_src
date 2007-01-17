@@ -17,7 +17,8 @@ import java.net.InetAddress;
 
 public class BlockDetails implements Serializable
 {
-    private final int SUB_LINE_LEN = 80;
+    private static final int SUB_LINE_LEN = 80;
+
     private final String nonce;
     private final String host;
     private final String uri;
@@ -44,31 +45,36 @@ public class BlockDetails implements Serializable
 
     public String getFormattedHost()
     {
-        return breakLine(getHost(), SUB_LINE_LEN);
+        return null == host ? "" : breakLine(host, SUB_LINE_LEN);
     }
 
     public String getWhitelistHost()
     {
-        if (host.startsWith("www.") && 4 < host.length()) {
+        if (null == host) {
+            return null;
+        } if (host.startsWith("www.") && 4 < host.length()) {
             return host.substring(4);
         } else {
             return host;
         }
     }
 
-    public String getFormattedWhitelistHost()
-    {
-        return breakLine(getWhitelistHost(), SUB_LINE_LEN);
-    }
-
     public String getUrl()
     {
-        return "http://" + host + uri;
+        if (null == host) {
+            return "javascript:history.back()";
+        } else {
+            return "http://" + host + uri;
+        }
     }
 
     public String getFormattedUrl()
     {
-        return breakLine(getUrl(), SUB_LINE_LEN);
+        if (null == host) {
+            return "";
+        } else {
+            return breakLine("http://" + host + uri, SUB_LINE_LEN);
+        }
     }
 
     public InetAddress getClientAddress()

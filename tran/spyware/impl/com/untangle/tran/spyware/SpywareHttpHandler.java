@@ -141,8 +141,17 @@ public class SpywareHttpHandler extends HttpStateMachine
 
         // XXX we could check the request-uri for an absolute address too...
         RequestLineToken requestLine = getRequestLine();
-        String host = requestHeader.getValue("host");
         URI uri = requestLine.getRequestUri();
+
+        String host = uri.getHost();
+        if (null == host) {
+            host = requestHeader.getValue("host");
+            if (null == host) {
+                InetAddress clientIp = getSession().clientAddr();
+                host = clientIp.getHostAddress();
+            }
+        }
+        host = host.toLowerCase();
 
         transform.incrementCount(Spyware.SCAN);
         if (transform.isWhitelistedDomain(host, session.clientAddr())) {

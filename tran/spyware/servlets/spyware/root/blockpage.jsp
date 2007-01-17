@@ -30,7 +30,7 @@ url = '<%=null == bd ? "javascript:history.back()" : bd.getUrl()%>';
 
 <script type="text/javascript" src="spyware.js"></script>
 
-  </head>
+</head>
 
   <body style="margin: 20px 20px 20px 20px">
     <table cellspacing="0" cellpadding="0" border="0" align="center" width="100%">
@@ -74,7 +74,7 @@ url = '<%=null == bd ? "javascript:history.back()" : bd.getUrl()%>';
 <tr>
 <td>
   <%
-  if (UserWhitelistMode.NONE != mode) {
+  if (UserWhitelistMode.NONE != mode && null != bd.getWhitelistHost()) {
   %>
       <input id="unblockNowButton" type="button" value="Unblock For Now"
       onclick="unblockSite(false)"/>

@@ -186,28 +186,38 @@ public class SpywareImpl extends AbstractTransform implements Spyware
             return false;
         } else if (global) {
             String site = bd.getWhitelistHost();
-            logger.warn("permanently unblocking site: " + site);
-            StringRule sr = new StringRule(site, site, "user whitelisted",
-                                           "whitelisted by user", true);
-            settings.getDomainWhitelist().add(sr);
-            setSpywareSettings(settings);
+            if (null == site) {
+                logger.warn("cannot unblock null host");
+                return false;
+            } else {
+                logger.warn("permanently unblocking site: " + site);
+                StringRule sr = new StringRule(site, site, "user whitelisted",
+                                               "whitelisted by user", true);
+                settings.getDomainWhitelist().add(sr);
+                setSpywareSettings(settings);
 
-            return true;
+                return true;
+            }
         } else {
             String site = bd.getWhitelistHost();
-            logger.warn("temporarily unblocking site: " + site);
-            InetAddress addr = bd.getClientAddress();
+            if (null == site) {
+                logger.warn("cannot unblock null host");
+                return false;
+            } else {
+                logger.warn("temporarily unblocking site: " + site);
+                InetAddress addr = bd.getClientAddress();
 
-            synchronized (this) {
-                Set<String> wl = hostWhitelists.get(addr);
-                if (null == wl) {
-                    wl = new HashSet<String>();
-                    hostWhitelists.put(addr, wl);
+                synchronized (this) {
+                    Set<String> wl = hostWhitelists.get(addr);
+                    if (null == wl) {
+                        wl = new HashSet<String>();
+                        hostWhitelists.put(addr, wl);
+                    }
+                    wl.add(site);
                 }
-                wl.add(site);
-            }
 
-            return true;
+                return true;
+            }
         }
     }
 
