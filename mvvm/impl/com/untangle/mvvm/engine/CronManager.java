@@ -74,7 +74,9 @@ class CronManager
         cronJob.setTask(task);
 
         Calendar next = cronJob.getPeriod().nextTime();
-        timer.schedule(task, next.getTime());
+        if (null != next) {
+            timer.schedule(task, next.getTime());
+        }
 
         return cronJob;
     }
