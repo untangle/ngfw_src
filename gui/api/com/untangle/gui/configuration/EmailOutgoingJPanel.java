@@ -284,7 +284,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 restrictIPJPanel.add(portJSpinner, gridBagConstraints);
 
                 smtpLoginJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                smtpLoginJLabel.setText("Authentication Login:");
+                smtpLoginJLabel.setText("Login (optional):");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 2;
@@ -308,7 +308,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 restrictIPJPanel.add(smtpLoginJTextField, gridBagConstraints);
 
                 smtpPasswordJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                smtpPasswordJLabel.setText("Authentication Password:");
+                smtpPasswordJLabel.setText("Password (optional):");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 3;
