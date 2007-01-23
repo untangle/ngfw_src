@@ -75,9 +75,11 @@ public class PhishSmtpFactory
             m_phishImpl.getSpamSettings().getSMTPInbound():
             m_phishImpl.getSpamSettings().getSMTPOutbound();
 
+        // Note that we may *****NOT***** release the session here.  This is because
+        // the mail casings currently assume that there will be at least one transform
+        // inline at all times.  The contained transform's state machine handles some
+        // of the casing's job currently. 10/06 jdi
         if(!spamConfig.getScan()) {
-            m_logger.debug("Scanning disabled.  Releasing.");
-            tsr.release(false);
             return;
         }
 
