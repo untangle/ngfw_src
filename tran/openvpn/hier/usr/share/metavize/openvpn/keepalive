@@ -6,19 +6,20 @@ currentPid=`pidof openvpn`
 expectedPid=`cat /var/run/openvpn.client.pid`
 
 if [ -z "${currentPid}" ] || [ "${currentPid}x" != "${expectedPid}x" ]; then
-    echo "\n[DEBUG:`date`] OpenVPN is no longer running, attempting a restart"
+    echo -e "\n[DEBUG:`date`] OpenVPN is no longer running, attempting a restart"
     killall openvpn
     /etc/init.d/openvpn restart
 fi
 
 echo -n "."
 
-## Test if the MVVM is aware of what is going on
-lastError=`tail -n 100 @MVVM_LOG@/console.log | grep 'netcap_intf_db.c:226:CRITICAL ERROR: Nothing is known about' | awk  --field-separator\='.'  '{ print $1 }' | tail -n 1  | sed 's|^\(..\)-\(..\)|\1/\2/06|'`
+## Test if the MVVM is aware of the VPN interface
+currentYear=`date +"%y"`
+lastError=`tail -n 100 @MVVM_LOG@/console.log | grep 'netcap_intf_db.c:[0-9]*:CRITICAL ERROR: Nothing is known about' | awk  -F '.'  '{ print $1 }' | tail -n 1  | sed "s|^\(..\)-\(..\)|\1/\2/${currentYear}|"`
 
 if [ "${lastError}x" != "x" ] && (( `date -d "${lastError}" +%s` > ( `date +%s` - 60 ))) ; then
-   echo "\n[DEBUG:`date`] Running mcli updateAddress to renew interfaces ${lastError}"
-   mcli updateAddress
+   echo -e "\n[DEBUG:`date`] Running mcli updateAddress to renew interfaces ${lastError}"
+   @USR_BIN@/mcli updateAddress
 fi
 
 true
