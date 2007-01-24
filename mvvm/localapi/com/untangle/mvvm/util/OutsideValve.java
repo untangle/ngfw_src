@@ -98,11 +98,16 @@ public abstract class OutsideValve extends ValveBase
             logger.warn( "Unable to parse the internet address: " + address );
         }
 
-
         int port = request.getLocalPort();
 
+        /* This is insecure access on port 80 */
         if (port == DEFAULT_HTTP_PORT) return isInsecureAccessAllowed();
+        
+        /* This is secure access on the internal port */
         if (port == NetworkUtil.INTERNAL_OPEN_HTTPS_PORT) return true;
+
+        /* This is secure access on the external port */
+        if (port == getRemoteSettings().getPublicHttpsPort()) return isOutsideAccessAllowed;
 
         return false;
     }
