@@ -79,7 +79,7 @@ public class InstallLicenseJPanel extends MWizardPageJPanel implements Adjustmen
 	    if( !acceptJRadioButton.isSelected() ){
 		if( declineJRadioButton.isSelected() ){
 		    MOneButtonJDialog.factory(topLevelWindow,"","<html>You have declined the Untangle License Agreement.  The install wizard will now exit.  You may run the install wizard again later.</html>","Install Wizard Warning","Warning");
-		    System.exit(0);
+		    System.exit(1);
 		    return;		
 		}
 		else{
