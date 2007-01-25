@@ -63,7 +63,7 @@ RIGHT.expr=Math.round($F{size}.doubleValue() / $F{all_size}.doubleValue() * 100)
 LEFT.total=Top @REPORT_MAX_LENGTH@ Totals:
 LEFTMID.total=(null != $F{top_count} ? $F{top_count} + "" : "0")
 MIDDLE.total=(null != $F{top_size} ? ($F{top_size}.doubleValue() / 1048576) : 0)
-RIGHT.total=(null != $F{top_size} ? Math.round($F{top_size}.doubleValue() / $F{all_size}.doubleValue() * 100) + "%" : "100%")
+RIGHT.total=(null != $F{top_size} ? Math.round($F{top_size}.doubleValue() / $F{all_size}.doubleValue() * 100) + "%" : "-%")
 
 LEFT.alltotal=Overall Totals:
 LEFTMID.alltotal=(null != $F{all_count} ? $F{all_count} + "" : "0")

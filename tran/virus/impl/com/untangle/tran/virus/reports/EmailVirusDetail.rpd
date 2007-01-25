@@ -25,7 +25,10 @@ FIELD_8.name=notify_action
 FIELD_8.type=String
 
 QUERY=\
-(SELECT evt.time_stamp, server_type, \
+SELECT time_stamp, server_type, recip_addr, from_addr, virus_name, ip_addr, \
+       action, notify_action \
+  FROM \
+((SELECT evt.time_stamp, server_type, \
         LOWER(recip_addr) AS recip_addr, LOWER(from_addr) AS from_addr, \
         evt.virus_name, c_client_addr AS ip_addr, \
         evt.action, evt.notify_action \
@@ -37,7 +40,7 @@ QUERY=\
      AND evt.vendor_name = $P{virusVendor}) \
    ORDER BY evt.time_stamp DESC) \
  UNION \
-(SELECT evt.time_stamp, server_type, \
+ (SELECT evt.time_stamp, server_type, \
         recip_addr, LOWER(from_addr) AS from_addr, \
         evt.virus_name, s_server_addr AS ip_addr, \
         evt.action, 'N' AS notify_action \
@@ -47,7 +50,9 @@ QUERY=\
      AND evt.time_stamp >= $P{startTime} \
      AND evt.time_stamp < $P{endTime} \
      AND evt.vendor_name = $P{virusVendor}) \
-   ORDER BY evt.time_stamp DESC)
+   ORDER BY evt.time_stamp DESC)) \
+  AS foo \
+ORDER BY time_stamp DESC
 
 TOPLEFT.label=Timestamp
 TOPLMID.label=Virus name
