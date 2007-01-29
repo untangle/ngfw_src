@@ -74,7 +74,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         + "</script>"
         + "</BODY></HTML>";
 
-    // XXX, someone,, make, this, pretty,
+    // XXX, someone make this pretty
     private static final String SIMPLE_BLOCK_TEMPLATE
         = "<HTML><HEAD>"
         + "<TITLE>403 Forbidden</TITLE>"

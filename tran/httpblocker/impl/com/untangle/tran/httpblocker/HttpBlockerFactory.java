@@ -43,7 +43,6 @@ public class HttpBlockerFactory implements TokenHandlerFactory
 
     public TokenHandler tokenHandler(TCPSession session)
     {
-
         return new HttpBlockerHandler(session, transform);
     }
 }

@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.tran.IPMaddrRule;
 import com.untangle.mvvm.tran.MimeType;
 import com.untangle.mvvm.tran.MimeTypeRule;
@@ -347,10 +346,11 @@ class Blacklist
             if (0 <= i)
                 result.add(cat);
         }
-        if (result.size() == 0)
+        if (result.size() == 0) {
             return null;
-        else
+        } else {
             return (String[]) result.toArray(new String[result.size()]);
+        }
     }
 
     private int findMatch(CharSequence[] strs, String val)
