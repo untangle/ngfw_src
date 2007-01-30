@@ -203,9 +203,12 @@ class UrlRewriter
     {
         InputStream is = getClass().getClassLoader().getResourceAsStream(JAVASCRIPT_REPLACEMENTS);
 
-        List<Replacement> repls = null == is
-            ? ((List<Replacement>)Collections.emptyList()) /* rere compiler */
-            : Replacement.getReplacements(is);
+        List<Replacement> repls;
+        if (null == is) {
+            repls = Collections.emptyList();
+        } else {
+            repls = Replacement.getReplacements(is);
+        }
 
         filterReplace(r, w, repls);
     }
