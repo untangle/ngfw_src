@@ -81,12 +81,10 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
 
     private boolean firstRefresh = true;
     protected void refreshAll() throws Exception {
-        applications.clear();
-        applications.addAll(Util.getMvvmContext().portalManager().applicationManager().getApplications());
         super.refreshAll();
-        if(!firstRefresh){
-            setVisible(false);
-            mTransformControlsJPanel.refreshGui();
+        if(firstRefresh){
+            applications.clear();
+            applications.addAll(Util.getMvvmContext().portalManager().applicationManager().getApplications());
         }
         firstRefresh = false;
         //settingsChanged = false;

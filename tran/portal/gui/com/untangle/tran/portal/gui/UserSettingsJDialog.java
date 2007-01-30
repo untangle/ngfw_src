@@ -75,7 +75,7 @@ public class UserSettingsJDialog extends MConfigJDialog implements SettingsChang
     protected void saveAll() throws Exception {
         super.saveAll();
         setVisible(false);
-        mTransformControlsJPanel.saveGui();
+        mTransformControlsJPanel.saveGui(); // XXX a little dangerous because refresh could come before the save... but refresh wouldnt do anything bad.
 
         /*
         if( settingsChanged )
@@ -85,12 +85,10 @@ public class UserSettingsJDialog extends MConfigJDialog implements SettingsChang
 
     private boolean firstRefresh = true;
     protected void refreshAll() throws Exception {
-        applications.clear();
-        applications.addAll(Util.getMvvmContext().portalManager().applicationManager().getApplications());
         super.refreshAll();
-        if( !firstRefresh ){
-            setVisible(false);
-            mTransformControlsJPanel.refreshGui();
+        if( firstRefresh ){
+            applications.clear();
+            applications.addAll(Util.getMvvmContext().portalManager().applicationManager().getApplications());
         }
         firstRefresh = false;
         //settingsChanged = false;
