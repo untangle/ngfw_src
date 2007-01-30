@@ -74,7 +74,7 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
     protected void saveAll() throws Exception {
         super.saveAll();
         setVisible(false);
-        mTransformControlsJPanel.saveGui();
+        mTransformControlsJPanel.saveGui();  // XXX a little dangerous because refresh could come before the save... but refresh wouldnt do anything bad.
         //if( settingsChanged )
         //    mTransformControlsJPanel.setSaveSettingsHintVisible(true);	    
     }
