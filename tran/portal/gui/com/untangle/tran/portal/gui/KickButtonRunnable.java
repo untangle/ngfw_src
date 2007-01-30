@@ -47,7 +47,9 @@ public class KickButtonRunnable implements ButtonRunnable {
     public void setMTransformControlsJPanel(MTransformControlsJPanel mTransformControlsJPanel){ this.mTransformControlsJPanel = mTransformControlsJPanel; }
     public void actionPerformed(ActionEvent evt){ run(); }
     public void run(){
-	new KickUserThread();
+        if(!Util.getIsDemo()){
+            new KickUserThread();
+        }
     }
 
     class KickUserThread extends Thread {
