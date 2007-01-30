@@ -13,9 +13,11 @@ package com.untangle.tran.portal.proxy;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,6 +33,8 @@ class UrlRewriter
     private static final String SLASH_SLASH = "//";
     private static final String HTTP = "http://";
     private static final String HTTPS = "https://";
+
+    private static final String JAVASCRIPT_REPLACEMENTS = "jsrepl.sed";
 
     private static final Pattern CSS_URL_PATTERN
         = Pattern.compile("url\\s*\\(\\s*(('[^']*')|(\"[^\"]*\"))\\s*\\)",
@@ -192,6 +196,18 @@ class UrlRewriter
             w.append(l);
             w.append("\n");
         }
+    }
+
+    void filterJavaScript(Reader r, Writer w)
+        throws IOException
+    {
+        InputStream is = getClass().getClassLoader().getResourceAsStream(JAVASCRIPT_REPLACEMENTS);
+
+        List<Replacement> repls = null == is
+            ? ((List<Replacement>)Collections.emptyList()) /* rere compiler */
+            : Replacement.getReplacements(is);
+
+        filterReplace(r, w, repls);
     }
 
     String getRemoteUrl()
