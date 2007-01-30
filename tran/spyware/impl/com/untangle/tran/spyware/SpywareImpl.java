@@ -562,7 +562,6 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
     }
 
-
     private Set<String> initList(String file)
     {
         Set<String> s = new HashSet<String>();

@@ -16,12 +16,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
 import org.apache.log4j.Logger;
 
@@ -203,5 +203,22 @@ class UrlRewriter
     String getHost()
     {
         return host;
+    }
+
+    // private methods --------------------------------------------------------
+
+    private void filterReplace(Reader r, Writer w, List<Replacement> repls)
+        throws IOException
+    {
+        BufferedReader br = new BufferedReader(r);
+
+        String l;
+        while (null != (l = br.readLine())) {
+            for (Replacement repl : repls) {
+                l = repl.doReplacement(l);
+            }
+
+            w.append(l).append("\n");
+        }
     }
 }
