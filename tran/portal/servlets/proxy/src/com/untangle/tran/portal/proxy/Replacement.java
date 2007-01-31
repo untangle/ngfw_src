@@ -51,8 +51,12 @@ class Replacement
         BufferedReader br = new BufferedReader(r);
 
         String line;
-        while (null != (line = br.readLine().trim())) {
-            l.add(getReplacement(line));
+        while (null != (line = br.readLine())) {
+            line = line.trim();
+            Replacement repl = getReplacement(line);
+            if (null != repl) {
+                l.add(repl);
+            }
         }
 
         return l;

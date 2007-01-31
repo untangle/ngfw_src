@@ -39,12 +39,9 @@ import com.untangle.mvvm.portal.LocalPortalManager;
 import com.untangle.mvvm.tran.IPaddr;
 import org.apache.commons.fileupload.MultipartStream;
 import org.apache.commons.fileupload.ParameterParser;
-import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
@@ -247,6 +244,11 @@ public class WebProxy extends HttpServlet
             Reader r = new InputStreamReader(is);
             Writer w = resp.getWriter();
             rewriter.filterCss(r, w);
+        } else if (contentType.startsWith("text/javascript")
+                   || contentType.startsWith("application/x-javascript")) {
+            Reader r = new InputStreamReader(is);
+            Writer w = resp.getWriter();
+            rewriter.filterJavaScript(r, w);
         } else {
             OutputStream os = resp.getOutputStream();
             copyStream(is, os);

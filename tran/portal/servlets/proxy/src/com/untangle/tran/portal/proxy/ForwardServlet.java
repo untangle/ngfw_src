@@ -30,7 +30,6 @@ import javax.servlet.http.HttpSession;
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.NetworkManager;
-import com.untangle.mvvm.networking.NetworkUtil;
 import com.untangle.mvvm.portal.Application;
 import com.untangle.mvvm.portal.Bookmark;
 import com.untangle.mvvm.portal.LocalApplicationManager;
@@ -272,5 +271,3 @@ public class ForwardServlet extends HttpServlet
         }
     }
 }
-
-
