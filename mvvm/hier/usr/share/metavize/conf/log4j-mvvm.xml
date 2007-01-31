@@ -83,6 +83,10 @@
     <priority value="DEBUG"/>
   </category>
 
+  <category name="com.untangle.tran.portal.proxy">
+    <priority value="INFO"/>
+  </category>
+
   <!-- ============================================== -->
   <!-- The Root Category                              -->
   <!-- ============================================== -->

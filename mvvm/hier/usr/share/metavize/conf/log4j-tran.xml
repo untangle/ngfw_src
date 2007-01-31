@@ -17,7 +17,8 @@
  -->
 
 
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+                     debug="false">
 
   <appender name="TranLog" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${bunnicula.home}/log/@TranLogFileName@.log"/>
@@ -26,19 +27,26 @@
     <param name="MaxBackupIndex" value="9"/>
     <param name="Threshold" value="ALL"/>
     <layout class="com.untangle.mvvm.logging.MvPatternLayout">
-      <param name="ConversionPattern" value="%D %-5p [%c{1}] &lt;%X{SessionID}&gt; %m%n"/>
+      <param name="ConversionPattern"
+             value="%D %-5p [%c{1}] &lt;%X{SessionID}&gt; %m%n"/>
     </layout>
   </appender>
 
   <!-- Log Emailer -->
 
   <appender name="EmailAppender" class="com.untangle.mvvm.logging.SMTPAppender">
-    <!-- Note: We do *not* specify a layout here because we must create it programmatically
-         so that we can get the transform name in there.  Instead we provide the Conversion
-         Pattern here at the top level so that the SMTPAppender constructor can create the
-         correct layout. -->
-    <param name="LayoutConversionPattern" value="%D %-5p [%c{1}] &lt;%X{SessionID}&gt; %m%n"/>
+    <!-- Note: We do *not* specify a layout here because we must
+         create it programmatically so that we can get the transform
+         name in there.  Instead we provide the Conversion Pattern
+         here at the top level so that the SMTPAppender constructor
+         can create the correct layout. -->
+    <param name="LayoutConversionPattern"
+           value="%D %-5p [%c{1}] &lt;%X{SessionID}&gt; %m%n"/>
   </appender>
+
+  <category name="org.apache.catalina">
+    <priority value="WARN"/>
+  </category>
 
   <!-- #      DEBUG           new session debugging -->
   <!-- #      INFO            each new session -->
@@ -51,8 +59,8 @@
     <priority value="WARN"/>
   </category>
 
-  <!-- # Session Event messages: all events delivered to transform, logged just before delivery -->
-  <!-- # from the delivery/execution thread. -->
+  <!-- # Session Event messages: all events delivered to transform,
+       logged just before delivery the delivery/execution thread. -->
   <!-- #      DEBUG          Data events -->
   <!-- #      INFO           shutdown, close, other session events. -->
   <!-- #      WARN           New session, new session request events -->
@@ -62,9 +70,10 @@
   </category>
 
   <!-- # Internal Session messages, -->
-  <!-- #      DEBUG           session read/write state change, read/write statistics -->
+  <!-- #      DEBUG           session read/write state change, read/write -->
+  <!-- #                      statistics -->
   <!-- #      INFO            (currently same as WARN) -->
-  <!-- #      WARN             exceptions or unusual conditions  -->
+  <!-- #      WARN            exceptions or unusual conditions  -->
   <category name="com.untangle.mvvm.tapi.Session">
     <priority value="WARN"/>
   </category>
@@ -144,15 +153,6 @@
   <category name="com.untangle.tran">
     <priority value="WARN"/>
   </category>
-
-  <category name="net.sf.hibernate">
-    <priority value="WARN"/>
-  </category>
-
-  <category name="org.apache.catalina">
-    <priority value="WARN"/>
-  </category>
-
 
   <!-- ======================= -->
   <!-- Setup the Root category -->

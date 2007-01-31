@@ -31,12 +31,6 @@ function mv_repl(url)
    }
 };
 
-function mv_watch_fn(prop, oldVal, newVal)
-{
-    return mv_repl(newVal);
-};
-
-
 if (undefined == window.ut_windowOpen) {
     window.ut_windowOpen = window.open;
 }
@@ -45,6 +39,3 @@ window.open = function(url, name, features, replace)
 {
     window.ut_windowOpen(mv_repl(url), name, features, replace);
 }
-
-location.watch("href", mv_watch_fn);
-window.watch("location", mv_watch_fn);

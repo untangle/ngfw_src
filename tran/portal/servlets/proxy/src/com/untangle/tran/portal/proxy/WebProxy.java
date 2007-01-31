@@ -97,7 +97,9 @@ public class WebProxy extends HttpServlet
             if (netManager.isAddressLocal(addr)) {
                 sendError(resp, HttpServletResponse.SC_FORBIDDEN);
             } else {
-                HttpMethod method = new GetMethod(rewriter.getRemoteUrl());
+                String remoteUrl = rewriter.getRemoteUrl();
+                logger.info("GET remoteUrl: " + remoteUrl);
+                HttpMethod method = new GetMethod(remoteUrl);
                 doIt(req, resp, method, rewriter);
             }
         } catch (UnknownHostException exn) {
@@ -113,7 +115,9 @@ public class WebProxy extends HttpServlet
     {
         try {
             UrlRewriter rewriter = UrlRewriter.getRewriter(req);
-            RawPostMethod method = new RawPostMethod(rewriter.getRemoteUrl());
+            String remoteUrl = rewriter.getRemoteUrl();
+            logger.info("POST remoteUrl: " + remoteUrl);
+            RawPostMethod method = new RawPostMethod(remoteUrl);
 
             method.setBodyStream(req.getContentType(), req.getInputStream(),
                                  req.getIntHeader("Content-Length"));

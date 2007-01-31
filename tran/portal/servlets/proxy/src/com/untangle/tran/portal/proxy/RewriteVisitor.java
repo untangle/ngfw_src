@@ -29,6 +29,7 @@ class RewriteVisitor extends NodeVisitor
     private final Logger logger = Logger.getLogger(getClass());
 
     private boolean seenBody = false;
+    private boolean inScript = false;
 
     // constructs -------------------------------------------------------------
 
@@ -62,8 +63,19 @@ class RewriteVisitor extends NodeVisitor
         }
 
         if (tagName.equalsIgnoreCase("script")) {
-            String type = tag.getAttribute("type");
-            String language = tag.getAttribute("language");
+            String language = tag.getAttribute("type");
+            if (null == language) {
+                language = tag.getAttribute("language");
+            }
+
+            if (null != language
+                && (language.equalsIgnoreCase("text/ecmascript")
+                    || language.equalsIgnoreCase("text/javascript")
+                    || language.equalsIgnoreCase("application/ecmascript")
+                    || language.equalsIgnoreCase("application/javascript")
+                    || language.equalsIgnoreCase("javascript"))) {
+                inScript = true;
+            }
         }
 
         for (Attribute a : (List<Attribute>)tag.getAttributesEx()) {
@@ -116,6 +128,10 @@ class RewriteVisitor extends NodeVisitor
     @Override
     public void visitEndTag(Tag tag)
     {
+        if (tag.getTagName().equalsIgnoreCase("script")) {
+            inScript = false;
+        }
+
         writer.print(tag.toHtml());
     }
 
@@ -123,7 +139,11 @@ class RewriteVisitor extends NodeVisitor
     public void visitStringNode(Text string)
     {
         String text = string.getText();
-        writer.print(text);
+        if (inScript) {
+            writer.print(rewriter.rewriteJavaScript(text));
+        } else {
+            writer.print(text);
+        }
     }
 
     @Override

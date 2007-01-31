@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +35,7 @@ class UrlRewriter
     private static final String SLASH_SLASH = "//";
     private static final String HTTP = "http://";
     private static final String HTTPS = "https://";
+    private static final String JAVASCRIPT = "javascript:";
 
     private static final String JAVASCRIPT_REPLACEMENTS = "jsrepl.sed";
 
@@ -131,6 +134,8 @@ class UrlRewriter
                 + v.substring(SLASH_SLASH.length());
         } else if (v.startsWith(SLASH)) {
             return contextBaseProtoHost + v.substring(SLASH.length());
+        } else if (v.startsWith(JAVASCRIPT)) {
+            return JAVASCRIPT + rewriteJavaScript(v.substring(JAVASCRIPT.length()));
         } else {
             return v;
         }
@@ -213,6 +218,19 @@ class UrlRewriter
         filterReplace(r, w, repls);
     }
 
+    String rewriteJavaScript(String text)
+    {
+        Reader r = new StringReader(text);
+        Writer w = new StringWriter(text.length());
+        try {
+            filterJavaScript(r, w);
+        } catch (IOException exn) {
+            logger.error("this isn't happening!", exn);
+        }
+
+        return w.toString();
+    }
+
     String getRemoteUrl()
         throws URIException
     {
@@ -231,6 +249,8 @@ class UrlRewriter
     {
         BufferedReader br = new BufferedReader(r);
 
+        logger.info("Filtering JavaScript");
+
         String l;
         while (null != (l = br.readLine())) {
             for (Replacement repl : repls) {
@@ -238,6 +258,9 @@ class UrlRewriter
             }
 
             w.append(l).append("\n");
+            logger.info(l);
         }
+
+        logger.info("Filtered JavaScript");
     }
 }
