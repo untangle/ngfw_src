@@ -98,7 +98,7 @@ public class WebProxy extends HttpServlet
                 sendError(resp, HttpServletResponse.SC_FORBIDDEN);
             } else {
                 String remoteUrl = rewriter.getRemoteUrl();
-                logger.info("GET remoteUrl: " + remoteUrl);
+                logger.debug("GET remoteUrl: " + remoteUrl);
                 HttpMethod method = new GetMethod(remoteUrl);
                 doIt(req, resp, method, rewriter);
             }
@@ -116,7 +116,7 @@ public class WebProxy extends HttpServlet
         try {
             UrlRewriter rewriter = UrlRewriter.getRewriter(req);
             String remoteUrl = rewriter.getRemoteUrl();
-            logger.info("POST remoteUrl: " + remoteUrl);
+            logger.debug("POST remoteUrl: " + remoteUrl);
             RawPostMethod method = new RawPostMethod(remoteUrl);
 
             method.setBodyStream(req.getContentType(), req.getInputStream(),

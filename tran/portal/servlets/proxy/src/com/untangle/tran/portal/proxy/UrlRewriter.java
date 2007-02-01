@@ -43,6 +43,16 @@ class UrlRewriter
         = Pattern.compile("url\\s*\\(\\s*(('[^']*')|(\"[^\"]*\"))\\s*\\)",
                           Pattern.CASE_INSENSITIVE);
 
+    private static final List<Replacement> REPLACEMENTS;
+
+    static {
+        if (Boolean.getBoolean(System.getProperty("tran.portal.proxy.devmode"))) {
+            REPLACEMENTS = null;
+        } else {
+            REPLACEMENTS = Collections.unmodifiableList(loadReplacements());
+        }
+    }
+
     private final String localHost;
     private final String contextBase;
     private final String proto;
@@ -206,15 +216,8 @@ class UrlRewriter
     void filterJavaScript(Reader r, Writer w)
         throws IOException
     {
-        InputStream is = getClass().getClassLoader()
-            .getResourceAsStream(JAVASCRIPT_REPLACEMENTS);
-
-        List<Replacement> repls;
-        if (null == is) {
-            repls = Collections.emptyList();
-        } else {
-            repls = Replacement.getReplacements(is);
-        }
+        List<Replacement> repls = null == REPLACEMENTS
+            ? loadReplacements() : REPLACEMENTS;
 
         filterReplace(r, w, repls);
     }
@@ -263,5 +266,21 @@ class UrlRewriter
         }
 
         logger.debug("Filtered JavaScript");
+    }
+
+    private static List<Replacement> loadReplacements()
+    {
+        InputStream is = UrlRewriter.class.getClassLoader()
+            .getResourceAsStream(JAVASCRIPT_REPLACEMENTS);
+
+        if (null == is) {
+            return Collections.emptyList();
+        } else {
+            try {
+                return Replacement.getReplacements(is);
+            } catch (IOException exn) {
+                return Collections.emptyList();
+            }
+        }
     }
 }
