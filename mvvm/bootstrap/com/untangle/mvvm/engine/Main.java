@@ -158,14 +158,6 @@ public class Main
         } else {
             logger.warn("Could not find " + f);
         }
-
-        f = new File(bunniculaConf + "/mvvm.networking.properties");
-        Properties networkingProperties = new Properties();
-
-        if (f.exists()) {
-            logger.info("Loading " + f);
-            networkingProperties.load(new FileInputStream(f));
-        } /* This file may not exist */
     }
 
     // XXX get rid of all these throws

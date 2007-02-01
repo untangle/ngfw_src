@@ -36,6 +36,8 @@ import com.untangle.mvvm.tran.IPNullAddr;
 import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.MACAddress;
+import com.untangle.mvvm.tran.script.ScriptRunner;
+import com.untangle.mvvm.tran.TransformException;
 
 import com.untangle.mvvm.networking.internal.DhcpLeaseInternal;
 import com.untangle.mvvm.networking.internal.DnsStaticHostInternal;
@@ -73,10 +75,7 @@ class DhcpManager
     private static final int DHCP_LEASE_ENTRY_HOST    = 3;
 
     private static final String DNS_MASQ_FILE         = "/etc/dnsmasq.conf";
-    private static final String DNS_MASQ_CMD          = "/etc/init.d/dnsmasq ";
-    private static final String DNS_MASQ_CMD_RESTART  = DNS_MASQ_CMD + " restart";
-    private static final String DNS_MASQ_CMD_STOP     = DNS_MASQ_CMD + " stop";
-
+    private static final String DNS_MASQ_CMD          = System.getProperty( "bunnicula.home" ) + "/networking/dnsmasq";
     private static final String HOST_FILE             = "/etc/hosts";
     private static final String[] HOST_FILE_START     = new String[] {
         HEADER,
@@ -135,35 +134,23 @@ class DhcpManager
 
     void startDnsMasq() throws NetworkException
     {
-        int code;
-
         try {
             logger.debug( "Restarting DNS Masq server" );
 
             /* restart dnsmasq */
-            Process p = Runtime.getRuntime().exec( DNS_MASQ_CMD_RESTART );
-            code = p.waitFor();
-        } catch ( Exception e ) {
+            ScriptRunner.getInstance().exec( DNS_MASQ_CMD, "restart", "false" );
+        } catch ( TransformException e ) {
             throw new NetworkException( "Unable to reload Start DNS masq server", e );
-        }
-
-        if ( code != 0 ) {
-            throw new NetworkException( "Error starting DNS masq server: " + code );
         }
     }
 
     void deconfigure()
     {
-        int code;
-
         try {
             writeDisabledConfiguration();
 
-            Process p = Runtime.getRuntime().exec( DNS_MASQ_CMD_RESTART );
-            code = p.waitFor();
-
-            if ( code != 0 ) logger.error( "Error stopping DNS masq server, returned code: " + code );
-        } catch ( Exception e ) {
+            ScriptRunner.getInstance().exec( DNS_MASQ_CMD, "restart", "false" );                        
+        } catch ( TransformException e ) {
             logger.error( "Error while disabling the DNS masq server", e );
         }
 
