@@ -206,7 +206,8 @@ class UrlRewriter
     void filterJavaScript(Reader r, Writer w)
         throws IOException
     {
-        InputStream is = getClass().getClassLoader().getResourceAsStream(JAVASCRIPT_REPLACEMENTS);
+        InputStream is = getClass().getClassLoader()
+            .getResourceAsStream(JAVASCRIPT_REPLACEMENTS);
 
         List<Replacement> repls;
         if (null == is) {
@@ -249,7 +250,7 @@ class UrlRewriter
     {
         BufferedReader br = new BufferedReader(r);
 
-        logger.info("Filtering JavaScript");
+        logger.debug("Filtering JavaScript");
 
         String l;
         while (null != (l = br.readLine())) {
@@ -258,9 +259,9 @@ class UrlRewriter
             }
 
             w.append(l).append("\n");
-            logger.info(l);
+            logger.debug(l);
         }
 
-        logger.info("Filtered JavaScript");
+        logger.debug("Filtered JavaScript");
     }
 }

@@ -14,7 +14,6 @@ package com.untangle.tran.portal.proxy;
 import java.io.PrintWriter;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.htmlparser.Attribute;
 import org.htmlparser.Remark;
 import org.htmlparser.Tag;
@@ -25,8 +24,6 @@ class RewriteVisitor extends NodeVisitor
 {
     private final PrintWriter writer;
     private final UrlRewriter rewriter;
-
-    private final Logger logger = Logger.getLogger(getClass());
 
     private boolean seenBody = false;
     private boolean inScript = false;
