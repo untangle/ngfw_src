@@ -46,7 +46,7 @@ class UrlRewriter
     private static final List<Replacement> REPLACEMENTS;
 
     static {
-        if (Boolean.getBoolean(System.getProperty("tran.portal.proxy.devmode"))) {
+        if (Boolean.getBoolean("tran.portal.proxy.devmode")) {
             REPLACEMENTS = null;
         } else {
             REPLACEMENTS = Collections.unmodifiableList(loadReplacements());
