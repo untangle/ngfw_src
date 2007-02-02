@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
@@ -738,24 +737,35 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         l = (List<StringRule>)settings.getDomainWhitelist();
         for (StringRule sr : l) {
             if (sr.isLive()) {
-                String str = sr.getString().toLowerCase();
-                if (str.startsWith("http://")) {
-                    try {
-                        URL url = new URL(str);
-                        str = url.getHost();
-                    } catch (MalformedURLException exn) {
-                        logger.warn("skipping non-url: " + s, exn);
-                    }
-                }
-
-                if (str.startsWith("www.")) {
-                    str = str.substring("www.".length());
-                }
+                String str = normalizeDomain(sr.getString());
 
                 s.add(str);
             }
         }
         domainWhitelist = s;
+    }
+
+    private String normalizeDomain(String dom)
+    {
+        String url = dom.toLowerCase();
+        String uri = url.startsWith("http://")
+            ? url.substring("http://".length()) : url;
+
+        while (0 < uri.length()
+               && ('*' == uri.charAt(0) || '.' == uri.charAt(0))) {
+            uri = uri.substring(1);
+        }
+
+        if (uri.startsWith("www.")) {
+            uri = uri.substring("www.".length());
+        }
+
+        int i = uri.indexOf('/');
+        if (0 <= i) {
+            uri = uri.substring(0, i);
+        }
+
+        return uri;
     }
 
     // XXX soon to be deprecated ----------------------------------------------

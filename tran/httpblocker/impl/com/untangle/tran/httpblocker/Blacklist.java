@@ -438,6 +438,10 @@ class Blacklist
             uri = uri.substring(1);
         }
 
+        if (uri.startsWith("www.")) {
+            uri = uri.substring("www.".length());
+        }
+
         return uri;
     }
 }
