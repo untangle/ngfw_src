@@ -378,9 +378,7 @@ class Blacklist
 
     {
         for (StringRule rule : rules) {
-            String url = rule.getString().toLowerCase();
-            String uri = url.startsWith("http://")
-                ? url.substring("http://".length()) : url;
+            String uri = normalizeDomain(rule.getString());
 
             if ((rule.isLive() || rule.getLog()) && match.equals(uri)) {
                 return rule;
@@ -420,14 +418,26 @@ class Blacklist
         List<String> strings = new ArrayList<String>(rules.size());
         for (StringRule rule : rules) {
             if (rule.isLive()) {
-                String url = rule.getString().toLowerCase();
-                String uri = url.startsWith("http://")
-                    ? url.substring("http://".length()) : url;
+                String uri = normalizeDomain(rule.getString());
                 strings.add(uri);
             }
         }
         Collections.sort(strings);
 
         return strings.toArray(new String[strings.size()]);
+    }
+
+    private String normalizeDomain(String dom)
+    {
+        String url = dom.toLowerCase();
+        String uri = url.startsWith("http://")
+            ? url.substring("http://".length()) : url;
+
+        while (0 < uri.length()
+               && ('*' == uri.charAt(0) || '.' == uri.charAt(0))) {
+            uri = uri.substring(1);
+        }
+
+        return uri;
     }
 }
