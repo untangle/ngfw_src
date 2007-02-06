@@ -213,7 +213,7 @@ class VirusFtpHandler extends FtpStateMachine
 
         try {
             transform.incrementCount(SCAN_COUNTER);
-            result = transform.getScanner().scanFile(file.getPath());
+            result = transform.getScanner().scanFile(file);
         } catch (Exception exn) {
             // Should never happen
             throw new TokenException("could not scan TokenException", exn);

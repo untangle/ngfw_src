@@ -11,6 +11,7 @@
 package com.untangle.tran.hauri;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -78,9 +79,9 @@ public class HauriScanner implements VirusScanner
         return version;
     }
 
-    public VirusScannerResult scanFile (String pathName)
+    public VirusScannerResult scanFile(File scanfile)
     {
-        HauriScannerLauncher scan = new HauriScannerLauncher(pathName);
+        HauriScannerLauncher scan = new HauriScannerLauncher(scanfile);
         return scan.doScan(this.timeout);
     }
 }

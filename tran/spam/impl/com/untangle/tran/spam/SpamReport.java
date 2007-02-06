@@ -20,7 +20,6 @@ import com.untangle.mvvm.tran.TemplateValues;
 import com.untangle.tran.token.header.IllegalFieldException;
 import org.apache.log4j.Logger;
 
-
 /**
  * Class to encapsulate a SPAM report.
  * <br>
@@ -41,7 +40,6 @@ import org.apache.log4j.Logger;
  *     <code><b>SCORE</b></code> The numerical value of the score (e.g. "7.2").
  *   </li>
  * </ul>
- *
  */
 public class SpamReport
   implements TemplateValues {
@@ -51,9 +49,9 @@ public class SpamReport
     private static final String THRESHOLD_KEY = "THRESHOLD".toLowerCase();
     private static final String SCORE_KEY = "SCORE".toLowerCase();
 
-    private final float threshold;
     private final List<ReportItem> items;
     private final float score;
+    private final float threshold;
 
     public static final float MAX_THRESHOLD = 1000f;
     public static final float MIN_THRESHOLD = 0f;
@@ -64,6 +62,13 @@ public class SpamReport
     private Logger logger = Logger.getLogger(SpamReport.class);
 
     // constructors -----------------------------------------------------------
+
+    public SpamReport(List<ReportItem> items, float score, float threshold)
+    {
+        this.items = new LinkedList<ReportItem>(items);
+        this.score = score;
+        this.threshold = threshold;
+    }
 
     public SpamReport(List<ReportItem> items, float threshold)
     {
@@ -78,7 +83,7 @@ public class SpamReport
     }
     /**
     * For use in Templates (see JavaDoc at the top of this class
-    * for explanation of vairable format}.
+    * for explanation of variable format).
     */
     public String getTemplateValue(String key) {
       key = key.trim().toLowerCase();

@@ -11,6 +11,7 @@
 package com.untangle.tran.hauri;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,11 +27,10 @@ public class HauriScannerLauncher extends VirusScannerLauncher
     /**
      * Create a Launcher for the give file
      */
-    public HauriScannerLauncher(String pathName)
+    public HauriScannerLauncher(File scanfile)
     {
-        super(pathName);
+        super(scanfile);
     }
-
 
     /**
      * This runs the virus scan, and stores the result for retrieval.
@@ -40,7 +40,7 @@ public class HauriScannerLauncher extends VirusScannerLauncher
     public void run()
     {
         try {
-            this.scanProcess = MvvmContextFactory.context().exec("virobot " + pathName);
+            this.scanProcess = MvvmContextFactory.context().exec("virobot " + scanfilePath);
             InputStream is  = this.scanProcess.getInputStream();
             OutputStream os = this.scanProcess.getOutputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(is));
@@ -85,7 +85,7 @@ public class HauriScannerLauncher extends VirusScannerLauncher
 
                             if (i==1) {
                                 virusName = str;
-                                logger.warn("found: " + virusName + " in " + pathName);
+                                //logger.debug("found: " + virusName + " in " + scanfilePath);
                                 break;
                             }
                         }

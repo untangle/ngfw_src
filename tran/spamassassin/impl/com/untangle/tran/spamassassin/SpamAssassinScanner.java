@@ -25,15 +25,16 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-class SpamAssassinScanner implements SpamScanner
+public class SpamAssassinScanner implements SpamScanner
 {
-    private final Logger logger = Logger.getLogger(SpamAssassinScanner.class.getName());
+    private final Logger logger = Logger.getLogger(getClass());
+
     private static final int timeout = 40000; /* XXX should be user configurable */
 
     private static int activeScanCount = 0;
     private static Object activeScanMonitor = new Object();
 
-    SpamAssassinScanner() { }
+    public SpamAssassinScanner() { }
 
     public String getVendorName()
     {
@@ -47,9 +48,9 @@ class SpamAssassinScanner implements SpamScanner
         }
     }
 
-    public SpamReport scanFile(File f, float threshold)
+    public SpamReport scanFile(File msgFile, float threshold)
     {
-        SpamAssassinScannerLauncher scan = new SpamAssassinScannerLauncher(f, threshold);
+        SpamAssassinScannerClientLauncher scan = new SpamAssassinScannerClientLauncher(msgFile, threshold);
         try {
             synchronized(activeScanMonitor) {
                 activeScanCount++;

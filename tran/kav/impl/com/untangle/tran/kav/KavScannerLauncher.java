@@ -11,6 +11,7 @@
 package com.untangle.tran.kav;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,11 +27,10 @@ public class KavScannerLauncher extends VirusScannerLauncher
     /**
      * Create a Launcher for the give file
      */
-    public KavScannerLauncher(String pathName)
+    public KavScannerLauncher(File scanfile)
     {
-        super(pathName);
+        super(scanfile);
     }
-
 
     /**
      * This runs the virus scan, and stores the result for retrieval.
@@ -40,7 +40,7 @@ public class KavScannerLauncher extends VirusScannerLauncher
     public void run()
     {
         try {
-            String command = "kavclient " + pathName;
+            String command = "kavclient " + scanfilePath;
             this.scanProcess = MvvmContextFactory.context().exec(command);
             InputStream is  = scanProcess.getInputStream();
             OutputStream os = scanProcess.getOutputStream();
@@ -75,7 +75,7 @@ public class KavScannerLauncher extends VirusScannerLauncher
                         st.nextToken();
                         if (st.hasMoreTokens()) {
                             virusName = st.nextToken();
-                            logger.warn("found: " + virusName + " in " + pathName);
+                            logger.warn("found: " + virusName + " in " + scanfilePath);
                         }
                     }
                 }

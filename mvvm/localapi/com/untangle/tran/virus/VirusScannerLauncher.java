@@ -10,8 +10,7 @@
  */
 package com.untangle.tran.virus;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.Logger;
+import java.io.File;
 
 import com.untangle.mvvm.MvvmContextFactory;
 import org.apache.log4j.Logger;
@@ -20,15 +19,15 @@ abstract public class VirusScannerLauncher implements Runnable
 {
     protected final Logger logger = Logger.getLogger(getClass());
 
-    protected String pathName = null;
+    protected String scanfilePath = null;
 
     // These next must be volatile since they are written and read by different threads.  bug948
     protected volatile Process scanProcess = null;
     protected volatile VirusScannerResult result = null;
 
-    protected VirusScannerLauncher(String pathName)
+    protected VirusScannerLauncher(File scanfile)
     {
-        this.pathName = pathName;
+        scanfilePath = scanfile.getAbsolutePath();
     }
 
     /**
@@ -36,7 +35,7 @@ abstract public class VirusScannerLauncher implements Runnable
      * If a result is reached, it is returned.
      * If the time expires VirusScannerResult.ERROR is returned
      */
-    public VirusScannerResult doScan(int timeout)
+    public VirusScannerResult doScan(long timeout)
     {
         Thread thread = MvvmContextFactory.context().newThread(this);
         long startTime = System.currentTimeMillis();
@@ -82,13 +81,5 @@ abstract public class VirusScannerLauncher implements Runnable
         }
     }
 
-    /**
-     * retrieve the stored result, null if not set
-     */
-    public VirusScannerResult getResult()
-    {
-        return this.result;
-    }
-
-    abstract public void  run();
+    abstract public void run();
 }

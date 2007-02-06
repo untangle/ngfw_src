@@ -71,7 +71,7 @@ class VirusHttpHandler extends HttpStateMachine
     private int outstanding;
     private int totalSize;
     private String extension;
-    private String fileName;
+    private File scanfile;
     private FileChannel outFile;
     private FileChannel inFile;
     private File file;
@@ -207,10 +207,10 @@ class VirusHttpHandler extends HttpStateMachine
         VirusScannerResult result;
         try {
             if (logger.isDebugEnabled()) {
-                logger.debug("Scanning the file: " + fileName);
+                logger.debug("Scanning the file: " + scanfile);
             }
             transform.incrementCount(SCAN_COUNTER);
-            result = transform.getScanner().scanFile(fileName);
+            result = transform.getScanner().scanFile(scanfile);
         } catch (Exception e) {
             // Should never happen
             logger.error("Virus scan failed: ", e);
@@ -351,10 +351,10 @@ class VirusHttpHandler extends HttpStateMachine
             TempFileFactory tff = new TempFileFactory(getPipeline());
             File fileBuf = tff.createFile("http-virus");
 
-            this.fileName = fileBuf.getAbsolutePath();
+            this.scanfile = fileBuf;
 
             if (logger.isDebugEnabled()) {
-                logger.debug("VIRUS: Using temporary file: " + this.fileName);
+                logger.debug("VIRUS: Using temporary file: " + this.scanfile);
             }
 
             this.outFile = (new FileOutputStream(fileBuf)).getChannel();

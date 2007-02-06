@@ -11,6 +11,7 @@
 package com.untangle.tran.clam;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,10 +23,11 @@ import org.apache.log4j.Logger;
 
 public class ClamScanner implements VirusScanner
 {
-    public static final String VERSION_ARG = "-V";
-
     private final Logger logger = Logger.getLogger(getClass());
+
     private static final int timeout = 30000; /* XXX should be user configurable */
+
+    private static final String VERSION_ARG = "-V";
 
     public ClamScanner() {}
 
@@ -83,10 +85,9 @@ public class ClamScanner implements VirusScanner
         return versionNumber + " -- " + versionTimestamp;
     }
 
-
-    public VirusScannerResult scanFile (String pathName)
+    public VirusScannerResult scanFile(File scanfile)
     {
-        ClamScannerLauncher scan = new ClamScannerLauncher(pathName);
-        return scan.doScan(this.timeout);
+        ClamScannerClientLauncher scan = new ClamScannerClientLauncher(scanfile);
+        return scan.doScan(timeout);
     }
 }

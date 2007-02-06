@@ -154,7 +154,7 @@ public class VirusPopHandler extends PopStateMachine
     private VirusScannerResult scanFile(File zFile) throws TokenException
     {
         try {
-            VirusScannerResult zScanResult = zScanner.scanFile(zFile.getPath());
+            VirusScannerResult zScanResult = zScanner.scanFile(zFile);
             VirusMailEvent event = new VirusMailEvent(zMsgInfo,
                                                       zScanResult,
                                                       zScanResult.isClean() ? VirusMessageAction.PASS : zMsgAction,

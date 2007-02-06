@@ -11,6 +11,7 @@
 package com.untangle.tran.kav;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,9 +23,10 @@ import org.apache.log4j.Logger;
 
 public class KavScanner implements VirusScanner
 {
-    public static final String VERSION_ARG = "-V";
-
     private final Logger logger = Logger.getLogger(getClass());
+
+    private static final String VERSION_ARG = "-V";
+
     private static final int timeout = 30000; /* XXX should be user configurable */
 
     public KavScanner() {}
@@ -78,9 +80,9 @@ public class KavScanner implements VirusScanner
         return version;
     }
 
-    public VirusScannerResult scanFile (String pathName)
+    public VirusScannerResult scanFile(File scanfile)
     {
-        KavScannerLauncher scan = new KavScannerLauncher(pathName);
+        KavScannerLauncher scan = new KavScannerLauncher(scanfile);
         return scan.doScan(this.timeout);
     }
 }

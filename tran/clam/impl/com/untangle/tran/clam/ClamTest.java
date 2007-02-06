@@ -10,6 +10,8 @@
  */
 package com.untangle.tran.clam;
 
+import java.io.File;
+
 import com.untangle.tran.virus.VirusScanner;
 import com.untangle.tran.virus.VirusScannerResult;
 
@@ -25,7 +27,7 @@ public class ClamTest
         ClamScanner scanner = new ClamScanner();
         VirusScannerResult result = null;
         
-        result = scanner.scanFile(args[0]);
+        result = scanner.scanFile(new File(args[0]));
         System.out.println(result);
         System.exit(0);
     }

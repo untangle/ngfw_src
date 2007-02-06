@@ -10,9 +10,9 @@
  */
 package com.untangle.tran.virus;
 
+import java.io.File;
+
 import com.untangle.mvvm.tran.Scanner;
-import java.io.IOException;
-import java.util.List;
 
 public interface VirusScanner extends Scanner
 {
@@ -27,9 +27,8 @@ public interface VirusScanner extends Scanner
      * requires that a report always be generated, for any problems or exceptions an
      * "clean" report is generated (and the error/warning should be logged).
      *
-     * @param fileName a <code>String</code> value
+     * @param msgFile a <code>File</code> value
      * @return a <code>VirusScannerResult</code> value
      */
-    VirusScannerResult scanFile (String fileName);
+    VirusScannerResult scanFile(File msgFile);
 }
-

@@ -163,7 +163,7 @@ public class VirusImapHandler
     //Call VirusScanner
     try {
 
-      VirusScannerResult result = m_virusImpl.getScanner().scanFile(f.getPath());
+      VirusScannerResult result = m_virusImpl.getScanner().scanFile(f);
       if(result == null || result == VirusScannerResult.ERROR) {
         m_logger.error("Received an error scan report.  Assume local error" +
           " and report file clean");
