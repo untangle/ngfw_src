@@ -15,12 +15,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 
 import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.networking.LocalNetworkManager;
 import com.untangle.mvvm.networking.NetworkUtil;
-import com.untangle.mvvm.networking.RemoteSettingsListener;
 import com.untangle.mvvm.networking.internal.RemoteInternalSettings;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Request;
@@ -46,15 +43,9 @@ public abstract class OutsideValve extends ValveBase
                 logger.debug( "The request: " + request + " caught by OutsideValve." );
             }
 
-            if (request.getLocalPort() == DEFAULT_HTTP_PORT) {
-                request.setAttribute( "com.untangle.mvvm.util.errorpage.error-message",
-                                      httpErrorMessage());
-            } else {
-                request.setAttribute( "com.untangle.mvvm.util.errorpage.error-message", 
-                                      outsideErrorMessage());
-            }
-
-            response.sendError( response.SC_FORBIDDEN );
+            String msg = request.getLocalPort() == DEFAULT_HTTP_PORT
+                ? httpErrorMessage() : outsideErrorMessage();
+            response.sendError(response.SC_FORBIDDEN, msg);
             return;
         }
 
@@ -102,7 +93,7 @@ public abstract class OutsideValve extends ValveBase
 
         /* This is insecure access on port 80 */
         if (port == DEFAULT_HTTP_PORT) return isInsecureAccessAllowed();
-        
+
         /* This is secure access on the internal port */
         if (port == NetworkUtil.INTERNAL_OPEN_HTTPS_PORT) return true;
 

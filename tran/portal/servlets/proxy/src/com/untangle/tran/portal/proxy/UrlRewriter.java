@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.httpclient.URIException;
 import org.apache.log4j.Logger;
 
 class UrlRewriter
@@ -236,7 +235,6 @@ class UrlRewriter
     }
 
     String getRemoteUrl()
-        throws URIException
     {
         return remoteUrl;
     }

@@ -1,14 +1,21 @@
-<%@ page isErrorPage="true" %>
+<%@ page isErrorPage="true" import="org.apache.log4j.Logger"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <%
-Object errorObject = request.getAttribute( "com.untangle.mvvm.util.errorpage.error-message" );
-String errorMessage = "Access to this resource is prohibited.";
-if (( errorObject != null ) && ( errorObject instanceof String )) {
-  errorMessage = (String)errorObject;
-}
+String errorMessage;
 
+ErrorData ed = pageContext.getErrorData();
+Throwable t = null == ed ? null : ed.getThrowable();
+if (null == t) {
+    Object o = request.getAttribute("javax.servlet.error.message");
+    errorMessage = null != o && o instanceof String
+        ? (String)o
+        : "Access to this resource is prohibited.";
+} else {
+    Logger.getLogger(getClass()).error("Exception thrown in servlet", t);
+    errorMessage = "Unexpected Error";
+}
 %>
 
 <html>

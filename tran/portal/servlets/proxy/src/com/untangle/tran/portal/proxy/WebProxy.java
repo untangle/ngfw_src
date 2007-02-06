@@ -90,22 +90,29 @@ public class WebProxy extends HttpServlet
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
+        UrlRewriter rewriter = UrlRewriter.getRewriter(req);
+        String remoteUrl = rewriter.getRemoteUrl();
+        String dest = rewriter.getHost();
         try {
-            UrlRewriter rewriter = UrlRewriter.getRewriter(req);
-            String dest = rewriter.getHost();
             IPaddr addr = new IPaddr(InetAddress.getByName(dest));
             if (netManager.isAddressLocal(addr)) {
-                sendError(resp, HttpServletResponse.SC_FORBIDDEN);
+                sendError(resp, HttpServletResponse.SC_FORBIDDEN,
+                          "Cannot Proxy to Untangle Server");
             } else {
-                String remoteUrl = rewriter.getRemoteUrl();
                 logger.debug("GET remoteUrl: " + remoteUrl);
                 HttpMethod method = new GetMethod(remoteUrl);
                 doIt(req, resp, method, rewriter);
             }
         } catch (UnknownHostException exn) {
-            sendError(resp, HttpServletResponse.SC_NOT_FOUND);
+            sendError(resp, HttpServletResponse.SC_NOT_FOUND,
+                      "Unknown Host: " + dest);
         } catch (URIException exn) {
-            sendError(resp, HttpServletResponse.SC_NOT_FOUND);
+            sendError(resp, HttpServletResponse.SC_NOT_FOUND,
+                      "Invalid URL: " + remoteUrl);
+        } catch (IOException exn) {
+            logger.warn("could not process GET", exn);
+            sendError(resp, HttpServletResponse.SC_BAD_REQUEST,
+                      "Could not get page: " + remoteUrl);
         }
     }
 
@@ -113,19 +120,29 @@ public class WebProxy extends HttpServlet
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
+        UrlRewriter rewriter = UrlRewriter.getRewriter(req);
+        String remoteUrl = rewriter.getRemoteUrl();
         try {
-            UrlRewriter rewriter = UrlRewriter.getRewriter(req);
-            String remoteUrl = rewriter.getRemoteUrl();
-            logger.debug("POST remoteUrl: " + remoteUrl);
-            RawPostMethod method = new RawPostMethod(remoteUrl);
+            String dest = rewriter.getHost();
+            IPaddr addr = new IPaddr(InetAddress.getByName(dest));
+            if (netManager.isAddressLocal(addr)) {
+                sendError(resp, HttpServletResponse.SC_FORBIDDEN,
+                          "Cannot Proxy to Untangle Server");
+            } else {
+                logger.debug("POST remoteUrl: " + remoteUrl);
+                RawPostMethod method = new RawPostMethod(remoteUrl);
 
-            method.setBodyStream(req.getContentType(), req.getInputStream(),
-                                 req.getIntHeader("Content-Length"));
-            doIt(req, resp, method, rewriter);
+                method.setBodyStream(req.getContentType(), req.getInputStream(),
+                                     req.getIntHeader("Content-Length"));
+                doIt(req, resp, method, rewriter);
+            }
         } catch (URIException exn) {
-            sendError(resp, HttpServletResponse.SC_BAD_REQUEST);
+            sendError(resp, HttpServletResponse.SC_BAD_REQUEST,
+                      "Invalid URL: " + remoteUrl);
         } catch (IOException exn) {
             logger.warn("could not process POST", exn);
+            sendError(resp, HttpServletResponse.SC_BAD_REQUEST,
+                      "Could not post page: " + remoteUrl);
         }
     }
 
@@ -133,7 +150,7 @@ public class WebProxy extends HttpServlet
 
     private void doIt(HttpServletRequest req, HttpServletResponse resp,
                       HttpMethod method, UrlRewriter rewriter)
-        throws ServletException
+        throws IOException, ServletException
     {
         method.getParams().setCookiePolicy(PERMISSIVE_COOKIE_POLICY);
 
@@ -160,20 +177,16 @@ public class WebProxy extends HttpServlet
             if (null != is) {
                 processResponse(is, resp, rewriter);
             }
-        } catch (IOException exn) {
-            logger.warn("could not make request", exn);
-            sendError(resp, HttpServletResponse.SC_BAD_REQUEST);
-            return;
         } finally {
             method.releaseConnection();
         }
     }
 
-    private void sendError(HttpServletResponse resp, int code)
+    private void sendError(HttpServletResponse resp, int code, String msg)
         throws ServletException
     {
         try {
-            resp.sendError(code);
+            resp.sendError(code, msg);
         } catch (IOException exn) {
             throw new ServletException("could not send error", exn);
         }
