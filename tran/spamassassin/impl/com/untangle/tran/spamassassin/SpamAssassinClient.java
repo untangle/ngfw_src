@@ -225,6 +225,7 @@ public final class SpamAssassinClient implements Runnable {
             boolean addDetail = false;
             while (false == this.stop &&
                    null != (line = bufReader.readLine())) {
+logger.debug(dbgName + ", " + line);
                 //logger.debug(dbgName + ", " + line);
                 if (0 == line.length()) {
                     addDetail = true; // end of spamd hdr (details follow)

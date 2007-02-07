@@ -246,7 +246,7 @@ public class ClamClient extends VirusClient {
                     break;
                 case 2:
                     if (false == RESULT_FOUND.equalsIgnoreCase(tStr)) {
-                        clogger.warn(dbgName + ", clamd did not confirm OK or virus FOUND: " + virusName + ", assuming clean");
+                        clogger.warn(dbgName + ", clamd did not confirm OK or virus FOUND: " + virusName + " " + tStr + ", assuming clean");
                         virusName = "";
                         clean = true;
                     }
