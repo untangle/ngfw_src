@@ -33,6 +33,8 @@ require 'buildtools/transform.rb'
 
 task :default => :devel
 
+task :all => :devel
+
 task :clean do
   FileUtils.rm_rf($BuildEnv.devel) if File.exist?($BuildEnv.devel)
   FileUtils.rm_rf($BuildEnv.staging) if File.exist?($BuildEnv.staging)
