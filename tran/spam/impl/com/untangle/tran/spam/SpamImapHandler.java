@@ -12,6 +12,7 @@
 package com.untangle.tran.spam;
 
 import java.io.File;
+import java.util.LinkedList;
 
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.tapi.TCPSession;
@@ -63,42 +64,37 @@ public class SpamImapHandler
     //Scan the message
     File f = messageToFile(msg);
     if(f == null) {
-      m_logger.error("Error writing to file.  Unable to scan.  Assume pass");
-      m_spamImpl.incrementPassCounter();
-      return HandleMailResult.forPassMessage();
+        m_logger.error("Error writing to file.  Unable to scan.  Assume pass");
+        postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SpamMessageAction.PASS);
+        m_spamImpl.incrementPassCounter();
+        return HandleMailResult.forPassMessage();
     }
 
     if(f.length() > m_config.getMsgSizeLimit()) {
-      m_logger.debug("Message larger than " + m_config.getMsgSizeLimit() + ".  Don't bother to scan");
-      m_spamImpl.incrementPassCounter();
-      return HandleMailResult.forPassMessage();
+        m_logger.debug("Message larger than " + m_config.getMsgSizeLimit() + ".  Don't bother to scan");
+        postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SpamMessageAction.OVERSIZE);
+        m_spamImpl.incrementPassCounter();
+        return HandleMailResult.forPassMessage();
     }
 
     if(m_safelist.isSafelisted(null, msg.getMMHeaders().getFrom(), null)) {
         m_logger.debug("Message sender safelisted");
+        postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SpamMessageAction.SAFELIST);
         m_spamImpl.incrementPassCounter();
         return HandleMailResult.forPassMessage();
     }
 
     SpamMessageAction action = m_config.getMsgAction();
-
     SpamReport report = scanFile(f);
-
     //Handle error case
     if(report == null) {
-      m_logger.error("Error scanning message.  Assume pass");
-      m_spamImpl.incrementPassCounter();
-      return HandleMailResult.forPassMessage();
+        m_logger.error("Error scanning message.  Assume pass");
+        postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SpamMessageAction.PASS);
+        m_spamImpl.incrementPassCounter();
+        return HandleMailResult.forPassMessage();
     }
 
-    //Create an event for the reports
-    SpamLogEvent spamEvent = new SpamLogEvent(
-      msgInfo,
-      report.getScore(),
-      report.isSpam(),
-      report.isSpam()?action:SpamMessageAction.PASS,
-      m_spamImpl.getScanner().getVendorName());
-    m_spamImpl.log(spamEvent);
+    postSpamEvent(msgInfo, report, action);
 
     //Mark headers regardless of other actions
     try {
@@ -130,6 +126,23 @@ public class SpamImapHandler
       m_spamImpl.incrementPassCounter();
       return HandleMailResult.forPassMessage();
     }//ENDOF HAM
+  }
+
+  /**
+   * ...name says it all...
+   */
+  private void postSpamEvent(MessageInfo msgInfo,
+    SpamReport report,
+    SpamMessageAction action) {
+
+    //Create an event for the reports
+    SpamLogEvent spamEvent = new SpamLogEvent(
+      msgInfo,
+      report.getScore(),
+      report.isSpam(),
+      report.isSpam() ? action : SpamMessageAction.PASS,
+      m_spamImpl.getScanner().getVendorName());
+    m_spamImpl.log(spamEvent);
   }
 
   /**

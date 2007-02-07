@@ -26,13 +26,21 @@ public class SpamMessageAction implements Serializable
 
     public static char PASS_KEY = 'P';
     public static char MARK_KEY = 'M';
+    public static char SAFELIST_KEY = 'S'; // special pass case
+    public static char OVERSIZE_KEY = 'Z'; // special pass case
 
     public static final SpamMessageAction PASS = new SpamMessageAction(PASS_KEY, "pass message");
     public static final SpamMessageAction MARK = new SpamMessageAction(MARK_KEY, "mark message");
+    // for now, label safelist and oversize messages as pass messages
+    // until someone requests more detail
+    public static final SpamMessageAction SAFELIST = new SpamMessageAction(SAFELIST_KEY, "pass message");
+    public static final SpamMessageAction OVERSIZE = new SpamMessageAction(OVERSIZE_KEY, "pass message");
 
     static {
         INSTANCES.put(PASS.getKey(), PASS);
         INSTANCES.put(MARK.getKey(), MARK);
+        INSTANCES.put(SAFELIST.getKey(), SAFELIST);
+        INSTANCES.put(OVERSIZE.getKey(), OVERSIZE);
     }
 
     private String name;

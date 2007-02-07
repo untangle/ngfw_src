@@ -13,15 +13,17 @@ package com.untangle.tran.spam;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 
 import com.untangle.mvvm.tapi.TCPSession;
 import com.untangle.mvvm.tran.Transform;
-import com.untangle.tran.mail.papi.MIMEMessageT;
 import com.untangle.tran.mail.papi.MailExport;
 import com.untangle.tran.mail.papi.MailTransformSettings;
-import com.untangle.tran.mail.papi.WrappedMessageGenerator;
+import com.untangle.tran.mail.papi.MessageInfo;
+import com.untangle.tran.mail.papi.MIMEMessageT;
 import com.untangle.tran.mail.papi.pop.PopStateMachine;
 import com.untangle.tran.mail.papi.safelist.SafelistTransformView;
+import com.untangle.tran.mail.papi.WrappedMessageGenerator;
 import com.untangle.tran.mime.HeaderParseException;
 import com.untangle.tran.mime.LCString;
 import com.untangle.tran.mime.MIMEMessage;
@@ -85,10 +87,13 @@ public class SpamPopHandler extends PopStateMachine
 
     protected TokenResult scanMessage() throws TokenException
     {
-        if (true == bScan &&
-            giveUpSize >= zMsgFile.length() &&
-            false == zSLTransformView.isSafelisted(null, zMMessage.getMMHeaders().getFrom(), null)) {
-
+        if (giveUpSize < zMsgFile.length()) {
+            postSpamEvent(zMsgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, strength/10.0f), SpamMessageAction.OVERSIZE);
+            zTransform.incrementCount(PASS_COUNTER);
+        } else if (true == zSLTransformView.isSafelisted(null, zMMessage.getMMHeaders().getFrom(), null)) {
+            postSpamEvent(zMsgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, strength/10.0f), SpamMessageAction.SAFELIST);
+            zTransform.incrementCount(PASS_COUNTER);
+        } else if (true == bScan) {
             SpamReport zReport;
 
             if (null != (zReport = scanFile(zMsgFile)) &&
@@ -125,12 +130,7 @@ public class SpamPopHandler extends PopStateMachine
     {
         try {
             SpamReport zReport = zScanner.scanFile(zFile, strength/10.0f);
-            SpamLogEvent event = new SpamLogEvent(zMsgInfo,
-                                                  zReport.getScore(),
-                                                  zReport.isSpam(),
-                                                  zReport.isSpam() ? zMsgAction : SpamMessageAction.PASS,
-                                                  zVendorName);
-            zTransform.log(event);
+            postSpamEvent(zMsgInfo, zReport, zMsgAction);
 
             try {
                 zMMessage.getMMHeaders().removeHeaderFields(new LCString(zConfig.getHeaderName()));
@@ -152,5 +152,14 @@ public class SpamPopHandler extends PopStateMachine
             /* we'll reuse original message */
             throw new TokenException("cannot scan message/mime part file: " + exn);
         }
+    }
+
+    private void postSpamEvent(MessageInfo msgInfo, SpamReport report, SpamMessageAction action) {
+        SpamLogEvent event = new SpamLogEvent(msgInfo,
+                                              report.getScore(),
+                                              report.isSpam(),
+                                              report.isSpam() ? action : SpamMessageAction.PASS,
+                                              zVendorName);
+        zTransform.log(event);
     }
 }

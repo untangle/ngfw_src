@@ -44,7 +44,7 @@ BOTRIGHT.label=Msg sender
 
 TOPLEFT.expr=$F{time_stamp}
 TOPLMID.expr=$F{is_spam}.booleanValue() ? "SPAM" : ""
-BOTLMID.expr=$F{is_spam}.booleanValue() ? ($F{action}.charAt(0) == 'P' ? "pass message" : $F{action}.charAt(0) == 'M' ? "mark message" : "pass message") : "pass message"
+BOTLMID.expr=$F{is_spam}.booleanValue() ? ($F{action}.charAt(0) == 'P' ? "pass message" : $F{action}.charAt(0) == 'M' ? "mark message" : $F{action}.charAt(0) == 'S' ? "pass message" : $F{action}.charAt(0) == 'Z' ? "pass message" : "pass message") : "pass message"
 TOPRMID.expr=$F{subject}
 BOTRMID.expr=$F{user_nm} == null ? "unknown" : $F{user_nm}
 TOPRIGHT.expr=$F{ip_addr}

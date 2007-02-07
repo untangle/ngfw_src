@@ -17,6 +17,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.InetAddress;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.untangle.mvvm.MvvmContextFactory;
@@ -107,34 +108,34 @@ public class SmtpSessionHandler
     File f = messageToFile(msg);
     if(f == null) {
       m_logger.error("Error writing to file.  Unable to scan.  Assume pass");
+      postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SMTPSpamMessageAction.PASS);
       m_spamImpl.incrementPassCounter();
       return PASS_MESSAGE;
     }
 
     if(f.length() > getGiveupSz()) {
       m_logger.debug("Message larger than " + getGiveupSz() + ".  Don't bother to scan");
+      postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SMTPSpamMessageAction.OVERSIZE);
       m_spamImpl.incrementPassCounter();
       return PASS_MESSAGE;
     }
 
-    if(m_safelist.isSafelisted(tx.getFrom(),
-      msg.getMMHeaders().getFrom(),
-      tx.getRecipients(false))) {
+    if(m_safelist.isSafelisted(tx.getFrom(), msg.getMMHeaders().getFrom(), tx.getRecipients(false))) {
       m_logger.debug("Message sender safelisted");
+      postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SMTPSpamMessageAction.SAFELIST);
+      m_spamImpl.incrementPassCounter();
+      return PASS_MESSAGE;
+    }
+
+    SpamReport report = scanFile(f);
+    if(report == null) { //Handle error case
+      m_logger.error("Error scanning message.  Assume pass");
+      postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SMTPSpamMessageAction.PASS);
       m_spamImpl.incrementPassCounter();
       return PASS_MESSAGE;
     }
 
     SMTPSpamMessageAction action = m_config.getMsgAction();
-
-    SpamReport report = scanFile(f);
-
-    //Handle error case
-    if(report == null) {
-      m_logger.error("Error scanning message.  Assume pass");
-      m_spamImpl.incrementPassCounter();
-      return PASS_MESSAGE;
-    }
 
     if(report.isSpam()) {//BEGIN SPAM
       m_logger.debug("Spam found");
@@ -199,7 +200,6 @@ public class SmtpSessionHandler
     }//ENDOF HAM
   }
 
-
   @Override
   public BlockOrPassResult blockOrPass(MIMEMessage msg,
     SmtpTransaction tx,
@@ -213,36 +213,34 @@ public class SmtpSessionHandler
     File f = messageToFile(msg);
     if(f == null) {
       m_logger.error("Error writing to file.  Unable to scan.  Assume pass");
+      postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SMTPSpamMessageAction.PASS);
       m_spamImpl.incrementPassCounter();
       return BlockOrPassResult.PASS;
     }
 
     if(f.length() > getGiveupSz()) {
       m_logger.debug("Message larger than " + getGiveupSz() + ".  Don't bother to scan");
+      postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SMTPSpamMessageAction.OVERSIZE);
       m_spamImpl.incrementPassCounter();
       return BlockOrPassResult.PASS;
     }
 
-    if(m_safelist.isSafelisted(tx.getFrom(),
-      msg.getMMHeaders().getFrom(),
-      tx.getRecipients(false))) {
+    if(m_safelist.isSafelisted(tx.getFrom(), msg.getMMHeaders().getFrom(), tx.getRecipients(false))) {
       m_logger.debug("Message sender safelisted");
+      postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SMTPSpamMessageAction.SAFELIST);
       m_spamImpl.incrementPassCounter();
       return BlockOrPassResult.PASS;
     }
 
     SpamReport report = scanFile(f);
-
-    //Handle error case
-    if(report == null) {
+    if(report == null) { //Handle error case
       m_logger.error("Error scanning message.  Assume pass");
-      postSpamEvent(msgInfo, report, SMTPSpamMessageAction.PASS);
+      postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SMTPSpamMessageAction.PASS);
       m_spamImpl.incrementPassCounter();
       return BlockOrPassResult.PASS;
     }
 
     SMTPSpamMessageAction action = m_config.getMsgAction();
-
     //Check for the impossible-to-satisfy action of "REMOVE"
     if(action == SMTPSpamMessageAction.MARK) {
       //Change action now, as it'll make the event logs
@@ -251,7 +249,6 @@ public class SmtpSessionHandler
         " to \"PASS\" as we have already begun to trickle");
       action = SMTPSpamMessageAction.PASS;
     }
-
 
     if(report.isSpam()) {
       m_logger.debug("Spam");

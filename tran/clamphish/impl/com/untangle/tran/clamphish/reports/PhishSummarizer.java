@@ -65,7 +65,7 @@ public class PhishSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT COUNT(*) FROM tr_spam_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'P'";
+            sql = "SELECT COUNT(*) FROM tr_spam_evt_smtp WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action IN ('P','S','Z')";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -109,7 +109,7 @@ public class PhishSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-            sql = "SELECT COUNT(*) FROM tr_spam_evt WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action = 'P'";
+            sql = "SELECT COUNT(*) FROM tr_spam_evt WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ? AND is_spam AND action IN ('P','S','Z')";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
