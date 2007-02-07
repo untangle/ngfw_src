@@ -108,21 +108,21 @@ public class SmtpSessionHandler
     File f = messageToFile(msg);
     if(f == null) {
       m_logger.error("Error writing to file.  Unable to scan.  Assume pass");
-      postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SMTPSpamMessageAction.PASS);
+      postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.PASS);
       m_spamImpl.incrementPassCounter();
       return PASS_MESSAGE;
     }
 
     if(f.length() > getGiveupSz()) {
       m_logger.debug("Message larger than " + getGiveupSz() + ".  Don't bother to scan");
-      postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SMTPSpamMessageAction.OVERSIZE);
+      postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.OVERSIZE);
       m_spamImpl.incrementPassCounter();
       return PASS_MESSAGE;
     }
 
     if(m_safelist.isSafelisted(tx.getFrom(), msg.getMMHeaders().getFrom(), tx.getRecipients(false))) {
       m_logger.debug("Message sender safelisted");
-      postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SMTPSpamMessageAction.SAFELIST);
+      postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.SAFELIST);
       m_spamImpl.incrementPassCounter();
       return PASS_MESSAGE;
     }
@@ -130,7 +130,7 @@ public class SmtpSessionHandler
     SpamReport report = scanFile(f);
     if(report == null) { //Handle error case
       m_logger.error("Error scanning message.  Assume pass");
-      postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SMTPSpamMessageAction.PASS);
+      postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.PASS);
       m_spamImpl.incrementPassCounter();
       return PASS_MESSAGE;
     }
@@ -213,21 +213,21 @@ public class SmtpSessionHandler
     File f = messageToFile(msg);
     if(f == null) {
       m_logger.error("Error writing to file.  Unable to scan.  Assume pass");
-      postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SMTPSpamMessageAction.PASS);
+      postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.PASS);
       m_spamImpl.incrementPassCounter();
       return BlockOrPassResult.PASS;
     }
 
     if(f.length() > getGiveupSz()) {
       m_logger.debug("Message larger than " + getGiveupSz() + ".  Don't bother to scan");
-      postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SMTPSpamMessageAction.OVERSIZE);
+      postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.OVERSIZE);
       m_spamImpl.incrementPassCounter();
       return BlockOrPassResult.PASS;
     }
 
     if(m_safelist.isSafelisted(tx.getFrom(), msg.getMMHeaders().getFrom(), tx.getRecipients(false))) {
       m_logger.debug("Message sender safelisted");
-      postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SMTPSpamMessageAction.SAFELIST);
+      postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.SAFELIST);
       m_spamImpl.incrementPassCounter();
       return BlockOrPassResult.PASS;
     }
@@ -235,7 +235,7 @@ public class SmtpSessionHandler
     SpamReport report = scanFile(f);
     if(report == null) { //Handle error case
       m_logger.error("Error scanning message.  Assume pass");
-      postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SMTPSpamMessageAction.PASS);
+      postSpamEvent(msgInfo, cleanReport(), SMTPSpamMessageAction.PASS);
       m_spamImpl.incrementPassCounter();
       return BlockOrPassResult.PASS;
     }
@@ -305,6 +305,10 @@ public class SmtpSessionHandler
     catch(HeaderParseException shouldNotHappen) {
       m_logger.error(shouldNotHappen);
     }
+  }
+
+  private SpamReport cleanReport() {
+      return new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f);
   }
 
   /**

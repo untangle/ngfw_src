@@ -65,21 +65,21 @@ public class SpamImapHandler
     File f = messageToFile(msg);
     if(f == null) {
         m_logger.error("Error writing to file.  Unable to scan.  Assume pass");
-        postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SpamMessageAction.PASS);
+        postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.PASS);
         m_spamImpl.incrementPassCounter();
         return HandleMailResult.forPassMessage();
     }
 
     if(f.length() > m_config.getMsgSizeLimit()) {
         m_logger.debug("Message larger than " + m_config.getMsgSizeLimit() + ".  Don't bother to scan");
-        postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SpamMessageAction.OVERSIZE);
+        postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.OVERSIZE);
         m_spamImpl.incrementPassCounter();
         return HandleMailResult.forPassMessage();
     }
 
     if(m_safelist.isSafelisted(null, msg.getMMHeaders().getFrom(), null)) {
         m_logger.debug("Message sender safelisted");
-        postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SpamMessageAction.SAFELIST);
+        postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.SAFELIST);
         m_spamImpl.incrementPassCounter();
         return HandleMailResult.forPassMessage();
     }
@@ -89,7 +89,7 @@ public class SpamImapHandler
     //Handle error case
     if(report == null) {
         m_logger.error("Error scanning message.  Assume pass");
-        postSpamEvent(msgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f), SpamMessageAction.PASS);
+        postSpamEvent(msgInfo, cleanReport(), SpamMessageAction.PASS);
         m_spamImpl.incrementPassCounter();
         return HandleMailResult.forPassMessage();
     }
@@ -126,6 +126,10 @@ public class SpamImapHandler
       m_spamImpl.incrementPassCounter();
       return HandleMailResult.forPassMessage();
     }//ENDOF HAM
+  }
+
+  private SpamReport cleanReport() {
+      return new SpamReport(new LinkedList<ReportItem>(), 0.0f, m_config.getStrength()/10.0f);
   }
 
   /**

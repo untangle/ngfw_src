@@ -88,10 +88,10 @@ public class SpamPopHandler extends PopStateMachine
     protected TokenResult scanMessage() throws TokenException
     {
         if (giveUpSize < zMsgFile.length()) {
-            postSpamEvent(zMsgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, strength/10.0f), SpamMessageAction.OVERSIZE);
+            postSpamEvent(zMsgInfo, cleanReport(), SpamMessageAction.OVERSIZE);
             zTransform.incrementCount(PASS_COUNTER);
         } else if (true == zSLTransformView.isSafelisted(null, zMMessage.getMMHeaders().getFrom(), null)) {
-            postSpamEvent(zMsgInfo, new SpamReport(new LinkedList<ReportItem>(), 0.0f, strength/10.0f), SpamMessageAction.SAFELIST);
+            postSpamEvent(zMsgInfo, cleanReport(), SpamMessageAction.SAFELIST);
             zTransform.incrementCount(PASS_COUNTER);
         } else if (true == bScan) {
             SpamReport zReport;
@@ -152,6 +152,10 @@ public class SpamPopHandler extends PopStateMachine
             /* we'll reuse original message */
             throw new TokenException("cannot scan message/mime part file: " + exn);
         }
+    }
+
+    private SpamReport cleanReport() {
+         return new SpamReport(new LinkedList<ReportItem>(), 0.0f, strength/10.0f);
     }
 
     private void postSpamEvent(MessageInfo msgInfo, SpamReport report, SpamMessageAction action) {
