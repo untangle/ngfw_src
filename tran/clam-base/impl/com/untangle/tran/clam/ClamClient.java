@@ -61,8 +61,8 @@ public class ClamClient extends VirusClient {
         try {
             clamcSocket = VirusClientSocket.create(cContext.getHost(), cContext.getPort());
         } catch (Exception e) {
+            clogger.warn(dbgName + ", finish, clamc could not connect to main clamd (" + cContext.getHost() + ":" + cContext.getPort() + "); please confirm that clamd is properly configured", e);
             cleanExit();
-            clogger.warn(dbgName + ", finish, clamc could not connect to main clamd (" + cContext.getHost() + ":" + cContext.getPort() + ")", e);
             return;
         }
         //clogger.debug("run, thread: " + cThread + ", this: " + this + ", create: " + clamcSocket);
@@ -103,9 +103,9 @@ public class ClamClient extends VirusClient {
             try {
                 msgcSocket = VirusClientSocket.create(cContext.getHost(), msgPort);
             } catch (Exception e) {
+                clogger.warn(dbgName + ", finish, clamc could not connect to msg clamd (" + cContext.getHost() + ":" + msgPort + ")", e);
                 cleanExit(clamcSocket, cContext.getHost(), cContext.getPort());
                 clamcSocket = null;
-                clogger.warn(dbgName + ", finish, clamc could not connect to msg clamd (" + cContext.getHost() + ":" + msgPort + ")", e);
                 return;
             }
             BufferedOutputStream bufMsgOutputStream = msgcSocket.getBufferedOutputStream();
@@ -167,9 +167,9 @@ public class ClamClient extends VirusClient {
             // thrown during parse
             clogger.warn(dbgName + ", clamc failed", e);
         } finally {
+            //clogger.debug(dbgName + ", finish");
             cleanExit(clamcSocket, cContext.getHost(), cContext.getPort());
             clamcSocket = null;
-            //clogger.debug(dbgName + ", finish");
             return;
         }
     }

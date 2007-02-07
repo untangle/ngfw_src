@@ -147,8 +147,8 @@ public final class SpamAssassinClient implements Runnable {
         try {
             spamcSocket = SpamAssassinClientSocket.create(cContext.getHost(), cContext.getPort());
         } catch (Exception e) {
+            logger.warn(dbgName + ", finish, spamc could not connect to spamd (" + cContext.getHost() + ":" + cContext.getPort() + "); please confirm that spamd is configured", e);
             cleanExit();
-            logger.warn(dbgName + ", finish, spamc could not connect to spamd (" + cContext.getHost() + ":" + cContext.getPort() + ")", e);
             return;
         }
         //logger.debug("run, thread: " + cThread + ", this: " + this + ", create: " + spamcSocket);
@@ -315,9 +315,9 @@ public final class SpamAssassinClient implements Runnable {
             // thrown during parse
             logger.warn(dbgName + ", spamc failed", e);
         } finally {
+            //logger.debug(dbgName + ", finish");
             cleanExit(spamcSocket, cContext.getHost(), cContext.getPort());
             spamcSocket = null;
-            //logger.debug(dbgName + ", finish");
             return;
         }
     }
