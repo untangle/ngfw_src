@@ -32,7 +32,6 @@ require 'buildtools/jasper.rb'
 require 'buildtools/transform.rb'
 
 task :default => :devel
-
 task :all => :devel
 
 task :clean do
@@ -48,7 +47,6 @@ $InstallTarget = InstallTarget.new(Package['install'], [Package['mvvm'], Package
 
 task :devel => $InstallTarget
 
-
 # See rake-util.rb, we check the arguments for "pkgs"
 task :pkgs => Package['install'] do
   FileList['./debian/**/etc/init.d/*'].each do |f|
@@ -59,6 +57,8 @@ task :pkgs => Package['install'] do
   Kernel.system(*%w(fakeroot ./debian/rules binary))
   Kernel.system(*%w(sudo ./buildtools/rebuildmvvm.sh))
 end
+
+task :pkgs => $InstallTarget
 
 task Package['mvvm'] => [:structure]
 

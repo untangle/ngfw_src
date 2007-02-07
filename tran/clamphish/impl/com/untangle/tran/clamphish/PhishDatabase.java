@@ -13,4 +13,5 @@ package com.untangle.tran.clamphish;
 
 class PhishDataBase
 {
+
 }
