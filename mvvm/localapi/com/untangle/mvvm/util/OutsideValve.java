@@ -16,6 +16,7 @@ import java.net.UnknownHostException;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 
+import com.untangle.mvvm.LocalAppServerManager;
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.networking.NetworkUtil;
 import com.untangle.mvvm.networking.internal.RemoteInternalSettings;
@@ -45,7 +46,8 @@ public abstract class OutsideValve extends ValveBase
 
             String msg = request.getLocalPort() == DEFAULT_HTTP_PORT
                 ? httpErrorMessage() : outsideErrorMessage();
-            response.sendError(response.SC_FORBIDDEN, msg);
+            request.setAttribute(LocalAppServerManager.MVVM_WEB_MESSAGE_ATTR, msg);
+            response.sendError(response.SC_FORBIDDEN);
             return;
         }
 

@@ -1,20 +1,30 @@
-<%@ page isErrorPage="true" import="org.apache.log4j.Logger"%>
+<%@ page isErrorPage="true" import="com.untangle.mvvm.LocalAppServerManager,org.apache.log4j.Logger,org.apache.catalina.Globals,org.apache.catalina.valves.Constants,org.apache.catalina.util.StringManager"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <%
-String errorMessage;
+// See LocalStrings.properties in the apache package for message
+// format. XXX we could make our own friendlier version.
 
-ErrorData ed = pageContext.getErrorData();
-Throwable t = null == ed ? null : ed.getThrowable();
-if (null == t) {
-    Object o = request.getAttribute("javax.servlet.error.message");
-    errorMessage = null != o && o instanceof String
-        ? (String)o
-        : "Access to this resource is prohibited.";
-} else {
-    Logger.getLogger(getClass()).error("Exception thrown in servlet", t);
-    errorMessage = "Unexpected Error";
+Object o = request.getAttribute(LocalAppServerManager.MVVM_WEB_MESSAGE_ATTR);
+String errorMessage = null != o && o instanceof String ? (String)o : null;
+
+if (null == errorMessage) {
+    ErrorData ed = pageContext.getErrorData();
+    Throwable t = null == ed ? null : ed.getThrowable();
+    if (null == t) {
+        o = request.getAttribute(Globals.STATUS_CODE_ATTR);
+        int statusCode = null != o && o instanceof Integer ? (Integer)o : 0;
+        o = request.getAttribute(Globals.ERROR_MESSAGE_ATTR);
+        String msg = null != o && o instanceof String
+            ? (String)o
+            : "Access to this resource is prohibited.";
+        StringManager sm = StringManager.getManager(Constants.Package);
+        errorMessage = sm.getString("http." + statusCode, msg);
+    } else {
+        Logger.getLogger(getClass()).error("Exception thrown in servlet", t);
+        errorMessage = "Unexpected Error";
+    }
 }
 %>
 

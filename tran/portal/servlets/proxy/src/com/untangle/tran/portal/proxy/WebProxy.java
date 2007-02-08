@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.untangle.mvvm.LocalAppServerManager;
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.NetworkManager;
@@ -96,7 +97,7 @@ public class WebProxy extends HttpServlet
         try {
             IPaddr addr = new IPaddr(InetAddress.getByName(dest));
             if (netManager.isAddressLocal(addr)) {
-                sendError(resp, HttpServletResponse.SC_FORBIDDEN,
+                sendError(req, resp, HttpServletResponse.SC_FORBIDDEN,
                           "Cannot Proxy to Untangle Server");
             } else {
                 logger.debug("GET remoteUrl: " + remoteUrl);
@@ -104,14 +105,14 @@ public class WebProxy extends HttpServlet
                 doIt(req, resp, method, rewriter);
             }
         } catch (UnknownHostException exn) {
-            sendError(resp, HttpServletResponse.SC_NOT_FOUND,
+            sendError(req, resp, HttpServletResponse.SC_NOT_FOUND,
                       "Unknown Host: " + dest);
         } catch (URIException exn) {
-            sendError(resp, HttpServletResponse.SC_NOT_FOUND,
+            sendError(req, resp, HttpServletResponse.SC_NOT_FOUND,
                       "Invalid URL: " + remoteUrl);
         } catch (IOException exn) {
             logger.warn("could not process GET", exn);
-            sendError(resp, HttpServletResponse.SC_BAD_REQUEST,
+            sendError(req, resp, HttpServletResponse.SC_BAD_REQUEST,
                       "Could not get page: " + remoteUrl);
         }
     }
@@ -126,7 +127,7 @@ public class WebProxy extends HttpServlet
             String dest = rewriter.getHost();
             IPaddr addr = new IPaddr(InetAddress.getByName(dest));
             if (netManager.isAddressLocal(addr)) {
-                sendError(resp, HttpServletResponse.SC_FORBIDDEN,
+                sendError(req, resp, HttpServletResponse.SC_FORBIDDEN,
                           "Cannot Proxy to Untangle Server");
             } else {
                 logger.debug("POST remoteUrl: " + remoteUrl);
@@ -137,11 +138,11 @@ public class WebProxy extends HttpServlet
                 doIt(req, resp, method, rewriter);
             }
         } catch (URIException exn) {
-            sendError(resp, HttpServletResponse.SC_BAD_REQUEST,
+            sendError(req, resp, HttpServletResponse.SC_BAD_REQUEST,
                       "Invalid URL: " + remoteUrl);
         } catch (IOException exn) {
             logger.warn("could not process POST", exn);
-            sendError(resp, HttpServletResponse.SC_BAD_REQUEST,
+            sendError(req, resp, HttpServletResponse.SC_BAD_REQUEST,
                       "Could not post page: " + remoteUrl);
         }
     }
@@ -182,11 +183,13 @@ public class WebProxy extends HttpServlet
         }
     }
 
-    private void sendError(HttpServletResponse resp, int code, String msg)
+    private void sendError(HttpServletRequest req, HttpServletResponse resp,
+                           int code, String msg)
         throws ServletException
     {
         try {
-            resp.sendError(code, msg);
+            req.setAttribute(LocalAppServerManager.MVVM_WEB_MESSAGE_ATTR, msg);
+            resp.sendError(code);
         } catch (IOException exn) {
             throw new ServletException("could not send error", exn);
         }
