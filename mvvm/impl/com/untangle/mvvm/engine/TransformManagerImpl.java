@@ -311,41 +311,7 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
             LogLog.warn("null transform context in threadContexts");
         }
 
-        return new MvvmLoggingContext()
-            {
-                public String getConfigName()
-                {
-                    return "log4j-tran.xml";
-                }
-
-                public String getFileName()
-                {
-                    if (null == tctx) {
-                        return "0";
-                    } else {
-                        return tctx.getTid().getName();
-                    }
-                }
-
-                public String getName()
-                {
-                    if (null == tctx) {
-                        return "0";
-                    } else {
-                        return tctx.getTid().getName();
-                    }
-                }
-
-                public boolean equals(Object o)
-                {
-                    return tctx.equals(o);
-                }
-
-                public int hashCode()
-                {
-                    return tctx.hashCode();
-                }
-            };
+        return new TransformManagerLoggingContext(tctx);
     }
 
     // package protected methods ----------------------------------------------
@@ -709,5 +675,63 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
         MvvmContextFactory.context().runTransaction(tw);
 
         return tid;
+    }
+
+    // private static classes -------------------------------------------------
+
+    private static class TransformManagerLoggingContext
+        implements MvvmLoggingContext
+    {
+        private final TransformContext tctx;
+
+        // constructors -------------------------------------------------------
+
+        TransformManagerLoggingContext(TransformContext tctx)
+        {
+            this.tctx = tctx;
+        }
+
+        // MvvmLoggingContext methods -----------------------------------------
+
+        public String getConfigName()
+        {
+            return "log4j-tran.xml";
+        }
+
+        public String getFileName()
+        {
+            if (null == tctx) {
+                return "0";
+            } else {
+                return tctx.getTid().getName();
+            }
+        }
+
+        public String getName()
+        {
+            if (null == tctx) {
+                return "0";
+            } else {
+                return tctx.getTid().getName();
+            }
+        }
+
+        // Object methods -----------------------------------------------------
+
+        public boolean equals(Object o)
+        {
+            if (o instanceof TransformManagerLoggingContext) {
+                TransformManagerLoggingContext tmc
+                    = (TransformManagerLoggingContext)o;
+                return tctx.equals(tmc.tctx);
+            } else {
+                return false;
+            }
+        }
+
+        public int hashCode()
+        {
+            return tctx.hashCode();
+        }
     }
 }

@@ -89,6 +89,7 @@ public class MvvmRepositorySelector implements RepositorySelector
 
         synchronized (repositories) {
             hier = repositories.get(ctx);
+            System.out.println("GET CTX: " + ctx + " HIER: " + hier);
             if (null == hier) {
                 MvvmLoggingContextFactory o = currentContextFactory.get();
                 try {
