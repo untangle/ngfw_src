@@ -404,6 +404,16 @@ class InstallTarget < Target
     end
   end
 
+  def installDirs(dirnames)
+    [dirnames].flatten.each do |f|
+      file f do
+        ensureDirectory(f)
+      end
+
+      stamptask self => f
+    end
+  end
+
   def installFiles(filenames, dest, name = nil)
     is = []
 

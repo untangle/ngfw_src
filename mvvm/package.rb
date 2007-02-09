@@ -186,6 +186,8 @@ $InstallTarget.installJars(Jars::Base, "#{mvvm.distDirectory}/usr/share/java/mvv
 
 $InstallTarget.installJars(Jars::Reporting, "#{mvvm.distDirectory}/usr/share/java/reports")
 
+$InstallTarget.installDirs("#{mvvm.distDirectory}/usr/share/metavize/toolbox")
+
 mvvm_cacerts = "#{mvvm.distDirectory}/usr/share/metavize/conf/cacerts"
 java_cacerts = "#{$BuildEnv.javahome}/jre/lib/security/cacerts"
 mv_ca = 'mvvm/resources/mv-ca.pem'
