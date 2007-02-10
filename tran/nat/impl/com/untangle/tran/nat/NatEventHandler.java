@@ -23,7 +23,6 @@ import com.untangle.mvvm.ArgonManager;
 import com.untangle.mvvm.NetworkManager;
 import com.untangle.mvvm.IntfConstants;
 import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.NetworkingConfiguration;
 
 import com.untangle.mvvm.logging.LogEvent;
 import com.untangle.mvvm.localapi.ArgonInterface;

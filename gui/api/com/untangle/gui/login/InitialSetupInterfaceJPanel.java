@@ -19,7 +19,6 @@ import com.untangle.gui.widgets.editTable.MSortedTableModel;
 import com.untangle.gui.widgets.editTable.MEditTableJPanel;
 import com.untangle.gui.transform.CompoundSettings;
 import com.untangle.mvvm.networking.Interface;
-import com.untangle.mvvm.NetworkingConfiguration;
 
 import com.untangle.gui.widgets.wizard.*;
 import com.untangle.gui.util.Util;

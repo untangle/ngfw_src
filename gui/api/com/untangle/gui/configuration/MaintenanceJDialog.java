@@ -16,8 +16,6 @@ import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.util.*;
 
-import com.untangle.mvvm.NetworkingConfiguration;
-
 import java.awt.*;
 import java.util.*;
 import javax.swing.table.*;

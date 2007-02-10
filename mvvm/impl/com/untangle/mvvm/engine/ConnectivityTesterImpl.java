@@ -19,7 +19,7 @@ import java.util.Random;
 
 import com.untangle.mvvm.ConnectivityTester;
 import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.NetworkingConfiguration;
+import com.untangle.mvvm.networking.BasicNetworkSettings;
 import com.untangle.mvvm.tran.script.ScriptRunner;
 import org.apache.log4j.Logger;
 
@@ -66,10 +66,10 @@ class ConnectivityTesterImpl implements ConnectivityTester
      */
     public Status getStatus()
     {
-        NetworkingConfiguration netConfig = MvvmContextFactory.context().networkManager().getNetworkingConfiguration();
+        BasicNetworkSettings basic = MvvmContextFactory.context().networkManager().getBasicSettings();
 
-        InetAddress dnsPrimary   = netConfig.dns1().getAddr();
-        InetAddress dnsSecondary = ( netConfig.dns2().isEmpty()) ? null : netConfig.dns2().getAddr();
+        InetAddress dnsPrimary   = basic.dns1().getAddr();
+        InetAddress dnsSecondary = ( basic.dns2().isEmpty()) ? null : basic.dns2().getAddr();
 
         /* Wait for any bridge interfaces to come up */
         waitForBridges();

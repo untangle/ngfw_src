@@ -375,7 +375,7 @@ class SettingsManager
         /* XXX The network settings are already known, there isn't really a need to craete
          * a new object, but this is more convenient */
         natSettings.
-            setNetworkSettings( MvvmContextFactory.context().networkManager().getNetworkingConfiguration());
+            setNetworkSettings( MvvmContextFactory.context().networkManager().getBasicSettings());
                 
         return natSettings;
     }

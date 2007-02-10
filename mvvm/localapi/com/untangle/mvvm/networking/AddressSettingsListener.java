@@ -11,10 +11,10 @@
 
 package com.untangle.mvvm.networking;
 
-import com.untangle.mvvm.networking.internal.RemoteInternalSettings;
+import com.untangle.mvvm.networking.internal.AddressSettingsInternal;
 
-/* Interface for monitoring changes to the remote settings */
-public interface RemoteSettingsListener
+/* Interface for monitoring changes to the hostname settings. */
+public interface AddressSettingsListener
 {
-    public void event( RemoteInternalSettings settings );
+    public void event( AddressSettingsInternal settings );
 }

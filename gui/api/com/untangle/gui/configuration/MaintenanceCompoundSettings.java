@@ -14,7 +14,8 @@ package com.untangle.gui.configuration;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.transform.CompoundSettings;
 import com.untangle.gui.transform.MCasingJPanel;
-import com.untangle.mvvm.networking.RemoteSettings;
+import com.untangle.mvvm.networking.AccessSettings;
+import com.untangle.mvvm.networking.MiscSettings;
 import com.untangle.mvvm.networking.NetworkSpacesSettings;
 import com.untangle.mvvm.security.Tid;
 import com.untangle.mvvm.tran.TransformContext;
@@ -24,9 +25,13 @@ import java.util.List;
 
 public class MaintenanceCompoundSettings implements CompoundSettings {
 
-    // NETWORKING CONFIGURATION //
-    private RemoteSettings remoteSettings;
-    public RemoteSettings getRemoteSettings(){ return remoteSettings; }
+    // ACCESS SETTINGS //
+    private AccessSettings accessSettings;
+    public AccessSettings getAccessSettings(){ return accessSettings; }
+
+    // MISC SETTINGS //
+    private MiscSettings miscSettings;
+    public MiscSettings getMiscSettings() { return miscSettings; }
 
     // NETWORK SETTINGS //
     private NetworkSpacesSettings networkSettings;
@@ -48,11 +53,7 @@ public class MaintenanceCompoundSettings implements CompoundSettings {
     public MCasingJPanel[] getCasingJPanels(){ return casingJPanels; }
 
     public void save() throws Exception {
-        /* RBS: !!! It is important that the remote settings are saved before the 
-         * the network settings, if they are not, the post configuration script
-         * may or may not be executed. */
-	Util.getNetworkManager().setRemoteSettings(remoteSettings);
-	Util.getNetworkManager().setNetworkSettings(networkSettings);
+	Util.getNetworkManager().setSettings(accessSettings,miscSettings,networkSettings);
 
 	if(mailTransformCompoundSettings != null){
 	    mailTransformCompoundSettings.save();
@@ -67,7 +68,8 @@ public class MaintenanceCompoundSettings implements CompoundSettings {
 
     public void refresh() throws Exception {
         Util.getNetworkManager().updateLinkStatus();
-	remoteSettings  = Util.getNetworkManager().getRemoteSettings();
+        accessSettings = Util.getNetworkManager().getAccessSettings();
+        miscSettings = Util.getNetworkManager().getMiscSettings();
 	networkSettings = Util.getNetworkManager().getNetworkSettings();
 
 	casingJPanels = Util.getPolicyStateMachine().loadAllCasings(true);
@@ -92,7 +94,10 @@ public class MaintenanceCompoundSettings implements CompoundSettings {
     }
 
     public void validate() throws Exception {
-
+        accessSettings.validate();
+        miscSettings.validate();
+        System.err.println( "need validation for network settings" );
+        //networkSettings.validate();
     }
 
 }

@@ -16,7 +16,8 @@ import com.untangle.gui.util.*;
 
 import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.*;
-import com.untangle.mvvm.networking.RemoteSettings;
+import com.untangle.mvvm.networking.AccessSettings;
+import com.untangle.mvvm.networking.MiscSettings;
 import com.untangle.mvvm.tran.*;
 import java.awt.*;
 
@@ -38,24 +39,26 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
         
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    RemoteSettings remoteSettings = maintenanceCompoundSettings.getRemoteSettings();
-            remoteSettings.isSshEnabled( isSshEnabled );
-            remoteSettings.isExceptionReportingEnabled( isExceptionReportingEnabled );
+	    AccessSettings accessSettings = maintenanceCompoundSettings.getAccessSettings();
+            MiscSettings miscSettings = maintenanceCompoundSettings.getMiscSettings();
+            accessSettings.setIsSshEnabled( isSshEnabled );
+            miscSettings.setIsExceptionReportingEnabled( isExceptionReportingEnabled );
         }
     }
 
     public void doRefresh(MaintenanceCompoundSettings maintenanceCompoundSettings){
-        RemoteSettings remoteSettings = maintenanceCompoundSettings.getRemoteSettings();
+        AccessSettings accessSettings = maintenanceCompoundSettings.getAccessSettings();
+        MiscSettings miscSettings = maintenanceCompoundSettings.getMiscSettings();
         
         // SSH ENABLED ///////
-	boolean isSshEnabled = remoteSettings.isSshEnabled();
+	boolean isSshEnabled = accessSettings.getIsSshEnabled();
 	if( isSshEnabled )
             sshEnabledRadioButton.setSelected(true);
         else
             sshDisabledRadioButton.setSelected(true);
         
         // REPORTING ENABLED ////
-        boolean isExceptionReportingEnabled = remoteSettings.isExceptionReportingEnabled();
+        boolean isExceptionReportingEnabled = miscSettings.getIsExceptionReportingEnabled();
         reportJCheckBox.setSelected( isExceptionReportingEnabled );
     }
     

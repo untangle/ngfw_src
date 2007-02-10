@@ -31,7 +31,6 @@ import com.untangle.jnetcap.JNetcapException;
 
 import com.untangle.mvvm.ArgonException;
 import com.untangle.mvvm.ArgonManager;
-import com.untangle.mvvm.NetworkingConfiguration;
 
 import com.untangle.mvvm.localapi.SessionMatcher;
 import com.untangle.mvvm.localapi.LocalIntfManager;

@@ -16,7 +16,7 @@ import com.untangle.gui.util.*;
 import com.untangle.mvvm.snmp.*;
 import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.*;
-import com.untangle.mvvm.networking.RemoteSettings;
+import com.untangle.mvvm.networking.MiscSettings;
 import com.untangle.mvvm.tran.*;
 
 import java.awt.*;
@@ -42,23 +42,23 @@ public class MaintenanceSecretJPanel extends javax.swing.JPanel
 
         // SAVE SETTINGS ////////////
         if( !validateOnly ){
-            RemoteSettings remoteSettings = maintenanceCompoundSettings.getRemoteSettings();
-            remoteSettings.setPostConfigurationScript( script );
-            remoteSettings.setCustomRules( rules );
+            MiscSettings miscSettings = maintenanceCompoundSettings.getMiscSettings();
+            miscSettings.setPostConfigurationScript( script );
+            miscSettings.setCustomRules( rules );
         }
     }
 
     public void doRefresh(MaintenanceCompoundSettings maintenanceCompoundSettings){
-        RemoteSettings remoteSettings = maintenanceCompoundSettings.getRemoteSettings();
+        MiscSettings miscSettings = maintenanceCompoundSettings.getMiscSettings();
 	
         // SCRIPT //
         script1JTextArea.setBackground( Color.WHITE );
-        String script1 = remoteSettings.getPostConfigurationScript();
+        String script1 = miscSettings.getPostConfigurationScript();
         script1JTextArea.setText( script1 );
 
         // CUSTOM RULES //
         script2JTextArea.setBackground( Color.WHITE );
-        String rules = remoteSettings.getCustomRules();
+        String rules = miscSettings.getCustomRules();
         script2JTextArea.setText( rules );
     }
     

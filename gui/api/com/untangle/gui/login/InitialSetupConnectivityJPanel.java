@@ -15,7 +15,6 @@ import com.untangle.gui.widgets.wizard.*;
 import java.util.Arrays;
 import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.gui.util.Util;
-import com.untangle.mvvm.NetworkingConfiguration;
 import com.untangle.gui.configuration.NetworkConnectivityTestJDialog;
 
 import java.awt.Dialog;

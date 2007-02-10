@@ -13,7 +13,8 @@ package com.untangle.gui.configuration;
 
 import com.untangle.gui.util.Util;
 import com.untangle.gui.transform.CompoundSettings;
-import com.untangle.mvvm.NetworkingConfiguration;
+import com.untangle.mvvm.networking.AccessSettings;
+import com.untangle.mvvm.networking.AddressSettings;
 import com.untangle.mvvm.snmp.SnmpSettings;
 import com.untangle.mvvm.logging.LoggingSettings;
 import com.untangle.mvvm.security.CertInfo;
@@ -21,9 +22,13 @@ import com.untangle.mvvm.security.AdminSettings;
 
 public class RemoteCompoundSettings implements CompoundSettings {
 
-    // NETWORKING CONFIGURATION //
-    private NetworkingConfiguration networkingConfiguration;
-    public NetworkingConfiguration getNetworkingConfiguration(){ return networkingConfiguration; }
+    // Access Configuration //
+    private AccessSettings accessSettings;
+    public AccessSettings getAccessSettings(){ return accessSettings; }
+
+    // Access Configuration //
+    private AddressSettings addressSettings;
+    public AddressSettings getAddressSettings(){ return addressSettings; }
 
     // SNMP SETTINGS //
     private SnmpSettings snmpSettings;
@@ -42,7 +47,7 @@ public class RemoteCompoundSettings implements CompoundSettings {
     public CertInfo getCurrentCertInfo(){ return certInfo; }
 
     public void save() throws Exception {
-	Util.getNetworkManager().setNetworkingConfiguration(networkingConfiguration);
+        Util.getNetworkManager().setSettings(accessSettings, addressSettings);
 	Util.getAdminManager().getSnmpManager().setSnmpSettings(snmpSettings);
 	Util.getAdminManager().setAdminSettings(adminSettings);
 	Util.getLoggingManager().setLoggingSettings(loggingSettings);
@@ -50,7 +55,8 @@ public class RemoteCompoundSettings implements CompoundSettings {
     }
 
     public void refresh() throws Exception {
-	networkingConfiguration = Util.getNetworkManager().getNetworkingConfiguration();
+	accessSettings = Util.getNetworkManager().getAccessSettings();
+        addressSettings = Util.getNetworkManager().getAddressSettings();
 	snmpSettings = Util.getAdminManager().getSnmpManager().getSnmpSettings();
 	adminSettings = Util.getAdminManager().getAdminSettings();
 	loggingSettings = Util.getLoggingManager().getLoggingSettings();
@@ -58,7 +64,8 @@ public class RemoteCompoundSettings implements CompoundSettings {
     }
 
     public void validate() throws Exception {
-
+        accessSettings.validate();
+        addressSettings.validate();
     }
 
 }

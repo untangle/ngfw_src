@@ -13,7 +13,7 @@ package com.untangle.tran.openvpn.gui;
 
 import com.untangle.tran.openvpn.*;
 
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.mvvm.tran.HostAddress;
 import com.untangle.gui.widgets.wizard.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.util.Util;
@@ -24,7 +24,7 @@ import java.awt.*;
 
 public class ClientWizardServerJPanel extends MWizardPageJPanel {
     
-    private static final String EXCEPTION_ADDRESS_FORMAT = "The \"Server IP Address\" is not a valid IP address.";
+    private static final String EXCEPTION_ADDRESS_FORMAT = "The \"Server Address\" is not a valid IP address.";
     private static final String EXCEPTION_NO_PASSWORD = "Please supply a password will be used to connect to the server.";
     private static final String EXCEPTION_KEY_UNREAD = "You must click \"Read USB Key\" before proceeding.";
     private static final String EXCEPTION_NO_SELECTION = "You must click \"Read USB Key\", and select a valid configuration " +
@@ -45,7 +45,7 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
 
     boolean useServer;
     String address;
-    IPaddr addressIPaddr;
+    HostAddress addressIPaddr;
     int serverPort;
     String password;
     boolean keyRead = false;
@@ -88,7 +88,7 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
                         exception = new Exception(EXCEPTION_ADDRESS_FORMAT);
                         return;
                     }
-                    addressIPaddr = IPaddr.parse( values[0] );
+                    addressIPaddr = HostAddress.parse( values[0] );
 		}
 		catch(Exception e){
 		    exception = new Exception(EXCEPTION_ADDRESS_FORMAT);
@@ -189,7 +189,7 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
 
                 serverJLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
                 serverJLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                serverJLabel1.setText("Server IP Address:");
+                serverJLabel1.setText("Server Address:");
                 add(serverJLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 120, -1, -1));
 
                 passwordJTextField.setColumns(19);

@@ -14,14 +14,14 @@ package com.untangle.gui.configuration;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.util.Util;
 
-import com.untangle.mvvm.NetworkingConfiguration;
+import com.untangle.mvvm.networking.BasicNetworkSettings;
 
 import javax.swing.*;
 import java.awt.Dialog;
 
 final public class NetworkDhcpRenewDialog extends MOneButtonProgressJDialog {
     
-    private NetworkingConfiguration networkingConfiguration = null;
+    private BasicNetworkSettings basicSettings = null;
     
     public NetworkDhcpRenewDialog(Dialog parentDialog) {
 	super(parentDialog);
@@ -32,8 +32,8 @@ final public class NetworkDhcpRenewDialog extends MOneButtonProgressJDialog {
         this.setVisible(true);
     }
     
-    public NetworkingConfiguration getNetworkingConfiguration(){
-        return networkingConfiguration;
+    public BasicNetworkSettings getBasicSettings(){
+        return basicSettings;
     }
 
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {}
@@ -55,7 +55,7 @@ final public class NetworkDhcpRenewDialog extends MOneButtonProgressJDialog {
         }
         public void run(){
             try{
-                NetworkDhcpRenewDialog.this.networkingConfiguration = Util.getNetworkManager().renewDhcpLease();
+                NetworkDhcpRenewDialog.this.basicSettings = Util.getNetworkManager().renewDhcpLease();
                 Thread.currentThread().sleep(2000l);
                 SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                     NetworkDhcpRenewDialog.this.jProgressBar.setIndeterminate(false);

@@ -28,13 +28,14 @@ import com.untangle.mvvm.IntfConstants;
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.NetworkManager;
-import com.untangle.mvvm.NetworkingConfiguration;
 import com.untangle.mvvm.ArgonException;
 import com.untangle.mvvm.api.IPSessionDesc;
+import com.untangle.mvvm.networking.internal.AccessSettingsInternal;
+import com.untangle.mvvm.networking.internal.AddressSettingsInternal;
 import com.untangle.mvvm.networking.internal.InterfaceInternal;
+import com.untangle.mvvm.networking.internal.MiscSettingsInternal;
 import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.networking.internal.RemoteInternalSettings;
 import com.untangle.mvvm.networking.internal.ServicesInternalSettings;
 import com.untangle.mvvm.security.Tid;
 import com.untangle.mvvm.toolbox.ToolboxManager;
@@ -44,8 +45,11 @@ import com.untangle.mvvm.tran.LocalTransformManager;
 import com.untangle.mvvm.tran.ValidateException;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.untangle.mvvm.tran.script.ScriptRunner;
+import com.untangle.mvvm.tran.script.ScriptWriter;
 import com.untangle.mvvm.util.DataLoader;
 import com.untangle.mvvm.util.DataSaver;
+
+import static com.untangle.mvvm.networking.ShellFlags.FILE_RULE_CFG;
 
 /* XXX This shouldn't be public */
 public class NetworkManagerImpl implements LocalNetworkManager
@@ -94,6 +98,15 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Manager for PPPoE connections */
     private final PPPoEManagerImpl pppoeManager;
 
+    /* Manager for AccessSettings */
+    private final AccessManagerImpl accessManager;
+
+    /* Manager for AddressSettings */
+    private final AddressManagerImpl addressManager;
+
+    /* Manager for MiscSettings */
+    private final MiscManagerImpl miscManager;
+
     /* Converter to create the initial networking configuration object if
      * network spaces has never been executed before */
     private NetworkConfigurationLoader networkConfigurationLoader;
@@ -101,7 +114,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* ??? Does the order matter, it shouldn't.  */
     private Set<NetworkSettingsListener> networkListeners = new HashSet<NetworkSettingsListener>();
     private Set<IntfEnumListener> intfEnumListeners = new HashSet<IntfEnumListener>();
-    private Set<RemoteSettingsListener> remoteListeners = new HashSet<RemoteSettingsListener>();
 
     /** The nuts and bolts of networking, the real bits of panther.  this my friend
      * should never be null */
@@ -109,10 +121,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     /** The configuration for the DHCP/DNS Server */
     private ServicesInternalSettings servicesSettings = null;
-
-    /* These are the "networking" settings that aren't related to the nuts and bolts of
-     * network spaces.  Things like SSH support */
-    private RemoteInternalSettings remote = null;
 
     /* These are the dynamic dns settings */
     private DynamicDNSSettings ddnsSettings = null;
@@ -132,6 +140,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.networkConfigurationLoader = NetworkConfigurationLoader.getInstance();
         this.dhcpManager  = new DhcpManager();
         this.pppoeManager = new PPPoEManagerImpl();
+        this.accessManager = new AccessManagerImpl();
+        this.addressManager = new AddressManagerImpl();
+        this.miscManager = new MiscManagerImpl();
     }
 
     /**
@@ -163,35 +174,114 @@ public class NetworkManagerImpl implements LocalNetworkManager
         InterfaceTester.getInstance().updateLinkStatus( this.networkSettings );
     }
 
-    public NetworkingConfiguration getNetworkingConfiguration()
+    /* Return the primary address of the device, this is the primary
+     * external address.  which is the first address registered on the
+     * first network space */
+    IPaddr getPrimaryAddress()
     {
-        return NetworkUtilPriv.getPrivInstance().
-            toConfiguration( this.networkSettings, this.remote.toSettings());
+        NetworkSpacesInternalSettings settings = this.networkSettings;
+        
+        if ( settings == null ) return null;
+
+        List<NetworkSpaceInternal> spaceList = settings.getNetworkSpaceList();
+        if ( spaceList.size() < 1 ) return null;
+
+        return spaceList.get( 0 ).getPrimaryAddress().getNetwork();
     }
 
-    public synchronized void setNetworkingConfiguration( NetworkingConfiguration configuration )
+    public BasicNetworkSettings getBasicSettings()
+    {
+        BasicNetworkSettings basic = NetworkUtilPriv.getPrivInstance().toBasic( this.networkSettings );
+        basic.setPPPoESettings( this.pppoeManager.getExternalSettings());
+        return basic;
+    }
+
+    public synchronized void setBasicSettings( BasicNetworkSettings basic )
         throws NetworkException, ValidateException
     {
-        this.pppoeManager.setExternalSettings( configuration.getPPPoESettings());
+        if ( logger.isDebugEnabled()) {
+            logger.debug( "saving the basic settings:\n" + basic );
+        }
+
+        this.pppoeManager.setExternalSettings( basic.getPPPoESettings());
         
         setNetworkSettings( NetworkUtilPriv.getPrivInstance().
-                            toInternal( configuration, this.networkSettings, true ));
-        setRemoteSettings( configuration );
+                            toInternal( basic, this.networkSettings, true ));
     }
 
     /* Save the basic network settings during the wizard */
-    public synchronized void setSetupNetworkingConfiguration( NetworkingConfiguration configuration ) 
+    public synchronized void setSetupSettings( AddressSettings address, BasicNetworkSettings basic ) 
         throws NetworkException, ValidateException
     {
-        this.pppoeManager.setExternalSettings( configuration.getPPPoESettings());
+        this.pppoeManager.setExternalSettings( basic.getPPPoESettings());
+        
+        this.addressManager.setSettings( address );
         setNetworkSettings( NetworkUtilPriv.getPrivInstance().
-                            toInternal( configuration, this.networkSettings, false ));
-        setRemoteSettings( configuration );
+                            toInternal( basic, this.networkSettings, false ));
+    }
+
+    /**
+     * Retrieve the settings related to limiting access to the box.
+     */
+    public AccessSettings getAccessSettings()
+    {
+        return this.accessManager.getSettings();
+    }
+
+    public AccessSettingsInternal getAccessSettingsInternal()
+    {
+        return this.accessManager.getInternalSettings();
+    }
+    
+    public void setAccessSettings( AccessSettings access )
+    {
+        this.accessManager.setSettings( access );
+    }
+
+    /**
+     * Retrieve the settings related to the hostname and the address used to access to the box.
+     */
+    public AddressSettings getAddressSettings()
+    {
+        return this.addressManager.getSettings();
+    }
+
+    public AddressSettingsInternal getAddressSettingsInternal()
+    {
+        return this.addressManager.getInternalSettings();
+    }
+    
+    public void setAddressSettings( AddressSettings address )
+    {
+        this.addressManager.setSettings( address );
+    }
+
+    /**
+     * Retrieve the miscellaneous settings that don't really belong anywhere else.
+     */
+    public MiscSettings getMiscSettings()
+    {
+        return this.miscManager.getSettings();
+    }
+
+    public MiscSettingsInternal getMiscSettingsInternal()
+    {
+        return this.miscManager.getInternalSettings();
+    }
+    
+    public void setMiscSettings( MiscSettings misc )
+    {
+        this.miscManager.setSettings( misc );
     }
 
     public NetworkSpacesSettingsImpl getNetworkSettings()
     {
         return NetworkUtilPriv.getPrivInstance().toSettings( this.networkSettings );
+    }
+
+    public NetworkSpacesInternalSettings getNetworkInternalSettings()
+    {
+        return this.networkSettings;
     }
 
     public synchronized void setNetworkSettings( NetworkSpacesSettings settings )
@@ -256,48 +346,38 @@ public class NetworkManagerImpl implements LocalNetworkManager
             logger.error( "Unable to save settings, updating address anyway", e );
         }
 
-        /* Have to update the remote settings */
+        /* Have to update the settings */
         updateAddress();
     }
 
-    public RemoteSettings getRemoteSettings()
+    /* Set the network settings and the address settings at once, used
+     * by the networking panel */
+    public synchronized void setSettings( BasicNetworkSettings basic, AddressSettings address )
+        throws NetworkException, ValidateException
     {
-        return this.remote.toSettings();
+        this.addressManager.setSettings( address );
+        
+        setBasicSettings( basic );
     }
 
-    public RemoteInternalSettings getRemoteInternalSettings()
+    /* Set the access and address settings, used by the Remote Panel */
+    public synchronized void setSettings( AccessSettings access, AddressSettings address )
+        throws NetworkException, ValidateException
     {
-        return this.remote;
-    }
-
-    public synchronized void setRemoteSettings( RemoteSettings newSettings )
-        throws NetworkException
-    {
-        if ( logger.isDebugEnabled()) logger.debug( "new remote settings:\n" + newSettings );
-        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-
-        this.remote = nup.makeRemoteInternal( this.networkSettings, newSettings, this.ddnsSettings );
-
-        saveRemoteSettings( this.remote );
-
-        /* Update the rules */
+        this.accessManager.setSettings( access );
+        this.addressManager.setSettings( address );
         generateRules();
-
-        if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings:\n" + this.remote );
-
-        /* Have to do this too, because the hostname may have changed */
-        try {
-            updateServicesSettings();
-        } catch ( Exception e ) {
-            logger.warn( "Error updating services settings, continuing", e );
-        }
-
-        callRemoteListeners();
     }
 
-    public NetworkSpacesInternalSettings getNetworkInternalSettings()
+    /* Set the Access, Misc and Network settings at once.  Used by the
+     * support panel */
+    public synchronized void setSettings( AccessSettings access, MiscSettings misc,
+                                          NetworkSpacesSettings network )
+        throws NetworkException, ValidateException
     {
-        return this.networkSettings;
+        this.accessManager.setSettings( access );
+        this.miscManager.setSettings( misc );
+        setNetworkSettings( network );
     }
 
     /* XXXX This is kind of busted since you can't change the services on/off switch from here */
@@ -383,6 +463,15 @@ public class NetworkManagerImpl implements LocalNetworkManager
         doDDNSUpdate();
     }
 
+
+    /* Returns true if dynamic dns is enabled */
+    boolean isDynamicDnsEnabled()
+    {
+        DynamicDNSSettings settings = this.ddnsSettings;
+        if ( settings == null ) return false;
+        return settings.isEnabled();
+    }
+
     public synchronized void disableNetworkSpaces() throws NetworkException
     {
         try {
@@ -408,19 +497,30 @@ public class NetworkManagerImpl implements LocalNetworkManager
             throw new NetworkException( "Unable to turn on network spaces" );
         }
     }
+    
+    /* Get the current hostname */
+    public HostName getHostname()
+    {
+        return this.addressManager.getInternalSettings().getHostName();
+    }
+
+    public String getPublicAddress()
+    {
+        return this.addressManager.getInternalSettings().getCurrentURL();
+    }
 
     /* Get the external HTTPS port */
     public int getPublicHttpsPort()
     {
-        return this.remote.getPublicHttpsPort();
+        return this.addressManager.getInternalSettings().getCurrentPublicPort();
     }
 
     /* Renew the DHCP address and return a new network settings with the updated address */
-    public synchronized NetworkingConfiguration renewDhcpLease() throws NetworkException
+    public synchronized BasicNetworkSettings renewDhcpLease() throws NetworkException
     {
         renewDhcpLease( 0 );
 
-        return getNetworkingConfiguration();
+        return getBasicSettings();
     }
 
     /* Renew the DHCP address for a network space, this function isn't really
@@ -454,16 +554,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         /* Update the address and generate new rules */
         updateAddress();
-    }
-
-    public HostName getHostname()
-    {
-        return this.remote.getHostname();
-    }
-
-    public String getPublicAddress()
-    {
-        return this.remote.getCurrentPublicAddress();
     }
 
     public void setWizardNatEnabled(IPaddr address, IPaddr netmask)
@@ -614,10 +704,12 @@ public class NetworkManagerImpl implements LocalNetworkManager
             ruleManager.setInterfaceList( this.networkSettings.getInterfaceList(),
                                           this.networkSettings.getServiceSpace());
 
-            updateRemoteSettings();
-
+            this.addressManager.updateAddress();
+            
             /* Have to do this too, because the ip address may have changed */
             updateServicesSettings();
+            
+            generateRules();
 
             callNetworkListeners();
         } catch ( Exception e ) {
@@ -626,79 +718,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
         }
     }
 
-    /** This is a helper function in place just to debug before the gui
-     * is written */
     public void pppoe( String args[] ) throws NetworkException
     {
-        if ( args.length == 1 ) {
-        }
-        else if ( args.length == 2 ) {
-            if ( "register".equalsIgnoreCase( args[1] )) {
-                this.pppoeManager.registerIntfs();
-                return;
-            } else if ( "unregister".equalsIgnoreCase( args[1] )) {
-                this.pppoeManager.unregisterIntfs();
-                return;
-            } else if ( "reset".equalsIgnoreCase( args[1] )) {
-                this.pppoeManager.resetIntfs();
-                return;
-            } else {
-            }
-        }
-        else if ( args.length == 3 ) {
-            byte argonIntf = Byte.valueOf( args[2] );
-            if ( "delete".equalsIgnoreCase( args[1] )) {
-                PPPoESettings pppoeSettings = this.pppoeManager.getSettings();
-                List<PPPoEConnectionRule> list = pppoeSettings.getConnectionList();
-                for ( Iterator<PPPoEConnectionRule> iter = list.iterator() ; iter.hasNext() ; ) {
-                    PPPoEConnectionRule rule = iter.next();
-                    if ( rule.getArgonIntf() == argonIntf ) iter.remove();
-                }
-                pppoeSettings.setConnectionList( list );
-
-                this.pppoeManager.setSettings( pppoeSettings );
-                return;
-            } else if ( "off".equalsIgnoreCase( args[1] )) {
-                PPPoESettings pppoeSettings = this.pppoeManager.getSettings();
-                List<PPPoEConnectionRule> list = pppoeSettings.getConnectionList();
-                for ( PPPoEConnectionRule rule : list ) {
-                    if ( rule.getArgonIntf() == argonIntf ) rule.setLive( false );
-                }
-                pppoeSettings.setConnectionList( list );
-                this.pppoeManager.setSettings( pppoeSettings );
-                return;
-            }
-        }
-        else if ( args.length == 6 ) {
-            if ( "mod".equalsIgnoreCase( args[1] )) {
-                byte argonIntf = Byte.valueOf( args[2] );
-                boolean isLive = Boolean.valueOf( args[3] );
-                String username = args[4];
-                String password = args[5];
-
-                PPPoESettings pppoeSettings = this.pppoeManager.getSettings();
-                List<PPPoEConnectionRule> list = pppoeSettings.getConnectionList();
-                for ( Iterator<PPPoEConnectionRule> iter = list.iterator() ; iter.hasNext() ; ) {
-                    PPPoEConnectionRule rule = iter.next();
-                    if ( rule.getArgonIntf() == argonIntf ) iter.remove();
-                }
-                PPPoEConnectionRule rule = new PPPoEConnectionRule();
-                rule.setArgonIntf( argonIntf );
-                rule.setLive( isLive );
-                rule.setUsername( username );
-                rule.setPassword( password );
-                list.add( rule );
-
-                pppoeSettings.setConnectionList( list );
-
-                this.pppoeManager.setSettings( pppoeSettings );
-                return;
-            }
-        }
-
-        logger.debug( "usage: " + args[0] + " <register|unregister|reset>" );
-        logger.debug( "usage: " + args[0] + " <off|delete> <argon interface>" );
-        logger.debug( "usage: " + args[0] + " <argon interface> <true|false> <username> <password>" );
+        this.pppoeManager.pppoe( args );
     }
 
     public void disableDhcpForwarding()
@@ -734,35 +756,19 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Update all of the iptables rules and the inside address database */
     private void generateRules() throws NetworkException
     {
-        /* Disable the public address and port by default */
-        IPaddr publicAddress = null;
-        int publicPort = -1;
-        boolean isPublicRedirectEnabled = false;
-
-        if ( this.remote != null ) {
-            publicAddress = this.remote.getCurrentPublicIPaddr();
-            publicPort    = this.remote.getCurrentPublicPort();
-            isPublicRedirectEnabled = this.remote.getIsPublicAddressEnabled();
-        }
-
-        /* Set the public address */
-        this.ruleManager.setPublicAddress( publicAddress, publicPort, isPublicRedirectEnabled );
-
+        ScriptWriter scriptWriter = new ScriptWriter();
         /* Set whether or not setup has completed */
         this.ruleManager.setHasCompletedSetup( this.networkSettings.getHasCompletedSetup());
+        
+        this.accessManager.commit( scriptWriter );
+        this.addressManager.commit( scriptWriter );
+        this.miscManager.commit( scriptWriter );
+        this.ruleManager.commit( scriptWriter );
+
+        /* Save out the script */
+        scriptWriter.writeFile( FILE_RULE_CFG );
 
         this.ruleManager.generateIptablesRules();
-    }
-
-    private void updateRemoteSettings() throws NetworkException
-    {
-        /* This just reinitializes the public address */
-        if ( this.remote == null ) {
-            logger.debug( "Remote settings haven't been initialized yet" );
-            return;
-        }
-
-        setRemoteSettings( this.remote.toSettings());
     }
 
     private void updateServicesSettings() throws NetworkException
@@ -786,7 +792,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
             logger.error( "Unable to reconfigure dhcp manager, continuing.", e );
         }
     }
-
 
     public void isShutdown()
     {
@@ -825,31 +830,15 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.networkListeners.remove( networkListener );
     }
 
-    /* Remote settings */
-    private void callRemoteListeners()
+    /* Address settings */
+    public void registerListener( AddressSettingsListener addressListener )
     {
-        if ( this.remote == null ) {
-            logger.info( "null remote settings, not calling listeners" );
-            return;
-        }
-
-        for ( RemoteSettingsListener listener : this.remoteListeners ) {
-            try {
-                listener.event( this.remote );
-            } catch ( Exception e ) {
-                logger.error( "Exception calling listener", e );
-            }
-        }
+        this.addressManager.registerListener( addressListener );
     }
 
-    public void registerListener( RemoteSettingsListener remoteListener )
+    public void unregisterListener( AddressSettingsListener addressListener )
     {
-        this.remoteListeners.add( remoteListener );
-    }
-
-    public void unregisterListener( RemoteSettingsListener remoteListener )
-    {
-        this.remoteListeners.remove( remoteListener );
+        this.addressManager.unregisterListener( addressListener );
     }
 
     /* Intf enum settings */
@@ -886,6 +875,11 @@ public class NetworkManagerImpl implements LocalNetworkManager
         return this.pppoeManager;
     }
 
+    boolean getSaveSettings()
+    {
+        return this.saveSettings;
+    }
+
     /* ----------------- Private ----------------- */
     private void initPriv() throws NetworkException, ValidateException
     {
@@ -894,13 +888,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
         /* Do not save settings if requested */
         if ( Boolean.valueOf( disableSaveSettings ) == true ) {
             this.saveSettings = false;
-            networkConfigurationLoader.disableSaveSettings();
         }
         
         loadAllSettings();
-
-        /* Initialize the PPPoE Manager */
-        this.pppoeManager.init();
 
         /* Create new dynamic dns settings, only if they are not set */
         if ( this.ddnsSettings == null ) {
@@ -915,27 +905,19 @@ public class NetworkManagerImpl implements LocalNetworkManager
         if ( this.networkSettings == null ) {
             /* Need to create new settings, (The method setNetworkingConfiguration assumes that
              * settings is already set, and cannot be used here) */
-            NetworkingConfiguration configuration = networkConfigurationLoader.getNetworkingConfiguration();
+            BasicNetworkSettings basic = networkConfigurationLoader.loadBasicNetworkSettings();
 
             /* Save these settings */
-            NetworkSpacesInternalSettings internal = nup.toInternal( configuration );
+            NetworkSpacesInternalSettings internal = nup.toInternal( basic );
 
             if ( logger.isDebugEnabled()) {
-                logger.debug( "Loaded the configuration:\n" + configuration );
+                logger.debug( "Loaded the configuration:\n" + basic );
                 logger.debug( "Converted to:\n" + internal );
             }
 
             /* Save the network settings */
             setNetworkSettings( internal );
             
-            configuration.isOutsideAccessEnabled( NetworkUtil.DEF_IS_OUTSIDE_EN );
-            configuration.setIsOutsideAdministrationEnabled( NetworkUtil.DEF_OUTSIDE_ADMINISTRATION );
-            configuration.setIsOutsideQuarantineEnabled( NetworkUtil.DEF_OUTSIDE_QUARANTINE );
-            configuration.setIsOutsideReportingEnabled( NetworkUtil.DEF_OUTSIDE_REPORTING );
-
-            /* Save the remote settings */
-            setRemoteSettings( configuration );
-
             /* Attempt to load the services settings */
             this.servicesSettings = loadServicesSettings();
 
@@ -1023,7 +1005,8 @@ public class NetworkManagerImpl implements LocalNetworkManager
         throws NetworkException, ArgonException
     {
         /* This is a script writer customized to generate etc interfaces files */
-        InterfacesScriptWriter isw = new InterfacesScriptWriter( newSettings, this.remote );
+        InterfacesScriptWriter isw = 
+            new InterfacesScriptWriter( newSettings, this.miscManager.getInternalSettings());
         isw.addNetworkSettings();
         isw.writeFile( ETC_INTERFACES_FILE );
 
@@ -1051,25 +1034,24 @@ public class NetworkManagerImpl implements LocalNetworkManager
             logger.error( "Error loading network settings, setting to null to be initialized later", e );
             this.networkSettings = null;
         }
-
+        
         /* These must load after the dynamic dns and the network settings in order to initialze
          * the public address. */
-        this.remote = loadRemoteSettings();
+
+        /* Load the miscellaneous settings */
+        this.miscManager.init();
+
+        /* Load the access settings. */        
+        this.accessManager.init();
+
+        /* Load the address/hostname settings */
+        this.addressManager.init();
+
+        /* Load the PPPoE settings */
+        this.pppoeManager.init();
 
         /* Load the services settings */
         if ( this.networkSettings != null ) this.servicesSettings = loadServicesSettings();
-
-        if ( logger.isDebugEnabled()) logger.debug( "Loaded remote settings: " + this.remote );
-    }
-
-    private RemoteInternalSettings loadRemoteSettings()
-    {
-        RemoteSettings remote = new RemoteSettingsImpl();
-        /* These come from files */
-        networkConfigurationLoader.loadRemoteSettings( remote );
-
-        NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
-        return nup.makeRemoteInternal( this.networkSettings, remote, this.ddnsSettings );
     }
 
     private NetworkSpacesInternalSettings loadNetworkSettings() throws NetworkException, ValidateException
@@ -1150,11 +1132,6 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.networkSettings = nssi;
     }
 
-    private void saveRemoteSettings( RemoteInternalSettings remote )
-    {
-        networkConfigurationLoader.saveRemoteSettings( remote );
-    }
-
     private void saveDynamicDnsSettings( DynamicDNSSettings newSettings )
     {
         DataSaver<DynamicDNSSettings> saver =
@@ -1226,9 +1203,9 @@ public class NetworkManagerImpl implements LocalNetworkManager
         nup.writeDDNSConfiguration(getDynamicDnsSettings(), getHostname(), externalInterfaceName);
     }
 
-    class DynamicDNSListener implements RemoteSettingsListener
+    class DynamicDNSListener implements AddressSettingsListener
     {
-        public void event( RemoteInternalSettings settings )
+        public void event( AddressSettingsInternal settings )
         {
             doDDNSUpdate();
         }

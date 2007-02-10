@@ -17,7 +17,7 @@ import com.untangle.gui.util.*;
 
 import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.*;
-import com.untangle.mvvm.networking.*;
+import com.untangle.mvvm.networking.AddressSettings;
 import com.untangle.mvvm.tran.*;
 
 import java.awt.*;
@@ -64,11 +64,11 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
 		
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    RemoteSettings remoteSettings = remoteCompoundSettings.getNetworkingConfiguration();
-            remoteSettings.setIsPublicAddressEnabled( isPublicAddressEnabled );
+	    AddressSettings addressSettings = remoteCompoundSettings.getAddressSettings();
+            addressSettings.setIsPublicAddressEnabled( isPublicAddressEnabled );
             
-            if ( address != null ) remoteSettings.setPublicIPaddr( address );
-            if ( 0 < port && port < 0xFFFF ) remoteSettings.setPublicPort( port );
+            if ( address != null ) addressSettings.setPublicIPaddr( address );
+            if ( 0 < port && port < 0xFFFF ) addressSettings.setPublicPort( port );
         }
     }
 
@@ -78,10 +78,10 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
     int portCurrent;
 
     public void doRefresh(RemoteCompoundSettings remoteCompoundSettings){
-	RemoteSettings remoteSettings = remoteCompoundSettings.getNetworkingConfiguration();
+	AddressSettings addressSettings = remoteCompoundSettings.getAddressSettings();
         
 	// PUBLIC ADDRESS ENABLED /////
-	isPublicAddressEnabledCurrent = remoteSettings.getIsPublicAddressEnabled();
+	isPublicAddressEnabledCurrent = addressSettings.getIsPublicAddressEnabled();
         
 	setEnabledDependency( isPublicAddressEnabledCurrent );
 	if( isPublicAddressEnabledCurrent )
@@ -90,7 +90,7 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
             disabledJRadioButton.setSelected(true);
 
         // ADDRESS //
-        addressCurrent = remoteSettings.getPublicIPaddr();
+        addressCurrent = addressSettings.getPublicIPaddr();
         if ( addressCurrent == null ) {
             addressJTextField.setText("");
         } else {
@@ -99,7 +99,7 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
         addressJTextField.setBackground(Color.WHITE);
 	
         // PORT //
-        portCurrent = remoteSettings.getPublicPort();
+        portCurrent = addressSettings.getPublicPort();
         portJSpinner.setValue(portCurrent);
 	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(portCurrent));
 	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);

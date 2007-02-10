@@ -13,39 +13,40 @@ package com.untangle.gui.configuration;
 
 import com.untangle.gui.util.Util;
 import com.untangle.gui.transform.CompoundSettings;
-import com.untangle.mvvm.NetworkingConfiguration;
-import com.untangle.mvvm.networking.RemoteSettings;
+import com.untangle.mvvm.networking.AddressSettings;
+import com.untangle.mvvm.networking.BasicNetworkSettings;
 import com.untangle.mvvm.networking.DynamicDNSSettings;
 
 
 public class NetworkCompoundSettings implements CompoundSettings {
 
     // NETWORKING CONFIGURATION //
-    private NetworkingConfiguration networkingConfiguration;
-    public NetworkingConfiguration getNetworkingConfiguration(){ return networkingConfiguration; }
+    private BasicNetworkSettings basicSettings;
+    public BasicNetworkSettings getBasicSettings(){ return basicSettings; }
 
-    // REMOTE SETTINGS //
-    private RemoteSettings remoteSettings;
-    public RemoteSettings getRemoteSettings(){ return remoteSettings; }
+    // HOSTNAME CONFIGURATION //
+    private AddressSettings addressSettings;
+    public AddressSettings getAddressSettings(){ return addressSettings; }
 
     // DYNAMIC DNS SETTINGS //
     private DynamicDNSSettings dynamicDNSSettings;
     public DynamicDNSSettings getDynamicDNSSettings(){ return dynamicDNSSettings; }
 
     public void save() throws Exception {
-	Util.getNetworkManager().setNetworkingConfiguration(networkingConfiguration);
 	Util.getNetworkManager().setDynamicDnsSettings(dynamicDNSSettings);
-	Util.getNetworkManager().setRemoteSettings(remoteSettings);
+        Util.getNetworkManager().setSettings(basicSettings,addressSettings);
     }
 
     public void refresh() throws Exception {
-	networkingConfiguration = Util.getNetworkManager().getNetworkingConfiguration();
+	basicSettings = Util.getNetworkManager().getBasicSettings();
 	dynamicDNSSettings = Util.getNetworkManager().getDynamicDnsSettings();
-	remoteSettings = Util.getNetworkManager().getRemoteSettings();
+        addressSettings = Util.getNetworkManager().getAddressSettings();
     }
 
     public void validate() throws Exception {
-        networkingConfiguration.validate();
+        System.err.println( "need validation for basic network settings" );
+        // basicSettings.validate();
+        addressSettings.validate();
     }
 
 }

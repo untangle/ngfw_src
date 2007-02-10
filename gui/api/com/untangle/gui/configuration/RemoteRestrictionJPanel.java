@@ -18,6 +18,9 @@ import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.*;
 import com.untangle.mvvm.tran.*;
 
+import com.untangle.mvvm.networking.AccessSettings;
+import com.untangle.mvvm.networking.AddressSettings;
+
 import javax.swing.SpinnerNumberModel;
 import java.awt.*;
 import javax.swing.JSpinner;
@@ -92,29 +95,31 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
         
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    NetworkingConfiguration networkingConfiguration = remoteCompoundSettings.getNetworkingConfiguration();
-	    networkingConfiguration.isOutsideAccessEnabled( isOutsideAccessEnabled );
+	    AccessSettings accessSettings = remoteCompoundSettings.getAccessSettings();
+            AddressSettings addressSettings = remoteCompoundSettings.getAddressSettings();
+            
+	    accessSettings.setIsOutsideAccessEnabled( isOutsideAccessEnabled );
 	    if( isOutsideAccessEnabled ){
-		networkingConfiguration.httpsPort( httpsPort );
-		networkingConfiguration.setIsOutsideAdministrationEnabled(isOutsideAdministrationEnabled);
-		networkingConfiguration.setIsOutsideReportingEnabled(isOutsideReportingEnabled);
-		networkingConfiguration.setIsOutsideQuarantineEnabled(isOutsideQuarantineEnabled);
-		networkingConfiguration.isOutsideAccessRestricted( isOutsideAccessRestricted );
+		addressSettings.setHttpsPort( httpsPort );
+		accessSettings.setIsOutsideAdministrationEnabled(isOutsideAdministrationEnabled);
+		accessSettings.setIsOutsideReportingEnabled(isOutsideReportingEnabled);
+		accessSettings.setIsOutsideQuarantineEnabled(isOutsideQuarantineEnabled);
+		accessSettings.setIsOutsideAccessRestricted( isOutsideAccessRestricted );
 		if( isOutsideAccessRestricted ){
-		    networkingConfiguration.outsideNetwork( outsideNetwork );
-		    networkingConfiguration.outsideNetmask( outsideNetmask );
+		    accessSettings.setOutsideNetwork( outsideNetwork );
+		    accessSettings.setOutsideNetmask( outsideNetmask );
 		}
 	    }
-	    networkingConfiguration.isInsideInsecureEnabled( isInsideInsecureEnabled );
+	    accessSettings.setIsInsideInsecureEnabled( isInsideInsecureEnabled );
         }
-
     }
 
     public void doRefresh(RemoteCompoundSettings remoteCompoundSettings){
-        NetworkingConfiguration networkingConfiguration = remoteCompoundSettings.getNetworkingConfiguration();
+        AccessSettings accessSettings = remoteCompoundSettings.getAccessSettings();
+        AddressSettings addressSettings = remoteCompoundSettings.getAddressSettings();
         
 	// OUTSIDE ACCESS ENABLED //////
-	boolean isOutsideAccessEnabled = networkingConfiguration.isOutsideAccessEnabled();
+	boolean isOutsideAccessEnabled = accessSettings.getIsOutsideAccessEnabled();
 	setOutsideAccessEnabledDependency( isOutsideAccessEnabled );
 	if( isOutsideAccessEnabled )
             externalAccessEnabledRadioButton.setSelected(true);
@@ -122,36 +127,36 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
             externalAccessDisabledRadioButton.setSelected(true);
 
 	// PORT ///
-	int httpsPort = networkingConfiguration.httpsPort();
+	int httpsPort = addressSettings.getHttpsPort();
 	externalAccessPortJSpinner.setValue( httpsPort );
 	((JSpinner.DefaultEditor)externalAccessPortJSpinner.getEditor()).getTextField().setText(Integer.toString(httpsPort));
 	((JSpinner.DefaultEditor)externalAccessPortJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
 	
 	// OUTSIDE ACCESS RESTRICTIONS ////
-	boolean isOutsideAdministrationEnabled = networkingConfiguration.getIsOutsideAdministrationEnabled();
+	boolean isOutsideAdministrationEnabled = accessSettings.getIsOutsideAdministrationEnabled();
 	restrictAdminJCheckBox.setSelected(!isOutsideAdministrationEnabled);
-	boolean isOutsideReportingEnabled = networkingConfiguration.getIsOutsideReportingEnabled();
+	boolean isOutsideReportingEnabled = accessSettings.getIsOutsideReportingEnabled();
 	restrictReportingJCheckBox.setSelected(!isOutsideReportingEnabled);
-	boolean isOutsideQuarantineEnabled = networkingConfiguration.getIsOutsideQuarantineEnabled();
+	boolean isOutsideQuarantineEnabled = accessSettings.getIsOutsideQuarantineEnabled();
 	restrictQuarantineJCheckBox.setSelected(!isOutsideQuarantineEnabled);
 
 	// OUTSIDE ACCESS IP RESTRICTED /////
-	boolean isOutsideAccessRestricted = networkingConfiguration.isOutsideAccessRestricted();
+	boolean isOutsideAccessRestricted = accessSettings.getIsOutsideAccessRestricted();
 	if( isOutsideAccessRestricted )
             externalAdminRestrictEnabledRadioButton.setSelected(true);
         else
             externalAdminRestrictDisabledRadioButton.setSelected(true);
         
 	// OUTSIDE ACCESS IP RESTRICTED NETWORK //////
-        restrictIPaddrJTextField.setText( networkingConfiguration.outsideNetwork().toString() );
+        restrictIPaddrJTextField.setText( accessSettings.getOutsideNetwork().toString() );
 	restrictIPaddrJTextField.setBackground( Color.WHITE );
 
 	// OUTSIDE ACCESS IP RESTRICTED NETMASK /////
-        restrictNetmaskJTextField.setText( networkingConfiguration.outsideNetmask().toString() );
+        restrictNetmaskJTextField.setText( accessSettings.getOutsideNetmask().toString() );
 	restrictNetmaskJTextField.setBackground( Color.WHITE );
         
 	// INSIDE INSECURE ENABLED ///////
-	boolean isInsideInsecureEnabled = networkingConfiguration.isInsideInsecureEnabled();
+	boolean isInsideInsecureEnabled = accessSettings.getIsInsideInsecureEnabled();
 	if( isInsideInsecureEnabled )
             internalAdminEnabledRadioButton.setSelected(true);
         else

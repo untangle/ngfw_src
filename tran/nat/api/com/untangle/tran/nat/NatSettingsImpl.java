@@ -28,7 +28,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.NetworkingConfiguration;
 import com.untangle.mvvm.networking.BasicNetworkSettings;
 import com.untangle.mvvm.networking.DhcpLeaseRule;
 import com.untangle.mvvm.networking.DnsStaticHostRule;

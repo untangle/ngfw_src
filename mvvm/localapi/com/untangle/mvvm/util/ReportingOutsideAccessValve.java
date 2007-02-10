@@ -18,7 +18,7 @@ public class ReportingOutsideAccessValve extends OutsideValve
     
     protected boolean isOutsideAccessAllowed()
     {
-        return getRemoteSettings().getIsOutsideReportingEnabled();
+        return getAccessSettings().getIsOutsideReportingEnabled();
     }
 
     protected String outsideErrorMessage()

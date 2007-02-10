@@ -27,6 +27,8 @@ import com.untangle.mvvm.tapi.Affinity;
 import com.untangle.mvvm.tapi.Fitting;
 import com.untangle.mvvm.tapi.PipeSpec;
 import com.untangle.mvvm.tapi.SoloPipeSpec;
+import com.untangle.mvvm.tran.HostAddress;
+import com.untangle.mvvm.tran.HostName;
 import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.TransformException;
 import com.untangle.mvvm.tran.TransformStartException;
@@ -51,6 +53,8 @@ public class VpnTransformImpl extends AbstractTransform
     private static final String MAIL_IMAGE_DIR = Constants.DATA_DIR + "/images";
 
     private static final String CLEANUP_SCRIPT = Constants.SCRIPT_DIR + "/cleanup";
+
+    private static final HostAddress EMPTY_HOST_ADDRESS = new HostAddress( HostName.getEmptyHostName());
 
     private final Logger logger = Logger.getLogger( VpnTransformImpl.class );
 
@@ -586,23 +590,23 @@ public class VpnTransformImpl extends AbstractTransform
         return ( settings.isBridgeMode() ? ConfigState.SERVER_BRIDGE : ConfigState.SERVER_ROUTE );
     }
 
-    public IPaddr getVpnServerAddress()
+    public HostAddress getVpnServerAddress()
     {
         /* Return the empty address */
-        if ( getConfigState() != ConfigState.CLIENT ) {
+        if (( this.settings == null ) || ( getConfigState() != ConfigState.CLIENT )) {
             logger.info( "non-client state, and request for server address" );
-            return new IPaddr( null );
+            return EMPTY_HOST_ADDRESS;
         }
 
-        IPaddr address = ( this.settings == null ) ? new IPaddr( null ) : this.settings.getServerAddress();
+        HostAddress address = this.settings.getServerAddress();
+
         if ( address == null ) {
-            logger.info( "null settings, and request for vpn server address" );
-            return new IPaddr( null );
+            logger.info( "null, host address, returning empty address." );
+            return EMPTY_HOST_ADDRESS;
         }
-
+        
         return address;
     }
-
 
     public void startConfig( ConfigState state ) throws ValidateException
     {
@@ -647,7 +651,7 @@ public class VpnTransformImpl extends AbstractTransform
         return this.sandbox.getAvailableUsbList();
     }
 
-    public void downloadConfig( IPaddr address, int port, String key ) throws Exception
+    public void downloadConfig( HostAddress address, int port, String key ) throws Exception
     {
         this.sandbox.downloadConfig( address, port, key );
     }

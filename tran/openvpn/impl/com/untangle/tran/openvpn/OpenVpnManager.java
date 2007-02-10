@@ -235,7 +235,7 @@ class OpenVpnManager
             sw.appendVariable( FLAG_DEVICE, DEVICE_BRIDGE );
         } else {
             sw.appendVariable( FLAG_DEVICE, DEVICE_ROUTING );
-            IPaddr localEndpoint  = settings.getServerAddress();
+            IPaddr localEndpoint  = settings.getServerAddress().getIp();
             IPaddr remoteEndpoint = getRemoteEndpoint( localEndpoint );
 
             sw.appendVariable( FLAG_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );

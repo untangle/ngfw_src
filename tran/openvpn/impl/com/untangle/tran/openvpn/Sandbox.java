@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.mvvm.tran.HostAddress;
 import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.TransformException;
 import com.untangle.mvvm.tran.ValidateException;
@@ -49,7 +50,7 @@ class Sandbox
 
     private static final String OPENVPN_CLIENT_FILE = OpenVpnManager.OPENVPN_CONF_DIR + "/client.conf";
 
-    private IPaddr vpnServerAddress;
+    private HostAddress vpnServerAddress;
 
     private CertificateParameters certificateParameters;
     private GroupList  groupList;
@@ -109,7 +110,7 @@ class Sandbox
         return new LinkedList<String>();
     }
 
-    void downloadConfig( IPaddr address, int port, String key ) throws Exception
+    void downloadConfig( HostAddress address, int port, String key ) throws Exception
     {
         /* The key must be a valid hexadecimal number, this is 
          * an easy check to detect spaces, and anyother weird characters
@@ -122,6 +123,8 @@ class Sandbox
         String serverSocketAddress = address.toString();
         
         if ( port != 443 && port != 0 ) serverSocketAddress += ":" + port;
+
+        logger.debug( "Downloading key from: " + serverSocketAddress );
 
         execDownloadScript( false, serverSocketAddress, key );
     }
@@ -157,6 +160,7 @@ class Sandbox
         }
 
         /* Parse out the client configuration address */
+        vpnServerAddress = new HostAddress( new IPaddr( null ));
         BufferedReader in = null;
         try { 
             in = new BufferedReader( new FileReader( OPENVPN_CLIENT_FILE ));
@@ -171,13 +175,13 @@ class Sandbox
                         break;
                     }
                     
-                    vpnServerAddress = IPaddr.parse( valueArray[1] );
+                    vpnServerAddress = HostAddress.parse( valueArray[1] );
                     break;
                 }
             }
         } catch ( Exception e ) {
             logger.warn( "Error reading client configuration file", e );
-            vpnServerAddress = new IPaddr( null );
+            vpnServerAddress = new HostAddress( new IPaddr( null ));
         } finally {
             if ( in != null ) try { in.close(); } catch ( Exception e ) {};
         }

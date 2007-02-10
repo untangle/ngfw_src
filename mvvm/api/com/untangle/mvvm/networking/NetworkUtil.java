@@ -285,29 +285,6 @@ public class NetworkUtil
         return publicAddress.toString() + ":" + publicPort;
     }
 
-    public void parsePublicAddress( RemoteSettings remote, String newValue ) throws ParseException
-    {
-        try {          
-            String valueArray[] = newValue.split( ":" );
-            if ( valueArray.length == 1 ) {
-                IPaddr address = IPaddr.parse( valueArray[0] );
-                remote.setPublicIPaddr( address );
-                remote.setPublicPort( DEF_HTTPS_PORT );
-                return;
-            } else if ( valueArray.length == 2 ) {
-                IPaddr address = IPaddr.parse( valueArray[0] );
-                int port = Integer.parseInt( valueArray[1] );
-                remote.setPublicIPaddr( address );
-                remote.setPublicPort( port );
-                return;
-            } 
-        } catch ( Exception e ) {
-            throw new ParseException( PUBLIC_ADDRESS_EXCEPTION );
-        }
-
-        throw new ParseException( PUBLIC_ADDRESS_EXCEPTION );
-    }
-
     /* Convert an IP Network to an AddressRange, used in validation */
     public AddressRange makeAddressRange( IPNetworkRule network )
     {

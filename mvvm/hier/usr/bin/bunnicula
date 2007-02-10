@@ -69,19 +69,6 @@ createuser -U postgres -d -A metavize 2>/dev/null
 createuser -U postgres -d -A untangle 2>/dev/null
 createdb -O postgres -U postgres mvvm 2>/dev/null
 
-# This parameter comes from the MVVM_PARAMS_FILE
-if [ -f /proc/sys/net/ipv4/tcp_window_scaling ] ; then
-    ## If undefined or non-true, disable window scaling
-    val=0
-
-    if [ "x$TCP_WINDOW_SCALING_EN" = "xtrue" ]; then
-        val=1
-    fi
-
-    echo $val > /proc/sys/net/ipv4/tcp_window_scaling ;
-fi
-
-
 CLASSPATH="@MVVM_HOME@/conf:@MVVM_HOME@/lib/mvvm-bootstrap.jar"
 
 #

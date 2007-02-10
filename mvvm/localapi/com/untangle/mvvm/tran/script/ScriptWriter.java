@@ -82,8 +82,28 @@ public class ScriptWriter
     {
         for ( String line : text.split( "\n" )) this.sb.append( comment() + " " + line + "\n" );
     }
-
+    
     // Really only for shell scripts
+    public void appendVariable( String variable, boolean value )
+    {
+        appendVariable( variable, String.valueOf( value ));
+    }
+
+    public void appendVariable( String variable, boolean value, boolean isGlobal )
+    {
+        appendVariable( variable, String.valueOf( value ), isGlobal );
+    }
+
+    public void appendVariable( String variable, int value )
+    {
+        appendVariable( variable, String.valueOf( value ));
+    }
+
+    public void appendVariable( String variable, int value, boolean isGlobal )
+    {
+        appendVariable( variable, String.valueOf( value ), isGlobal );
+    }
+    
     // This should be rewritten so all of these methods are final, and then
     // the method that takes four arguments is protected.
     public void appendVariable( String variable, String value, boolean isGlobal )

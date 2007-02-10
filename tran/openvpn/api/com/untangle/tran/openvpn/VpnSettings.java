@@ -32,6 +32,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.untangle.mvvm.security.Tid;
+import com.untangle.mvvm.tran.HostAddress;
 import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.Validatable;
 import com.untangle.mvvm.tran.ValidateException;
@@ -49,7 +50,7 @@ import org.hibernate.annotations.Type;
 @Table(name="tr_openvpn_settings", schema="settings")
 public class VpnSettings implements Serializable, Validatable
 {
-    private static final long serialVersionUID = 1900466626555001143L;
+    // private static final long serialVersionUID = 1900466626555001143L;
 
     private static final String INVALID_CHARACTERS_STRING = "[^-a-zA-Z0-9- ]";
     private static final Pattern INVALID_CHARACTERS_PATTERN;
@@ -75,8 +76,8 @@ public class VpnSettings implements Serializable, Validatable
     private boolean isBridgeMode = false;
     private boolean isUntanglePlatformClient = false;
 
-    /* The virtual address of the vpn server */
-    private IPaddr serverAddress;
+    /* The virtual address of the vpn server, or the address of the server to connect to. */
+    private HostAddress serverAddress;
 
     /* List of addresses that should be visible to the VPN */
     private List<ServerSiteNetwork> exportedAddressList;
@@ -350,13 +351,13 @@ public class VpnSettings implements Serializable, Validatable
      * @return virtual address of the open vpn server.
      */
     @Column(name="server_address")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
-    public IPaddr getServerAddress()
+    @Type(type="com.untangle.mvvm.type.HostAddressUserType")
+    public HostAddress getServerAddress()
     {
         return this.serverAddress;
     }
 
-    public void setServerAddress( IPaddr serverAddress )
+    public void setServerAddress( HostAddress serverAddress )
     {
         this.serverAddress = serverAddress;
     }

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.mvvm.tran.HostAddress;
 import com.untangle.mvvm.tran.TransformException;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
@@ -156,9 +157,12 @@ class AddressMapper
 
         /* If necessary add the server address */
         if ( assignServer ) {
-            IPaddr serverAddress = settings.getServerAddress();
-            if (( null != serverAddress ) && matcher.isMatch( serverAddress.getAddr())) {
-                addressSet.add( serverAddress );
+            IPaddr address = null;
+            HostAddress serverAddress = settings.getServerAddress();
+            if ( serverAddress != null ) address = serverAddress.getIp();
+            
+            if (( null != address ) && matcher.isMatch( address.getAddr())) {
+                addressSet.add( address );
             } else {
                 settings.setServerAddress( null );
             }
@@ -181,9 +185,12 @@ class AddressMapper
     {
         /* First check the server address */
         if ( assignServer ) {
-            IPaddr serverAddress = settings.getServerAddress();
-            if (( null !=  serverAddress ) && matcher.isMatch( serverAddress.getAddr())) {
-                addressSet.remove( serverAddress );
+            IPaddr address = null;
+            HostAddress serverAddress = settings.getServerAddress();
+            if ( serverAddress != null ) address = serverAddress.getIp();
+
+            if (( null != address ) && matcher.isMatch( address.getAddr())) {
+                addressSet.remove( serverAddress.getIp());
             } else {
                 settings.setServerAddress( null );
             }
@@ -209,7 +216,7 @@ class AddressMapper
 
         /* If necessary assign the server an address */
         if ( assignServer && ( null == settings.getServerAddress())) {
-            settings.setServerAddress( iter.next());
+            settings.setServerAddress( new HostAddress( iter.next()));
             iter.remove();
         }
 

@@ -18,7 +18,9 @@ import com.untangle.gui.util.*;
 import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.*;
 import com.untangle.mvvm.tran.*;
-import com.untangle.mvvm.networking.*;
+import com.untangle.mvvm.networking.BasicNetworkSettings;
+import com.untangle.mvvm.networking.PPPoEConnectionRule;
+
 
 import java.awt.*;
 import javax.swing.JDialog;
@@ -69,8 +71,8 @@ public class NetworkPPPOEJPanel extends javax.swing.JPanel
         
         // SAVE SETTINGS ////////////
         if( !validateOnly ){	    
-            NetworkingConfiguration networkingConfiguration = networkCompoundSettings.getNetworkingConfiguration();            
-            PPPoEConnectionRule connectionRule = networkingConfiguration.getPPPoESettings();
+            BasicNetworkSettings basicSettings = networkCompoundSettings.getBasicSettings();
+            PPPoEConnectionRule connectionRule = basicSettings.getPPPoESettings();
             connectionRule.setLive( isPPPOEEnabled );
             if( isPPPOEEnabled ){
                 connectionRule.setUsername( name );
@@ -87,8 +89,8 @@ public class NetworkPPPOEJPanel extends javax.swing.JPanel
     String optionCurrent;
 
     public void doRefresh(NetworkCompoundSettings networkCompoundSettings){
-        NetworkingConfiguration networkingConfiguration = networkCompoundSettings.getNetworkingConfiguration();
-        PPPoEConnectionRule connectionRule = networkingConfiguration.getPPPoESettings();
+        BasicNetworkSettings basicSettings = networkCompoundSettings.getBasicSettings();
+        PPPoEConnectionRule connectionRule = basicSettings.getPPPoESettings();
 
         // PPPOE ENABLED /////
         isPPPOEEnabledCurrent = connectionRule.isLive();

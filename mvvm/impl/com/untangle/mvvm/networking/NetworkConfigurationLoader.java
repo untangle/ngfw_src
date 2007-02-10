@@ -15,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -27,22 +26,41 @@ import java.util.Properties;
 import com.untangle.jnetcap.InterfaceData;
 import com.untangle.jnetcap.Netcap;
 import com.untangle.mvvm.InterfaceAlias;
-import com.untangle.mvvm.IntfConstants;
 import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmState;
-import com.untangle.mvvm.NetworkingConfiguration;
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.networking.internal.RemoteInternalSettings;
 import com.untangle.mvvm.tran.HostName;
 import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.script.ScriptRunner;
-import com.untangle.mvvm.tran.script.ScriptWriter;
 import com.untangle.mvvm.util.StringUtil;
 import org.apache.log4j.Logger;
 
 import static com.untangle.mvvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
 import static com.untangle.mvvm.networking.NetworkManagerImpl.BUNNICULA_CONF;
+
+
+import static com.untangle.mvvm.networking.ShellFlags.FILE_RULE_CFG;
+import static com.untangle.mvvm.networking.ShellFlags.FILE_PROPERTIES;
+
+import static com.untangle.mvvm.networking.ShellFlags.FLAG_HTTP_IN;
+import static com.untangle.mvvm.networking.ShellFlags.FLAG_HTTPS_OUT;
+import static com.untangle.mvvm.networking.ShellFlags.FLAG_HTTPS_RES;
+import static com.untangle.mvvm.networking.ShellFlags.FLAG_OUT_NET;
+import static com.untangle.mvvm.networking.ShellFlags.FLAG_OUT_MASK;
+
+import static com.untangle.mvvm.networking.ShellFlags.FLAG_TCP_WIN;
+import static com.untangle.mvvm.networking.ShellFlags.FLAG_POST_FUNC;
+import static com.untangle.mvvm.networking.ShellFlags.POST_FUNC_NAME;
+import static com.untangle.mvvm.networking.ShellFlags.DECL_POST_CONF;
+
+import static com.untangle.mvvm.networking.ShellFlags.FLAG_CUSTOM_RULES;
+import static com.untangle.mvvm.networking.ShellFlags.CUSTOM_RULES_NAME;
+import static com.untangle.mvvm.networking.ShellFlags.DECL_CUSTOM_RULES;
+
+import static com.untangle.mvvm.networking.ShellFlags.FLAG_IS_HOSTNAME_PUBLIC;
+import static com.untangle.mvvm.networking.ShellFlags.FLAG_HOSTNAME;
+import static com.untangle.mvvm.networking.ShellFlags.FLAG_PUBLIC_ADDRESS_EN;
+import static com.untangle.mvvm.networking.ShellFlags.FLAG_PUBLIC_ADDRESS;
+
+import static com.untangle.mvvm.networking.ShellFlags.PROPERTY_HTTPS_PORT;
 
 /**
  * NetworkingConfigurationLoader is used to load a network configuration from the system.
@@ -57,83 +75,78 @@ class NetworkConfigurationLoader
     private static final NetworkConfigurationLoader INSTANCE = new NetworkConfigurationLoader();
     private static final String IP_CFG_FILE       = "/etc/network/interfaces";
     private static final String NS_CFG_FILE       = "/etc/resolv.conf";
-    private static final String FLAGS_CFG_FILE    = BUNNICULA_CONF + "/networking.sh";
 
-    private static final String SSH_ENABLE_SCRIPT  = BUNNICULA_BASE + "/ssh_enable.sh";
-    private static final String SSH_DISABLE_SCRIPT = BUNNICULA_BASE + "/ssh_disable.sh";
-    private static final String HOSTNAME_SCRIPT    = BUNNICULA_BASE + "/networking/save-hostname";
     private static final String DHCP_RENEW_SCRIPT  = BUNNICULA_BASE + "/networking/dhcp-renew";
 
     private static final String SSHD_PID_FILE     = "/var/run/sshd.pid";
-    private static final String PROPERTY_FILE     = BUNNICULA_CONF + "/mvvm.networking.properties";
     private static final String DHCP_TEST_SCRIPT  = BUNNICULA_BASE + "/networking/dhcp-check";
     private static final int    DHCP_ENABLED_CODE = 1;
 
-    private static final String FLAG_TCP_WIN      = "TCP_WINDOW_SCALING_EN";
-    private static final String FLAG_HTTP_IN      = "MVVM_ALLOW_IN_HTTP";
-    private static final String FLAG_HTTPS_OUT    = "MVVM_ALLOW_OUT_HTTPS";
-    private static final String FLAG_HTTPS_RES    = "MVVM_ALLOW_OUT_RES";
-    private static final String FLAG_OUT_NET      = "MVVM_ALLOW_OUT_NET";
-    private static final String FLAG_OUT_MASK     = "MVVM_ALLOW_OUT_MASK";
     private static final String FLAG_EXCEPTION    = "MVVM_IS_EXCEPTION_REPORTING_EN";
-    private static final String FLAG_POST_FUNC    = "MVVM_POST_CONF";
-    private static final String FLAG_CUSTOM_RULES_FUNC = "MVVM_CUSTOM_RULES";
-    private static final String POST_FUNC_NAME    = "postConfigurationScript";
-    private static final String CUSTOM_RULES_NAME = "customRulesScript";
     
-    /* Function declaration for the post configuration function */
-    private static final String DECL_POST_CONF    = "function " + POST_FUNC_NAME + "() {";
-    private static final String DECL_CUSTOM_RULES = "function " + CUSTOM_RULES_NAME + "() {";
-
-    private static final String FLAG_IS_HOSTNAME_PUBLIC = "MVVM_IS_HOSTNAME_EN";
-    private static final String FLAG_HOSTNAME          = "MVVM_HOSTNAME";
-    private static final String FLAG_PUBLIC_ADDRESS_EN = "MVVM_PUBLIC_ADDRESS_EN";
-    private static final String FLAG_PUBLIC_ADDRESS    = "MVVM_PUBLIC_ADDRESS";
-
     /* Property to determine the secondary https port */
-    private static final String PROPERTY_HTTPS_PORT = "mvvm.https.port";
     private static final String PROPERTY_OUTSIDE_ADMINISTRATION = "mvvm.https.administration";
     private static final String PROPERTY_OUTSIDE_QUARANTINE     = "mvvm.https.quarantine";
     private static final String PROPERTY_OUTSIDE_REPORTING      = "mvvm.https.reporting";
-
-    private static final String PROPERTY_COMMENT    = "Properties for the networking configuration";
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
     private static final List<InterfaceData> EMPTY_INTF_DATA_LIST = Collections.emptyList();
 
-    private boolean saveSettings = true;
-
     private NetworkConfigurationLoader()
     {
     }
 
-    NetworkingConfiguration getNetworkingConfiguration()
-        throws NetworkException
+    AccessSettings loadAccessSettings()
     {
-        NetworkingConfiguration configuration = new NetworkingConfigurationImpl();
-
-        loadBasicNetworkSettings( configuration );
-        loadRemoteSettings( configuration );
-
-        return configuration;
+        AccessSettings settings = new AccessSettings();
+        loadAccessSettings( settings );
+        return settings;
     }
 
-    /* Load the current remote settings into a new remote settings object */
-    RemoteSettings loadRemoteSettings()
+    void loadAccessSettings( AccessSettings settings )
     {
-        RemoteSettings remote = new RemoteSettingsImpl();
-        loadRemoteSettings( remote );
-        return remote;
+        loadFlags( settings );
+        /* have to load properties after loading flags */
+        loadProperties( settings );
+        loadSshFlag( settings );
+        settings.isClean( false );
     }
 
-    /* Fill in the remote settings for an existing remote settings object. */
-    void loadRemoteSettings( RemoteSettings remote )
+    AddressSettings loadAddressSettings()
     {
-        loadFlags( remote );
-        loadHostname( remote );
-        loadHttpsProperties( remote, remote.isOutsideAccessEnabled());
-        loadSshFlag( remote );
+        AddressSettings settings = new AddressSettings();
+        loadAddressSettings( settings );
+        return settings;
+    }
+
+    void loadAddressSettings( AddressSettings settings )
+    {
+        loadFlags( settings );
+        loadProperties( settings );
+        loadHostName( settings );
+        settings.isClean( false );
+    }
+
+    MiscSettings loadMiscSettings()
+    {
+        MiscSettings settings = new MiscSettings();
+        loadMiscSettings( settings );
+        return settings;
+    }
+
+    void loadMiscSettings( MiscSettings settings )
+    {
+        loadFlags( settings );
+        settings.isClean( false );
+    }
+
+
+    BasicNetworkSettings loadBasicNetworkSettings() throws NetworkException
+    {
+        BasicNetworkSettings basic = new BasicNetworkSettings();
+        loadBasicNetworkSettings( basic );
+        return basic;
     }
 
     void loadBasicNetworkSettings( BasicNetworkSettings basic ) throws NetworkException
@@ -185,16 +198,12 @@ class NetworkConfigurationLoader
         else                   basic.gateway( new IPaddr( gateway ));
     }
 
-    void disableSaveSettings()
+    static NetworkConfigurationLoader getInstance()
     {
-        this.saveSettings = false;
+        return INSTANCE;
     }
-
-    void enableSaveSettings()
-    {
-        this.saveSettings = true;
-    }
-
+    
+    /************************ PRIVATE **********************/
     private void loadDhcp( BasicNetworkSettings basic )
     {
         boolean isDhcpEnabled;
@@ -226,15 +235,99 @@ class NetworkConfigurationLoader
         }
     }
 
-    private void loadFlags( RemoteSettings remote )
+    private void loadHostName( AddressSettings address )
+    {
+        HostName hostname = NetworkUtilPriv.getPrivInstance().loadHostname();
+
+        if ( hostname != null && !hostname.isEmpty() && !NetworkUtil.DEFAULT_HOSTNAME.equals( hostname )) {
+            address.setHostName( hostname );
+        } else {
+            address.setIsHostNamePublic( false );
+            address.setHostName( null );
+        }
+    }
+
+    private void loadProperties( AccessSettings access )
+    {
+        /* Used to calculate the defaults */
+        boolean isOutsideAccessEnabled = access.getIsOutsideAccessEnabled();
+        try {
+            StringUtil su = StringUtil.getInstance();
+            
+            Properties properties = new Properties();
+            File f = new File( FILE_PROPERTIES );
+            if ( f.exists()) {
+                logger.debug( "Loading " + f );
+                properties.load( new FileInputStream( f ));
+                
+                if ( properties.getProperty( PROPERTY_OUTSIDE_ADMINISTRATION ) == null ) {
+                    logger.debug( "Outside administration is not set, using defaults." );
+                    if ( isOutsideAccessEnabled ) {
+                        access.setIsOutsideAdministrationEnabled( true );
+                        access.setIsOutsideQuarantineEnabled( true );
+                        access.setIsOutsideReportingEnabled( true );
+                    } else {
+                        access.setIsOutsideAdministrationEnabled( NetworkUtil.DEF_OUTSIDE_ADMINISTRATION );
+                        access.setIsOutsideQuarantineEnabled( NetworkUtil.DEF_OUTSIDE_QUARANTINE );
+                        access.setIsOutsideReportingEnabled( NetworkUtil.DEF_OUTSIDE_REPORTING );
+                    }
+                } else {
+                    logger.debug( "Loading HTTP access settings." );
+                    
+                    boolean value = 
+                        su.parseBoolean( properties.getProperty( PROPERTY_OUTSIDE_ADMINISTRATION ),
+                                         NetworkUtil.DEF_OUTSIDE_ADMINISTRATION );
+                    access.setIsOutsideAdministrationEnabled( value );
+                    
+                    value = su.parseBoolean( properties.getProperty( PROPERTY_OUTSIDE_QUARANTINE ), 
+                                             NetworkUtil.DEF_OUTSIDE_QUARANTINE );
+                    access.setIsOutsideQuarantineEnabled( value );
+                    
+                    value = su.parseBoolean( properties.getProperty( PROPERTY_OUTSIDE_REPORTING ), 
+                                             NetworkUtil.DEF_OUTSIDE_REPORTING );
+                    access.setIsOutsideReportingEnabled( value );
+                }
+            }
+        } catch ( Exception e ) {
+            logger.warn( "Unable to load access properties from file: " + FILE_PROPERTIES, e );
+            access.setIsOutsideAdministrationEnabled( NetworkUtil.DEF_OUTSIDE_ADMINISTRATION );
+            access.setIsOutsideQuarantineEnabled( NetworkUtil.DEF_OUTSIDE_QUARANTINE );
+            access.setIsOutsideReportingEnabled( NetworkUtil.DEF_OUTSIDE_REPORTING );
+        }
+    }
+
+    private void loadProperties( AddressSettings address )
+    {
+        address.setHttpsPort( NetworkUtil.DEF_HTTPS_PORT );
+
+        try {
+            StringUtil su = StringUtil.getInstance();
+            
+            Properties properties = new Properties();
+            File f = new File( FILE_PROPERTIES );
+            if ( f.exists()) {
+                logger.debug( "Loading " + f );
+                properties.load( new FileInputStream( f ));
+                
+                address.setHttpsPort( su.parseInt( properties.getProperty( PROPERTY_HTTPS_PORT ),
+                                                   NetworkUtil.DEF_HTTPS_PORT ));
+            }
+        } catch ( Exception e ) {
+            logger.warn( "Unable to load access properties from file: " + FILE_PROPERTIES, e );
+            address.setHttpsPort( NetworkUtil.DEF_HTTPS_PORT );
+        }
+    }
+    
+    /** The following functions are for reading settings from
+     * networking.sh, they are only used on upgrade. */
+    private void loadFlags( AccessSettings access )
     {
         String host = null;
         String mask = null;
-        String publicAddress = null;
 
         /* Open up the interfaces file */
         try {
-            BufferedReader in = new BufferedReader(new FileReader( FLAGS_CFG_FILE ));
+            BufferedReader in = new BufferedReader( new FileReader( FILE_RULE_CFG ));
             String str;
             while ((str = in.readLine()) != null) {
                 str = str.trim();
@@ -242,33 +335,61 @@ class NetworkConfigurationLoader
                     /* Skip comments and empty lines */
                     if (( str.startsWith( "#" )) || ( str.length() == 0 )) {
                         continue;
-                    } else if ( str.startsWith( FLAG_TCP_WIN )) {
-                        remote.isTcpWindowScalingEnabled( parseBooleanFlag( str, FLAG_TCP_WIN ));
                     } else if ( str.startsWith( FLAG_HTTP_IN )) {
-                        remote.isInsideInsecureEnabled( parseBooleanFlag( str, FLAG_HTTP_IN ));
+                        access.setIsInsideInsecureEnabled( parseBooleanFlag( str, FLAG_HTTP_IN ));
                     } else if ( str.startsWith( FLAG_HTTPS_OUT )) {
-                        remote.isOutsideAccessEnabled( parseBooleanFlag( str, FLAG_HTTPS_OUT ));
+                        access.setIsOutsideAccessEnabled( parseBooleanFlag( str, FLAG_HTTPS_OUT ));
                     } else if ( str.startsWith( FLAG_HTTPS_RES )) {
-                        remote.isOutsideAccessRestricted( parseBooleanFlag( str, FLAG_HTTPS_RES ));
+                        access.setIsOutsideAccessRestricted( parseBooleanFlag( str, FLAG_HTTPS_RES ));
                     } else if ( str.startsWith( FLAG_OUT_NET )) {
-                        host = removeQuotes( str.substring( FLAG_OUT_NET.length() + 1 ));
+                        host =  removeQuotes( str.substring( FLAG_OUT_NET.length() + 1 ));
                     } else if ( str.startsWith( FLAG_OUT_MASK )) {
                         mask = removeQuotes( str.substring( FLAG_OUT_MASK.length() + 1 ));
-                    } else if ( str.startsWith( FLAG_EXCEPTION )) {
-                        remote.isExceptionReportingEnabled( parseBooleanFlag( str, FLAG_EXCEPTION ));
-                    } else if ( str.startsWith( FLAG_IS_HOSTNAME_PUBLIC )) {
-                        remote.setIsHostnamePublic( parseBooleanFlag( str, FLAG_IS_HOSTNAME_PUBLIC ));
-                    } else if ( str.startsWith( FLAG_PUBLIC_ADDRESS_EN )) {
-                        remote.setIsPublicAddressEnabled( parseBooleanFlag( str, FLAG_PUBLIC_ADDRESS_EN ));
+                    }  else {
+                        logger.info( "Unknown line: '" + str + "'" );
+                    }
+                } catch ( Exception ex ) {
+                    logger.warn( "Error while retrieving flags", ex );
+                }
+            }
+            in.close();
+        } catch ( FileNotFoundException ex ) {
+            logger.warn( "Could not read '" + FILE_RULE_CFG + "' because it doesn't exist" );
+        } catch ( Exception ex ) {
+            logger.warn( "Error reading file: ", ex );
+        }
+
+        try {
+            if ( host != null ) {
+                access.setOutsideNetwork( IPaddr.parse( host ));
+
+                if ( mask != null ) access.setOutsideNetmask( IPaddr.parse( mask ));
+            }
+        } catch ( Exception ex ) {
+            logger.error( "Error parsing outside host or netmask", ex );
+        }        
+    }
+
+    private void loadFlags( AddressSettings address )
+    {
+        String publicAddress = "";
+
+        /* Open up the configuration file */
+        try {
+            BufferedReader in = new BufferedReader(new FileReader( FILE_RULE_CFG ));
+            String str;
+            while ((str = in.readLine()) != null) {
+                str = str.trim();
+                try {
+                    /* Skip comments and empty lines */
+                    if (( str.startsWith( "#" )) || ( str.length() == 0 )) {
+                        continue;
+                    } if ( str.startsWith( FLAG_PUBLIC_ADDRESS_EN )) {
+                        address.setIsPublicAddressEnabled( parseBooleanFlag( str, FLAG_PUBLIC_ADDRESS_EN ));
                     } else if ( str.startsWith( FLAG_PUBLIC_ADDRESS )) {
                         publicAddress = removeQuotes( str.substring( FLAG_PUBLIC_ADDRESS.length() + 1 ));
-                    } else if ( str.startsWith( FLAG_POST_FUNC )) {
-                        /* Nothing to do here, this is just here to indicate that a
-                         * post configuration function exists */
-                    } else if ( str.equals( DECL_POST_CONF )) {
-                        remote.setPostConfigurationScript( parseScript( remote, in ));
-                    } else if ( str.equals( DECL_CUSTOM_RULES )) {
-                        remote.setCustomRules( parseScript( remote, in ));
+                    } else if ( str.startsWith( FLAG_IS_HOSTNAME_PUBLIC )) {
+                        address.setIsHostNamePublic( parseBooleanFlag( str, FLAG_IS_HOSTNAME_PUBLIC ));
                     } else {
                         logger.info( "Unknown line: '" + str + "'" );
                     }
@@ -278,49 +399,88 @@ class NetworkConfigurationLoader
             }
             in.close();
         } catch ( FileNotFoundException ex ) {
-            logger.warn( "Could not read '" + FLAGS_CFG_FILE + "' because it doesn't exist" );
+            logger.warn( "Could not read '" + FILE_RULE_CFG + "' because it doesn't exist" );
         } catch ( Exception ex ) {
             logger.warn( "Error reading file: ", ex );
         }
-
-        try {
-            if ( host != null ) {
-                remote.outsideNetwork( IPaddr.parse( host ));
-
-                if ( mask != null ) remote.outsideNetmask( IPaddr.parse( mask ));
-            }
-        } catch ( Exception ex ) {
-            logger.error( "Error parsing outside host or netmask", ex );
-        }
-
+        
         /* Handle the public address */
         if (( publicAddress != null ) && ( publicAddress.length() > 0 )) {
             /* Do not alter the value of the public address flag */
             try {
-                remote.setPublicAddress( publicAddress );
+                address.setPublicAddress( publicAddress );
             } catch ( ParseException e ) {
                 logger.warn( "Unable to parse the public address: " + publicAddress );
-                remote.setIsPublicAddressEnabled( false );
+                /* disable the public address, if unable to determine what it is. */
+                address.setIsPublicAddressEnabled( false );
             }
         } else {
-            remote.setIsPublicAddressEnabled( false );
+            /* otherwise, disable the public address field if there isn't one. */
+            address.setIsPublicAddressEnabled( false );
         }
     }
 
-    private void loadHostname( RemoteSettings remote )
+    /** The following functions are for reading settings from
+     * networking.sh, they are only used on upgrade. */
+    private void loadFlags( MiscSettings misc )
     {
-        HostName hostname = NetworkUtilPriv.getPrivInstance().loadHostname();
-
-        if ( hostname != null && !hostname.isEmpty() && !NetworkUtil.DEFAULT_HOSTNAME.equals( hostname )) {
-            remote.setHostname( hostname );
-        } else {
-            remote.setIsHostnamePublic( false );
-            remote.setHostname( null );
+        /* Open up the configuration file */
+        try {
+            BufferedReader in = new BufferedReader(new FileReader( FILE_RULE_CFG ));
+            String str;
+            while ((str = in.readLine()) != null) {
+                str = str.trim();
+                try {
+                    /* Skip comments and empty lines */
+                    if (( str.startsWith( "#" )) || ( str.length() == 0 )) {
+                        continue;
+                    } else if ( str.startsWith( FLAG_TCP_WIN )) {
+                        misc.setIsTcpWindowScalingEnabled( parseBooleanFlag( str, FLAG_TCP_WIN ));
+                    } else if ( str.startsWith( FLAG_EXCEPTION )) {
+                        misc.setIsExceptionReportingEnabled( parseBooleanFlag( str, FLAG_EXCEPTION ));
+                    } else if ( str.startsWith( FLAG_POST_FUNC )) {
+                        /* Nothing to do here, this is just here to indicate that a
+                         * post configuration function exists */
+                    } else if ( str.equals( DECL_POST_CONF )) {
+                        misc.setPostConfigurationScript( parseScript( in ));
+                    } else if ( str.startsWith( FLAG_CUSTOM_RULES )) {
+                        /* Nothing to do here, this is just here to indicate that a
+                         * post configuration function exists */
+                    } else if ( str.equals( DECL_CUSTOM_RULES )) {
+                        misc.setCustomRules( parseScript( in ));
+                    } else {
+                        logger.info( "Unknown line: '" + str + "'" );
+                    }
+                } catch ( Exception ex ) {
+                    logger.warn( "Error while retrieving flags", ex );
+                }
+            }
+            in.close();
+        } catch ( FileNotFoundException ex ) {
+            logger.warn( "Could not read '" + FILE_RULE_CFG + "' because it doesn't exist" );
+        } catch ( Exception ex ) {
+            logger.warn( "Error reading file: ", ex );
         }
+    }
+
+    private void loadSshFlag( AccessSettings access )
+    {
+        /* SSH is enabled if and only if this file exists */
+        File sshd = new File( SSHD_PID_FILE );
+
+        access.setIsSshEnabled( sshd.exists());
+    }
+
+    private boolean parseBooleanFlag( String nameValuePair, String name )
+    {
+        if ( nameValuePair.length() < name.length() + 1 ) return false;
+
+        nameValuePair = removeQuotes( nameValuePair.substring( name.length() + 1 ));
+        return Boolean.parseBoolean( nameValuePair );
     }
 
     /* Parse the input stream until it reaches the end of the function */
-    private String parseScript( RemoteSettings remote, BufferedReader in )
+    private String parseScript( BufferedReader in )
         throws IOException
     {
         String command;
@@ -345,247 +505,10 @@ class NetworkConfigurationLoader
         return "";
     }
 
-    private void loadHttpsProperties( RemoteSettings remote, boolean isOutsideAccessEnabled )
-    {
-        /* Try to read in the properties for the HTTPS port */
-        remote.httpsPort( NetworkUtil.DEF_HTTPS_PORT );
-
-        try {
-            StringUtil su = StringUtil.getInstance();
-
-            Properties properties = new Properties();
-            File f = new File( PROPERTY_FILE );
-            if ( f.exists()) {
-                logger.debug( "Loading " + f );
-                properties.load( new FileInputStream( f ));
-                
-                remote.httpsPort( su.parseInt( properties.getProperty( PROPERTY_HTTPS_PORT ), 
-                                               NetworkUtil.DEF_HTTPS_PORT ));
-                
-                if ( properties.getProperty( PROPERTY_OUTSIDE_ADMINISTRATION ) == null ) {
-                    logger.debug( "Outside administration is not set, using defaults." );
-                    if ( isOutsideAccessEnabled ) {
-                        remote.setIsOutsideAdministrationEnabled( true );
-                        remote.setIsOutsideQuarantineEnabled( true );
-                        remote.setIsOutsideReportingEnabled( true );
-                    } else {
-                        remote.setIsOutsideAdministrationEnabled( NetworkUtil.DEF_OUTSIDE_ADMINISTRATION );
-                        remote.setIsOutsideQuarantineEnabled( NetworkUtil.DEF_OUTSIDE_QUARANTINE );
-                        remote.setIsOutsideReportingEnabled( NetworkUtil.DEF_OUTSIDE_REPORTING );
-                    }
-                } else {
-                    logger.debug( "Loading HTTP access settings." );
-                    
-                    boolean value = 
-                        su.parseBoolean( properties.getProperty( PROPERTY_OUTSIDE_ADMINISTRATION ),
-                                         NetworkUtil.DEF_OUTSIDE_ADMINISTRATION );
-                    remote.setIsOutsideAdministrationEnabled( value );
-                    
-                    value = su.parseBoolean( properties.getProperty( PROPERTY_OUTSIDE_QUARANTINE ), 
-                                             NetworkUtil.DEF_OUTSIDE_QUARANTINE );
-                    remote.setIsOutsideQuarantineEnabled( value );
-                    
-                    value = su.parseBoolean( properties.getProperty( PROPERTY_OUTSIDE_REPORTING ), 
-                                             NetworkUtil.DEF_OUTSIDE_REPORTING );
-                    remote.setIsOutsideReportingEnabled( value );
-                }
-
-            }
-        } catch ( Exception e ) {
-            logger.warn( "Unable to load properties file: " + PROPERTY_FILE, e );
-            remote.httpsPort( NetworkUtil.DEF_HTTPS_PORT );
-            remote.setIsOutsideQuarantineEnabled( NetworkUtil.DEF_OUTSIDE_ADMINISTRATION );
-            remote.setIsOutsideQuarantineEnabled( NetworkUtil.DEF_OUTSIDE_QUARANTINE );
-            remote.setIsOutsideQuarantineEnabled( NetworkUtil.DEF_OUTSIDE_REPORTING );
-        }
-    }
-
-    private void loadSshFlag( RemoteSettings remote )
-    {
-        /* SSH is enabled if and only if this file exists */
-        File sshd = new File( SSHD_PID_FILE );
-
-        remote.isSshEnabled( sshd.exists());
-    }
-
-    private boolean parseBooleanFlag( String nameValuePair, String name )
-    {
-        if ( nameValuePair.length() < name.length() + 1 ) return false;
-
-        nameValuePair = removeQuotes( nameValuePair.substring( name.length() + 1 ));
-        return Boolean.parseBoolean( nameValuePair );
-    }
-
     private String removeQuotes( String value )
     {
         if ( value == null ) return "";
         return value.replace( '"', ' ' ).trim();
-    }
-
-    /* Save methods */
-
-    void saveRemoteSettings( RemoteInternalSettings remote )
-    {
-        try {
-            saveProperties( remote );
-        } catch ( Exception e ) {
-            logger.error( "Exception saving properties.", e );
-        }
-
-        try {
-            saveHostname( remote );
-        } catch ( Exception e ) {
-            logger.error( "Exception saving hostname", e );
-        }
-
-        saveFlags( remote );
-        saveSsh( remote );
-    }
-
-    private void saveFlags( RemoteInternalSettings remote ) {
-        ScriptWriter sw = new ScriptWriter();
-
-        sw.appendComment( "Set to true to enable\n" );
-        sw.appendComment( "false or undefined is disabled.\n" );
-        sw.appendVariable( FLAG_TCP_WIN, "" + remote.isTcpWindowScalingEnabled());
-        sw.appendComment( "Allow inside HTTP true to enable" );
-        sw.appendComment( "false or undefined is disabled." );
-        sw.appendVariable( FLAG_HTTP_IN, "" + remote.isInsideInsecureEnabled());
-        sw.appendComment( "Allow outside HTTPS true to enable" );
-        sw.appendComment( "false or undefined to disable." );
-        sw.appendVariable( FLAG_HTTPS_OUT, "" + remote.isOutsideAccessEnabled());
-        sw.appendComment( "Restrict outside HTTPS access" );
-        sw.appendComment( "True if restricted, undefined or false if unrestricted" );
-        sw.appendVariable( FLAG_HTTPS_RES, "" + remote.isOutsideAccessRestricted());
-        sw.appendComment( "Report exceptions\n" );
-        sw.appendComment( "True to send out exception logs, undefined or false for not" );
-        sw.appendVariable( FLAG_EXCEPTION, "" + remote.isExceptionReportingEnabled());
-
-        if ( !remote.outsideNetwork().isEmpty()) {
-            IPaddr network = remote.outsideNetwork();
-            IPaddr netmask = remote.outsideNetmask();
-
-            sw.appendComment( "If outside access is enabled and restricted, only allow access from" );
-            sw.appendComment( "this network.\n" );
-
-            sw.appendVariable( FLAG_OUT_NET, network.toString());
-
-            if ( !netmask.isEmpty()) sw.appendVariable( FLAG_OUT_MASK, netmask.toString());
-
-            sw.appendLine();
-        }
-
-        if ( remote.getPostConfigurationScript().length() > 0 ) {
-            sw.appendComment( "Script to be executed after /etc/network/interfaces is executed\n" );
-            sw.appendLine( DECL_POST_CONF );
-            /* The post configuration script should be an object, allowing it to
-             * be prevalidated */
-            sw.appendLine( remote.getPostConfigurationScript().toString().trim());
-            sw.appendLine( "}" );
-
-            sw.appendComment( "Flag to indicate that there is a post configuuration script." );
-            sw.appendVariable( FLAG_POST_FUNC, POST_FUNC_NAME );
-        }
-
-        if ( remote.getCustomRules().length() > 0 ) {
-            sw.appendComment( "Script to be executed after the rule-generator is executed\n" );
-            sw.appendLine( DECL_CUSTOM_RULES );
-            /* The custom rules script should be an object, allowing it to be prevalidated */
-            sw.appendLine( remote.getCustomRules().toString().trim());
-            sw.appendLine( "}" );
-
-            sw.appendComment( "Flag to indicate that there is is a custom rules script." );
-            sw.appendVariable( FLAG_CUSTOM_RULES_FUNC, CUSTOM_RULES_NAME );
-        }
-
-        HostName hostname = remote.getHostname();
-        /* The hostname itself is stored inside of /etc/hostname in saveHostname() */
-        if ( hostname != null && !NetworkUtil.DEFAULT_HOSTNAME.equals( hostname )) {
-            sw.appendVariable( FLAG_IS_HOSTNAME_PUBLIC, "" + remote.getIsHostnamePublic());
-        } else {
-            sw.appendVariable( FLAG_IS_HOSTNAME_PUBLIC, "" + false );
-        }
-
-        /* Append whether or not the public address is enabled */
-        sw.appendVariable( FLAG_PUBLIC_ADDRESS_EN, "" + remote.getIsPublicAddressEnabled());
-
-        if ( remote.getPublicAddress() != null ) {
-            sw.appendVariable( FLAG_PUBLIC_ADDRESS, remote.getPublicAddress());
-        }
-
-        sw.writeFile( FLAGS_CFG_FILE );
-    }
-
-    private void saveProperties( RemoteInternalSettings remote ) throws Exception
-    {
-
-        /* rebind the https port */
-        int httpsPort = remote.getPublicHttpsPort();
-        try {
-            MvvmContextFactory.context().appServerManager().rebindExternalHttpsPort( httpsPort );
-        } catch ( Exception e ) {
-            if ( !MvvmContextFactory.context().state().equals( MvvmState.RUNNING )) {
-                /* This isn't a problem at startup, because the app manager uses the property also */
-                /* this fails the first time because the tomcat manager isn't initialized yet */
-                logger.info( "unable to rebind port at startup: " + e );
-            } else {
-                logger.warn( "unable to rebind https port", e );
-            }
-        }
-
-        Properties properties = new Properties();
-        // if ( configuration.httpsPort() != NetworkingConfigurationImpl.DEF_HTTPS_PORT ) {
-            /* Make sure to write the file anyway, this guarantees that if the property
-             * is already set, it gets overwritten with an empty value */
-        // }
-
-        /* Maybe only store this value if it has been changed */
-        properties.setProperty( PROPERTY_HTTPS_PORT, String.valueOf( httpsPort ));
-        properties.setProperty( PROPERTY_OUTSIDE_ADMINISTRATION, 
-                                String.valueOf( remote.getIsOutsideAdministrationEnabled()));
-
-        properties.setProperty( PROPERTY_OUTSIDE_QUARANTINE, 
-                                String.valueOf( remote.getIsOutsideQuarantineEnabled()));
-
-        properties.setProperty( PROPERTY_OUTSIDE_REPORTING, 
-                                String.valueOf( remote.getIsOutsideReportingEnabled()));
-
-        try {
-            logger.debug( "Storing properties into: " + PROPERTY_FILE + "[" + httpsPort + "]" );
-            properties.store( new FileOutputStream( new File( PROPERTY_FILE )), PROPERTY_COMMENT );
-        } catch ( Exception e ) {
-            logger.error( "Error saving HTTPS port" );
-        }
-
-        logger.debug( "Rebinding the HTTPS port" );
-    }
-
-    private void saveSsh( RemoteInternalSettings remote )
-    {
-        try {
-            if ( remote.isSshEnabled()) {
-                ScriptRunner.getInstance().exec( SSH_ENABLE_SCRIPT );
-            } else {
-                ScriptRunner.getInstance().exec( SSH_DISABLE_SCRIPT );
-            }
-        } catch ( Exception ex ) {
-            logger.error( "Unable to configure ssh", ex );
-        }
-    }
-
-    private void saveHostname( RemoteInternalSettings remote ) throws Exception
-    {
-        if ( !this.saveSettings ) {
-            logger.warn( "not saving hostname as requested" );
-            return;
-        }
-
-        ScriptRunner.getInstance().exec( HOSTNAME_SCRIPT, remote.getHostname().toString());
-    }
-
-    static NetworkConfigurationLoader getInstance()
-    {
-        return INSTANCE;
     }
 }
 

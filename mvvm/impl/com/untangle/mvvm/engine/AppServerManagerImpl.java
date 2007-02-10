@@ -17,8 +17,8 @@ import java.util.Properties;
 
 import com.untangle.mvvm.LocalAppServerManager;
 import com.untangle.mvvm.networking.NetworkUtil;
-import com.untangle.mvvm.networking.RemoteSettingsListener;
-import com.untangle.mvvm.networking.internal.RemoteInternalSettings;
+import com.untangle.mvvm.networking.AddressSettingsListener;
+import com.untangle.mvvm.networking.internal.AddressSettingsInternal;
 import com.untangle.mvvm.security.CertInfo;
 import com.untangle.mvvm.security.RFC2253Name;
 import com.untangle.mvvm.security.RegistrationInfo;
@@ -151,12 +151,11 @@ class AppServerManagerImpl implements LocalAppServerManager
             logger.warn("could not start Tomcat", exn);
         }
 
-        mctx.networkManager().registerListener(new RemoteSettingsListener() {
-                public void event(RemoteInternalSettings settings)
+        mctx.networkManager().registerListener(new AddressSettingsListener() {
+                public void event(AddressSettingsInternal settings)
                 {
                     String existingAlias = tomcatManager.getKeyAlias();
-                    String currentHostname = mctx.networkManager()
-                        .getHostname().toString();
+                    String currentHostname = settings.getHostName().toString();
                     if (null == existingAlias
                         || !(existingAlias.equals(currentHostname))) {
                         hostnameChanged(currentHostname);

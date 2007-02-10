@@ -11,8 +11,9 @@
 
 package com.untangle.tran.openvpn;
 
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.mvvm.tran.HostAddress;
 import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.mvvm.tran.Transform;
 
 import com.untangle.mvvm.tran.TransformException;
 import com.untangle.mvvm.tran.ValidateException;
@@ -42,14 +43,14 @@ public interface VpnTransform extends Transform
 
     public enum ConfigState { UNCONFIGURED, CLIENT, SERVER_BRIDGE, SERVER_ROUTE }
     public ConfigState getConfigState();
-    public IPaddr getVpnServerAddress();
+    public HostAddress getVpnServerAddress();
 
     public void startConfig(ConfigState state) throws ValidateException;
     public void completeConfig() throws Exception;
 
     //// the stages of the setup wizard ///
     List<String> getAvailableUsbList() throws TransformException;
-    public void downloadConfig( IPaddr address, int port, String key ) throws Exception;
+    public void downloadConfig( HostAddress address, int port, String key ) throws Exception;
     public void downloadConfigUsb( String name ) throws Exception;
     public void generateCertificate( CertificateParameters parameters ) throws Exception;
     public GroupList getAddressGroups() throws Exception;

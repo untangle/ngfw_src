@@ -18,7 +18,7 @@ public class AdministrationOutsideAccessValve extends OutsideValve
 
     protected boolean isOutsideAccessAllowed()
     {
-        return getRemoteSettings().getIsOutsideAdministrationEnabled();
+        return getAccessSettings().getIsOutsideAdministrationEnabled();
     }
 
     protected String outsideErrorMessage()

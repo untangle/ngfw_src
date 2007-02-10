@@ -17,7 +17,6 @@ import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.mvvm.snmp.*;
 import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.*;
-import com.untangle.mvvm.networking.RemoteSettings;
 import com.untangle.mvvm.networking.NetworkException;
 import com.untangle.mvvm.networking.ping.*;
 import com.untangle.mvvm.tran.*;

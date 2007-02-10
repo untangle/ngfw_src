@@ -19,7 +19,6 @@ import javax.swing.table.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.NetworkingConfiguration;
 
 public class DirectoryJDialog extends MConfigJDialog {
 

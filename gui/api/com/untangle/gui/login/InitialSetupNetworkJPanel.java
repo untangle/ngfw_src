@@ -17,8 +17,10 @@ import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.HostName;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.mvvm.NetworkingConfiguration;
-import com.untangle.mvvm.networking.*;
+import com.untangle.mvvm.networking.AddressSettings;
+import com.untangle.mvvm.networking.BasicNetworkSettings;
+import com.untangle.mvvm.networking.NetworkUtil;
+import com.untangle.mvvm.networking.PPPoEConnectionRule;
 import com.untangle.mvvm.MailSender;
 
 import javax.swing.*;
@@ -195,29 +197,30 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
 	if( !validateOnly ){
 	    InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Network Settings...");
             try{
-                NetworkingConfiguration networkingConfiguration = Util.getNetworkManager().getNetworkingConfiguration();
-                networkingConfiguration.isDhcpEnabled( isDhcpEnabled );
+                AddressSettings addressSettings = Util.getNetworkManager().getAddressSettings();
+                BasicNetworkSettings basicSettings = Util.getNetworkManager().getBasicSettings();
+                basicSettings.isDhcpEnabled( isDhcpEnabled );
                 if( !isDhcpEnabled ){
-                    networkingConfiguration.host( host );
-                    networkingConfiguration.netmask( netmask );
-                    networkingConfiguration.gateway( gateway );
-                    networkingConfiguration.dns1( dns1 );
-                    networkingConfiguration.dns2( dns2 );
+                    basicSettings.host( host );
+                    basicSettings.netmask( netmask );
+                    basicSettings.gateway( gateway );
+                    basicSettings.dns1( dns1 );
+                    basicSettings.dns2( dns2 );
                 }
-                networkingConfiguration.hostname( hostname );
-                PPPoEConnectionRule connectionRule = networkingConfiguration.getPPPoESettings();
+                addressSettings.setHostName( hostname );
+                PPPoEConnectionRule connectionRule = basicSettings.getPPPoESettings();
                 connectionRule.setLive( isPPPOEEnabled );
                 if( isPPPOEEnabled ){
                     connectionRule.setUsername( pppoeName );
                     connectionRule.setPassword( pppoePassword );
                 }
-                networkingConfiguration.setPPPoESettings( connectionRule );
+                basicSettings.setPPPoESettings( connectionRule );
 
 		boolean isPublic = NetworkUtil.getInstance().isHostnameLikelyPublic( hostname.toString() );
-                networkingConfiguration.setIsHostnamePublic(isPublic);
+                addressSettings.setIsHostNamePublic(isPublic);
 
 		InitialSetupWizard.setSharedData(hostname.toString());
-                Util.getNetworkManager().setSetupNetworkingConfiguration(networkingConfiguration);
+                Util.getNetworkManager().setSetupSettings(addressSettings,basicSettings);
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
             }
             catch(Exception e){

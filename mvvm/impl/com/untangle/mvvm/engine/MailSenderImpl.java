@@ -27,8 +27,8 @@ import com.untangle.mvvm.MailSender;
 import com.untangle.mvvm.MailSettings;
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.networking.NetworkManagerImpl;
-import com.untangle.mvvm.networking.RemoteSettingsListener;
-import com.untangle.mvvm.networking.internal.RemoteInternalSettings;
+import com.untangle.mvvm.networking.AddressSettingsListener;
+import com.untangle.mvvm.networking.internal.AddressSettingsInternal;
 import com.untangle.mvvm.security.AdminSettings;
 import com.untangle.mvvm.security.User;
 import com.untangle.mvvm.tran.script.ScriptRunner;
@@ -183,8 +183,8 @@ class MailSenderImpl implements MailSender
     void postInit() {
         reconfigure();
         ((NetworkManagerImpl)MvvmContextFactory.context().networkManager()).
-            registerListener(new RemoteSettingsListener() {
-                    public void event( RemoteInternalSettings settings )
+            registerListener(new AddressSettingsListener() {
+                    public void event( AddressSettingsInternal settings )
                     {
                         reconfigure();
                     }
@@ -241,7 +241,7 @@ class MailSenderImpl implements MailSender
             StringBuilder sb = new StringBuilder();
 
             String hostName = MvvmContextFactory.context().networkManager().
-                getNetworkingConfiguration().hostname().toString();
+                getAddressSettingsInternal().getHostName().toString();
             if (hostName == null) {
                 logger.warn("null hostname, using mv-edgeguard");
                 hostName = "mv-edgeguard";

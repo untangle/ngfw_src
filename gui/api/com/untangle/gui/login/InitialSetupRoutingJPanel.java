@@ -12,8 +12,8 @@
 package com.untangle.gui.login;
 
 import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.mvvm.networking.BasicNetworkSettings;
 import com.untangle.mvvm.networking.NetworkUtil;
-import com.untangle.mvvm.NetworkingConfiguration;
 
 import com.untangle.gui.widgets.wizard.*;
 import com.untangle.gui.util.Util;
@@ -46,7 +46,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 	public void run(){
 	    InitialSetupWizard.getInfiniteProgressJComponent().startLater("Auto-Detecting Usage...");
             try{
-                NetworkingConfiguration nc = Util.getNetworkManager().getNetworkingConfiguration();
+                BasicNetworkSettings nc = Util.getNetworkManager().getBasicSettings();
 		publicAddress = nc.host();
 		final boolean isPrivateNetwork = NetworkUtil.getInstance().isPrivateNetwork(nc.host(),nc.netmask());
 		SwingUtilities.invokeLater( new Runnable(){ public void run(){

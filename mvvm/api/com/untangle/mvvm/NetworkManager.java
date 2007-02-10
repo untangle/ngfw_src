@@ -14,13 +14,15 @@ package com.untangle.mvvm;
 import com.untangle.mvvm.tran.HostName;
 import com.untangle.mvvm.tran.IPaddr;
 
+import com.untangle.mvvm.networking.AccessSettings;
+import com.untangle.mvvm.networking.AddressSettings;
 import com.untangle.mvvm.networking.BasicNetworkSettings;
 import com.untangle.mvvm.networking.DhcpStatus;
 import com.untangle.mvvm.networking.DynamicDNSSettings;
+import com.untangle.mvvm.networking.MiscSettings;
 import com.untangle.mvvm.networking.NetworkException;
 import com.untangle.mvvm.networking.NetworkSpacesSettings;
 import com.untangle.mvvm.networking.NetworkSpacesSettingsImpl;
-import com.untangle.mvvm.networking.RemoteSettings;
 
 import com.untangle.mvvm.tran.ValidateException;
 
@@ -31,32 +33,57 @@ public interface NetworkManager
     /**
      * Retrieve the basic network settings
      */
-    public NetworkingConfiguration getNetworkingConfiguration();
+    public BasicNetworkSettings getBasicSettings();
 
     /* Save the basic network settings */
-    public void setNetworkingConfiguration( NetworkingConfiguration configuration ) 
+    public void setBasicSettings( BasicNetworkSettings basic ) 
         throws NetworkException, ValidateException;
 
     /* Save the basic network settings during the wizard */
-    public void setSetupNetworkingConfiguration( NetworkingConfiguration configuration ) 
+    public void setSetupSettings( AddressSettings address, BasicNetworkSettings basic )
         throws NetworkException, ValidateException;
+        
+    /**
+     * Retrieve the settings related to limiting access to the box.
+     */
+    public AccessSettings getAccessSettings();
+    
+    public void setAccessSettings( AccessSettings access );
 
-    /* Use this to retrieve just the remote settings */
-    public RemoteSettings getRemoteSettings();
+    /**
+     * Retrieve the settings related to the hostname and the address used to access to the box.
+     */
+    public AddressSettings getAddressSettings();
+    
+    public void setAddressSettings( AddressSettings address );
 
-    /* Use this to mess with the remote settings without modifying the network settings */
-    public void setRemoteSettings( RemoteSettings remote ) throws NetworkException;
+    /**
+     * Retrieve the miscellaneous settings that don't really belong anywhere else.
+     */
+    public MiscSettings getMiscSettings();
+    
+    public void setMiscSettings( MiscSettings misc );
 
     /**
      * Retrieve the current network configuration
      */
     public NetworkSpacesSettingsImpl getNetworkSettings();
     
-    /**
-     * Set a network configuration.
-     * @param configuration - Configuration to save
-     */
     public void setNetworkSettings( NetworkSpacesSettings networkSettings ) 
+        throws NetworkException, ValidateException;
+
+    /* Set the network settings and the address settings at once, used
+     * by the networking panel */
+    public void setSettings( BasicNetworkSettings basic, AddressSettings address )
+        throws NetworkException, ValidateException;
+
+    /* Set the access and address settings, used by the Remote Panel */
+    public void setSettings( AccessSettings access, AddressSettings address )
+        throws NetworkException, ValidateException;
+
+    /* Set the Access, Misc and Network settings at once.  Used by the
+     * support panel */
+    public void setSettings( AccessSettings access, MiscSettings misc, NetworkSpacesSettings network )
         throws NetworkException, ValidateException;
 
     /** Update the internal representation of the address */
@@ -78,7 +105,7 @@ public interface NetworkManager
     public void subscribeLocalOutside( boolean newValue );
     
     /* Renew the DHCP address and return a new network settings with the updated address */
-    public NetworkingConfiguration renewDhcpLease() throws NetworkException;
+    public BasicNetworkSettings renewDhcpLease() throws NetworkException;
     
     /* Get the external HTTPS port */
     public int getPublicHttpsPort();

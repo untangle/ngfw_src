@@ -16,7 +16,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.NetworkingConfiguration;
 import com.untangle.mvvm.localapi.SessionMatcher;
 import com.untangle.mvvm.localapi.SessionMatcherFactory;
 import com.untangle.mvvm.logging.EventLogger;
@@ -210,9 +209,6 @@ public class FirewallImpl extends AbstractTransform implements Firewall
     {
         logger.info( "Loading the default settings" );
         FirewallSettings settings = new FirewallSettings( this.getTid());
-
-        /* Need this to lookup the local IP address */
-        NetworkingConfiguration netConfig = MvvmContextFactory.context().networkManager().getNetworkingConfiguration();
 
         try {
             IPMatcherFactory ipmf = IPMatcherFactory.getInstance();

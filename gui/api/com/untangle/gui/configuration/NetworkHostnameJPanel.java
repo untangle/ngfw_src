@@ -17,7 +17,8 @@ import com.untangle.gui.util.*;
 
 import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.*;
-import com.untangle.mvvm.networking.*;
+import com.untangle.mvvm.networking.AddressSettings;
+import com.untangle.mvvm.networking.DynamicDNSSettings;
 import com.untangle.mvvm.tran.*;
 
 import java.awt.*;
@@ -83,9 +84,9 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
 		
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    RemoteSettings remoteSettings = networkCompoundSettings.getRemoteSettings();
-	    remoteSettings.setIsHostnamePublic(hostnameIsPublic);
-            remoteSettings.setHostname(hostname);
+	    AddressSettings addressSettings = networkCompoundSettings.getAddressSettings();
+	    addressSettings.setIsHostNamePublic(hostnameIsPublic);
+            addressSettings.setHostName(hostname);
 	    
 	    DynamicDNSSettings dynamicDNSSettings = networkCompoundSettings.getDynamicDNSSettings();
 	    dynamicDNSSettings.setEnabled(isDynamicDNSEnabled);
@@ -107,17 +108,15 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
 
     public void doRefresh(NetworkCompoundSettings networkCompoundSettings){
 
-	NetworkingConfiguration networkingConfiguration = networkCompoundSettings.getNetworkingConfiguration();
+	AddressSettings addressSettings = networkCompoundSettings.getAddressSettings();
 			
 	// HOSTNAME /////////
-	hostnameCurrent = networkingConfiguration.hostname().toString();
+	hostnameCurrent = addressSettings.getHostName().toString();
 	hostnameJTextField.setText( hostnameCurrent );
 	hostnameJTextField.setBackground( Color.WHITE );
 
-	RemoteSettings remoteSettings = networkCompoundSettings.getRemoteSettings();
-
 	// IS HOSTNAME PUBLIC
-	isHostnamePublicCurrent = remoteSettings.getIsHostnamePublic();
+	isHostnamePublicCurrent = addressSettings.getIsHostNamePublic();
 	publicJCheckBox.setSelected(isHostnamePublicCurrent);
 			
         DynamicDNSSettings dynamicDNSSettings = networkCompoundSettings.getDynamicDNSSettings();

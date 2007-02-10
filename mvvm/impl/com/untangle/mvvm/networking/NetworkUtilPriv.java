@@ -28,13 +28,11 @@ import com.untangle.mvvm.ArgonException;
 import com.untangle.mvvm.InterfaceAlias;
 import com.untangle.mvvm.IntfConstants;
 import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.NetworkingConfiguration;
 import com.untangle.mvvm.localapi.LocalIntfManager;
 import com.untangle.mvvm.networking.internal.InterfaceInternal;
 import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.untangle.mvvm.networking.internal.RedirectInternal;
-import com.untangle.mvvm.networking.internal.RemoteInternalSettings;
 import com.untangle.mvvm.networking.internal.RouteInternal;
 import com.untangle.mvvm.networking.internal.ServicesInternalSettings;
 import com.untangle.mvvm.tran.HostName;
@@ -296,13 +294,43 @@ class NetworkUtilPriv extends NetworkUtil
 
     }
 
+    BasicNetworkSettings toBasic( NetworkSpacesInternalSettings settings )
+    {
+        BasicNetworkSettings basic = new BasicNetworkSettings();
+
+        NetworkSpaceInternal primary = settings.getNetworkSpaceList().get( 0 );
+        
+        basic.isDhcpEnabled( primary.getIsDhcpEnabled());
+        IPNetwork primaryNetwork = primary.getPrimaryAddress();
+
+        basic.host( primaryNetwork.getNetwork());
+        basic.netmask( primaryNetwork.getNetmask());
+
+        /* interface aliases */
+        List<InterfaceAlias> aliasList = new LinkedList<InterfaceAlias>();
+        for ( IPNetwork network : primary.getNetworkList()) {
+            if ( network.equals( primaryNetwork )) continue;
+            aliasList.add( new InterfaceAlias( network.getNetwork(), network.getNetmask()));
+        }
+        basic.setAliasList( aliasList );
+        
+        basic.dns1( settings.getDns1());
+        basic.dns2( settings.getDns2());
+        basic.gateway( settings.getDefaultRoute());
+
+        logger.debug( "created: " + basic );
+
+        /* XXXXXXXX PPPOE XXXXXXX */
+        return basic;
+    }
+    
     /**
      * Convert a networking configuration object to an internal representation.
      * This should only be used when updating a box.  Under other circumstances,
      * the other converter which takes the networking configuration and the previous
      * internal settings should be used
      */
-    NetworkSpacesInternalSettings toInternal( NetworkingConfiguration configuration )
+    NetworkSpacesInternalSettings toInternal( BasicNetworkSettings basic )
         throws NetworkException, ValidateException
     {
         LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
@@ -323,7 +351,7 @@ class NetworkUtilPriv extends NetworkUtil
         primary.setIsTrafficForwarded( true );
         primary.setIsNatEnabled( false );
         primary.setIsDmzHostEnabled( false );
-        primary.setIsDhcpEnabled( configuration.isDhcpEnabled());
+        primary.setIsDhcpEnabled( basic.isDhcpEnabled());
 
         List<Interface> interfaceList = new LinkedList<Interface>();
 
@@ -343,19 +371,19 @@ class NetworkUtilPriv extends NetworkUtil
         /* Set the address and the address of the aliases */
         List<IPNetworkRule> networkList = new LinkedList<IPNetworkRule>();
 
-        IPaddr host = configuration.host();
-        IPaddr netmask = configuration.netmask();
+        IPaddr host = basic.host();
+        IPaddr netmask = basic.netmask();
         if (( host == null ) || ( netmask == null ) || ( host.isEmpty()) || netmask.isEmpty()) {
             /* This is pretty bad */
             logger.warn( "Configuration has an empty address[" + host + "] is netmask [" + netmask + "]" );
         } else {
             /* Only add this address if DHCP is not enabled */
-            if ( !configuration.isDhcpEnabled()) {
+            if ( !basic.isDhcpEnabled()) {
                 networkList.add( IPNetworkRule.makeInstance( host, netmask ));
             }
         }
 
-        for ( InterfaceAlias alias : configuration.getAliasList()) {
+        for ( InterfaceAlias alias : basic.getAliasList()) {
             host = alias.getAddress();
             netmask = alias.getNetmask();
             if (( host == null ) || ( netmask == null ) || ( host.isEmpty()) || netmask.isEmpty()) {
@@ -374,9 +402,9 @@ class NetworkUtilPriv extends NetworkUtil
         newSettings.setInterfaceList( interfaceList );
         newSettings.setNetworkSpaceList( networkSpaceList );
         newSettings.setRoutingTable( new LinkedList<Route>());
-        newSettings.setDefaultRoute( configuration.gateway());
-        newSettings.setDns1( configuration.dns1());
-        newSettings.setDns2( configuration.dns2());
+        newSettings.setDefaultRoute( basic.gateway());
+        newSettings.setDns1( basic.dns1());
+        newSettings.setDns2( basic.dns2());
 
         return toInternal( newSettings );
     }
@@ -559,58 +587,6 @@ class NetworkUtilPriv extends NetworkUtil
 
     }
 
-    NetworkingConfiguration toConfiguration( NetworkSpacesInternalSettings settings,
-                                             RemoteSettings remoteSettings )
-    {
-        NetworkingConfiguration configuration = new NetworkingConfigurationImpl();
-
-        NetworkSpaceInternal primary = settings.getNetworkSpaceList().get( 0 );
-
-        /* Grab the stuff from the primary space */
-        configuration.isDhcpEnabled( primary.getIsDhcpEnabled());
-        IPNetwork primaryNetwork = primary.getPrimaryAddress();
-
-        configuration.host( primaryNetwork.getNetwork());
-        configuration.netmask( primaryNetwork.getNetmask());
-
-        /* Get the aliases */
-        List<InterfaceAlias> aliasList = new LinkedList<InterfaceAlias>();
-        for ( IPNetwork network : primary.getNetworkList()) {
-            if ( network.equals( primaryNetwork )) continue;
-
-            aliasList.add( new InterfaceAlias( network.getNetwork(), network.getNetmask()));
-        }
-        configuration.setAliasList( aliasList );
-
-        /* Grab the basic parameters */
-        configuration.dns1( settings.getDns1());
-        configuration.dns2( settings.getDns2());
-        configuration.gateway( settings.getDefaultRoute());
-        configuration.setHostname( remoteSettings.getHostname());
-        configuration.setIsPublicAddressEnabled( remoteSettings.getIsPublicAddressEnabled());
-        configuration.setPublicIPaddr( remoteSettings.getPublicIPaddr());
-        configuration.setPublicPort( remoteSettings.getPublicPort());
-        configuration.isSshEnabled( remoteSettings.isSshEnabled());
-        configuration.isExceptionReportingEnabled( remoteSettings.isExceptionReportingEnabled());
-        configuration.isTcpWindowScalingEnabled( remoteSettings.isTcpWindowScalingEnabled());
-        configuration.isInsideInsecureEnabled( remoteSettings.isInsideInsecureEnabled());
-        configuration.isOutsideAccessEnabled( remoteSettings.isOutsideAccessEnabled());
-        configuration.isOutsideAccessRestricted( remoteSettings.isOutsideAccessRestricted());
-        configuration.outsideNetwork( remoteSettings.outsideNetwork());
-        configuration.outsideNetmask( remoteSettings.outsideNetmask());
-        configuration.httpsPort( remoteSettings.httpsPort());
-
-        configuration.setIsOutsideAdministrationEnabled( remoteSettings.getIsOutsideAdministrationEnabled());
-        configuration.setIsOutsideQuarantineEnabled( remoteSettings.getIsOutsideQuarantineEnabled());
-        configuration.setIsOutsideReportingEnabled( remoteSettings.getIsOutsideReportingEnabled());
-
-        /* Grab the PPPoE Settings for the external interface */
-        PPPoEManagerImpl pppoe = NetworkManagerImpl.getInstance().getPPPoEManager();
-        configuration.setPPPoESettings( pppoe.getExternalSettings());
-
-        return configuration;
-    }
-
     /* Return the impl so this can go into a database */
     NetworkSpacesSettingsImpl toSettings( NetworkSpacesInternalSettings internalSettings )
     {
@@ -682,66 +658,6 @@ class NetworkUtilPriv extends NetworkUtil
         settings.setRedirectList( internalSettings.getRedirectRuleList());
 
         return settings;
-    }
-
-    RemoteInternalSettings makeRemoteInternal( NetworkSpacesInternalSettings network, RemoteSettings remote,
-                                               DynamicDNSSettings ddns  )
-    {
-        String publicAddress;
-        IPaddr publicIPaddr = NetworkUtil.BOGUS_DHCP_ADDRESS;
-        int publicPort  = NetworkUtil.DEF_HTTPS_PORT;
-
-        /* assumes at least one space */
-        IPaddr primaryAddress = null;
-
-        if ( network == null ) {
-            logger.warn( "Null network settings, may be unable to initialize the public address" );
-        } else {
-            NetworkSpaceInternal primary = network.getNetworkSpaceList().get( 0 );
-            primaryAddress = primary.getPrimaryAddress().getNetwork();
-        }
-
-        /* Has public address */
-        boolean hpa = remote.getIsPublicAddressEnabled();
-        publicAddress = remote.getPublicAddress();
-        if ( hpa && ( publicAddress != null ) && ( publicAddress.trim().length() > 0 )) {
-            publicIPaddr = remote.getPublicIPaddr();
-            publicPort   = remote.getPublicPort();
-        } else {
-            HostName hostname = remote.getHostname();
-
-            /* Here is where a some validation is required. */
-            boolean isHostnamePublic = remote.getIsHostnamePublic();
-
-            /* If ddns is non-null, enable the hostname if ddns is enabled */
-            if ( ddns != null ) isHostnamePublic = isHostnamePublic || ddns.isEnabled();
-
-            if ( isHostnamePublic && ( hostname != null )) {
-                publicAddress = hostname.toString();
-                publicPort = remote.httpsPort();
-                publicIPaddr = primaryAddress;
-
-                if ( publicPort != NetworkUtil.DEF_HTTPS_PORT ) publicAddress += ":" + publicPort;
-            } else if (( primaryAddress == null ) || ( primaryAddress.isEmpty())) {
-                logger.warn( "Network settings are unitialized, using hostname as fallback for " +
-                             "public address" );
-                publicAddress = hostname.toString();
-
-                if ( hostname == null ) {
-                    publicAddress = NetworkUtil.DEFAULT_HOSTNAME.toString();
-                    publicPort    = NetworkUtil.DEF_HTTPS_PORT;
-                    publicIPaddr  = NetworkUtil.BOGUS_DHCP_ADDRESS;
-                }
-            } else {
-                publicPort    = remote.httpsPort();
-                publicIPaddr  = primaryAddress;
-                publicAddress = publicIPaddr.toString();
-                if ( publicPort != NetworkUtil.DEF_HTTPS_PORT ) publicAddress += ":" + publicPort;
-            }
-        }
-
-        /* Otherwise return the primary address of the primary space and the HTTPS port */
-        return new RemoteInternalSettings( remote, publicIPaddr, publicPort, publicAddress );
     }
 
     List<IPaddr> getDnsServers()
@@ -841,16 +757,6 @@ class NetworkUtilPriv extends NetworkUtil
 
 
     /************* PRIVATE **********/
-    private SpaceInfo makeBasicNetworkSpace( BasicNetworkSettings basicNetworkSettings,
-                                             NetworkSpacesInternalSettings internalSettings )
-    {
-        List<Interface> interfaceList = new LinkedList<Interface>();
-
-        /* The list of interfaces in this network space are defined by the internal settings */
-        throw new IllegalStateException( "Implement me" );
-    }
-
-
     private IPNetwork getPrimaryAddress( NetworkSpace networkSpace, int index )
     {
         IPNetwork primaryAddress = IPNetwork.getEmptyNetwork();
@@ -869,7 +775,7 @@ class NetworkUtilPriv extends NetworkUtil
 
         if ( primaryAddress == null || primaryAddress.equals( IPNetwork.getEmptyNetwork())) {
             /* XXX This is where it would handle the empty ip network */
-            logger.warn( "Network space " + index + " doesn't have a primary address" );
+            logger.warn( "Network space " + index + " does not have a primary address" );
         }
 
         return ( primaryAddress == null ) ? IPNetwork.getEmptyNetwork() : primaryAddress;

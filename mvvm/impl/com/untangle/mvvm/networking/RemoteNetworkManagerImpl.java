@@ -12,7 +12,6 @@
 package com.untangle.mvvm.networking;
 
 import com.untangle.mvvm.NetworkManager;
-import com.untangle.mvvm.NetworkingConfiguration;
 import com.untangle.mvvm.tran.HostName;
 import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.ValidateException;
@@ -29,37 +28,87 @@ public class RemoteNetworkManagerImpl implements NetworkManager
     /**
      * Retrieve the basic network settings
      */
-    public NetworkingConfiguration getNetworkingConfiguration()
+    public BasicNetworkSettings getBasicSettings()
     {
-        return lnm.getNetworkingConfiguration();
+        return lnm.getBasicSettings();
     }
 
     /* Save the basic network settings */
-    public void setNetworkingConfiguration( NetworkingConfiguration configuration )
+    public void setBasicSettings( BasicNetworkSettings basic )
         throws NetworkException, ValidateException
     {
-        lnm.setNetworkingConfiguration( configuration );
+        this.lnm.setBasicSettings( basic );
     }
 
     /* Save the basic network settings during the wizard */
-    public void setSetupNetworkingConfiguration( NetworkingConfiguration configuration )
+    public synchronized void setSetupSettings( AddressSettings address, BasicNetworkSettings basic ) 
         throws NetworkException, ValidateException
     {
-        lnm.setSetupNetworkingConfiguration( configuration );
+        this.lnm.setSetupSettings( address, basic );
     }
 
-    /* Use this to retrieve just the remote settings */
-    public RemoteSettings getRemoteSettings()
+    /* Set the network settings and the address settings at once, used
+     * by the networking panel */
+    public void setSettings( BasicNetworkSettings basic, AddressSettings address )
+        throws NetworkException, ValidateException
     {
-        return lnm.getRemoteSettings();
+        this.lnm.setSettings( basic, address );
     }
 
-    /* Use this to mess with the remote settings without modifying the network settings */
-    public void setRemoteSettings( RemoteSettings remote ) throws NetworkException
+    /* Set the access and address settings, used by the Remote Panel */
+    public void setSettings( AccessSettings access, AddressSettings address )
+        throws NetworkException, ValidateException
     {
-        lnm.setRemoteSettings( remote );
+        this.lnm.setSettings( access, address );
     }
 
+    /* Set the Access, Misc and Network settings at once.  Used by the
+     * support panel */
+    public void setSettings( AccessSettings access, MiscSettings misc, NetworkSpacesSettings network )
+        throws NetworkException, ValidateException
+    {
+        this.lnm.setSettings( access, misc, network );
+    }
+
+    /**
+     * Retrieve the settings related to limiting access to the box.
+     */
+    public AccessSettings getAccessSettings()
+    {
+        return this.lnm.getAccessSettings();
+    }
+    
+    public void setAccessSettings( AccessSettings access )
+    {
+        this.lnm.setAccessSettings( access );
+    }
+
+    /**
+     * Retrieve the settings related to the hostname and the address used to access to the box.
+     */
+    public AddressSettings getAddressSettings()
+    {
+        return this.lnm.getAddressSettings();
+    }
+    
+    public void setAddressSettings( AddressSettings address )
+    {
+        this.lnm.setAddressSettings( address );
+    }
+
+    /**
+     * Retrieve the miscellaneous settings that don't really belong anywhere else.
+     */
+    public MiscSettings getMiscSettings()
+    {
+        return lnm.getMiscSettings();
+    }
+    
+    public void setMiscSettings( MiscSettings misc )
+    {
+        lnm.setMiscSettings( misc );
+    }
+   
     /**
      * Retrieve the current network configuration
      */
@@ -122,7 +171,7 @@ public class RemoteNetworkManagerImpl implements NetworkManager
     // public IntfEnum getIntfEnum();
 
     /* Renew the DHCP address and return a new network settings with the updated address */
-    public NetworkingConfiguration renewDhcpLease() throws NetworkException
+    public BasicNetworkSettings renewDhcpLease() throws NetworkException
     {
         return lnm.renewDhcpLease();
     }

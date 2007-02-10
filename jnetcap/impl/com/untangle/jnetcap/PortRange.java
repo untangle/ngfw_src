@@ -11,7 +11,8 @@
 
 package com.untangle.jnetcap;
 
-public class PortRange {
+public class PortRange
+{
     private final int low;
     private final int high;
 
@@ -20,10 +21,12 @@ public class PortRange {
      * @param low - low value (inclusive).
      * @param high - high value (inclusive).
      */
-    public PortRange(int low, int high) throws JNetcapException
+    public PortRange( int low, int high )
     {
         if (low > high) {
-            throw new JNetcapException("Reversed port range: low=" + low + " high=" + high);
+            int swap = low;
+            low = high;
+            high = swap;
         }
 
         this.low  = low;

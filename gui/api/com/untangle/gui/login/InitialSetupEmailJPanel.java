@@ -17,7 +17,6 @@ import com.untangle.gui.util.Util;
 import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.*;
 import com.untangle.mvvm.MailSender;
-import com.untangle.mvvm.NetworkingConfiguration;
 import com.untangle.mvvm.client.MvvmRemoteContextFactory;
 import com.untangle.gui.configuration.EmailConnectivityTestJDialog;
 

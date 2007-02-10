@@ -20,7 +20,7 @@ import com.untangle.mvvm.localapi.LocalIntfManager;
 import com.untangle.mvvm.networking.internal.InterfaceInternal;
 import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.networking.internal.RemoteInternalSettings;
+import com.untangle.mvvm.networking.internal.MiscSettingsInternal;
 import com.untangle.mvvm.networking.internal.RouteInternal;
 import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.script.ScriptWriter;
@@ -31,7 +31,7 @@ class InterfacesScriptWriter extends ScriptWriter
     private final Logger logger = Logger.getLogger(getClass());
 
     private final NetworkSpacesInternalSettings settings;
-    private final RemoteInternalSettings remote;
+    private final MiscSettingsInternal misc;
 
     private boolean isDhcpEnabled = false;
 
@@ -57,11 +57,11 @@ class InterfacesScriptWriter extends ScriptWriter
     // static final String DHCP_FLAG_ADDRESS_ONLY = " --no-gateway --no-resolvconf ";
     /* XXX */
 
-    InterfacesScriptWriter( NetworkSpacesInternalSettings settings, RemoteInternalSettings remote )
+    InterfacesScriptWriter( NetworkSpacesInternalSettings settings, MiscSettingsInternal misc )
     {
         super();
         this.settings = settings;
-        this.remote   = remote;
+        this.misc   = misc;
     }
 
     /* This function should only be called once */
@@ -266,12 +266,12 @@ class InterfacesScriptWriter extends ScriptWriter
 
     private void addPostConfigurationScript()
     {
-        if ( this.remote == null ) {
-            logger.warn( "null remote settings, ignoring post configuration script" );
+        if ( this.misc == null ) {
+            logger.warn( "null misc settings, ignoring post configuration script" );
             return;
         }
 
-        String script = this.remote.getPostConfigurationScript();
+        String script = this.misc.getPostConfigurationScript();
 
         if (( script != null ) && ( script.trim().length() > 0 )) {
             appendCommands( "up if [ -r " + POST_SCRIPT + " ]; then sh " + POST_SCRIPT + "; fi" );

@@ -16,7 +16,7 @@ import com.untangle.gui.util.Util;
 import com.untangle.gui.transform.*;
 import com.untangle.gui.pipeline.MPipelineJPanel;
 
-import com.untangle.mvvm.tran.*;
+import com.untangle.mvvm.tran.HostAddress;
 import com.untangle.tran.openvpn.*;
 
 import javax.swing.*;
@@ -36,8 +36,8 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
     private static VpnTransform.ConfigState configState, lastConfigState;;
     public static VpnTransform.ConfigState getConfigState(){ return configState; }
     private VpnTransform vpnTransform;
-    private static IPaddr vpnServerAddress;
-    public static IPaddr getVpnServerAddress(){ return vpnServerAddress; }
+    private static HostAddress vpnServerAddress;
+    public static HostAddress getVpnServerAddress(){ return vpnServerAddress; }
 
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);

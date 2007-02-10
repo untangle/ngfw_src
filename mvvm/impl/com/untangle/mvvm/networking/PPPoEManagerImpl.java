@@ -92,7 +92,6 @@ class PPPoEManagerImpl
     {
         /* This returns the first external interface connection, or an empty connection rule
          * if there isn't one */
-
         for ( PPPoEConnectionInternal connection : this.settings.getConnectionList()) {
             if ( connection.getArgonIntf() == IntfConstants.EXTERNAL_INTF ) {
                 return connection.toRule();
@@ -155,6 +154,81 @@ class PPPoEManagerImpl
             logger.warn( "Unable to register ppp interfaces at startup, disabling" );
             resetIntfs();
         }
+    }
+
+    /** This is a helper function in place just to debug before the gui
+     * is written */
+    void pppoe( String args[] ) throws NetworkException
+    {
+        if ( args.length == 1 ) {
+        }
+        else if ( args.length == 2 ) {
+            if ( "register".equalsIgnoreCase( args[1] )) {
+                registerIntfs();
+                return;
+            } else if ( "unregister".equalsIgnoreCase( args[1] )) {
+                unregisterIntfs();
+                return;
+            } else if ( "reset".equalsIgnoreCase( args[1] )) {
+                resetIntfs();
+                return;
+            } else {
+            }
+        }
+        else if ( args.length == 3 ) {
+            byte argonIntf = Byte.valueOf( args[2] );
+            if ( "delete".equalsIgnoreCase( args[1] )) {
+                PPPoESettings pppoeSettings = getSettings();
+                List<PPPoEConnectionRule> list = pppoeSettings.getConnectionList();
+                for ( Iterator<PPPoEConnectionRule> iter = list.iterator() ; iter.hasNext() ; ) {
+                    PPPoEConnectionRule rule = iter.next();
+                    if ( rule.getArgonIntf() == argonIntf ) iter.remove();
+                }
+                pppoeSettings.setConnectionList( list );
+
+                setSettings( pppoeSettings );
+                return;
+            } else if ( "off".equalsIgnoreCase( args[1] )) {
+                PPPoESettings pppoeSettings = getSettings();
+                List<PPPoEConnectionRule> list = pppoeSettings.getConnectionList();
+                for ( PPPoEConnectionRule rule : list ) {
+                    if ( rule.getArgonIntf() == argonIntf ) rule.setLive( false );
+                }
+                pppoeSettings.setConnectionList( list );
+                setSettings( pppoeSettings );
+                return;
+            }
+        }
+        else if ( args.length == 6 ) {
+            if ( "mod".equalsIgnoreCase( args[1] )) {
+                byte argonIntf = Byte.valueOf( args[2] );
+                boolean isLive = Boolean.valueOf( args[3] );
+                String username = args[4];
+                String password = args[5];
+
+                PPPoESettings pppoeSettings = getSettings();
+                List<PPPoEConnectionRule> list = pppoeSettings.getConnectionList();
+                for ( Iterator<PPPoEConnectionRule> iter = list.iterator() ; iter.hasNext() ; ) {
+                    PPPoEConnectionRule rule = iter.next();
+                    if ( rule.getArgonIntf() == argonIntf ) iter.remove();
+                }
+                PPPoEConnectionRule rule = new PPPoEConnectionRule();
+                rule.setArgonIntf( argonIntf );
+                rule.setLive( isLive );
+                rule.setUsername( username );
+                rule.setPassword( password );
+                list.add( rule );
+
+                pppoeSettings.setConnectionList( list );
+
+                setSettings( pppoeSettings );
+                return;
+            }
+        }
+
+        logger.debug( "usage: " + args[0] + " <register|unregister|reset>" );
+        logger.debug( "usage: " + args[0] + " <off|delete> <argon interface>" );
+        logger.debug( "usage: " + args[0] + " <argon interface> <true|false> <username> <password>" );
     }
     
     /* Write all the config files */

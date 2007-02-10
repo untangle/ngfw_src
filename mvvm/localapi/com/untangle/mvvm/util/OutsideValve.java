@@ -19,7 +19,8 @@ import javax.servlet.ServletRequest;
 import com.untangle.mvvm.LocalAppServerManager;
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.networking.NetworkUtil;
-import com.untangle.mvvm.networking.internal.RemoteInternalSettings;
+import com.untangle.mvvm.networking.internal.AccessSettingsInternal;
+import com.untangle.mvvm.networking.internal.AddressSettingsInternal;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
@@ -60,15 +61,21 @@ public abstract class OutsideValve extends ValveBase
         if ( nextValve != null ) nextValve.invoke( request, response );
     }
 
-    protected RemoteInternalSettings getRemoteSettings()
+    protected AccessSettingsInternal getAccessSettings()
     {
-        return MvvmContextFactory.context().networkManager().getRemoteInternalSettings();
+        return MvvmContextFactory.context().networkManager().getAccessSettingsInternal();
     }
+
+    protected AddressSettingsInternal getAddressSettings()
+    {
+        return MvvmContextFactory.context().networkManager().getAddressSettingsInternal();
+    }
+
 
     /* Unified way to determine if access to port 80 is allowed, override if behavior is different */
     protected boolean isInsecureAccessAllowed()
     {
-        return getRemoteSettings().isInsideInsecureEnabled();
+        return getAccessSettings().getIsInsideInsecureEnabled();
     }
 
     /* Unified way to determine which parameter to check */
@@ -100,7 +107,7 @@ public abstract class OutsideValve extends ValveBase
         if (port == NetworkUtil.INTERNAL_OPEN_HTTPS_PORT) return true;
 
         /* This is secure access on the external port */
-        if (port == getRemoteSettings().getPublicHttpsPort()) return isOutsideAccessAllowed;
+        if (port == getAddressSettings().getHttpsPort()) return isOutsideAccessAllowed;
 
         return false;
     }

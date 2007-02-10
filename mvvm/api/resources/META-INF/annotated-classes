@@ -3,11 +3,14 @@ com.untangle.mvvm.Period
 com.untangle.mvvm.addrbook.AddressBookSettings
 com.untangle.mvvm.addrbook.RepositorySettings
 com.untangle.mvvm.logging.LoggingSettings
+com.untangle.mvvm.networking.AccessSettings
+com.untangle.mvvm.networking.AddressSettings
 com.untangle.mvvm.networking.DhcpLeaseRule
 com.untangle.mvvm.networking.DnsStaticHostRule
 com.untangle.mvvm.networking.DynamicDNSSettings
 com.untangle.mvvm.networking.IPNetworkRule
 com.untangle.mvvm.networking.Interface
+com.untangle.mvvm.networking.MiscSettings
 com.untangle.mvvm.networking.NetworkSpace
 com.untangle.mvvm.networking.NetworkSpacesSettingsImpl
 com.untangle.mvvm.networking.PPPoESettings

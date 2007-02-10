@@ -258,6 +258,14 @@ public class IPaddr implements Comparable, Serializable
         if ( num < 0 ) num = num & 0x7F + 0x80;
         return num;
     }
+
+    /* tired of checking for null everywhere */
+    public static boolean equals( IPaddr addr1, IPaddr addr2 )
+    {
+        if ( addr1 == null || addr1 == null ) return addr1 == addr2;
+
+        return addr1.equals( addr2 );
+    }
     
     static
     {

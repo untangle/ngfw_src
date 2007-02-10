@@ -25,7 +25,6 @@ import java.util.Random;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.NetworkingConfiguration;
 import com.untangle.mvvm.tran.TransformException;
 
 import com.untangle.mvvm.tran.script.ScriptWriter;

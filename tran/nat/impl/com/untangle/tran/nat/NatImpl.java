@@ -31,8 +31,6 @@ import com.untangle.mvvm.networking.NetworkException;
 import com.untangle.mvvm.networking.NetworkSettingsListener;
 import com.untangle.mvvm.networking.NetworkSpace;
 import com.untangle.mvvm.networking.NetworkSpacesSettings;
-import com.untangle.mvvm.networking.NetworkUtil;
-import com.untangle.mvvm.networking.RemoteSettings;
 import com.untangle.mvvm.networking.SetupState;
 import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
 import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;

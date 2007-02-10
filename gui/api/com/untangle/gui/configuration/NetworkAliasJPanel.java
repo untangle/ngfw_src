@@ -23,7 +23,7 @@ import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
 
-import com.untangle.mvvm.NetworkingConfiguration;
+import com.untangle.mvvm.networking.BasicNetworkSettings;
 import com.untangle.mvvm.InterfaceAlias;
 import com.untangle.mvvm.tran.IPaddr;
 
@@ -97,15 +97,15 @@ class InterfaceAliasModel extends MSortedTableModel<NetworkCompoundSettings>{
         
 	// SAVE SETTINGS //////////
 	if( !validateOnly ){
-	    NetworkingConfiguration networkingConfiguraion = networkCompoundSettings.getNetworkingConfiguration();
-	    networkingConfiguraion.setAliasList( elemList );
+	    BasicNetworkSettings basicSettings = networkCompoundSettings.getBasicSettings();
+	    basicSettings.setAliasList( elemList );
 	}
     }
 
     public Vector<Vector> generateRows(NetworkCompoundSettings networkCompoundSettings) {
-        NetworkingConfiguration networkingConfiguration = networkCompoundSettings.getNetworkingConfiguration();
+        BasicNetworkSettings basicSettings = networkCompoundSettings.getBasicSettings();
 	List<InterfaceAlias> interfaceAliasList = 
-            (List<InterfaceAlias>) networkingConfiguration.getAliasList();
+            (List<InterfaceAlias>) basicSettings.getAliasList();
         Vector<Vector> allRows = new Vector<Vector>(interfaceAliasList.size());
 	Vector tempRow = null;
         int rowIndex = 0;

@@ -129,6 +129,13 @@ public class HostName implements Serializable {
         return EMPTY_HOSTNAME;
     }
 
+    public static boolean equals( HostName name1, HostName name2 )
+    {
+        if ( name1 == null || name2 == null ) return ( name1 == name2 );
+        
+        return name1.equals( name2 );
+    }
+
     static
     {
         Pattern p;

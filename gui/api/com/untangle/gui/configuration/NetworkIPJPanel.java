@@ -19,6 +19,8 @@ import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.*;
 import com.untangle.mvvm.tran.*;
 
+import com.untangle.mvvm.networking.BasicNetworkSettings;
+
 import java.awt.*;
 import javax.swing.JDialog;
 
@@ -124,14 +126,14 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 	
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){	    
-	    NetworkingConfiguration networkingConfiguration = networkCompoundSettings.getNetworkingConfiguration();
-	    networkingConfiguration.isDhcpEnabled( isDhcpEnabled );
+	    BasicNetworkSettings basicSettings = networkCompoundSettings.getBasicSettings();
+	    basicSettings.isDhcpEnabled( isDhcpEnabled );
 	    if( !isDhcpEnabled ){
-		networkingConfiguration.host( host );
-		networkingConfiguration.netmask( netmask );
-		networkingConfiguration.gateway( gateway );
-		networkingConfiguration.dns1( dns1 );
-		networkingConfiguration.dns2( dns2 );
+		basicSettings.host( host );
+		basicSettings.netmask( netmask );
+		basicSettings.gateway( gateway );
+		basicSettings.dns1( dns1 );
+		basicSettings.dns2( dns2 );
 	    }
         }
     }
@@ -145,42 +147,42 @@ public class NetworkIPJPanel extends javax.swing.JPanel
     String dnsSecondaryCurrent;
 
     public void doRefresh(NetworkCompoundSettings networkCompoundSettings){
-        NetworkingConfiguration networkingConfiguration = networkCompoundSettings.getNetworkingConfiguration();
+        BasicNetworkSettings basicSettings = networkCompoundSettings.getBasicSettings();
         
 	// DHCP ENABLED /////
-	isDhcpEnabledCurrent = networkingConfiguration.isDhcpEnabled();
+	isDhcpEnabledCurrent = basicSettings.isDhcpEnabled();
 	setDhcpEnabledDependency( isDhcpEnabledCurrent );
 
         /* rbs: only enable the dhcp renew button if dhcp is enabled and pppoe is disabled */
-        renewDhcpLeaseJButton.setEnabled( isDhcpEnabledCurrent && !networkingConfiguration.getPPPoESettings().isLive());
+        renewDhcpLeaseJButton.setEnabled( isDhcpEnabledCurrent && !basicSettings.getPPPoESettings().isLive());
 	if( isDhcpEnabledCurrent )
             dhcpEnabledRadioButton.setSelected(true);
         else
             dhcpDisabledRadioButton.setSelected(true);
         
 	// DHCP HOST ////
-	dhcpIPaddrCurrent = networkingConfiguration.host().toString();
+	dhcpIPaddrCurrent = basicSettings.host().toString();
 	dhcpIPaddrJTextField.setText( dhcpIPaddrCurrent );
 	dhcpIPaddrJTextField.setBackground( Color.WHITE );
 	
 	// DHCP NETMASK /////
-	dhcpNetmaskCurrent = networkingConfiguration.netmask().toString();
+	dhcpNetmaskCurrent = basicSettings.netmask().toString();
         dhcpNetmaskJTextField.setText( dhcpNetmaskCurrent );
 	dhcpNetmaskJTextField.setBackground( Color.WHITE );
 
 	// DHCP DEFAULT ROUTE ////////
-	dhcpRouteCurrent = networkingConfiguration.gateway().toString();
+	dhcpRouteCurrent = basicSettings.gateway().toString();
         dhcpRouteJTextField.setText( dhcpRouteCurrent );
 	dhcpRouteJTextField.setBackground( Color.WHITE );
 
 	// DNS1 ///////////
-	dnsPrimaryCurrent = networkingConfiguration.dns1().toString();
+	dnsPrimaryCurrent = basicSettings.dns1().toString();
         dnsPrimaryJTextField.setText( dnsPrimaryCurrent );
 	dnsPrimaryJTextField.setBackground( Color.WHITE );
 
 	// DNS2 //////////
-        if ( networkingConfiguration.hasDns2()) {
-	    dnsSecondaryCurrent = networkingConfiguration.dns2().toString();
+        if ( basicSettings.hasDns2()) {
+	    dnsSecondaryCurrent = basicSettings.dns2().toString();
             dnsSecondaryJTextField.setText( dnsSecondaryCurrent );
         } else {
 	    dnsSecondaryCurrent = "";
@@ -525,8 +527,8 @@ public class NetworkIPJPanel extends javax.swing.JPanel
         warning.setVisible(true);
         if( warning.isProceeding() ){
             NetworkDhcpRenewDialog dhcpLeaseRenewDialog = new NetworkDhcpRenewDialog((JDialog)this.getTopLevelAncestor());
-            NetworkingConfiguration newNetworkingConfiguration = dhcpLeaseRenewDialog.getNetworkingConfiguration();
-            if( newNetworkingConfiguration != null){
+            BasicNetworkSettings basicSettings = dhcpLeaseRenewDialog.getBasicSettings();
+            if( basicSettings != null){
                 mConfigJDialog.refreshGui();
                 // UPDATE STORE
                 Util.getPolicyStateMachine().updateStoreModel();

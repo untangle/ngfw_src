@@ -274,7 +274,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
         
         /* Load the current networking configuration, this is used in validation, this is here
          * because it is a remote call. [RBS, per recommendation of inieves] */
-        BasicNetworkSettings basicNetworkSettings = Util.getNetworkManager().getNetworkingConfiguration();
+        BasicNetworkSettings basicNetworkSettings = Util.getNetworkManager().getBasicSettings();
         ((NatCommonSettings)settings).setNetworkSettings(basicNetworkSettings);
         
 	MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);		
@@ -283,7 +283,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
     }
 
     public void refreshAll() throws Exception {
-	BasicNetworkSettings basicNetworkSettings = Util.getNetworkManager().getNetworkingConfiguration();
+	BasicNetworkSettings basicNetworkSettings = Util.getNetworkManager().getBasicSettings();
 	host = basicNetworkSettings.host();
 	dhcpEnabled = basicNetworkSettings.isDhcpEnabled();
 	super.refreshAll();

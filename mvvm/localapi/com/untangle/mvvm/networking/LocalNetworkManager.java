@@ -15,18 +15,23 @@ import java.net.InetAddress;
 
 import com.untangle.mvvm.NetworkManager;
 import com.untangle.mvvm.api.IPSessionDesc;
+
+import com.untangle.mvvm.networking.internal.AccessSettingsInternal;
+import com.untangle.mvvm.networking.internal.AddressSettingsInternal;
+import com.untangle.mvvm.networking.internal.MiscSettingsInternal;
 import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.networking.internal.RemoteInternalSettings;
 import com.untangle.mvvm.networking.internal.ServicesInternalSettings;
 import com.untangle.mvvm.tran.ValidateException;
 
 public interface LocalNetworkManager extends NetworkManager
 {
-    public RemoteInternalSettings getRemoteInternalSettings();
-
     public NetworkSpacesInternalSettings getNetworkInternalSettings();
 
     public ServicesInternalSettings getServicesInternalSettings();
+
+    public AccessSettingsInternal getAccessSettingsInternal();
+    public AddressSettingsInternal getAddressSettingsInternal();
+    public MiscSettingsInternal getMiscSettingsInternal();
 
     public void setNetworkSettings( NetworkSpacesSettings settings, boolean configure )
         throws NetworkException, ValidateException;
@@ -56,9 +61,9 @@ public interface LocalNetworkManager extends NetworkManager
 
     public void unregisterListener( NetworkSettingsListener networkListener );
 
-    public void registerListener( RemoteSettingsListener remoteListener );
+    public void registerListener( AddressSettingsListener remoteListener );
 
-    public void unregisterListener( RemoteSettingsListener remoteListener );
+    public void unregisterListener( AddressSettingsListener remoteListener );
 
     public void registerListener( IntfEnumListener intfEnumListener );
 

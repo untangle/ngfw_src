@@ -18,7 +18,7 @@ public class QuarantineOutsideAccessValve extends OutsideValve
 
     protected boolean isOutsideAccessAllowed()
     {
-        return getRemoteSettings().getIsOutsideQuarantineEnabled();
+        return getAccessSettings().getIsOutsideQuarantineEnabled();
     }
 
     protected String outsideErrorMessage()

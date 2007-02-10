@@ -23,7 +23,6 @@ import javax.mail.internet.MimeBodyPart;
 import com.untangle.mvvm.MailSender;
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.MvvmState;
-import com.untangle.mvvm.NetworkingConfiguration;
 import com.untangle.mvvm.Version;
 import org.apache.log4j.Logger;
 
@@ -149,7 +148,7 @@ public class LogMailerImpl implements LogMailer, Runnable
                     Thread.sleep(MIN_MESSAGE_PERIOD  - (now - lastSendTime));
                 if (MvvmContextFactory.state() == MvvmState.RUNNING &&
                     MvvmContextFactory.context().networkManager().
-                    getNetworkingConfiguration().isExceptionReportingEnabled()) {
+                    getMiscSettingsInternal().getIsExceptionReportingEnabled()) {
                     sendMessage(triggerer);
                 }
                 lastSendTime = System.currentTimeMillis();
@@ -166,8 +165,8 @@ public class LogMailerImpl implements LogMailer, Runnable
 
     private void doSend(String subjectBase, String bodyBase,
                         List<MimeBodyPart> parts) {
-        NetworkingConfiguration netConf = MvvmContextFactory.context().networkManager().getNetworkingConfiguration();
-        String host = netConf.host().toString();
+        String host = MvvmContextFactory.context().networkManager().
+                getAddressSettingsInternal().getHostName().toString();
 
         String bodyText = sysstat.systemStatus();
         String version = Version.getVersion();
