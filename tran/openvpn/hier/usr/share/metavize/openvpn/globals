@@ -6,6 +6,8 @@ DATA_DIR=${SCRIPT_DIR}
 CONF_DIR="@MVVM_CONF@/openvpn"
 MISC_DIR="${CONF_DIR}/misc"
 
+ZIP_BASE="untangle-vpn"
+
 BASE_CONFIG_FILE="${MISC_DIR}/base_cfg"
 
 PACKAGE_DIR=${CONF_DIR}/client-packages

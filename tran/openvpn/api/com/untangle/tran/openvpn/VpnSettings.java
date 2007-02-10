@@ -15,6 +15,9 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -47,6 +50,14 @@ import org.hibernate.annotations.Type;
 public class VpnSettings implements Serializable, Validatable
 {
     private static final long serialVersionUID = 1900466626555001143L;
+
+    private static final String INVALID_CHARACTERS_STRING = "[^-a-zA-Z0-9- ]";
+    private static final Pattern INVALID_CHARACTERS_PATTERN;
+    
+    private static final String MULTISPACE_STRING = " +";
+    private static final Pattern MULTISPACE_PATTERN;
+
+    private static final String DEFAULT_SITE_NAME = "untangle-vpn";
 
     static private final int KEY_SIZE_ENUMERATION[] = new int[]
         {
@@ -525,6 +536,37 @@ public class VpnSettings implements Serializable, Validatable
     }
 
     /**
+     * Name of this VPN site.  This is the value that identifies this office
+     * in the config file */
+    @Transient
+    public String getSiteName()
+    {
+        String site = this.organization;
+        
+        if ( site == null ) return DEFAULT_SITE_NAME;
+        
+        site = site.trim();
+        if ( site.length() == 0 ) return DEFAULT_SITE_NAME;
+
+        if (( null == INVALID_CHARACTERS_PATTERN ) || ( null == MULTISPACE_PATTERN )) {
+            return DEFAULT_SITE_NAME;
+        }
+
+        site = site.toLowerCase();
+
+        /* get rid of the invalid characters */
+        site = INVALID_CHARACTERS_PATTERN.matcher( site ).replaceAll( "" );
+
+        /* Trim off whitespace again */
+        site = site.trim(); 
+
+        /* replace all of the spaces with dashes */
+        site = MULTISPACE_PATTERN.matcher( site ).replaceAll( "-" );
+        
+        return site;
+    }
+
+    /**
      * @return organizationUnit.
      */
     @Column(name="org_unit")
@@ -573,5 +615,29 @@ public class VpnSettings implements Serializable, Validatable
     public void setCaKeyOnUsb( boolean caKeyOnUsb )
     {
         this.caKeyOnUsb = caKeyOnUsb;
+    }
+
+    static
+    {
+        Pattern pattern = null;
+
+        try {
+            pattern = Pattern.compile( INVALID_CHARACTERS_STRING );
+        } catch ( PatternSyntaxException e ) {
+            System.err.println( "Unable to compile pattern, using null" );
+            pattern = null;
+        }
+
+        INVALID_CHARACTERS_PATTERN = pattern;
+
+        try {
+            pattern = Pattern.compile( MULTISPACE_STRING );
+        } catch ( PatternSyntaxException e ) {
+            System.err.println( "Unable to compile pattern, using null" );
+            pattern = null;
+        }
+
+        MULTISPACE_PATTERN = pattern;
+
     }
 }

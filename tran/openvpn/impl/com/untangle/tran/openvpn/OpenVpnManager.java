@@ -72,6 +72,7 @@ class OpenVpnManager
 
     private static final String FLAG_CERT         = "cert";
     private static final String FLAG_KEY          = "key";
+    private static final String FLAG_CA           = "ca";
 
     /* The directory where the key material ends up for a client */
     private static final String CLI_KEY_DIR       = "untangle-data";
@@ -144,7 +145,6 @@ class OpenVpnManager
         "verb " + DEFAULT_VERBOSITY,
         /* Exit if unable to connect to the server */
         "tls-exit",
-        "ca " + CLI_KEY_DIR + "/ca.crt"
     };
 
     private static final String WIN_CLIENT_DEFAULTS[]  = new String[] {};
@@ -156,6 +156,7 @@ class OpenVpnManager
         // "user nobody",
         // "group nogroup"
     };
+
     private static final String UNIX_EXTENSION         = "conf";
 
     private final Logger logger = Logger.getLogger( this.getClass());
@@ -318,7 +319,8 @@ class OpenVpnManager
             ScriptRunner.getInstance().exec( GENERATE_DISTRO_SCRIPT, client.getInternalName(),
                                              key, publicAddress,
                                              String.valueOf( client.getDistributeUsb()),
-                                             String.valueOf( client.isUntanglePlatform()));
+                                             String.valueOf( client.isUntanglePlatform()),
+                                             settings.getSiteName());
         } catch ( ScriptException e ) {
             if ( e.getCode() == Constants.USB_ERROR_CODE ) {
                 throw new UsbUnavailableException( "Unable to connect or write to USB device" );
@@ -347,9 +349,11 @@ class OpenVpnManager
         }
 
         String name = client.getInternalName();
+        String siteName = settings.getSiteName();
 
-        sw.appendVariable( FLAG_CERT, CLI_KEY_DIR + "/" + name + ".crt" );
-        sw.appendVariable( FLAG_KEY,  CLI_KEY_DIR + "/" + name + ".key" );
+        sw.appendVariable( FLAG_CERT, CLI_KEY_DIR + "/" + siteName + "-" + name + ".crt" );
+        sw.appendVariable( FLAG_KEY,  CLI_KEY_DIR + "/" + siteName + "-" + name + ".key" );
+        sw.appendVariable( FLAG_CA,   CLI_KEY_DIR + "/" + siteName + "-ca.crt" );
 
         /* VPN configuratoins needs information from the networking settings. */
         NetworkManager networkManager = MvvmContextFactory.context().networkManager();
@@ -511,7 +515,7 @@ class OpenVpnManager
     }
 
     /* A safe function (exceptionless) for InetAddress.getByAddress */
-    IPaddr getByAddress( byte[] data )
+    private IPaddr getByAddress( byte[] data )
     {
         try {
             return new IPaddr((Inet4Address)InetAddress.getByAddress( data ));
@@ -523,7 +527,7 @@ class OpenVpnManager
 
     /* For Tunnel nodes, this gets the corresponding remote endpoint, see the openvpn howto for
      * the definition of a remote and local endpoint */
-    IPaddr getRemoteEndpoint( IPaddr localEndpoint )
+    private IPaddr getRemoteEndpoint( IPaddr localEndpoint )
     {
         byte[] data = localEndpoint.getAddr().getAddress();
         data[3] += 1;

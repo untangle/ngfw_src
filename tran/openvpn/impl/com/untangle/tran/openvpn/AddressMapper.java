@@ -253,8 +253,8 @@ class AddressMapper
         }
     }
 
-    /* A safe function (exceptionless) for InetAddress.getByAddress */
-    IPaddr getByAddress( byte[] data )
+    /* A safe function (exceptionless) for InetAddress.getByAddress  */
+    private IPaddr getByAddress( byte[] data )
     {
         try {
             return new IPaddr((Inet4Address)InetAddress.getByAddress( data ));

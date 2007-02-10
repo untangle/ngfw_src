@@ -90,13 +90,13 @@ function installClient()
     mkdir -p /etc/openvpn || ( ${RM_CMD} -rf ${t_output};  exit -4 )
 
     ## Copy in the necessary files
-    cp ${t_output}/office-mv/office-mv.conf ${OPENVPN_CONF_DIR}/client.conf \
+    cp ${t_output}/untangle-vpn/*.conf ${OPENVPN_CONF_DIR}/client.conf \
         || ( ${RM_CMD} -rf ${t_output};  exit -4 )
 
     ## Update the configuration file to log to a normal place
     sed -i -e "\$a log ${logFile}" ${OPENVPN_CONF_DIR}/client.conf 
 
-    cp -r ${t_output}/office-mv/untangle-data ${OPENVPN_CONF_DIR}/untangle-data \
+    cp -r ${t_output}/untangle-vpn/untangle-data ${OPENVPN_CONF_DIR}/untangle-data \
         || ( ${RM_CMD} -f ${OPENVPN_CONF_DIR}/client.conf ; ${RM_CMD} -rf ${t_output};  exit -4 )
     
     ## Cleanup

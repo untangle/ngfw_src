@@ -224,13 +224,13 @@ Section "OpenVPN GUI" SecGUI
 
   # Include your custom config file(s) here.
   SetOutPath "$INSTDIR\config"
-  File /oname=office-mv.ovpn "${MV_PACKAGE_DIR}/client-${COMMON_NAME}.ovpn"
+  File /oname=${SITE_NAME}.ovpn "${MV_PACKAGE_DIR}/client-${COMMON_NAME}.ovpn"
 
   # Named untangle-data so it is safe to overwrite the files in it.
   SetOutPath "$INSTDIR\config\untangle-data"
-  File /oname=${COMMON_NAME}.crt "${MV_PKI_DIR}/client-${COMMON_NAME}.crt"
-  File /oname=${COMMON_NAME}.key "${MV_PKI_DIR}/client-${COMMON_NAME}.key"
-  File "${MV_PKI_DIR}/ca.crt"
+  File /oname=${SITE_NAME}-${COMMON_NAME}.crt "${MV_PKI_DIR}/client-${COMMON_NAME}.crt"
+  File /oname=${SITE_NAME}-${COMMON_NAME}.key "${MV_PKI_DIR}/client-${COMMON_NAME}.key"
+  File /oname=${SITE_NAME}-ca.crt "${MV_PKI_DIR}/ca.crt"
 
   SetOutPath "$INSTDIR"
   File "${HOME}\install-win32\OpenVPN GUI ReadMe.txt"
