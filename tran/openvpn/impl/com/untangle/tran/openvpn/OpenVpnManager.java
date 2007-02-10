@@ -320,7 +320,7 @@ class OpenVpnManager
                                              key, publicAddress,
                                              String.valueOf( client.getDistributeUsb()),
                                              String.valueOf( client.isUntanglePlatform()),
-                                             settings.getSiteName());
+                                             settings.getInternalSiteName());
         } catch ( ScriptException e ) {
             if ( e.getCode() == Constants.USB_ERROR_CODE ) {
                 throw new UsbUnavailableException( "Unable to connect or write to USB device" );
@@ -349,7 +349,7 @@ class OpenVpnManager
         }
 
         String name = client.getInternalName();
-        String siteName = settings.getSiteName();
+        String siteName = settings.getInternalSiteName();
 
         sw.appendVariable( FLAG_CERT, CLI_KEY_DIR + "/" + siteName + "-" + name + ".crt" );
         sw.appendVariable( FLAG_KEY,  CLI_KEY_DIR + "/" + siteName + "-" + name + ".key" );

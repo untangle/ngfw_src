@@ -68,8 +68,8 @@ function buildConfigFile() {
     ## Clean up
     ${RM_CMD} -f ${outputDir}/${siteName}.conf
     ${RM_CMD} -f ${outputDir}/${siteName}.ovpn
-    ${RM_CMD} -f ${keyDir}/${commonName}.crt
-    ${RM_CMD} -f ${keyDir}/${commonName}.key
+    ${RM_CMD} -f ${keyDir}/${siteName}-${commonName}.key
+    ${RM_CMD} -f ${keyDir}/${siteName}-${commonName}.crt
     ${RM_CMD} -f ${keyDir}/${siteName}-ca.crt
     
     rmdir ${keyDir}
@@ -96,6 +96,8 @@ function buildEmail()
 function copyToUsb()
 {
     local t_usbDevice=`lookupUsbDevice`
+    ## Unique qualifier to distinguish the file on the USB key
+    local fileKey="${siteName}-${commonName}"
     
     if [ -z "${t_usbDevice}" ]; then
         echo "Unable to find USB device"
@@ -112,16 +114,16 @@ function copyToUsb()
     mkdir -p ${t_mountPoint}/${USB_DEST}/ || usbCleanup ${t_mountPoint} ${USB_ERROR}
 
     cp -f ${PACKAGE_DIR}/config-${commonName}.zip \
-        ${t_mountPoint}/${USB_DEST}/config-${commonName}.zip || usbCleanup ${t_mountPoint} ${USB_ERROR}
+        ${t_mountPoint}/${USB_DEST}/config-${fileKey}.zip || usbCleanup ${t_mountPoint} ${USB_ERROR}
 
     cp -f ${PACKAGE_DIR}/setup-${commonName}.exe \
-        ${t_mountPoint}/${USB_DEST}/setup-${commonName}.exe || usbCleanup ${t_mountPoint} ${USB_ERROR}
+        ${t_mountPoint}/${USB_DEST}/setup-${fileKey}.exe || usbCleanup ${t_mountPoint} ${USB_ERROR}
 
     # A stamp which indicates whether or not this client is an edgeguard
     if [ "${isEdgeGuard}x" = "truex" ]; then
-        touch ${t_mountPoint}/${USB_DEST}/eg-${commonName}.stamp || usbCleanup ${t_mountPoint} ${USB_ERROR}
+        touch ${t_mountPoint}/${USB_DEST}/eg-${fileKey}.stamp || usbCleanup ${t_mountPoint} ${USB_ERROR}
     else
-        rm -f ${t_mountPoint}/${USB_DEST}/eg-${commonName}.stamp || usbCleanup ${t_mountPoint} ${USB_ERROR}
+        rm -f ${t_mountPoint}/${USB_DEST}/eg-${fileKey}.stamp || usbCleanup ${t_mountPoint} ${USB_ERROR}
     fi
     
     ## Cleanup

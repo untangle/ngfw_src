@@ -289,6 +289,9 @@ class Sandbox
         settings.setLocality( this.certificateParameters.getLocality());
         settings.setCaKeyOnUsb( this.certificateParameters.getStoreCaUsb());
 
+        /* Presently the site name is the organization name */
+        settings.setSiteName( this.certificateParameters.getOrganization());
+
         /* Group list */
         settings.setGroupList( this.groupList.getGroupList());
 

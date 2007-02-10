@@ -110,6 +110,9 @@ public class VpnSettings implements Serializable, Validatable
     private String  email;
     private boolean caKeyOnUsb;
 
+    /* This is the name of the site for distinguishing the VPN client on user machines */
+    private String siteName = "";
+
     public VpnSettings() { }
 
     public VpnSettings( Tid tid )
@@ -537,37 +540,6 @@ public class VpnSettings implements Serializable, Validatable
     }
 
     /**
-     * Name of this VPN site.  This is the value that identifies this office
-     * in the config file */
-    @Transient
-    public String getSiteName()
-    {
-        String site = this.organization;
-        
-        if ( site == null ) return DEFAULT_SITE_NAME;
-        
-        site = site.trim();
-        if ( site.length() == 0 ) return DEFAULT_SITE_NAME;
-
-        if (( null == INVALID_CHARACTERS_PATTERN ) || ( null == MULTISPACE_PATTERN )) {
-            return DEFAULT_SITE_NAME;
-        }
-
-        site = site.toLowerCase();
-
-        /* get rid of the invalid characters */
-        site = INVALID_CHARACTERS_PATTERN.matcher( site ).replaceAll( "" );
-
-        /* Trim off whitespace again */
-        site = site.trim(); 
-
-        /* replace all of the spaces with dashes */
-        site = MULTISPACE_PATTERN.matcher( site ).replaceAll( "-" );
-        
-        return site;
-    }
-
-    /**
      * @return organizationUnit.
      */
     @Column(name="org_unit")
@@ -616,6 +588,61 @@ public class VpnSettings implements Serializable, Validatable
     public void setCaKeyOnUsb( boolean caKeyOnUsb )
     {
         this.caKeyOnUsb = caKeyOnUsb;
+    }
+
+    @Column(name="site_name")
+    public String getSiteName()
+    {
+        if ( this.siteName == null ) this.siteName = DEFAULT_SITE_NAME;
+        
+        this.siteName = this.siteName.trim();
+        
+        if ( this.siteName.length() == 0 ) this.siteName = DEFAULT_SITE_NAME;
+        
+        return this.siteName;
+    }
+
+    public void setSiteName( String newValue )
+    {
+        if ( newValue == null ) newValue = DEFAULT_SITE_NAME;
+        newValue = newValue.trim(); 
+        if ( newValue.length() == 0 ) newValue = DEFAULT_SITE_NAME;
+        this.siteName = newValue;
+    }
+    
+    /**
+     * Name of this VPN site.  This is the value that identifies this
+     * office in the config file */
+    @Transient
+    public String getInternalSiteName()
+    {
+        String site = getSiteName();
+        
+        /* try using the organization if the site name is not intialized */
+        if ( DEFAULT_SITE_NAME.equals( site )) site = this.organization;
+        
+        /* fall back to the site name if necessary */
+        if ( site == null ) site = DEFAULT_SITE_NAME;
+        site = site.trim();
+        if ( site.length() == 0 ) site = DEFAULT_SITE_NAME;
+
+        /* can't substitute the bad characters */
+        if (( null == INVALID_CHARACTERS_PATTERN ) || ( null == MULTISPACE_PATTERN )) {
+            return DEFAULT_SITE_NAME;
+        }
+
+        site = site.toLowerCase();
+
+        /* get rid of the invalid characters */
+        site = INVALID_CHARACTERS_PATTERN.matcher( site ).replaceAll( "" );
+
+        /* Trim off whitespace again */
+        site = site.trim(); 
+
+        /* replace all of the spaces with dashes */
+        site = MULTISPACE_PATTERN.matcher( site ).replaceAll( "-" );
+        
+        return site;
     }
 
     static

@@ -1,5 +1,10 @@
 -- settings convert for release-4.2
 
+-- Insert the new siteName field.
+ALTER TABLE tr_openvpn_settings ADD COLUMN site_name TEXT;
+
+-- Save the organization into the site name
+UPDATE tr_openvpn_settings SET site_name = org;
 
 -- Drop the constraints
 ALTER TABLE tr_openvpn_s_site_network DROP CONSTRAINT FKF75374E89E4538C5;
@@ -20,7 +25,7 @@ CREATE TABLE settings.tr_openvpn_settings_tmp AS
            country, province, locality, org, org_unit,
            email, max_clients, is_edgeguard_client, is_ca_on_usb,
            is_bridge, expose_clients, keep_alive, public_port,
-           is_dns_override, dns_1, dns_2
+           is_dns_override, dns_1, dns_2, site_name
     FROM settings.tr_openvpn_settings;
 
 DROP TABLE settings.tr_openvpn_settings CASCADE;

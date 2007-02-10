@@ -103,6 +103,7 @@ create table settings.tr_openvpn_settings (
         is_dns_override     BOOL,
         dns_1               INET,
         dns_2               INET,
+        site_name           TEXT,
         primary key (ID));
 
 alter table tr_openvpn_c_site_network add constraint FKF75374E830D9EF2D
