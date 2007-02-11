@@ -58,7 +58,7 @@ public class MaintenancePingJPanel extends javax.swing.JPanel {
                 externalRemoteJPanel.setMinimumSize(new java.awt.Dimension(88, 323));
                 externalRemoteJPanel.setPreferredSize(new java.awt.Dimension(730, 323));
                 jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel1.setText("<html>The Ping Test can be used to test that a particular host or client is contactable from Untangle.</html>");
+                jLabel1.setText("<html>The Ping Test can be used to test that a particular host or client can be contacted from Untangle.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;

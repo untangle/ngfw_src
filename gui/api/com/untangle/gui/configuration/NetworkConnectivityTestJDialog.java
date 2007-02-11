@@ -226,12 +226,12 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
                     result = "Success!  Internet and DNS are both working.";
                 }
                 else{
-                    result = "Warning!  DNS is contactable, but the Internet cannot be contacted.";
+                    result = "Warning!  DNS was contacted, but the Internet cannot be contacted.";
                 }
             }
             else{
                 if( status.isTcpWorking() ){
-                    result = "Warning!  The Internet is contactable, but DNS cannot be contacted.";
+                    result = "Warning!  The Internet was contacted, but DNS cannot be contacted.";
                 }
                 else{
                     result = "Warning!  The Internet and DNS cannot be contacted.";
