@@ -69,7 +69,7 @@ class PassDomainTableModel extends MSortedTableModel<Object>{
 	addTableColumn( tableColumnModel,  1, C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, false, true,  false, false, Boolean.class, "true", sc.bold("pass"));
         addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, String.class,  sc.EMPTY_CATEGORY, "category");
-        addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, false, String.class,  "http://", "domain");
+        addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, false, String.class,  "", "domain");
         addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  6, 10,    false, false, true,  false, StringRule.class, null, "");
         return tableColumnModel;
@@ -85,13 +85,18 @@ class PassDomainTableModel extends MSortedTableModel<Object>{
             newElem = (StringRule) rowVector.elementAt(6);
             newElem.setLive( (Boolean) rowVector.elementAt(2) );
             newElem.setCategory( (String) rowVector.elementAt(3) );
-	    try{
-		URL newURL = new URL( (String) rowVector.elementAt(4) );
-		if( newURL.getPath().length() > 0 )
-		    throw new Exception();
-		newElem.setString( newURL.toString() );
-	    }
-            catch(Exception e){ throw new Exception("Invalid \"domain\" specified at row: " + rowIndex); }
+            String newURL = (String) rowVector.elementAt(4);
+            if( newURL.startsWith("https://") )
+                throw new Exception("https \"URL\" specified at row: " + rowIndex + "cannot be passed.");
+            if( newURL.startsWith("http://") )
+                newURL = newURL.substring(7,newURL.length());
+            if( newURL.startsWith("www.") )                
+                newURL = newURL.substring(4, newURL.length());
+            if( newURL.indexOf("/") >= 0 )
+                newURL = newURL.substring(0, newURL.indexOf("/"));
+            if( newURL.trim().length() == 0 )
+                throw new Exception("Invalid \"domain\" specified at row: " + rowIndex); 
+            newElem.setString( newURL  );
             newElem.setDescription( (String) rowVector.elementAt(5) );
 
             elemList.add(newElem);
