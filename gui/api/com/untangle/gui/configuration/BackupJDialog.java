@@ -70,33 +70,33 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 jTabbedPane = new javax.swing.JTabbedPane();
                 jPanel1 = new javax.swing.JPanel();
                 backupJTabbedPane = new javax.swing.JTabbedPane();
-                backupHardDiskJPanel = new javax.swing.JPanel();
-                contentJPanel = new javax.swing.JPanel();
-                jLabel1 = new javax.swing.JLabel();
-                actionJPanel = new javax.swing.JPanel();
-                backupHardDiskJButton = new javax.swing.JButton();
-                backupUsbKeyJPanel = new javax.swing.JPanel();
-                contentJPanel1 = new javax.swing.JPanel();
-                jLabel2 = new javax.swing.JLabel();
-                actionJPanel1 = new javax.swing.JPanel();
-                backupUSBKeyJButton = new javax.swing.JButton();
                 backupLocalFileJPanel = new javax.swing.JPanel();
                 contentJPanel3 = new javax.swing.JPanel();
                 jLabel4 = new javax.swing.JLabel();
                 localBackupDisabledJLabel = new javax.swing.JLabel();
                 actionJPanel2 = new javax.swing.JPanel();
                 backupFileJButton = new javax.swing.JButton();
+                backupUsbKeyJPanel = new javax.swing.JPanel();
+                contentJPanel1 = new javax.swing.JPanel();
+                jLabel2 = new javax.swing.JLabel();
+                actionJPanel1 = new javax.swing.JPanel();
+                backupUSBKeyJButton = new javax.swing.JButton();
+                backupHardDiskJPanel = new javax.swing.JPanel();
+                contentJPanel = new javax.swing.JPanel();
+                jLabel1 = new javax.swing.JLabel();
+                actionJPanel = new javax.swing.JPanel();
+                backupHardDiskJButton = new javax.swing.JButton();
                 jPanel2 = new javax.swing.JPanel();
                 restoreJTabbedPane = new javax.swing.JTabbedPane();
-                restoreHDAndUSBJPanel = new javax.swing.JPanel();
-                contentJPanel2 = new javax.swing.JPanel();
-                jLabel3 = new javax.swing.JLabel();
                 restoreLocalFileJPanel = new javax.swing.JPanel();
                 contentJPanel4 = new javax.swing.JPanel();
                 jLabel5 = new javax.swing.JLabel();
                 localRestoreDisabledJLabel = new javax.swing.JLabel();
                 actionJPanel3 = new javax.swing.JPanel();
                 restoreFileJButton = new javax.swing.JButton();
+                restoreHDAndUSBJPanel = new javax.swing.JPanel();
+                contentJPanel2 = new javax.swing.JPanel();
+                jLabel3 = new javax.swing.JLabel();
                 backgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
 
                 getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -135,118 +135,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 backupJTabbedPane.setBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(7, 13, 13, 13)));
                 backupJTabbedPane.setFocusable(false);
                 backupJTabbedPane.setFont(new java.awt.Font("Dialog", 0, 12));
-                backupHardDiskJPanel.setLayout(new java.awt.GridBagLayout());
-
-                backupHardDiskJPanel.setFocusable(false);
-                contentJPanel.setLayout(new java.awt.GridBagLayout());
-
-                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel1.setText("<html>\nYou can backup your current system configuration to Hard Disk for later restoration, in the event that you would like to replace new settings with your current settings.<br>\n<br>\nAfter backing up your current system configuration to Hard Disk, you can then restore that configuration through the <b>Backup and Restore Utilities</b>.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into the Untangle Server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt. \n</html>");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                contentJPanel.add(jLabel1, gridBagConstraints);
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
-                backupHardDiskJPanel.add(contentJPanel, gridBagConstraints);
-
-                actionJPanel.setLayout(new java.awt.GridBagLayout());
-
-                backupHardDiskJButton.setIcon(Util.getButtonBackupToHardDisk());
-                backupHardDiskJButton.setDoubleBuffered(true);
-                backupHardDiskJButton.setFocusPainted(false);
-                backupHardDiskJButton.setFocusable(false);
-                backupHardDiskJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                backupHardDiskJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                backupHardDiskJButton.setMaximumSize(new java.awt.Dimension(155, 25));
-                backupHardDiskJButton.setMinimumSize(new java.awt.Dimension(155, 25));
-                backupHardDiskJButton.setPreferredSize(new java.awt.Dimension(155, 25));
-                backupHardDiskJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                backupHardDiskJButtonActionPerformed(evt);
-                        }
-                });
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.weightx = 0.5;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 0);
-                actionJPanel.add(backupHardDiskJButton, gridBagConstraints);
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 0, 15, 0);
-                backupHardDiskJPanel.add(actionJPanel, gridBagConstraints);
-
-                backupJTabbedPane.addTab("To Hard Disk", backupHardDiskJPanel);
-
-                backupUsbKeyJPanel.setLayout(new java.awt.GridBagLayout());
-
-                backupUsbKeyJPanel.setFocusable(false);
-                contentJPanel1.setLayout(new java.awt.GridBagLayout());
-
-                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>\nYou can backup your current system configuration to USB Key for later restoration, in the event that you would like to replace new settings with your current settings.<br>\n<br>\nAfter backing up your current system configuration to USB Key, you can then restore that configuration through the <b>Backup and Restore Utilities</b>.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into the Untangle Server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt.<br>\n<br>\n<b>Note: You must insert your USB Key into a valid USB port on the back of the Untangle Server before pressing the button.  You must not remove the USB Key from the USB port until after the process is complete.  The progress bar will inform you when the process is complete.</b> \n</html>");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                contentJPanel1.add(jLabel2, gridBagConstraints);
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
-                backupUsbKeyJPanel.add(contentJPanel1, gridBagConstraints);
-
-                actionJPanel1.setLayout(new java.awt.GridBagLayout());
-
-                backupUSBKeyJButton.setIcon(Util.getButtonBackupToUsbKey());
-                backupUSBKeyJButton.setDoubleBuffered(true);
-                backupUSBKeyJButton.setFocusPainted(false);
-                backupUSBKeyJButton.setFocusable(false);
-                backupUSBKeyJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                backupUSBKeyJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                backupUSBKeyJButton.setMaximumSize(new java.awt.Dimension(155, 25));
-                backupUSBKeyJButton.setMinimumSize(new java.awt.Dimension(155, 25));
-                backupUSBKeyJButton.setPreferredSize(new java.awt.Dimension(155, 25));
-                backupUSBKeyJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                backupUSBKeyJButtonActionPerformed(evt);
-                        }
-                });
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.weightx = 0.5;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 0);
-                actionJPanel1.add(backupUSBKeyJButton, gridBagConstraints);
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 0, 15, 0);
-                backupUsbKeyJPanel.add(actionJPanel1, gridBagConstraints);
-
-                backupJTabbedPane.addTab("To USB Key", backupUsbKeyJPanel);
-
                 backupLocalFileJPanel.setLayout(new java.awt.GridBagLayout());
 
                 backupLocalFileJPanel.setFocusable(false);
@@ -312,7 +200,119 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 gridBagConstraints.insets = new java.awt.Insets(15, 0, 15, 0);
                 backupLocalFileJPanel.add(actionJPanel2, gridBagConstraints);
 
-                backupJTabbedPane.addTab("To Local File", backupLocalFileJPanel);
+                backupJTabbedPane.addTab("To File", backupLocalFileJPanel);
+
+                backupUsbKeyJPanel.setLayout(new java.awt.GridBagLayout());
+
+                backupUsbKeyJPanel.setFocusable(false);
+                contentJPanel1.setLayout(new java.awt.GridBagLayout());
+
+                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel2.setText("<html>\nYou can backup your current system configuration to USB Key for later restoration, in the event that you would like to replace new settings with your current settings.<br>\n<br>\nAfter backing up your current system configuration to USB Key, you can then restore that configuration through the <b>Backup and Restore Utilities</b>.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into the Untangle Server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt.<br>\n<br>\n<b>Note: You must insert your USB Key into a valid USB port on the back of the Untangle Server before pressing the button.  You must not remove the USB Key from the USB port until after the process is complete.  The progress bar will inform you when the process is complete.</b> \n</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                contentJPanel1.add(jLabel2, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                backupUsbKeyJPanel.add(contentJPanel1, gridBagConstraints);
+
+                actionJPanel1.setLayout(new java.awt.GridBagLayout());
+
+                backupUSBKeyJButton.setIcon(Util.getButtonBackupToUsbKey());
+                backupUSBKeyJButton.setDoubleBuffered(true);
+                backupUSBKeyJButton.setFocusPainted(false);
+                backupUSBKeyJButton.setFocusable(false);
+                backupUSBKeyJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                backupUSBKeyJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+                backupUSBKeyJButton.setMaximumSize(new java.awt.Dimension(155, 25));
+                backupUSBKeyJButton.setMinimumSize(new java.awt.Dimension(155, 25));
+                backupUSBKeyJButton.setPreferredSize(new java.awt.Dimension(155, 25));
+                backupUSBKeyJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                backupUSBKeyJButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.weightx = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 0);
+                actionJPanel1.add(backupUSBKeyJButton, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 0, 15, 0);
+                backupUsbKeyJPanel.add(actionJPanel1, gridBagConstraints);
+
+                backupJTabbedPane.addTab("To USB Key", backupUsbKeyJPanel);
+
+                backupHardDiskJPanel.setLayout(new java.awt.GridBagLayout());
+
+                backupHardDiskJPanel.setFocusable(false);
+                contentJPanel.setLayout(new java.awt.GridBagLayout());
+
+                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel1.setText("<html>\nYou can backup your current system configuration to Hard Disk for later restoration, in the event that you would like to replace new settings with your current settings.<br>\n<br>\nAfter backing up your current system configuration to Hard Disk, you can then restore that configuration through the <b>Backup and Restore Utilities</b>.  To access the Backup and Restore Utilities, you must have a monitor and keyboard physically plugged into the Untangle Server when it is turned on, and then select \"Backup and Restore Utilities\" from the boot prompt. \n</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                contentJPanel.add(jLabel1, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+                backupHardDiskJPanel.add(contentJPanel, gridBagConstraints);
+
+                actionJPanel.setLayout(new java.awt.GridBagLayout());
+
+                backupHardDiskJButton.setIcon(Util.getButtonBackupToHardDisk());
+                backupHardDiskJButton.setDoubleBuffered(true);
+                backupHardDiskJButton.setFocusPainted(false);
+                backupHardDiskJButton.setFocusable(false);
+                backupHardDiskJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                backupHardDiskJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+                backupHardDiskJButton.setMaximumSize(new java.awt.Dimension(155, 25));
+                backupHardDiskJButton.setMinimumSize(new java.awt.Dimension(155, 25));
+                backupHardDiskJButton.setPreferredSize(new java.awt.Dimension(155, 25));
+                backupHardDiskJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                backupHardDiskJButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.weightx = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 0);
+                actionJPanel.add(backupHardDiskJButton, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 0, 15, 0);
+                backupHardDiskJPanel.add(actionJPanel, gridBagConstraints);
+
+                backupJTabbedPane.addTab("To Hard Disk", backupHardDiskJPanel);
 
                 jPanel1.add(backupJTabbedPane, java.awt.BorderLayout.CENTER);
 
@@ -323,30 +323,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 restoreJTabbedPane.setBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(7, 13, 13, 13)));
                 restoreJTabbedPane.setFocusable(false);
                 restoreJTabbedPane.setFont(new java.awt.Font("Dialog", 0, 12));
-                restoreHDAndUSBJPanel.setLayout(new java.awt.GridBagLayout());
-
-                restoreHDAndUSBJPanel.setFocusable(false);
-                contentJPanel2.setLayout(new java.awt.GridBagLayout());
-
-                jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel3.setText("<html>\nAfter backing up your system configuration, you can restore that configuration through the <b>Recovery Utilities</b> on the Untangle Server once it is done booting.\n<br>\n<br>To access the <b>Recovery Utilities</b>, you must have a monitor and keyboard physically plugged into the Untangle Server, and then click on the appropriate toolbar button when it is done booting... select \"Advanced\" from the menu... select \"Untangle Recovery\", and proceed from there. \n</html>");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                contentJPanel2.add(jLabel3, gridBagConstraints);
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 15, 15);
-                restoreHDAndUSBJPanel.add(contentJPanel2, gridBagConstraints);
-
-                restoreJTabbedPane.addTab("From Hard Disk and USB Key", restoreHDAndUSBJPanel);
-
                 restoreLocalFileJPanel.setLayout(new java.awt.GridBagLayout());
 
                 restoreLocalFileJPanel.setFocusable(false);
@@ -412,7 +388,31 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 gridBagConstraints.insets = new java.awt.Insets(15, 0, 15, 0);
                 restoreLocalFileJPanel.add(actionJPanel3, gridBagConstraints);
 
-                restoreJTabbedPane.addTab("From Local File", restoreLocalFileJPanel);
+                restoreJTabbedPane.addTab("From File", restoreLocalFileJPanel);
+
+                restoreHDAndUSBJPanel.setLayout(new java.awt.GridBagLayout());
+
+                restoreHDAndUSBJPanel.setFocusable(false);
+                contentJPanel2.setLayout(new java.awt.GridBagLayout());
+
+                jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel3.setText("<html>\nAfter backing up your system configuration, you can restore that configuration through the <b>Recovery Utilities</b> on the Untangle Server once it is done booting.\n<br>\n<br>To access the <b>Recovery Utilities</b>, you must have a monitor and keyboard physically plugged into the Untangle Server, and then click on the appropriate toolbar button when it is done booting... select \"Advanced\" from the menu... select \"Untangle Recovery\", and proceed from there. \n</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                contentJPanel2.add(jLabel3, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 15, 15);
+                restoreHDAndUSBJPanel.add(contentJPanel2, gridBagConstraints);
+
+                restoreJTabbedPane.addTab("From Hard Disk and USB Key", restoreHDAndUSBJPanel);
 
                 jPanel2.add(restoreJTabbedPane, java.awt.BorderLayout.CENTER);
 
