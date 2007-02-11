@@ -257,9 +257,9 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMaximumSize(new java.awt.Dimension(563, 555));
-                setMinimumSize(new java.awt.Dimension(563, 555));
-                setPreferredSize(new java.awt.Dimension(563, 555));
+                setMaximumSize(new java.awt.Dimension(563, 545));
+                setMinimumSize(new java.awt.Dimension(563, 545));
+                setPreferredSize(new java.awt.Dimension(563, 545));
                 externalRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
                 externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Active Directory (AD) Server", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));

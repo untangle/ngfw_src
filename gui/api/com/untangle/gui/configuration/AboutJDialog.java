@@ -30,7 +30,7 @@ import com.untangle.gui.transform.Refreshable;
 public class AboutJDialog extends MConfigJDialog {
 
     private static final String NAME_ABOUT_CONFIG      = "Setup Info";
-    private static final String NAME_ABOUT_INFO        = "Version/Revision";
+    private static final String NAME_ABOUT_INFO        = "Version";
     private static final String NAME_LICENSE_INFO      = "License Agreement";
     private static final String NAME_REGISTRATION_INFO = "Registration";
     private static final String NAME_TIMEZONE_PANEL    = "Timezone";
@@ -103,8 +103,8 @@ public class AboutJDialog extends MConfigJDialog {
 	    containingJScrollPane = jScrollPane;
 	}
 	public void doRefresh(AboutCompoundSettings aboutCompoundSettings){
-	    String buildString = "<html><b>Build:</b> " + aboutCompoundSettings.getInstalledVersion()
-		+ aboutCompoundSettings.getAboutText() + "</html>";
+	    String buildString = "<html><b>Build:</b> " + aboutCompoundSettings.getInstalledVersion();
+
 	    try{
 		setText(buildString);
 	    }

@@ -34,10 +34,6 @@ public class AboutCompoundSettings implements CompoundSettings {
     // LICENSE //
     private URL licenseURL;
     public URL getLicenseURL(){ return licenseURL; }
-
-    // ABOUT //
-    private String aboutText = "<br><br><b>Readme:</b> http://www.untangle.com/egquickstart<br><br><b>Website: </b>http://www.untangle.com";
-    public String getAboutText(){ return aboutText; }
     
     // TIMEZONE //
     private TimeZone timeZone;
