@@ -192,7 +192,7 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 
                 contentJPanel.setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>Which email server (SMTP) should the Untangle Server use to send emails, reports, etc?<br><b>This information is optional.</b></html>");
+                jLabel2.setText("<html>Which email server (SMTP) should the Untangle Server use to send emails, reports, etc.?<br><b>This information is optional.</b></html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
