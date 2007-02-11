@@ -110,7 +110,7 @@ class AvailablePolicyTableModel extends MSortedTableModel<PolicyCompoundSettings
 		    throw new Exception("Network communication failure.  Please try again.");
 		}
 		if( transformInstances.size() > 0 )
-		    throw new Exception("The rack in row: " + rowIndex + " cannot be removed because it is not empty.  Please remove all appliances first.");
+		    throw new Exception("The rack in row: " + rowIndex + " cannot be removed because it is not empty.  Please remove all products first.");
 	    }
 	    else{
 		// verify there is no name collision

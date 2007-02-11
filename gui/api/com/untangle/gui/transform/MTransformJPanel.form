@@ -75,7 +75,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="stateJLabel">
       <Properties>
-        <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt; The &lt;B&gt;Status Indicator&lt;/B&gt; shows the current operating condition of a particular software appliance.&lt;BR&gt;&#xa;&lt;font color=&quot;00FF00&quot;&gt;&lt;b&gt;Green&lt;/b&gt;&lt;/font&gt; indicates that the appliance is &quot;on&quot; and operating normally.&lt;BR&gt;&#xa;&lt;font color=&quot;FF0000&quot;&gt;&lt;b&gt;Red&lt;/b&gt;&lt;/font&gt; indicates that the appliance is &quot;on&quot;, but that an abnormal condition has occurred.&lt;BR&gt;&#xa;&lt;font color=&quot;FFFF00&quot;&gt;&lt;b&gt;Yellow&lt;/b&gt;&lt;/font&gt; indicates that the appliance is saving or refreshing settings.&lt;BR&gt;&#xa;&lt;b&gt;Clear&lt;/b&gt; indicates that the appliance is &quot;off&quot;, and may be turned &quot;on&quot; by the user.&#xa;&lt;/HTML&gt;"/>
+        <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt; The &lt;B&gt;Status Indicator&lt;/B&gt; shows the current operating condition of a particular software product.&lt;BR&gt;&#xa;&lt;font color=&quot;00FF00&quot;&gt;&lt;b&gt;Green&lt;/b&gt;&lt;/font&gt; indicates that the product is &quot;on&quot; and operating normally.&lt;BR&gt;&#xa;&lt;font color=&quot;FF0000&quot;&gt;&lt;b&gt;Red&lt;/b&gt;&lt;/font&gt; indicates that the product is &quot;on&quot;, but that an abnormal condition has occurred.&lt;BR&gt;&#xa;&lt;font color=&quot;FFFF00&quot;&gt;&lt;b&gt;Yellow&lt;/b&gt;&lt;/font&gt; indicates that the product is saving or refreshing settings.&lt;BR&gt;&#xa;&lt;b&gt;Clear&lt;/b&gt; indicates that the product is &quot;off&quot;, and may be turned &quot;on&quot; by the user.&#xa;&lt;/HTML&gt;"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="(JLabel) new com.untangle.gui.transform.BlinkJLabel();"/>
@@ -214,7 +214,7 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection code="new javax.swing.ImageIcon( Util.getClassLoader().getResource(&quot;com/untangle/gui/transform/IconPowerOffState28x28.png&quot;))" type="code"/>
         </Property>
-        <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt;&#xa;The &lt;B&gt;Power Button&lt;/B&gt; allows you to turn a Product &quot;on&quot; and &quot;off&quot;.&lt;br&gt;&#xa;&#xa;&lt;/HTML&gt;"/>
+        <Property name="toolTipText" type="java.lang.String" value="&lt;HTML&gt;&#xa;The &lt;B&gt;Power Button&lt;/B&gt; allows you to turn a product &quot;on&quot; and &quot;off&quot;.&lt;br&gt;&#xa;&#xa;&lt;/HTML&gt;"/>
         <Property name="alignmentX" type="float" value="0.5"/>
         <Property name="borderPainted" type="boolean" value="false"/>
         <Property name="contentAreaFilled" type="boolean" value="false"/>

@@ -236,7 +236,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
     }
 
 
-    JToggleButton powerJToggleButton(){ return powerJToggleButton; }
+    public JToggleButton powerJToggleButton(){ return powerJToggleButton; }
     BlinkJLabel stateJLabel(){ return (BlinkJLabel) stateJLabel; }
     JLabel messageTextJLabel(){ return messageTextJLabel; }
         private void initComponents() {//GEN-BEGIN:initComponents
@@ -278,7 +278,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 nbPowerOnHintJLabel.setIconTextGap(0);
                 add(nbPowerOnHintJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 80, -1, -1));
 
-                stateJLabel.setToolTipText("<HTML> The <B>Status Indicator</B> shows the current operating condition of a particular software appliance.<BR>\n<font color=\"00FF00\"><b>Green</b></font> indicates that the appliance is \"on\" and operating normally.<BR>\n<font color=\"FF0000\"><b>Red</b></font> indicates that the appliance is \"on\", but that an abnormal condition has occurred.<BR>\n<font color=\"FFFF00\"><b>Yellow</b></font> indicates that the appliance is saving or refreshing settings.<BR>\n<b>Clear</b> indicates that the appliance is \"off\", and may be turned \"on\" by the user.\n</HTML>");
+                stateJLabel.setToolTipText("<HTML> The <B>Status Indicator</B> shows the current operating condition of a particular software product.<BR>\n<font color=\"00FF00\"><b>Green</b></font> indicates that the product is \"on\" and operating normally.<BR>\n<font color=\"FF0000\"><b>Red</b></font> indicates that the product is \"on\", but that an abnormal condition has occurred.<BR>\n<font color=\"FFFF00\"><b>Yellow</b></font> indicates that the product is saving or refreshing settings.<BR>\n<b>Clear</b> indicates that the product is \"off\", and may be turned \"on\" by the user.\n</HTML>");
                 add(stateJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(606, 20, 28, 28));
 
                 controlsJToggleButton.setFont(new java.awt.Font("Default", 0, 12));
@@ -335,7 +335,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
                 powerJToggleButton.setFont(new java.awt.Font("Default", 0, 12));
                 powerJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconPowerOffState28x28.png")));
-                powerJToggleButton.setToolTipText("<HTML>\nThe <B>Power Button</B> allows you to turn a Product \"on\" and \"off\".<br>\n\n</HTML>");
+                powerJToggleButton.setToolTipText("<HTML>\nThe <B>Power Button</B> allows you to turn a product \"on\" and \"off\".<br>\n\n</HTML>");
                 powerJToggleButton.setAlignmentX(0.5F);
                 powerJToggleButton.setBorderPainted(false);
                 powerJToggleButton.setContentAreaFilled(false);
