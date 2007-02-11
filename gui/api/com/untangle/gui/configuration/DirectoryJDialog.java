@@ -38,6 +38,10 @@ public class DirectoryJDialog extends MConfigJDialog {
 	compoundSettings = new DirectoryCompoundSettings();
     }
 
+	protected Dimension getMinSize(){
+        return new Dimension(640, 675);
+    }
+		
     protected void generateGui(){
 	// LOCAL DIRECTORY ////////
 	DirectoryLocalJPanel directoryLocalJPanel = new DirectoryLocalJPanel();
