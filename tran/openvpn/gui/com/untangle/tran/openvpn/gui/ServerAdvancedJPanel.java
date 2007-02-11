@@ -165,7 +165,7 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
 
                 portJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Server Port", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jLabel9.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel9.setText("<html> The Server Port is the port that the VPN Server will accept connections from.  This setting is intended to allow you to run your VPN Server from a non-standard port in case you already have a VPN running, or you have a complex network setup.</html>");
+                jLabel9.setText("<html> The Server Port is the port that the VPN Server will accept connections from.  These connection are UDP.  This setting is intended to allow you to run your VPN Server from a non-standard port in case you already have a VPN running, or you have a complex network setup.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;

@@ -39,14 +39,6 @@ public class LogJPanel extends MLogTableJPanel {
 
         final HttpBlocker httpBlocker = (HttpBlocker)logTransform;
 
-        depthJSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent ce) {
-                    int v = depthJSlider.getValue();
-                    EventManager<HttpBlockerEvent> em = httpBlocker.getEventManager();
-                    em.setLimit(v);
-                }
-            });
-
         setTableModel(new LogTableModel());
 
         EventManager<HttpBlockerEvent> eventManager = httpBlocker.getEventManager();

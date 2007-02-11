@@ -49,14 +49,9 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
 	entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
 	entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
 	addComponentListener(MLogTableJPanel.this);
-	Dictionary dictionary = depthJSlider.getLabelTable();
-	Enumeration enumeration = dictionary.elements();
-	while(enumeration.hasMoreElements()){
-	    Object object = enumeration.nextElement();
-	    if(object instanceof JComponent) ((JComponent)object).setFont(new Font("Dialog", 0, 9));
-	}
-	depthJSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     }
+
+    public int getEventDepth(){ return 1000; }
 
     public void doShutdown(){
         if( refreshThread != null )
@@ -103,7 +98,6 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
                 streamingJToggleButton = new javax.swing.JToggleButton();
                 entryJScrollPane = new javax.swing.JScrollPane();
                 entryJTable = new MColoredJTable();
-                depthJSlider = new javax.swing.JSlider();
 
                 setLayout(new java.awt.GridBagLayout());
 
@@ -184,37 +178,13 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
                 gridBagConstraints.weighty = 1.0;
                 contentJPanel.add(entryJScrollPane, gridBagConstraints);
 
-                depthJSlider.setFont(new java.awt.Font("Dialog", 0, 12));
-                depthJSlider.setMajorTickSpacing(50);
-                depthJSlider.setMaximum(500);
-                depthJSlider.setMinimum(50);
-                depthJSlider.setMinorTickSpacing(25);
-                depthJSlider.setOrientation(javax.swing.JSlider.VERTICAL);
-                depthJSlider.setPaintLabels(true);
-                depthJSlider.setPaintTicks(true);
-                depthJSlider.setSnapToTicks(true);
-                depthJSlider.setToolTipText("<html>\n<b>Event Log Depth Slider</b><br>\nThis slider allows you to specify the maximum number of visible events<br>\nwhen the \"Refresh Log\" or \"Start Auto-refresh\" buttons are pressed.</html>");
-                depthJSlider.setValue(100);
-                depthJSlider.setDebugGraphicsOptions(javax.swing.DebugGraphics.NONE_OPTION);
-                depthJSlider.setDoubleBuffered(true);
-                depthJSlider.setFocusable(false);
-                depthJSlider.setOpaque(false);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
-                gridBagConstraints.ipadx = 10;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 10);
-                contentJPanel.add(depthJSlider, gridBagConstraints);
-
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(4, 4, 2, 2);
+                gridBagConstraints.insets = new java.awt.Insets(4, 2, 2, 2);
                 add(contentJPanel, gridBagConstraints);
 
         }//GEN-END:initComponents
@@ -247,7 +217,6 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JPanel contentJPanel;
-        protected javax.swing.JSlider depthJSlider;
         protected javax.swing.JScrollPane entryJScrollPane;
         protected javax.swing.JTable entryJTable;
         private javax.swing.JPanel eventJPanel;

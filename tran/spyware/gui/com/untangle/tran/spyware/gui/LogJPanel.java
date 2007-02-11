@@ -33,14 +33,6 @@ public class LogJPanel extends MLogTableJPanel {
 
         final Spyware spyware = (Spyware)logTransform;
 
-        depthJSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent ce) {
-                    int v = depthJSlider.getValue();
-                    EventManager<SpywareEvent> em = spyware.getEventManager();
-                    em.setLimit(v);
-                }
-            });
-
         setTableModel(new LogTableModel());
 
         EventManager<SpywareEvent> eventManager = spyware.getEventManager();

@@ -34,13 +34,6 @@ public class LogJPanel extends MLogTableJPanel {
 
         final BoxBackup boxBackup = (BoxBackup)logTransform;
 
-        depthJSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent ce) {
-                    int v = depthJSlider.getValue();
-                    EventManager<BoxBackupEvent> em = boxBackup.getEventManager();
-                    em.setLimit(v);
-                }
-            });
 
         setTableModel(new LogTableModel());
 

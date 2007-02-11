@@ -35,14 +35,6 @@ public class LogJPanel extends MLogTableJPanel {
 
         final ProtoFilter protoFilter = (ProtoFilter)logTransform;
 
-        depthJSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent ce) {
-                    int v = depthJSlider.getValue();
-                    EventManager<ProtoFilterLogEvent> em = protoFilter.getEventManager();
-                    em.setLimit(v);
-                }
-            });
-
         setTableModel(new LogTableModel());
 
         EventManager<ProtoFilterLogEvent> eventManager = protoFilter.getEventManager();

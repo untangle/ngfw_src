@@ -36,14 +36,6 @@ public class LogJPanel extends MLogTableJPanel {
 
 	vpnTransform = (VpnTransform)logTransform;
 
-        depthJSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent ce) {
-                    int v = depthJSlider.getValue();
-                    EventManager<ClientConnectEvent> em = vpnTransform.getClientConnectEventManager();
-                    em.setLimit(v);
-                }
-            });
-
         setTableModel(new LogTableModel());
 
         EventManager<ClientConnectEvent> eventManager = vpnTransform.getClientConnectEventManager();

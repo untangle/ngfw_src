@@ -34,14 +34,6 @@ public class LogJPanel extends MLogTableJPanel {
 
         final Firewall firewall = (Firewall)transform;
 
-        depthJSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent ce) {
-                    int v = depthJSlider.getValue();
-                    EventManager<FirewallEvent> em = firewall.getEventManager();
-                    em.setLimit(v);
-                }
-            });
-
         setTableModel(new LogTableModel());
 
         EventManager<FirewallEvent> eventManager = firewall.getEventManager();

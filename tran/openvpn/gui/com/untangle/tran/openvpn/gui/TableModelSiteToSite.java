@@ -38,7 +38,7 @@ public class TableModelSiteToSite extends MSortedTableModel<Object>{
     private static final int C5_MW = 150; /* group */
     private static final int C6_MW = 120; /* network address */
     private static final int C7_MW = 120; /* netmask */
-    private static final int C8_MW = 120; /* action */
+    private static final int C8_MW = 135; /* action */
     private static final int C9_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW  + C8_MW), 120); /* description */
 
     private DefaultComboBoxModel groupModel = new DefaultComboBoxModel();

@@ -34,14 +34,6 @@ public class LogJPanel extends MLogTableJPanel {
 
         final SpamTransform spam = (SpamTransform)logTransform;
 
-        depthJSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent ce) {
-                    int v = depthJSlider.getValue();
-                    EventManager<SpamEvent> em = spam.getEventManager();
-                    em.setLimit(v);
-                }
-            });
-
         setTableModel(new LogTableModel());
 
         EventManager<SpamEvent> eventManager = spam.getEventManager();

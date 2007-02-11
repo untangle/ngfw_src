@@ -36,14 +36,6 @@ public class LogJPanel extends MLogTableJPanel {
 
         final PortalTransform portalTransform = (PortalTransform)transform;
 
-        depthJSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent ce) {
-                    int v = depthJSlider.getValue();
-                    EventManager<PortalEvent> em = portalTransform.getEventManager();
-                    em.setLimit(v);
-                }
-            });
-
         setTableModel(new LogTableModel());
 
         EventManager<PortalEvent> eventManager = portalTransform.getEventManager();

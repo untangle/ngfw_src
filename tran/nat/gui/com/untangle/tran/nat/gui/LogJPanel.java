@@ -37,14 +37,6 @@ public class LogJPanel extends MLogTableJPanel
 
         final Nat nat = (Nat)logTransform;
 
-        depthJSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent ce) {
-                    int v = depthJSlider.getValue();
-                    EventManager<LogEvent> em = nat.getEventManager();
-                    em.setLimit(v);
-                }
-            });
-
         setTableModel(new LogTableModel());
 
         EventManager<LogEvent> eventManager = nat.getEventManager();

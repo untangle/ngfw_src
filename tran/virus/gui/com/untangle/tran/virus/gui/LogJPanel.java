@@ -33,14 +33,6 @@ public class LogJPanel extends MLogTableJPanel {
 
         final VirusTransform virus = (VirusTransform)logTransform;
 
-        depthJSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent ce) {
-                    int v = depthJSlider.getValue();
-                    EventManager<VirusEvent> em = virus.getEventManager();
-                    em.setLimit(v);
-                }
-            });
-
         setTableModel(new LogTableModel());
 
         EventManager<VirusEvent> eventManager = virus.getEventManager();

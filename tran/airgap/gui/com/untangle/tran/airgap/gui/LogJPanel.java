@@ -29,7 +29,7 @@ public class LogJPanel extends MLogTableJPanel {
     }
 
     protected void refreshSettings(){
-        settings = ((AirgapTransform)super.logTransform).getLogs(depthJSlider.getValue());
+        settings = ((AirgapTransform)super.logTransform).getLogs(getEventDepth());
     }
 
     class LogTableModel extends MSortedTableModel<Object>{

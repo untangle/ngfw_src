@@ -35,14 +35,6 @@ public class LogJPanel extends MLogTableJPanel {
 
         final IDSTransform ids = (IDSTransform)transform;
 
-        depthJSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent ce) {
-                    int v = depthJSlider.getValue();
-                    EventManager<IDSLogEvent> em = ids.getEventManager();
-                    em.setLimit(v);
-                }
-            });
-
         setTableModel(new LogTableModel());
 
         EventManager<IDSLogEvent> eventManager = ids.getEventManager();
