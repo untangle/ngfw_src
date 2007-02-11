@@ -42,10 +42,10 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
         initComponents();
         setDhcpEnabledDependency(dhcpEnabledRadioButton.isSelected());
         setPPPOEEnabledDependency(pppoeEnabledJRadioButton.isSelected());
+        hostnameJTextField.setText( "untangle" + "." + MailSender.DEFAULT_LOCAL_DOMAIN );
     }
 
     public void initialFocus(){
-        hostnameJTextField.setText( "untangle" + "." + MailSender.DEFAULT_LOCAL_DOMAIN );
         hostnameJTextField.requestFocus();
     }
 	

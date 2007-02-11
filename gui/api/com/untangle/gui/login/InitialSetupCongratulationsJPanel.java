@@ -23,13 +23,16 @@ public class InitialSetupCongratulationsJPanel extends MWizardPageJPanel {
     }
 
     public void initialFocus(){
-	String message;
+	String message = null;
 	if( InitialSetupRoutingJPanel.getNatEnabled() && !InitialSetupRoutingJPanel.getNatChanged() ){
 	    String publicAddress = InitialSetupRoutingJPanel.getPublicAddress().toString();
 	    String privateAddress = InitialSetupRoutingJPanel.getAddress().toString();
 	    message = "<html><font color=\"#FF0000\">Press \"Finish\" to open a Login window to Untangle.<br>Outside Address: "
 		+ publicAddress + "<br>" + "Inside Address: " + privateAddress + "</font></html>";
 	}
+    else if( Util.isLocal() ){
+        // show no message
+    }
 	else{
 	    String finalAddress;
 	    if( !InitialSetupRoutingJPanel.getNatEnabled() ){

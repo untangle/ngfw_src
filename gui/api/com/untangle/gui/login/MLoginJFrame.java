@@ -144,7 +144,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 getContentPane().setLayout(new java.awt.GridBagLayout());
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-                setTitle("Untangle Client " + Version.getVersion());
+                setTitle("Untangle " + Version.getVersion());
                 setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/untangle/gui/main/Logo16x16.png"))).getImage());
                 setName("loginJFrame");
                 setResizable(false);
@@ -198,6 +198,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 inputJPanel.setPreferredSize(new java.awt.Dimension(270, 140));
                 loginJTextField.setFont(new java.awt.Font("Arial", 0, 12));
                 loginJTextField.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+                loginJTextField.setText("admin");
                 loginJTextField.setDoubleBuffered(true);
                 loginJTextField.setMinimumSize(new java.awt.Dimension(150, 20));
                 loginJTextField.setPreferredSize(new java.awt.Dimension(150, 20));
