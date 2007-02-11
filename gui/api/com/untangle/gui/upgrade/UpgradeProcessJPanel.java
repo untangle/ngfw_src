@@ -194,7 +194,7 @@ public class UpgradeProcessJPanel extends JPanel
             setDaemon(true);
             this.setContextClassLoader(Util.getClassLoader());
             ((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setProgressBarVisible(true);
-            ((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().start("Upgrading...");
+            ((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().start("Downloading updates...");
             this.start();
         }
         public void run() {
@@ -223,7 +223,7 @@ public class UpgradeProcessJPanel extends JPanel
 
                 if( visitor.isSuccessful() ){
                     // LET THE USER KNOW WERE FINISHED NORMALLY
-                    ((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Upgrade Success");
+                    ((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Download Complete!");
                     MOneButtonJDialog.factory(UpgradeProcessJPanel.this.getTopLevelAncestor(), "",
 					      "The updates have successfully downloaded.  The client will now exit while the upgrade is performed.",
 					      "Upgrade Success", "");
