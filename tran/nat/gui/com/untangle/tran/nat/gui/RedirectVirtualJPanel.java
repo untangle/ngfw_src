@@ -93,7 +93,7 @@ class RedirectVirtualTableModel extends MSortedTableModel<Object>{
         //                                 #   min     rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0,  C0_MW,  false, false, false, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW,  false, true,  false, false, Integer.class, null, sc.TITLE_INDEX );
-        addTableColumn( tableColumnModel,  2,  C2_MW,  false, true,  false, false, Boolean.class, "true", sc.bold("redirect") );
+        addTableColumn( tableColumnModel,  2,  C2_MW,  false, true,  false, false, Boolean.class, "true", sc.bold("enable") );
         addTableColumn( tableColumnModel,  3,  C3_MW,  false, true,  false, false, Boolean.class, "false",  sc.bold("log"));
         addTableColumn( tableColumnModel,  4,  C4_MW,  false, true,  false, false, ComboBoxModel.class, protocolModel, sc.html("traffic<br>type") );
         addTableColumn( tableColumnModel,  5,  C5_MW,  true,  true,  false, false, ComboBoxModel.class, interfaceModel, sc.html("destination<br>address") );
