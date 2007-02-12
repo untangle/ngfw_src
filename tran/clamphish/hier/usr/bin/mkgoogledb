@@ -1,0 +1,29 @@
+#!/usr/bin/ruby
+
+require 'net/http'
+require 'bdb'
+
+db = BDB::Hash.open('hippieshit', nil, 'w');
+
+Net::HTTP.start('sb.google.com', 80) do |http|
+  buf = ''
+  firstLine = true
+
+  http.get('/safebrowsing/update?version=goog-black-enchash:1:1') do |s|
+    buf += s;
+
+    if firstLine then
+      if buf =~ /^\[goog-black-enchash ([0-9.]+)\]$/ then
+        version = $1
+        puts "version #{version}"
+        firstLine = false
+        buf = $'
+      end
+    else
+      while buf =~ /^\+([^\t]+)\t([^\t]+)$/ do
+        db[$1] = $2;
+        buf = $'
+      end
+    end
+  end
+end
