@@ -29,6 +29,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.text.*;
 import java.util.*;
+import java.net.URL;
+import javax.jnlp.BasicService;
+import javax.jnlp.ServiceManager;
 
 public abstract class MConfigJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
     
@@ -64,6 +67,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         getRootPane().setDoubleBuffered(true);
         RepaintManager.currentManager(this).setDoubleBufferingEnabled(true);
         initComponents();
+        helpJButton.setVisible(false);
         setBounds( Util.generateCenteredBounds( parentWindow.getBounds(), getMinSize().width, getMinSize().height) );
         addWindowListener(this);
         setGlassPane(infiniteProgressJComponent);
@@ -77,6 +81,12 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	    new RefreshAllThread(true);
 	}
 	super.setVisible(isVisible);
+    }
+
+    private String helpSource;
+    public void setHelpSource(String helpSource){
+        this.helpSource = helpSource;
+        helpJButton.setVisible(true);
     }
 
     protected abstract void generateGui();
@@ -205,6 +215,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 buttonGroup1 = new javax.swing.ButtonGroup();
                 contentJTabbedPane = new javax.swing.JTabbedPane();
                 closeJButton = new javax.swing.JButton();
+                helpJButton = new javax.swing.JButton();
                 reloadJButton = new javax.swing.JButton();
                 saveJButton = new javax.swing.JButton();
                 backgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
@@ -220,7 +231,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
-                gridBagConstraints.gridwidth = 3;
+                gridBagConstraints.gridwidth = 4;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
@@ -248,8 +259,32 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
+                gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(0, 15, 15, 0);
                 getContentPane().add(closeJButton, gridBagConstraints);
+
+                helpJButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconHelp28x28.png")));
+                helpJButton.setText("Help");
+                helpJButton.setFocusPainted(false);
+                helpJButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+                helpJButton.setIconTextGap(2);
+                helpJButton.setMargin(new java.awt.Insets(0, 0, 0, 9));
+                helpJButton.setMaximumSize(new java.awt.Dimension(86, 25));
+                helpJButton.setMinimumSize(new java.awt.Dimension(86, 25));
+                helpJButton.setOpaque(false);
+                helpJButton.setPreferredSize(new java.awt.Dimension(86, 25));
+                helpJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                helpJButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 170, 15, 0);
+                getContentPane().add(helpJButton, gridBagConstraints);
 
                 reloadJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 reloadJButton.setText("<html><b>Refresh</b> Settings</html>");
@@ -269,10 +304,9 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 });
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridx = 2;
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
-                gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 15);
                 getContentPane().add(reloadJButton, gridBagConstraints);
 
@@ -294,7 +328,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 });
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 2;
+                gridBagConstraints.gridx = 3;
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.ipadx = 40;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
@@ -306,7 +340,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
-                gridBagConstraints.gridwidth = 3;
+                gridBagConstraints.gridwidth = 4;
                 gridBagConstraints.gridheight = 2;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
@@ -314,6 +348,16 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 getContentPane().add(backgroundJLabel, gridBagConstraints);
 
         }//GEN-END:initComponents
+
+		private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
+            try{
+                URL newURL = new URL( "http://www.untangle.com/docs?" + "version=" + Version.getVersion() + "&source=" + helpSource);
+                ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
+            }
+            catch(Exception f){
+                Util.handleExceptionNoRestart("Error showing help for " + helpSource, f);
+            }
+		}//GEN-LAST:event_helpJButtonActionPerformed
 
     private void saveJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveJButtonActionPerformed
 	if( Util.getIsDemo() )
@@ -349,6 +393,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         private javax.swing.ButtonGroup buttonGroup1;
         private javax.swing.JButton closeJButton;
         protected javax.swing.JTabbedPane contentJTabbedPane;
+        private javax.swing.JButton helpJButton;
         protected javax.swing.JButton reloadJButton;
         protected javax.swing.JButton saveJButton;
         // End of variables declaration//GEN-END:variables

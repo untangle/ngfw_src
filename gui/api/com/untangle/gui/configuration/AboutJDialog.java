@@ -39,6 +39,7 @@ public class AboutJDialog extends MConfigJDialog {
     public AboutJDialog(Frame parentFrame) {
 	super(parentFrame);
         setTitle(NAME_ABOUT_CONFIG);
+        setHelpSource("setup_info_config");
 	compoundSettings = new AboutCompoundSettings();
     }
 

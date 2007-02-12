@@ -48,6 +48,7 @@ public class EmailJDialog extends MConfigJDialog {
     public EmailJDialog( Frame parentFrame ) {
         super(parentFrame);
         setTitle(NAME_EMAIL_CONFIG);
+        setHelpSource("email_config");
         compoundSettings = new EmailCompoundSettings();
         emailCompoundSettings = (EmailCompoundSettings) compoundSettings;
         INSTANCE = this;

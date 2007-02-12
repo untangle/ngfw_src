@@ -35,6 +35,7 @@ public class NetworkJDialog extends MConfigJDialog {
     public NetworkJDialog( Frame parentFrame ) {
 	super(parentFrame);
         setTitle(NAME_NETWORKING_CONFIG);
+        setHelpSource("networking_config");
         compoundSettings = new NetworkCompoundSettings();
     }
 

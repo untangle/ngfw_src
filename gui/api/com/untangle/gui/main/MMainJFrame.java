@@ -23,6 +23,7 @@ import javax.jnlp.BasicService;
 import javax.jnlp.ServiceManager;
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.event.*;
 
 import com.untangle.gui.configuration.*;
 import com.untangle.gui.pipeline.*;
@@ -50,6 +51,9 @@ public class MMainJFrame extends javax.swing.JFrame {
 
         // INIT GUI
         initComponents();
+
+        mTabbedPane.addChangeListener(new TabSelectionChangeListener());
+
         storeJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
         toolboxJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
         configurationJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
@@ -67,6 +71,20 @@ public class MMainJFrame extends javax.swing.JFrame {
 	Util.addShutdownable("UpdateCheckThread", updateCheckThread);
     }
 
+    private class TabSelectionChangeListener implements ChangeListener {
+        private int lastSelection = 0;
+        public TabSelectionChangeListener(){}
+        public void stateChanged(ChangeEvent e){
+            int newSelection = mTabbedPane.getSelectedIndex();
+            String lastTitle = mTabbedPane.getTitleAt(lastSelection);
+            lastTitle = lastTitle.substring(9, lastTitle.length()-11);
+            mTabbedPane.setTitleAt(lastSelection, lastTitle);
+            String newTitle = mTabbedPane.getTitleAt(newSelection);
+            newTitle = "<html><b>" + newTitle + "</b></html>";
+            mTabbedPane.setTitleAt(newSelection, newTitle);
+            lastSelection = newSelection;
+        }
+    }
 
     public void updateJButton(final int count){
         Runnable updateButtonInSwing = new Runnable(){
@@ -93,7 +111,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                     }
                 }
             };
-        SwingUtilities.invokeLater( updateButtonInSwing );
+        //SwingUtilities.invokeLater( updateButtonInSwing );
     }
 
 
@@ -126,9 +144,9 @@ public class MMainJFrame extends javax.swing.JFrame {
                 directoryJButton = new javax.swing.JButton();
                 backupJButton = new javax.swing.JButton();
                 maintenanceJButton = new javax.swing.JButton();
+                upgradeJButton = new javax.swing.JButton();
                 aboutJButton = new javax.swing.JButton();
                 configurationSpacerJPanel1 = new javax.swing.JPanel();
-                upgradeJButton = new javax.swing.JButton();
                 helpJButton = new javax.swing.JButton();
                 mPipelineJPanel = new com.untangle.gui.pipeline.MPipelineJPanel();
                 backgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
@@ -176,7 +194,8 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
-                gridBagConstraints.insets = new java.awt.Insets(45, 0, 45, 0);
+                gridBagConstraints.gridwidth = 2;
+                gridBagConstraints.insets = new java.awt.Insets(40, 0, 40, 0);
                 controlsJPanel.add(untangleJButton, gridBagConstraints);
 
                 mTabbedPane.setDoubleBuffered(true);
@@ -219,7 +238,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.weighty = 1.0;
                 storeJPanel.add(storeJScrollPane, gridBagConstraints);
 
-                mTabbedPane.addTab("Store", storeJPanel);
+                mTabbedPane.addTab("<html><b>Store</b></html>", storeJPanel);
 
                 toolboxJPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -287,7 +306,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.weighty = 1.0;
                 toolboxJPanel.add(toolboxJScrollPane, gridBagConstraints);
 
-                mTabbedPane.addTab("Toolbox", toolboxJPanel);
+                mTabbedPane.addTab("My Apps", toolboxJPanel);
 
                 configurationJPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -436,6 +455,32 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
                 jPanel8.add(maintenanceJButton, gridBagConstraints);
 
+                upgradeJButton.setFont(new java.awt.Font("Default", 0, 12));
+                upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/IconConfigUpgrade36x36.png")));
+                upgradeJButton.setText("<html>Upgrade</html>");
+                upgradeJButton.setDoubleBuffered(true);
+                upgradeJButton.setFocusPainted(false);
+                upgradeJButton.setFocusable(false);
+                upgradeJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                upgradeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+                upgradeJButton.setMargin(new java.awt.Insets(3, 3, 3, 2));
+                upgradeJButton.setMaximumSize(new java.awt.Dimension(114, 42));
+                upgradeJButton.setMinimumSize(new java.awt.Dimension(96, 48));
+                upgradeJButton.setOpaque(false);
+                upgradeJButton.setPreferredSize(new java.awt.Dimension(96, 48));
+                upgradeJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                upgradeJButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
+                jPanel8.add(upgradeJButton, gridBagConstraints);
+
                 aboutJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 aboutJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/IconConfigSetup36x36.png")));
                 aboutJButton.setText("<html>Setup Info</html>");
@@ -455,7 +500,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(10, 1, 3, 3);
+                gridBagConstraints.insets = new java.awt.Insets(0, 1, 3, 3);
                 jPanel8.add(aboutJButton, gridBagConstraints);
 
                 configurationSpacerJPanel1.setFocusable(false);
@@ -481,6 +526,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
+                gridBagConstraints.gridwidth = 2;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.weightx = 1.0;
@@ -488,43 +534,15 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
                 controlsJPanel.add(mTabbedPane, gridBagConstraints);
 
-                upgradeJButton.setFont(new java.awt.Font("Default", 0, 12));
-                upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/upgrade/IconAvailable32x32.png")));
-                upgradeJButton.setText("<html><center>Upgrade<br>(1)</center></html>");
-                upgradeJButton.setDoubleBuffered(true);
-                upgradeJButton.setFocusPainted(false);
-                upgradeJButton.setFocusable(false);
-                upgradeJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                upgradeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-                upgradeJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-                upgradeJButton.setMaximumSize(new java.awt.Dimension(114, 42));
-                upgradeJButton.setMinimumSize(new java.awt.Dimension(114, 42));
-                upgradeJButton.setOpaque(false);
-                upgradeJButton.setPreferredSize(new java.awt.Dimension(114, 42));
-                upgradeJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                upgradeJButtonActionPerformed(evt);
-                        }
-                });
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 4;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                gridBagConstraints.insets = new java.awt.Insets(10, 20, 10, 20);
-                controlsJPanel.add(upgradeJButton, gridBagConstraints);
-
                 helpJButton.setFont(new java.awt.Font("Default", 0, 12));
-                helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/IconHelpBlue32x32.png")));
-                helpJButton.setText("<html>Upgrade<br></html>");
+                helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/IconHelp36x36.png")));
+                helpJButton.setText("Help");
                 helpJButton.setDoubleBuffered(true);
                 helpJButton.setFocusPainted(false);
                 helpJButton.setFocusable(false);
-                helpJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-                helpJButton.setMaximumSize(new java.awt.Dimension(36, 42));
-                helpJButton.setMinimumSize(new java.awt.Dimension(36, 42));
+                helpJButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+                helpJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 helpJButton.setOpaque(false);
-                helpJButton.setPreferredSize(new java.awt.Dimension(36, 42));
                 helpJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 helpJButtonActionPerformed(evt);
@@ -533,9 +551,10 @@ public class MMainJFrame extends javax.swing.JFrame {
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 4;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                gridBagConstraints.insets = new java.awt.Insets(10, 20, 10, 20);
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.gridwidth = 2;
+                gridBagConstraints.weightx = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
                 controlsJPanel.add(helpJButton, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -588,11 +607,11 @@ public class MMainJFrame extends javax.swing.JFrame {
 
     private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
         try{
-            URL newURL = new URL( "http://www.untangle.com/docs/" + Version.getVersion());
+            URL newURL = new URL( "http://www.untangle.com/docs?" + "version=" + Version.getVersion() + "&source=rack");
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
         }
         catch(Exception f){
-            Util.handleExceptionNoRestart("Error showing help for Untangle Reports", f);
+            Util.handleExceptionNoRestart("Error showing help for rack.", f);
         }
     }//GEN-LAST:event_helpJButtonActionPerformed
 

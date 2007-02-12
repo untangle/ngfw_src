@@ -38,6 +38,7 @@ public class RemoteJDialog extends MConfigJDialog {
     public RemoteJDialog( Frame parentFrame ) {
 	super(parentFrame);
 	setTitle(NAME_ADMINISTRATION_CONFIG);
+    setHelpSource("remote_admin_config");
 	compoundSettings = new RemoteCompoundSettings();
     }
 

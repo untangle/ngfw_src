@@ -19,8 +19,10 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 import javax.swing.text.*;
 import javax.swing.filechooser.*;
-
+import javax.jnlp.BasicService;
+import javax.jnlp.ServiceManager;
 import java.io.*;
+import java.net.URL;
 
 import com.untangle.gui.main.MMainJFrame;
 import com.untangle.gui.util.*;
@@ -67,6 +69,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 
                 buttonGroup1 = new javax.swing.ButtonGroup();
                 closeJButton = new javax.swing.JButton();
+                helpJButton = new javax.swing.JButton();
                 jTabbedPane = new javax.swing.JTabbedPane();
                 jPanel1 = new javax.swing.JPanel();
                 backupJTabbedPane = new javax.swing.JTabbedPane();
@@ -106,14 +109,15 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 setModal(true);
                 setResizable(false);
                 closeJButton.setFont(new java.awt.Font("Default", 0, 12));
-                closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Close_Window_106x17.png")));
+                closeJButton.setIcon(new javax.swing.ImageIcon(""));
+                closeJButton.setText("<html><b>Close</b> Window</html>");
                 closeJButton.setDoubleBuffered(true);
                 closeJButton.setFocusPainted(false);
                 closeJButton.setFocusable(false);
-                closeJButton.setMaximumSize(new java.awt.Dimension(117, 25));
-                closeJButton.setMinimumSize(new java.awt.Dimension(117, 25));
+                closeJButton.setMaximumSize(new java.awt.Dimension(140, 25));
+                closeJButton.setMinimumSize(new java.awt.Dimension(140, 25));
                 closeJButton.setOpaque(false);
-                closeJButton.setPreferredSize(new java.awt.Dimension(117, 25));
+                closeJButton.setPreferredSize(new java.awt.Dimension(140, 25));
                 closeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 closeJButtonActionPerformed(evt);
@@ -126,6 +130,29 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
                 gridBagConstraints.insets = new java.awt.Insets(0, 15, 15, 0);
                 getContentPane().add(closeJButton, gridBagConstraints);
+
+                helpJButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconHelp28x28.png")));
+                helpJButton.setText("Help");
+                helpJButton.setFocusPainted(false);
+                helpJButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+                helpJButton.setIconTextGap(2);
+                helpJButton.setMargin(new java.awt.Insets(0, 0, 0, 9));
+                helpJButton.setMaximumSize(new java.awt.Dimension(86, 25));
+                helpJButton.setMinimumSize(new java.awt.Dimension(86, 25));
+                helpJButton.setOpaque(false);
+                helpJButton.setPreferredSize(new java.awt.Dimension(86, 25));
+                helpJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                helpJButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 170, 15, 0);
+                getContentPane().add(helpJButton, gridBagConstraints);
 
                 jTabbedPane.setDoubleBuffered(true);
                 jTabbedPane.setFocusable(false);
@@ -442,6 +469,16 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 setBounds((screenSize.width-630)/2, (screenSize.height-500)/2, 630, 500);
         }//GEN-END:initComponents
 
+		private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
+            try{
+                URL newURL = new URL( "http://www.untangle.com/docs?" + "version=" + Version.getVersion() + "&source=backup_restore_config");
+                ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
+            }
+            catch(Exception f){
+                Util.handleExceptionNoRestart("Error showing help for backup_config", f);
+            }
+		}//GEN-LAST:event_helpJButtonActionPerformed
+
     private void restoreFileJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restoreFileJButtonActionPerformed
 	if( Util.getIsDemo() )
 	    return;
@@ -672,6 +709,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
         private javax.swing.JPanel contentJPanel2;
         private javax.swing.JPanel contentJPanel3;
         private javax.swing.JPanel contentJPanel4;
+        private javax.swing.JButton helpJButton;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JLabel jLabel2;
         private javax.swing.JLabel jLabel3;

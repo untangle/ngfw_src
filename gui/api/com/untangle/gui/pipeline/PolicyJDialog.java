@@ -36,6 +36,7 @@ public class PolicyJDialog extends MConfigJDialog {
     public PolicyJDialog( Frame parentFrame ) {
 	super(parentFrame);
         setTitle(NAME_POLICY_MANAGER);
+        setHelpSource("policy_manager");
 	compoundSettings = new PolicyCompoundSettings();
     }
 

@@ -16,6 +16,9 @@ import java.awt.event.*;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import javax.swing.*;
+import javax.jnlp.BasicService;
+import javax.jnlp.ServiceManager;
+import java.net.URL;
 
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.*;
@@ -245,6 +248,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 nbPowerOnHintJLabel = powerOnHintJLabel;
                 stateJLabel = (JLabel) new com.untangle.gui.transform.BlinkJLabel();
                 controlsJToggleButton = new javax.swing.JToggleButton();
+                helpJButton = new javax.swing.JButton();
                 descriptionIconJLabel = new javax.swing.JLabel();
                 organizationIconJLabel = new javax.swing.JLabel();
                 jProgressBar = new javax.swing.JProgressBar();
@@ -299,7 +303,25 @@ public class MTransformJPanel extends javax.swing.JPanel {
                         }
                 });
 
-                add(controlsJToggleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 60, 120, 25));
+                add(controlsJToggleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(126, 60, 120, 25));
+
+                helpJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                helpJButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconHelp28x28.png")));
+                helpJButton.setText("Help");
+                helpJButton.setFocusPainted(false);
+                helpJButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+                helpJButton.setIconTextGap(0);
+                helpJButton.setMargin(new java.awt.Insets(0, 0, 0, 3));
+                helpJButton.setMaximumSize(new java.awt.Dimension(76, 22));
+                helpJButton.setMinimumSize(new java.awt.Dimension(76, 22));
+                helpJButton.setPreferredSize(new java.awt.Dimension(76, 22));
+                helpJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                helpJButtonActionPerformed(evt);
+                        }
+                });
+
+                add(helpJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 60, 68, 25));
 
                 descriptionIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconDesc42x42.png")));
@@ -361,6 +383,16 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 688, 100));
 
         }//GEN-END:initComponents
+
+		private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
+            try{
+                URL newURL = new URL( "http://www.untangle.com/docs?" + "version=" + Version.getVersion() + "&source=" + transformDesc.getDisplayName().replace(" ", "_").toLowerCase());
+                ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
+            }
+            catch(Exception f){
+                Util.handleExceptionNoRestart("Error showing help for " + transformDesc.getDisplayName(), f);
+            }
+		}//GEN-LAST:event_helpJButtonActionPerformed
 
     private void controlsJToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_controlsJToggleButtonActionPerformed
         handleControlsJButton(controlsJToggleButton.isSelected());
@@ -467,6 +499,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
         protected javax.swing.JLabel descriptionIconJLabel;
         protected javax.swing.JLabel descriptionTextJLabel;
         private javax.swing.JPanel effectsJPanel;
+        private javax.swing.JButton helpJButton;
         private javax.swing.JProgressBar jProgressBar;
         protected javax.swing.JLabel messageTextJLabel;
         protected javax.swing.JLabel nbPowerOnHintJLabel;

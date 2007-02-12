@@ -38,6 +38,7 @@ public class MaintenanceJDialog extends MConfigJDialog {
     public MaintenanceJDialog( Frame parentFrame ) {
 	super(parentFrame);
         setTitle(NAME_MAINTENANCE_CONFIG);
+        setHelpSource("support_config");
 	compoundSettings = new MaintenanceCompoundSettings();
     }
 
