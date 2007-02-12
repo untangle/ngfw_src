@@ -2,3 +2,4 @@ com.untangle.tran.spam.SpamIMAPConfig
 com.untangle.tran.spam.SpamPOPConfig
 com.untangle.tran.spam.SpamSMTPConfig
 com.untangle.tran.spam.SpamSettings
+com.untangle.tran.spam.SpamRBL

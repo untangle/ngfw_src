@@ -11,9 +11,11 @@
 
 package com.untangle.tran.spam;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.*;
+
+import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.mvvm.tapi.TCPNewSessionRequest;
+import org.apache.log4j.Logger;
 
 /**
  * A class that checks if an SMTP server is listed on a Realtime Blackhole List (RBL).
@@ -22,72 +24,41 @@ import java.util.*;
  * @author Kai Blankenhorn &lt;<a href="mailto:pub01@bitfolge.de">pub01@bitfolge.de</a>&gt;
  */
 public class RBLChecker {
+    private final Logger logger = Logger.getLogger(getClass());
 
-    private RBLChecker()
-    {}
+    private static final int TIMEOUT_MS = 500; // timeout in 0.5 sec
+    private static final int SKIPRBLNOW_CNT = 20;
 
-    /**
-     * The <a href="http://www.ordb.org">Open Relay Database</a> lists open relays.
-     */
-    public final static String RBL_ORDB = "relays.ordb.org";
+    private static Object rblCntMonitor = new Object();
+    private static int rblCnt = 0;
 
-    /**
-     * <a href="http://spamcop.net/bl.shtml">SpamCop</a> lists mail servers that have a high spam-to-legitimate-mail ratio.
-     */
-    public final static String RBL_SPAMCOP = "bl.spamcop.net";
+    private Map<RBLClient, RBLClientContext> clientMap;
+    private SpamImpl spamImpl;
+    private List<SpamRBL> spamRBLList;
 
-    /**
-     * <a href="http://dsbl.org/">DSBL</a> publishes the IP addresses of hosts which have sent special test email to listme@listme.dsbl.org
-     */
-    public final static String RBL_DSBL = "list.dsbl.org";
-
-    /**
-     * <a href="http://relays.osirusoft.com/">OsiruSoft</a>
-     */
-    public final static String RBL_OSIRUSOFT = "relays.osirusoft.com";
-
-    /**
-     * the default RBL
-     */
-    private static String RBL = RBL_SPAMCOP;
-
-    public static void main(String[] args)
-    {
-        System.out.println(checkRelay("127.0.0.2")); //true
-        System.out.println(checkRelay("127.0.0.1")); //false
-        System.out.println(checkRelay("mail.untangle.com")); //false
+    public RBLChecker(SpamImpl spamImpl, List<SpamRBL> spamRBLList) {
+        this.spamImpl = spamImpl;
+        this.spamRBLList = spamRBLList;
     }
 
     /**
-     * Sets the RBL used for checks to a new value. There are several predefined values, accessible as
-     * static variables of this class. However, any host which provides RBL services is suitable.<br>
-     * To reset the RBL server name to its default value, use <pre>setRBL(null)</pre> or <pre>setRBL("")</pre>.
+     * Checks if a mail server is listed on an RBL service.
+     * This method connects to a RBL service to check
+     * if a record for <code>ipAddr</code> exists.
      *
-     * @param rbl the hostname of an RBL service
-     */
-    public static void setRBL(String rbl)
-    {
-
-        if(rbl != null && !rbl.equals("")) {
-            RBL = rbl;
-        } else {
-            RBL = RBL_ORDB;
-        }
-    }
-
-    /**
-     * Checks if a mail server is an open relay using an RBL service. Upon calling, this method connects
-     * to the currently set RBL service to check if a record for <code>hostname</code> exists.
-     *
-     * @param hostName the host name of the mail server to check
-     * @return true if the mail server is listed as an open relay, false if there is no record
+     * @param ipAddr - check the IP address of this mail server
+     * @return true if the mail server is listed on a blacklist,
+     *         false if there is no record
      */
 
-    /*    http://relays.osirusoft.com/faq.html:
+    /*
+    http://relays.osirusoft.com/faq.html:
     For a given address, a.b.c.d will return one of the following values if a dns lookup of d.c.b.a.relays.osirusoft.com is performed.
 
-    The DNS addressing is as follows:
+    127.0.0.2 // bl.spamcop.net, dul.dnsbl.sorbs.net, list.dsbl.org return hit
+    127.0.0.4 // list.dsbl.org returns hit
 
+    The DNS addressing is as follows:
     127.0.0.2 Verified Open Relay
     127.0.0.3 Dialup Spam Source
     Dialup Spam Sources are imported into the Zone file from other sources and some known sources are manually added to the local include file.
@@ -100,46 +71,153 @@ public class RBLChecker {
     127.0.0.8 An insecure formmail.cgi script. (Planned)
     127.0.0.9 Open proxy servers
     */
-    public static boolean checkRelay(String hostName)
-    {
-        try {
-            InetAddress.getByName(invertIPAddress(hostName) + "." + RBL);
 
-            return true;
-        } catch(UnknownHostException e) {
+    public boolean check(TCPNewSessionRequest tsr) {
+        String ipAddr = tsr.clientAddr().getHostName();
+        String invertedIPAddr = invertIPAddress(ipAddr);
 
-            return false;
+        RBLClient[] clients = createClients(ipAddr, invertedIPAddr); // create checkers
+
+        for (RBLClient clientStart : clients) {
+            clientStart.startScan(); // start checking
         }
 
-        /* alternative code, but needs a nameserver
-        try {
-        DirContext ictx = new InitialDirContext();
-        String u = "dns://a.ns.ordb.org/"+inverseIPAddress(hostName)+"."+RBL;
-        Attributes attr = ictx.getAttributes(u, new String[] {"A"});
-        return attr.getAll().hasMoreElements();
-        } catch (NamingException e) {
-        //e.printStackTrace();
+        // wait for results or stop checking if too much time has passed
+        long remainingTime = TIMEOUT_MS;
+        long startTime = System.currentTimeMillis();
+        for (RBLClient clientWait : clients) {
+            if (0 < remainingTime) {
+                // time remains; let other clients continue
+                logger.debug("RBL: " + clientWait + ", wait: " + remainingTime);
+                clientWait.checkProgress(remainingTime);
+                remainingTime = TIMEOUT_MS - (System.currentTimeMillis() - startTime);
+            } else {
+                // no time remains; stop other clients
+                logger.warn("RBL: " + clientWait + ", stop (timed out)");
+                clientWait.stopScan();
+            }
         }
-        return false;
-        */
+
+        RBLClientContext[] cContexts = getClientContexts(); // get contexts
+        freeClients(); // destroy checkers
+
+        // examine results
+        // - if any confirmation is found, log it and then report it
+        boolean isBlacklisted = false;
+
+        Boolean result;
+        for (RBLClientContext cContext : cContexts) {
+            result = cContext.getResult();
+            if (null == result)
+                continue; // assume not blacklisted
+
+            if (true == result.equals(Boolean.TRUE)) {
+                isBlacklisted = logRBLEvent(cContext, tsr, ipAddr); // log/done
+                break;
+            }
+        }
+
+        return isBlacklisted; // report
+    }
+
+    private boolean logRBLEvent(RBLClientContext cContext, TCPNewSessionRequest tsr, String ipAddr) {
+        boolean isBlacklisted = true;
+
+        // we have a confirmed hit
+        // but we may decide not to reject the connection from this hit
+        // - if we do not reject, then do not log
+        synchronized(rblCntMonitor) {
+            if (SKIPRBLNOW_CNT == rblCnt) {
+                // accept every '1 out of SKIPRBLNOW_CNT' connections
+                // from a blacklisted SMTP server
+                // to test the emails that this server will try to send
+                // -> functionality requested by dmorris
+                logger.info(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist but ignoring this time");
+                spamImpl.logRBL(new SpamSMTPRBLEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), true));
+                rblCnt = 0;
+                isBlacklisted = false;
+            } else {
+                logger.info(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist");
+                spamImpl.logRBL(new SpamSMTPRBLEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), false));
+                rblCnt++;
+            }
+        }
+
+        return isBlacklisted;
     }
 
     /**
-     * Inverts an IP address to match the requirements of most RBL DNS services.<br>
-     * Example: <code>inverseIPAddress("127.0.0.2")</code> --&gt; <code>2.0.0.127</code>
+     * Inverts an IP address to match the requirements of most RBL services.<br>
+     * Example:
+     * <code>invertIPAddress("127.0.0.2")</code> --&gt; <code>"2.0.0.127"</code>
      *
-     * @param originalIPAddress the IP address to invert
-     * @return the inverted form of the passed IP address
+     * @param orgIPAddr - invert this IP address
+     * @return the inverted form of orgIPAddr
      */
-    protected static String invertIPAddress(String originalIPAddress)
-    {
-        StringTokenizer t = new StringTokenizer(originalIPAddress, ".");
-        String inverted = t.nextToken();
+    private String invertIPAddress(String orgIPAddr) {
+        StringTokenizer strTokenizer = new StringTokenizer(orgIPAddr, ".");
+        String invertedIPAddr = strTokenizer.nextToken();
 
-        while(t.hasMoreTokens()) {
-            inverted = t.nextToken() + "." + inverted;
+        while(strTokenizer.hasMoreTokens()) {
+            invertedIPAddr = strTokenizer.nextToken() + "." + invertedIPAddr;
         }
 
-        return inverted;
+        return invertedIPAddr;
+    }
+
+    private RBLClient createClient(RBLClientContext cContext) {
+        RBLClient client = new RBLClient(cContext);
+        Thread thread = MvvmContextFactory.context().newThread(client);
+        client.setThread(thread);
+        clientMap.put(client, cContext);
+        return client;
+    }
+
+    private Object[] getClients() {
+        Set<RBLClient> clientSet = clientMap.keySet();
+        return clientSet.toArray();
+    }
+
+    private RBLClient[] createClients(String ipAddr, String invertedIPAddr) {
+        clientMap = new HashMap();
+
+        RBLClientContext cContext;
+        RBLClient client;
+        for (SpamRBL spamRBL : spamRBLList) {
+            if (false == spamRBL.getActive()) {
+                logger.debug(spamRBL.getHostname() + " is not active; skipping it");
+                continue;
+            }
+            cContext = new RBLClientContext(spamRBL.getHostname(), ipAddr, invertedIPAddr);
+            client = createClient(cContext);
+        }
+
+        Object[] cObjects = getClients();
+        RBLClient[] clients = new RBLClient[cObjects.length];
+        int idx = 0;
+
+        for (Object cObject : cObjects) {
+            clients[idx] = (RBLClient) cObject;
+            idx++;
+        }
+
+        return clients;
+    }
+
+    private RBLClientContext[] getClientContexts() {
+        Object[] contexts = clientMap.values().toArray();
+        RBLClientContext[] cContexts = new RBLClientContext[contexts.length];
+        int idx = 0;
+        for (Object context : contexts) {
+            cContexts[idx] = (RBLClientContext) context;
+            idx++;
+        }
+
+        return cContexts;
+    }
+
+    private void freeClients() {
+        clientMap.clear();
+        return;
     }
 }

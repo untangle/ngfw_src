@@ -1,2 +1,3 @@
 com.untangle.tran.spam.SpamLogEvent
 com.untangle.tran.spam.SpamSmtpEvent
+com.untangle.tran.spam.SpamSMTPRBLEvent

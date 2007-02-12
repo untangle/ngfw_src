@@ -20,7 +20,6 @@ import static com.untangle.tran.util.Ascii.CRLF;
 
 public class ClamPhishTransform extends SpamImpl
 {
-
     private static final String OUT_MOD_SUB_TEMPLATE =
       "[PHISH] $MIMEMessage:SUBJECT$";
     private static final String OUT_MOD_BODY_TEMPLATE =

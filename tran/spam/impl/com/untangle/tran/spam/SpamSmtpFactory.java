@@ -28,12 +28,12 @@ import org.apache.log4j.Logger;
 public class SpamSmtpFactory
   implements TokenHandlerFactory {
 
+  private final Logger m_logger = Logger.getLogger(getClass());
 
   private MailExport m_mailExport;
   private QuarantineTransformView m_quarantine;
   private SafelistTransformView m_safelist;
   private SpamImpl m_spamImpl;
-  private final Logger m_logger = Logger.getLogger(getClass());
 
   public SpamSmtpFactory(SpamImpl impl) {
     Policy p = impl.getTid().getPolicy();
@@ -43,38 +43,34 @@ public class SpamSmtpFactory
     m_spamImpl = impl;
   }
 
+    public TokenHandler tokenHandler(TCPSession session) {
+        boolean inbound = session.isInbound();
 
-  public TokenHandler tokenHandler(TCPSession session) {
+        SpamSettings spamSettings = m_spamImpl.getSpamSettings();
+        SpamSMTPConfig spamConfig = inbound ?
+            spamSettings.getSMTPInbound() : spamSettings.getSMTPOutbound();
 
-      boolean inbound = session.isInbound();
+        if(!spamConfig.getScan()) {
+            m_logger.debug("Scanning disabled. Return passthrough token handler");
+            return Session.createPassthruSession(session);
+        }
 
-    SpamSMTPConfig spamConfig = inbound?
-      m_spamImpl.getSpamSettings().getSMTPInbound():
-      m_spamImpl.getSpamSettings().getSMTPOutbound();
-
-    if(!spamConfig.getScan()) {
-      m_logger.debug("Scanning disabled.  Return passthrough token handler");
-      return Session.createPassthruSession(session);
+        MailTransformSettings casingSettings = m_mailExport.getExportSettings();
+        long timeout = inbound ?
+            casingSettings.getSmtpInboundTimeout() :
+            casingSettings.getSmtpOutboundTimeout();
+        return new Session(session,
+          new SmtpSessionHandler(session, timeout, timeout, m_spamImpl,
+                                 spamConfig, m_quarantine, m_safelist));
     }
-
-    MailTransformSettings casingSettings = m_mailExport.getExportSettings();
-    return new Session(session,
-      new SmtpSessionHandler(session,
-        inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
-        inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
-        m_spamImpl,
-        spamConfig,
-        m_quarantine,
-        m_safelist));
-  }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)
     {
         boolean inbound = tsr.isInbound();
 
-        SpamSMTPConfig spamConfig = inbound?
-            m_spamImpl.getSpamSettings().getSMTPInbound():
-            m_spamImpl.getSpamSettings().getSMTPOutbound();
+        SpamSettings spamSettings = m_spamImpl.getSpamSettings();
+        SpamSMTPConfig spamConfig = inbound ?
+            spamSettings.getSMTPInbound() : spamSettings.getSMTPOutbound();
 
         // Note that we may *****NOT***** release the session here.  This is because
         // the mail casings currently assume that there will be at least one transform
@@ -85,22 +81,18 @@ public class SpamSmtpFactory
         }
 
         if (spamConfig.getThrottle()) {
-            if(RBLChecker.checkRelay(tsr.clientAddr().getHostAddress())) {
-                m_logger.info("RBL check positive - sleeping to throttle" + tsr.clientAddr());
-                try {
-                    Thread.sleep(spamConfig.getThrottleSec()*1000);
-                }
-                catch (InterruptedException e) {
-                    m_logger.warn("Interrupted during spam throttle sleep",e);
-                }
+            //m_logger.debug("Check RBL(s) for connection from: " + tsr.clientAddr());
+            RBLChecker rblChecker = new RBLChecker(m_spamImpl, spamSettings.getSpamRBLList());
+            if (true == rblChecker.check(tsr)) {
+                m_logger.warn("RBL hit confirmed, rejecting connection from: " + tsr.clientAddr());
+                tsr.rejectReturnRst();
             }
         }
 
         int activeCount = m_spamImpl.getScanner().getActiveScanCount();
         if (ScanLoadChecker.reject(activeCount, m_logger)) {
-            m_logger.warn("Load too high, rejecting connection from " + tsr.clientAddr());
+            m_logger.warn("Load too high, rejecting connection from: " + tsr.clientAddr());
             tsr.rejectReturnRst();
         }
-
     }
 }

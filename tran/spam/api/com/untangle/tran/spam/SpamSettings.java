@@ -12,6 +12,8 @@
 package com.untangle.tran.spam;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,6 +28,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.untangle.mvvm.security.Tid;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * Settings for the SpamTransform.
@@ -48,14 +52,16 @@ public class SpamSettings implements Serializable
     private SpamPOPConfig POPOutbound;
     private SpamIMAPConfig IMAPInbound;
     private SpamIMAPConfig IMAPOutbound;
+    private List<SpamRBL> spamRBLList;
 
     // constructors -----------------------------------------------------------
 
-    public SpamSettings() { }
+    public SpamSettings() {}
 
     public SpamSettings(Tid tid)
     {
         this.tid = tid;
+        spamRBLList = new LinkedList<SpamRBL>();
     }
 
     // accessors --------------------------------------------------------------
@@ -195,6 +201,29 @@ public class SpamSettings implements Serializable
     public void setIMAPOutbound(SpamIMAPConfig IMAPOutbound)
     {
         this.IMAPOutbound = IMAPOutbound;
+        return;
+    }
+
+    /**
+     * Spam RBL list.
+     *
+     * @return Spam RBL list.
+     */
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({org.hibernate.annotations.CascadeType.ALL,
+              org.hibernate.annotations.CascadeType.DELETE_ORPHAN})
+    @JoinTable(name="tr_spam_rbl_list",
+               joinColumns=@JoinColumn(name="settings_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<SpamRBL> getSpamRBLList()
+    {
+        return spamRBLList;
+    }
+
+    public void setSpamRBLList(List<SpamRBL> spamRBLList)
+    {
+        this.spamRBLList = spamRBLList;
         return;
     }
 }

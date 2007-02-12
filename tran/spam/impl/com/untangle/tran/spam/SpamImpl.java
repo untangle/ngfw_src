@@ -11,6 +11,9 @@
 
 package com.untangle.tran.spam;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import static com.untangle.tran.util.Ascii.CRLF;
 
 import com.untangle.mvvm.logging.EventLogger;
@@ -32,6 +35,8 @@ import org.hibernate.Session;
 
 public class SpamImpl extends AbstractTransform implements SpamTransform
 {
+    private final Logger logger = Logger.getLogger(getClass());
+
     //===============================
     // Defaults for templates
 
@@ -84,10 +89,9 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
     private final SpamScanner scanner;
     private final EventLogger<SpamEvent> eventLogger;
+    private final EventLogger<SpamSMTPRBLEvent> rblEventLogger;
 
-    private final Logger logger = Logger.getLogger(getClass());
-
-    private volatile SpamSettings zSpamSettings;
+    private volatile SpamSettings spamSettings;
 
     // constructors -----------------------------------------------------------
 
@@ -100,6 +104,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         String vendor = scanner.getVendorName();
 
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
+        rblEventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
 
         SimpleEventFilter ef = new SpamAllFilter(vendor);
         eventLogger.addSimpleEventFilter(ef);
@@ -112,6 +117,8 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
         ef = new SpamLogFilter(vendor);
         eventLogger.addSimpleEventFilter(ef);
+
+        // no filters for RBL events
     }
 
     // Spam methods -----------------------------------------------------------
@@ -121,7 +128,44 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         return eventLogger;
     }
 
+    public EventManager<SpamSMTPRBLEvent> getRBLEventManager()
+    {
+        return rblEventLogger;
+    }
+
     // Transform methods ------------------------------------------------------
+
+    /**
+     * Increment the counter for messages scanned
+     */
+    public void incrementScanCounter() {
+      //The scanning blingy-bringer has been disabled
+//      incrementCount(Transform.GENERIC_0_COUNTER);
+    }
+    /**
+     * Increment the counter for blocked (SMTP only).
+     */
+    public void incrementBlockCounter() {
+      incrementCount(Transform.GENERIC_1_COUNTER);
+    }
+    /**
+     * Increment the counter for messages passed
+     */
+    public void incrementPassCounter() {
+      incrementCount(Transform.GENERIC_0_COUNTER);
+    }
+    /**
+     * Increment the counter for messages marked
+     */
+    public void incrementMarkCounter() {
+      incrementCount(Transform.GENERIC_2_COUNTER);
+    }
+    /**
+     * Increment the count for messages quarantined.
+     */
+    public void incrementQuarantineCount() {
+      incrementCount(Transform.GENERIC_3_COUNTER);
+    }
 
     /**
      * Method for subclass (currently - clamphish) to define
@@ -184,17 +228,12 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
       return inbound?IN_NOTIFY_BODY_TEMPLATE:OUT_NOTIFY_BODY_TEMPLATE;
     }
 
-
     /**
-     * The settings for the IMAP/POP/SMTP
-     * templates have been added to the
-     * Config objects, yet not in the database
-     * (9/05).  This method makes sure that
-     * they are set to the programatic
-     * default.
+     * The settings for the IMAP/POP/SMTP templates have been added
+     * to the Config objects, yet not in the database (9/05).
+     * This method makes sure that they are set to the programatic default.
      *
-     * Once we move these to the database,
-     * this method is obsolete.
+     * Once we move these to the database, this method is obsolete.
      */
     private void ensureTemplateSettings(SpamSettings ss) {
       ss.getIMAPInbound().setSubjectWrapperTemplate(getDefaultSubjectWrapperTemplate(true));
@@ -229,30 +268,46 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
       ss.getSMTPInbound().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
       ss.getSMTPOutbound().setHeaderValue(getDefaultIndicatorHeaderValue(true), true);
       ss.getSMTPOutbound().setHeaderValue(getDefaultIndicatorHeaderValue(false), false);
-      ss.getSMTPOutbound().setNotifySubjectTemplate(getDefaultNotifySubjectTemplate(false));
       ss.getSMTPInbound().setNotifySubjectTemplate(getDefaultNotifySubjectTemplate(true));
-      ss.getSMTPOutbound().setNotifyBodyTemplate(getDefaultNotifyBodyTemplate(false));
+      ss.getSMTPOutbound().setNotifySubjectTemplate(getDefaultNotifySubjectTemplate(false));
       ss.getSMTPInbound().setNotifyBodyTemplate(getDefaultNotifyBodyTemplate(true));
+      ss.getSMTPOutbound().setNotifyBodyTemplate(getDefaultNotifyBodyTemplate(false));
     }
 
+    private void initSpamRBLList(SpamSettings tmpSpamSettings) {
+        List<SpamRBL> spamRBLList = tmpSpamSettings.getSpamRBLList();
+        if (false == spamRBLList.isEmpty()) {
+            return; // list is already initialized
+        } // else initialize list now (e.g., upgrade has just occurred)
+
+        spamRBLList.add(new SpamRBL("dul.dnsbl.sorbs.net", "Spam and Open-Relay Blocking System", true));
+        spamRBLList.add(new SpamRBL("list.dsbl.org", "Distributed Sender Blackhole List", true));
+        //spamRBLList.add(new SpamRBL("sbl-xbl.spamhaus.org", "Spamhaus Block and Exploits Block Lists", true));
+        spamRBLList.add(new SpamRBL("bl.spamcop.net", "SpamCop Blocking List", true));
+
+        return;
+    }
 
     public SpamSettings getSpamSettings()
     {
-    if( this.zSpamSettings == null )
-        logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
-        return this.zSpamSettings;
+        if( this.spamSettings == null )
+            logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+
+        return this.spamSettings;
     }
 
-    public void setSpamSettings(final SpamSettings newSettings)
+    public void setSpamSettings(final SpamSettings newSpamSettings)
     {
         //TEMP HACK, Until we move the templates to database
-        ensureTemplateSettings(newSettings);
+        ensureTemplateSettings(newSpamSettings);
+        initSpamRBLList(newSpamSettings); // set list if not already set
+
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
                 {
-                    s.merge(newSettings);
-                    SpamImpl.this.zSpamSettings = newSettings;
+                    s.merge(newSpamSettings);
+                    SpamImpl.this.spamSettings = newSpamSettings;
 
                     return true;
                 }
@@ -264,46 +319,13 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         return;
     }
 
-    /**
-     * Increment the counter for messages scanned
-     */
-    public void incrementScanCounter() {
-      //The scanning blingy-bringer has been disabled
-//      incrementCount(Transform.GENERIC_0_COUNTER);
-    }
-    /**
-     * Increment the counter for blocked (SMTP only).
-     */
-    public void incrementBlockCounter() {
-      incrementCount(Transform.GENERIC_1_COUNTER);
-    }
-    /**
-     * Increment the counter for messages passed
-     */
-    public void incrementPassCounter() {
-      incrementCount(Transform.GENERIC_0_COUNTER);
-    }
-    /**
-     * Increment the counter for messages marked
-     */
-    public void incrementMarkCounter() {
-      incrementCount(Transform.GENERIC_2_COUNTER);
-    }
-    /**
-     * Increment the count for messages quarantined.
-     */
-    public void incrementQuarantineCount() {
-      incrementCount(Transform.GENERIC_3_COUNTER);
-    }
-
-
     public void initializeSettings()
     {
         logger.debug("Initializing Settings");
 
-        SpamSettings zTmpSpamSettings = new SpamSettings(getTid());
+        SpamSettings tmpSpamSettings = new SpamSettings(getTid());
 
-        zTmpSpamSettings.setSMTPInbound(
+        tmpSpamSettings.setSMTPInbound(
           new SpamSMTPConfig(true,
                              SMTPSpamMessageAction.QUARANTINE,
                              SpamSMTPNotifyAction.NEITHER,
@@ -319,7 +341,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                              false,
                              15));
 
-        zTmpSpamSettings.setSMTPOutbound(
+        tmpSpamSettings.setSMTPOutbound(
           new SpamSMTPConfig(false,
                              SMTPSpamMessageAction.PASS,
                              SpamSMTPNotifyAction.NEITHER,
@@ -335,7 +357,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                              false,
                              15));
 
-        zTmpSpamSettings.setPOPInbound(
+        tmpSpamSettings.setPOPInbound(
           new SpamPOPConfig(true,
                             SpamMessageAction.MARK,
                             SpamProtoConfig.DEFAULT_STRENGTH,
@@ -343,10 +365,10 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                             getDefaultSubjectWrapperTemplate(true),
                             getDefaultBodyWrapperTemplate(true),
                             getDefaultIndicatorHeaderName(),
-                             getDefaultIndicatorHeaderValue(true),
-                             getDefaultIndicatorHeaderValue(false) ));
+                            getDefaultIndicatorHeaderValue(true),
+                            getDefaultIndicatorHeaderValue(false) ));
 
-        zTmpSpamSettings.setPOPOutbound(
+        tmpSpamSettings.setPOPOutbound(
           new SpamPOPConfig(false,
                             SpamMessageAction.PASS,
                             SpamProtoConfig.DEFAULT_STRENGTH,
@@ -354,10 +376,10 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                             getDefaultSubjectWrapperTemplate(false),
                             getDefaultBodyWrapperTemplate(false),
                             getDefaultIndicatorHeaderName(),
-                             getDefaultIndicatorHeaderValue(true),
-                             getDefaultIndicatorHeaderValue(false) ));
+                            getDefaultIndicatorHeaderValue(true),
+                            getDefaultIndicatorHeaderValue(false) ));
 
-        zTmpSpamSettings.setIMAPInbound(
+        tmpSpamSettings.setIMAPInbound(
           new SpamIMAPConfig(true,
                              SpamMessageAction.MARK,
                              SpamProtoConfig.DEFAULT_STRENGTH,
@@ -368,7 +390,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                              getDefaultIndicatorHeaderValue(true),
                              getDefaultIndicatorHeaderValue(false) ));
 
-        zTmpSpamSettings.setIMAPOutbound(
+        tmpSpamSettings.setIMAPOutbound(
           new SpamIMAPConfig(false,
                              SpamMessageAction.PASS,
                              SpamProtoConfig.DEFAULT_STRENGTH,
@@ -379,8 +401,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                              getDefaultIndicatorHeaderValue(true),
                              getDefaultIndicatorHeaderValue(false) ));
 
-        ensureTemplateSettings(zTmpSpamSettings);
-        setSpamSettings(zTmpSpamSettings);
+        setSpamSettings(tmpSpamSettings);
         return;
     }
 
@@ -401,9 +422,11 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                     Query q = s.createQuery
                         ("from SpamSettings ss where ss.tid = :tid");
                     q.setParameter("tid", getTid());
-                    zSpamSettings = (SpamSettings)q.uniqueResult();
+                    spamSettings = (SpamSettings)q.uniqueResult();
 
-                    ensureTemplateSettings(zSpamSettings);
+                    ensureTemplateSettings(spamSettings);
+                    // set list if not already set
+                    initSpamRBLList(spamSettings);
 
                     return true;
                 }
@@ -423,6 +446,10 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     void log(SpamEvent se)
     {
         eventLogger.log(se);
+    }
+
+    void logRBL(SpamSMTPRBLEvent spamSmtpRBLEvent) {
+        rblEventLogger.log(spamSmtpRBLEvent);
     }
 
     // XXX soon to be deprecated ----------------------------------------------

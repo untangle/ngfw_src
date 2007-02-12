@@ -30,8 +30,7 @@ import com.untangle.tran.spam.SpamReport;
 import org.apache.log4j.Logger;
 
 public final class SpamAssassinClient implements Runnable {
-
-    protected final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = Logger.getLogger(getClass());
 
     private final static Pattern REPORT_PATTERN = Pattern.compile("^[ ]*-?[0-9]+\\.[0-9]+ [A-Z0-9_]+");
 
@@ -69,8 +68,8 @@ public final class SpamAssassinClient implements Runnable {
     private final String userNameCHdr;
     private final String contentLenCHdr;
 
-    private volatile Thread cThread;
-    private volatile String dbgName; // thread name and socket host
+    private Thread cThread;
+    private String dbgName; // thread name and socket host
     private volatile boolean stop = false;
 
     public SpamAssassinClient(SpamAssassinClientContext cContext, String userName) {

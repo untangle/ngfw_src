@@ -38,6 +38,7 @@ public class SpamSummarizer extends BaseSummarizer {
         int popimapScanned = 0;
         int popimapMarked = 0;
         int popimapPassed = 0;
+        int smtpRBLRejected = 0;
 
         try {
             String sql;
@@ -132,6 +133,16 @@ public class SpamSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
+            sql = "SELECT COUNT(*) FROM tr_spam_smtp_rbl_evt WHERE skipped = FALSE AND time_stamp >= ? AND time_stamp < ?";
+            ps = conn.prepareStatement(sql);
+            ps.setTimestamp(1, startDate);
+            ps.setTimestamp(2, endDate);
+            rs = ps.executeQuery();
+            rs.first();
+            smtpRBLRejected = rs.getInt(1);
+            rs.close();
+            ps.close();
+
         } catch (SQLException exn) {
             logger.warn("could not summarize", exn);
         }
@@ -143,6 +154,10 @@ public class SpamSummarizer extends BaseSummarizer {
         addEntry("&nbsp;&nbsp;&nbsp;Spam & Passed", Util.trimNumber("",smtpPassed), Util.percentNumber(smtpPassed, smtpScanned));
         int totalSpam = smtpQuarantined + smtpBlocked + smtpMarked + smtpPassed;
         addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",smtpScanned-totalSpam), Util.percentNumber(smtpScanned-totalSpam, smtpScanned));
+
+        addEntry("&nbsp;","&nbsp;");
+
+        addEntry("Connection attempts rejected using RBLs (SMTP)", Util.trimNumber("",smtpRBLRejected));
 
         addEntry("&nbsp;","&nbsp;");
 

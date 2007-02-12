@@ -22,8 +22,8 @@ abstract public class VirusClient implements Runnable {
 
     protected final VirusClientContext cContext;
 
-    protected volatile Thread cThread;
-    protected volatile String dbgName; // thread name and socket host
+    protected Thread cThread;
+    protected String dbgName; // thread name and socket host
     protected volatile boolean stop = false;
 
     public VirusClient(VirusClientContext cContext) {

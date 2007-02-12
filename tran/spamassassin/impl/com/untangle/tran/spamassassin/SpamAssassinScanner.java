@@ -13,15 +13,8 @@ package com.untangle.tran.spamassassin;
 
 import com.untangle.tran.spam.SpamScanner;
 import com.untangle.tran.spam.SpamReport;
-import com.untangle.tran.spam.ReportItem;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 

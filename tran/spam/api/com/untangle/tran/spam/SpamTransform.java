@@ -20,4 +20,5 @@ public interface SpamTransform extends Transform
     SpamSettings getSpamSettings();
 
     EventManager<SpamEvent> getEventManager();
+    EventManager<SpamSMTPRBLEvent> getRBLEventManager();
 }
