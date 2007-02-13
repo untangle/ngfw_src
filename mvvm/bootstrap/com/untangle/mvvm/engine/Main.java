@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.Properties;
 
 import com.untangle.mvvm.logging.MvvmRepositorySelector;
 import org.apache.log4j.LogManager;
@@ -78,7 +77,7 @@ public class Main
 
     // package private methods ------------------------------------------------
 
-    boolean refreshToolbox()
+    public boolean refreshToolbox()
     {
         return mcl.refreshToolbox();
     }
