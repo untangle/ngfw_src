@@ -36,8 +36,6 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private volatile int limit = 100;
-
     // constructors -----------------------------------------------------------
 
     EventLoggerImpl()
@@ -83,24 +81,6 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
     public List<EventRepository<E>> getRepositories()
     {
         return new LinkedList<EventRepository<E>>(caches);
-    }
-
-    public void setLimit(int limit)
-    {
-        boolean checkCold = limit > this.limit;
-
-        this.limit = limit;
-
-        if (checkCold) {
-            for (EventCache<E> c : caches) {
-                c.checkCold();
-            }
-        }
-    }
-
-    public int getLimit()
-    {
-        return limit;
     }
 
     // public methods --------------------------------------------------------

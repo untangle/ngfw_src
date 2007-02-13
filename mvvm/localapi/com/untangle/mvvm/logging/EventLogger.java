@@ -21,8 +21,6 @@ public abstract class EventLogger<E extends LogEvent>
     public abstract List<RepositoryDesc> getRepositoryDescs();
     public abstract EventRepository<E> getRepository(String repositoryName);
     public abstract List<EventRepository<E>> getRepositories();
-    public abstract void setLimit(int limit);
-    public abstract int getLimit();
 
     // public methods --------------------------------------------------------
 

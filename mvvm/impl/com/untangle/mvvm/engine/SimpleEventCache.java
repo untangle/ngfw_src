@@ -77,18 +77,11 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
     {
         if (eventFilter.accept(e)) {
             synchronized (cache) {
-                while (cache.size() >= eventLogger.getLimit()) {
+                while (cache.size() >= CACHE_SIZE) {
                     cache.removeLast();
                 }
                 cache.add(0, e);
             }
-        }
-    }
-
-    public void checkCold()
-    {
-        synchronized (cache) {
-            cold = eventLogger.getLimit() > cache.size();
         }
     }
 
@@ -97,9 +90,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
     private void warm()
     {
         synchronized (cache) {
-            final int limit = eventLogger.getLimit();
-
-            if (cache.size() < limit) {
+            if (cache.size() < CACHE_SIZE) {
                 final TransformContext tctx = eventLogger.getTransformContext();
 
                 TransactionWork tw = new TransactionWork()
@@ -114,7 +105,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
                                 params = Collections.emptyMap();
                             }
 
-                            eventFilter.warm(s, cache, limit, params);
+                            eventFilter.warm(s, cache, CACHE_SIZE, params);
 
                             return true;
                         }

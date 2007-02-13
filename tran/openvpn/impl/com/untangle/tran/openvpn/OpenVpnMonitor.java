@@ -671,7 +671,7 @@ class OpenVpnMonitor implements Runnable
           List<ClientConnectEvent> list = getOpenConnectionsAsEvents();
           Collections.sort(list,
             ClientConnectEventComparator.getComparator(ClientConnectEventComparator.SortBy.END_DATE, false));
-          int maxLen = eventLogger.getLimit();
+          int maxLen = EventRepository.CACHE_SIZE;
           if(list.size() > maxLen) {
             list = list.subList(0, maxLen);
           }
@@ -706,7 +706,7 @@ class OpenVpnMonitor implements Runnable
           Collections.sort(openList,
             ClientConnectEventComparator.getComparator(ClientConnectEventComparator.SortBy.END_DATE, false));
 
-          int maxLen = eventLogger.getLimit();
+          int maxLen = EventRepository.CACHE_SIZE;
           if(openList.size() > maxLen) {
             openList = openList.subList(0, maxLen);
           }

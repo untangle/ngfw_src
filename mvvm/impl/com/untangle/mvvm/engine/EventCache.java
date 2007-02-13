@@ -19,8 +19,6 @@ abstract class EventCache<E extends LogEvent> implements EventRepository<E>
 {
     public abstract void log(E e);
 
-    public abstract void checkCold();
-
     /**
      * Sets a reference to the EventLogger as soon
      * as this cache is added to an EventLogger
