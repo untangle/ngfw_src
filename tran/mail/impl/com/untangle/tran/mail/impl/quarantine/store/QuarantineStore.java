@@ -98,10 +98,9 @@ public class QuarantineStore {
     }
 
     //Create address lock
-    m_addressLock = new AddressLock();
+    m_addressLock = AddressLock.getInstance();
 
     //Initiailze the InboxDirectoryTree
-
     m_logger.debug("About to initialize InboxDirectoryTree...");
     m_dirTracker = new InboxDirectoryTree(m_rootDir);
     m_logger.debug("Initialized InboxDirectoryTree");

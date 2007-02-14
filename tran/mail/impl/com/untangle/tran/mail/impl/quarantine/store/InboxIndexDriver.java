@@ -36,8 +36,6 @@ import org.apache.log4j.Logger;
 class InboxIndexDriver
   extends AbstractDriver {
 
-
-
   private static final Logger s_logger = Logger.getLogger(InboxIndexDriver.class);
 
   //Blurb added to top of file
@@ -55,7 +53,6 @@ class InboxIndexDriver
   private static final String RECORD_SEP = "--SEP--";
   private static final String INBOX_OWNER_TAG = "Address:";
   private static final int VERSION = 3;
-
 
 
   /**
@@ -192,12 +189,22 @@ class InboxIndexDriver
   static boolean replaceIndex(InboxIndex index,
     File inboxDir) {
 
+    if (false == inboxDir.exists()) {
+        if (false == inboxDir.mkdirs()) {
+            // mkdirs can fail when multiple threads simultaneously attempt
+            // to create different directories on a shared directory tree and
+            // the tree has branches that need to be created
+            // - getInboxDir/AddressLock prevents this problem
+            //   (while thread X is creating a directory,
+            //    other threads wait for thread X to finish)
+            //   (i.e., this condition should never occur)
+            s_logger.error("Unable to create: " + inboxDir + ", and to update index");
+            return false;
+        }
+    }
+
     File f = null;
     FileOutputStream fOut = null;
-
-    if(!inboxDir.exists()) {
-      inboxDir.mkdirs();
-    }
 
     try {
       f = File.createTempFile("idx", ".tmp", inboxDir);
@@ -232,8 +239,7 @@ class InboxIndexDriver
         return false;
       }
       return true;
-    }
-    catch(Exception ex) {
+    } catch(Exception ex) {
       s_logger.error("Unable to update index", ex);
       IOUtil.close(fOut);
       IOUtil.delete(f);
