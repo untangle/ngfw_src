@@ -1,7 +1,8 @@
 #!/usr/bin/ruby
 
-require 'net/http'
+require 'base64'
 require 'bdb'
+require 'net/http'
 
 db = BDB::Hash.open('hippieshit', nil, 'w');
 
@@ -21,7 +22,10 @@ Net::HTTP.start('sb.google.com', 80) do |http|
       end
     else
       while buf =~ /^\+([^\t]+)\t([^\t]+)$/ do
-        db[$1] = $2;
+        host = $1.hex
+        regexp = Base64.decode64($2)
+        db[host] = regexp;
+        puts "HOST: #{host} REGEXP: #{regexp}"
         buf = $'
       end
     end

@@ -22,7 +22,13 @@
    (append
     (mapcar (lambda (a)
               (concat "../downloads/output/" a))
-            '("c3p0-0.9.0.4/lib/c3p0-0.9.0.4.jar"
+            '(
+              "apache-tomcat-5.5.17-embed/lib/catalina-optional.jar"
+              "apache-tomcat-5.5.17-embed/lib/catalina.jar"
+              "apache-tomcat-5.5.17-embed/lib/jsp-api.jar"
+              "apache-tomcat-5.5.17-embed/lib/servlet-api.jar"
+              "bcel-5.1/bcel-5.1.jar"
+              "c3p0-0.9.0.4/lib/c3p0-0.9.0.4.jar"
               "commons-fileupload-1.1/commons-fileupload-1.1.jar"
               "commons-httpclient-3.0/commons-httpclient-3.0.jar"
               "hibernate-3.2/hibernate3.jar"
@@ -30,15 +36,12 @@
               "hibernate-annotations-3.2.0.CR3/lib/ejb3-persistence.jar"
               "htmlparser1_6_20060319/htmlparser1_6/lib/htmllexer.jar"
               "htmlparser1_6_20060319/htmlparser1_6/lib/htmlparser.jar"
-              "apache-tomcat-5.5.17-embed/lib/catalina.jar"
-              "apache-tomcat-5.5.17-embed/lib/catalina-optional.jar"
-              "apache-tomcat-5.5.17-embed/lib/jsp-api.jar"
-              "apache-tomcat-5.5.17-embed/lib/servlet-api.jar"
               "javamail-1.3.3_01/mail.jar"
               "jcifs_1.2.9/jcifs-1.2.9.jar"
+              "je-3.2.13/lib/je-3.2.13.jar"
               "junit3.8.1/junit.jar"
-              "logging-log4j-1.2.9/dist/lib/log4j-1.2.9.jar"
-              "bcel-5.1/bcel-5.1.jar"))
+              "logging-log4j-1.2.14/dist/lib/log4j-1.2.14.jar"
+              ))
     (if (file-exists-p (concat prj-dir "./staging/grabbag"))
         (mapcar
          (lambda (a)

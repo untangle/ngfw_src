@@ -139,7 +139,7 @@ public class Main
         String bunniculaTmp = bunniculaHome + "/tmp";
         System.setProperty("bunnicula.tmp.dir", bunniculaTmp);
 
-        System.setProperty("derby.system.home", bunniculaHome + "/db");
+        System.setProperty("bunnicula.db.dir", bunniculaHome + "/db");
 
         logger.info("bunnicula.home        " + bunniculaHome);
         logger.info("bunnicula.lib.dir     " + bunniculaLib);

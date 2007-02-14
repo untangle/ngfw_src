@@ -47,23 +47,25 @@ class Jars
   Jasper     = [ Jars.downloadTarget('jasperreports-1.1.1/dist/jasperreports-1.1.1.jar') ]
 
   ## Miscellaneous Jars
-  JavaMail   = [ Jars.downloadTarget('javamail-1.3.3_01/mail.jar')]
-  Jcifs      = [ Jars.downloadTarget('jcifs_1.2.9/jcifs-1.2.9.jar')]
-  Dom4j      = [ Jars.downloadTarget('hibernate-3.2/lib/dom4j-1.6.1.jar')]
-  Activation = [ Jars.downloadTarget('jaf-1.0.2/activation.jar')]
-  Trove      = [ Jars.downloadTarget('trove-1.0.2/lib/trove.jar')]
+  JavaMail   = [ Jars.downloadTarget('javamail-1.3.3_01/mail.jar') ]
+  Jcifs      = [ Jars.downloadTarget('jcifs_1.2.9/jcifs-1.2.9.jar') ]
+  Dom4j      = [ Jars.downloadTarget('hibernate-3.2/lib/dom4j-1.6.1.jar') ]
+  Activation = [ Jars.downloadTarget('jaf-1.0.2/activation.jar') ]
+  Trove      = [ Jars.downloadTarget('trove-1.0.2/lib/trove.jar') ]
   Postgres   = [ Jars.downloadTarget('postgres-jdbc-7.4_215/pg74.215.jdbc3.jar')]
   Velocity   = [ Jars.downloadTarget('velocity-1.4/velocity-1.4.jar') ]
 
   Jnlp       = [ ThirdpartyJar.get("#{$BuildEnv.javahome}/sample/jnlp/servlet/jnlp.jar") ]
 
   ## Jars required to run/compile unit tests
-  Junit      = [ Jars.downloadTarget('junit4.1/junit-4.1.jar')]
+  Junit      = [ Jars.downloadTarget('junit4.1/junit-4.1.jar') ]
+  Bdb        = [ Jars.downloadTarget('je-3.2.13/lib/je-3.2.13.jar') ]
 
   ## Groups used for compiling
   # This is available to everything?
-  Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres, Activation, Jcifs,
-                              C3p0, Ant, JavaMailApi, JavaMail, TomcatEmb, Velocity,WBEM)
+  Base       = Jars.makeGroup(Log4j, Hibernate, HibernateAnnotations, Postgres,
+                              Activation, Jcifs, C3p0, Ant, JavaMailApi,
+                              JavaMail, TomcatEmb, Velocity, WBEM, Bdb)
 
   # Jars for compiling the GUI, and GUI transform components
   Gui        = Jars.makeGroup(Alloy, JFreeChartGui, Netbeans, Jnlp)
