@@ -48,14 +48,13 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 	// OUTSIDE ACCESS PORT //////
 	((JSpinner.DefaultEditor)externalAccessPortJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
 	int httpsPort = 0;
-	if( isOutsideAccessEnabled ){
-	    try{ externalAccessPortJSpinner.commitEdit(); }
-	    catch(Exception e){ 
+    try{ externalAccessPortJSpinner.commitEdit(); }
+    catch(Exception e){ 
 		((JSpinner.DefaultEditor)externalAccessPortJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
 		throw new Exception(Util.EXCEPTION_PORT_RANGE);
-	    }
-	    httpsPort = (Integer) externalAccessPortJSpinner.getValue();
-	}
+    }
+    httpsPort = (Integer) externalAccessPortJSpinner.getValue();
+
 
 	// OUTSIDE ACCESS IP RESTRICTION ///////
 	boolean isOutsideAccessRestricted = externalAdminRestrictEnabledRadioButton.isSelected();
@@ -63,7 +62,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 	// OUTSIDE ACCESS IP RESTRICTION ADDRESS /////////
         restrictIPaddrJTextField.setBackground( Color.WHITE );
 	IPaddr outsideNetwork = null;
-	if( isOutsideAccessEnabled && isOutsideAccessRestricted ){
+	if( isOutsideAccessRestricted ){
 	    try{
 		outsideNetwork = IPaddr.parse( restrictIPaddrJTextField.getText() );
 		if( outsideNetwork.isEmpty() )
@@ -78,7 +77,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 	// OUTSIDE ACCESS IP RESTRICTION NETMASK /////////
         restrictNetmaskJTextField.setBackground( Color.WHITE );
 	IPaddr outsideNetmask = null;
-	if( isOutsideAccessEnabled && isOutsideAccessRestricted ){	    
+	if( isOutsideAccessRestricted ){	    
 	    try{
 		outsideNetmask = IPaddr.parse( restrictNetmaskJTextField.getText() );
 	    }
@@ -99,14 +98,12 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 		accessSettings.setIsOutsideAdministrationEnabled(isOutsideAdministrationEnabled);
 		accessSettings.setIsOutsideReportingEnabled(isOutsideReportingEnabled);
 		accessSettings.setIsOutsideQuarantineEnabled(isOutsideQuarantineEnabled);
-	    if( isOutsideAccessEnabled ){
 		addressSettings.setHttpsPort( httpsPort );
 		accessSettings.setIsOutsideAccessRestricted( isOutsideAccessRestricted );
 		if( isOutsideAccessRestricted ){
 		    accessSettings.setOutsideNetwork( outsideNetwork );
 		    accessSettings.setOutsideNetmask( outsideNetmask );
 		}
-	    }
 	    accessSettings.setIsInsideInsecureEnabled( isInsideInsecureEnabled );
         }
     }
@@ -125,7 +122,6 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 
         // OUTSIDE ACCESS ENABLED //////
         boolean isOutsideAccessEnabled = isOutsideAdministrationEnabled || isOutsideReportingEnabled || isOutsideQuarantineEnabled;
-        setOutsideAccessEnabledDependency( isOutsideAccessEnabled );
 
 	// PORT ///
 	int httpsPort = addressSettings.getHttpsPort();
@@ -436,27 +432,15 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
         }//GEN-END:initComponents
 
 		private void restrictAdminJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restrictAdminJCheckBoxActionPerformed
-            boolean isOutsideAdministrationEnabled = restrictAdminJCheckBox.isSelected();
-            boolean isOutsideReportingEnabled = restrictReportingJCheckBox.isSelected();
-            boolean isOutsideQuarantineEnabled = restrictQuarantineJCheckBox.isSelected();
-            boolean isOutsideAccessEnabled = isOutsideAdministrationEnabled || isOutsideReportingEnabled || isOutsideQuarantineEnabled;
-            setOutsideAccessEnabledDependency(isOutsideAccessEnabled);
+
 		}//GEN-LAST:event_restrictAdminJCheckBoxActionPerformed
 
 		private void restrictReportingJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restrictReportingJCheckBoxActionPerformed
-            boolean isOutsideAdministrationEnabled = restrictAdminJCheckBox.isSelected();
-            boolean isOutsideReportingEnabled = restrictReportingJCheckBox.isSelected();
-            boolean isOutsideQuarantineEnabled = restrictQuarantineJCheckBox.isSelected();
-            boolean isOutsideAccessEnabled = isOutsideAdministrationEnabled || isOutsideReportingEnabled || isOutsideQuarantineEnabled;
-            setOutsideAccessEnabledDependency(isOutsideAccessEnabled);
+
 		}//GEN-LAST:event_restrictReportingJCheckBoxActionPerformed
 
 		private void restrictQuarantineJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restrictQuarantineJCheckBoxActionPerformed
-            boolean isOutsideAdministrationEnabled = restrictAdminJCheckBox.isSelected();
-            boolean isOutsideReportingEnabled = restrictReportingJCheckBox.isSelected();
-            boolean isOutsideQuarantineEnabled = restrictQuarantineJCheckBox.isSelected();
-            boolean isOutsideAccessEnabled = isOutsideAdministrationEnabled || isOutsideReportingEnabled || isOutsideQuarantineEnabled;
-            setOutsideAccessEnabledDependency(isOutsideAccessEnabled);
+
 		}//GEN-LAST:event_restrictQuarantineJCheckBoxActionPerformed
             
     private void externalAdminRestrictEnabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_externalAdminRestrictEnabledRadioButtonActionPerformed
@@ -469,14 +453,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
     
     
     private void setOutsideAccessEnabledDependency(boolean enabled){
-	externalAccessPortJSpinner.setEnabled( enabled );
-	externalAccessPortJLabel.setEnabled( enabled );
-	externalAdminRestrictDisabledRadioButton.setEnabled( enabled );
-	externalAdminRestrictEnabledRadioButton.setEnabled( enabled );
-	if( enabled )
-	    setOutsideAccessRestrictedDependency( externalAdminRestrictEnabledRadioButton.isSelected() );
-	else
-	    setOutsideAccessRestrictedDependency( false );
+
     }
  
     private void setOutsideAccessRestrictedDependency(boolean enabled){
