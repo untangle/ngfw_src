@@ -607,7 +607,11 @@ public class MMainJFrame extends javax.swing.JFrame {
 
     private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
         try{
-            URL newURL = new URL( "http://www.untangle.com/docs?" + "version=" + Version.getVersion() + "&source=rack");
+            String focus = mTabbedPane.getTitleAt(mTabbedPane.getSelectedIndex()).toLowerCase().replace(" ", "_");
+            URL newURL = new URL( "http://www.untangle.com/docs?" 
+                                  + "version=" + Version.getVersion()
+                                  + "&source=rack"
+                                  + "&focus=" + focus);
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
         }
         catch(Exception f){
