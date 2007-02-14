@@ -36,11 +36,10 @@ public class SpamMessageAction implements Serializable
     public static final SpamMessageAction SAFELIST = new SpamMessageAction(SAFELIST_KEY, "pass message");
     public static final SpamMessageAction OVERSIZE = new SpamMessageAction(OVERSIZE_KEY, "pass message");
 
+    // do not include SAFELIST or OVERSIZE in INSTANCES map
     static {
         INSTANCES.put(PASS.getKey(), PASS);
         INSTANCES.put(MARK.getKey(), MARK);
-        INSTANCES.put(SAFELIST.getKey(), SAFELIST);
-        INSTANCES.put(OVERSIZE.getKey(), OVERSIZE);
     }
 
     private String name;

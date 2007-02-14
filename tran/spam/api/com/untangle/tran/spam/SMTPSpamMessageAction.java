@@ -40,13 +40,12 @@ public class SMTPSpamMessageAction implements Serializable
     public static final SMTPSpamMessageAction SAFELIST = new SMTPSpamMessageAction(SAFELIST_KEY, "pass message");
     public static final SMTPSpamMessageAction OVERSIZE = new SMTPSpamMessageAction(OVERSIZE_KEY, "pass message");
 
+    // do not include SAFELIST or OVERSIZE in INSTANCES map
     static {
         INSTANCES.put(PASS.getKey(), PASS);
         INSTANCES.put(MARK.getKey(), MARK);
         INSTANCES.put(BLOCK.getKey(), BLOCK);
         INSTANCES.put(QUARANTINE.getKey(), QUARANTINE);
-        INSTANCES.put(SAFELIST.getKey(), SAFELIST);
-        INSTANCES.put(OVERSIZE.getKey(), OVERSIZE);
     }
 
     private String name;
