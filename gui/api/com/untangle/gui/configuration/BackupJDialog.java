@@ -471,7 +471,12 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 
 		private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
             try{
-                URL newURL = new URL( "http://www.untangle.com/docs?" + "version=" + Version.getVersion() + "&source=backup_restore_config");
+                String focus = Util.getSelectedTabTitle(backupJTabbedPane).toLowerCase().replace(" ", "_");
+                URL newURL = new URL( "http://www.untangle.com/docs?"
+                                      + "version=" + Version.getVersion()
+                                      + "&source=" + "backup_restore_config"
+                                      + "&focus=" + focus);
+                System.out.println(newURL);
                 ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
             }
             catch(Exception f){

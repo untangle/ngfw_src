@@ -303,7 +303,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
                         }
                 });
 
-                add(controlsJToggleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(126, 60, 120, 25));
+                add(controlsJToggleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 60, 120, 25));
 
                 helpJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 helpJButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconHelp28x28.png")));
@@ -321,7 +321,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
                         }
                 });
 
-                add(helpJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 60, 68, 25));
+                add(helpJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(178, 60, 68, 25));
 
                 descriptionIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconDesc42x42.png")));
@@ -386,7 +386,12 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
 		private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
             try{
-                URL newURL = new URL( "http://www.untangle.com/docs?" + "version=" + Version.getVersion() + "&source=" + transformDesc.getDisplayName().replace(" ", "_").toLowerCase());
+                String focus = Util.getSelectedTabTitle(mTransformControlsJPanel.getMTabbedPane()).toLowerCase().replace(" ", "_");
+                String source = getTransformDesc().getDisplayName().toLowerCase().replace(" ", "_");
+                URL newURL = new URL( "http://www.untangle.com/docs?"
+                                      + "version=" + Version.getVersion()
+                                      + "&source=" + source
+                                      + "&focus=" + focus);
                 ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
             }
             catch(Exception f){

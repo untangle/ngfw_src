@@ -29,6 +29,9 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
+import java.net.URL;
+import javax.jnlp.BasicService;
+import javax.jnlp.ServiceManager;
 
 public abstract class MTransformControlsJPanel extends javax.swing.JPanel implements SettingsChangedListener{
 
@@ -90,6 +93,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 
         // INITIALIZE GUI
         initComponents();
+        helpJButton.setVisible(false);
 	add(infiniteProgressJComponent, infiniteConstraints, 0);
 
 	mTabbedPane.setFont( new java.awt.Font("Arial", 0, 14) );
@@ -299,6 +303,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 mTabbedPane = new javax.swing.JTabbedPane();
                 nbSaveSettingsHintJLabel = saveSettingsHintJLabel;
                 removeJButton = new javax.swing.JButton();
+                helpJButton = new javax.swing.JButton();
                 expandJButton = new javax.swing.JButton();
                 reloadJButton = new javax.swing.JButton();
                 saveJButton = new javax.swing.JButton();
@@ -361,6 +366,28 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 contentJPanel.add(removeJButton, gridBagConstraints);
+
+                helpJButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconHelp28x28.png")));
+                helpJButton.setText("Help");
+                helpJButton.setFocusPainted(false);
+                helpJButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+                helpJButton.setIconTextGap(2);
+                helpJButton.setMargin(new java.awt.Insets(0, 0, 0, 9));
+                helpJButton.setMaximumSize(new java.awt.Dimension(86, 25));
+                helpJButton.setMinimumSize(new java.awt.Dimension(86, 25));
+                helpJButton.setOpaque(false);
+                helpJButton.setPreferredSize(new java.awt.Dimension(86, 25));
+                helpJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                helpJButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                contentJPanel.add(helpJButton, gridBagConstraints);
 
                 expandJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 expandJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Expand_Settings_106x17.png")));
@@ -479,6 +506,21 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 
         }//GEN-END:initComponents
 
+		private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
+            try{
+                String focus = Util.getSelectedTabTitle(mTabbedPane).toLowerCase().replace(" ", "_");
+                String source = mTransformJPanel.getTransformDesc().getDisplayName().toLowerCase().replace(" ", "_");
+                URL newURL = new URL( "http://www.untangle.com/docs?"
+                                      + "version=" + Version.getVersion()
+                                      + "&source=" + source
+                                      + "&focus=" + focus);
+                ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
+            }
+            catch(Exception f){
+                Util.handleExceptionNoRestart("Error showing help for " + mTransformJPanel.getTransformDesc().getDisplayName(), f);
+            }
+		}//GEN-LAST:event_helpJButtonActionPerformed
+
     private void saveJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveJButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_saveJButtonActionPerformed
@@ -490,6 +532,8 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     private void expandJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expandJButtonActionPerformed
 	if( !MTransformControlsJPanel.this.expandJDialog.isVisible() ){
 	    // change layout
+        helpJButton.setVisible(true);
+        removeJButton.setVisible(false);
 	    remove(infiniteProgressJComponent);
             socketJPanel.remove(contentJPanel);
             revalidate();
@@ -506,6 +550,8 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
             expandJDialog.setVisible(true);
 
             // cleanup after new window is closed
+            helpJButton.setVisible(false);
+            removeJButton.setVisible(true);
 	    expandJButton.setIcon(Util.getButtonExpandSettings());
             expandJDialog.getContentPane().remove(contentJPanel);
             socketJPanel.add(contentJPanel);
@@ -523,6 +569,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
         private javax.swing.JLabel backgroundJLabel;
         protected javax.swing.JPanel contentJPanel;
         protected javax.swing.JButton expandJButton;
+        private javax.swing.JButton helpJButton;
         protected javax.swing.JTabbedPane mTabbedPane;
         protected javax.swing.JLabel nbSaveSettingsHintJLabel;
         protected javax.swing.JLabel readoutJLabel;

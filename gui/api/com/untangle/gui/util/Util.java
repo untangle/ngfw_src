@@ -516,6 +516,30 @@ public class Util {
     }
     //////////////////////////////////////////////////////
 
+    // FOCUS //
+    public static String getSelectedTabTitle(JTabbedPane jTabbedPane){
+
+        String focus;
+        int focusIndex = jTabbedPane.getSelectedIndex();
+        if(focusIndex < 0){
+            return "null";
+        }
+        else{
+            Component focusComponent = jTabbedPane.getComponentAt(focusIndex);
+            if(focusComponent instanceof JTabbedPane)
+                return jTabbedPane.getTitleAt(focusIndex) + "+" + getSelectedTabTitle((JTabbedPane)focusComponent);
+            else if( (focusComponent instanceof Container)
+                     && (((Container)focusComponent).getComponentCount()>0)
+                     && (((Container)focusComponent).getComponent(0) instanceof JTabbedPane) ){
+                return jTabbedPane.getTitleAt(focusIndex) + "+"
+                    + getSelectedTabTitle((JTabbedPane)((Container)focusComponent).getComponent(0));
+            }
+            else
+                return jTabbedPane.getTitleAt(focusIndex);
+        }
+
+    }
+    //////////////////////////////////////////////////////
 
     // EXCEPTION HANDLING AND MESSAGE PRINTING ////////////
     private static final boolean PRINT_MESSAGES = true;
