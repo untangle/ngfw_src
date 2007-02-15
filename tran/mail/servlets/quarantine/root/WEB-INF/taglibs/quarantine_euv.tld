@@ -156,12 +156,22 @@
   </tag>
 
   <!--
-    Tag outputs the total number and size of records in the current index, or
-    0 of there is no current index
+    Tag outputs the total number of records in the current index, or
+    unknown if there is no current index
   -->
   <tag>
-    <name>indexMsgTotals</name>
-    <tagclass>com.untangle.tran.mail.web.euv.tags.InboxMsgTotalsTag</tagclass>
+    <name>indexNumRecords</name>
+    <tagclass>com.untangle.tran.mail.web.euv.tags.InboxNumRecordsTag</tagclass>
+    <bodycontent>empty</bodycontent>
+  </tag>
+
+  <!--
+    Tag outputs the total size of records in the current index, or
+    unknown if there is no current index
+  -->
+  <tag>
+    <name>indexSizeRecords</name>
+    <tagclass>com.untangle.tran.mail.web.euv.tags.InboxSizeRecordsTag</tagclass>
     <bodycontent>empty</bodycontent>
   </tag>
 

@@ -327,7 +327,7 @@
                           </td>
 
                           <th scope="row" align=left>TOTALS</th>
-                          <td align=left><quarantine:indexMsgTotals/></td>
+                          <td align=left><quarantine:indexNumRecords/><br><quarantine:indexSizeRecords/></td>
                           <td> </td> <!-- table cell filler to shift navigation table cell to right (Prev|Next) -->
 
                           <td align=center width=130> <!-- align center w/ 130 pixel width to match navigation table cell in header -->

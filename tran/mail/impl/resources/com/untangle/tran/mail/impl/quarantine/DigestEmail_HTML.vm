@@ -47,6 +47,7 @@ $numRecsNotShown - Number of records which could not be shown for space reasons
 
 $totalNumRecords - total number of records (because this Velocity junk would
                    not understand "$inboxrecords.length")
+$totalSizeRecords - total size of records
 
 $jsEscaper - Instance which can escape JavaScript if found in subject
 
@@ -632,12 +633,12 @@ hr {
                         </td>
 
                         <th scope="row">TOTALS</th>
-                        <td colspan="3" align=left>$totalNumRecords</td>
+                        <td colspan="3" align=left>$totalNumRecords<br>$totalSizeRecords</td>
                       </tr>
                     #else
                       <tr>
                         <th scope="row">TOTALS</th>
-                        <td colspan="6" align=left>$totalNumRecords</td>
+                        <td colspan="6" align=left>$totalNumRecords<br>$totalSizeRecords</td>
                       </tr>
                     #end
                     </tfoot>

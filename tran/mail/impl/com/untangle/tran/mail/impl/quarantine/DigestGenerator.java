@@ -65,6 +65,7 @@ class DigestGenerator {
   private static final String HAS_RECORDS_NOT_SHOWN_VV = "hasRecsNotShown";
   private static final String NUM_RECS_NOT_SHOWN_VV = "numRecsNotShown";
   private static final String TOTAL_NUM_RECORDS_VV = "totalNumRecords";
+  private static final String TOTAL_SIZE_RECORDS_VV = "totalSizeRecords";
   private static final String MAX_DAYS_TO_INTERN_VV = "daysToIntern";
   private static final String MAX_DAYS_IDLE_INBOX_VV = "daysIdleInbox";
   private static final String JS_ESCAPER = "jsEscaper";
@@ -72,8 +73,6 @@ class DigestGenerator {
   private static final String MAIL_BLAST = "http://www.untangle.com/mail_blast/quarantine/images";
 
   private static final Integer MAX_RECORDS_PER_EMAIL = new Integer(25);
-
-  private static String DIGEST_SUBJECT = "You've Got Spam!";
 
   //We save the lengths of the templates, so we can make a guestimate
   //of how large the byte[] to accumulate them need be.  Avoids
@@ -154,11 +153,9 @@ class DigestGenerator {
     props.put("directive.foreach.counter.initial.value", "1");
 
     //----Set how resources are loaded----
-    props.put("resource.loader",
-      "file");
+    props.put("resource.loader", "file");
     //Turn-on caching (recommended for production environments)
-    props.put("file.resource.loader.cache",
-      "true");
+    props.put("file.resource.loader.cache", "true");
     //Turn-off looking for updates
     props.put("file.resource.loader.modificationCheckInterval", "1");//Integer.toString(Integer.MAX_VALUE));
     
@@ -297,12 +294,13 @@ the line below is commented-out
         context.put(HAS_RECORDS_VV, Boolean.FALSE);
         context.put(HAS_RECORDS_NOT_SHOWN_VV, Boolean.FALSE);
         context.put(NUM_RECS_NOT_SHOWN_VV, new Integer(0));
-        context.put(TOTAL_NUM_RECORDS_VV, new Integer(0));
+        context.put(TOTAL_NUM_RECORDS_VV, new String("0 mail"));
+        context.put(TOTAL_SIZE_RECORDS_VV, new String("(0.0 KB)"));
       }
       else {
-        context.put(TOTAL_NUM_RECORDS_VV, String.valueOf(index.inboxCount()) + " mails (" + String.format("%01.3f", new Float(index.inboxSize() / 1024.0)) + " KB)");
-        InboxRecord[] recsToDisplay = null;
         context.put(HAS_RECORDS_VV, Boolean.TRUE);
+
+        InboxRecord[] recsToDisplay = null;
         if(allRecords.length > MAX_RECORDS_PER_EMAIL) {
           context.put(HAS_RECORDS_NOT_SHOWN_VV, Boolean.TRUE);
           context.put(NUM_RECS_NOT_SHOWN_VV, new Integer(allRecords.length - MAX_RECORDS_PER_EMAIL));
@@ -314,7 +312,10 @@ the line below is commented-out
           context.put(NUM_RECS_NOT_SHOWN_VV, new Integer(0));
           recsToDisplay = allRecords;
         }
+
         context.put(INBOX_RECORDS_VV, recsToDisplay);
+        context.put(TOTAL_NUM_RECORDS_VV, String.valueOf(index.inboxCount()) + " mails");
+        context.put(TOTAL_SIZE_RECORDS_VV, String.valueOf("(" + String.format("%01.1f", new Float(index.inboxSize() / 1024.0)) + " KB)"));
       }
 
       //Create the (text) Body part

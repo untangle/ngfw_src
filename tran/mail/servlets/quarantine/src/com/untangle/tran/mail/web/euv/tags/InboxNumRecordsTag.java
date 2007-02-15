@@ -12,22 +12,18 @@ package com.untangle.tran.mail.web.euv.tags;
 
 import com.untangle.tran.mail.papi.quarantine.InboxRecordCursor;
 
-
 /**
- * Outputs the total number and size of records in the current index, or
+ * Outputs the total number of records in the current index, or
  * unknown if there is no current index
  *
  */
-public final class InboxMsgTotalsTag
-  extends SingleValueTag {
-
+public final class InboxNumRecordsTag extends SingleValueTag {
   @Override
   protected String getValue() {
     InboxRecordCursor iCursor = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
     try {
-        return Long.toString(iCursor == null ? 0 : iCursor.inboxCount()) + " mails (" +
-          String.format("%01.3f", new Float(iCursor.inboxSize() / 1024.0)) + " KB)";
+        return Long.toString(iCursor == null ? 0 : iCursor.inboxCount()) + " mails";
     }
-    catch(Exception ex) { return "<unknown> mails, <unknown> KB"; }
+    catch(Exception ex) { return "<unknown> mails"; }
   }
 }
