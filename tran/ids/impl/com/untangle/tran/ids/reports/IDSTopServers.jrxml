@@ -128,7 +128,7 @@ SELECT rule_sid,
                 <textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
                     <font fontName="SansSerif" pdfFontName="Helvetica" size="9" isBold="false" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
                 </textElement>
-            <text><![CDATA[Rule #]]></text>
+            <text><![CDATA[SID]]></text>
             </staticText>
             <staticText>
                 <reportElement

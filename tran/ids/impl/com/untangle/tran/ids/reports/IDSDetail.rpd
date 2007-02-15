@@ -15,16 +15,18 @@ FIELD_4.name=c_server_port
 FIELD_4.type=String
 FIELD_5.name=classification
 FIELD_5.type=String
-FIELD_6.name=message
-FIELD_6.type=String
-FIELD_7.name=blocked
-FIELD_7.type=Boolean
-FIELD_8.name=name
-FIELD_8.type=String
+FIELD_6.name=rule_sid
+FIELD_6.type=Long
+FIELD_7.name=message
+FIELD_7.type=String
+FIELD_8.name=blocked
+FIELD_8.type=Boolean
+FIELD_9.name=name
+FIELD_9.type=String
 
 QUERY=\
 SELECT evt.time_stamp, c_client_addr, c_server_addr, c_server_port, \
-       classification, message, blocked, name \
+       classification, rule_sid, message, blocked, name \
   FROM tr_ids_evt evt \
          JOIN pl_endp endp \
            ON (evt.pl_endp_id = endp.event_id) \
@@ -40,7 +42,7 @@ TOPLEFT.label=Timestamp
 TOPLMID.label=User
 BOTLMID.label=Action
 TOPRMID.label=Classification
-BOTRMID.label=Description
+BOTRMID.label=SID: Description
 TOPRIGHT.label=Server IP
 BOTRIGHT.label=Server Port
 
@@ -48,6 +50,6 @@ TOPLEFT.expr=$F{time_stamp}
 TOPLMID.expr=$F{name} == null ? $F{c_client_addr} : $F{name}
 BOTLMID.expr=$F{blocked}.booleanValue() ? "blocked" : "passed"
 TOPRMID.expr=$F{classification}
-BOTRMID.expr=$F{message}
+BOTRMID.expr=$F{rule_sid} + ": " + $F{message}
 TOPRIGHT.expr=$F{c_server_addr}
 BOTRIGHT.expr=$F{c_server_port}

@@ -331,8 +331,11 @@ public class TranReporter {
             ps.setTimestamp(2, endTime);
 
             ResultSet rs = ps.executeQuery();
+            String uName;
             while (true == rs.next()) {
-                uNameList.add(rs.getString(1));
+                uName = rs.getString(1);
+                if (null != uName)
+                    uNameList.add(uName);
             }
             rs.close();
 
@@ -355,8 +358,11 @@ public class TranReporter {
             ps.setTimestamp(2, endTime);
 
             ResultSet rs = ps.executeQuery();
+            String hName;
             while (true == rs.next()) {
-                hNameList.add(rs.getString(1));
+                hName = rs.getString(1);
+                if (null != hName)
+                    hNameList.add(hName);
             }
             rs.close();
 
