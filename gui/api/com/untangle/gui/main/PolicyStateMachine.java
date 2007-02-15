@@ -628,7 +628,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             try{
                 if(mTransformJButton == null)
                     throw new Exception();
-                purchaseBlockingQueue.put(new PurchaseWrapper(mTransformJButton, selectedPolicy));
+                Policy purchasePolicy;
+                if(mTransformJButton.getMackageDesc().isCore())
+                    purchasePolicy = null;
+                else
+                    purchasePolicy = selectedPolicy;
+                purchaseBlockingQueue.put(new PurchaseWrapper(mTransformJButton, purchasePolicy));
             }
             catch (Exception e) {
                 Util.handleExceptionNoRestart("Error purchasing", e);
@@ -746,42 +751,6 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 if( !mackageInstalled )
                     throw new Exception();
                 Thread.currentThread().sleep(INSTALL_FINAL_PAUSE_MILLIS);
-                //// AUTO-INSTALL INTO RACK
-                SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                    mTransformJButton.setProgress("Deploying...", 101);
-                }});
-                try{
-                    Tid tid = Util.getTransformManager().instantiate(installName,targetPolicy);
-                    TransformContext transformContext = Util.getTransformManager().transformContext( tid );
-                    TransformDesc transformDesc = transformContext.getTransformDesc();
-                    MTransformJPanel mTransformJPanel = MTransformJPanel.instantiate(transformContext, transformDesc, targetPolicy);
-                    Thread.currentThread().sleep(DEPLOY_FINAL_PAUSE_MILLIS);
-                    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                        mTransformJButton.setProgress("Deployed!", 100);
-                    }});
-                    addToRack(targetPolicy, mTransformJPanel, true);
-                    focusInRack(mTransformJPanel);
-                    if( installName.startsWith("nat") || installName.startsWith("openvpn") ){
-                        mTransformJPanel.setPowerOnHintVisible(true);
-                    }
-                    else{
-                        mTransformJPanel.powerJToggleButton().doClick();
-                    }
-                }
-                catch(Exception e){
-                    e.printStackTrace();
-                    try{ Util.handleExceptionWithRestart("Error during auto install/on procedure", e); }
-                    catch(Exception f){
-                        Util.handleExceptionNoRestart("Error during auto install/on procedure", f);
-                        mTransformJButton.setFailedDeployView();
-                        MOneButtonJDialog.factory( Util.getMMainJFrame(), "",					       
-                                                   "A problem occurred while installing to the rack:<br>"
-                                                   + mTransformJButton.getDisplayName()
-                                                   + "<br>Please contact Untangle Support.",
-                                                   mTransformJButton.getDisplayName() + " Warning", "");
-                        return;
-                    }
-                }
                 // UPDATE PROTOCOL SETTINGS CACHE
                 loadAllCasings(false);
                 // REMOVE FROM STORE / UPDATE STORE MODEL
@@ -791,8 +760,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     Util.getMMainJFrame().setVisible(true);
                     Util.getMMainJFrame().toFront();
                 }});
-                // ADD TO TOOLBOX
+                // GENERATE LIST OF NEW MACKAGES
                 List<MackageDesc> newMackageDescs = computeNewMackageDescs(originalInstalledMackages, currentInstalledMackages);
+                // ADD TO TOOLBOX
                 Policy currentPolicy = (Policy) viewSelector.getSelectedItem();
                 for( MackageDesc newMackageDesc : newMackageDescs ){
                     if( !isMackageStoreItem(newMackageDesc) && isMackageVisible(newMackageDesc) ){
@@ -813,7 +783,54 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         }
                         newMTransformJButton.setDeployedView();
                         revalidateToolboxes();
-                        focusInToolbox(newMTransformJButton, true); // focus and highlight in current toolbox
+                        //focusInToolbox(newMTransformJButton, true); // focus and highlight in current toolbox
+                    }
+                }
+                //// AUTO-INSTALL INTO RACK
+                SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+                    mTransformJButton.setProgress("Deploying...", 101);
+                }});
+                for( MackageDesc newMackageDesc : newMackageDescs ){
+                    if( isMackageStoreItem(newMackageDesc) || !isMackageVisible(newMackageDesc) )
+                        continue;
+                    try{
+                        Policy newPolicy = null;
+                        if( !newMackageDesc.isCore() )
+                            newPolicy = targetPolicy;
+                        Tid tid = Util.getTransformManager().instantiate(newMackageDesc.getName(),newPolicy);
+                        TransformContext transformContext = Util.getTransformManager().transformContext( tid );
+                        TransformDesc transformDesc = transformContext.getTransformDesc();
+                        MTransformJPanel mTransformJPanel = MTransformJPanel.instantiate(transformContext, transformDesc, newPolicy);
+                        Thread.currentThread().sleep(DEPLOY_FINAL_PAUSE_MILLIS);
+                        SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+                            mTransformJButton.setProgress("Deployed!", 100);
+                        }});
+                        addToRack(newPolicy, mTransformJPanel, true);
+                        focusInRack(mTransformJPanel);
+                        if( newMackageDesc.getName().startsWith("nat") || newMackageDesc.getName().startsWith("openvpn") ){
+                            mTransformJPanel.setPowerOnHintVisible(true);
+                            MOneButtonJDialog.factory( Util.getMMainJFrame(), "",					       
+                                                       "This product can not be automatically turned on:<br>"
+                                                       + newMackageDesc.getDisplayName()
+                                                       + "<br>Please configure its settings first.",
+                                                       newMackageDesc.getDisplayName() + " Warning", "");
+                        }
+                        else{
+                            mTransformJPanel.powerJToggleButton().doClick();
+                        }
+                    }
+                    catch(Exception e){
+                        e.printStackTrace();
+                        try{ Util.handleExceptionWithRestart("Error during auto install/on procedure", e); }
+                        catch(Exception f){
+                            Util.handleExceptionNoRestart("Error during auto install/on procedure", f);
+                            mTransformJButton.setFailedDeployView();
+                            MOneButtonJDialog.factory( Util.getMMainJFrame(), "",					       
+                                                       "A problem occurred while installing to the rack:<br>"
+                                                       + mTransformJButton.getDisplayName()
+                                                       + "<br>Please contact Untangle Support.",
+                                                       mTransformJButton.getDisplayName() + " Warning", "");
+                        }
                     }
                 }
                 // REFRESH STATE OF ALL EXISTING APPLIANCES
@@ -971,10 +988,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             try{
                 Util.getToolboxManager().update();
                 storeItemsAvailable = Util.getToolboxManager().uninstalled();
+                /*
                 if( storeItemsAvailable == null )
                     System.out.println("items: null");
                 else
                     System.out.println("items: " + storeItemsAvailable.length);
+                */
                 connectedToStore = true;
             }
             catch(Exception e){
@@ -1048,13 +1067,13 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 		    // ADD TO STORE IF NOT A TRIAL
 		    for( MackageDesc mackageDesc : storeItemsAvailable ){
 			String name = mackageDesc.getName();
-            System.out.println("testing: " + name);
+            //System.out.println("testing: " + name);
 			if( name.endsWith(STOREITEM_EXTENSION) && !name.endsWith(TRIAL_EXTENSION) ){
 			    addToStore(mackageDesc,false);
-                System.out.println("added");
+                //System.out.println("added");
 			}
             else{
-                System.out.println("failed");
+                //System.out.println("failed");
             }
 		    }			    
 

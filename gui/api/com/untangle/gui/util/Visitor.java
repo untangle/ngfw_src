@@ -81,12 +81,14 @@ public class Visitor implements ProgressVisitor{
     }
 
     public void visitDownloadComplete(final DownloadComplete dc){
-        isSuccessful = dc.getSuccess();
-        isDone = !isSuccessful;
+        if(!dc.getSuccess()){
+            isSuccessful = false;
+            isDone = true;
+        }
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             currentByteIndex += currentByteIncrement;
             currentFileIndex++;
-            if(!dc.getSuccess()){
+            if(!isSuccessful){
                 if(isProgressBar){
                     ((JProgressBar)visualizer).setString( "Download failed.  Please try again." );
                     ((JProgressBar)visualizer).setValue(100);
@@ -102,7 +104,7 @@ public class Visitor implements ProgressVisitor{
         isSuccessful = ic.getSuccess();
         isDone = true;
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-            if(ic.getSuccess()){
+            if(isSuccessful){
                 if(isProgressBar){
                     ((JProgressBar)visualizer).setString( "Download successful." );
                     ((JProgressBar)visualizer).setValue(100);
