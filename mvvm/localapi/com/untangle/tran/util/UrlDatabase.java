@@ -9,7 +9,7 @@
  * $Id: SpywareHttpHandler.java 8668 2007-01-29 19:17:09Z amread $
  */
 
-package com.untangle.tran.clamphish;
+package com.untangle.tran.util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,12 +41,10 @@ import com.sleepycat.je.OperationStatus;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Decoder;
 
-class PhishDataBase implements DomainDatabase
+public class UrlDatabase
 {
     private static final byte[] DB_SALT = "oU3q.72p".getBytes();
     private static final byte[] VERSION_KEY = "goog-black-enchash".getBytes();
-
-    private static final DomainDatabase NULL_DB = new NullDatabase();
 
     private static final Pattern VERSION_PATTERN = Pattern.compile("\\[goog-black-enchash ([0-9.]+)\\]");
     private static final Pattern TUPLE_PATTERN = Pattern.compile("\\+([0-9A-F]+)\t([A-Za-z0-9+/=]+)");
@@ -56,7 +54,7 @@ class PhishDataBase implements DomainDatabase
 
     // constructors -----------------------------------------------------------
 
-    private PhishDataBase() throws DatabaseException
+    public UrlDatabase() throws DatabaseException
     {
         EnvironmentConfig envCfg = new EnvironmentConfig();
         envCfg.setAllowCreate(true);
@@ -75,27 +73,12 @@ class PhishDataBase implements DomainDatabase
                 logger.warn("could not initialize database", exn);
             }
         } catch (DatabaseException exn) {
-            logger.warn("could not open phish database", exn);
+            logger.warn("could not open database", exn);
             throw exn;
         }
     }
 
-    // factories --------------------------------------------------------------
-
-    static DomainDatabase getDatabase()
-    {
-        DomainDatabase pdb;
-
-        try {
-            pdb = new PhishDataBase();
-        } catch (DatabaseException exn) {
-            pdb = NULL_DB;
-        }
-
-        return pdb;
-    }
-
-    // DomainDatabase methods -------------------------------------------------
+    // public methods ---------------------------------------------------------
 
     // this method for pre-normalized parts
     public boolean contains(String proto, String host, String uri)
@@ -259,28 +242,5 @@ class PhishDataBase implements DomainDatabase
             logger.warn("could not decode", exn);
             return new byte[0];
         }
-    }
-
-    // private classes --------------------------------------------------------
-
-    private static class NullDatabase implements DomainDatabase
-    {
-        NullDatabase() { }
-
-        // DomainDatabase methods ---------------------------------------------
-
-        public boolean contains(String proto, String host, String uri)
-        {
-            return false;
-        }
-    }
-
-    public static void main(String[] args) throws Exception
-    {
-        DomainDatabase pdb = PhishDataBase.getDatabase();
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-        boolean b = pdb.contains("http", "youress.info", "/confirm/sbuser/");
     }
 }
