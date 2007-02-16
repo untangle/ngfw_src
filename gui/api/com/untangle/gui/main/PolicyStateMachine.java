@@ -760,8 +760,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     Util.getMMainJFrame().setVisible(true);
                     Util.getMMainJFrame().toFront();
                 }});
-                // GENERATE LIST OF NEW MACKAGES
-                List<MackageDesc> newMackageDescs = computeNewMackageDescs(originalInstalledMackages, currentInstalledMackages);
+                // GENERATE LIST OF NEW MACKAGES, COUNTING EXTRA NAME
+                List<MackageDesc> newMackageDescs = computeNewMackageDescs(originalInstalledMackages,
+                                                                           currentInstalledMackages,
+                                                                           true);
                 // ADD TO TOOLBOX
                 Policy currentPolicy = (Policy) viewSelector.getSelectedItem();
                 for( MackageDesc newMackageDesc : newMackageDescs ){
@@ -783,9 +785,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         }
                         newMTransformJButton.setDeployedView();
                         revalidateToolboxes();
-                        //focusInToolbox(newMTransformJButton, true); // focus and highlight in current toolbox
                     }
                 }
+                // GENERATE LIST OF NEW MACKAGES, NOT COUNTING EXTRA NAME
+                newMackageDescs = computeNewMackageDescs(originalInstalledMackages,
+                                                         currentInstalledMackages,
+                                                         false);
                 //// AUTO-INSTALL INTO RACK
                 SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                     mTransformJButton.setProgress("Deploying...", 101);
@@ -802,9 +807,6 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         TransformDesc transformDesc = transformContext.getTransformDesc();
                         MTransformJPanel mTransformJPanel = MTransformJPanel.instantiate(transformContext, transformDesc, newPolicy);
                         Thread.currentThread().sleep(DEPLOY_FINAL_PAUSE_MILLIS);
-                        SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                            mTransformJButton.setProgress("Deployed!", 100);
-                        }});
                         addToRack(newPolicy, mTransformJPanel, true);
                         focusInRack(mTransformJPanel);
                         if( newMackageDesc.getName().startsWith("nat") || newMackageDesc.getName().startsWith("openvpn") ){
@@ -833,6 +835,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         }
                     }
                 }
+                SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+                    mTransformJButton.setProgress("Deployed!", 100);
+                }});
                 // REFRESH STATE OF ALL EXISTING APPLIANCES
                 for(Policy policy : policyRackMap.keySet()){
                     for(MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values()){
@@ -870,14 +875,26 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             }
         }
     }
-    private List<MackageDesc> computeNewMackageDescs(MackageDesc[] originalInstalledMackages, MackageDesc[] currentInstalledMackages){
+    private List<MackageDesc> computeNewMackageDescs(MackageDesc[] originalInstalledMackages,
+                                                     MackageDesc[] currentInstalledMackages,
+                                                     boolean countExtraName){
         Vector<MackageDesc> newlyInstalledMackages = new Vector<MackageDesc>();
         Hashtable<String,String> originalInstalledMackagesHashtable = new Hashtable<String,String>();
-        for( MackageDesc mackageDesc : originalInstalledMackages )
-            originalInstalledMackagesHashtable.put(mackageDesc.getName(), mackageDesc.getName());
-        for( MackageDesc mackageDesc : currentInstalledMackages )
-            if( !originalInstalledMackagesHashtable.containsKey(mackageDesc.getName()) )
+        if(countExtraName){
+            for( MackageDesc mackageDesc : originalInstalledMackages )
+                originalInstalledMackagesHashtable.put(mackageDesc.getName()+mackageDesc.getExtraName(),
+                                                       mackageDesc.getName()+mackageDesc.getExtraName());
+            for( MackageDesc mackageDesc : currentInstalledMackages )
+                if( !originalInstalledMackagesHashtable.containsKey(mackageDesc.getName()+mackageDesc.getExtraName()) )
                 newlyInstalledMackages.add(mackageDesc);
+        }
+        else{
+            for( MackageDesc mackageDesc : originalInstalledMackages )
+                originalInstalledMackagesHashtable.put(mackageDesc.getName(), mackageDesc.getName());
+            for( MackageDesc mackageDesc : currentInstalledMackages )
+                if( !originalInstalledMackagesHashtable.containsKey(mackageDesc.getName()) )
+                newlyInstalledMackages.add(mackageDesc);
+        }
         return newlyInstalledMackages;
     }
     ///////////////////////////////////////////////////////
@@ -1404,10 +1421,13 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             if( mackageDesc.isUtil() || mackageDesc.isService() ){
                 // UPDATE GUI DATA MODEL
+                MTransformJButton removeMTransformJButton = utilToolboxMap.remove(buttonKey); // to remove possible trial
                 utilToolboxMap.put(buttonKey,mTransformJButton);
                 mTransformJButton.addActionListener( new ToolboxActionListener(null,mTransformJButton) );
                 // UPDATE GUI VIEW MODEL
                 int position = ((TreeMap)utilToolboxMap).headMap(buttonKey).size();
+                if(removeMTransformJButton!=null)
+                    coreToolboxJPanel.remove(removeMTransformJButton);
                 utilToolboxJPanel.add(mTransformJButton, buttonGridBagConstraints, position);
                 if(doRevalidate)
                     utilToolboxJPanel.revalidate();
@@ -1415,21 +1435,27 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             else if(mackageDesc.isSecurity()){
                 // UPDATE GUI DATA MODEL
                 Map<ButtonKey,MTransformJButton> toolboxMap = policyToolboxMap.get(policy);
+                MTransformJButton removeMTransformJButton = toolboxMap.remove(buttonKey); // to remove possible trial
                 toolboxMap.put(buttonKey,mTransformJButton);
                 mTransformJButton.addActionListener( new ToolboxActionListener(policy,mTransformJButton) );
                 // UPDATE GUI VIEW MODEL
                 JPanel toolboxJPanel = policyToolboxJPanelMap.get(policy);
                 int position = ((TreeMap)toolboxMap).headMap(buttonKey).size();
+                if(removeMTransformJButton!=null)
+                    coreToolboxJPanel.remove(removeMTransformJButton);
                 toolboxJPanel.add(mTransformJButton, buttonGridBagConstraints, position);
                 if(doRevalidate)
                     toolboxJPanel.revalidate();
             }
             else if( mackageDesc.isCore() ){
                 // UPDATE GUI DATA MODEL
+                MTransformJButton removeMTransformJButton = coreToolboxMap.remove(buttonKey); // to remove possible trial
                 coreToolboxMap.put(buttonKey,mTransformJButton);
                 mTransformJButton.addActionListener( new ToolboxActionListener(null,mTransformJButton) );
                 // UPDATE GUI VIEW MODEL
                 int position = ((TreeMap)coreToolboxMap).headMap(buttonKey).size();
+                if(removeMTransformJButton!=null)
+                    coreToolboxJPanel.remove(removeMTransformJButton);
                 coreToolboxJPanel.add(mTransformJButton, buttonGridBagConstraints, position);
                 if(doRevalidate)
                     coreToolboxJPanel.revalidate();
