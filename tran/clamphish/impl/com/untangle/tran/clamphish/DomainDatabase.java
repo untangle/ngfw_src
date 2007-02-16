@@ -13,5 +13,5 @@ package com.untangle.tran.clamphish;
 
 interface DomainDatabase
 {
-    void getPatterns(String host);
+    void lookupHost(String host);
 }
