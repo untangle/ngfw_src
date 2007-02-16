@@ -13,5 +13,5 @@ package com.untangle.tran.clamphish;
 
 interface DomainDatabase
 {
-    void lookupHost(String host);
+    boolean contains(String proto, String host, String uri);
 }

@@ -22,6 +22,9 @@ import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.crypto.Cipher;
@@ -37,7 +40,6 @@ import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 class PhishDataBase implements DomainDatabase
 {
@@ -59,7 +61,6 @@ class PhishDataBase implements DomainDatabase
         EnvironmentConfig envCfg = new EnvironmentConfig();
         envCfg.setAllowCreate(true);
         File dbHome = new File(System.getProperty("bunnicula.db.dir"));
-        System.out.println("DB HOME: " + dbHome);
         try {
             Environment dbEnv = new Environment(dbHome, envCfg);
 
@@ -70,15 +71,11 @@ class PhishDataBase implements DomainDatabase
 
             try {
                 loadDatabase();
-                System.out.println("DATABASE COUNT: " + db.count());
             } catch (IOException exn) {
                 logger.warn("could not initialize database", exn);
-                System.out.println("could not initialize database");
             }
         } catch (DatabaseException exn) {
             logger.warn("could not open phish database", exn);
-            System.out.println("could not open phish database");
-            exn.printStackTrace();
             throw exn;
         }
     }
@@ -100,21 +97,31 @@ class PhishDataBase implements DomainDatabase
 
     // DomainDatabase methods -------------------------------------------------
 
-    public void lookupHost(String hostStr)
+    // this method for pre-normalized parts
+    public boolean contains(String proto, String host, String uri)
     {
-        for (String d = hostStr; null != d; d = nextHost(d)) {
-            getPatterns(d);
+        String url = proto + "://" + host + uri;
+
+        for (String d = host; null != d; d = nextHost(d)) {
+            for (String p : getPatterns(d)) {
+                if (url.matches(p)) {
+                    return true;
+                }
+            }
         }
+
+        return false;
     }
 
     // private methods --------------------------------------------------------
 
-    private void getPatterns(String hostStr)
+    private List<String> getPatterns(String hostStr)
     {
         byte[] host = hostStr.getBytes();
 
         byte[] in = new byte[DB_SALT.length + host.length];
         System.arraycopy(DB_SALT, 0, in, 0, DB_SALT.length);
+
         System.arraycopy(host, 0, in, DB_SALT.length, host.length);
 
         // XXX Switch to Fast MD5 http://www.twmacinta.com/myjava/fast_md5.php
@@ -124,8 +131,7 @@ class PhishDataBase implements DomainDatabase
             md = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException exn) {
             logger.warn("Could not get MD5 algorithm", exn);
-            System.out.println("Could not get MD5 algorithm");
-            return;
+            return Collections.emptyList();
         }
 
         byte[] hash = md.digest(in);
@@ -138,19 +144,15 @@ class PhishDataBase implements DomainDatabase
             status = db.get(null, k, v, LockMode.DEFAULT);
         } catch (DatabaseException exn) {
             logger.warn("could not access database", exn);
-            System.out.println("could not access database");
-            return;
+            return Collections.emptyList();
         }
-        System.out.println("STATUS: " + status);
 
         if (OperationStatus.SUCCESS == status) {
             byte[] data = v.getData();
-            System.out.println("DATA: " + base64Encode(v.getData()));
             in = new byte[8 + DB_SALT.length + host.length];
             System.arraycopy(DB_SALT, 0, in, 0, DB_SALT.length);
             System.arraycopy(data, 0, in, DB_SALT.length, 8);
             System.arraycopy(host, 0, in, 8 + DB_SALT.length, host.length);
-            System.out.println("KEY: " + new String(in));
             md.reset();
             hash = md.digest(in);
 
@@ -161,23 +163,33 @@ class PhishDataBase implements DomainDatabase
                 arcfour.init(Cipher.DECRYPT_MODE, key);
             } catch (GeneralSecurityException exn) {
                 logger.warn("could not get ARCFOUR algorithm", exn);
-                System.out.println("could not get ARCFOUR algorithm");
-                return;
+                return Collections.emptyList();
             }
 
-            System.out.println("UPDATE");
-
+            byte[] output;
             try {
-                System.out.println("DATA LENGTH: " + (data.length - 8));
-                byte[] output = arcfour.doFinal(data, 8, data.length - 8);
-                System.out.println("OUTPUT: " + new String(output));
+                output = arcfour.doFinal(data, 8, data.length - 8);
             } catch (GeneralSecurityException exn) {
                 logger.warn("could not decrypt regexp", exn);
-                System.out.println("could not decrypt regexp");
-                exn.printStackTrace();
+                return Collections.emptyList();
             }
+
+            List<String> l = new ArrayList<String>();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < output.length; i++) {
+                char c = (char)output[i];
+                if ('\t' == c) {
+                    l.add(sb.toString());
+                    sb.delete(0, sb.length());
+                } else {
+                    sb.append(c);
+                }
+            }
+            l.add(sb.toString());
+
+            return l;
         } else {
-            System.out.println("HOST NOT FOUND: " + hostStr);
+            return Collections.emptyList();
         }
     }
 
@@ -222,7 +234,6 @@ class PhishDataBase implements DomainDatabase
             }
         } else {
             logger.warn("No version number: " + line);
-            System.out.println("No version number: " + line);
         }
 
         while (null != (line = br.readLine())) {
@@ -246,15 +257,9 @@ class PhishDataBase implements DomainDatabase
             return new BASE64Decoder().decodeBuffer(s);
         } catch (IOException exn) {
             logger.warn("could not decode", exn);
-            System.out.println("could not decode");
             return new byte[0];
         }
     }
-
-    private String base64Encode(byte[] b) {
-        return new BASE64Encoder().encodeBuffer(b);
-    }
-
 
     // private classes --------------------------------------------------------
 
@@ -264,7 +269,10 @@ class PhishDataBase implements DomainDatabase
 
         // DomainDatabase methods ---------------------------------------------
 
-        public void lookupHost(String host) { System.out.println("NULL"); }
+        public boolean contains(String proto, String host, String uri)
+        {
+            return false;
+        }
     }
 
     public static void main(String[] args) throws Exception
@@ -272,12 +280,7 @@ class PhishDataBase implements DomainDatabase
         DomainDatabase pdb = PhishDataBase.getDatabase();
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println(pdb + " READY!");
-        String line;
-        System.out.print("Host: ");
-        while (null != (line = br.readLine())) {
-            System.out.print("Host: ");
-            pdb.lookupHost(line);
-        }
+
+        boolean b = pdb.contains("http", "youress.info", "/confirm/sbuser/");
     }
 }
