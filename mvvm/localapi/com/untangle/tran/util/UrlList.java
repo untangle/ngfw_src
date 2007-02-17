@@ -26,7 +26,7 @@ import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import org.apache.log4j.Logger;
 
-public abstract class UrlDatabase
+public abstract class UrlList
 {
     private final Database db;
 
@@ -34,7 +34,8 @@ public abstract class UrlDatabase
 
     // constructors -----------------------------------------------------------
 
-    public UrlDatabase(File dbHome, String dbName) throws DatabaseException, IOException
+    public UrlList(File dbHome, String dbName)
+        throws DatabaseException, IOException
     {
         EnvironmentConfig envCfg = new EnvironmentConfig();
         envCfg.setAllowCreate(true);

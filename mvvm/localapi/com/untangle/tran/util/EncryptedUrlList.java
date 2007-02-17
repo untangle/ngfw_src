@@ -38,7 +38,7 @@ import com.sleepycat.je.OperationStatus;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Decoder;
 
-public class EncryptedUrlDatabase extends UrlDatabase
+public class EncryptedUrlList extends UrlList
 {
     private static final byte[] DB_SALT = "oU3q.72p".getBytes();
     private static final byte[] VERSION_KEY = "goog-black-enchash".getBytes();
@@ -50,7 +50,7 @@ public class EncryptedUrlDatabase extends UrlDatabase
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    EncryptedUrlDatabase(File dbHome, String dbName, URL databaseUrl)
+    EncryptedUrlList(File dbHome, String dbName, URL databaseUrl)
         throws DatabaseException, IOException
     {
         super(dbHome, dbName);
@@ -58,7 +58,7 @@ public class EncryptedUrlDatabase extends UrlDatabase
         this.databaseUrl = databaseUrl;
     }
 
-    // UrlDatabase methods ----------------------------------------------------
+    // UrlList methods --------------------------------------------------------
 
     protected void updateDatabase(Database db) throws IOException
     {
