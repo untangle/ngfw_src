@@ -34,17 +34,16 @@ public abstract class UrlDatabase
 
     // constructors -----------------------------------------------------------
 
-    public UrlDatabase() throws DatabaseException, IOException
+    public UrlDatabase(File dbHome, String dbName) throws DatabaseException, IOException
     {
         EnvironmentConfig envCfg = new EnvironmentConfig();
         envCfg.setAllowCreate(true);
-        File dbHome = new File(System.getProperty("bunnicula.db.dir"));
         Environment dbEnv = new Environment(dbHome, envCfg);
 
         // Open the database. Create it if it does not already exist.
         DatabaseConfig dbCfg = new DatabaseConfig();
         dbCfg.setAllowCreate(true);
-        db = dbEnv.openDatabase(null, "google-black-enchash", dbCfg);
+        db = dbEnv.openDatabase(null, dbName, dbCfg);
 
         updateDatabase(db);
     }

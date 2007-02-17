@@ -12,6 +12,7 @@
 package com.untangle.tran.util;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -42,12 +43,20 @@ public class EncryptedUrlDatabase extends UrlDatabase
     private static final byte[] DB_SALT = "oU3q.72p".getBytes();
     private static final byte[] VERSION_KEY = "goog-black-enchash".getBytes();
 
-    private static final Pattern VERSION_PATTERN = Pattern.compile("\\[goog-black-enchash ([0-9.]+)\\]");
+    private static final Pattern VERSION_PATTERN = Pattern.compile("\\[[^ ]+ ([0-9.]+)\\]");
     private static final Pattern TUPLE_PATTERN = Pattern.compile("\\+([0-9A-F]+)\t([A-Za-z0-9+/=]+)");
+
+    private final URL databaseUrl;
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    EncryptedUrlDatabase() throws DatabaseException, IOException { }
+    EncryptedUrlDatabase(File dbHome, String dbName, URL databaseUrl)
+        throws DatabaseException, IOException
+    {
+        super(dbHome, dbName);
+
+        this.databaseUrl = databaseUrl;
+    }
 
     // UrlDatabase methods ----------------------------------------------------
 
@@ -64,9 +73,7 @@ public class EncryptedUrlDatabase extends UrlDatabase
             logger.warn("could not get database version", exn);
         }
 
-
-        URL url = new URL("http://sb.google.com/safebrowsing/update?version=goog-black-enchash:1:1");
-        InputStream is = url.openStream();
+        InputStream is = databaseUrl.openStream();
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
         String line = br.readLine();
