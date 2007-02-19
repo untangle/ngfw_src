@@ -187,7 +187,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
             super("MVCLIENT-StateMachineRefreshThread: " + displayName );
 	    setDaemon(true);
             setProcessingView(false);
-	    mTransformControlsJPanel.getInfiniteProgressJComponent().start("Reloading...");
+	    mTransformControlsJPanel.getInfiniteProgressJComponent().start("Refreshing...");
             start();
         }
         public void run(){

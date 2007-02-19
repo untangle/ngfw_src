@@ -117,7 +117,9 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
     }
 
     public void settingsChanged(Object source){
-	setSaveSettingsHintVisible(true);
+        saveJButton.setEnabled(true);
+        reloadJButton.setEnabled(true);
+        setSaveSettingsHintVisible(true);
     }
 
     public void doShutdown(){
@@ -250,6 +252,8 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 	}        
 	// SEND SETTINGS TO SERVER
 	mTransformJPanel.getTransform().setSettings( settings );
+    saveJButton.setEnabled(false);
+    reloadJButton.setEnabled(false);
 	setSaveSettingsHintVisible(false);
     }
 
@@ -285,6 +289,8 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 		}
 	    }});
 	}
+    saveJButton.setEnabled(false);
+    reloadJButton.setEnabled(false);
 	setSaveSettingsHintVisible(false);
     }
     
@@ -328,6 +334,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridwidth = 4;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
@@ -344,39 +351,34 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridwidth = 4;
                 gridBagConstraints.gridheight = 2;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 21, 55);
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 55);
                 contentJPanel.add(nbSaveSettingsHintJLabel, gridBagConstraints);
 
                 removeJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                removeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Remove_Appliance_106x17.png")));
+                removeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconRemove_16x16.png")));
+                removeJButton.setText("Remove");
                 removeJButton.setDoubleBuffered(true);
                 removeJButton.setFocusPainted(false);
                 removeJButton.setFocusable(false);
-                removeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                removeJButton.setIconTextGap(0);
-                removeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                removeJButton.setMaximumSize(new java.awt.Dimension(130, 25));
-                removeJButton.setMinimumSize(new java.awt.Dimension(130, 25));
+                removeJButton.setIconTextGap(6);
+                removeJButton.setMargin(new java.awt.Insets(2, 4, 2, 4));
                 removeJButton.setOpaque(false);
-                removeJButton.setPreferredSize(new java.awt.Dimension(130, 25));
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 contentJPanel.add(removeJButton, gridBagConstraints);
 
-                helpJButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconHelp28x28.png")));
+                helpJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconHelp_18x16.png")));
                 helpJButton.setText("Help");
                 helpJButton.setFocusPainted(false);
-                helpJButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-                helpJButton.setIconTextGap(2);
-                helpJButton.setMargin(new java.awt.Insets(0, 0, 0, 9));
-                helpJButton.setMaximumSize(new java.awt.Dimension(86, 25));
-                helpJButton.setMinimumSize(new java.awt.Dimension(86, 25));
+                helpJButton.setIconTextGap(6);
+                helpJButton.setMargin(new java.awt.Insets(2, 4, 2, 4));
                 helpJButton.setOpaque(false);
-                helpJButton.setPreferredSize(new java.awt.Dimension(86, 25));
                 helpJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 helpJButtonActionPerformed(evt);
@@ -390,17 +392,14 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 contentJPanel.add(helpJButton, gridBagConstraints);
 
                 expandJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                expandJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Expand_Settings_106x17.png")));
+                expandJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconEnlarge_43x16.png")));
+                expandJButton.setText("Enlarge");
                 expandJButton.setDoubleBuffered(true);
                 expandJButton.setFocusPainted(false);
                 expandJButton.setFocusable(false);
-                expandJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                expandJButton.setIconTextGap(0);
-                expandJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                expandJButton.setMaximumSize(new java.awt.Dimension(140, 25));
-                expandJButton.setMinimumSize(new java.awt.Dimension(140, 25));
+                expandJButton.setIconTextGap(6);
+                expandJButton.setMargin(new java.awt.Insets(2, 4, 2, 4));
                 expandJButton.setOpaque(false);
-                expandJButton.setPreferredSize(new java.awt.Dimension(140, 25));
                 expandJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 expandJButtonActionPerformed(evt);
@@ -408,24 +407,20 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 });
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 1;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                gridBagConstraints.insets = new java.awt.Insets(0, 160, 0, 0);
+                gridBagConstraints.weightx = 1.0;
                 contentJPanel.add(expandJButton, gridBagConstraints);
 
                 reloadJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                reloadJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Reload_Settings_106x17.png")));
+                reloadJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconCancel_16x16.png")));
+                reloadJButton.setText("Cancel");
                 reloadJButton.setDoubleBuffered(true);
                 reloadJButton.setFocusPainted(false);
                 reloadJButton.setFocusable(false);
-                reloadJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                reloadJButton.setIconTextGap(0);
-                reloadJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                reloadJButton.setMaximumSize(new java.awt.Dimension(115, 25));
-                reloadJButton.setMinimumSize(new java.awt.Dimension(115, 25));
+                reloadJButton.setIconTextGap(6);
+                reloadJButton.setMargin(new java.awt.Insets(2, 4, 2, 4));
                 reloadJButton.setOpaque(false);
-                reloadJButton.setPreferredSize(new java.awt.Dimension(115, 25));
                 reloadJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 reloadJButtonActionPerformed(evt);
@@ -433,24 +428,21 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 });
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridx = 2;
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 119);
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
                 contentJPanel.add(reloadJButton, gridBagConstraints);
 
                 saveJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                saveJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Save_Settings_106x17.png")));
+                saveJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
+                saveJButton.setText("Save");
                 saveJButton.setDoubleBuffered(true);
                 saveJButton.setFocusPainted(false);
                 saveJButton.setFocusable(false);
-                saveJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                saveJButton.setIconTextGap(0);
-                saveJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                saveJButton.setMaximumSize(new java.awt.Dimension(115, 25));
-                saveJButton.setMinimumSize(new java.awt.Dimension(115, 25));
+                saveJButton.setIconTextGap(6);
+                saveJButton.setMargin(new java.awt.Insets(2, 4, 2, 4));
                 saveJButton.setOpaque(false);
-                saveJButton.setPreferredSize(new java.awt.Dimension(115, 25));
                 saveJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 saveJButtonActionPerformed(evt);
@@ -458,7 +450,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 });
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridx = 3;
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 contentJPanel.add(saveJButton, gridBagConstraints);
@@ -477,7 +469,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 
                 readoutJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 readoutJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                readoutJLabel.setText("Settings expanded...");
+                readoutJLabel.setText("Settings enlarged...");
                 readoutJLabel.setBorder(new javax.swing.border.EtchedBorder());
                 readoutJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 readoutJLabel.setIconTextGap(0);
@@ -545,14 +537,16 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
             expandJDialog.setBounds( Util.generateCenteredBounds(Util.getMMainJFrame().getBounds(),
 								 Util.getMMainJFrame().getWidth()-EXPAND_INSET,
 								 Util.getMMainJFrame().getHeight()-EXPAND_INSET) );
-	    expandJButton.setIcon(Util.getButtonCollapseSettings());
+	    expandJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconShrink_43x16.png")));
+        expandJButton.setText("Shrink");
 	    expandJDialog.setTitle( mTransformJPanel.getTransformDesc().getDisplayName() + " (expanded settings window)");
             expandJDialog.setVisible(true);
 
             // cleanup after new window is closed
             helpJButton.setVisible(false);
             removeJButton.setVisible(true);
-	    expandJButton.setIcon(Util.getButtonExpandSettings());
+            expandJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconEnlarge_43x16.png")));
+            expandJButton.setText("Enlarge");
             expandJDialog.getContentPane().remove(contentJPanel);
             socketJPanel.add(contentJPanel);
 	    add(infiniteProgressJComponent, infiniteConstraints, 0);
