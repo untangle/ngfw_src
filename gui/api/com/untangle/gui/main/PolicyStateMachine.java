@@ -100,6 +100,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     // CONSTANTS /////////////
     private GridBagConstraints buttonGridBagConstraints;
     private GridBagConstraints storeProgressGridBagConstraints;
+    private GridBagConstraints storeSettingsGridBagConstraints;
     private GridBagConstraints storeSpacerGridBagConstraints;
     private GridBagConstraints applianceGridBagConstraints;
     private GridBagConstraints utilGridBagConstraints;
@@ -188,9 +189,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         buttonGridBagConstraints = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 1d, 0d,
                                                           GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                                                           new Insets(0,1,3,3), 0, 0);
-        storeProgressGridBagConstraints = new GridBagConstraints(0, 0, 1, 1, 1d, 0d,
+        storeProgressGridBagConstraints = new GridBagConstraints(0, 0, 1, 1, .5d, 0d,
                                                                  GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
                                                                  new Insets(0,4,0,4), 0, 0);
+        storeSettingsGridBagConstraints = new GridBagConstraints(0, 1, 1, 1, .5d, 0d,
+                                                                 GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+                                                                 new Insets(15,4,0,4), 0, 0);
         storeSpacerGridBagConstraints = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 0d, 1d,
                                                                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                                                                new Insets(0,0,0,0), 0, 0);
@@ -1036,6 +1040,14 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         storeProgressBar.setValue(1);
                         storeProgressBar.setIndeterminate(false);
                         storeProgressBar.setString("No New Items");
+                        JButton storeSettingsJButton = new JButton();
+                        storeSettingsJButton.setFocusPainted(false);
+                        storeSettingsJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                        storeSettingsJButton.setText("Show Billing Info");
+                        storeSettingsJButton.addActionListener(new StoreSettingsActionListener());
+                        storeJPanel.add(storeSettingsJButton, storeSettingsGridBagConstraints);
+                        storeJPanel.revalidate();
+                        storeJPanel.repaint();
                         if(firstRun){
                             actionJTabbedPane.setSelectedIndex(1);			
                             firstRun = false;
@@ -1098,12 +1110,24 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 }
             }
         }
-
-
-
-
-
     }
+
+    private class StoreSettingsActionListener implements ActionListener{
+        public void actionPerformed(ActionEvent e){
+            try{
+                URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/");
+                ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
+            }
+            catch(Exception f){
+                Util.handleExceptionNoRestart("error launching browser for Store settings", f);
+                MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
+                                          "A problem occurred while trying to access Store."
+                                          + "<br>Please contact Untangle Support.",
+                                          "Untangle Store Warning", "");
+            }
+        }
+    }
+
     private void initToolboxModel(final JProgressBar progressBar){
         // BUILD THE MODEL
         Map<String,MackageDesc> installedMackageMap = new HashMap<String,MackageDesc>();
@@ -1636,18 +1660,18 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 	    if( Util.getUpgradeCount() != 0 )
 		return;
 	    try{
-		String authNonce = Util.getAdminManager().generateAuthNonce();
-		URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/storeitem.php?name="
-				      + mTransformJButton.getName() + "&" + authNonce);
-		((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
+            String authNonce = Util.getAdminManager().generateAuthNonce();
+            URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/storeitem.php?name="
+                                  + mTransformJButton.getName() + "&" + authNonce);
+            ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
 	    }
 	    catch(Exception f){
-		Util.handleExceptionNoRestart("error launching browser for Store", f);
-		MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
-					  "A problem occurred while trying to access Store."
-					  + "<br>Please contact Untangle Support.",
-					  "Untangle Store Warning", "");
-    }
+            Util.handleExceptionNoRestart("error launching browser for Store", f);
+            MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
+                                      "A problem occurred while trying to access Store."
+                                      + "<br>Please contact Untangle Support.",
+                                      "Untangle Store Warning", "");
+        }
         }
     }
 
