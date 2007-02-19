@@ -32,6 +32,7 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
 
     private static final String EXCEPTION_INVALID_PRIMARY_DNS = "You must enter a valid IP address for the Primary Address";
     private static final String EXCEPTION_INVALID_SECONDARY_DNS = "You must enter a valid IP address for the Secondary Address";
+    private static final String EXCEPTION_INVALID_SITE_NAME = "You must enter a site name.";
 
     // SETTINGS CHANGE NOTIFICATION /////////
     private SettingsChangedListener settingsChangedListener;
@@ -57,6 +58,15 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
             throw new Exception(Util.EXCEPTION_PORT_RANGE);
         }
         port = (Integer) portJSpinner.getValue();
+
+        // SITE NAME //
+        nameJTextField.setBackground(Color.WHITE);
+        String siteName = null;
+        siteName = nameJTextField.getText();
+        if( siteName.trim().length() == 0 ){
+            nameJTextField.setBackground(Util.INVALID_BACKGROUND_COLOR);
+            throw new Exception(EXCEPTION_INVALID_SITE_NAME);
+        }
 
         // OVERRIDE //
         boolean overrideEnabled = overrideEnabledJRadioButton.isSelected();
@@ -87,6 +97,7 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
         if( !validateOnly ){
             VpnSettings vpnSettings = (VpnSettings) settings;
             vpnSettings.setPublicPort( port );
+            vpnSettings.setSiteName( siteName );
             vpnSettings.setIsDnsOverrideEnabled( overrideEnabled );
             if( overrideEnabled ){
                 vpnSettings.setDns1( primaryOverrideIPaddr );
@@ -97,6 +108,7 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
 
 
     int portCurrent;
+    String siteCurrent;
     boolean overrideEnabledCurrent;
     String overridePrimaryCurrent;
     String overrideSecondaryCurrent;
@@ -109,6 +121,11 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
         portJSpinner.setValue(portCurrent);
         ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(portCurrent));
         ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+
+        // SITE //
+        siteCurrent = vpnSettings.getSiteName();
+        nameJTextField.setText(siteCurrent);
+        nameJTextField.setBackground(Color.WHITE);
 
         // OVERRIDE //
         overrideEnabledCurrent = vpnSettings.getIsDnsOverrideEnabled();
@@ -143,6 +160,11 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
                 portJLabel = new javax.swing.JLabel();
                 portJSpinner = new javax.swing.JSpinner();
                 defaultJLabel = new javax.swing.JLabel();
+                siteJPanel = new javax.swing.JPanel();
+                jLabel10 = new javax.swing.JLabel();
+                staticIPJPanel1 = new javax.swing.JPanel();
+                portJLabel1 = new javax.swing.JLabel();
+                nameJTextField = new javax.swing.JTextField();
                 dnsJPanel = new javax.swing.JPanel();
                 jTextArea2 = new javax.swing.JTextArea();
                 jPanel1 = new javax.swing.JPanel();
@@ -158,9 +180,9 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setMaximumSize(new java.awt.Dimension(515, 387));
-                setMinimumSize(new java.awt.Dimension(515, 387));
-                setPreferredSize(new java.awt.Dimension(515, 387));
+                setMaximumSize(new java.awt.Dimension(515, 534));
+                setMinimumSize(new java.awt.Dimension(515, 534));
+                setPreferredSize(new java.awt.Dimension(515, 534));
                 portJPanel.setLayout(new java.awt.GridBagLayout());
 
                 portJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Server Port", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
@@ -223,6 +245,58 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
                 add(portJPanel, gridBagConstraints);
+
+                siteJPanel.setLayout(new java.awt.GridBagLayout());
+
+                siteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Site Name", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+                jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel10.setText("<html> If you have multiple VPN sites, you may want to use this to change the name of this site.  Then cients can choose between multiple VPN sites to connect to, because each one will have a different name.</html>");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
+                siteJPanel.add(jLabel10, gridBagConstraints);
+
+                staticIPJPanel1.setLayout(new java.awt.GridBagLayout());
+
+                portJLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+                portJLabel1.setText("Name: ");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                staticIPJPanel1.add(portJLabel1, gridBagConstraints);
+
+                nameJTextField.setMaximumSize(new java.awt.Dimension(150, 19));
+                nameJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
+                nameJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
+                nameJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                nameJTextFieldCaretUpdate(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 1;
+                staticIPJPanel1.add(nameJTextField, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.ipadx = 150;
+                gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
+                siteJPanel.add(staticIPJPanel1, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+                add(siteJPanel, gridBagConstraints);
 
                 dnsJPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -370,6 +444,11 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
 
         }//GEN-END:initComponents
 
+		private void nameJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_nameJTextFieldCaretUpdate
+            if( !nameJTextField.getText().trim().equals(siteCurrent) && (settingsChangedListener!=null) )
+                settingsChangedListener.settingsChanged(this);
+		}//GEN-LAST:event_nameJTextFieldCaretUpdate
+
 		private void secondaryDNSIPaddrJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_secondaryDNSIPaddrJTextFieldCaretUpdate
             if( !secondaryDNSIPaddrJTextField.getText().trim().equals(overrideSecondaryCurrent) && (settingsChangedListener != null) )
                 settingsChangedListener.settingsChanged(this);
@@ -408,14 +487,17 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
         private javax.swing.JLabel defaultJLabel;
         private javax.swing.JPanel dnsJPanel;
         private javax.swing.JLabel jLabel1;
+        private javax.swing.JLabel jLabel10;
         private javax.swing.JLabel jLabel9;
         private javax.swing.JPanel jPanel1;
         private javax.swing.JTextArea jTextArea2;
+        private javax.swing.JTextField nameJTextField;
         private javax.swing.JLabel optionalJLabel;
         private javax.swing.ButtonGroup overrideButtonGroup;
         public javax.swing.JRadioButton overrideDisabledJRadioButton;
         public javax.swing.JRadioButton overrideEnabledJRadioButton;
         private javax.swing.JLabel portJLabel;
+        private javax.swing.JLabel portJLabel1;
         private javax.swing.JPanel portJPanel;
         private javax.swing.JSpinner portJSpinner;
         public javax.swing.JTextField primaryDNSIPaddrJTextField;
@@ -423,7 +505,9 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
         private javax.swing.JPanel restrictIPJPanel;
         public javax.swing.JTextField secondaryDNSIPaddrJTextField;
         private javax.swing.JLabel secondaryDNSJLabel;
+        private javax.swing.JPanel siteJPanel;
         private javax.swing.JPanel staticIPJPanel;
+        private javax.swing.JPanel staticIPJPanel1;
         // End of variables declaration//GEN-END:variables
     
 
