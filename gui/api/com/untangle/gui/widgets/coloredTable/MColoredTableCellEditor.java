@@ -258,6 +258,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    }});
 	}
 	*/
+    jTextField.setEditable(mSortedTableModel.getAlwaysEditable());
 	return editedComponent;
     }
     

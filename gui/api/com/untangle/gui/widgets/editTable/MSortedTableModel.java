@@ -98,6 +98,7 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
     // MODES ///////////////////////
     private boolean doInstantRemove = false;
     private boolean alwaysSelectable = false;
+    private boolean alwaysEditable = true;
     ////////////////////////////////
 	
     // COLUMN SETUP ////////////////
@@ -461,6 +462,12 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
     }
     public boolean getAlwaysSelectable(){
 	return alwaysSelectable;
+    }
+    public void setAlwaysEditable(boolean enabled){
+        alwaysEditable = enabled;
+    }
+    public boolean getAlwaysEditable(){
+        return alwaysEditable;
     }
     public void moveRow(final int fromModelRow, final int toModelRow){
 	if( fromModelRow != toModelRow ){
