@@ -65,10 +65,10 @@ class QuarantinableModel extends MSortedTableModel<EmailCompoundSettings>{
         
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min    rsz    edit   remv   desc   typ            def
-        addTableColumn( tableColumnModel,  0,  C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
-        addTableColumn( tableColumnModel,  1,  C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
+        addTableColumn( tableColumnModel,  0,  C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS );
+        addTableColumn( tableColumnModel,  1,  C1_MW, false, false, true, false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  C2_MW, true,  true,  false, false, String.class, "someone@somewhere.com", sc.html("quarantinable<br>address") );
-        addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
+        addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  true, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
         addTableColumn( tableColumnModel,  4,  C4_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
         addTableColumn( tableColumnModel,  5,  10,    false, false, true,  false, EmailAddressRule.class, null, "");
         return tableColumnModel;
@@ -111,7 +111,7 @@ class QuarantinableModel extends MSortedTableModel<EmailCompoundSettings>{
 	    tempRow.add( rowIndex );
             tempRow.add( address.getAddress() );
             tempRow.add( address.getCategory() );
-	    tempRow.add( address.getDescription() );
+	    tempRow.add( address.getAddress().equals("*")?"All addresses have quarantines":address.getDescription() );
 	    tempRow.add( address );
 	    allRows.add( tempRow );
         }

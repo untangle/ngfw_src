@@ -62,14 +62,13 @@ class SmtpTableModel extends MSortedTableModel<Object>{
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
-        addTableColumn( tableColumnModel,  0, C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS);
+        addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS);
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, false, false, false, false, String.class,  null, "source");
         addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class,  null, sc.bold("scan") );
         addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>Virus detected"));
-        addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("notification if<br>Virus detected"));
-        addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
-        addTableColumn( tableColumnModel,  7, 10,    false, false, true,  false, VirusSMTPConfig.class,  null, "");
+        addTableColumn( tableColumnModel,  5, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  6, 10,    false, false, true,  false, VirusSMTPConfig.class,  null, "");
         return tableColumnModel;
     }
 
@@ -81,11 +80,10 @@ class SmtpTableModel extends MSortedTableModel<Object>{
 	VirusSMTPConfig virusSMTPConfigOutbound = null;
 
 	for( Vector rowVector : tableVector ){
-            VirusSMTPConfig virusSMTPConfig = (VirusSMTPConfig) rowVector.elementAt(7);
+            VirusSMTPConfig virusSMTPConfig = (VirusSMTPConfig) rowVector.elementAt(6);
             virusSMTPConfig.setScan( (Boolean) rowVector.elementAt(3) );
             virusSMTPConfig.setMsgAction( (SMTPVirusMessageAction) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
-            virusSMTPConfig.setNotifyAction( (SMTPNotifyAction) ((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem() );
-            virusSMTPConfig.setNotes( (String) rowVector.elementAt(6) );
+            virusSMTPConfig.setNotes( (String) rowVector.elementAt(5) );
 	    
 	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
 		virusSMTPConfigInbound = virusSMTPConfig;
@@ -112,28 +110,26 @@ class SmtpTableModel extends MSortedTableModel<Object>{
 
 	// INBOUND
 	rowIndex++;
-	Vector inboundRow = new Vector(8);
+	Vector inboundRow = new Vector(7);
         VirusSMTPConfig virusSMTPConfigInbound = virusSettings.getSMTPInbound();
         inboundRow.add( super.ROW_SAVED );
         inboundRow.add( rowIndex );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( virusSMTPConfigInbound.getScan() );
         inboundRow.add( super.generateComboBoxModel(SMTPVirusMessageAction.getValues(), virusSMTPConfigInbound.getMsgAction()) );
-        inboundRow.add( super.generateComboBoxModel(SMTPNotifyAction.getValues(), virusSMTPConfigInbound.getNotifyAction()) );
         inboundRow.add( virusSMTPConfigInbound.getNotes() );
 	inboundRow.add( virusSMTPConfigInbound );
 	allRows.add(inboundRow);
 
 	// OUTBOUND
 	rowIndex++;
-	Vector outboundRow = new Vector(8);
+	Vector outboundRow = new Vector(7);
         VirusSMTPConfig virusSMTPConfigOutbound = virusSettings.getSMTPOutbound();
         outboundRow.add( super.ROW_SAVED );
         outboundRow.add( rowIndex );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( virusSMTPConfigOutbound.getScan() );
         outboundRow.add( super.generateComboBoxModel(SMTPVirusMessageAction.getValues(), virusSMTPConfigOutbound.getMsgAction()) );
-        outboundRow.add( super.generateComboBoxModel(SMTPNotifyAction.getValues(), virusSMTPConfigOutbound.getNotifyAction()) );
         outboundRow.add( virusSMTPConfigOutbound.getNotes() );
 	outboundRow.add( virusSMTPConfigOutbound );
 	allRows.add(outboundRow);

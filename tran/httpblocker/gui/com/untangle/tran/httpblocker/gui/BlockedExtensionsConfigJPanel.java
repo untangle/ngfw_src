@@ -59,12 +59,12 @@ class ExtensionTableModel extends MSortedTableModel<Object>{
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
-        addTableColumn( tableColumnModel,  0, C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS);
+        addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS);
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
-        addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
-        addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, String.class,  "no extension", "extension");
-        addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, Boolean.class, "true", sc.bold("block"));
-        addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  2, C3_MW, true,  true,  false, false, String.class,  "no extension", "extension");
+        addTableColumn( tableColumnModel,  3, C4_MW, false, true,  false, false, Boolean.class, "true", sc.bold("block"));
+        addTableColumn( tableColumnModel,  4, C2_MW, true,  true,  false, false, String.class,  sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
+        addTableColumn( tableColumnModel,  5, C5_MW, true,  true,  true, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  6, 10,    false, false, true,  false, StringRule.class, null, "");
         return tableColumnModel;
     }
@@ -76,9 +76,9 @@ class ExtensionTableModel extends MSortedTableModel<Object>{
 
 	for( Vector rowVector : tableVector ){
             newElem = (StringRule) rowVector.elementAt(6);
-            newElem.setName( (String) rowVector.elementAt(2) );
-            newElem.setString( (String) rowVector.elementAt(3) );
-            newElem.setLive( (Boolean) rowVector.elementAt(4) );
+            newElem.setString( (String) rowVector.elementAt(2) );
+            newElem.setLive( (Boolean) rowVector.elementAt(3) );
+            newElem.setName( (String) rowVector.elementAt(4) );
             newElem.setCategory( (String) rowVector.elementAt(5) );
             elemList.add(newElem);
         }
@@ -102,9 +102,9 @@ class ExtensionTableModel extends MSortedTableModel<Object>{
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( newElem.getName() );
-            tempRow.add( newElem.getString() );
             tempRow.add( newElem.isLive() );
             tempRow.add( newElem.getCategory() );
+            tempRow.add( newElem.getString() );
 	    tempRow.add( newElem );
             allRows.add( tempRow );
         }

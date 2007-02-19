@@ -27,7 +27,7 @@ import javax.swing.event.*;
 
 public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
     
-    private static final String NAME_BLOCK_LIST = "Protocol Block List";
+    private static final String NAME_BLOCK_LIST = "Protocol List";
     private static final String NAME_LOG = "Event Log";
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {

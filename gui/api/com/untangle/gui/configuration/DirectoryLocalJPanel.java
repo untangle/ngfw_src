@@ -56,8 +56,8 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min  rsz    edit   remv   desc   typ               def
-        addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, false, false, String.class,     null, sc.TITLE_STATUS );
-	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, false, false, Integer.class,    null, sc.TITLE_INDEX );
+        addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, true, false, String.class,     null, sc.TITLE_STATUS );
+	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, true, false, Integer.class,    null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  100, true,  true,  false, false, String.class,     "[no ID/login]", "user/login ID");
         addTableColumn( tableColumnModel,  3,  100, true,  true,  false, false, String.class,     sc.EMPTY_NAME, "first name");
         addTableColumn( tableColumnModel,  4,  100, true,  true,  false, false, String.class,     sc.EMPTY_NAME, "last name");

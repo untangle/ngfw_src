@@ -76,7 +76,7 @@ class BlockTableModel extends MSortedTableModel<Object>{
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min    rsz    edit   remv   desc   typ            def
-        addTableColumn( tableColumnModel,  0,  C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
+        addTableColumn( tableColumnModel,  0,  C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW, false, true,  false, false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  C2_MW, false, true,  false, false, Boolean.class, "true", sc.bold("enable<br>rule") );
         addTableColumn( tableColumnModel,  3,  C3_MW, false, true,  false, false, ComboBoxModel.class, actionModel, sc.bold("action") );

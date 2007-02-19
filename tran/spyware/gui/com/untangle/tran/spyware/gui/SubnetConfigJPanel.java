@@ -67,13 +67,13 @@ class SpyTableModel extends MSortedTableModel<Object>{
         
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
-        addTableColumn( tableColumnModel,  0, C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
+        addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS );
 	addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  sc.EMPTY_NAME, sc.TITLE_NAME );
         addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, IPMaddrString.class,  "1.2.3.4/5", "subnet");
         addTableColumn( tableColumnModel,  4, C4_MW, false, true,  true,  false, Boolean.class, "true", sc.bold("block"));
         addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, Boolean.class, "true", sc.bold("log"));
-        addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  true, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  7, 10,    false, false, true,  false, IPMaddrRule.class, null, "");
         return tableColumnModel;
     }

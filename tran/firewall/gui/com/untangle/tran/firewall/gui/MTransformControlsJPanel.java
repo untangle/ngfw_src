@@ -29,7 +29,7 @@ import com.untangle.tran.firewall.*;
 
 public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
 
-    private static final String NAME_BLOCK_LIST = "Block/Pass List";
+    private static final String NAME_BLOCK_LIST = "Rule List";
     private static final String NAME_GENERAL_SETTINGS = "General Settings";
     private static final String NAME_LOG = "Event Log";
 

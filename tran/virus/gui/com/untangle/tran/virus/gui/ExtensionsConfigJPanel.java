@@ -62,7 +62,7 @@ class ExtensionTableModel extends MSortedTableModel<Object>{
     public TableColumnModel getTableColumnModel(){
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
-        addTableColumn( tableColumnModel,  0, C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
+        addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  "undefined type", "extension");
         addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class, "true", sc.bold("scan"));

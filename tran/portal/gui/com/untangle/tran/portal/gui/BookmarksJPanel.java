@@ -115,7 +115,7 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
         if( mode.equals("OTHER") ){ // VNC, HTTP, CIFS
 	    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
 	    //                                 #  min    rsz    edit   remv   desc   typ            def
-	    addTableColumn( tableColumnModel,  0, OC0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
+	    addTableColumn( tableColumnModel,  0, OC0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS );
 	    addTableColumn( tableColumnModel,  1, OC1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX );
 	    addTableColumn( tableColumnModel,  2, OC2_MW, true,  true,  false, false, String.class, "[no name]", "name");
 	    addTableColumn( tableColumnModel,  3, OC3_MW, true,  true,  false, false, ComboBoxModel.class, appModel, "application");
@@ -126,7 +126,7 @@ class BookmarksTableModel extends MSortedTableModel<Object>{
 	else{ // RDP
 	    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
 	    //                                 #  min    rsz    edit   remv   desc   typ            def
-	    addTableColumn( tableColumnModel,  0, RC0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
+	    addTableColumn( tableColumnModel,  0, RC0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS );
 	    addTableColumn( tableColumnModel,  1, RC1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX );
 	    addTableColumn( tableColumnModel,  2, RC2_MW, true,  true,  false, false, String.class, "[no name]", "name");
 	    addTableColumn( tableColumnModel,  3, RC3_MW, true,  true,  false, false, String.class, "", sc.html("hostname"));

@@ -56,14 +56,14 @@ public class TableModelClientToSite extends MSortedTableModel<Object>{
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
-        addTableColumn( tableColumnModel,  0, C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS);
-        addTableColumn( tableColumnModel,  1, C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX);
+        addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS);
+        addTableColumn( tableColumnModel,  1, C1_MW, false, false, true, false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, false, true,  false, false, Boolean.class, "true", sc.bold("enabled"));
         addTableColumn( tableColumnModel,  3, C3_MW, true,  true,  false, false, String.class,  sc.EMPTY_NAME, sc.html("client name") );
         addTableColumn( tableColumnModel,  4, C4_MW, true,  true,  false, false, ComboBoxModel.class,  groupModel, sc.html("address<br>pool"));
         addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, KeyButtonRunnable.class,  "false", sc.html("secure key<br>distribution"));
         addTableColumn( tableColumnModel,  6, C6_MW, false, false, false, false, IPaddrString.class, UNSET_STRING, sc.html("virtual address"));
-        addTableColumn( tableColumnModel,  7, C7_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  7, C7_MW, true,  true,  true, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  8, 10,    false, false, true,  false, VpnClient.class, null, "");
         return tableColumnModel;
     }

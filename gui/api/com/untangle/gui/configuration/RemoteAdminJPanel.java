@@ -58,15 +58,15 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min  rsz    edit   remv   desc   typ               def
-        addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, false, false, String.class,     null, sc.TITLE_STATUS );
-        addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, false, false, Integer.class,    null, sc.TITLE_INDEX );
+        addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, true, false, String.class,     null, sc.TITLE_STATUS );
+        addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, true, false, Integer.class,    null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  85, true,  true,  false, false, String.class,     sc.EMPTY_NAME,  sc.TITLE_NAME );
         addTableColumn( tableColumnModel,  3,  85, true,  true,  false, false, String.class,     "[no login]", "login");
-        addTableColumn( tableColumnModel,  4,  85, true,  false, true,  false, MPasswordField.class, PasswordUtil.encrypt("12345678"), sc.html("original<br>password"));
-        addTableColumn( tableColumnModel,  5, 260, true,  true,  false, false, MPasswordField.class, "",     sc.html("set new password<br>(for new accounts or to change password)"));
-        addTableColumn( tableColumnModel,  6, 260, true,  true,  false, false, MPasswordField.class, "",     sc.html("confirm new password<br>(for new accounts or to change password)"));
-        addTableColumn( tableColumnModel,  7,  85, false, true,  false, false, Boolean.class,     "false", sc.html("read-only<br>access"));
-        addTableColumn( tableColumnModel,  8,  85, true,  true,  false, false, String.class,     "[no email]", sc.html("email<br>address"));
+        addTableColumn( tableColumnModel,  4,  85, false, true,  false, false, Boolean.class,     "false", sc.html("read-only<br>access"));
+        addTableColumn( tableColumnModel,  5,  85, true,  true,  false, false, String.class,     "[no email]", sc.html("email<br>address"));
+        addTableColumn( tableColumnModel,  6,  85, true,  false, true,  false, MPasswordField.class, PasswordUtil.encrypt("12345678"), sc.html("original<br>password"));
+        addTableColumn( tableColumnModel,  7, 260, true,  true,  false, false, MPasswordField.class, "",     sc.html("set new password<br>(for new accounts or to change password)"));
+        addTableColumn( tableColumnModel,  8, 260, true,  true,  false, false, MPasswordField.class, "",     sc.html("confirm new password<br>(for new accounts or to change password)"));
         addTableColumn( tableColumnModel,  9,  10, false, false, true,  false, User.class,    null, "");
         return tableColumnModel;
     }
@@ -81,10 +81,10 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
         // go through all the rows and perform some tests
         for( Vector tempUser : tableVector ){
             rowIndex++;
-            byte[] origPasswd = ((MPasswordField)tempUser.elementAt(4)).getByteArray();
-            char[] newPasswd = ((MPasswordField)tempUser.elementAt(5)).getPassword();
-            char[] newConfPasswd  = ((MPasswordField)tempUser.elementAt(6)).getPassword();
-            boolean readOnly = (Boolean) tempUser.elementAt(7);
+            byte[] origPasswd = ((MPasswordField)tempUser.elementAt(6)).getByteArray();
+            char[] newPasswd = ((MPasswordField)tempUser.elementAt(7)).getPassword();
+            char[] newConfPasswd  = ((MPasswordField)tempUser.elementAt(8)).getPassword();
+            boolean readOnly = (Boolean) tempUser.elementAt(4);
             String loginName = (String) tempUser.elementAt(3);
             String state = (String) tempUser.elementAt(0);
 
@@ -147,8 +147,8 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
         for( Vector rowVector : tableVector ){
 	    rowIndex++;
             newElem = (User) rowVector.elementAt(9);
-            byte[] origPasswd = ((MPasswordField)rowVector.elementAt(4)).getByteArray();
-            char[] newPasswd = ((MPasswordField)rowVector.elementAt(5)).getPassword();            
+            byte[] origPasswd = ((MPasswordField)rowVector.elementAt(6)).getByteArray();
+            char[] newPasswd = ((MPasswordField)rowVector.elementAt(7)).getPassword();            
 
             if( ((String)rowVector.elementAt(0)).equals(super.ROW_REMOVE) ){
                 // THIS IS HERE FOR SAFETY
@@ -160,8 +160,8 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
                 if( newPasswd.length > 0 )
                     newElem.setClearPassword( new String(newPasswd) );
             }
-            newElem.setReadOnly( (Boolean) rowVector.elementAt(7) );
-            String email = (String) rowVector.elementAt(8);
+            newElem.setReadOnly( (Boolean) rowVector.elementAt(4) );
+            String email = (String) rowVector.elementAt(5);
             if( (email!=null) && (email.length()==0) )
                 email = null;
             newElem.setEmail(email);
@@ -190,14 +190,14 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
             tempRow.add( rowIndex );
             tempRow.add( user.getName() );
             tempRow.add( user.getLogin() );
+            tempRow.add( user.isReadOnly() );
+            tempRow.add( user.getEmail()==null?"":user.getEmail() );
             MPasswordField tempMPasswordField = new MPasswordField( user.getPassword() );
             tempRow.add( tempMPasswordField );
             tempRow.add( new MPasswordField() );
             tempRow.add( new MPasswordField() );
             MPasswordField originalMPasswordField = new MPasswordField();
             originalMPasswordField.setGeneratesChangeEvent(false);
-            tempRow.add( user.isReadOnly() );
-            tempRow.add( user.getEmail()==null?"":user.getEmail() );
             tempRow.add( user );
             allRows.add( tempRow );
         }

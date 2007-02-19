@@ -60,14 +60,13 @@ class SmtpTableModel extends MSortedTableModel<Object>{
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
-        addTableColumn( tableColumnModel,  0, C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS);
+        addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS);
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, false, false, false, false, String.class,  null, "source");
         addTableColumn( tableColumnModel,  3, C3_MW, false, true,  false, false, Boolean.class,  null, sc.bold("scan") );
         addTableColumn( tableColumnModel,  4, C4_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("action if<br>PHISH detected"));
-        addTableColumn( tableColumnModel,  5, C5_MW, false, true,  false, false, ComboBoxModel.class,  null, sc.html("notification if<br>PHISH detected"));
-        addTableColumn( tableColumnModel,  6, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
-        addTableColumn( tableColumnModel,  7, 10,    false, false, true,  false, SpamSMTPConfig.class, null, "");
+        addTableColumn( tableColumnModel,  5, C6_MW, true,  true,  false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        addTableColumn( tableColumnModel,  6, 10,    false, false, true,  false, SpamSMTPConfig.class, null, "");
         return tableColumnModel;
     }
 
@@ -79,11 +78,10 @@ class SmtpTableModel extends MSortedTableModel<Object>{
 	SpamSMTPConfig spamSMTPConfigOutbound = null;
 
 	for( Vector rowVector : tableVector ){
-            SpamSMTPConfig spamSMTPConfig = (SpamSMTPConfig) rowVector.elementAt(7);
+            SpamSMTPConfig spamSMTPConfig = (SpamSMTPConfig) rowVector.elementAt(6);
             spamSMTPConfig.setScan( (Boolean) rowVector.elementAt(3) );
             spamSMTPConfig.setMsgAction( (SMTPSpamMessageAction) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
-            spamSMTPConfig.setNotifyAction( (SpamSMTPNotifyAction) ((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem() );
-            spamSMTPConfig.setNotes( (String) rowVector.elementAt(6) );
+            spamSMTPConfig.setNotes( (String) rowVector.elementAt(5) );
 	    
 	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
 		spamSMTPConfigInbound = spamSMTPConfig;
@@ -109,28 +107,26 @@ class SmtpTableModel extends MSortedTableModel<Object>{
 
 	// INBOUND
 	rowIndex++;
-	Vector inboundRow = new Vector(8);
+	Vector inboundRow = new Vector(7);
         SpamSMTPConfig spamSMTPConfigInbound = spamSettings.getSMTPInbound();
         inboundRow.add( super.ROW_SAVED );
         inboundRow.add( rowIndex );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( spamSMTPConfigInbound.getScan() );
 	inboundRow.add( super.generateComboBoxModel(SMTPSpamMessageAction.getValues(), spamSMTPConfigInbound.getMsgAction()) );
-        inboundRow.add( super.generateComboBoxModel(SpamSMTPNotifyAction.getValues(), spamSMTPConfigInbound.getNotifyAction()) );
         inboundRow.add( spamSMTPConfigInbound.getNotes() );
 	inboundRow.add( spamSMTPConfigInbound );
 	allRows.add(inboundRow);
 
 	// OUTBOUND
 	rowIndex++;
-	Vector outboundRow = new Vector(8);
+	Vector outboundRow = new Vector(7);
         SpamSMTPConfig spamSMTPConfigOutbound = spamSettings.getSMTPOutbound();
         outboundRow.add( super.ROW_SAVED );
         outboundRow.add( rowIndex );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( spamSMTPConfigOutbound.getScan() );
 	outboundRow.add( super.generateComboBoxModel(SMTPSpamMessageAction.getValues(), spamSMTPConfigOutbound.getMsgAction()) );
-        outboundRow.add( super.generateComboBoxModel(SpamSMTPNotifyAction.getValues(), spamSMTPConfigOutbound.getNotifyAction()) );
         outboundRow.add( spamSMTPConfigOutbound.getNotes() );
 	outboundRow.add( spamSMTPConfigOutbound );
 	allRows.add(outboundRow);
