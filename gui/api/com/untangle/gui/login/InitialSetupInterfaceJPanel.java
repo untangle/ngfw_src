@@ -143,7 +143,7 @@ public class InitialSetupInterfaceJPanel extends MWizardPageJPanel {
 	    super.setAuxJPanelEnabled(true);
 
 	    // add a basic description
-	    JLabel descriptionJLabel = new JLabel("<html>This Interface Test shows you when a network interface is connected to an ethernet cable, or disconnected.  You should use this test to determine which ethernet cable to plug into each network interface.</html>");
+	    JLabel descriptionJLabel = new JLabel("<html>This Interface Test helps you identify your external, internal, and other network interface cards.  It shows you when a network interface is connected to an ethernet cable, or disconnected so you can figure out which card is which.</html>");
 	    descriptionJLabel.setFont(new Font("Default", 0, 12));
 	    auxJPanel.setLayout(new BorderLayout());
 	    auxJPanel.add(descriptionJLabel);
