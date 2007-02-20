@@ -28,6 +28,8 @@ import org.apache.log4j.Logger;
 
 public abstract class UrlList
 {
+    private static final byte[] VERSION_KEY = "__version".getBytes();
+
     private final Database db;
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -46,7 +48,24 @@ public abstract class UrlList
         dbCfg.setAllowCreate(true);
         db = dbEnv.openDatabase(null, dbName, dbCfg);
 
-        updateDatabase(db);
+        try {
+            DatabaseEntry k = new DatabaseEntry(VERSION_KEY);
+            DatabaseEntry v = new DatabaseEntry();
+
+            String version;
+            OperationStatus s = db.get(null, k, v, LockMode.READ_UNCOMMITTED);
+            if (OperationStatus.SUCCESS == s) {
+                byte[] d = v.getData();
+                version = updateDatabase(db, new String(d));
+            } else {
+                version = initDatabase(db);
+            }
+            if (null != version) {
+                db.put(null, k, new DatabaseEntry(version.getBytes()));
+            }
+        } catch (DatabaseException exn) {
+            logger.warn("could not get database version", exn);
+        }
     }
 
     // public methods ---------------------------------------------------------
@@ -57,7 +76,7 @@ public abstract class UrlList
         String url = proto + "://" + host + uri;
 
         for (String p : getPatterns(host)) {
-            if (url.matches(p)) {
+            if (matches(url, p)) {
                 return true;
             }
         }
@@ -67,10 +86,15 @@ public abstract class UrlList
 
     // protected methods ------------------------------------------------------
 
-    protected abstract void updateDatabase(Database db) throws IOException;
+    protected abstract String initDatabase(Database db)
+        throws IOException;
+
+    protected abstract String updateDatabase(Database db, String currentVer)
+        throws IOException;
 
     protected abstract byte[] getKey(byte[] host);
     protected abstract List<String> getValues(byte[] host, byte[] data);
+    protected abstract boolean matches(String str, String pattern);
 
     // private methods --------------------------------------------------------
 
@@ -85,7 +109,6 @@ public abstract class UrlList
         DatabaseEntry k = new DatabaseEntry(hash);
         DatabaseEntry v = new DatabaseEntry();
 
-        // XXX hopefully we can just use READ_UNCOMMITTED
         OperationStatus status;
         try {
             status = db.get(null, k, v, LockMode.READ_UNCOMMITTED);

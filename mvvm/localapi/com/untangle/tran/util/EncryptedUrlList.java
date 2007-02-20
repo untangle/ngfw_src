@@ -33,15 +33,12 @@ import javax.crypto.spec.SecretKeySpec;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.LockMode;
-import com.sleepycat.je.OperationStatus;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Decoder;
 
 public class EncryptedUrlList extends UrlList
 {
     private static final byte[] DB_SALT = "oU3q.72p".getBytes();
-    private static final byte[] VERSION_KEY = "goog-black-enchash".getBytes();
 
     private static final Pattern VERSION_PATTERN = Pattern.compile("\\[[^ ]+ ([0-9.]+)\\]");
     private static final Pattern TUPLE_PATTERN = Pattern.compile("\\+([0-9A-F]+)\t([A-Za-z0-9+/=]+)");
@@ -60,19 +57,9 @@ public class EncryptedUrlList extends UrlList
 
     // UrlList methods --------------------------------------------------------
 
-    protected void updateDatabase(Database db) throws IOException
+    protected String initDatabase(Database db)
+        throws IOException
     {
-        DatabaseEntry versionKey = new DatabaseEntry(VERSION_KEY);
-
-        try {
-            // XXX do an update if exists
-            if (OperationStatus.SUCCESS == db.get(null, versionKey, new DatabaseEntry(), LockMode.READ_UNCOMMITTED)) {
-                return;
-            }
-        } catch (DatabaseException exn) {
-            logger.warn("could not get database version", exn);
-        }
-
         InputStream is = databaseUrl.openStream();
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
@@ -83,12 +70,8 @@ public class EncryptedUrlList extends UrlList
         Matcher matcher = VERSION_PATTERN.matcher(line);
         if (matcher.find()) {
             version = matcher.group(1);
-            try {
-                db.put(null, versionKey, new DatabaseEntry(version.getBytes()));
-            } catch (DatabaseException exn) {
-                logger.warn("could not set database version", exn);
-            }
         } else {
+            version = null;
             logger.warn("No version number: " + line);
         }
 
@@ -107,6 +90,15 @@ public class EncryptedUrlList extends UrlList
                 }
             }
         }
+
+        return version;
+    }
+
+    protected String updateDatabase(Database db, String version)
+        throws IOException
+    {
+        // XXX implement update
+        return null;
     }
 
     protected byte[] getKey(byte[] host)
@@ -175,6 +167,11 @@ public class EncryptedUrlList extends UrlList
         l.add(sb.toString());
 
         return l;
+    }
+
+    protected boolean matches(String str, String pat)
+    {
+        return str.matches(pat);
     }
 
     // private methods --------------------------------------------------------
