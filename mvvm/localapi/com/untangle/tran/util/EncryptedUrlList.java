@@ -66,7 +66,7 @@ public class EncryptedUrlList extends UrlList
 
         try {
             // XXX do an update if exists
-            if (OperationStatus.SUCCESS == db.get(null, versionKey, new DatabaseEntry(), LockMode.DEFAULT)) {
+            if (OperationStatus.SUCCESS == db.get(null, versionKey, new DatabaseEntry(), LockMode.READ_UNCOMMITTED)) {
                 return;
             }
         } catch (DatabaseException exn) {

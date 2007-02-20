@@ -65,16 +65,6 @@ public abstract class UrlList
         return false;
     }
 
-    public String nextHost(String host)
-    {
-        int i = host.indexOf('.');
-        if (0 > i || i == host.lastIndexOf('.')) {
-            return null;  /* skip TLD */
-        }
-
-        return host.substring(i + 1);
-    }
-
     // protected methods ------------------------------------------------------
 
     protected abstract void updateDatabase(Database db) throws IOException;
@@ -98,7 +88,7 @@ public abstract class UrlList
         // XXX hopefully we can just use READ_UNCOMMITTED
         OperationStatus status;
         try {
-            status = db.get(null, k, v, LockMode.DEFAULT);
+            status = db.get(null, k, v, LockMode.READ_UNCOMMITTED);
         } catch (DatabaseException exn) {
             logger.warn("could not access database", exn);
             return Collections.emptyList();
