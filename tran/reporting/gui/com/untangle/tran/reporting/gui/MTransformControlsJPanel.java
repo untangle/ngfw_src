@@ -26,7 +26,7 @@ import javax.swing.border.EmptyBorder;
 public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
     
     private static final String NAME_DIRECTORY = "IP Address to User Map";
-    private static final String NAME_EMAIL_RECIPIENTS = "Recipients List";
+    private static final String NAME_EMAIL_RECIPIENTS = "Recipients";
     private static final String NAME_VIEW = "View Reports";
     private static final String NAME_GENERATION_OPTIONS = "Generation Settings";
 
