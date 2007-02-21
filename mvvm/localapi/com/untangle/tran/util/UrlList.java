@@ -25,6 +25,7 @@ import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import org.apache.log4j.Logger;
+import java.util.ArrayList;
 
 public abstract class UrlList
 {
