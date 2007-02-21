@@ -56,9 +56,8 @@ class IDSTableModel extends MSortedTableModel<Object>{
     private static final int C5_MW = 55;  /* log */
     private static final int C6_MW = 180; /* description */
     private static final int C7_MW = 120; /* class */
-    private static final int C8_MW = 85; /* Launch Browser button */
-    private static final int C9_MW = 100; /* info url */
-    private static final int C10_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW), 120); /* signature */
+    private static final int C8_MW = 150; /* Launch Browser button */
+    private static final int C9_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW), 120); /* signature */
 
     
     public TableColumnModel getTableColumnModel(){
@@ -73,10 +72,9 @@ class IDSTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  5,  C5_MW,  false, true,  false, false, Boolean.class, "false", sc.bold("log"));
         addTableColumn( tableColumnModel,  6,  C6_MW,  true,  false, false, true,  String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
         addTableColumn( tableColumnModel,  7,  C7_MW,  true,  false, false, false, String.class,  "unclassified", "class");
-        addTableColumn( tableColumnModel,  8,  C8_MW,  true,  true,  false, false, UrlButtonRunnable.class,  "false", "launch url");
-        addTableColumn( tableColumnModel,  9,  C9_MW,  true,  false, false, false, String.class,  "http://", "info url");
-        addTableColumn( tableColumnModel,  10, C10_MW, true,  true,  false, false, String.class,  sc.empty("no signature"), "signature");
-        addTableColumn( tableColumnModel, 11,  10,     false, false, true,  false, IDSRule.class, null, "");
+        addTableColumn( tableColumnModel,  8,  C8_MW,  true,  true,  false, false, UrlButtonRunnable.class,  "false", "info URL");
+        addTableColumn( tableColumnModel,  9,  C9_MW, true,  true,  false, false, String.class,  sc.empty("no signature"), "signature");
+        addTableColumn( tableColumnModel, 10,  10,     false, false, true,  false, IDSRule.class, null, "");
         return tableColumnModel;
     }
     
@@ -86,15 +84,14 @@ class IDSTableModel extends MSortedTableModel<Object>{
 	IDSRule newElem = null;
 
 	for( Vector rowVector : tableVector ){            
-	    newElem = (IDSRule) rowVector.elementAt(11);
+	    newElem = (IDSRule) rowVector.elementAt(10);
             newElem.setCategory( (String) rowVector.elementAt(2) );
             newElem.setSid( (Integer) rowVector.elementAt(3) );
             newElem.setLive( (Boolean) rowVector.elementAt(4) );
             newElem.setLog( (Boolean) rowVector.elementAt(5) );
             newElem.setDescription( (String) rowVector.elementAt(6) );
-	    newElem.setClassification( (String) rowVector.elementAt(7) );
+            newElem.setClassification( (String) rowVector.elementAt(7) );
             newElem.setURL( (String) rowVector.elementAt(9) );
-            newElem.setText( (String) rowVector.elementAt(10) );
 
 	    // an optimization so that the transform knows which rows are changed
 	    String ruleState = (String) rowVector.elementAt(0);
@@ -125,7 +122,7 @@ class IDSTableModel extends MSortedTableModel<Object>{
 
 	for( IDSRule newElem : rules ){
 	    rowIndex++;
-            tempRow = new Vector(12);
+            tempRow = new Vector(11);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( newElem.getCategory() );
@@ -134,16 +131,15 @@ class IDSTableModel extends MSortedTableModel<Object>{
             tempRow.add( newElem.getLog() );
             tempRow.add( newElem.getDescription() );
             tempRow.add( newElem.getClassification() );
-	    UrlButtonRunnable urlButtonRunnable = new UrlButtonRunnable("true");
-	    if( (newElem.getURL() == null) || (newElem.getURL().length() == 0) )
-		urlButtonRunnable.setEnabled(false);
-	    else
-		urlButtonRunnable.setEnabled(true);
-	    urlButtonRunnable.setUrl( newElem.getURL() );
-	    tempRow.add( urlButtonRunnable );
-            tempRow.add( newElem.getURL() );
+            UrlButtonRunnable urlButtonRunnable = new UrlButtonRunnable("true");
+            if( (newElem.getURL() == null) || (newElem.getURL().length() == 0) )
+                urlButtonRunnable.setEnabled(false);
+            else
+                urlButtonRunnable.setEnabled(true);
+            urlButtonRunnable.setUrl( newElem.getURL() );
+            tempRow.add( urlButtonRunnable );
             tempRow.add( newElem.getText() );
-	    tempRow.add( newElem );
+            tempRow.add( newElem );
             allRows.add( tempRow );
         }
         return allRows;

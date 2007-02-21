@@ -22,17 +22,27 @@ import javax.jnlp.BasicService;
 import javax.jnlp.ServiceManager;
 import javax.swing.CellEditor;
 
-public class UrlButtonRunnable implements ButtonRunnable {
+public class UrlButtonRunnable implements ButtonRunnable, Comparable<UrlButtonRunnable> {
     private String url;
     private Window topLevelWindow;
     private boolean isEnabled;
     public UrlButtonRunnable(String isEnabled){
     }
-    public String getButtonText(){ return "Show"; }
+    public String getButtonText(){
+        if( url.startsWith("http") )
+            return "Show " + url.substring(7,url.length());
+        else
+            return "No URL";
+    }
 
     public boolean valueChanged(){ return false; }
     public void setEnabled(boolean enabled){ this.isEnabled = enabled; }
-    public boolean isEnabled(){ return isEnabled; }
+    public boolean isEnabled(){
+        if( url.startsWith("http") )
+            return true;
+        else
+            return false;
+    }
 
     public void setUrl(String url){ this.url = url; }
     public void setCellEditor(CellEditor cellEditor){}
@@ -47,8 +57,11 @@ public class UrlButtonRunnable implements ButtonRunnable {
 	    }
 	    catch(Exception e){
 		Util.handleExceptionNoRestart("Error showing URL", e);
-		MOneButtonJDialog.factory(topLevelWindow, "OpenVPN", "Unable to show URL", "OpenVPN Warning", "Warning");
+		MOneButtonJDialog.factory(topLevelWindow, "Intrusion Prevention", "Unable to show URL", "Intrusion Prevention Warning", "Warning");
 	    }
 	}
+    }
+    public int compareTo(UrlButtonRunnable o){
+        return url.compareTo(o.url);
     }
 }
