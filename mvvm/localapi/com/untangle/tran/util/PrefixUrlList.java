@@ -37,7 +37,7 @@ public class PrefixUrlList extends UrlList
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    PrefixUrlList(File dbHome, String dbName, URL databaseUrl)
+    public PrefixUrlList(File dbHome, String dbName, URL databaseUrl)
         throws DatabaseException, IOException
     {
         super(dbHome, dbName);
@@ -118,14 +118,5 @@ public class PrefixUrlList extends UrlList
     protected boolean matches(String str, String pat)
     {
         return str.startsWith(pat);
-    }
-
-    public static void main(String[] args)
-        throws Exception
-    {
-        PrefixUrlList pul = new PrefixUrlList(new File("./db"), "hippie",
-                                              new URL("http://sb.google.com/safebrowsing/update?version=goog-black-url:1:1"));
-        pul.update();
-        pul.close();
     }
 }

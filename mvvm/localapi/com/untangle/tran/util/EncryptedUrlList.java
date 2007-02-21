@@ -46,7 +46,7 @@ public class EncryptedUrlList extends UrlList
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    EncryptedUrlList(File dbHome, String dbName, URL databaseUrl)
+    public EncryptedUrlList(File dbHome, String dbName, URL databaseUrl)
         throws DatabaseException, IOException
     {
         super(dbHome, dbName);

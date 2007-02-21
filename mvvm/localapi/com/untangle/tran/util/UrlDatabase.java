@@ -11,13 +11,19 @@
 
 package com.untangle.tran.util;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.sleepycat.je.DatabaseException;
+import org.apache.log4j.Logger;
 
 public class UrlDatabase<T>
 {
     private final Map<T, UrlList> whitelists = new HashMap<T, UrlList>();
     private final Map<T, UrlList> blacklists = new HashMap<T, UrlList>();
+
+    private final Logger logger = Logger.getLogger(getClass());
 
     public void addBlacklist(T o, UrlList blacklist)
     {
@@ -27,6 +33,23 @@ public class UrlDatabase<T>
     public void addWhitelist(T o, UrlList whitelist)
     {
         whitelists.put(o, whitelist);
+    }
+
+    public void updateAll()
+    {
+        try {
+            for (T o : whitelists.keySet()) {
+                whitelists.get(o).update();
+            }
+
+            for (T o : blacklists.keySet()) {
+                blacklists.get(o).update();
+            }
+        } catch (IOException exn) {
+            logger.warn("could not update db", exn);
+        } catch (DatabaseException exn) {
+            logger.warn("could not update db", exn);
+        }
     }
 
     public UrlDatabaseResult search(String proto, String host, String uri)
