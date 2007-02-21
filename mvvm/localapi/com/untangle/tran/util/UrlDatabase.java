@@ -12,10 +12,14 @@
 package com.untangle.tran.util;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.sleepycat.je.DatabaseException;
+import com.untangle.mvvm.tapi.TCPSession;
+import com.untangle.tran.token.Header;
 import org.apache.log4j.Logger;
 
 public class UrlDatabase<T>
@@ -50,6 +54,27 @@ public class UrlDatabase<T>
         } catch (DatabaseException exn) {
             logger.warn("could not update db", exn);
         }
+    }
+
+    public UrlDatabaseResult search(TCPSession session, URI uri,
+                                    Header requestHeader)
+    {
+        String host = uri.getHost();
+        if (null == host) {
+            host = requestHeader.getValue("host");
+            if (null == host) {
+                InetAddress clientIp = session.clientAddr();
+                host = clientIp.getHostAddress();
+            }
+        }
+        host = host.toLowerCase();
+
+        UrlDatabaseResult result = null;
+        do {
+            result = search("http", host, uri.toString());
+        } while (null == result && null != (host = nextHost(host)));
+
+        return result;
     }
 
     public UrlDatabaseResult search(String proto, String host, String uri)

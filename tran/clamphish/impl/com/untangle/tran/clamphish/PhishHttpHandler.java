@@ -11,8 +11,6 @@
 
 package com.untangle.tran.clamphish;
 
-import java.net.InetAddress;
-import java.net.URI;
 
 import com.untangle.mvvm.tapi.TCPSession;
 import com.untangle.tran.http.HttpStateMachine;
@@ -20,6 +18,7 @@ import com.untangle.tran.http.RequestLineToken;
 import com.untangle.tran.http.StatusLine;
 import com.untangle.tran.token.Chunk;
 import com.untangle.tran.token.Header;
+import com.untangle.tran.util.UrlDatabaseResult;
 
 public class PhishHttpHandler extends HttpStateMachine
 {
@@ -48,23 +47,22 @@ public class PhishHttpHandler extends HttpStateMachine
     @Override
     protected Header doRequestHeader(Header requestHeader)
     {
-        // XXX we could check the request-uri for an absolute address too...
-        RequestLineToken requestLine = getRequestLine();
-        URI uri = requestLine.getRequestUri();
+        UrlDatabaseResult result = transform.getUrlDatabase()
+            .search(getSession(), getRequestLine().getRequestUri(),
+                    requestHeader);
 
-        String host = uri.getHost();
-        if (null == host) {
-            host = requestHeader.getValue("host");
-            if (null == host) {
-                InetAddress clientIp = getSession().clientAddr();
-                host = clientIp.getHostAddress();
+        if (null != result) {
+            // XXX fire off event
+            if (result.blacklisted()) {
+                // XXX send replacement!!
+                System.out.println("BLACKLISTED MOTHERFUCKER!");
+                return requestHeader;
+            } else {
+                return requestHeader;
             }
+        } else {
+            return requestHeader;
         }
-        host = host.toLowerCase();
-
-        // XXX LOOKUP
-
-        return requestHeader;
     }
 
     @Override

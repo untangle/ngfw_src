@@ -21,4 +21,14 @@ public class UrlDatabaseResult<T>
         this.black = black;
         this.o = o;
     }
+
+    public boolean blacklisted()
+    {
+        return black;
+    }
+
+    public boolean whitelisted()
+    {
+        return !black;
+    }
 }
