@@ -227,6 +227,7 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
     public int getStateModelIndex(){ return stateModelIndex; }
     public int getDescriptionModelIndex(){ return descriptionModelIndex; }
     public int getOrderModelIndex(){ return orderModelIndex; }
+    public void setOrderModelIndex(int index){ orderModelIndex = index; };
     public int getGreedyColumnViewIndex(){
 	if( greedyColumnModelIndex == -1 )
 	    return -1;

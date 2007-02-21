@@ -208,11 +208,13 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 	serverEnabledDependency( serverEnabledCurrent );
     
     // SERVER ADDRESS
-    serverIPJTextField.setText( directoryCompoundSettings.getWMISettings().getAddress().toString() );
+    serverAddressCurrent = directoryCompoundSettings.getWMISettings().getAddress().toString();
+    serverIPJTextField.setText( serverAddressCurrent );
     serverIPJTextField.setBackground( Color.WHITE );
 
     // SERVER URL
-    urlJTextField.setText( directoryCompoundSettings.getWMISettings().getUrl() );
+    serverURLCurrent = directoryCompoundSettings.getWMISettings().getUrl();
+    urlJTextField.setText( serverURLCurrent );
     }
     
     
@@ -250,6 +252,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 serverDisabledJRadioButton = new javax.swing.JRadioButton();
                 serverEnabledJRadioButton = new javax.swing.JRadioButton();
                 restrictIPJPanel2 = new javax.swing.JPanel();
+                messageJLabel = new javax.swing.JLabel();
                 serverIPJLabel = new javax.swing.JLabel();
                 serverIPJTextField = new javax.swing.JTextField();
                 urlJLabel = new javax.swing.JLabel();
@@ -573,20 +576,39 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
                 restrictIPJPanel2.setLayout(new java.awt.GridBagLayout());
 
+                messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                messageJLabel.setText("<html>The text below is for you to cut and paste from.  These fields are not editable.</html>");
+                messageJLabel.setMaximumSize(null);
+                messageJLabel.setMinimumSize(null);
+                messageJLabel.setPreferredSize(null);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridwidth = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+                restrictIPJPanel2.add(messageJLabel, gridBagConstraints);
+
                 serverIPJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 serverIPJLabel.setText("Server IP Address:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 restrictIPJPanel2.add(serverIPJLabel, gridBagConstraints);
 
                 serverIPJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
                 serverIPJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
                 serverIPJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
+                serverIPJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                serverIPJTextFieldCaretUpdate(evt);
+                        }
+                });
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
                 restrictIPJPanel2.add(serverIPJTextField, gridBagConstraints);
@@ -602,6 +624,12 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 urlJTextField.setMaximumSize(new java.awt.Dimension(250, 19));
                 urlJTextField.setMinimumSize(new java.awt.Dimension(250, 19));
                 urlJTextField.setPreferredSize(new java.awt.Dimension(250, 19));
+                urlJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                                urlJTextFieldCaretUpdate(evt);
+                        }
+                });
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 2;
@@ -611,9 +639,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 80, 5, 0);
+                gridBagConstraints.insets = new java.awt.Insets(0, 50, 5, 0);
                 enableRemoteJPanel.add(restrictIPJPanel2, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -634,6 +663,25 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 add(externalRemoteJPanel, gridBagConstraints);
 
         }//GEN-END:initComponents
+
+
+		private void urlJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_urlJTextFieldCaretUpdate
+            if( !serverURLCurrent.equals(urlJTextField.getText().trim()) ){
+                final String finalString = serverURLCurrent;
+                SwingUtilities.invokeLater( new Runnable(){ public void run(){                    
+                    urlJTextField.setText(finalString);
+                }});
+            }            
+		}//GEN-LAST:event_urlJTextFieldCaretUpdate
+
+		private void serverIPJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_serverIPJTextFieldCaretUpdate
+            if( !serverAddressCurrent.equals(serverIPJTextField.getText().trim()) ){
+                final String finalString = serverAddressCurrent;
+                SwingUtilities.invokeLater( new Runnable(){ public void run(){                    
+                    serverIPJTextField.setText(finalString);
+                }});
+            }
+		}//GEN-LAST:event_serverIPJTextFieldCaretUpdate
 
 		private void serverEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverEnabledJRadioButtonActionPerformed
             serverEnabledDependency(true);        
@@ -721,6 +769,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
     private void serverEnabledDependency(boolean enabled){        
         serverJLabel.setEnabled( enabled );
+		messageJLabel.setEnabled( enabled );
         serverIPJLabel.setEnabled( enabled );
         serverIPJTextField.setEnabled( enabled );
         urlJLabel.setEnabled( enabled );
@@ -743,6 +792,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         private javax.swing.JSeparator jSeparator4;
         private javax.swing.JLabel loginJLabel;
         public javax.swing.JTextField loginJTextField;
+        private javax.swing.JLabel messageJLabel;
         private javax.swing.JLabel orgJLabel;
         public javax.swing.JTextField orgJTextField;
         private javax.swing.JLabel orgOptionalJLabel;
