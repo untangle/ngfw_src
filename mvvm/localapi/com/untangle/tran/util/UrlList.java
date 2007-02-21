@@ -37,7 +37,7 @@ public abstract class UrlList
     // constructors -----------------------------------------------------------
 
     public UrlList(File dbHome, String dbName)
-        throws DatabaseException, IOException
+        throws DatabaseException
     {
         EnvironmentConfig envCfg = new EnvironmentConfig();
         envCfg.setAllowCreate(true);
@@ -47,7 +47,13 @@ public abstract class UrlList
         DatabaseConfig dbCfg = new DatabaseConfig();
         dbCfg.setAllowCreate(true);
         db = dbEnv.openDatabase(null, dbName, dbCfg);
+    }
 
+    // public methods ---------------------------------------------------------
+
+    public void update()
+        throws DatabaseException, IOException
+    {
         try {
             DatabaseEntry k = new DatabaseEntry(VERSION_KEY);
             DatabaseEntry v = new DatabaseEntry();
@@ -61,14 +67,19 @@ public abstract class UrlList
                 version = initDatabase(db);
             }
             if (null != version) {
-                db.put(null, k, new DatabaseEntry(version.getBytes()));
+                db.put(null, new DatabaseEntry(VERSION_KEY), new DatabaseEntry(version.getBytes()));
             }
         } catch (DatabaseException exn) {
             logger.warn("could not get database version", exn);
         }
     }
 
-    // public methods ---------------------------------------------------------
+    public void close()
+        throws DatabaseException
+    {
+        db.close();
+        db.getEnvironment().close();
+    }
 
     // this method for pre-normalized parts
     public boolean contains(String proto, String host, String uri)
@@ -95,6 +106,24 @@ public abstract class UrlList
     protected abstract byte[] getKey(byte[] host);
     protected abstract List<String> getValues(byte[] host, byte[] data);
     protected abstract boolean matches(String str, String pattern);
+
+    protected List<String> split(byte[] buf)
+    {
+        List<String> l = new ArrayList<String>();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < buf.length; i++) {
+            char c = (char)buf[i];
+            if ('\t' == c) {
+                l.add(sb.toString());
+                sb.delete(0, sb.length());
+            } else {
+                sb.append(c);
+            }
+        }
+        l.add(sb.toString());
+
+        return l;
+    }
 
     // private methods --------------------------------------------------------
 

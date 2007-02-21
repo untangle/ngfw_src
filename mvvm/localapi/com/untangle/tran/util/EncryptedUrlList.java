@@ -22,7 +22,6 @@ import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -153,20 +152,7 @@ public class EncryptedUrlList extends UrlList
             return Collections.emptyList();
         }
 
-        List<String> l = new ArrayList<String>();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < buf.length; i++) {
-            char c = (char)buf[i];
-            if ('\t' == c) {
-                l.add(sb.toString());
-                sb.delete(0, sb.length());
-            } else {
-                sb.append(c);
-            }
-        }
-        l.add(sb.toString());
-
-        return l;
+        return split(buf);
     }
 
     protected boolean matches(String str, String pat)

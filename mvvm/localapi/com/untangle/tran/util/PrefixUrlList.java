@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,12 +24,14 @@ import java.util.regex.Pattern;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.LockMode;
+import com.sleepycat.je.OperationStatus;
 import org.apache.log4j.Logger;
 
 public class PrefixUrlList extends UrlList
 {
     private static final Pattern VERSION_PATTERN = Pattern.compile("\\[[^ ]+ ([0-9.]+)\\]");
-    private static final Pattern TUPLE_PATTERN = Pattern.compile("\\+(https?://([^/\t]+)/[^\t])\tc");
+    private static final Pattern TUPLE_PATTERN = Pattern.compile("\\+(https?://([^/\t]+)/[^\t]*)\tc");
 
     private final URL databaseUrl;
 
@@ -40,7 +41,6 @@ public class PrefixUrlList extends UrlList
         throws DatabaseException, IOException
     {
         super(dbHome, dbName);
-
         this.databaseUrl = databaseUrl;
     }
 
@@ -70,11 +70,26 @@ public class PrefixUrlList extends UrlList
                 byte[] prefix = matcher.group(1).getBytes();
                 byte[] host = matcher.group(2).getBytes();
 
-                System.out.println("PUTTING HOST: " + new String(host)
-                                   + " prefix: " + new String(prefix));
                 try {
-                    db.put(null, new DatabaseEntry(host),
-                           new DatabaseEntry(prefix));
+                    DatabaseEntry k = new DatabaseEntry(host);
+                    DatabaseEntry v = new DatabaseEntry();
+
+                    OperationStatus s = db.get(null, k, v,
+                                               LockMode.READ_UNCOMMITTED);
+                    if (OperationStatus.SUCCESS == s) {
+                        byte[] data = v.getData();
+                        byte[] newData = new byte[data.length + 1 + prefix.length];
+                        System.arraycopy(data, 0, newData, 0, data.length);
+                        newData[data.length] = '\t';
+                        System.arraycopy(prefix, 0, newData, data.length + 1,
+                                         prefix.length);
+
+                        v.setData(newData);
+                    } else {
+                        v.setData(prefix);
+                    }
+
+                    db.put(null, k, v);
                 } catch (DatabaseException exn) {
                     logger.warn("could not add database entry", exn);
                 }
@@ -97,11 +112,20 @@ public class PrefixUrlList extends UrlList
 
     protected List<String> getValues(byte[] host, byte[] data)
     {
-        return Collections.singletonList(new String(data));
+        return split(data);
     }
 
     protected boolean matches(String str, String pat)
     {
         return str.startsWith(pat);
+    }
+
+    public static void main(String[] args)
+        throws Exception
+    {
+        PrefixUrlList pul = new PrefixUrlList(new File("./db"), "hippie",
+                                              new URL("http://sb.google.com/safebrowsing/update?version=goog-black-url:1:1"));
+        pul.update();
+        pul.close();
     }
 }
