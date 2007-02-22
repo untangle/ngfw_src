@@ -30,7 +30,7 @@ public class UrlButtonRunnable implements ButtonRunnable, Comparable<UrlButtonRu
     }
     public String getButtonText(){
         if( url.startsWith("http") )
-            return "Show " + url.substring(7,url.length());
+            return "Show URL";
         else
             return "No URL";
     }

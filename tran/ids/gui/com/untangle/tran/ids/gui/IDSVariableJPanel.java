@@ -39,6 +39,7 @@ public class IDSVariableJPanel extends MEditTableJPanel {
         
         // create actual table model
         IDSVariableTableModel tableModel = new IDSVariableTableModel();
+        tableModel.setSortingStatus(2, IDSVariableTableModel.ASCENDING);
         this.setTableModel( tableModel );
     }
 }
