@@ -259,7 +259,10 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 
     public void saveGui(){
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            Boolean enabled = saveJButton.isEnabled();
+            saveJButton.setEnabled(true);
             saveJButton.doClick();
+            saveJButton.setEnabled(enabled);
         }});
     }
     
@@ -267,7 +270,10 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 
     public void refreshGui(){
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
+        Boolean enabled = reloadJButton.isEnabled();
+        reloadJButton.setEnabled(true);
 	    reloadJButton.doClick();
+        reloadJButton.setEnabled(enabled);
 	}});
     }
 

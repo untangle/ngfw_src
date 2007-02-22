@@ -61,7 +61,7 @@ public class ServerRoutingWizard extends MWizardJDialog {
         addWizardPageJPanel(new ServerRoutingWizardExportsJPanel(vpnTransform),         "4. Add Exports", false, true);
         addWizardPageJPanel(new ServerRoutingWizardClientsJPanel(vpnTransform),         "5. Add VPN Clients", false, true);
         addWizardPageJPanel(new ServerRoutingWizardSitesJPanel(vpnTransform),           "6. Add VPN Sites", false, true);
-        addWizardPageJPanel(new ServerRoutingWizardCongratulationsJPanel(vpnTransform), "7. Congratulations", false, true);
+        addWizardPageJPanel(new ServerRoutingWizardCongratulationsJPanel(vpnTransform), "7. Congratulations", true, true);
     }
 
     protected Dimension getTitleJPanelPreferredSize(){ return new Dimension(250,360); }
@@ -77,10 +77,10 @@ public class ServerRoutingWizard extends MWizardJDialog {
     }
 
     protected void wizardFinishedNormal(){
-	super.wizardFinishedNormal();
-	mTransformControlsJPanel.getInfiniteProgressJComponent().startLater("Reconfiguring...");
-	mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(3000l);
-	mTransformControlsJPanel.refreshGui();
+        super.wizardFinishedNormal();
+        mTransformControlsJPanel.getInfiniteProgressJComponent().startLater("Reconfiguring...");
+        mTransformControlsJPanel.refreshGui();
+        mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(0l);
     }    
 }
 

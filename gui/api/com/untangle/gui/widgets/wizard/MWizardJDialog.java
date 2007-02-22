@@ -129,9 +129,11 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 	if( disableAll ){
 	    nextJButton.setEnabled(false);
 	    previousJButton.setEnabled(false);
+        closeJButton.setEnabled(false);
 	}
 	else{
 		previousJButton.setEnabled(true);
+        closeJButton.setEnabled(true);
 	    if( currentPage == 0 ){
 		nextJButton.setEnabled(true);
 		previousJButton.setVisible(false);
@@ -143,6 +145,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 		nextJButton.setText(STRING_NEXT_PAGE);
 	    }
 	    else{
+        closeJButton.setEnabled(false);
 		nextJButton.setEnabled(true);
 		previousJButton.setVisible(true);
 		nextJButton.setText(STRING_FINAL_PAGE);
