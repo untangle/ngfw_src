@@ -74,8 +74,7 @@ public class PrefixUrlList extends UrlList
                     DatabaseEntry k = new DatabaseEntry(host);
                     DatabaseEntry v = new DatabaseEntry();
 
-                    OperationStatus s = db.get(null, k, v,
-                                               LockMode.READ_UNCOMMITTED);
+                    OperationStatus s = db.get(null, k, v, LockMode.READ_UNCOMMITTED);
                     if (OperationStatus.SUCCESS == s) {
                         byte[] data = v.getData();
                         byte[] newData = new byte[data.length + 1 + prefix.length];

@@ -86,16 +86,16 @@ public class ClamPhishTransform extends SpamImpl
         urlDatabase = new UrlDatabase();
 
         // XXX post/pre init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        File dbHome = new File(System.getProperty("bunnicula.db.home"), "clamphish");
-        try {
-            URL url = new URL("http://sb.google.com/safebrowsing/update?version=goog-black-url:1:1");
-            UrlList ul = new PrefixUrlList(dbHome, "goog-black-url", url);
-            urlDatabase.addBlacklist("goog-black-url", ul);
-        } catch (DatabaseException exn) {
-            logger.warn("could not open database", exn);
-        } catch (IOException exn) {
-            logger.warn("could not open database", exn);
-        }
+        File dbHome = new File(System.getProperty("bunnicula.db.dir"), "clamphish");
+//         try {
+//             URL url = new URL("http://sb.google.com/safebrowsing/update?version=goog-black-url:1:1");
+//             UrlList ul = new PrefixUrlList(dbHome, "goog-black-url", url);
+//             urlDatabase.addBlacklist("goog-black-url", ul);
+//         } catch (DatabaseException exn) {
+//             logger.warn("could not open database", exn);
+//         } catch (IOException exn) {
+//             logger.warn("could not open database", exn);
+//         }
 
         try {
             URL url = new URL("http://sb.google.com/safebrowsing/update?version=goog-black-enchash:1:1");

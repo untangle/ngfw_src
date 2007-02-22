@@ -17,5 +17,6 @@ $Id$
                   classname="com.untangle.tran.clamphish.ClamPhishTransform"
                   gui-classname="com.untangle.tran.clamphish.gui.MTransformJPanel"
                   transform-base="spam-base"/>
+  <parent>http-casing</parent>
   <parent>mail-casing</parent>
 </mvvm-transform>

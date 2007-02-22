@@ -69,6 +69,7 @@ public class UrlDatabase<T>
         }
         host = host.toLowerCase();
 
+        // XXX dont do nextHost() for ipaddresses
         UrlDatabaseResult result = null;
         do {
             result = search("http", host, uri.toString());

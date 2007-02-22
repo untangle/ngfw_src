@@ -70,6 +70,8 @@ public abstract class UrlList
             if (null != version) {
                 db.put(null, new DatabaseEntry(VERSION_KEY), new DatabaseEntry(version.getBytes()));
             }
+
+            db.getEnvironment().sync();
         } catch (DatabaseException exn) {
             logger.warn("could not get database version", exn);
         }
@@ -128,11 +130,16 @@ public abstract class UrlList
 
     // private methods --------------------------------------------------------
 
-    private List<String> getPatterns(String hostStr)
+    // XXX private
+    public List<String> getPatterns(String hostStr)
     {
         byte[] host = hostStr.getBytes();
 
         byte[] hash = getKey(host);
+
+        byte[] hippie = new byte[hash.length + 1];
+        System.arraycopy(hash, 0, hippie, 1, hash.length);
+
         if (null == hash) {
             return Collections.emptyList();
         }
