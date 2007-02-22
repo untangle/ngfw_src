@@ -364,7 +364,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 removeJButton.setFocusPainted(false);
                 removeJButton.setFocusable(false);
                 removeJButton.setIconTextGap(6);
-                removeJButton.setMargin(new java.awt.Insets(2, 4, 2, 4));
+                removeJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 removeJButton.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -377,7 +377,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 helpJButton.setText("Help");
                 helpJButton.setFocusPainted(false);
                 helpJButton.setIconTextGap(6);
-                helpJButton.setMargin(new java.awt.Insets(2, 4, 2, 4));
+                helpJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 helpJButton.setOpaque(false);
                 helpJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -398,7 +398,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 expandJButton.setFocusPainted(false);
                 expandJButton.setFocusable(false);
                 expandJButton.setIconTextGap(6);
-                expandJButton.setMargin(new java.awt.Insets(2, 4, 2, 4));
+                expandJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 expandJButton.setOpaque(false);
                 expandJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -419,7 +419,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 reloadJButton.setFocusPainted(false);
                 reloadJButton.setFocusable(false);
                 reloadJButton.setIconTextGap(6);
-                reloadJButton.setMargin(new java.awt.Insets(2, 4, 2, 4));
+                reloadJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 reloadJButton.setOpaque(false);
                 reloadJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -441,7 +441,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 saveJButton.setFocusPainted(false);
                 saveJButton.setFocusable(false);
                 saveJButton.setIconTextGap(6);
-                saveJButton.setMargin(new java.awt.Insets(2, 4, 2, 4));
+                saveJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 saveJButton.setOpaque(false);
                 saveJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

@@ -110,7 +110,7 @@
                 <Property name="focusable" type="boolean" value="false"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-                  <Insets value="[2, 4, 2, 4]"/>
+                  <Insets value="[2, 6, 2, 6]"/>
                 </Property>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
@@ -135,7 +135,7 @@
                 <Property name="focusPainted" type="boolean" value="false"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-                  <Insets value="[2, 4, 2, 4]"/>
+                  <Insets value="[2, 6, 2, 6]"/>
                 </Property>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
@@ -162,7 +162,7 @@
                 <Property name="focusable" type="boolean" value="false"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-                  <Insets value="[2, 4, 2, 4]"/>
+                  <Insets value="[2, 6, 2, 6]"/>
                 </Property>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
@@ -192,7 +192,7 @@
                 <Property name="focusable" type="boolean" value="false"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-                  <Insets value="[2, 4, 2, 4]"/>
+                  <Insets value="[2, 6, 2, 6]"/>
                 </Property>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
@@ -222,7 +222,7 @@
                 <Property name="focusable" type="boolean" value="false"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-                  <Insets value="[2, 4, 2, 4]"/>
+                  <Insets value="[2, 6, 2, 6]"/>
                 </Property>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
