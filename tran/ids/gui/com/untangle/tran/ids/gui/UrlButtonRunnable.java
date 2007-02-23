@@ -29,19 +29,19 @@ public class UrlButtonRunnable implements ButtonRunnable, Comparable<UrlButtonRu
     public UrlButtonRunnable(String isEnabled){
     }
     public String getButtonText(){
-        if( url.startsWith("http") )
-            return "Show URL";
-        else
+        if( (url==null) || (!url.startsWith("http")))
             return "No URL";
+        else
+            return "Show URL";
     }
 
     public boolean valueChanged(){ return false; }
     public void setEnabled(boolean enabled){ this.isEnabled = enabled; }
     public boolean isEnabled(){
-        if( url.startsWith("http") )
-            return true;
-        else
+        if( (url==null) || (!url.startsWith("http")))
             return false;
+        else
+            return true;
     }
 
     public void setUrl(String url){ this.url = url; }
