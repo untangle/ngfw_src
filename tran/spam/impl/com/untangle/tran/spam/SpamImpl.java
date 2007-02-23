@@ -14,8 +14,6 @@ package com.untangle.tran.spam;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.untangle.tran.util.Ascii.CRLF;
-
 import com.untangle.mvvm.logging.EventLogger;
 import com.untangle.mvvm.logging.EventLoggerFactory;
 import com.untangle.mvvm.logging.EventManager;
@@ -29,6 +27,7 @@ import com.untangle.mvvm.tran.Transform;
 import com.untangle.mvvm.tran.TransformContext;
 import com.untangle.mvvm.util.TransactionWork;
 import com.untangle.tran.token.TokenAdaptor;
+import static com.untangle.tran.util.Ascii.CRLF;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -88,6 +87,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     };
 
     private final SpamScanner scanner;
+    private final SpamAssassinDaemon saDaemon;
     private final EventLogger<SpamEvent> eventLogger;
     private final EventLogger<SpamSMTPRBLEvent> rblEventLogger;
 
@@ -97,14 +97,15 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
 
     public SpamImpl(SpamScanner scanner)
     {
-        TransformContext tctx = getTransformContext();
-
         this.scanner = scanner;
+        saDaemon = new SpamAssassinDaemon();
 
-        String vendor = scanner.getVendorName();
+        TransformContext tctx = getTransformContext();
 
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
         rblEventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
+
+        String vendor = scanner.getVendorName();
 
         SimpleEventFilter ef = new SpamAllFilter(vendor);
         eventLogger.addSimpleEventFilter(ef);
@@ -274,16 +275,158 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
       ss.getSMTPOutbound().setNotifyBodyTemplate(getDefaultNotifyBodyTemplate(false));
     }
 
-    private void initSpamRBLList(SpamSettings tmpSpamSettings) {
+    protected void initSpamRBLList(SpamSettings tmpSpamSettings) {
         List<SpamRBL> spamRBLList = tmpSpamSettings.getSpamRBLList();
         if (false == spamRBLList.isEmpty()) {
-            return; // list is already initialized
+            // if already initialized,
+            // use list as-is (e.g., database contains final word)
+            //
+            // if need be, update existing list here
+            //
+            // on return, save to database
+            return;
         } // else initialize list now (e.g., upgrade has just occurred)
 
         spamRBLList.add(new SpamRBL("dul.dnsbl.sorbs.net", "Spam and Open-Relay Blocking System", true));
         spamRBLList.add(new SpamRBL("list.dsbl.org", "Distributed Sender Blackhole List", true));
         //spamRBLList.add(new SpamRBL("sbl-xbl.spamhaus.org", "Spamhaus Block and Exploits Block Lists", true));
         spamRBLList.add(new SpamRBL("bl.spamcop.net", "SpamCop Blocking List", true));
+
+        return;
+    }
+
+    protected void initSpamAssassinDefList(SpamSettings tmpSpamSettings) {
+        List<SpamAssassinDef> saDefList = tmpSpamSettings.getSpamAssassinDefList();
+        SpamAssassinDefFile saDefFile = new SpamAssassinDefFile();
+
+        if (false == saDefList.isEmpty()) {
+            // if already initialized,
+            // use list as-is (e.g., database contains final word)
+            //
+            // if need be, update existing list here
+            //
+            // write to file and on return, save to database
+            saDefFile.writeToFile(saDefList);
+            // note that we do not automatically restart spamd
+            // after every write to file because there may be no changes
+            // - someone needs to separately call restartSpamAssassinDaemon
+            //   if there are changes
+            return;
+        } // else initialize list now (e.g., upgrade has just occurred)
+
+        // to initialize, merge existing system def confs from file
+        // with required system def confs
+        saDefFile.readFromFile(saDefList);
+        initSpamAssassinDefList(saDefList);
+        saDefFile.writeToFile(saDefList);
+        // note that we automatically restart spamd
+        // after we've initialized because there may be changes
+        if (false == restartSpamAssassinDaemon())
+            logger.error("Could not restart SpamAssassin Mail Filter Daemon");
+
+        return;
+    }
+
+    // initialize system def conf settings
+    // - delete any dupls
+    // - swap required system def conf with its constant equivalent
+    //   (to ensure that its value is correctly set)
+    // - add any missing required system def conf with its constant equivalent
+    private void initSpamAssassinDefList(List<SpamAssassinDef> saDefList)
+    {
+        List<SpamAssassinDef> duplSADefList = new LinkedList<SpamAssassinDef>();
+        List<SpamAssassinDef> copySADefList = new LinkedList<SpamAssassinDef>(saDefList);
+
+        boolean isDup;
+
+        for (SpamAssassinDef saDef : saDefList) {
+            if (false == saDef.getActive())
+                continue;
+
+            isDup = false;
+            for (SpamAssassinDef copySADef : copySADefList) {
+                if (false == copySADef.getActive())
+                    continue;
+
+                if (true == saDef.equalsOptName(copySADef)) {
+                    if (true == isDup) {
+                        duplSADefList.add(copySADef); // mark dupl for removal
+                    } else {
+                        isDup = true; // keep 1st one
+                    }
+                }
+            }
+
+            if (true == isDup) {
+                copySADefList.removeAll(duplSADefList);
+                duplSADefList.clear();
+            }
+        }
+
+        saDefList.clear();
+        saDefList.addAll(copySADefList); // add whatever remains
+        copySADefList.clear();
+
+        boolean hasEnabled = false;
+        boolean hasOptions = false;
+
+        for (SpamAssassinDef saDef : saDefList) {
+            if (false == saDef.getActive()) {
+                copySADefList.add(saDef);
+            } else if (true == SpamAssassinDef.ENABLED_DEF.equalsOptName(saDef)){
+                copySADefList.add(SpamAssassinDef.ENABLED_DEF); // swap
+                hasEnabled = true;
+            } else if (true == SpamAssassinDef.OPTIONS_DEF.equalsOptName(saDef)) {
+                copySADefList.add(SpamAssassinDef.OPTIONS_DEF); // swap
+                hasOptions = true;
+            } else {
+                copySADefList.add(saDef);
+            }
+        }
+
+        saDefList.clear();
+        // add required comment to beginning
+        saDefList.add(SpamAssassinDef.DEF_COMMENT_DEF);
+        saDefList.add(SpamAssassinDef.EMPTY_DEF);
+        // add rest
+        if (false == hasEnabled) {
+            saDefList.add(SpamAssassinDef.ENABLED_DEF); // add missing
+        } else if (false == hasOptions) {
+            saDefList.add(SpamAssassinDef.OPTIONS_DEF); // add missing
+        }
+        saDefList.addAll(copySADefList);
+        copySADefList.clear();
+
+        return;
+    }
+
+    protected void initSpamAssassinLclList(SpamSettings tmpSpamSettings) {
+        List<SpamAssassinLcl> saLclList = tmpSpamSettings.getSpamAssassinLclList();
+        SpamAssassinLclFile saLclFile = new SpamAssassinLclFile();
+
+        if (false == saLclList.isEmpty()) {
+            // if already initialized,
+            // use list as-is (e.g., database contains final word)
+            //
+            // if need be, update existing list here
+            //
+            // write to file and on return, save to database
+            saLclFile.writeToFile(saLclList);
+            return;
+        } // else initialize list now (e.g., upgrade has just occurred)
+
+        // to initialize, define local def confs now
+        //
+        // add required comment and local def conf
+        saLclList.add(SpamAssassinLcl.LCL_COMMENT_LCL);
+        saLclList.add(SpamAssassinLcl.EMPTY_LCL);
+        saLclList.add(SpamAssassinLcl.SCORE_LCL);
+        saLclList.add(SpamAssassinLcl.LOCK_DB_FILES_LCL);
+        saLclList.add(SpamAssassinLcl.AUTO_WL_FACTOR_LCL);
+        saLclList.add(SpamAssassinLcl.PYZOR_TIMEOUT_LCL);
+        saLclList.add(SpamAssassinLcl.RESET_RPT_TEMPL_LCL);
+        saLclList.add(SpamAssassinLcl.RPT_LCL);
+        saLclFile.writeToFile(saLclList);
 
         return;
     }
@@ -300,7 +443,10 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     {
         //TEMP HACK, Until we move the templates to database
         ensureTemplateSettings(newSpamSettings);
-        initSpamRBLList(newSpamSettings); // set list if not already set
+        // set lists if not already set
+        initSpamRBLList(newSpamSettings);
+        initSpamAssassinLclList(newSpamSettings);
+        initSpamAssassinDefList(newSpamSettings); // def must be last
 
         TransactionWork tw = new TransactionWork()
             {
@@ -405,6 +551,83 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         return;
     }
 
+    // convenience method for GUI
+    public boolean startSpamAssassinDaemon() {
+        return saDaemon.start();
+    }
+
+    // convenience method for GUI
+    public boolean stopSpamAssassinDaemon() {
+        return saDaemon.stop();
+    }
+
+    // convenience method for GUI
+    public boolean restartSpamAssassinDaemon() {
+        return saDaemon.restart();
+    }
+
+    // convenience method for GUI
+    public List<String> getUnWhitelistFromList() {
+        return getSALclOptValueList(SpamAssassinLcl.UNWHITELIST_FROM_SETTING);
+    }
+
+    // convenience method for GUI
+    public void setUnWhitelistFromList(List<String> unWhitelistFromList) {
+        swapSALclOptValues(unWhitelistFromList, SpamAssassinLcl.UNWHITELIST_FROM_SETTING);
+        return;
+    }
+
+    // convenience method for GUI
+    public List<String> getUnWhitelistFromRcvdList() {
+        return getSALclOptValueList(SpamAssassinLcl.UNWHITELIST_FROM_RCVD_SETTING);
+    }
+
+    // convenience method for GUI
+    public void setUnWhitelistFromRcvdList(List<String> unWhitelistFromRcvdList) {
+        swapSALclOptValues(unWhitelistFromRcvdList, SpamAssassinLcl.UNWHITELIST_FROM_RCVD_SETTING);
+        return;
+    }
+
+    private List<String> getSALclOptValueList(String optName) {
+        List<String> optValueList = new LinkedList<String>();
+        List<SpamAssassinLcl> saLclList = getSALclList(optName);
+        for (SpamAssassinLcl saLcl : saLclList) {
+            optValueList.add(saLcl.getOptValue());
+        }
+
+        return optValueList;
+    }
+
+    private void swapSALclOptValues(List<String> newOptValueList, String optName) {
+        if (true == newOptValueList.isEmpty())
+            return;
+
+        // replace existing local def conf with new ones
+        List<SpamAssassinLcl> rmSALclList = getSALclList(optName);
+        List<SpamAssassinLcl> srcSALclList = spamSettings.getSpamAssassinLclList();
+        srcSALclList.removeAll(rmSALclList);
+        rmSALclList.clear();
+        for (String newOptValue : newOptValueList) {
+            srcSALclList.add(new SpamAssassinLcl(optName, newOptValue, null, true));
+        }
+
+        return;
+    }
+
+    private List<SpamAssassinLcl> getSALclList(String optName) {
+        List<SpamAssassinLcl> saLclList = new LinkedList<SpamAssassinLcl>();
+        List<SpamAssassinLcl> srcSALclList = spamSettings.getSpamAssassinLclList();
+        for (SpamAssassinLcl srcSALcl : srcSALclList) {
+            if (false == srcSALcl.getActive())
+                continue;
+
+            if (true == optName.equals(srcSALcl.getOptName()))
+                saLclList.add(srcSALcl);
+        }
+
+        return saLclList;
+    }
+
     // AbstractTransform methods ----------------------------------------------
 
     @Override
@@ -425,8 +648,10 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                     spamSettings = (SpamSettings)q.uniqueResult();
 
                     ensureTemplateSettings(spamSettings);
-                    // set list if not already set
+                    // set lists if not already set
                     initSpamRBLList(spamSettings);
+                    initSpamAssassinLclList(spamSettings);
+                    initSpamAssassinDefList(spamSettings); // def must be last
 
                     return true;
                 }

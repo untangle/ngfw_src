@@ -52,7 +52,9 @@ public class SpamSettings implements Serializable
     private SpamPOPConfig POPOutbound;
     private SpamIMAPConfig IMAPInbound;
     private SpamIMAPConfig IMAPOutbound;
-    private List<SpamRBL> spamRBLList;
+    private List<SpamRBL> spamRBLList; // spam only
+    private List<SpamAssassinDef> spamAssassinDefList; // spamassassin only
+    private List<SpamAssassinLcl> spamAssassinLclList; // spamassassin only
 
     // constructors -----------------------------------------------------------
 
@@ -62,6 +64,8 @@ public class SpamSettings implements Serializable
     {
         this.tid = tid;
         spamRBLList = new LinkedList<SpamRBL>();
+        spamAssassinDefList = new LinkedList<SpamAssassinDef>();
+        spamAssassinLclList = new LinkedList<SpamAssassinLcl>();
     }
 
     // accessors --------------------------------------------------------------
@@ -224,6 +228,52 @@ public class SpamSettings implements Serializable
     public void setSpamRBLList(List<SpamRBL> spamRBLList)
     {
         this.spamRBLList = spamRBLList;
+        return;
+    }
+
+    /**
+     * SpamAssassin System Default Conf list.
+     *
+     * @return SpamAssassin System Default Conf list.
+     */
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({org.hibernate.annotations.CascadeType.ALL,
+              org.hibernate.annotations.CascadeType.DELETE_ORPHAN})
+    @JoinTable(name="tr_spam_spamassassin_def_list",
+               joinColumns=@JoinColumn(name="settings_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<SpamAssassinDef> getSpamAssassinDefList()
+    {
+        return spamAssassinDefList;
+    }
+
+    public void setSpamAssassinDefList(List<SpamAssassinDef> spamAssassinDefList)
+    {
+        this.spamAssassinDefList = spamAssassinDefList;
+        return;
+    }
+
+    /**
+     * SpamAssassin Local Default Conf list.
+     *
+     * @return SpamAssassin Local Default Conf list.
+     */
+    @OneToMany(fetch=FetchType.EAGER)
+    @Cascade({org.hibernate.annotations.CascadeType.ALL,
+              org.hibernate.annotations.CascadeType.DELETE_ORPHAN})
+    @JoinTable(name="tr_spam_spamassassin_lcl_list",
+               joinColumns=@JoinColumn(name="settings_id"),
+               inverseJoinColumns=@JoinColumn(name="rule_id"))
+    @IndexColumn(name="position")
+    public List<SpamAssassinLcl> getSpamAssassinLclList()
+    {
+        return spamAssassinLclList;
+    }
+
+    public void setSpamAssassinLclList(List<SpamAssassinLcl> spamAssassinLclList)
+    {
+        this.spamAssassinLclList = spamAssassinLclList;
         return;
     }
 }

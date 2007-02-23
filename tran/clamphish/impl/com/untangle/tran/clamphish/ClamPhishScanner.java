@@ -51,11 +51,11 @@ public class ClamPhishScanner implements SpamScanner
 
     public SpamReport scanFile(File msgFile, float threshold)
     {
+        ClamScannerClientLauncher scan = new ClamScannerClientLauncher(msgFile);
         try {
             synchronized(activeScanMonitor) {
                 activeScanCount++;
             }
-            ClamScannerClientLauncher scan = new ClamScannerClientLauncher(msgFile);
             VirusScannerResult vsr = scan.doScan(this.timeout);
             SpamReport result;
             if (vsr.isClean() || vsr.getVirusName() == null || !vsr.getVirusName().contains("Phish")) {

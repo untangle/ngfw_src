@@ -13,6 +13,7 @@ package com.untangle.tran.clamphish;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import com.sleepycat.je.DatabaseException;
 import com.untangle.mvvm.tapi.Affinity;
@@ -20,6 +21,7 @@ import com.untangle.mvvm.tapi.Fitting;
 import com.untangle.mvvm.tapi.PipeSpec;
 import com.untangle.mvvm.tapi.SoloPipeSpec;
 import com.untangle.tran.spam.SpamImpl;
+import com.untangle.tran.spam.SpamSettings;
 import com.untangle.tran.token.TokenAdaptor;
 import com.untangle.tran.util.EncryptedUrlList;
 import com.untangle.tran.util.PrefixUrlList;
@@ -118,6 +120,21 @@ public class ClamPhishTransform extends SpamImpl
     }
 
     @Override
+    protected void initSpamRBLList(SpamSettings tmpSpamSettings) {
+        return; // does not apply to clamphish
+    }
+
+    @Override
+    protected void initSpamAssassinDefList(SpamSettings tmpSpamSettings) {
+        return; // does not apply to clamphish
+    }
+
+    @Override
+    protected void initSpamAssassinLclList(SpamSettings tmpSpamSettings) {
+        return; // does not apply to clamphish
+    }
+
+    @Override
     public String getDefaultSubjectWrapperTemplate(boolean inbound) {
       return inbound?IN_MOD_SUB_TEMPLATE:OUT_MOD_SUB_TEMPLATE;
     }
@@ -150,6 +167,41 @@ public class ClamPhishTransform extends SpamImpl
     @Override
     public String getDefaultNotifyBodyTemplate(boolean inbound) {
       return inbound?IN_NOTIFY_BODY_TEMPLATE:OUT_NOTIFY_BODY_TEMPLATE;
+    }
+
+    @Override
+    public boolean startSpamAssassinDaemon() {
+        return false; // does not apply to clamphish
+    }
+
+    @Override
+    public boolean stopSpamAssassinDaemon() {
+        return false; // does not apply to clamphish
+    }
+
+    @Override
+    public boolean restartSpamAssassinDaemon() {
+        return false; // does not apply to clamphish
+    }
+
+    @Override
+    public List<String> getUnWhitelistFromList() {
+        return null; // does not apply to clamphish
+    }
+
+    @Override
+    public void setUnWhitelistFromList(List<String> unWhitelistFromList) {
+        return; // does not apply to clamphish
+    }
+
+    @Override
+    public List<String> getUnWhitelistFromRcvdList() {
+        return null; // does not apply to clamphish
+    }
+
+    @Override
+    public void setUnWhitelistFromRcvdList(List<String> unWhitelistFromRcvdList) {
+        return; // does not apply to clamphish
     }
 
     UrlDatabase getUrlDatabase()

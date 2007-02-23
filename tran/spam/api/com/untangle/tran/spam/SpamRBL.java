@@ -89,7 +89,7 @@ public class SpamRBL implements Serializable
      *
      * @return description of hostname
      */
-    @Column(nullable=false)
+    @Column(nullable=true)
     public String getDescription() {
         return description;
     }
