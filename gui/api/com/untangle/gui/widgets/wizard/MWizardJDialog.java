@@ -36,10 +36,10 @@ import java.util.*;
 public class MWizardJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
     // BUTTON STRINGS ///////
-    protected String STRING_NEXT_PAGE = "<html><b>Next</b> Page</html>";
-    protected String STRING_PREVIOUS_PAGE = "<html><b>Previous</b> Page</html>";
-    protected String STRING_FINAL_PAGE = "<html><b>Finish</b></html>";
-    protected String STRING_CLOSE_WIZARD = "<html><b>Close</b> Wizard</html>";
+    protected String STRING_NEXT_PAGE = "Next";
+    protected String STRING_PREVIOUS_PAGE = "Previous";
+    protected String STRING_FINAL_PAGE = "Finish";
+    protected String STRING_CLOSE_WIZARD = "Close";
 
     // LABEL COLORS /////
     protected Color COLOR_COMPLETED = Color.GRAY;
@@ -138,17 +138,20 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
 		nextJButton.setEnabled(true);
 		previousJButton.setVisible(false);
 		nextJButton.setText(STRING_NEXT_PAGE);
+        nextJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/widgets/wizard/IconNext_16x16.png")));
 	    }
 	    else if( currentPage < (wizardPageMap.size()-1) ){
 		nextJButton.setEnabled(true);
 		previousJButton.setVisible(true);
 		nextJButton.setText(STRING_NEXT_PAGE);
+        nextJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/widgets/wizard/IconNext_16x16.png")));
 	    }
 	    else{
         closeJButton.setEnabled(false);
 		nextJButton.setEnabled(true);
 		previousJButton.setVisible(true);
 		nextJButton.setText(STRING_FINAL_PAGE);
+        nextJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/widgets/wizard/IconFinish_16x16.png")));
 	    }
 	    if( checkpointVector.elementAt(currentPage) )
 		previousJButton.setVisible(false);
@@ -263,20 +266,20 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
                 buttonJPanel.setLayout(new java.awt.GridBagLayout());
 
                 buttonJPanel.setFocusable(false);
+                buttonJPanel.setMaximumSize(null);
                 buttonJPanel.setOpaque(false);
                 buttonJPanel.setRequestFocusEnabled(false);
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 
+                jPanel1.setMaximumSize(null);
                 jPanel1.setOpaque(false);
                 nextJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                nextJButton.setText("<html><b>Next</b> page</html>");
+                nextJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/widgets/wizard/IconNext_16x16.png")));
+                nextJButton.setText("Next");
                 nextJButton.setDoubleBuffered(true);
-                nextJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                nextJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-                nextJButton.setMaximumSize(new java.awt.Dimension(78, 25));
-                nextJButton.setMinimumSize(new java.awt.Dimension(78, 25));
+                nextJButton.setIconTextGap(6);
+                nextJButton.setMargin(new java.awt.Insets(4, 6, 4, 6));
                 nextJButton.setOpaque(false);
-                nextJButton.setPreferredSize(new java.awt.Dimension(78, 25));
                 nextJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 nextJButtonActionPerformed(evt);
@@ -286,19 +289,16 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 2;
                 gridBagConstraints.gridy = 0;
-                gridBagConstraints.ipadx = 40;
                 gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 0);
                 jPanel1.add(nextJButton, gridBagConstraints);
 
                 previousJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                previousJButton.setText("<html><b>Previous</b> page</html>");
+                previousJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/widgets/wizard/IconPrevious_16x16.png")));
+                previousJButton.setText("Previous");
                 previousJButton.setDoubleBuffered(true);
-                previousJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                previousJButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-                previousJButton.setMaximumSize(new java.awt.Dimension(120, 25));
-                previousJButton.setMinimumSize(new java.awt.Dimension(120, 25));
+                previousJButton.setIconTextGap(6);
+                previousJButton.setMargin(new java.awt.Insets(4, 6, 4, 6));
                 previousJButton.setOpaque(false);
-                previousJButton.setPreferredSize(new java.awt.Dimension(120, 25));
                 previousJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 previousJButtonActionPerformed(evt);
@@ -311,14 +311,12 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
                 jPanel1.add(previousJButton, gridBagConstraints);
 
                 closeJButton.setFont(new java.awt.Font("Default", 0, 12));
-                closeJButton.setText("<html><b>Close</b> Window</html>");
+                closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/widgets/wizard/IconClose_16x16.png")));
+                closeJButton.setText("Close");
                 closeJButton.setDoubleBuffered(true);
-                closeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                closeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                closeJButton.setMaximumSize(new java.awt.Dimension(140, 25));
-                closeJButton.setMinimumSize(new java.awt.Dimension(140, 25));
+                closeJButton.setIconTextGap(6);
+                closeJButton.setMargin(new java.awt.Insets(4, 6, 4, 6));
                 closeJButton.setOpaque(false);
-                closeJButton.setPreferredSize(new java.awt.Dimension(140, 25));
                 closeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 closeJButtonActionPerformed(evt);
@@ -344,7 +342,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.gridwidth = 2;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(7, 15, 15, 15);
