@@ -56,6 +56,7 @@ public class SystemStatus
     private JitterThread jitter = null;
 
     private static final String SPACER = "========================================================\n";
+    private static final String RETCHAR = "\r\n";
 
     public String staticConf = null;
 
@@ -119,7 +120,7 @@ public class SystemStatus
             proc = MvvmContextFactory.context().exec("/bin/uname -a");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
-                sb.append(line+"\n");
+                sb.append(line + RETCHAR);
             }
             proc.destroy();
 
@@ -130,7 +131,7 @@ public class SystemStatus
             proc = MvvmContextFactory.context().exec("/usr/bin/lspci");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
-                sb.append(line+"\n");
+                sb.append(line + RETCHAR);
             }
             proc.destroy();
 
@@ -140,7 +141,7 @@ public class SystemStatus
             sb.append(SPACER);
             input = new BufferedReader(new FileReader("/proc/cpuinfo"));
             for ( i=0 ; i<8 && ((line = input.readLine()) != null) ; i++ ) {
-                sb.append(line+"\n");
+                sb.append(line + RETCHAR);
             }
             input.close();
 
@@ -170,12 +171,12 @@ public class SystemStatus
             proc = MvvmContextFactory.context().exec("/usr/bin/uptime");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
-                sb.append(line+"\n");
+                sb.append(line + RETCHAR);
             }
         }
         catch (Exception e) {
             logger.error("Exception: ", e);
-            sb.append("Exception on exec (/usr/bin/uptime): " + e.toString() + "\n");
+            sb.append("Exception on exec (/usr/bin/uptime): " + e.toString() + RETCHAR);
         }
         finally {
             if (proc != null)
@@ -191,12 +192,12 @@ public class SystemStatus
             proc = MvvmContextFactory.context().exec("/usr/bin/mvuptime");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
-                sb.append("MVVM uptime: "+line+"\n");
+                sb.append("MVVM uptime: " + line + RETCHAR);
             }
         }
         catch (Exception e) {
             logger.error("Exception: ", e);
-            sb.append("Exception on exec (/usr/bin/mvuptime): " + e.toString() + "\n");
+            sb.append("Exception on exec (/usr/bin/mvuptime): " + e.toString() + RETCHAR);
         }
         finally {
             if (proc != null)
@@ -211,7 +212,7 @@ public class SystemStatus
             sb.append(SPACER);
             input = new BufferedReader(new FileReader("/proc/loadavg"));
             while ((line = input.readLine()) != null) {
-                sb.append("LOAD: "+line+"\n");
+                sb.append("LOAD: " + line + RETCHAR);
             }
             input.close();
         }
@@ -225,7 +226,7 @@ public class SystemStatus
              */
             sb.append(SPACER);
             if (this.jitter != null) {
-                sb.append("JITTER: " + jitter.toString() +"\n");
+                sb.append("JITTER: " + jitter.toString() + RETCHAR);
                 jitter.resetMaxDelay();
             }
             else {
@@ -245,12 +246,12 @@ public class SystemStatus
             proc = MvvmContextFactory.context().exec("/usr/bin/free -m");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
-                sb.append(line+"\n");
+                sb.append(line + RETCHAR);
             }
         }
         catch (Exception e) {
             logger.error("Exception: ", e);
-            sb.append("Exception on exec (/usr/bin/free -m): " + e.toString() + "\n");
+            sb.append("Exception on exec (/usr/bin/free -m): " + e.toString() + RETCHAR);
         }
         finally {
             if (proc != null)
@@ -264,7 +265,7 @@ public class SystemStatus
             sb.append(SPACER);
             input = new BufferedReader(new FileReader("/proc/meminfo"));
             while ((line = input.readLine()) != null) {
-                sb.append("MEM: "+line+"\n");
+                sb.append("MEM: " + line + RETCHAR);
             }
             input.close();
         }
@@ -281,12 +282,12 @@ public class SystemStatus
             proc = MvvmContextFactory.context().exec("/bin/df -h");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
-                sb.append(line+"\n");
+                sb.append(line + RETCHAR);
             }
         }
         catch (Exception e) {
             logger.error("Exception: ", e);
-            sb.append("Exception on exec (/bin/df): " + e.toString() + "\n");
+            sb.append("Exception on exec (/bin/df): " + e.toString() + RETCHAR);
         }
         finally {
             if (proc != null)
@@ -302,12 +303,12 @@ public class SystemStatus
             proc = MvvmContextFactory.context().exec("/bin/ps --sort -rss aux");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
-                sb.append(line+"\n");
+                sb.append(line + RETCHAR);
             }
         }
         catch (Exception e) {
             logger.error("Exception: ", e);
-            sb.append("Exception on exec (/bin/ps): " + e.toString() + "\n");
+            sb.append("Exception on exec (/bin/ps): " + e.toString() + RETCHAR);
         }
         finally {
             if (proc != null)
@@ -323,12 +324,12 @@ public class SystemStatus
             proc = MvvmContextFactory.context().exec("/sbin/mii-tool");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
-                sb.append(line+"\n");
+                sb.append(line + RETCHAR);
             }
         }
         catch (Exception e) {
             logger.error("Exception: ", e);
-            sb.append("Exception on exec (/sbin/mii-tool): " + e.toString() + "\n");
+            sb.append("Exception on exec (/sbin/mii-tool): " + e.toString() + RETCHAR);
         }
         finally {
             if (proc != null)
@@ -353,7 +354,7 @@ public class SystemStatus
             sb.append(SPACER);
             NetworkSpacesInternalSettings netConf = ((NetworkManagerImpl) MvvmContextFactory.context().networkManager()).getNetworkInternalSettings();
             sb.append(netConf.toString());
-            sb.append("\n");
+            sb.append(RETCHAR);
 
             /**
              * Transform Config
@@ -373,7 +374,7 @@ public class SystemStatus
                 }
                 String name = pad(tctx.getTransformDesc().getName(), 25);
                 sb.append(t.getName() + "\t" + name + "\t" + t.getPolicy()
-                          + "\t" + tran.getRunState() + "\n");
+                          + "\t" + tran.getRunState() + RETCHAR);
             }
 
             /**
@@ -382,7 +383,7 @@ public class SystemStatus
             sb.append(SPACER);
             sb.append("Estimated Sesssion Count: ");
             sb.append(MvvmContextFactory.context().argonManager().getSessionCount());
-            sb.append("\n");
+            sb.append(RETCHAR);
             /* Insert anything else here */
         }
         catch (Exception e) {
