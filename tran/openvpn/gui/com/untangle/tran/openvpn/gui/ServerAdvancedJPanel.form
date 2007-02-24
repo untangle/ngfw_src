@@ -45,7 +45,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt; The Server Port is the port that the VPN Server will accept connections from.  These connection are UDP.  This setting is intended to allow you to run your VPN Server from a non-standard port in case you already have a VPN running, or you have a complex network setup.&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt; The Server Port is the port that the VPN Server will accept connections from.  These connections are UDP.  This setting is intended to allow you to run your VPN Server from a non-standard port in case you already have a VPN running, or you have a complex network setup.&lt;/html&gt;"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
