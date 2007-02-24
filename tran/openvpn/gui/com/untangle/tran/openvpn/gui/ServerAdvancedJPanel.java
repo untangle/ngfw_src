@@ -44,7 +44,7 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
     public ServerAdvancedJPanel() {
         initComponents();
 	    Util.setPortView(portJSpinner, VpnSettings.DEFAULT_PUBLIC_PORT);
-		defaultJLabel.setText("(default: " + VpnSettings.DEFAULT_PUBLIC_PORT + ")");
+		defaultJLabel.setText("(default: UDP " + VpnSettings.DEFAULT_PUBLIC_PORT + ")");
     }
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
