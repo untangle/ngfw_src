@@ -51,18 +51,12 @@ public class IPNullAddr extends IPaddr implements Comparable
 
     public boolean equals( Object o )
     {
-        if ( o instanceof IPNullAddr )
-	    return true;
-	else
-	    return false;
+        return super.equals(o);
     }
 
     public int compareTo(Object o)
     {
-	if( o instanceof IPNullAddr )
-	    return 0;
-	else
-	    return -1;
+        return super.compareTo(o);
     }
 }
 
