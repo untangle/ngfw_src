@@ -1,10 +1,13 @@
 #!/bin/sh
 
-## Start the ssh daemon
-/etc/init.d/ssh start
+for PKG_NAME in rbot-mv ssh ; do
+  INIT_SCRIPT="/etc/init.d/${PKG_NAME}"
 
-## Update to start SSH at bootup
-update-rc.d ssh defaults > /dev/null
+  # Start the daemon
+  ${INIT_SCRIPT} start
 
+  # Enable startup at boot time
+  update-rc.d ${PKG_NAME} defaults > /dev/null
+done
 
 

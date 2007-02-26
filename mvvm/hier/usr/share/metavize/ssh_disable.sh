@@ -1,13 +1,17 @@
 #!/bin/sh
 
-# Stop the SSH daemon
-/etc/init.d/ssh stop
+for PKG_NAME in rbot-mv ssh ; do
+  INIT_SCRIPT="/etc/init.d/${PKG_NAME}"
 
-# Backup the initialization script
-mv /etc/init.d/ssh /etc/init.d/ssh.tmp
+  # Stop the daemon
+  ${INIT_SCRIPT} stop
 
-# Disable ssh startup at bootup
-update-rc.d ssh remove > /dev/null
+  # Backup the initialization script
+  mv ${INIT_SCRIPT} ${INIT_SCRIPT}.tmp
 
-# Restore the ssh initialization script
-mv /etc/init.d/ssh.tmp /etc/init.d/ssh
+  # Disable startup at boot time
+  update-rc.d $PKG_NAME remove > /dev/null
+
+  # Restore the initialization script
+  mv ${INIT_SCRIPT}.tmp ${INIT_SCRIPT}
+done
