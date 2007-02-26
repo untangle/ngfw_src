@@ -96,7 +96,7 @@ function installClient()
     ## Update the configuration file to log to a normal place
     sed -i -e "\$a log ${logFile}" ${OPENVPN_CONF_DIR}/client.conf 
 
-    cp -r ${t_output}/untangle-vpn/untangle-data ${OPENVPN_CONF_DIR}/untangle-data \
+    cp -r ${t_output}/untangle-vpn/untangle-vpn ${OPENVPN_CONF_DIR}/untangle-vpn \
         || ( ${RM_CMD} -f ${OPENVPN_CONF_DIR}/client.conf ; ${RM_CMD} -rf ${t_output};  exit -4 )
     
     ## Cleanup
