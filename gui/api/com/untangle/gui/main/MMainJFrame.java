@@ -205,7 +205,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 mTabbedPane.setPreferredSize(new java.awt.Dimension(200, 160));
                 storeJPanel.setLayout(new java.awt.GridBagLayout());
 
-                storeJPanel.setBorder(new javax.swing.border.TitledBorder(null, " Click to Purchase ", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
+                storeJPanel.setBorder(new javax.swing.border.TitledBorder(null, " Click to Learn More", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial", 0, 11)));
                 storeJPanel.setFocusable(false);
                 storeJPanel.setFont(new java.awt.Font("Arial", 0, 11));
                 storeJPanel.setMaximumSize(new java.awt.Dimension(189, 32767));
