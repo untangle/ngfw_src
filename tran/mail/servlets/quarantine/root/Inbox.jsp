@@ -98,13 +98,11 @@
         document.form1.submit();
       }
 
-
     </script>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
   <link rel="stylesheet" href="styles/style.css" type="text/css"/>
 </head>
 <body>
-
 
 <center>
 <table border="0" cellpadding="0" cellspacing="0" width="904">
@@ -152,34 +150,43 @@
     <!-- END MIDDLE THIRD -->
     <!-- CONTENT AREA -->
     <tr>
-
       <td id="table_main_left"></td>
 
       <!-- CENTER CELL -->
       <td id="table_main_center" style="padding: 8px 0px 0px;">
         <hr size="1" width="100%"/>
 
-
+      <!-- INTRO MESSAGE -->
       <quarantine:isRemapped includeIfTrue="true">
-        <div>
-          Quarantined emails for <quarantine:currentAddress/> are being sent to the inbox of <quarantine:remappedTo encoded="false"/>.  If you believe this to be an error, please contact either your system administrator or <a href="mailto:<quarantine:remappedTo encoded="false"/>"><quarantine:remappedTo encoded="false"/></a> directly.
-        </div>
+        Quarantined emails for &quot;<quarantine:currentAddress/>&quot;
+        have been forwarded to the quarantine of &quot;<quarantine:remappedTo encoded="false"/>&quot;.
+        If you believe this to be an error,
+        please contact either your system administrator or
+        <a href="mailto:<quarantine:remappedTo encoded="false"/>"><quarantine:remappedTo encoded="false"/></a> directly.
+        <br><br>
       </quarantine:isRemapped>
 
       <quarantine:isRemapped includeIfTrue="false">
-        <!-- INTRO MESSAGE -->
-        The emails listed below have been quarantined by the Untangle Server.
-        These emails will be deleted automatically after <quarantine:maxDaysToIntern/> days.
-        <br><br>
-        To release any email from the quarantine and deliver the email to your inbox,
-        click the checkboxes for one or more emails and click <code>Release</code>.
-        To delete any email in the quarantine,
-        click the checkboxes for one or more emails and click <code>Delete</code>.
-        <br><br>
+        <quarantine:hasInboxRecords includeIfTrue="true">
+          The emails listed below have been quarantined by the Untangle Server and
+          will be deleted automatically after <quarantine:maxDaysToIntern/> days.
+          <br><br>
+          To release or delete emails from the quarantine and
+          have them delivered to your inbox,
+          click the checkboxes for one or more emails and
+          click <code>Release</code> or <code>Delete</code>, respectively.
+          <br><br>
+        </quarantine:hasInboxRecords>
+
+        <quarantine:hasInboxRecords includeIfTrue="false">
+          You have no quarantined emails.
+          <br><br>
+        </quarantine:hasInboxRecords>
+
         <quarantine:hasSafelist includeIfTrue="true">
           You may also view your <a href="/quarantine/safelist?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="slview"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="true"/>">safelist</a>
-        of email senders whose emails you do not want to quarantine.
-        <br><br>
+          of email senders whose emails you never want to quarantine.
+          <br><br>
         </quarantine:hasSafelist>
 
         <quarantine:isReceivesRemaps includeIfTrue="true">
@@ -187,25 +194,34 @@
             This address received remaps.  Do not offer to let them pass
             their account along until all inbound remaps are empty
           -->
-          Note that emails for <quarantine:currentAddress/> as well as:
+          Note that quarantined emails for &quot;<quarantine:currentAddress/>&quot;
+          as well as for:
           <ul>
             <quarantine:forEachReceivingRemapsEntry>
               <li><quarantine:receivingRemapsEntry encoded="false"/></li>
             </quarantine:forEachReceivingRemapsEntry>
           </ul>
-          are accumulated into this inbox.  If you wish to change which email addresses
-          are quarantined at this address, please proceed <a href="/quarantine/unmp?action=unmapview&tkn=<quarantine:currentAuthToken encoded="true"/>">to the alias control page</a>.
+          are forwarded to this quarantine.
+          If you wish to change the email addresses that are associated with
+          this address, please visit
+          <a href="/quarantine/unmp?action=unmapview&tkn=<quarantine:currentAuthToken encoded="true"/>">the alias control</a> page.
           <br><br>
         </quarantine:isReceivesRemaps>
+
         <quarantine:isReceivesRemaps includeIfTrue="false">
           <!-- Offer to remap -->
-          You can also choose to forward all quarantined mail for <quarantine:currentAddress/> to a different email address.  This is useful for email lists (such as &quot;sales@mycompany.com&quot; or &quot;jobs@anotherCompany.com&quot;) to designate a single person to manage the quarantined emails for the group.  To enable such forwarding, please visit <a href="/quarantine/mp?action=mapview&tkn=<quarantine:currentAuthToken encoded="true"/>">the quarantine redirect</a> page.
+          You can also forward all quarantined email for
+          &quot;<quarantine:currentAddress/>&quot; to the quarantine of a different email address.
+          For example,
+          when you have a mailing list (such as &quot;sales@mycompany.com&quot; or &quot;jobs@anotherCompany.com&quot;),
+          you can have a single person manage the quarantined emails for this list.
+          To enable forwarding, please visit
+          <a href="/quarantine/mp?action=mapview&tkn=<quarantine:currentAuthToken encoded="true"/>">the quarantine redirect</a> page.
           <br><br>
         </quarantine:isReceivesRemaps>
       </quarantine:isRemapped>
 
         <!-- MAIN MESSAGE -->
-        <br/>
         <center>
         <table>
               <quarantine:hasMessages type="info">
@@ -235,7 +251,7 @@
         </center>
 
         <!-- MAIN TABLE -->
-    <center>
+        <center>
           <quarantine:hasInboxRecords includeIfTrue="true">
           <form name="form1" method="POST" action="manageuser">
             <input type="hidden"
@@ -258,11 +274,7 @@
               <tbody>
                 <tr>
                   <td>
-                    <table class="actions"
-                      border="0"
-                      cellpadding="0"
-                      cellspacing="0"
-                      width="100%">
+                    <table class="actions" border="0" cellpadding="0" cellspacing="0" width="100%">
                       <tbody>
                         <tr>
                           <td>
@@ -327,7 +339,7 @@
                           </td>
 
                           <th scope="row" align=left>TOTALS</th>
-                          <td align=left><quarantine:indexNumRecords/><br><quarantine:indexSizeRecords/></td>
+                          <td align=left><quarantine:indexNumRecords/><br/><quarantine:indexSizeRecords/></td>
                           <td> </td> <!-- table cell filler to shift navigation table cell to right (Prev|Next) -->
 
                           <td align=center width=130> <!-- align center w/ 130 pixel width to match navigation table cell in header -->
@@ -360,7 +372,7 @@
                             <td>
                               <quarantine:inboxRecord prop="tsender" JSEscape="true"/>
                               <quarantine:hasSafelist includeIfTrue="true">
-                                <a href="/quarantine/manageuser?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="sladd"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="true"/>&<quarantine:constants keyName="sort"/>=<quarantine:pagnationProperties propName="sorting"/>&<quarantine:constants keyName="ascend"/>=<quarantine:pagnationProperties propName="ascending"/>&<quarantine:constants keyName="first"/>=<quarantine:pagnationProperties propName="thisId"/>&<quarantine:constants keyName="sladdr"/>=<quarantine:inboxRecord prop="sender"/>">(Safelist)</a>
+                                <a href="/quarantine/manageuser?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="sladd"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="true"/>&<quarantine:constants keyName="sort"/>=<quarantine:pagnationProperties propName="sorting"/>&<quarantine:constants keyName="ascend"/>=<quarantine:pagnationProperties propName="ascending"/>&<quarantine:constants keyName="first"/>=<quarantine:pagnationProperties propName="thisId"/>&<quarantine:constants keyName="sladdr"/>=<quarantine:inboxRecord prop="sender"/>"><br/>(Safelist)</a>
                               </quarantine:hasSafelist>
                             </td>
                             <quarantine:hasAttachments includeIfTrue="true">
@@ -383,7 +395,7 @@
             </table>
           </form>
           </quarantine:hasInboxRecords>
-    </center>
+        </center>
 
         <br/>
     <center>Powered by Untangle&reg; Server</center>

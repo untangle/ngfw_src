@@ -75,8 +75,14 @@
       <!-- CENTER CELL -->
       <td id="table_main_center" style="padding: 8px 0px 0px;">
         <hr size="1" width="100%"/>
+        Please enter and submit the email address that will manage the
+        quarantined emails for &quot;<quarantine:currentAddress/>&quot;.
+        This association does <i>not</i> affect all email,
+        it will only forward quarantined emails for
+        &quot;<quarantine:currentAddress/>&quot;
+        to the quarantine of this other email address.
+        <br><br>
 
-        Please provide the email address to-which any quarantined mails <quarantine:currentAddress/> will be managed.  This does <b>not</b> redirect all mails, just quarantine notifications.
         <center>
         <table>
               <quarantine:hasMessages type="info">
@@ -108,11 +114,7 @@
         </table>
         </center>
 
-
-
-
      <!-- INPUT FORM 2 -->
-          <br><br>
           <form name="form2" action="mp">
             <input type="hidden"
               name="<quarantine:constants keyName="action"/>"
@@ -134,7 +136,6 @@
               </tr>
             </table>
           </form>
-
 
         <br/>
     <center>Powered by Untangle&reg; Server</center>

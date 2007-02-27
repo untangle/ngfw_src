@@ -12,8 +12,6 @@
 %>
 <%@ taglib uri="/WEB-INF/taglibs/quarantine_euv.tld" prefix="quarantine" %>
 
-
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -91,7 +89,7 @@
         Welcome to your &quot;safelist.&quot;
         A safelist is a list of email addresses,
         usually email addresses of your friends and colleagues.
-        Emails, sent by anyone on a safelist, will <i>not</i> be quarantined if the emails are identified as spam or phish.<br><br>
+        Emails, sent by anyone on a safelist, will <i>not</i> be quarantined even if the emails were to be identified as spam or phish.<br><br>
         To delete any email address on the safelist,
         click the checkboxes for one or more email addresses and click <code>Remove Selected Addresses</code>.
         To add an email address to the safelist,
@@ -137,37 +135,32 @@
             <input type="hidden"
               name="<quarantine:constants keyName="tkn"/>"
               value="<quarantine:currentAuthToken encoded="false"/>"/>
-            <table width="100%">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
               <tr>
                 <td>
-                  <table class="slist">
+                  <table class="slist" width="100%">
                     <thead>
                       <tr>
-                        <th><input name="checkall"
+                        <th><input type="checkbox"
+                          name="checkall"
                           value="checkall"
-                          onclick="CheckAll()"
-                          type="checkbox"></th>
+                          onclick="CheckAll()"></th>
                         <th width="100%">Email Address</th>
                       </tr>
                     </thead>
                     <tbody>
                       <quarantine:forEachSafelistEntry>
                         <tr>
-                          <td>
-                            <input type="checkbox"
-                              name="<quarantine:constants keyName="sladdr"/>"
-                              value="<quarantine:safelistEntry encoded="false"/>"/>
-                          </td>
-                          <td>
-                            <quarantine:safelistEntry encoded="false"/>
-                          </td>
+                          <td><input type="checkbox"
+                            name="<quarantine:constants keyName="sladdr"/>"
+                            value="<quarantine:safelistEntry encoded="false"/>"/></td>
+                          <td><quarantine:safelistEntry encoded="false"/></td>
                         </tr>
                       </quarantine:forEachSafelistEntry>
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td colspan="2"><input type="Submit" value="Remove Selected Addresses"/>
-                        </td>
+                        <td colspan="2"><input type="Submit" value="Remove Selected Addresses"/></td>
                       </tr>
                     </tfoot>
                   </table>

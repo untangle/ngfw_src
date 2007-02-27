@@ -88,7 +88,11 @@
         <hr size="1" width="100%"/>
 
         <!-- INTRO MESSAGE -->
-    The following is a list of email addresses which have their quarantine emails forwarded to <quarantine:currentAddress/>.  To stop this from happening (to no longer have quarantine mails for one or more of these addresses forwarded), click the checkboxes for one or more addresses and click <code>Remove Selected Addresses</code>.
+        This is a list of email addresses that have their quarantined emails
+        forwarded to the quarantine of &quot;<quarantine:currentAddress/>&quot;.
+        To stop forwarding quarantined emails for one or more of these addresses,
+        click the checkboxes for one or more addresses and click <code>Remove Selected Addresses</code>.
+        <br><br>
 
         <!-- INITIAL TABLE -->
         <center>
@@ -130,37 +134,32 @@
             <input type="hidden"
               name="<quarantine:constants keyName="tkn"/>"
               value="<quarantine:currentAuthToken encoded="false"/>"/>
-            <table width="100%">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
               <tr>
                 <td>
-                  <table class="slist">
+                  <table class="slist" width="100%">
                     <thead>
                       <tr>
-                        <th><input name="checkall"
+                        <th><input type="checkbox"
+                          name="checkall"
                           value="checkall"
-                          onclick="CheckAll()"
-                          type="checkbox"></th>
-                        <th width="100%">Email Address</th>
+                          onclick="CheckAll()"></th>
+                         <th width="100%">Email Address</th>
                       </tr>
                     </thead>
                     <tbody>
                       <quarantine:forEachReceivingRemapsEntry>
                         <tr>
-                          <td>
-                            <input type="checkbox"
-                              name="unmapaddr"
-                              value="<quarantine:receivingRemapsEntry encoded="false"/>"/>
-                          </td>
-                          <td>
-                            <quarantine:receivingRemapsEntry encoded="false"/>
-                          </td>
+                          <td><input type="checkbox"
+                            name="unmapaddr"
+                            value="<quarantine:receivingRemapsEntry encoded="false"/>"/></td>
+                          <td><quarantine:receivingRemapsEntry encoded="false"/></td>
                         </tr>
                       </quarantine:forEachReceivingRemapsEntry>
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td colspan="2"><input type="Submit" value="Remove Selected Addresses"/>
-                        </td>
+                        <td colspan="2"><input type="Submit" value="Remove Selected Addresses"/></td>
                       </tr>
                     </tfoot>
                   </table>
@@ -168,9 +167,6 @@
               </tr>
             </table>
           </form>
-          <br><br>
-
-
 
         <br/>
     <center>Powered by Untangle&reg; Server</center>
@@ -201,4 +197,3 @@
 
 </body>
 </html>
-

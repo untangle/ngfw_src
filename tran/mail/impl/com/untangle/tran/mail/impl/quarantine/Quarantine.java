@@ -567,6 +567,7 @@ public class Quarantine
     settings.getQuarantineSettings().setAddressRemaps(newMappingsList);
 
     m_impl.setMailTransformSettings(settings);
+//    m_addressAliases = newMapper; // use updated mapping
 
 //    System.out.println("***DEBUG*** Returning True");
     return true;

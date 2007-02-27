@@ -1,15 +1,17 @@
+/* Note the magic trick below to center the table */
+/*
 table.outertable {
-  background:#FFFFFF;
+  background: #FFFFFF;
   padding: 0;
   margin: 0;
-  /* Note the magic trick below to center the table */
   width: 96%;
   height: 95%;
-  margin-left:2%;
-  margin-right:2%;
-  margin-top:1%;
-  margin-bottom:4%;
+  margin-left: 2%;
+  margin-right: 2%;
+  margin-top: 1%;
+  margin-bottom: 4%;
 }
+*/
 
 .logoTable {
   padding-left: 15; 
@@ -35,18 +37,22 @@ table.introUserInfo {
 }
 
 table.actions {
+  border-style: solid;
+  border-color: black;
+  border-width: 1px;
+  border-collapse: collapse;
   margin: 0;
   padding: 0;
   color: #FFFFFF
 }
 
 table.actions tbody TD {
-  background-color: #34609B;
+  background-color: #C1C1C1;  
   padding: 15;
 }
 
 table.actions tbody TD + TD {
-  background-color: #34609B;
+  background-color: #C1C1C1;  
   text-align: right;
   padding-right: 10;
 }
@@ -57,129 +63,81 @@ table.actions tbody TD + TD {
 }
 
 .msiehack1 {
-  background-color: #34609B;
+  background-color: #C1C1C1;  
   text-align: right;
+  color: #606060;
   padding-right: 10;
 }
 .msiehack2 {
-  background-color: #34609B;
+  background-color: #C1C1C1;  
   text-align: left;
+  color: #606060;
   padding-left: 10;
 }
 
-table.actions a {
-  color: #FFFFFF;
-}
-table.actions a:visited {
-  color: #CCFFFF;
-}
-table.actions a:hover {
-  color: #33FFFF;
-}
-table.actions a:active {
-  color: #FF0000;
-}
-
 .errortext {
-  font:  normal 20 Arial,Geneva; color: #FF0000;
+  font: normal 20 Arial, Geneva;
+  color: #FF0000;
   padding-left: 10;
   padding-right: 10;
   padding-bottom: 10;
 }
 
 .messageText {
-  font:  normal 20 Arial,Geneva; color: #00ff00;
+  font: normal 20 Arial, Geneva;
+  color: #00ff00;
   padding-left: 10;
   padding-right: 10;
   padding-bottom: 10;
 }
 
-table.topofsl {
-  border-collapse: collapse;
-  border-style:  solid;
-  border-width: 1;
-  border-color: #666;
-  width: 98%;
-  margin-left:1%;
-  margin-right:1%;
-  background-color: #34609B;  
-}
-
-
-
 table.slist {
+  border-style: solid;
+  border-color: black;
+  border-width: 1px;
   border-collapse: collapse;
-  border-style:  solid;
-  border-width: 1;
-  border-color: #666;
-  width: 98%;
-  margin-left:1%;
-  margin-right:1%;
+  margin: 0;
+  padding: 0;
 }
 
-table.slist th, table.slist td {
+table.slist th {
   border-bottom: 1px solid #666;
-  border-top: 1px solid #666;
+  text-align: left;
+  text-transform: uppercase;
   padding: 0.6em;
   vertical-align: 4px;
 }
 
-table.slist th {
-  text-align: left;
-  text-transform: uppercase;
-}
-
-table.slist tbody td.first {
-  text-align: left;
-  padding-left: 20;
+table.slist td {
+  border-top: 1px solid #666;
+  border-bottom: 1px solid #666;
+  padding: 0.6em;
+  vertical-align: 4px;
 }
 
 table.slist thead th {
-  background-color: #E0E0E0;
-  border-left: 1px solid #666;
-}
-
-table.slist table.slist tfoot th, table.slist tfoot td {
-  background-color: #E0E0E0;
-}
-
-table.slist thead th.first {
-  padding-left: 24px;
+  background-color: #C1C1C1;  
 }
 
 table.slist tbody th {
   padding-left: 24px;
 }
 
-table.slist tr.even td, table.slist tr.even th {
-  background-color:#C1C1CE;
+table.slist tfoot th, table.slist tfoot td {
+  background-color: #C1C1C1;  
 }
-
-table.slist tr.odd td, table.slist tr.odd th {
-  background-color: #B7B7C4;
-}
-
-
-
-
-
-
-
-
-
-
-
 
 table.inbox {
+  border-style: solid;
+  border-color: black;
+  border-width: 1px;
   border-collapse: collapse;
   margin: 0;
   padding: 0;
-
 }
 
 table.inbox th, table.inbox td {
   border-bottom: 1px solid #666;
-  border-top: 1px solid #666;
   padding: 0.6em;
   vertical-align: 4px;
 }
@@ -189,17 +147,18 @@ table.inbox th {
   text-transform: uppercase;
 }
 
+table.inbox thead th.first {
+  background-color: #ddd;
+  padding-left: 24px;
+}
+
 table.inbox tbody td.first {
   text-align: left;
   padding-left: 20;
 }
 
-table.inbox thead th, table.inbox tfoot th, table.inbox tfoot td {
-  background-color: #E0E0E0;
-}
-
-table.inbox thead th.first {
-  padding-left: 24px;
+table.inbox thead th {
+  background-color: #ddd;
 }
 
 table.inbox tbody th {
@@ -207,43 +166,33 @@ table.inbox tbody th {
 }
 
 table.inbox tr.even td, table.inbox tr.even th {
-  background-color:#eee;
+  background-color: #eee;
 }
 
 table.inbox tr.odd td, table.inbox tr.odd th {
   background-color: #ddd;
 }
 
-table.inbox tbody a {
-  color: #333;
-}
-
-table.inbox tbody a:visited {
-  color: #999999;
-}
-
-table.inbox tbody a:hover {
-  color: #33c;
-}
-
-table.inbox tbody a:active {
-  color: #33c;
+table.inbox tfoot th, table.inbox tfoot td {
+  background-color: #C1C1C1;  
 }
 
 table.inbox tfoot th {
+  background-color: #C1C1C1;  
   text-align: right;
 }
 
+/* MSIE ignores this style */
 table.inbox tfoot th:after {
   content: ":";
 }
 
 .enteremail {
   border-style: solid;
-  border-width: 1;
+  border-color: black;
+  border-width: 1px;
   padding: 20;
-  background: #D0D0D0;
-  border-color: #000000;
+  background: #C1C1C1;
 }
 
 .msiehack3 {
@@ -251,23 +200,13 @@ table.inbox tfoot th:after {
 }
 
 .smallLogo {
-  font:  normal 12 arial, helvetica, sans serif;
+  font: normal 12 Arial, Helvetica, Sans-Serif;
   text-align: center;
   padding-top: 30;
   padding-bottom: 30;
   height: 100%;
   vertical-align: bottom;
 }
-
-
-
-
-
-
-
-
-
-
 
 body {
      margin: 15px;
@@ -276,13 +215,13 @@ body {
 }  
 
 table {
-    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
+    font: normal normal normal 10pt/14pt Arial, Sans-Serif;
     text-align: left;
     color: #606060;
 }
 
 input {
-    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
+    font: normal normal normal 10pt/14pt Arial, Sans-Serif;
     text-align: left;
     color: #606060;
 }
@@ -291,36 +230,43 @@ form {
     margin: 0px;
 }
 
-
-a:link, a:visited {
-    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
-    color: #1997FE;
+/* define link color override */
+a:link {
+    font: normal normal normal 10pt/14pt Arial, Sans-Serif;
+    color: #1997FE ! important;
     text-decoration: none;
 }
 
+/* define visited color override */
+a:visited {
+    font: normal normal normal 10pt/14pt Arial, Sans-Serif;
+    color: #1997FE ! important;
+    text-decoration: none;
+}
+
+/* define hover color override */
 a:hover {
-    color: #1997FE;
+    color: #1997FE ! important;
     text-decoration: underline;
 }
 
 .page_header_title {
-    font: bold normal normal 25pt Arial,Sans-Serif;
+    font: bold normal normal 25pt Arial, Sans-Serif;
     color: #777777;
 }
 
 .page_sub_title {
-    font: bold normal normal 17pt Arial,Sans-Serif;
+    font: bold normal normal 17pt Arial, Sans-Serif;
     color: #777777;
 }
 
-
 .page_header_alternate {
-    font: normal normal normal 20pt Arial,Sans-Serif;
+    font: normal normal normal 20pt Arial, Sans-Serif;
     color: #777777;
 }
 
 h1 {
-    font: normal normal bold 11pt Arial,Sans-Serif;
+    font: normal normal bold 11pt Arial, Sans-Serif;
     color: #999999;
     letter-spacing: 1px;
     margin: 0px;
@@ -328,7 +274,7 @@ h1 {
 }
 
 h2 {
-    font: normal normal bold 10pt Arial,Sans-Serif;
+    font: normal normal bold 10pt Arial, Sans-Serif;
     color: #999999;
     letter-spacing: 1px;
     margin: 0px;
@@ -336,7 +282,7 @@ h2 {
 }
 
 h3 {
-    font: normal normal bold 11pt Arial,Sans-Serif;
+    font: normal normal bold 11pt Arial, Sans-Serif;
     color: #606060;
     letter-spacing: 1px;
     margin: 0px;
@@ -344,7 +290,7 @@ h3 {
 }
 
 h4 {
-    font: normal normal bold 14pt Arial,Sans-Serif;
+    font: normal normal bold 14pt Arial, Sans-Serif;
     color: #0044D7;
     letter-spacing: 1px;
     margin: 0px;
