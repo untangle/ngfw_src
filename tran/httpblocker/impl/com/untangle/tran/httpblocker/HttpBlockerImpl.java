@@ -34,6 +34,7 @@ import com.untangle.mvvm.tran.TransformContext;
 import com.untangle.mvvm.util.OutsideValve;
 import com.untangle.mvvm.util.TransactionWork;
 import com.untangle.tran.token.TokenAdaptor;
+import com.untangle.tran.util.NonceFactory;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -53,6 +54,8 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
 
     private final Blacklist blacklist = new Blacklist(this);
+    private final NonceFactory<BlockDetails> nonceFactory
+        = new NonceFactory<BlockDetails>();
 
     private final EventLogger<HttpBlockerEvent> eventLogger;
 
@@ -109,7 +112,12 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
     public BlockDetails getDetails(String nonce)
     {
-        return BlacklistCache.cache().getDetails(nonce);
+        return nonceFactory.getNonceData(nonce);
+    }
+
+    public String generateNonce(BlockDetails details)
+    {
+        return nonceFactory.generateNonce(details);
     }
 
     // Transform methods ------------------------------------------------------

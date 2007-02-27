@@ -72,19 +72,19 @@ public class HttpBlockerHandler extends HttpStateMachine
     {
         transform.incrementCount(SCAN, 1);
 
-        BlockDetails c2sReplacement = transform.getBlacklist()
+        String nonce = transform.getBlacklist()
             .checkRequest(getSession().clientAddr(), getRequestLine(),
                           requestHeader);
         if (logger.isDebugEnabled()) {
             logger.debug("in doRequestHeader(): " + requestHeader
-                         + "check request returns: " + c2sReplacement);
+                         + "check request returns: " + nonce);
         }
 
-        if (null == c2sReplacement) {
+        if (null == nonce) {
             releaseRequest();
         } else {
             transform.incrementCount(BLOCK, 1);
-            blockRequest(generateResponse(c2sReplacement, isRequestPersistent()));
+            blockRequest(generateResponse(nonce, isRequestPersistent()));
         }
 
         return requestHeader;
@@ -111,22 +111,21 @@ public class HttpBlockerHandler extends HttpStateMachine
         if (100 == getStatusLine().getStatusCode()) {
             releaseResponse();
         } else {
-            BlockDetails s2cReplacement = transform.getBlacklist()
+            String nonce = transform.getBlacklist()
                 .checkResponse(getSession().clientAddr(), getResponseRequest(),
                                responseHeader);
             if (logger.isDebugEnabled()) {
                 logger.debug("in doResponseHeader: " + responseHeader
-                             + "checkResponse returns: " + s2cReplacement);
+                             + "checkResponse returns: " + nonce);
             }
 
-            if (null == s2cReplacement) {
+            if (null == nonce) {
                 transform.incrementCount(PASS, 1);
 
                 releaseResponse();
             } else {
                 transform.incrementCount(BLOCK, 1);
-                blockResponse(generateResponse(s2cReplacement,
-                                               isResponsePersistent()));
+                blockResponse(generateResponse(nonce, isResponsePersistent()));
             }
         }
 
@@ -144,21 +143,23 @@ public class HttpBlockerHandler extends HttpStateMachine
 
     // private methods --------------------------------------------------------
 
-    private Token[] generateResponse(BlockDetails details, boolean persistent)
+    private Token[] generateResponse(String nonce, boolean persistent)
     {
         InetAddress addr = MvvmContextFactory.context().networkManager()
             .getInternalHttpAddress(getSession());
         if (null == addr) {
-            return generateSimplePage(details, persistent);
+            return generateSimplePage(nonce, persistent);
         } else {
             String host = addr.getHostAddress();
-            return generateRedirect(host, details, persistent);
+            return generateRedirect(host, nonce, persistent);
         }
     }
 
-    private Token[] generateSimplePage(BlockDetails details, boolean persistent)
+    private Token[] generateSimplePage(String nonce, boolean persistent)
     {
         Token response[] = new Token[4];
+
+        BlockDetails details = transform.getDetails(nonce);
 
         String replacement = String.format(BLOCK_TEMPLATE, details.getHeader(),
                                            details.getHost(), details.getUri(),
@@ -185,11 +186,11 @@ public class HttpBlockerHandler extends HttpStateMachine
         return response;
     }
 
-    private Token[] generateRedirect(String host, BlockDetails details,
+    private Token[] generateRedirect(String host, String nonce,
                                      boolean persistent)
     {
         String blockPageUrl = "http://" + host
-            + "/httpblocker/blockpage.jsp?nonce=" + details.getNonce()
+            + "/httpblocker/blockpage.jsp?nonce=" + nonce
             + "&tid=" + transform.getTid();
 
         Token response[] = new Token[4];

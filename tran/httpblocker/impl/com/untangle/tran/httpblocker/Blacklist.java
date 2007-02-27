@@ -112,8 +112,8 @@ class Blacklist
      * @param path the requested path.
      * @return an HTML response.
      */
-    BlockDetails checkRequest(InetAddress clientIp,
-                              RequestLineToken requestLine, Header header)
+    String checkRequest(InetAddress clientIp,
+                        RequestLineToken requestLine, Header header)
     {
         URI uri = requestLine.getRequestUri().normalize();
 
@@ -161,10 +161,10 @@ class Blacklist
         }
 
         // check in HttpBlockerSettings
-        BlockDetails blockMsg = checkBlacklist(host, requestLine);
+        String nonce = checkBlacklist(host, requestLine);
 
-        if (null != blockMsg) {
-            return blockMsg;
+        if (null != nonce) {
+            return nonce;
         }
 
         // Check Extensions
@@ -179,17 +179,17 @@ class Blacklist
                      Reason.BLOCK_EXTENSION, exn);
                 transform.log(hbe);
 
-                BlacklistCache cache = BlacklistCache.cache();
-                return cache.saveDetails(settings, host, uri,
-                                         "extension (" + exn + ")");
+                BlockDetails bd = new BlockDetails(settings, host, uri,
+                                                   "extension (" + exn + ")");
+                return transform.generateNonce(bd);
             }
         }
 
         return null;
     }
 
-    BlockDetails checkResponse(InetAddress clientIp,
-                               RequestLineToken requestLine, Header header)
+    String checkResponse(InetAddress clientIp, RequestLineToken requestLine,
+                         Header header)
     {
         if (null == requestLine) {
             return null;
@@ -209,9 +209,9 @@ class Blacklist
                 String host = header.getValue("host");
                 URI uri = requestLine.getRequestUri().normalize();
 
-                BlacklistCache cache = BlacklistCache.cache();
-                return cache.saveDetails(settings, host, uri,
-                                         "Mime-Type (" + contentType + ")");
+                BlockDetails bd = new BlockDetails(settings, host, uri,
+                                                   "Mime-Type (" + contentType + ")");
+                return transform.generateNonce(bd);
             }
         }
 
@@ -241,8 +241,8 @@ class Blacklist
         return null;
     }
 
-    private BlockDetails checkBlacklist(String host,
-                                        RequestLineToken requestLine)
+    private String checkBlacklist(String host,
+                                  RequestLineToken requestLine)
     {
         URI uri = requestLine.getRequestUri().normalize();
         String category = null;
@@ -257,7 +257,9 @@ class Blacklist
             transform.log(hbe);
 
             BlacklistCache cache = BlacklistCache.cache();
-            return cache.saveDetails(settings, host, uri, "not allowed");
+            BlockDetails bd = new BlockDetails(settings, host, uri,
+                                               "not allowed");
+            return transform.generateNonce(bd);
         }
 
         String dom = host;
@@ -306,8 +308,9 @@ class Blacklist
             } else if (null != bc && bc.getLogOnly()) {
                 return null;
             } else {
-                BlacklistCache cache = BlacklistCache.cache();
-                return cache.saveDetails(settings, host, uri, category);
+                BlockDetails bd = new BlockDetails(settings, host, uri,
+                                                   category);
+                return transform.generateNonce(bd);
             }
         }
 

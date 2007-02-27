@@ -12,7 +12,6 @@
 package com.untangle.tran.httpblocker;
 
 import java.lang.ref.WeakReference;
-import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -20,9 +19,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import com.untangle.tran.util.AsciiString;
 import org.apache.log4j.Logger;
@@ -43,14 +39,7 @@ class BlacklistCache
     private final Map<String, WeakReference<CharSequence[]>>domains
         = new HashMap<String, WeakReference<CharSequence[]>>();
 
-    private final Map<String, BlockDetails> nonces
-        = new HashMap<String, BlockDetails>();
-
-    private final Random random = new Random();
-
     private final Logger logger = Logger.getLogger(BlacklistCache.class);
-
-    private Timer timer = null;
 
     // constructors -----------------------------------------------------------
 
@@ -97,30 +86,6 @@ class BlacklistCache
         }
 
         return blacklist;
-    }
-
-    BlockDetails saveDetails(HttpBlockerSettings settings, String host,
-                             URI uri, String reason)
-    {
-        String nonce = Long.toHexString(random.nextLong());
-        BlockDetails d = new BlockDetails(nonce, settings, host, uri, reason);
-        synchronized (this) {
-            nonces.put(nonce, d);
-
-            if (null == timer) {
-                timer = new Timer(true);
-            }
-
-            timer.schedule(new PurgeTask(nonce), 600000);
-        }
-        return d;
-    }
-
-    BlockDetails getDetails(String nonce)
-    {
-        synchronized (this) {
-            return nonces.get(nonce);
-        }
     }
 
     // private methods --------------------------------------------------------
@@ -172,28 +137,5 @@ class BlacklistCache
         }
 
         return a;
-    }
-
-    // private classes --------------------------------------------------------
-
-    private class PurgeTask extends TimerTask
-    {
-        private final String nonce;
-
-        PurgeTask(String nonce)
-        {
-            this.nonce = nonce;
-        }
-
-        public void run()
-        {
-            synchronized (BlacklistCache.this) {
-                nonces.remove(nonce);
-                if (0 == nonces.size()) {
-                    timer.cancel();
-                    timer = null;
-                }
-            }
-        }
     }
 }

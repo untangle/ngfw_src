@@ -21,7 +21,6 @@ public class BlockDetails implements Serializable
 {
     private static final int SUB_LINE_LEN = 80;
 
-    private final String nonce;
     private final HttpBlockerSettings settings;
     private final String host;
     private final URI uri;
@@ -29,10 +28,9 @@ public class BlockDetails implements Serializable
 
     // constructor ------------------------------------------------------------
 
-    public BlockDetails(String nonce, HttpBlockerSettings settings,
-                        String host, URI uri, String reason)
+    public BlockDetails(HttpBlockerSettings settings, String host, URI uri,
+                        String reason)
     {
-        this.nonce = nonce;
         this.settings = settings;
         this.host = host;
         this.uri = uri;
@@ -40,11 +38,6 @@ public class BlockDetails implements Serializable
     }
 
     // public methods ---------------------------------------------------------
-
-    public String getNonce()
-    {
-        return nonce;
-    }
 
     public String getHost()
     {
