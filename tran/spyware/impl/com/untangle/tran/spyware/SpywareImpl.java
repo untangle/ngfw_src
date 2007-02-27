@@ -47,6 +47,7 @@ import com.untangle.mvvm.tran.TransformContext;
 import com.untangle.mvvm.util.OutsideValve;
 import com.untangle.mvvm.util.TransactionWork;
 import com.untangle.tran.token.TokenAdaptor;
+import com.untangle.tran.util.NonceFactory;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -97,6 +98,9 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     private volatile Map<String, StringRule> activeXRules;
     private volatile Map<String, StringRule> cookieRules;
     private volatile Set<String> domainWhitelist;
+
+    private final NonceFactory<BlockDetails> nonceFactory
+        = new NonceFactory<BlockDetails>();
 
     // constructors -----------------------------------------------------------
 
@@ -156,12 +160,19 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     public BlockDetails getBlockDetails(String nonce)
     {
-        return NonceFactory.factory().getBlockDetails(nonce);
+        return nonceFactory.getNonceData(nonce);
+    }
+
+    public String generateNonce(String host, String uri, InetAddress addr)
+    {
+        BlockDetails bd = new BlockDetails(host, uri, addr);
+
+        return nonceFactory.generateNonce(bd);
     }
 
     public boolean unblockSite(String nonce, boolean global)
     {
-        BlockDetails bd = NonceFactory.factory().removeBlockDetails(nonce);
+        BlockDetails bd = nonceFactory.removeNonce(nonce);
 
         switch (settings.getUserWhitelistMode()) {
         case NONE:

@@ -19,23 +19,15 @@ public class BlockDetails implements Serializable
 {
     private static final int SUB_LINE_LEN = 80;
 
-    private final String nonce;
     private final String host;
     private final String uri;
     private final InetAddress clientAddr;
 
-    public BlockDetails(String nonce, String host, String uri,
-                        InetAddress clientAddr)
+    public BlockDetails(String host, String uri, InetAddress clientAddr)
     {
-        this.nonce = nonce;
         this.host = host;
         this.uri = uri;
         this.clientAddr = clientAddr;
-    }
-
-    public String getNonce()
-    {
-        return nonce;
     }
 
     public String getHost()

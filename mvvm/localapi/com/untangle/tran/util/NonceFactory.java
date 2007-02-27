@@ -24,9 +24,13 @@ public class NonceFactory<T>
 
     private Timer timer = null;
 
+    // constructors -----------------------------------------------------------
+
     public NonceFactory() { }
 
-    String generateNonce(T o)
+    // public methods ---------------------------------------------------------
+
+    public String generateNonce(T o)
     {
         String nonce;
 
@@ -44,14 +48,14 @@ public class NonceFactory<T>
         return nonce;
     }
 
-    T getNonceData(String nonce)
+    public T getNonceData(String nonce)
     {
         synchronized (this) {
             return nonces.get(nonce);
         }
     }
 
-    T removeNonce(String nonce)
+    public T removeNonce(String nonce)
     {
         T data;
 
@@ -65,6 +69,8 @@ public class NonceFactory<T>
 
         return data;
     }
+
+    // private classes --------------------------------------------------------
 
     private class PurgeTask extends TimerTask
     {

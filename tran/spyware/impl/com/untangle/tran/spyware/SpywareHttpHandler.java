@@ -301,10 +301,12 @@ public class SpywareHttpHandler extends HttpStateMachine
         return buf;
     }
 
-    private ByteBuffer generateRedirect(String redirectHost, String host, String uri)
+    private ByteBuffer generateRedirect(String redirectHost, String host,
+                                        String uri)
     {
         InetAddress addr = session.clientAddr();
-        String nonce = NonceFactory.factory().generateNonce(host, uri, addr);
+
+        String nonce = transform.generateNonce(host, uri, addr);
 
         String tidStr = transform.getTid().toString();
 
