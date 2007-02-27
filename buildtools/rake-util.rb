@@ -1,7 +1,8 @@
 # -*-ruby-*-
 
-require "tempfile"
+require "find"
 require "ftools"
+require "tempfile"
 
 ## This is overly complicated
 class DebugLevel
@@ -609,8 +610,18 @@ class ServletBuilder < Target
     args = ["-s", "-die", "-l", "-v", "-compile", "-d", classroot,
             "-p", @pkgname, "-webinc", webfrag.path, "-source", "1.5",
             "-target", "1.5", "-uriroot", @destRoot]
+
     unless @jsp_list.nil?
       args += @jsp_list
+    end
+
+    Dir.chdir(@destRoot) do |d|
+      Find.find('.') do |f|
+        if /\.jsp$/ =~ f
+          puts "ADDED JSP: #{f}"
+          args << f
+        end
+      end
     end
 
     JavaCompiler.run(cp, "org.apache.jasper.JspC", *args)
