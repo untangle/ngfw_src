@@ -1,8 +1,9 @@
 # -*-ruby-*-
 
-require "find"
-require "ftools"
-require "tempfile"
+require 'find'
+require 'ftools'
+require 'set'
+require 'tempfile'
 
 ## This is overly complicated
 class DebugLevel
@@ -16,9 +17,9 @@ class DebugLevel
     @@cache[name] = self
   end
 
-  DEBUG = DebugLevel.new(10,"debug")
-  INFO = DebugLevel.new(5,"info")
-  WARN = DebugLevel.new(3,"warn")
+  DEBUG = DebugLevel.new(10, 'debug')
+  INFO = DebugLevel.new(5, 'info')
+  WARN = DebugLevel.new(3, 'warn')
   DEFAULT =INFO
 
   def <=>(other)
@@ -35,7 +36,7 @@ class DebugLevel
 end
 
 module Debug
-  Level=DebugLevel[ENV["RAKE_DEBUG_LEVEL"]]
+  Level=DebugLevel[ENV['RAKE_DEBUG_LEVEL']]
 
   def isDebugEnabled
     Level >= DebugLevel::DEBUG
@@ -70,7 +71,7 @@ include Debug
 
 # XXX make this class immutable
 class BuildEnv
-  ThirdPartyJar = "usr/share/java/mvvm"
+  ThirdPartyJar = 'usr/share/java/mvvm'
 
   attr_reader :prefix, :staging, :devel, :deb, :isDevel, :buildtools, :grabbag, :downloads, :javahome, :servletcommon, :include
   attr_writer :prefix, :target, :isDevel
@@ -538,7 +539,7 @@ class ServletBuilder < Target
     @pkgname = pkgname
     @path = path
     @trandeps = trandeps
-    @jsp_list = jsp_list
+    @jsp_list = Set.new(jsp_list)
     name = File.basename(path)
     @destRoot = package.getWebappDir(name)
 
@@ -611,17 +612,15 @@ class ServletBuilder < Target
             "-p", @pkgname, "-webinc", webfrag.path, "-source", "1.5",
             "-target", "1.5", "-uriroot", @destRoot]
 
-    unless @jsp_list.nil?
-      args += @jsp_list
-    end
-
     Dir.chdir(@destRoot) do |d|
       Find.find('.') do |f|
         if /\.jsp$/ =~ f
-          args << f
+          @jsp_list << f
         end
       end
     end
+
+    args += @jsp_list.to_a
 
     JavaCompiler.run(cp, "org.apache.jasper.JspC", *args)
 
