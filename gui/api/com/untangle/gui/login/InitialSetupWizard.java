@@ -48,15 +48,15 @@ public class InitialSetupWizard extends MWizardJDialog {
 
         if( Util.getIsCD() ){
             addWizardPageJPanel(new InitialSetupContactJPanel(),         "2. Contact Information", false, false);
-            addWizardPageJPanel(new InitialSetupKeyJPanel(),             "3. Activation Key", false, true);
-            addWizardPageJPanel(new InitialSetupPasswordJPanel(),        "4. Admin Account & Time", true, true);        
+	    //            addWizardPageJPanel(new InitialSetupKeyJPanel(),             "3. Activation Key", false, true);
+            addWizardPageJPanel(new InitialSetupPasswordJPanel(),        "3. Admin Account & Time", true, true);        
             initialSetupInterfaceJPanel = new InitialSetupInterfaceJPanel();
-            addWizardPageJPanel(initialSetupInterfaceJPanel,       "5. Interface Test", false, false);
-            addWizardPageJPanel(new InitialSetupNetworkJPanel(),         "6. External Address", false, true);
-            addWizardPageJPanel(new InitialSetupConnectivityJPanel(),    "7. Connectivity Test", false, true);
-            addWizardPageJPanel(new InitialSetupRoutingJPanel(),         "8. Routing", false, true);
-            addWizardPageJPanel(new InitialSetupEmailJPanel(),           "9. Email Settings", false, true);
-            addWizardPageJPanel(new InitialSetupCongratulationsJPanel(), "10. Finished!", true, true);
+            addWizardPageJPanel(initialSetupInterfaceJPanel,       "4. Interface Test", false, false);
+            addWizardPageJPanel(new InitialSetupNetworkJPanel(),         "5. External Address", false, true);
+            addWizardPageJPanel(new InitialSetupConnectivityJPanel(),    "6. Connectivity Test", false, true);
+            addWizardPageJPanel(new InitialSetupRoutingJPanel(),         "7. Routing", false, true);
+            addWizardPageJPanel(new InitialSetupEmailJPanel(),           "8. Email Settings", false, true);
+            addWizardPageJPanel(new InitialSetupCongratulationsJPanel(), "9. Finished!", true, true);
         }
         else{
             addWizardPageJPanel(new InitialSetupLicenseJPanel(),         "2. License Agreement", false, false);

@@ -2,10 +2,12 @@
 
 KEY_VERIFICATION="@MVVM_HOME@/conf/etc/mvverifykey"
 CD_INSTALL="@MVVM_HOME@/.cdinstall"
-
+ACTIVATION_KEY_FILE="@MVVM_HOME@/activation.key"
+ACTIVATION_KEY_FILE_TMP="${ACTIVATION_KEY_FILE}.tmp"
+FAKE_KEY="0000-0000-0000-0000"
 REG_KEY="$1"
 
-if [ -f "@MVVM_HOME@/activation.key" ]; then
+if [ -f $ACTIVATION_KEY_FILE ] && [ `cat $ACTIVATION_KEY_FILE` != "$FAKE_KEY" ] ; then
     echo "Product has already been activated"
     exit 2
 fi
@@ -33,5 +35,6 @@ if [ -f "$CD_INSTALL" ]; then
     sed -i -e 's/release\.untangle\.com/release-cd.untangle.com/' @PREFIX@/etc/apt/sources.list
 fi
 
-# Do this last, since once this file exists we cannot activate again
-echo $REG_KEY > @MVVM_HOME@/activation.key
+# Do this last
+echo $FAKE_KEY > $ACTIVATION_KEY_FILE
+echo $REG_KEY > $ACTIVATION_KEY_FILE_TMP
