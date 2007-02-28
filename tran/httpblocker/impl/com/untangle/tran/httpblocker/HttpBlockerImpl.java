@@ -27,14 +27,15 @@ import com.untangle.mvvm.tapi.Affinity;
 import com.untangle.mvvm.tapi.Fitting;
 import com.untangle.mvvm.tapi.PipeSpec;
 import com.untangle.mvvm.tapi.SoloPipeSpec;
+import com.untangle.mvvm.tapi.TCPSession;
 import com.untangle.mvvm.tran.MimeType;
 import com.untangle.mvvm.tran.MimeTypeRule;
 import com.untangle.mvvm.tran.StringRule;
 import com.untangle.mvvm.tran.TransformContext;
 import com.untangle.mvvm.util.OutsideValve;
 import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.tran.token.Token;
 import com.untangle.tran.token.TokenAdaptor;
-import com.untangle.tran.util.NonceFactory;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -54,8 +55,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { pipeSpec };
 
     private final Blacklist blacklist = new Blacklist(this);
-    private final NonceFactory<BlockDetails> nonceFactory
-        = new NonceFactory<BlockDetails>();
+    private final HttpBlockerReplacementGenerator replacementGenerator;
 
     private final EventLogger<HttpBlockerEvent> eventLogger;
 
@@ -65,6 +65,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
     public HttpBlockerImpl()
     {
+        replacementGenerator = new HttpBlockerReplacementGenerator(getTid());
         TransformContext tctx = getTransformContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
         SimpleEventFilter sef = new HttpBlockerBlockedFilter();
@@ -112,12 +113,19 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
     public BlockDetails getDetails(String nonce)
     {
-        return nonceFactory.getNonceData(nonce);
+        return replacementGenerator.getNonceData(nonce);
     }
 
     public String generateNonce(BlockDetails details)
     {
-        return nonceFactory.generateNonce(details);
+        return replacementGenerator.generateNonce(details);
+    }
+
+    public Token[] generateResponse(String nonce, TCPSession session,
+                                    boolean persistent)
+    {
+        return replacementGenerator.generateResponse(nonce, session,
+                                                     persistent);
     }
 
     // Transform methods ------------------------------------------------------
@@ -347,8 +355,19 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         blacklist.destroy();
     }
 
-    // private methods --------------------------------------------------------
+    // package protected methods ----------------------------------------------
 
+    Blacklist getBlacklist()
+    {
+        return blacklist;
+    }
+
+    void log(HttpBlockerEvent se)
+    {
+        eventLogger.log(se);
+    }
+
+    // private methods --------------------------------------------------------
 
     /**
      * Causes the blacklist to populate its arrays.
@@ -494,17 +513,5 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     public void setSettings(Object settings)
     {
         setHttpBlockerSettings((HttpBlockerSettings)settings);
-    }
-
-    // package protected methods ----------------------------------------------
-
-    Blacklist getBlacklist()
-    {
-        return blacklist;
-    }
-
-    void log(HttpBlockerEvent se)
-    {
-        eventLogger.log(se);
     }
 }

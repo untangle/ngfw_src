@@ -68,7 +68,7 @@ public abstract class ReplacementGenerator<T>
     // protected methods ------------------------------------------------------
 
     protected abstract String getReplacement(T data);
-    protected abstract String getRedirectUrl(String nonce);
+    protected abstract String getRedirectUrl(String nonce, String host, Tid tid);
 
     // private methods --------------------------------------------------------
 
@@ -107,7 +107,7 @@ public abstract class ReplacementGenerator<T>
         response[0] = sl;
 
         Header h = new Header();
-        h.addField("Location", getRedirectUrl(nonce));
+        h.addField("Location", getRedirectUrl(nonce, host, tid));
         h.addField("Content-Type", "text/plain");
         h.addField("Content-Length", "0");
         h.addField("Connection", persistent ? "Keep-Alive" : "Close");
