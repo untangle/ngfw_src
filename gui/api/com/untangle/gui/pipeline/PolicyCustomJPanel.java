@@ -47,7 +47,7 @@ public class PolicyCustomJPanel extends MEditTableJPanel {
 
         // create actual table model
         CustomPolicyTableModel customPolicyTableModel = new CustomPolicyTableModel(mConfigJDialog);
-        customPolicyTableModel.setOrderModelIndex(0);
+        //customPolicyTableModel.setOrderModelIndex(0);
         this.setTableModel( customPolicyTableModel );
         this.setAddRemoveEnabled(true);
         this.setFillJButtonEnabled(false);

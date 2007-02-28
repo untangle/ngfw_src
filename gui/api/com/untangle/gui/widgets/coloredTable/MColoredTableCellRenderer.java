@@ -201,6 +201,8 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
                         renderJLabel.setText(value.toString());
                 else
                     renderJLabel.setText("");
+
+                /*
                 if( col == 0 ) {
                     renderJLabel.setHorizontalAlignment(JTextField.CENTER);
                     renderJLabel.setText("");
@@ -217,25 +219,26 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
                         renderJLabel.setIcon( savedImageIcon );
                     }
                     else{
-			renderJLabel.setHorizontalAlignment(JTextField.LEFT);
+                        renderJLabel.setHorizontalAlignment(JTextField.LEFT);
                         renderJLabel.setIcon(null);
                         renderJLabel.setText(value.toString());
                     }
-		    renderJComponent = renderJLabel;
+                    renderJComponent = renderJLabel;
                 }
-		else if( (col == 1) && (value instanceof Integer) ){
-		    if(isEditable){
-			renderJSpinner.setModel( indexSpinnerNumberModel );
-			renderJSpinner.setValue( value );
-			renderJComponent = renderJSpinner;
-			renderSecondaryJComponent = ((JSpinner.DefaultEditor)renderJSpinner.getEditor()).getTextField();
-		    }
-		    else{
-			renderJLabel.setHorizontalAlignment(JTextField.CENTER);
-			renderJLabel.setIcon(null);
-			renderJComponent = renderJLabel;
-		    }
-		}
+                else*/
+                if( (col == 0) && (value instanceof Integer) ){
+                    if(isEditable){
+                        renderJSpinner.setModel( indexSpinnerNumberModel );
+                        renderJSpinner.setValue( value );
+                        renderJComponent = renderJSpinner;
+                        renderSecondaryJComponent = ((JSpinner.DefaultEditor)renderJSpinner.getEditor()).getTextField();
+                    }
+                    else{
+                        renderJLabel.setHorizontalAlignment(JTextField.CENTER);
+                        renderJLabel.setIcon(null);
+                        renderJComponent = renderJLabel;
+                    }
+                }
                 else{
                     if (value instanceof Number)
                         renderJLabel.setHorizontalAlignment(JTextField.RIGHT);

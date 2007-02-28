@@ -51,7 +51,7 @@ public class RedirectVirtualJPanel extends MEditTableJPanel {
         
         // create actual table model
         RedirectVirtualTableModel redirectVirtualTableModel = new RedirectVirtualTableModel(mTransformControlsJPanel);
-        redirectVirtualTableModel.setOrderModelIndex(0);
+        //redirectVirtualTableModel.setOrderModelIndex(0);
         this.setTableModel( redirectVirtualTableModel );
     }
     

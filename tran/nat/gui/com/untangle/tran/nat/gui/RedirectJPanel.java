@@ -51,7 +51,7 @@ public class RedirectJPanel extends MEditTableJPanel {
         
         // create actual table model
         RedirectTableModel redirectTableModel = new RedirectTableModel();
-        redirectTableModel.setOrderModelIndex(0);
+        //redirectTableModel.setOrderModelIndex(0);
         this.setTableModel( redirectTableModel );
 
     }

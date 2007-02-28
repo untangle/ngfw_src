@@ -128,11 +128,13 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	
 	jSpinner = new JSpinner();
 	jSpinner.setFocusable(true);
-	jSpinner.setOpaque(false);
+	jSpinner.setOpaque(true);
+    jSpinner.setBackground(new Color(0f, 0f, 0f, 0f));
 	jSpinner.setFont(new java.awt.Font("Default", 0, 10));
 	jSpinner.setBorder(mLineBorder);
 	jSpinner.getEditor().setOpaque(false);
-	((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setOpaque(false);
+	((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setOpaque(true);
+	((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setBackground(new Color(0f,0f,0f,0f));
 	((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setFocusable(true);
 	jSpinner.addChangeListener(this);
 
@@ -231,7 +233,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    ((MPasswordField)editedComponent).setText( new String(password) );
 	}
 	else if( (value instanceof Integer) 
-		 && (selectedModelCol == mSortedTableModel.getOrderModelIndex()) ){
+		 && (selectedModelCol == mSortedTableModel.getOrderViewIndex()) ){
 	    selectedValue  = value;
 	    editedComponent = jSpinner;
 	    ((JSpinner)editedComponent).setModel( new SpinnerNumberModel( ((Integer)value).intValue(),
@@ -275,7 +277,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    newValue = returnValue;
 	}
 	else if(editedComponent instanceof JSpinner){
-	    if( selectedModelCol == mSortedTableModel.getOrderModelIndex() ){
+	    if( selectedModelCol == mSortedTableModel.getOrderViewIndex() ){
 		returnValue = (Integer) ((JSpinner)editedComponent).getModel().getValue();
 		newValue = returnValue;
 	    }

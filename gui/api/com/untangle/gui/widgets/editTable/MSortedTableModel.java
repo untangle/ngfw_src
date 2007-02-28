@@ -227,6 +227,7 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
     public int getStateModelIndex(){ return stateModelIndex; }
     public int getDescriptionModelIndex(){ return descriptionModelIndex; }
     public int getOrderModelIndex(){ return orderModelIndex; }
+    public int getOrderViewIndex(){ return getColModelToViewIndex(orderModelIndex); }
     public void setOrderModelIndex(int index){ orderModelIndex = index; };
     public int getGreedyColumnViewIndex(){
 	if( greedyColumnModelIndex == -1 )
@@ -522,17 +523,17 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
 	changedRow.setElementAt(value, modelCol);
     }
     public void insertNewRow(int modelRow) {
-	int rowCount = getRowCount();
-	Vector movedRow;
-	Vector<Vector> dataVector = getDataVector();
+        int rowCount = getRowCount();
+        Vector movedRow;
+        Vector<Vector> dataVector = getDataVector();
         for(int i=modelRow; i<rowCount; i++){
-	    movedRow = dataVector.elementAt(i);
-	    movedRow.setElementAt(i+2, orderModelIndex);
-	}
+            movedRow = dataVector.elementAt(i);
+            movedRow.setElementAt(i+2, orderModelIndex);
+        }
         dataVector.insertElementAt(generateNewRow(modelRow+1), modelRow);
         fireTableRowsInserted(modelRow, modelRow);
-	if( settingsChangedListener != null )
-	    settingsChangedListener.settingsChanged(this);
+        if( settingsChangedListener != null )
+            settingsChangedListener.settingsChanged(this);
     }
     public void insertNewRow(int modelRow, Vector newRow){
 	int rowCount = getRowCount();
@@ -586,7 +587,10 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
 	    settingsChangedListener.settingsChanged(this);
     }
     public String getRowState(int modelRow){
+        //System.out.println("getting row state: (model row)  " + modelRow + " index: " + stateModelIndex);
     	return (String) super.getValueAt(modelRow, stateModelIndex);
+        //Vector<Vector> dataVector = getDataVector();
+        //return (String) dataVector.elementAt(modelRow).elementAt(stateModelIndex);
     }
     public void setRowState(String state, int modelRow){
 	Vector<Vector> dataVector = getDataVector();
@@ -614,16 +618,19 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
     // sees the world, and reads and writed to the model... This I cannot change.
     // getColumnClass(...) and isCellEditable(...) are my bitches though, and they shall be
     // in model space.
-    public void setValueAt(Object value, int viewRow, int viewCol){
+    public void setValueAt(Object value, int viewRow, int modelCol){
 	if( getAlwaysSelectable() )
 	    return;
-	super.setValueAt(value, getRowViewToModelIndex(viewRow), viewCol);
-	if( (getOrderModelIndex() != -1) && ( viewCol == getColModelToViewIndex(getOrderModelIndex())) ){
+	super.setValueAt(value, getRowViewToModelIndex(viewRow), modelCol);
+	if( (getOrderModelIndex() != -1) && ( modelCol == getOrderModelIndex()) ){
 	    // deal with row order changing
 	    int modelRow = getRowViewToModelIndex(viewRow);
 	    moveRow(modelRow, ((Integer)value)-1);
 	}
-	if( getSortingStatus(viewCol) != NOT_SORTED ){
+    else{
+        System.out.println("order index: " + getOrderModelIndex() + " model col: " + modelCol );
+    }
+	if( getSortingStatus(modelCol) != NOT_SORTED ){
 	    fireTableDataChanged();  // because otherwise the table will only update the view of the changed column
 	}
     }
