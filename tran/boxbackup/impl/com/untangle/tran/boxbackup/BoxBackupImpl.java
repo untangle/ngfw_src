@@ -31,11 +31,12 @@ import org.hibernate.Session;
 
 public class BoxBackupImpl extends AbstractTransform implements BoxBackup
 {
+    private final Logger logger = Logger.getLogger(BoxBackupImpl.class);
+
     private static final String DEF_BACKUP_URL = "https://poptrack.untangle.com/boxbackup/backup.php";
 
     private final EventHandler handler = new EventHandler(this);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { };
-    private final Logger logger = Logger.getLogger(BoxBackupImpl.class);
     private EventLogger<BoxBackupEvent> eventLogger;
     private CronJob cronJob;
 
@@ -80,6 +81,7 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
         catch (TransformException exn) {
             logger.error("Could not save BoxBackup settings", exn);
         }
+
         if (null != cronJob) {
             int h = settings.getHourInDay();
             int m = settings.getMinuteInHour();
@@ -126,7 +128,6 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
                 public Object getResult() { return null; }
             };
         getTransformContext().runTransaction(tw);
-
     }
 
     protected void preStart() throws TransformStartException
@@ -160,6 +161,8 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
           };
       cronJob = MvvmContextFactory.context().makeCronJob(p, r);
       logger.info("Created (java)cron job for 24 hour box backup");
+
+      doBackup(); // backup immediately -> after every start
     }
 
     protected void preStop() {
@@ -169,7 +172,6 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
         cronJob = null;
       }
     }
-
 
     /**
      * Callback from the cron job that it is time
@@ -200,13 +202,13 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
           logger,
           true);
 
-
         if(result.exitCode != 0) {
           logger.error("Backup returned non-zero error code (" +
             result.exitCode + ").  Stdout \"" +
             new String(result.stdOut) + "\".  Stderr \"" +
             new String(result.stdErr));
-          String reason = "";
+
+          String reason = null;
           switch(result.exitCode) {
             case 1:
               reason = "Error in arguments";
@@ -232,19 +234,17 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
         }
       }
       catch(java.io.IOException ex) {
-        logger.error("Exception attempting to perform backup", ex);
-        event = new BoxBackupEvent(false, "Local error in processing");
+        logger.error("Exception occurred while performing backup", ex);
+        event = new BoxBackupEvent(false, "Local error occurred while performing backup");
       }
+
       eventLogger.log(event);
     }
-
-
-
 
     private void reconfigure() throws TransformException
     {
         BoxBackupSettings settings = getBoxBackupSettings();
-        logger.info("Reconfigure()");
+        logger.debug("Reconfigure()");
 
         if (settings == null) {
             throw new TransformException("Failed to get BoxBackup settings: " + settings);
