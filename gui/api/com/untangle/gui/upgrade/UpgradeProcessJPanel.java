@@ -42,6 +42,8 @@ public class UpgradeProcessJPanel extends JPanel
         mEditTableJPanel.setTableTitle("Available Upgrades");
         mEditTableJPanel.setDetailsTitle("Upgrade Details");
         mEditTableJPanel.setAddRemoveEnabled(false);
+        mEditTableJPanel.getJTable().setCellSelectionEnabled(false);
+        mEditTableJPanel.getJTable().setRowSelectionAllowed(false);
         upgradeTableModel = new UpgradeTableModel();
         mEditTableJPanel.setTableModel( upgradeTableModel );
         mEditTableJPanel.getJTable().setRowHeight(49);
