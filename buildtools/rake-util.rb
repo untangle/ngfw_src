@@ -620,7 +620,14 @@ class ServletBuilder < Target
       end
     end
 
+    @jsp_list.map! do |e|
+      if /^\.\// =~ e then $' else e end
+    end
+
     args += @jsp_list.to_a
+
+    puts "ARGS:";
+    args.each { |a| puts "ARG: #{a}" }
 
     JavaCompiler.run(cp, "org.apache.jasper.JspC", *args)
 
