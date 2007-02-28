@@ -618,7 +618,6 @@ class ServletBuilder < Target
     Dir.chdir(@destRoot) do |d|
       Find.find('.') do |f|
         if /\.jsp$/ =~ f
-          puts "ADDED JSP: #{f}"
           args << f
         end
       end
