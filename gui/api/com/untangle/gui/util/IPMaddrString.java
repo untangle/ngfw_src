@@ -13,15 +13,15 @@ package com.untangle.gui.util;
 
 import com.untangle.mvvm.tran.IPMaddr;
 
-
 public class IPMaddrString implements Comparable<IPMaddrString> {
 
-    private IPMaddr ipMAddr;
-    private String unparsedString;
+    private IPMaddr ipMAddr; // takes precedence on comparisons
+    private String unparsedString; // takes precedence on display requests
 
     public IPMaddrString(){}
 
     public IPMaddrString(String unparsedString){
+        ipMAddr = IPMaddr.parse(unparsedString); // parse str for comparisons
 	this.unparsedString = unparsedString;
     }
 
@@ -30,6 +30,9 @@ public class IPMaddrString implements Comparable<IPMaddrString> {
     }
 
     public void setString(String unparsedString){
+        if (null == ipMAddr) {
+           ipMAddr = IPMaddr.parse(unparsedString); // parse str for comparisons
+        }
 	this.unparsedString = unparsedString;
     }
     public String getString(){
@@ -43,15 +46,9 @@ public class IPMaddrString implements Comparable<IPMaddrString> {
 	    return 0 == compareTo( (IPMaddrString) obj );
     }
 
+    // cannot reliably compare on unparsedString value
     public int compareTo(IPMaddrString ipMaddrString){
-	
-	if( (unparsedString != null) && (ipMaddrString.unparsedString != null) )
-	    return unparsedString.compareTo(ipMaddrString.unparsedString);
-	else if( (unparsedString == null) && (ipMaddrString.unparsedString != null) )
-	    return 1;
-	else if( (unparsedString != null) && (ipMaddrString.unparsedString == null) )
-	    return -1;
-	else if( (ipMAddr == null) && (ipMaddrString.ipMAddr == null) )
+	if( (ipMAddr == null) && (ipMaddrString.ipMAddr == null) )
 	    return 0;
 	else if( (ipMAddr != null) && (ipMaddrString.ipMAddr == null) )
 	    return 1;

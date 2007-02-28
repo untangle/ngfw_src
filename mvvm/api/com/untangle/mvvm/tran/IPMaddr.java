@@ -427,11 +427,10 @@ public class IPMaddr implements Serializable, Comparable
     private long toLong( )
     {
         long val = 0;
-        
         byte valArray[] = textToNumericFormat(addr);
         
         for ( int c = 0 ; c < INADDRSZ ; c++ ) {
-            val += ((long)byteToInt(valArray[c])) << ( 8 * c );
+            val += ((long)byteToInt(valArray[c])) << ( 8 * ( INADDRSZ - c - 1 ));
         }
 
         return val;

@@ -13,7 +13,6 @@ package com.untangle.gui.util;
 
 import com.untangle.mvvm.tran.IPaddr;
 
-
 public class IPaddrString implements Comparable<IPaddrString> {
 
     private IPaddr ipAddr;
@@ -44,14 +43,13 @@ public class IPaddrString implements Comparable<IPaddrString> {
     }
 
     public int compareTo(IPaddrString ipAddrString){
-	
 	if( (unparsedString != null) && (ipAddrString.unparsedString != null) )
 	    return unparsedString.compareTo(ipAddrString.unparsedString);
 	else if( (unparsedString == null) && (ipAddrString.unparsedString != null) )
 	    return 1;
 	else if( (unparsedString != null) && (ipAddrString.unparsedString == null) )
 	    return -1;
-	if( (ipAddr == null) && (ipAddrString.ipAddr == null) )
+        else if( (ipAddr == null) && (ipAddrString.ipAddr == null) )
 	    return 0;
 	else if( (ipAddr != null) && (ipAddrString.ipAddr == null) )
 	    return 1;

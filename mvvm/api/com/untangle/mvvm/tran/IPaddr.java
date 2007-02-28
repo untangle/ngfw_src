@@ -183,11 +183,10 @@ public class IPaddr implements Comparable, Serializable
     /** Convert an IPaddr to a long */
     private long toLong( )
     {
-        long val = 0;
-                        
         /* XXX A little questionable, but this is only used for comparisons anyway */
         if ( addr == null ) return 0;
-        
+
+        long val = 0;
         byte valArray[] = addr.getAddress();
 
         for ( int c = 0 ; c < INADDRSZ ; c++ ) {

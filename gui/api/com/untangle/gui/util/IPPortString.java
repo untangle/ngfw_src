@@ -39,7 +39,6 @@ public class IPPortString implements Comparable<IPPortString> {
     }
 
     public int compareTo(IPPortString ipPortString){
-	
 	if( (ipAddr == null) && (ipPortString.ipAddr == null) )
 	    return 0;
 	else if( (ipAddr != null) && (ipPortString.ipAddr == null) )
