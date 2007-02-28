@@ -35,7 +35,8 @@ import com.untangle.tran.util.IOUtil;
 
 public class BackupJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
-    private static final String BACKUP_EXTENSION = ".egbackup";
+    private static final String BACKUP_EXTENSION = ".backup";
+    private static final String OLD_BACKUP_EXTENSION = ".egbackup";
     
     private InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
     private static final long MIN_PROGRESS_MILLIS = 1000l;
@@ -168,7 +169,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 contentJPanel3.setLayout(new java.awt.GridBagLayout());
 
                 jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel4.setText("<html> You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".egbackup\"<br> <br> After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".</html>");
+                jLabel4.setText("<html> You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \"" + BACKUP_EXTENSION + "\"<br> <br> After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -356,7 +357,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 contentJPanel4.setLayout(new java.awt.GridBagLayout());
 
                 jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel5.setText("<html> You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \".egbackup\"</html>");
+                jLabel5.setText("<html> You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \"" + BACKUP_EXTENSION + "\"</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -546,7 +547,8 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 		    int retVal = chooser.showSaveDialog(BackupJDialog.this);
 		    if(retVal == JFileChooser.APPROVE_OPTION){
 			File file = chooser.getSelectedFile();
-			if(!file.getName().endsWith(BACKUP_EXTENSION))
+			if(!file.getName().endsWith(BACKUP_EXTENSION) &&
+                           !file.getName().endsWith(OLD_BACKUP_EXTENSION))
 			    file = new File(file.getPath() + BACKUP_EXTENSION);
 
 			if(file.exists()){
@@ -684,6 +686,8 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 	    if(f.isDirectory())
 		return true;
 	    else if(f.getName().endsWith(BACKUP_EXTENSION))
+		return true;
+	    else if(f.getName().endsWith(OLD_BACKUP_EXTENSION))
 		return true;
 	    else
 		return false;
