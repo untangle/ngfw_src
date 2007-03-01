@@ -7,7 +7,7 @@ ACTIVATION_KEY_FILE_TMP="${ACTIVATION_KEY_FILE}.tmp"
 FAKE_KEY="0000-0000-0000-0000"
 REG_KEY="$1"
 
-if [ -f $ACTIVATION_KEY_FILE ] && [ `cat $ACTIVATION_KEY_FILE` != "$FAKE_KEY" ] ; then
+if [ -f $ACTIVATION_KEY_FILE ] ; then
     echo "Product has already been activated"
     exit 2
 fi
