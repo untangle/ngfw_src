@@ -114,13 +114,25 @@ public abstract class InboxRecord
   public final String getFormattedDate() {
       try {
           Date iDate = new Date(getInternDate());
-          SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/yy H:mm");
+          SimpleDateFormat dateFormat = new SimpleDateFormat("M/d/yy");
           return dateFormat.format(iDate).toString();
       } catch(Exception ex) { return "<unknown>"; }
   }
 
   public final void setFormattedDate(String date) {
       String dummy = date;
+  }
+
+  public final String getFormattedTime() {
+      try {
+          Date iDate = new Date(getInternDate());
+          SimpleDateFormat dateFormat = new SimpleDateFormat("H:mm");
+          return dateFormat.format(iDate).toString();
+      } catch(Exception ex) { return "<unknown>"; }
+  }
+
+  public final void setFormattedTime(String time) {
+      String dummy = time;
   }
 
   // need get and set pair prefixes for velocity

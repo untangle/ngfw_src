@@ -286,15 +286,11 @@
                               <quarantine:hasPagnation linkType="prev" includeIfTrue="true">
                                 <a href="javascript:mv_doPrev();">Prev</a>
                               </quarantine:hasPagnation>
-                              <quarantine:hasPagnation linkType="prev" includeIfTrue="false">
-                                Prev
-                              </quarantine:hasPagnation>
+                              <quarantine:hasPagnation linkType="prev" includeIfTrue="false">Prev</quarantine:hasPagnation>
                               <quarantine:hasPagnation linkType="next" includeIfTrue="true">
                                 <a href="javascript:mv_doNext();">|Next</a>
                               </quarantine:hasPagnation>
-                              <quarantine:hasPagnation linkType="next" includeIfTrue="false">
-                                |Next
-                              </quarantine:hasPagnation>
+                              <quarantine:hasPagnation linkType="next" includeIfTrue="false">|Next</quarantine:hasPagnation>
                             </div>
                           </td>
                        </tr>
@@ -383,7 +379,7 @@
                             </quarantine:hasAttachments>
                             <td><quarantine:inboxRecord prop="fdetail" JSEscape="true"/></td>
                             <td><quarantine:inboxRecord prop="tsubject" JSEscape="true"/></td>
-                            <td><quarantine:inboxRecord prop="fdate" JSEscape="true"/></td>
+                            <td><quarantine:inboxRecord prop="fdate" JSEscape="true"/><br/><quarantine:inboxRecord prop="ftime" JSEscape="true"/></td>
                             <td><quarantine:inboxRecord prop="fsize" JSEscape="true"/></td>
                           </tr>
                         </quarantine:forEachInboxRecord>

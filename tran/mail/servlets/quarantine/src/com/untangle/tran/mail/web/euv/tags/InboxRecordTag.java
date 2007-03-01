@@ -31,6 +31,7 @@ public final class InboxRecordTag
   public static final String TSUBJECT_PROP = "tsubject"; // truncated
   public static final String FSCORE_PROP = "fdetail"; // formatted
   public static final String FDATE_PROP = "fdate"; // formatted
+  public static final String FTIME_PROP = "ftime"; // formatted
   public static final String FSIZE_PROP = "fsize"; // formatted
 
   private String m_propName;
@@ -80,6 +81,9 @@ public final class InboxRecordTag
     }
     if(name.equals(FDATE_PROP)) {
         return record.getFormattedDate();
+    }
+    if(name.equals(FTIME_PROP)) {
+        return record.getFormattedTime();
     }
     if(name.equals(FSIZE_PROP)) {
         return record.getFormattedSize();
