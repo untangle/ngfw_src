@@ -13,6 +13,7 @@ package com.untangle.tran.http;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.util.regex.Pattern;
 
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.security.Tid;
@@ -25,6 +26,23 @@ import com.untangle.tran.util.NonceFactory;
 
 public abstract class ReplacementGenerator<T>
 {
+    private static final byte[] WHITE_GIF = new byte[]
+        {
+            0x47, 0x49, 0x46, 0x38,
+            0x37, 0x61, 0x01, 0x00,
+            0x01, 0x00, (byte)0x80, 0x00,
+            0x00, (byte)0xff, (byte)0xff, (byte)0xff,
+            (byte)0xff, (byte)0xff, (byte)0xff, 0x2c,
+            0x00, 0x00, 0x00, 0x00,
+            0x01, 0x00, 0x01, 0x00,
+            0x00, 0x02, 0x02, 0x44,
+            0x01, 0x00, 0x3b
+        };
+
+    private static final Pattern IMAGE_PATTERN
+        = Pattern.compile(".*((jpg)|(jpeg)|(gif)|(png)|(ico))",
+                          Pattern.CASE_INSENSITIVE);
+
     private final NonceFactory<T> nonceFactory = new NonceFactory<T>();
     private final Tid tid;
 
@@ -55,13 +73,24 @@ public abstract class ReplacementGenerator<T>
     public Token[] generateResponse(String nonce, TCPSession session,
                                     boolean persistent)
     {
-        InetAddress addr = MvvmContextFactory.context().networkManager()
-            .getInternalHttpAddress(session);
-        if (null == addr) {
-            return generateSimplePage(nonce, persistent);
+        return generateResponse(nonce, session, null, null, persistent);
+    }
+
+    public Token[] generateResponse(String nonce, TCPSession session,
+                                    String uri, Header requestHeader,
+                                    boolean persistent)
+    {
+        if (imagePreferred(uri, requestHeader)) {
+            return generateSimplePage(nonce, persistent, true);
         } else {
-            String host = addr.getHostAddress();
-            return generateRedirect(nonce, host, persistent);
+            InetAddress addr = MvvmContextFactory.context().networkManager()
+                .getInternalHttpAddress(session);
+            if (null == addr) {
+                return generateSimplePage(nonce, persistent, false);
+            } else {
+                String host = addr.getHostAddress();
+                return generateRedirect(nonce, host, persistent);
+            }
         }
     }
 
@@ -72,26 +101,35 @@ public abstract class ReplacementGenerator<T>
 
     // private methods --------------------------------------------------------
 
-    private Token[] generateSimplePage(String nonce, boolean persistent)
+    private Token[] generateSimplePage(String nonce, boolean persistent,
+                                       boolean gif)
     {
+
+        Chunk chunk;
+        if (gif) {
+            byte[] buf = new byte[WHITE_GIF.length];
+            System.arraycopy(WHITE_GIF, 0, buf, 0, buf.length);
+            ByteBuffer bb = ByteBuffer.wrap(buf);
+            chunk = new Chunk(bb);
+        } else {
+            String replacement = getReplacement(nonceFactory.getNonceData(nonce));
+            ByteBuffer buf = ByteBuffer.allocate(replacement.length());
+            buf.put(replacement.getBytes()).flip();
+            chunk = new Chunk(buf);
+        }
+
         Token response[] = new Token[4];
-
-        String replacement = getReplacement(nonceFactory.getNonceData(nonce));
-
-        ByteBuffer buf = ByteBuffer.allocate(replacement.length());
-        buf.put(replacement.getBytes()).flip();
 
         StatusLine sl = new StatusLine("HTTP/1.1", 403, "Forbidden");
         response[0] = sl;
 
         Header h = new Header();
-        h.addField("Content-Length", Integer.toString(buf.remaining()));
-        h.addField("Content-Type", "text/html");
+        h.addField("Content-Length", Integer.toString(chunk.getSize()));
+        h.addField("Content-Type", gif ? "image/gif" : "text/html");
         h.addField("Connection", persistent ? "Keep-Alive" : "Close");
         response[1] = h;
 
-        Chunk c = new Chunk(buf);
-        response[2] = c;
+        response[2] = chunk;
 
         response[3] = EndMarker.MARKER;
 
@@ -118,5 +156,20 @@ public abstract class ReplacementGenerator<T>
         response[3] = EndMarker.MARKER;
 
         return response;
+    }
+
+    private boolean imagePreferred(String uri, Header header)
+    {
+        if (null != uri && IMAGE_PATTERN.matcher(uri).matches()) {
+            return true;
+        } else if (null != header) {
+            String accept = header.getValue("accept");
+
+            // firefox uses "image/png, */*;q=0.5" when expecting an image
+            // ie uses "*/*" no matter what it expects
+            return null != accept && accept.startsWith("image/png");
+        } else {
+            return false;
+        }
     }
 }

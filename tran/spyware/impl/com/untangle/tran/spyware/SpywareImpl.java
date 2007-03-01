@@ -40,14 +40,16 @@ import com.untangle.mvvm.tapi.Affinity;
 import com.untangle.mvvm.tapi.Fitting;
 import com.untangle.mvvm.tapi.PipeSpec;
 import com.untangle.mvvm.tapi.SoloPipeSpec;
+import com.untangle.mvvm.tapi.TCPSession;
 import com.untangle.mvvm.tran.IPMaddr;
 import com.untangle.mvvm.tran.IPMaddrRule;
 import com.untangle.mvvm.tran.StringRule;
 import com.untangle.mvvm.tran.TransformContext;
 import com.untangle.mvvm.util.OutsideValve;
 import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.tran.token.Header;
+import com.untangle.tran.token.Token;
 import com.untangle.tran.token.TokenAdaptor;
-import com.untangle.tran.util.NonceFactory;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -99,13 +101,14 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     private volatile Map<String, StringRule> cookieRules;
     private volatile Set<String> domainWhitelist;
 
-    private final NonceFactory<BlockDetails> nonceFactory
-        = new NonceFactory<BlockDetails>();
+    private final SpywareReplacementGenerator replacementGenerator;
 
     // constructors -----------------------------------------------------------
 
     public SpywareImpl()
     {
+        replacementGenerator = new SpywareReplacementGenerator(getTid());
+
         urlBlacklist = SpywareCache.cache().getUrls();
 
         TransformContext tctx = getTransformContext();
@@ -160,19 +163,19 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     public BlockDetails getBlockDetails(String nonce)
     {
-        return nonceFactory.getNonceData(nonce);
+        return replacementGenerator.getNonceData(nonce);
     }
 
     public String generateNonce(String host, String uri, InetAddress addr)
     {
         BlockDetails bd = new BlockDetails(host, uri, addr);
 
-        return nonceFactory.generateNonce(bd);
+        return replacementGenerator.generateNonce(bd);
     }
 
     public boolean unblockSite(String nonce, boolean global)
     {
-        BlockDetails bd = nonceFactory.removeNonce(nonce);
+        BlockDetails bd = replacementGenerator.removeNonce(nonce);
 
         switch (settings.getUserWhitelistMode()) {
         case NONE:
@@ -303,6 +306,15 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     }
 
     // package private methods ------------------------------------------------
+
+
+    Token[] generateResponse(BlockDetails bd, TCPSession sess, String uri,
+                             Header header, boolean persistent)
+    {
+        String n = replacementGenerator.generateNonce(bd);
+        return replacementGenerator.generateResponse(n, sess, uri, header,
+                                                     persistent);
+    }
 
     boolean isBlacklistDomain(String domain, URI uri)
     {

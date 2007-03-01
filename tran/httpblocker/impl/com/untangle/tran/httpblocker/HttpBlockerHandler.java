@@ -68,7 +68,9 @@ public class HttpBlockerHandler extends HttpStateMachine
         } else {
             transform.incrementCount(BLOCK, 1);
             boolean p = isRequestPersistent();
-            Token[] response = transform.generateResponse(nonce, sess, p);
+            String uri = getRequestLine().getRequestUri().toString();
+            Token[] response = transform.generateResponse(nonce, sess, uri,
+                                                          requestHeader, p);
             blockRequest(response);
         }
 

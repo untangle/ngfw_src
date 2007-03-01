@@ -626,9 +626,6 @@ class ServletBuilder < Target
 
     args += @jsp_list.to_a
 
-    puts "ARGS:";
-    args.each { |a| puts "ARG: #{a}" }
-
     JavaCompiler.run(cp, "org.apache.jasper.JspC", *args)
 
     FileList["#{@destRoot}/**/*.java"].each { |f| FileUtils.rm(f) }

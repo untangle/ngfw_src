@@ -40,6 +40,7 @@ import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import com.untangle.tran.token.Header;
 
 public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 {
@@ -119,6 +120,14 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     public String generateNonce(BlockDetails details)
     {
         return replacementGenerator.generateNonce(details);
+    }
+
+    public Token[] generateResponse(String nonce, TCPSession session,
+                                    String uri, Header header,
+                                    boolean persistent)
+    {
+        return replacementGenerator.generateResponse(nonce, session, uri,
+                                                     header, persistent);
     }
 
     public Token[] generateResponse(String nonce, TCPSession session,

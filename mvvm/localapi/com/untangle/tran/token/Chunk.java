@@ -45,6 +45,11 @@ public class Chunk implements Token
         return data;
     }
 
+    public int getSize()
+    {
+        return data.remaining();
+    }
+
     // Token methods ----------------------------------------------------------
 
     /**

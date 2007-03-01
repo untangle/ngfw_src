@@ -22,76 +22,24 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.tapi.TCPSession;
 import com.untangle.mvvm.tran.StringRule;
 import com.untangle.tran.http.HttpStateMachine;
 import com.untangle.tran.http.RequestLineToken;
 import com.untangle.tran.http.StatusLine;
 import com.untangle.tran.token.Chunk;
-import com.untangle.tran.token.EndMarker;
 import com.untangle.tran.token.Header;
 import com.untangle.tran.token.Token;
 import com.untangle.tran.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
+
 public class SpywareHttpHandler extends HttpStateMachine
 {
-    private static final String TEXT_HTML = "text/html";
-    private static final String IMAGE_GIF = "image/gif";
-    private static final String ACCEPT = "accept";
-
     private static final Pattern OBJECT_PATTERN
         = Pattern.compile("<object", Pattern.CASE_INSENSITIVE);
     private static final Pattern CLSID_PATTERN
         = Pattern.compile("clsid:([0-9\\-]*)", Pattern.CASE_INSENSITIVE);
-    private static final Pattern IMAGE_PATTERN
-        = Pattern.compile(".*((jpg)|(jpeg)|(gif)|(png)|(ico))",
-                          Pattern.CASE_INSENSITIVE);
-
-    private static final byte[] WHITE_GIF = new byte[]
-        {
-            0x47, 0x49, 0x46, 0x38,
-            0x37, 0x61, 0x01, 0x00,
-            0x01, 0x00, (byte)0x80, 0x00,
-            0x00, (byte)0xff, (byte)0xff, (byte)0xff,
-            (byte)0xff, (byte)0xff, (byte)0xff, 0x2c,
-            0x00, 0x00, 0x00, 0x00,
-            0x01, 0x00, 0x01, 0x00,
-            0x00, 0x02, 0x02, 0x44,
-            0x01, 0x00, 0x3b
-        };
-
-    private static final String REDIRECT_BLOCK_TEMPLATE
-        = "<HTML><HEAD>"
-        + "<TITLE>403 Forbidden</TITLE>"
-        + "</HEAD><BODY>"
-        + "<script id='untangleDetect' type='text/javascript'>\n"
-        + "var e = document.getElementById(\"untangleDetect\")\n"
-        + "if (window == window.top && e.parentNode.tagName == \"BODY\") {\n"
-        + "  window.location.href = '%s';"
-        + "}\n"
-        + "</script>"
-        + "</BODY></HTML>";
-
-    // XXX, someone make this pretty
-    private static final String SIMPLE_BLOCK_TEMPLATE
-        = "<HTML><HEAD>"
-        + "<TITLE>403 Forbidden</TITLE>"
-        + "</HEAD><BODY>"
-        + "<script id='metavizeDetect' type='text/javascript'>\n"
-        + "var e = document.getElementById(\"metavizeDetect\")\n"
-        + "if (window == window.top && e.parentNode.tagName == \"BODY\") {\n"
-        + "  document.writeln(\"<center><b>Metavize Spyware Blocker</b></center>\")\n"
-        + "  document.writeln(\"<p>This site blocked because it may be a spyware site.</p>\")\n"
-        + "  document.writeln(\"<p>Host: %s</p>\")\n"
-        + "  document.writeln(\"<p>URI: %s</p>\")\n"
-        + "  document.writeln(\"<p>Please contact your network administrator.</p>\")\n"
-        + "  document.writeln(\"<HR>\")\n"
-        + "  document.writeln(\"<ADDRESS>Untangle</ADDRESS>\")\n"
-        + "}\n"
-        + "</script>"
-        + "</BODY></HTML>";
 
     private final TCPSession session;
 
@@ -167,8 +115,13 @@ public class SpywareHttpHandler extends HttpStateMachine
             // XXX we could send a page back instead, this isn't really right
             logger.debug("detected spyware, shutting down");
 
-            blockRequest(generateResponse(requestHeader, host, uri.toString(),
-                                          isRequestPersistent()));
+            InetAddress addr = getSession().clientAddr();
+            String uriStr = uri.toString();
+            BlockDetails bd = new BlockDetails(host, uriStr, addr);
+            Token[] resp = transform.generateResponse(bd, getSession(),
+                                                      uriStr, requestHeader,
+                                                      isRequestPersistent());
+            blockRequest(resp);
             return requestHeader;
         } else {
             transform.incrementCount(Spyware.PASS);
@@ -221,104 +174,6 @@ public class SpywareHttpHandler extends HttpStateMachine
     protected void doResponseBodyEnd()
     {
         logger.debug("got response body end");
-    }
-
-    // private methods --------------------------------------------------------
-
-    private Token[] generateResponse(Header header, String host, String uri,
-                                     boolean persistent)
-    {
-        Token response[] = new Token[4];
-
-        String contentType;
-        ByteBuffer buf;
-
-        Matcher m = IMAGE_PATTERN.matcher(uri);
-
-        if (m.matches() || imagePreferred(header)) {
-            buf = generateGif();
-            contentType = IMAGE_GIF;
-        } else {
-            buf = generateHtml(host, uri);
-            contentType = TEXT_HTML;
-        }
-
-        StatusLine sl = new StatusLine("HTTP/1.1", 403, "Forbidden");
-        response[0] = sl;
-
-        Header h = new Header();
-        h.addField("Content-Length", Integer.toString(buf.remaining()));
-        h.addField("Content-Type", contentType);
-        h.addField("Connection", persistent ? "Keep-Alive" : "Close");
-        response[1] = h;
-
-        Chunk c = new Chunk(buf);
-        response[2] = c;
-
-        response[3] = EndMarker.MARKER;
-
-        return response;
-    }
-
-    private boolean imagePreferred(Header header)
-    {
-        String accept = header.getValue(ACCEPT);
-
-        // firefox uses "image/png, */*;q=0.5" when expecting an image
-        // ie uses "*/*" no matter what it expects
-        return null != accept && accept.startsWith("image/png");
-    }
-
-    private ByteBuffer generateGif()
-    {
-        byte[] buf = new byte[WHITE_GIF.length];
-        System.arraycopy(WHITE_GIF, 0, buf, 0, buf.length);
-        ByteBuffer bb = ByteBuffer.wrap(buf);
-
-        return bb;
-    }
-
-
-    private ByteBuffer generateHtml(String host, String uri)
-    {
-        InetAddress addr = MvvmContextFactory.context().networkManager()
-            .getInternalHttpAddress(getSession());
-        if (null == addr) {
-            return generateSimplePage(host, uri);
-        } else {
-            String redirectHost = addr.getHostAddress();
-            return generateRedirect(redirectHost, host, uri);
-        }
-    }
-
-    private ByteBuffer generateSimplePage(String host, String uri)
-    {
-        String replacement = String.format(SIMPLE_BLOCK_TEMPLATE, host, uri);
-
-        ByteBuffer buf = ByteBuffer.allocate(replacement.length());
-        buf.put(replacement.getBytes()).flip();
-
-        return buf;
-    }
-
-    private ByteBuffer generateRedirect(String redirectHost, String host,
-                                        String uri)
-    {
-        InetAddress addr = session.clientAddr();
-
-        String nonce = transform.generateNonce(host, uri, addr);
-
-        String tidStr = transform.getTid().toString();
-
-        String url = "http://" + redirectHost + "/spyware/blockpage.jsp?nonce="
-            + nonce + "&tid=" + tidStr;
-
-        String replacement = String.format(REDIRECT_BLOCK_TEMPLATE, url);
-
-        ByteBuffer buf = ByteBuffer.allocate(replacement.length());
-        buf.put(replacement.getBytes()).flip();
-
-        return buf;
     }
 
     // cookie stuff -----------------------------------------------------------
