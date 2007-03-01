@@ -14,98 +14,67 @@ package com.untangle.tran.mail.papi.quarantine;
 import java.util.Comparator;
 import java.util.EnumMap;
 
-
-/**
- * Class acts as a helper for sorting InboxRecords
- */
+/* Class acts as a helper for sorting InboxRecords */
 public final class InboxRecordComparator {
-
-  /**
-   * Ways to sort an InboxRecord
-   */
+  // Ways to sort an InboxRecord
+  // - indices are used by Inbox.jsp to execute a sort request
   public static enum SortBy {
-    /**
-     * 0 = Sort by the date the message was interned
-     */
-    INTERN_DATE,
-    /**
-     * 1 = Sort by the message size
-     */
-    SIZE,
-    /**
-     * 2 = Sort by the sender of the message
-     */
-    SENDER,
-    /**
-     * 3 = Sort by the subject
-     */
-    SUBJECT,
-    /**
-     * 4 = Sort by the quarantine detail (score)
-     */
-    DETAIL,
-    /**
-     * 5 = Sort by the attachment count
-     */
-    ATTACHMENT_COUNT    
+    INTERN_DATE, /* 0 => Sort by the date the message was interned */
+    SIZE, /* 1 => Sort by the message size */
+    SENDER, /* 2 => Sort by the sender of the message */
+    SUBJECT, /* 3 => Sort by the subject */
+    DETAIL, /* 4 => Sort by the quarantine detail (score) */
+    ATTACHMENT_COUNT /* 5 => Sort by the attachment count */
   };
 
-  private static final EnumMap<SortBy, IRComp> m_fwdComparitors;
-  private static final EnumMap<SortBy, IRComp> m_bwdComparitors;
+  private static final EnumMap<SortBy, IRComp> m_fwdComparators;
+  private static final EnumMap<SortBy, IRComp> m_bwdComparators;
 
   static {
-    m_fwdComparitors = new EnumMap<SortBy, IRComp>(SortBy.class);
-    m_bwdComparitors = new EnumMap<SortBy, IRComp>(SortBy.class);
+    m_fwdComparators = new EnumMap<SortBy, IRComp>(SortBy.class);
+    m_bwdComparators = new EnumMap<SortBy, IRComp>(SortBy.class);
 
-    m_fwdComparitors.put(SortBy.INTERN_DATE, new DateComp().setReverse(false));
-    m_bwdComparitors.put(SortBy.INTERN_DATE, new DateComp().setReverse(true));
+    m_fwdComparators.put(SortBy.INTERN_DATE, new DateComp().setReverse(false));
+    m_bwdComparators.put(SortBy.INTERN_DATE, new DateComp().setReverse(true));
 
-    m_fwdComparitors.put(SortBy.SIZE, new SizeComp().setReverse(false));
-    m_bwdComparitors.put(SortBy.SIZE, new SizeComp().setReverse(true));
+    m_fwdComparators.put(SortBy.SIZE, new SizeComp().setReverse(false));
+    m_bwdComparators.put(SortBy.SIZE, new SizeComp().setReverse(true));
 
-    m_fwdComparitors.put(SortBy.SENDER, new SenderComp().setReverse(false));
-    m_bwdComparitors.put(SortBy.SENDER, new SenderComp().setReverse(true));
+    m_fwdComparators.put(SortBy.SENDER, new SenderComp().setReverse(false));
+    m_bwdComparators.put(SortBy.SENDER, new SenderComp().setReverse(true));
 
-    m_fwdComparitors.put(SortBy.SUBJECT, new SubjectComp().setReverse(false));
-    m_bwdComparitors.put(SortBy.SUBJECT, new SubjectComp().setReverse(true));
+    m_fwdComparators.put(SortBy.SUBJECT, new SubjectComp().setReverse(false));
+    m_bwdComparators.put(SortBy.SUBJECT, new SubjectComp().setReverse(true));
 
-    m_fwdComparitors.put(SortBy.DETAIL, new DetailComp().setReverse(false));
-    m_bwdComparitors.put(SortBy.DETAIL, new DetailComp().setReverse(true));
+    m_fwdComparators.put(SortBy.DETAIL, new DetailComp().setReverse(false));
+    m_bwdComparators.put(SortBy.DETAIL, new DetailComp().setReverse(true));
     
-    m_fwdComparitors.put(SortBy.ATTACHMENT_COUNT, new AttachmentComp().setReverse(false));
-    m_bwdComparitors.put(SortBy.ATTACHMENT_COUNT, new AttachmentComp().setReverse(true));
+    m_fwdComparators.put(SortBy.ATTACHMENT_COUNT, new AttachmentComp().setReverse(false));
+    m_bwdComparators.put(SortBy.ATTACHMENT_COUNT, new AttachmentComp().setReverse(true));
   }
 
   /**
-   * Get a Comparitor (for InboxRecords) based on the given
-   * criteria.
+   * Get a Comparator (for InboxRecords) based on the given criteria.
    *
    * @param criteria how things should be sorted
    * @param forward if true, the forward (normal) ordering.  If false,
    *        backward (reverse) ordering.
    *
-   * @return the Comparitor
+   * @return the Comparator
    */
-  public static Comparator<InboxRecord> getComparator(SortBy criteria,
-    boolean forward) {
-    return (forward?
-        m_fwdComparitors:
-        m_bwdComparitors).get(criteria);
+  public static Comparator<InboxRecord> getComparator(SortBy criteria, boolean forward) {
+    return (forward ? m_fwdComparators : m_bwdComparators).get(criteria);
   }
-
 
   //============================ Inner Class ============================
   
-  private abstract static class IRComp
-    implements Comparator<InboxRecord> {
+  private abstract static class IRComp implements Comparator<InboxRecord> {
 
     private int m_reverse;
 
-    /**
-     * Cause the result to be reversed
-     */
+    /* Cause the result to be reversed */
     IRComp setReverse(boolean reverse) {
-      m_reverse = reverse?-1:1;
+      m_reverse = reverse ? -1 : 1;
       return this;
     }
     
@@ -121,96 +90,84 @@ public final class InboxRecordComparator {
     }    
   }
 
-  
   //============================ Inner Class ============================
   
   private static class DateComp extends IRComp {
 
+    // o2 > o1 => -1, o2 < o1 => 1, o2 = o1 => 0
     protected int compareImpl(InboxRecord o1, InboxRecord o2) {
-      return o1.getInternDate()<o2.getInternDate()?
-        -1:
-        o1.getInternDate()>o2.getInternDate()?
-          1:0;
+      return o1.getInternDate() < o2.getInternDate() ? -1 :
+             o1.getInternDate() > o2.getInternDate() ? 1 : 0;
     }
   }
-
 
   //============================ Inner Class ============================
   
   private static class SizeComp extends IRComp {
 
+    // o2 > o1 => -1, o2 < o1 => 1, o2 = o1 => 0
     protected int compareImpl(InboxRecord o1, InboxRecord o2) {
-      return o1.getSize()<o2.getSize()?
-        -1:
-        o1.getSize()>o2.getSize()?
-          1:0;
+      return o1.getSize() < o2.getSize() ? -1 :
+             o1.getSize() > o2.getSize() ? 1 : 0;
     }
   }
-
 
   //============================ Inner Class ============================
   
   private static class SenderComp extends IRComp {
-
     //Null is less than not null
   
+    // o2 > o1 => -1, o2 < o1 => 1, o2 = o1 => 0
     protected int compareImpl(InboxRecord o1, InboxRecord o2) {
-
       // compare on original sender (not truncated sender)
       // because truncation may drop uniqueness
-      String sender1 = o1.getMailSummary()==null?
-        null:o1.getMailSummary().getSender();
+      String sender1 = o1.getMailSummary() == null ? null : 
+                       o1.getMailSummary().getSender();
         
-      String sender2 = o2.getMailSummary()==null?
-        null:o2.getMailSummary().getSender();
+      String sender2 = o2.getMailSummary() == null ? null :
+                       o2.getMailSummary().getSender();
         
-      return sender1==null?
-        (sender2==null?0:-1)://Sender1 null
-        (sender2==null?1:sender1.compareToIgnoreCase(sender2));
+      return sender1 == null ? (sender2 == null ? 0 : -1) :
+             (sender2 == null ? 1 : sender1.compareToIgnoreCase(sender2));
     }
   }
-
 
   //============================ Inner Class ============================
   
   private static class SubjectComp extends IRComp {
-
     //Null is less than not null
   
+    // o2 > o1 => -1, o2 < o1 => 1, o2 = o1 => 0
     protected int compareImpl(InboxRecord o1, InboxRecord o2) {
-
       // compare on original subject (not truncated subject)
       // because truncation may drop uniqueness
-      String subject1 = o1.getMailSummary()==null?
-        null:o1.getMailSummary().getSubject();
+      String subject1 = o1.getMailSummary() == null ? null :
+                        o1.getMailSummary().getSubject();
         
-      String subject2 = o2.getMailSummary()==null?
-        null:o2.getMailSummary().getSubject();
+      String subject2 = o2.getMailSummary() == null ? null :
+                        o2.getMailSummary().getSubject();
         
-      return subject1==null?
-        (subject2==null?0:-1)://Subject1 null
-        (subject2==null?1:subject1.compareToIgnoreCase(subject2));
+      return subject1 == null ? (subject2 == null ? 0 : -1):
+             (subject2 == null ? 1 : subject1.compareToIgnoreCase(subject2));
     }
   }
-
 
   //============================ Inner Class ============================
   
   private static class DetailComp extends IRComp {
-
     //Null is less than not null
   
+    // o2 > o1 => -1, o2 < o1 => 1, o2 = o1 => 0
     protected int compareImpl(InboxRecord o1, InboxRecord o2) {
     
-      String detail1 = o1.getMailSummary()==null?
-        null:o1.getMailSummary().getQuarantineDetail();
+      String detail1 = o1.getMailSummary() == null ? null :
+                       o1.getMailSummary().getQuarantineDetail();
         
-      String detail2 = o2.getMailSummary()==null?
-        null:o2.getMailSummary().getQuarantineDetail();
+      String detail2 = o2.getMailSummary() == null ? null :
+                       o2.getMailSummary().getQuarantineDetail();
         
-      return detail1==null?
-        (detail2==null?0:-1)://Sender1 null
-        (detail2==null?1:compareDetailsNotNull(detail1, detail2));
+      return detail1 == null ? (detail2 == null ? 0 : -1) :
+             (detail2 == null ? 1 : compareDetailsNotNull(detail1, detail2));
     }
 
     private int compareDetailsNotNull(String d1, String d2) {
@@ -233,36 +190,28 @@ public final class InboxRecordComparator {
       }
       catch(Exception ignore) {d2IsNum = false;}
 
-      return d1IsNum?
+      return d1IsNum ?
         (//D1 is a number
-          d2IsNum?
+          d2IsNum ?
             (//D2 is number
-              d1AsNum>d2AsNum?
-                1:
-                (
-                  d1AsNum<d2AsNum?-1:0
-                )
-            ):
-            (1)//D2 not a number
-        ):
+              d1AsNum > d2AsNum ? 1 : (d1AsNum < d2AsNum ? -1 : 0)
+            ) : (1) //D2 not a number
+        ) :
         (//D1 is not a number
-          d2IsNum?
-            -1://D2 a number
-            d1.compareTo(d2)//Neither is a number
+          d2IsNum ? -1 : //D2 is a number
+            d1.compareTo(d2) //Neither is a number (compare as strings)
         );
     }
   }
-
   
   //============================ Inner Class ============================
   
   private static class AttachmentComp extends IRComp {
 
+    // o2 > o1 => -1, o2 < o1 => 1, o2 = o1 => 0
     protected int compareImpl(InboxRecord o1, InboxRecord o2) {
-      return o1.getMailSummary().getAttachmentCount()<o2.getMailSummary().getAttachmentCount()?
-        -1:
-        o1.getMailSummary().getAttachmentCount()>o2.getMailSummary().getAttachmentCount()?
-          1:0;
+      return o1.getMailSummary().getAttachmentCount() < o2.getMailSummary().getAttachmentCount() ? -1 :
+             o1.getMailSummary().getAttachmentCount() > o2.getMailSummary().getAttachmentCount() ? 1 : 0;
     }
   }   
 }

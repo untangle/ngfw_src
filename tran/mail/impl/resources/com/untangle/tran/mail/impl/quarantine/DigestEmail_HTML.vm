@@ -518,8 +518,8 @@ hr {
                           #end
                           <tr class="$parity">
                             <td class="first">
-                              <a href="$linkgenerator.generatePurgeLink($record.getMailID())">Delete</a><br>
-                              <a href="$linkgenerator.generateRescueLink($record.getMailID())">Release</a></td>
+                              <a href="$linkgenerator.generateRescueLink($record.getMailID())">Release</a><br/>
+                              <a href="$linkgenerator.generatePurgeLink($record.getMailID())">Delete</a></td>
                             <td>$jsEscaper.escapeJS($record.getMailSummary().TruncatedSender)</td>
                             <td>
                             #if ($record.getMailSummary().hasAttachments())
