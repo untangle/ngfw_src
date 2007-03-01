@@ -259,7 +259,8 @@ public abstract class SessionImpl implements Session
     }
 
     /**
-     * Kill the server and client side of the session.
+     * Kill the server and client side of the session, this should only be
+     * called from the session thread.
      */
     public void killSession()
     {

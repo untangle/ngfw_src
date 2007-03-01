@@ -55,10 +55,10 @@ class WMIAssistant implements Assistant
     private static final String PROPERTY_READ_TIMEOUT = "javax.wbem.client.adapter.http.transport.timeout-read";
 
     /* default connection timeout to connect to server(millis) */
-    private static final int DEFAULT_CONNECT_TIMEOUT = 4000;
+    private static final int DEFAULT_CONNECT_TIMEOUT = 500;
 
     /* default connection timeout to read from the server  */
-    private static final int DEFAULT_READ_TIMEOUT = 4000;
+    private static final int DEFAULT_READ_TIMEOUT = 1000;
 
     /* this is the property for the success timeout */
     private static final String PROPERTY_LIFETIME = "com.untangle.mvvm.user.wmi.lifetime";
@@ -67,7 +67,10 @@ class WMIAssistant implements Assistant
     private static final String PROPERTY_NEGATIVE_LIFETIME = "com.untangle.mvvm.user.wmi.negativelifetime";
 
     /* this is how long to assume a login is valid for (in millis) */
-    private static final long DEFAULT_LIFETIME_MS = 5 * 60 * 1000 ;
+    private static final long DEFAULT_LIFETIME_MS = 6 * 60 * 1000 ;
+
+    /* Two minutes of overlap on succesful lookups */
+    private static final int DEFAULT_LOOKUP_OVERLAP = 2 * 60 * 1000;
 
     /* wait 10 minutes for a negative response */
     private static final long DEFAULT_NEGATIVE_LIFETIME_MS = 10 * 60 * 1000 ;
@@ -126,11 +129,8 @@ class WMIAssistant implements Assistant
         /* settings are disabled, nothing to do */
         if ( !this.worker.settings.getIsEnabled()) return;
 
-        /* attempt to grab the user info from the local cache */
-        if ( updateFromCache( info )) return;
-
-        /* if the connection is unitiated, then perform a full lookup */
-         startLookup( info );
+        /* attempt to grab the user info from the local cache, or start a lookup for the query */
+        updateOrStartLookup( info );
     }
 
     public int priority()
@@ -213,26 +213,43 @@ class WMIAssistant implements Assistant
     }
 
     /* attempt to lookup the response from the cache */
-    private boolean updateFromCache( UserInfo info )
+    private void updateOrStartLookup( UserInfo info )
     {
         InetAddress address = info.getAddress();
 
         CIMData cimData = cache.get( address );
-        if ( cimData == null ) return false;
+        if ( cimData == null ) {
+            startLookup( info );
+            return;
+        }
 
+        /* If it is time to do another lookup, then fill in the data
+         * but start another lookup */
+        if ( cimData.startNextLookup()) {
+            logger.debug( "found cached value, starting new lookup [", address.getHostAddress(), "]: ", 
+                          cimData );
+            /* First start the lookup */
+            startLookup( info );
+
+            /* Complete the data from the cache */
+            cimData.completeInfo( info );
+            return;
+        }
+        
         /* if the data has already expired, then remove it from the
          * cache and perform a full query */
         if ( cimData.isExpired()) {
             cache.remove( address );
             logger.debug( "cached value [", address.getHostAddress(), "]: ", cimData, " expired" );
-            return false;
+            startLookup( info );
+            return;
         }
 
         logger.debug( "found valid cached value [", address.getHostAddress(), "]: ", cimData );
 
         cimData.completeInfo( info );
 
-        return true;
+        return;
     }
 
     /* put the lookup onto the queue */
@@ -276,7 +293,8 @@ class WMIAssistant implements Assistant
     private class WMIWorker implements Worker
     {
         /* queue to add more results */
-        private final LinkedBlockingQueue<UserInfo> lookupQueue = new LinkedBlockingQueue<UserInfo>( DEFAULT_QUEUE_LENGTH );
+        private final LinkedBlockingQueue<UserInfo> lookupQueue = 
+            new LinkedBlockingQueue<UserInfo>( DEFAULT_QUEUE_LENGTH );
 
         /* ordered list of the CIM data, used to expire requests */
         private final List<CIMData> expireList = new LinkedList<CIMData>();
@@ -306,9 +324,8 @@ class WMIAssistant implements Assistant
             expireValues();
 
             if ( info == null ) return;
-
-            /* first check the queue */
-            if ( updateFromCache( info )) return;
+            
+            /* The worker shouldn't update from cache */
 
             if ( !getHostname( info )) {
                 /* unable to lookup the hostname */
@@ -320,7 +337,7 @@ class WMIAssistant implements Assistant
                 lookup( info );
             } catch ( CIMException e ) {
                 /* this can actually happen for a number of reasons */
-                logger.info( e, "exception looking up user information" );
+                logger.info( e, "exception looking up user information <", info, ">" );
                 fail( info );
             }
         }
@@ -493,7 +510,7 @@ class WMIAssistant implements Assistant
     /* CIMData: interface to keep track of the status of a WMI query. */
     private static abstract class  CIMData
     {
-        private final long expirationDate;
+        protected final long expirationDate;
         private final InetAddress address;
 
         CIMData( long expirationDate, InetAddress address )
@@ -502,7 +519,12 @@ class WMIAssistant implements Assistant
             this.address = address;
         }
 
-        abstract void completeInfo( UserInfo info );
+        public abstract void completeInfo( UserInfo info );
+
+        /* Returns true if the caller should initiate the next lookup,
+         * the next lookup is started before the data expires, this way, 
+         * the gaps between lookups are minimized */
+        public abstract boolean startNextLookup();
 
         boolean isExpired()
         {
@@ -537,9 +559,10 @@ class WMIAssistant implements Assistant
             return "<FailedCIMData>";
         }
 
-        void completeInfo( UserInfo info )
+        public void completeInfo( UserInfo info )
         {
             /* indicate that the lookup failed */
+            info.setUsername( null );
             info.setUsernameState( LookupState.FAILED );
 
             /* only indicate that the hostname lookup failed if it was pending */
@@ -547,6 +570,13 @@ class WMIAssistant implements Assistant
                 if ( this.hostname != null ) info.setHostname( this.hostname );
                 else info.setHostnameState( LookupState.FAILED );
             }
+        }
+
+        /* it is a failed lookup, so the next lookup should start when
+         * this one expires */
+        public boolean startNextLookup()
+        {
+            return false;
         }
     }
 
@@ -556,6 +586,8 @@ class WMIAssistant implements Assistant
         private final Username username;
         private final HostName hostname;
 
+        private boolean hasStartedNextLookup = false;
+
         /* in order to perform a CIM query, you have to lookup the
          * hostname, windows doesn't work on ip addresses. */
         SuccessfulCIMData( InetAddress address, Username username, HostName hostname, long expirationDate )
@@ -563,6 +595,7 @@ class WMIAssistant implements Assistant
             super( expirationDate, address );
             this.username = username;
             this.hostname = hostname;
+            this.hasStartedNextLookup = false;
         }
 
         public void completeInfo( UserInfo info )
@@ -571,6 +604,19 @@ class WMIAssistant implements Assistant
 
             info.setUsername( this.username );
         }
+
+        public boolean startNextLookup()
+        {
+            if ( this.hasStartedNextLookup ) return false;
+            
+            if ( System.currentTimeMillis() > ( expirationDate - DEFAULT_LOOKUP_OVERLAP )) {
+                this.hasStartedNextLookup = true;
+                return true;
+            }
+            
+            return false;
+        }
+
 
         public String toString()
         {
