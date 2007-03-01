@@ -345,7 +345,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 		private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
             try{
                 String focus = Util.getSelectedTabTitle(contentJTabbedPane).toLowerCase().replace(" ", "_");
-                URL newURL = new URL( "http://www.untangle.com/docs?"
+                URL newURL = new URL( "http://www.untangle.com/docs/get.php?"
                                       + "version=" + Version.getVersion()
                                       + "&source=" + helpSource
                                       + "&focus=" + focus);

@@ -388,7 +388,7 @@ public class MTransformJPanel extends javax.swing.JPanel {
             try{
                 String focus = Util.getSelectedTabTitle(mTransformControlsJPanel.getMTabbedPane()).toLowerCase().replace(" ", "_");
                 String source = getTransformDesc().getDisplayName().toLowerCase().replace(" ", "_");
-                URL newURL = new URL( "http://www.untangle.com/docs?"
+                URL newURL = new URL( "http://www.untangle.com/docs/get.php?"
                                       + "version=" + Version.getVersion()
                                       + "&source=" + source
                                       + "&focus=" + focus);
