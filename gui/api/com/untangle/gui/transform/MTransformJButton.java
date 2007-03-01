@@ -99,7 +99,7 @@ public class MTransformJButton extends JButton {
 	    tempName = mackageDesc.getDisplayName();
         if( (mackageDesc.getExtraName()!=null) && (mackageDesc.getExtraName().contains("Trial")) )
             tempName += " (Trial)";
-        nameJLabel.setText( "<html><b>" + Util.wrapString(tempName, 19) + "</b></html>");
+        nameJLabel.setText( "<html>" + Util.wrapString(tempName, 19) + "</html>");
         nameJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
         nameJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         nameJLabel.setFocusable(false);

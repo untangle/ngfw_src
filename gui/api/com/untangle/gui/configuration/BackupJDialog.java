@@ -110,15 +110,17 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 setModal(true);
                 setResizable(false);
                 closeJButton.setFont(new java.awt.Font("Default", 0, 12));
-                closeJButton.setIcon(new javax.swing.ImageIcon(""));
-                closeJButton.setText("<html><b>Close</b> Window</html>");
+                closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconClose_16x16.png")));
+                closeJButton.setText("Close");
                 closeJButton.setDoubleBuffered(true);
                 closeJButton.setFocusPainted(false);
                 closeJButton.setFocusable(false);
-                closeJButton.setMaximumSize(new java.awt.Dimension(140, 25));
-                closeJButton.setMinimumSize(new java.awt.Dimension(140, 25));
+                closeJButton.setIconTextGap(6);
+                closeJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
+                closeJButton.setMaximumSize(null);
+                closeJButton.setMinimumSize(null);
                 closeJButton.setOpaque(false);
-                closeJButton.setPreferredSize(new java.awt.Dimension(140, 25));
+                closeJButton.setPreferredSize(null);
                 closeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 closeJButtonActionPerformed(evt);
@@ -132,16 +134,13 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 gridBagConstraints.insets = new java.awt.Insets(0, 15, 15, 0);
                 getContentPane().add(closeJButton, gridBagConstraints);
 
-                helpJButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconHelp28x28.png")));
+                helpJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconHelp_18x16.png")));
                 helpJButton.setText("Help");
                 helpJButton.setFocusPainted(false);
-                helpJButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-                helpJButton.setIconTextGap(2);
-                helpJButton.setMargin(new java.awt.Insets(0, 0, 0, 9));
-                helpJButton.setMaximumSize(new java.awt.Dimension(86, 25));
-                helpJButton.setMinimumSize(new java.awt.Dimension(86, 25));
+                helpJButton.setIconTextGap(6);
+                helpJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 helpJButton.setOpaque(false);
-                helpJButton.setPreferredSize(new java.awt.Dimension(86, 25));
                 helpJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 helpJButtonActionPerformed(evt);
@@ -169,7 +168,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 contentJPanel3.setLayout(new java.awt.GridBagLayout());
 
                 jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel4.setText("<html> You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \"" + BACKUP_EXTENSION + "\"<br> <br> After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".</html>");
+                jLabel4.setText("<html> You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".egbackup\"<br> <br> After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -357,7 +356,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 contentJPanel4.setLayout(new java.awt.GridBagLayout());
 
                 jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel5.setText("<html> You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \"" + BACKUP_EXTENSION + "\"</html>");
+                jLabel5.setText("<html> You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \".egbackup\"</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
