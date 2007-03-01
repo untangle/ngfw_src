@@ -26,6 +26,8 @@ import java.util.*;
 public class UpgradeSettingsJPanel extends javax.swing.JPanel
     implements Savable<UpgradeCompoundSettings>, Refreshable<UpgradeCompoundSettings> {
 		
+    private static final String EXCEPTION_NO_DAY = "You must select at least one day to check for upgrades.";
+
     public UpgradeSettingsJPanel() {
 	initComponents();
     }
@@ -35,6 +37,7 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
         tempCalendar.setTime((Date)timeJSpinner.getValue());
         int hour = tempCalendar.get(Calendar.HOUR_OF_DAY);
         int minute = tempCalendar.get(Calendar.MINUTE);
+
         boolean sunday = sundayJCheckBox.isSelected();
         boolean monday = mondayJCheckBox.isSelected();
         boolean tuesday = tuesdayJCheckBox.isSelected();
@@ -42,6 +45,10 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
         boolean thursday = thursdayJCheckBox.isSelected();
         boolean friday = fridayJCheckBox.isSelected();
         boolean saturday = saturdayJCheckBox.isSelected();
+
+        if( !(sunday || monday || tuesday || wednesday || thursday || friday || saturday) )
+            throw new Exception(EXCEPTION_NO_DAY);
+
         boolean autoUpgrade = yesAutoJRadioButton.isSelected();
 
         // SAVE SETTINGS //////
