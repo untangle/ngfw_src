@@ -94,6 +94,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
 
     // STATUS ////////
 	KickUserJPanel kickUserJPanel = new KickUserJPanel(this);
+    kickUserJPanel.setMTransformJPanel(mTransformJPanel);
     addTab(NAME_STATUS, null, kickUserJPanel);
 	addSavable(NAME_STATUS, kickUserJPanel);
 	addRefreshable(NAME_STATUS, kickUserJPanel);

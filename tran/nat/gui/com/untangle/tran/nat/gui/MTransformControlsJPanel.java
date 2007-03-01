@@ -226,6 +226,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
 
 	// DHCP ADDRESSES /////
 	AddressJPanel addressJPanel = new AddressJPanel();
+    addressJPanel.setMTransformJPanel(mTransformJPanel);
         dhcpJTabbedPane.addTab(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, null, addressJPanel );
         addSavable(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, addressJPanel);
         addRefreshable(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, addressJPanel);

@@ -38,6 +38,7 @@ public class AddressJPanel extends MEditTableJPanel{
         super.setTableTitle("");
         super.setDetailsTitle("");
         super.setAddRemoveEnabled(true);
+        super.setRefreshJButtonEnabled(true);
         
         // create actual table model
         AddressTableModel addressTableModel = new AddressTableModel();

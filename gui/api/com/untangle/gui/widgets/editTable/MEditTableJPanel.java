@@ -104,6 +104,7 @@ public class MEditTableJPanel extends javax.swing.JPanel
                 
         
         auxJPanel.setVisible(false);
+        refreshJButton.setVisible(false);
     }
 
     public void setShowDetailJPanelEnabled(boolean enabled){}
@@ -118,6 +119,10 @@ public class MEditTableJPanel extends javax.swing.JPanel
 
     public void setAuxJPanelEnabled(boolean enabled){
         auxJPanel.setVisible(enabled);
+    }
+
+    public void setRefreshJButtonEnabled(boolean enabled){
+        refreshJButton.setVisible(enabled);
     }
 
     public void setMessage(String message){
@@ -205,11 +210,12 @@ public class MEditTableJPanel extends javax.swing.JPanel
 
                 contentJPanel = new javax.swing.JPanel();
                 tableJPanel = new javax.swing.JPanel();
+                auxJPanel = new javax.swing.JPanel();
                 entryJScrollPane = new javax.swing.JScrollPane();
                 entryJTable = mColoredJTable;
                 addJButton = new javax.swing.JButton();
                 removeJButton = new javax.swing.JButton();
-                auxJPanel = new javax.swing.JPanel();
+                refreshJButton = new javax.swing.JButton();
 
                 setLayout(new java.awt.GridBagLayout());
 
@@ -218,6 +224,13 @@ public class MEditTableJPanel extends javax.swing.JPanel
                 tableJPanel.setLayout(new java.awt.GridBagLayout());
 
                 tableJPanel.setMinimumSize(new java.awt.Dimension(40, 40));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+                tableJPanel.add(auxJPanel, gridBagConstraints);
+
                 entryJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
                 entryJScrollPane.setDoubleBuffered(true);
                 entryJScrollPane.setRequestFocusEnabled(false);
@@ -290,12 +303,29 @@ public class MEditTableJPanel extends javax.swing.JPanel
                 gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 4);
                 tableJPanel.add(removeJButton, gridBagConstraints);
 
+                refreshJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                refreshJButton.setText("Refresh");
+                refreshJButton.setToolTipText("");
+                refreshJButton.setDoubleBuffered(true);
+                refreshJButton.setFocusPainted(false);
+                refreshJButton.setFocusable(false);
+                refreshJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                refreshJButton.setIconTextGap(0);
+                refreshJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
+                refreshJButton.setOpaque(false);
+                refreshJButton.setPreferredSize(null);
+                refreshJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                refreshJButtonActionPerformed(evt);
+                        }
+                });
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-                tableJPanel.add(auxJPanel, gridBagConstraints);
+                gridBagConstraints.gridy = 4;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+                tableJPanel.add(refreshJButton, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -314,6 +344,10 @@ public class MEditTableJPanel extends javax.swing.JPanel
                 add(contentJPanel, gridBagConstraints);
 
         }//GEN-END:initComponents
+
+		private void refreshJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshJButtonActionPerformed
+            mTransformJPanel.mTransformControlsJPanel().refreshGui();
+		}//GEN-LAST:event_refreshJButtonActionPerformed
 
 
     protected boolean generateNewRow(int selectedModelRow){
@@ -421,6 +455,7 @@ public class MEditTableJPanel extends javax.swing.JPanel
         private javax.swing.JPanel contentJPanel;
         protected javax.swing.JScrollPane entryJScrollPane;
         protected javax.swing.JTable entryJTable;
+        private javax.swing.JButton refreshJButton;
         private javax.swing.JButton removeJButton;
         private javax.swing.JPanel tableJPanel;
         // End of variables declaration//GEN-END:variables

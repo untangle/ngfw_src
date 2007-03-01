@@ -40,6 +40,7 @@ public class KickUserJPanel extends MEditTableJPanel{
         super.setTableTitle("");
         super.setDetailsTitle("");
         super.setAddRemoveEnabled(false);
+        super.setRefreshJButtonEnabled(true);
         
         // create actual table model
         KickUserTableModel kickUserTableModel = new KickUserTableModel(mTransformControlsJPanel);
