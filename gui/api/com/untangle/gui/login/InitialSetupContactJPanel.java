@@ -11,10 +11,12 @@
 
 package com.untangle.gui.login;
 
+import java.net.URL;
 import com.untangle.mvvm.security.*;
 import com.untangle.gui.widgets.wizard.*;
-import com.untangle.gui.util.Util;
+import com.untangle.gui.util.*;
 import javax.swing.SwingUtilities;
+import com.untangle.mvvm.client.*;
 import java.awt.Color;
 
 public class InitialSetupContactJPanel extends MWizardPageJPanel {
@@ -112,24 +114,44 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
             throw exception;
 	        
         if( !validateOnly ){
-	    try{
-		InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Contact Information...");
-		RegistrationInfo registrationInfo = new RegistrationInfo(company, firstName, lastName, email, count);
-		registrationInfo.setAddress1(address1);
-		registrationInfo.setAddress2(address2);
-		registrationInfo.setCity(city);
-		registrationInfo.setState(state);
-		registrationInfo.setZipcode(zipcode);
-		registrationInfo.setPhone(phone);
-		Util.getAdminManager().setRegistrationInfo(registrationInfo);
-		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
-	    }
-	    catch(Exception e){
-		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
-		Util.handleExceptionNoRestart("Error sending data", e);
-		throw new Exception("A network communication error occurred.  Please retry.");
-	    }
-	}
+            try{
+                InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Contact Information...");
+                RegistrationInfo registrationInfo = new RegistrationInfo(company, firstName, lastName, email, count);
+                registrationInfo.setAddress1(address1);
+                registrationInfo.setAddress2(address2);
+                registrationInfo.setCity(city);
+                registrationInfo.setState(state);
+                registrationInfo.setZipcode(zipcode);
+                registrationInfo.setPhone(phone);
+                Util.getAdminManager().setRegistrationInfo(registrationInfo);
+
+                // KEY, IF CD INSTALL
+                if(Util.getIsCD()){
+                    URL url = Util.getServerCodeBase();
+                    boolean isActivated = com.untangle.mvvm.client.MvvmRemoteContextFactory.factory().isActivated( url.getHost(),
+                                                                                                                   url.getPort(),
+                                                                                                                   0,
+                                                                                                                   Util.isSecureViaHttps() );
+                    if( !isActivated ){
+                        MvvmRemoteContext mvvmContext = MvvmRemoteContextFactory.factory().activationLogin( url.getHost(), url.getPort(),
+                                                                                                            "0000-0000-0000-0000",
+                                                                                                            0,
+                                                                                                            Util.getClassLoader(),
+                                                                                                            Util.isSecureViaHttps() );                        
+                        Util.setMvvmContext(mvvmContext);
+                        KeepAliveThread keepAliveThread = new KeepAliveThread(mvvmContext);
+                        InitialSetupWizard.setKeepAliveThread(keepAliveThread);
+                    }
+                }
+
+                InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);	    
+            }
+            catch(Exception e){
+                InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
+                Util.handleExceptionNoRestart("Error sending data", e);
+                throw new Exception("A network communication error occurred.  Please retry.");
+            }
+        }
     }
     
 
