@@ -24,7 +24,7 @@ import com.untangle.tran.token.Header;
 import com.untangle.tran.token.Token;
 import com.untangle.tran.util.NonceFactory;
 
-public abstract class ReplacementGenerator<T>
+public abstract class ReplacementGenerator<T extends BlockDetails>
 {
     private static final byte[] WHITE_GIF = new byte[]
         {

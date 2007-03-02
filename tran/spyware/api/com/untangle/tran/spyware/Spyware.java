@@ -23,7 +23,7 @@ public interface Spyware extends Transform
     SpywareSettings getSpywareSettings();
     void setSpywareSettings(SpywareSettings settings);
 
-    BlockDetails getBlockDetails(String nonce);
+    SpywareBlockDetails getBlockDetails(String nonce);
     boolean unblockSite(String nonce, boolean global);
 
     UserWhitelistMode getUserWhitelistMode();

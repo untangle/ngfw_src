@@ -15,7 +15,7 @@ import com.untangle.mvvm.security.Tid;
 import com.untangle.tran.http.ReplacementGenerator;
 
 public class SpywareReplacementGenerator
-    extends ReplacementGenerator<BlockDetails>
+    extends ReplacementGenerator<SpywareBlockDetails>
 {
     private static final String SIMPLE_BLOCK_TEMPLATE
         = "<HTML><HEAD>"
@@ -44,7 +44,7 @@ public class SpywareReplacementGenerator
 
     // ReplacementGenerator methods -------------------------------------------
 
-    protected String getReplacement(BlockDetails bd)
+    protected String getReplacement(SpywareBlockDetails bd)
     {
         return String.format(SIMPLE_BLOCK_TEMPLATE, bd.getHost(), bd.getUrl());
     }

@@ -9,49 +9,27 @@
  * $Id$
  */
 
-package com.untangle.tran.httpblocker;
+package com.untangle.tran.http;
 
 import java.io.Serializable;
 import java.lang.StringBuffer;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 
 public class BlockDetails implements Serializable
 {
     private static final int SUB_LINE_LEN = 80;
 
-    private final HttpBlockerSettings settings;
     private final String host;
-    private final URI uri;
-    private final String reason;
+    private final String uri;
 
-    // constructor ------------------------------------------------------------
-
-    public BlockDetails(HttpBlockerSettings settings, String host, URI uri,
-                        String reason)
+    public BlockDetails(String host, String uri)
     {
-        this.settings = settings;
         this.host = host;
         this.uri = uri;
-        this.reason = reason;
     }
-
-    // public methods ---------------------------------------------------------
 
     public String getHost()
     {
-        return null == host ? "" : host;
-    }
-
-    public String getHeader()
-    {
-        return settings.getBlockTemplate().getHeader();
-    }
-
-    public String getContact()
-    {
-        return settings.getBlockTemplate().getContact();
+        return host;
     }
 
     public String getFormattedHost()
@@ -59,33 +37,38 @@ public class BlockDetails implements Serializable
         return null == host ? "" : breakLine(host, SUB_LINE_LEN);
     }
 
-    public URI getUri()
+    public String getWhitelistHost()
+    {
+        if (null == host) {
+            return null;
+        } if (host.startsWith("www.") && 4 < host.length()) {
+            return host.substring(4);
+        } else {
+            return host;
+        }
+    }
+
+    public String getUri()
     {
         return uri;
     }
 
-    public String getFormattedUri()
+    public String getUrl()
     {
-        return breakLine(getUri().toString(), SUB_LINE_LEN);
-    }
-
-    public URL getUrl()
-    {
-        try {
-            return uri.resolve("http://" + host).toURL();
-        } catch (MalformedURLException exn) {
-            throw new RuntimeException(exn);
+        if (null == host) {
+            return "javascript:history.back()";
+        } else {
+            return "http://" + host + uri;
         }
     }
 
     public String getFormattedUrl()
     {
-        return breakLine(getUrl().toString(), SUB_LINE_LEN);
-    }
-
-    public String getReason()
-    {
-        return reason;
+        if (null == host) {
+            return "";
+        } else {
+            return breakLine("http://" + host + uri, SUB_LINE_LEN);
+        }
     }
 
     // private methods --------------------------------------------------------

@@ -5,7 +5,7 @@ spyware = Package['spyware-transform']
 
 TransformBuilder.makeTransform('spyware', [http["localapi"]], [http["localapi"]])
 
-deps = [spyware['gui']]
+deps = [spyware['gui'], http['gui']]
 
 ServletBuilder.new(spyware, 'com.untangle.tran.spyware.jsp',
                    'tran/spyware/servlets/spyware', [], deps, [],

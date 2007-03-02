@@ -15,7 +15,7 @@ import com.untangle.mvvm.security.Tid;
 import com.untangle.tran.http.ReplacementGenerator;
 
 class HttpBlockerReplacementGenerator
-    extends ReplacementGenerator<BlockDetails>
+    extends ReplacementGenerator<HttpBlockerBlockDetails>
 {
     private static final String BLOCK_TEMPLATE
         = "<HTML><HEAD>"
@@ -41,7 +41,7 @@ class HttpBlockerReplacementGenerator
     // ReplacementGenerator methods -------------------------------------------
 
     @Override
-    protected String getReplacement(BlockDetails details)
+    protected String getReplacement(HttpBlockerBlockDetails details)
     {
         return String.format(BLOCK_TEMPLATE, details.getHeader(),
                              details.getHost(), details.getUri(),

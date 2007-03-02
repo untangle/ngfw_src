@@ -9,7 +9,7 @@ Tid tid = new Tid(Long.parseLong(tidStr));
 
 TransformContext tctx = tman.transformContext(tid);
 HttpBlocker tran = (HttpBlocker)tctx.transform();
-BlockDetails bd = tran.getDetails(nonce);
+HttpBlockerBlockDetails bd = tran.getDetails(nonce);
 
 String header = null == bd ? "" : bd.getHeader();
 String contact = null == bd ? "your administrator" : bd.getContact();

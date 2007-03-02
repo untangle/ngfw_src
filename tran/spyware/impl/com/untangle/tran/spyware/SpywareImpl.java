@@ -161,21 +161,21 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         return settings.getUserWhitelistMode();
     }
 
-    public BlockDetails getBlockDetails(String nonce)
+    public SpywareBlockDetails getBlockDetails(String nonce)
     {
         return replacementGenerator.getNonceData(nonce);
     }
 
     public String generateNonce(String host, String uri, InetAddress addr)
     {
-        BlockDetails bd = new BlockDetails(host, uri, addr);
+        SpywareBlockDetails bd = new SpywareBlockDetails(host, uri, addr);
 
         return replacementGenerator.generateNonce(bd);
     }
 
     public boolean unblockSite(String nonce, boolean global)
     {
-        BlockDetails bd = replacementGenerator.removeNonce(nonce);
+        SpywareBlockDetails bd = replacementGenerator.removeNonce(nonce);
 
         switch (settings.getUserWhitelistMode()) {
         case NONE:
@@ -308,8 +308,8 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     // package private methods ------------------------------------------------
 
 
-    Token[] generateResponse(BlockDetails bd, TCPSession sess, String uri,
-                             Header header, boolean persistent)
+    Token[] generateResponse(SpywareBlockDetails bd, TCPSession sess,
+                             String uri, Header header, boolean persistent)
     {
         String n = replacementGenerator.generateNonce(bd);
         return replacementGenerator.generateResponse(n, sess, uri, header,

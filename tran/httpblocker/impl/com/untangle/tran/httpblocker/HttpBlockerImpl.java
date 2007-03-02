@@ -34,13 +34,13 @@ import com.untangle.mvvm.tran.StringRule;
 import com.untangle.mvvm.tran.TransformContext;
 import com.untangle.mvvm.util.OutsideValve;
 import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.tran.token.Header;
 import com.untangle.tran.token.Token;
 import com.untangle.tran.token.TokenAdaptor;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import com.untangle.tran.token.Header;
 
 public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 {
@@ -112,12 +112,12 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         return eventLogger;
     }
 
-    public BlockDetails getDetails(String nonce)
+    public HttpBlockerBlockDetails getDetails(String nonce)
     {
         return replacementGenerator.getNonceData(nonce);
     }
 
-    public String generateNonce(BlockDetails details)
+    public String generateNonce(HttpBlockerBlockDetails details)
     {
         return replacementGenerator.generateNonce(details);
     }

@@ -10,7 +10,7 @@ Tid tid = new Tid(Long.parseLong(tidStr));
 TransformContext tctx = tman.transformContext(tid);
 Spyware tran = (Spyware)tctx.transform();
 UserWhitelistMode mode = tran.getUserWhitelistMode();
-BlockDetails bd = tran.getBlockDetails(nonce);
+SpywareBlockDetails bd = tran.getBlockDetails(nonce);
 
 String header = "Spyware Blocker";
 String host = null == bd ? "" : bd.getFormattedHost();

@@ -117,7 +117,7 @@ public class SpywareHttpHandler extends HttpStateMachine
 
             InetAddress addr = getSession().clientAddr();
             String uriStr = uri.toString();
-            BlockDetails bd = new BlockDetails(host, uriStr, addr);
+            SpywareBlockDetails bd = new SpywareBlockDetails(host, uriStr, addr);
             Token[] resp = transform.generateResponse(bd, getSession(),
                                                       uriStr, requestHeader,
                                                       isRequestPersistent());

@@ -179,8 +179,9 @@ class Blacklist
                      Reason.BLOCK_EXTENSION, exn);
                 transform.log(hbe);
 
-                BlockDetails bd = new BlockDetails(settings, host, uri,
-                                                   "extension (" + exn + ")");
+                HttpBlockerBlockDetails bd = new HttpBlockerBlockDetails
+                    (settings, host, uri.toString(),
+                     "extension (" + exn + ")");
                 return transform.generateNonce(bd);
             }
         }
@@ -209,8 +210,9 @@ class Blacklist
                 String host = header.getValue("host");
                 URI uri = requestLine.getRequestUri().normalize();
 
-                BlockDetails bd = new BlockDetails(settings, host, uri,
-                                                   "Mime-Type (" + contentType + ")");
+                HttpBlockerBlockDetails bd = new HttpBlockerBlockDetails
+                    (settings, host, uri.toString(),
+                     "Mime-Type (" + contentType + ")");
                 return transform.generateNonce(bd);
             }
         }
@@ -257,8 +259,8 @@ class Blacklist
             transform.log(hbe);
 
             BlacklistCache cache = BlacklistCache.cache();
-            BlockDetails bd = new BlockDetails(settings, host, uri,
-                                               "not allowed");
+            HttpBlockerBlockDetails bd = new HttpBlockerBlockDetails
+                (settings, host, uri.toString(), "not allowed");
             return transform.generateNonce(bd);
         }
 
@@ -308,8 +310,8 @@ class Blacklist
             } else if (null != bc && bc.getLogOnly()) {
                 return null;
             } else {
-                BlockDetails bd = new BlockDetails(settings, host, uri,
-                                                   category);
+                HttpBlockerBlockDetails bd = new HttpBlockerBlockDetails
+                    (settings, host, uri.toString(), category);
                 return transform.generateNonce(bd);
             }
         }
