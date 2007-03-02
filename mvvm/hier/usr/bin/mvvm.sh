@@ -90,9 +90,15 @@ raiseFdLimit() {
 }
 
 getLicenseKey() {
-  # is the temp file isn't there, it means we already have a valid key
+  # if the temp file isn't there, it means we already have a valid key
+  # Copyright TeamJanky 2007: the double test is to avoid a possible
+  # race condition where we pass 1), but the other backgrounded curl
+  # completes before 2), and then when we reach 3) our temp file has
+  # already been deleted and we're left in the cold...
   [[ -f $ACTIVATION_KEY_FILE_TMP ]] || return
-  
+  killall curl
+  [[ -f $ACTIVATION_KEY_FILE_TMP ]] || return
+
   KEY=`cat $ACTIVATION_KEY_FILE_TMP`
 
   # for CD downloads, the temp key is only 0s, so we need to ask the 
@@ -230,8 +236,11 @@ while true; do
 
 # Instead of waiting, we now monitor.
     while true; do
-        # try to fetch a key right away
-        getLicenseKey
+
+        # try to fetch a key right away; bg'ed so as to not block the
+        # rest of the mvvm.sh tasks. We ensure only one key-fetching function runs at all times
+
+        getLicenseKey &
 
         sleep $SLEEP_TIME
         if [ ! -d /proc/$pid ] ; then
