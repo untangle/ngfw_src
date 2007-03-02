@@ -47,7 +47,7 @@ public class InitialSetupWizard extends MWizardJDialog {
         addWizardPageJPanel(new InitialSetupWelcomeJPanel(),         "1. Welcome", false, false);
 
         if( Util.getIsCD() ){
-            addWizardPageJPanel(new InitialSetupContactJPanel(),         "2. Contact Information", false, false);
+            addWizardPageJPanel(new InitialSetupContactJPanel(),         "2. Contact Information", true, true);
 	    //            addWizardPageJPanel(new InitialSetupKeyJPanel(),             "3. Activation Key", false, true);
             addWizardPageJPanel(new InitialSetupPasswordJPanel(),        "3. Admin Account & Time", true, true);        
             initialSetupInterfaceJPanel = new InitialSetupInterfaceJPanel();
@@ -85,7 +85,7 @@ public class InitialSetupWizard extends MWizardJDialog {
         dialog.setCancelText("<html><b>Continue</b> Wizard</html>");
         dialog.setVisible(true);
         if( dialog.isProceeding() ){
-            if( currentPage >= 4 )
+            if ( ( currentPage >= 4 ) || ( Util.getIsCD() && ( currentPage >= 3 ) ) )
                 isRegistered = true;
             if( currentPage <= 3 ){ // NOT REGISTERED, MUST DO WIZARD AGAIN
                 MOneButtonJDialog.factory(this, "", MESSAGE_NOT_REGISTERED, MESSAGE_DIALOG_TITLE, "");

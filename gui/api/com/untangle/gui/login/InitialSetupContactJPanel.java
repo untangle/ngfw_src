@@ -113,7 +113,7 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
         if( exception != null)
             throw exception;
 	        
-        if( !validateOnly ){
+	if( !validateOnly ){
             try{
                 InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Contact Information...");
                 RegistrationInfo registrationInfo = new RegistrationInfo(company, firstName, lastName, email, count);
@@ -123,8 +123,6 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
                 registrationInfo.setState(state);
                 registrationInfo.setZipcode(zipcode);
                 registrationInfo.setPhone(phone);
-                Util.getAdminManager().setRegistrationInfo(registrationInfo);
-
                 // KEY, IF CD INSTALL
                 if(Util.getIsCD()){
                     URL url = Util.getServerCodeBase();
@@ -144,6 +142,8 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
                     }
                 }
 
+                Util.getAdminManager().setRegistrationInfo(registrationInfo);
+
                 InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);	    
             }
             catch(Exception e){
@@ -151,7 +151,7 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
                 Util.handleExceptionNoRestart("Error sending data", e);
                 throw new Exception("A network communication error occurred.  Please retry.");
             }
-        }
+	}
     }
     
 
