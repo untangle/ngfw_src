@@ -23,6 +23,13 @@ MVVM_SESSION_LIMIT=""
 
 MVVM_ARGS=""
 
+# activation files
+ACTIVATION_KEY_FILE=@PREFIX@/usr/share/metavize/activation.key
+ACTIVATION_KEY_FILE_TMP=${ACTIVATION_KEY_FILE}.tmp
+TMP_ARCHIVE=@PREFIX@/tmp/activation.tar
+ACTIVATION_URL="https://ob1.metaloft.com/cgi-bin/nph-get-license-key.rb?license_key="
+FAKE_KEY=0000-0000-0000-0000
+
 ## For testing, uncomment and setup interfaces here, the values below should not be modified.
 #MVVM_INTERNAL_INTF=""
 #MVVM_EXTERNAL_INTF=""

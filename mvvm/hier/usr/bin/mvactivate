@@ -38,6 +38,7 @@ if [ ! -f $CD_INSTALL ] && [ $REG_KEY = $FAKE_KEY ] ; then
   fi
 fi
 
-# Do this last
 echo $FAKE_KEY > $ACTIVATION_KEY_FILE
+# this one is what mvvm.sh uses to figure out if it needs to fetch a
+# key or not, so we create it last
 echo $REG_KEY > $ACTIVATION_KEY_FILE_TMP

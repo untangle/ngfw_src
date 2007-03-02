@@ -89,6 +89,23 @@ raiseFdLimit() {
     ulimit -n 1024000
 }
 
+getLicenseKey() {
+  # is the temp file isn't there, it means we already have a valid key
+  [[ -f $ACTIVATION_KEY_FILE_TMP ]] || return
+  
+  KEY=`cat $ACTIVATION_KEY_FILE_TMP`
+
+  # for CD downloads, the temp key is only 0s, so we need to ask the 
+  # server for a brand new one; that's done by not supplying any value
+  # to the CGI variable
+  [[ $KEY = $FAKE_KEY ]] && KEY="" 
+
+  if curl --insecure --fail -o $TMP_ARCHIVE ${ACTIVATION_URL}$KEY ; then
+    tar -C / -xf $TMP_ARCHIVE
+    rm -f $ACTIVATION_KEY_FILE_TMP
+  fi
+}
+
 isServiceRunning() {
   ps aux -w -w | grep -v "grep -q $1" | grep -q "$1"
   return $?
@@ -212,6 +229,9 @@ while true; do
 
 # Instead of waiting, we now monitor.
     while true; do
+        # try to fetch a key right away
+        getLicenseKey
+
         sleep $SLEEP_TIME
         if [ ! -d /proc/$pid ] ; then
             echo "*** restarting missing bunnicula $? on `date` ***" >> $MVVM_WRAPPER_LOG
