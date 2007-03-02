@@ -218,19 +218,19 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
         JTabbedPane dhcpJTabbedPane = addTabbedPane(NAME_DHCP, null);
 
 	// DHCP SETTINGS /////
-        DhcpJPanel dhcpJPanel = new DhcpJPanel();
-	addScrollableTab(dhcpJTabbedPane, NAME_DHCP + " " + NAME_DHCP_SETTINGS, null, dhcpJPanel, false, true);
-        addSavable(NAME_DHCP + " " + NAME_DHCP_SETTINGS, dhcpJPanel);
-        addRefreshable(NAME_DHCP + " " + NAME_DHCP_SETTINGS, dhcpJPanel);
-	dhcpJPanel.setSettingsChangedListener(this);
+        DhcpGeneralJPanel dhcpGeneralJPanel = new DhcpGeneralJPanel();
+        addScrollableTab(dhcpJTabbedPane, NAME_DHCP + " " + NAME_DHCP_SETTINGS, null, dhcpGeneralJPanel, false, true);
+        addSavable(NAME_DHCP + " " + NAME_DHCP_SETTINGS, dhcpGeneralJPanel);
+        addRefreshable(NAME_DHCP + " " + NAME_DHCP_SETTINGS, dhcpGeneralJPanel);
+        dhcpGeneralJPanel.setSettingsChangedListener(this);
 
 	// DHCP ADDRESSES /////
-	AddressJPanel addressJPanel = new AddressJPanel();
-    addressJPanel.setMTransformJPanel(mTransformJPanel);
-        dhcpJTabbedPane.addTab(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, null, addressJPanel );
-        addSavable(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, addressJPanel);
-        addRefreshable(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, addressJPanel);
-	addressJPanel.setSettingsChangedListener(this);
+        DhcpAddressJPanel dhcpAddressJPanel = new DhcpAddressJPanel();
+        dhcpAddressJPanel.setMTransformJPanel(mTransformJPanel);
+        dhcpJTabbedPane.addTab(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, null, dhcpAddressJPanel );
+        addSavable(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, dhcpAddressJPanel);
+        addRefreshable(NAME_DHCP + " " + NAME_DHCP_ADDRESS_MAP, dhcpAddressJPanel);
+        dhcpAddressJPanel.setSettingsChangedListener(this);
 
         // DNS /////////////
         JTabbedPane dnsJTabbedPane = addTabbedPane(NAME_DNS, null);

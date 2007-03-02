@@ -20,12 +20,12 @@ import com.untangle.mvvm.tran.IPaddr;
 import java.awt.*;
 
 
-public class DhcpJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
+public class DhcpGeneralJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
 
     private static final String EXCEPTION_DHCP_RANGE_START = "The DHCP Start Address must be a valid IP address.";
     private static final String EXCEPTION_DHCP_RANGE_END = "The DHCP End Address must be a valid IP address.";
 
-    public DhcpJPanel() {
+    public DhcpGeneralJPanel() {
         initComponents();
     }    
     

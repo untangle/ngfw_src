@@ -30,6 +30,7 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
 
 
     private static Date activeDate = new Date(0l);
+    private static Date leaseDate = new Date(1l);
     
     private static ImageIcon addImageIcon;
     private static ImageIcon changedImageIcon;
@@ -277,6 +278,8 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
 		renderJLabel.setHorizontalAlignment(JTextField.LEFT);
 		if( tempDate.equals(activeDate) )
 		    renderJLabel.setText("");
+        else if(tempDate.equals(leaseDate) )
+            renderJLabel.setText("[not connected]");
 		else{
 		    renderJLabel.setText( Util.getLogDateFormat().format(tempDate) );
 		}

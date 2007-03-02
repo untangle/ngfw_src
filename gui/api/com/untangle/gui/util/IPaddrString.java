@@ -17,6 +17,7 @@ public class IPaddrString implements Comparable<IPaddrString> {
 
     private IPaddr ipAddr;
     private String unparsedString;
+    private String emptyString;
 
     public IPaddrString(){}
 
@@ -33,6 +34,10 @@ public class IPaddrString implements Comparable<IPaddrString> {
     }
     public String getString(){
 	return toString();
+    }
+
+    public void setEmptyString(String s){
+        emptyString = s;
     }
 
     public boolean equals(Object obj){
@@ -60,11 +65,15 @@ public class IPaddrString implements Comparable<IPaddrString> {
     }
 
     public String toString(){
-	if( unparsedString != null )
-	    return unparsedString;
-	else if( ipAddr == null )
-	    return "";
-	else
-	    return ipAddr.toString();
+        if( unparsedString != null )
+            return unparsedString;
+        else if( ipAddr == null ){
+            if(emptyString == null)
+                return "";
+            else
+                return emptyString;
+        }
+        else
+            return ipAddr.toString();
     }
 }

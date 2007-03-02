@@ -28,10 +28,10 @@ import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
 
-public class AddressJPanel extends MEditTableJPanel{
+public class DhcpAddressJPanel extends MEditTableJPanel{
 
             
-    public AddressJPanel() {
+    public DhcpAddressJPanel() {
         super(true, true);
         super.setFillJButtonEnabled( false );
         super.setInsets(new java.awt.Insets(4, 4, 2, 2));
@@ -57,8 +57,8 @@ class AddressTableModel extends MSortedTableModel<Object>{
     private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int  C1_MW = Util.LINENO_MIN_WIDTH; /* # - invisible */
     private static final int  C2_MW = 130;  /* MAC address */
-    private static final int  C3_MW = 130;  /* current static target IP */
-    private static final int  C4_MW = 130;  /* current IP */
+    private static final int  C3_MW = 130;  /* current IP */
+    private static final int  C4_MW = 130;  /* current static target IP */
     private static final int  C5_MW = 100;  /* hostname */
     private static final int  C6_MW = 150;  /* current lease end */
     private static final int  C7_MW = 120;  /* category */
@@ -74,11 +74,11 @@ class AddressTableModel extends MSortedTableModel<Object>{
         //                                 #   min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0,  C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX );
-        addTableColumn( tableColumnModel,  2,  C2_MW, true,  true,  false, false, String.class, "00:01:23:45:67:89", sc.html("MAC<br>address") );
-        addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  false, false, IPaddrString.class, "1.2.3.4", sc.html("target static<br>IP address") );
-        addTableColumn( tableColumnModel,  4,  C4_MW, true,  false, false, false, IPaddrString.class, "", sc.html("current<br>IP address") );
-        addTableColumn( tableColumnModel,  5,  C5_MW, true,  false, false, false, String.class, "", sc.html("current<br>hostname") );
-        addTableColumn( tableColumnModel,  6,  C6_MW, true,  false, false, false, Date.class,   "", sc.html("current<br>lease end") );
+        addTableColumn( tableColumnModel,  2,  C2_MW, true,  true,  false, false, String.class, "00:01:23:45:67:89", sc.html("<b>MAC<br>address</b>") );
+        addTableColumn( tableColumnModel,  3,  C3_MW, true,  false, false, false, IPaddrString.class, "[not connected]", sc.html("current<br>IP address") );
+        addTableColumn( tableColumnModel,  4,  C4_MW, true,  true,  false, false, IPaddrString.class, "1.2.3.4", sc.html("<b>target static<br>IP address</b>") );
+        addTableColumn( tableColumnModel,  5,  C5_MW, true,  false, false, false, String.class, "[not connected]", sc.html("current<br>hostname") );
+        addTableColumn( tableColumnModel,  6,  C6_MW, true,  false, false, false, Date.class,   "[not connected]", sc.html("current<br>lease end") );
         addTableColumn( tableColumnModel,  7,  C7_MW, true,  true,  true, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
         addTableColumn( tableColumnModel,  8,  C8_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel,  9,  10,    false, false, true,  false, DhcpLeaseRule.class, null, "");
@@ -97,7 +97,7 @@ class AddressTableModel extends MSortedTableModel<Object>{
             newElem = (DhcpLeaseRule) rowVector.elementAt(9);
             try{ newElem.setMacAddress( MACAddress.parse( (String)rowVector.elementAt(2)) ); }
             catch(Exception e){ throw new Exception("Invalid \"MAC address\" in row: " + rowIndex); }
-            try{ newElem.setStaticAddress( IPNullAddr.parse( ((IPaddrString)rowVector.elementAt(3)).getString()) ); }
+            try{ newElem.setStaticAddress( IPNullAddr.parse( ((IPaddrString)rowVector.elementAt(4)).getString()) ); }
             catch(Exception e){ throw new Exception("Invalid \"target static IP address\" in row: " + rowIndex); }
             newElem.setCategory( (String) rowVector.elementAt(7) );
             newElem.setDescription( (String) rowVector.elementAt(8) );
@@ -125,10 +125,20 @@ class AddressTableModel extends MSortedTableModel<Object>{
 	    tempRow.add( super.ROW_SAVED );
 	    tempRow.add( rowIndex );
 	    tempRow.add( leaseRule.getMacAddress().toString() );
-	    tempRow.add( new IPaddrString(leaseRule.getStaticAddress()) );
-	    tempRow.add( new IPaddrString(leaseRule.getCurrentAddress()) );
-	    tempRow.add( leaseRule.getHostname() );
-	    tempRow.add( (leaseRule.getEndOfLease()==null?new Date(0l):leaseRule.getEndOfLease()) );
+        IPaddrString currentIPaddrString = new IPaddrString(leaseRule.getCurrentAddress());
+        currentIPaddrString.setEmptyString("[not connected]");
+        tempRow.add( currentIPaddrString );
+        IPaddrString targetIPaddrString = new IPaddrString(leaseRule.getStaticAddress());
+        targetIPaddrString.setEmptyString("none (use current)");
+	    tempRow.add( targetIPaddrString );
+        String hostname = leaseRule.getHostname();
+        if(hostname.equals("*"))
+            tempRow.add( "[no hostname requested]" );
+        else if(hostname.equals(""))
+            tempRow.add("[not connected]");
+        else
+            tempRow.add(hostname);
+	    tempRow.add( (leaseRule.getEndOfLease()==null?new Date(1l):leaseRule.getEndOfLease()) );
 	    tempRow.add( leaseRule.getCategory() );
 	    tempRow.add( leaseRule.getDescription() );
 	    tempRow.add( leaseRule );
