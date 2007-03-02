@@ -11,7 +11,6 @@
 
 package com.untangle.tran.clamphish;
 
-
 import com.untangle.mvvm.tapi.TCPSession;
 import com.untangle.tran.http.HttpStateMachine;
 import com.untangle.tran.http.RequestLineToken;
@@ -54,15 +53,13 @@ public class PhishHttpHandler extends HttpStateMachine
         if (null != result) {
             // XXX fire off event
             if (result.blacklisted()) {
-                // XXX send replacement!!
-                System.out.println("BLACKLISTED MOTHERFUCKER!");
-                return requestHeader;
-            } else {
-                return requestHeader;
+//                 Token[] r = transform.generateResponse(bd, getSession(), uri,
+//                                                        isRequestPersistent());
+//                 blockRequest(r);
             }
-        } else {
-            return requestHeader;
         }
+        return requestHeader;
+
     }
 
     @Override
