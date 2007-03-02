@@ -48,7 +48,7 @@ mkdir -p ${PACKAGE_DIR}
 function buildConfigFile() {
     local tmpDir=`mktemp -d || exit -3`
 
-    ## Done this way so the zip directory is called office-mv
+    ## Done this way so the zip directory is called
     local outputDir="${tmpDir}/${ZIP_BASE}"
     local keyDir="${outputDir}/${ZIP_BASE}"
 
@@ -62,6 +62,8 @@ function buildConfigFile() {
     cp ${CA_CRT}           ${keyDir}/${siteName}-ca.crt
 
     pushd ${tmpDir}
+    ## Remove the zip first, otherwise it will append files.
+    rm -f ${PACKAGE_DIR}/config-${commonName}.zip
     zip -r ${PACKAGE_DIR}/config-${commonName}.zip ${ZIP_BASE} > /dev/null
     popd
 

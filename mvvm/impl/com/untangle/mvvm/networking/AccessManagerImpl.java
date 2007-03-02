@@ -11,6 +11,9 @@
 
 package com.untangle.mvvm.networking;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
 import com.untangle.mvvm.MvvmContextFactory;
@@ -39,9 +42,16 @@ class AccessManagerImpl implements LocalAccessManager
     private static final String SSH_ENABLE_SCRIPT  = BUNNICULA_BASE + "/ssh_enable.sh";
     private static final String SSH_DISABLE_SCRIPT = BUNNICULA_BASE + "/ssh_disable.sh";
 
+    /* These are the services keys, each one must be unique */
+    private static final String KEY_ADMINISTRATION = "administration";
+    private static final String KEY_QUARANTINE = "quarantine";
+    private static final String KEY_REPORTING = "reporting";
+
     private final Logger logger = Logger.getLogger(getClass());
 
-    AccessSettingsInternal accessSettings = null;
+    private AccessSettingsInternal accessSettings = null;
+
+    private final Set<String> servicesSet = new HashSet<String>();
 
     AccessManagerImpl()
     {
@@ -104,12 +114,29 @@ class AccessManagerImpl implements LocalAccessManager
     /* This should also be synchronized from its callers. */
     synchronized void commit( ScriptWriter scriptWriter )
     {
+        setServiceStatus( this.accessSettings.getIsOutsideAdministrationEnabled(), KEY_ADMINISTRATION );
+        setServiceStatus( this.accessSettings.getIsOutsideQuarantineEnabled(), KEY_QUARANTINE );
+        setServiceStatus( this.accessSettings.getIsOutsideReportingEnabled(), KEY_REPORTING );
+        
         /* Save the variables that need to be written to networking.sh */
         updateShellScript( scriptWriter, this.accessSettings );
     }
 
+
+    /** Register a service, used to determine if port 443 should be open or not */
+    synchronized void registerService( String name )
+    {
+        this.servicesSet.add( name );
+    }
+
+    /** Register a service, used to determine if port 443 should be open or not */
+    synchronized void unregisterService( String name )
+    {
+        this.servicesSet.remove( name );
+    }
+
     /* ---------------------- PRIVATE ---------------------- */
-            private void updateShellScript( ScriptWriter scriptWriter, AccessSettingsInternal access )
+    private void updateShellScript( ScriptWriter scriptWriter, AccessSettingsInternal access )
     {
         if ( access == null ) {
             logger.warn( "unable to save hostname, access settings are not initialized." );            
@@ -117,7 +144,11 @@ class AccessManagerImpl implements LocalAccessManager
         }
 
         scriptWriter.appendVariable( FLAG_HTTP_IN, access.getIsInsideInsecureEnabled());
-        scriptWriter.appendVariable( FLAG_HTTPS_OUT, access.getIsOutsideAccessEnabled());
+
+        // access.getIsOutsideAccessEnabled() is no longer used, HTTPs
+        // is automatically opened if there are any services that need
+        // it.
+        scriptWriter.appendVariable( FLAG_HTTPS_OUT, !this.servicesSet.isEmpty());
         scriptWriter.appendVariable( FLAG_HTTPS_RES, access.getIsOutsideAccessRestricted());
 
         IPaddr outsideNetwork = access.getOutsideNetwork();
@@ -153,6 +184,12 @@ class AccessManagerImpl implements LocalAccessManager
         } catch ( Exception ex ) {
             logger.error( "Unable to configure ssh", ex );
         }
+    }
+
+    private void setServiceStatus( boolean status, String key )
+    {
+        if ( status ) registerService( key );
+        else          unregisterService( key );
     }
 }
 

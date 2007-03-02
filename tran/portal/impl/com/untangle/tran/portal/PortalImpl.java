@@ -44,6 +44,8 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     private static final String RDP_JS_URL = "/rdp/app.js";
     private static final String VNC_JS_URL = "/vnc/app.js";
 
+    private static final String SERVICE_NAME = "portal";
+
     private final Logger logger = Logger.getLogger(PortalImpl.class);
 
     private final PipeSpec[] pipeSpecs = new PipeSpec[0];
@@ -215,6 +217,9 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         super.preStop();
         logger.debug("preStop()");
         unDeployWebAppIfRequired(logger);
+
+        /* unregister the service with the MVVM */
+        MvvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
     }
 
     @Override
@@ -223,6 +228,9 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
         logger.debug("postStart()");
 
         deployWebAppIfRequired(logger);
+
+        /* register the service with the MVVM */
+        MvvmContextFactory.context().networkManager().registerService( SERVICE_NAME );
     }
 
     @Override
@@ -233,6 +241,9 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     @Override
     protected void preDestroy() {
         deregisterApps();
+
+        /* unregister the service with the MVVM */
+        MvvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
     }
 
     // Portal methods ----------------------------------------------

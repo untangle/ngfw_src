@@ -274,6 +274,30 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.miscManager.setSettings( misc );
     }
 
+    /* Register a service that needs outside access to HTTPs, the name should be unique */
+    public synchronized void registerService( String name )
+    {
+        this.accessManager.registerService( name );
+
+        try {
+            generateRules();
+        } catch ( NetworkException e ) {
+            logger.error( "Unable to create rules", e );
+        }
+    }
+    
+    /* Remove a service that needs outside access to HTTPs, the name should be unique */
+    public synchronized void unregisterService( String name )
+    {
+        this.accessManager.unregisterService( name );
+
+        try {
+            generateRules();
+        } catch ( NetworkException e ) {
+            logger.error( "Unable to create rules", e );
+        }
+    }
+
     public NetworkSpacesSettingsImpl getNetworkSettings()
     {
         return NetworkUtilPriv.getPrivInstance().toSettings( this.networkSettings );

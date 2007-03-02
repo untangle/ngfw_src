@@ -33,6 +33,12 @@ public interface LocalNetworkManager extends NetworkManager
     public AddressSettingsInternal getAddressSettingsInternal();
     public MiscSettingsInternal getMiscSettingsInternal();
 
+    /* Register a service that needs outside access to HTTPs, the name should be unique */
+    public void registerService( String name );
+
+    /* Remove a service that needs outside access to HTTPs, the name should be unique */
+    public void unregisterService( String name );
+
     public void setNetworkSettings( NetworkSpacesSettings settings, boolean configure )
         throws NetworkException, ValidateException;
 
@@ -41,7 +47,7 @@ public interface LocalNetworkManager extends NetworkManager
 
     public void setServicesSettings( DhcpServerSettings dhcp, DnsServerSettings dns )
         throws NetworkException;
-
+    
     /* This returns an address where the host should be able to access
      * HTTP.  if HTTP is not reachable, this returns NULL */
     public InetAddress getInternalHttpAddress( IPSessionDesc session );

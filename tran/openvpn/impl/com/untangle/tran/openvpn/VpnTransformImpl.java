@@ -56,6 +56,8 @@ public class VpnTransformImpl extends AbstractTransform
 
     private static final HostAddress EMPTY_HOST_ADDRESS = new HostAddress( HostName.getEmptyHostName());
 
+    private static final String SERVICE_NAME = "openvpn";
+
     private final Logger logger = Logger.getLogger( VpnTransformImpl.class );
 
     private boolean isWebAppDeployed = false;
@@ -392,6 +394,9 @@ public class VpnTransformImpl extends AbstractTransform
             else logger.warn( "Unable to deploy openvpn web app" );
         }
         isWebAppDeployed = true;
+
+        /* unregister the service with the MVVM */
+        MvvmContextFactory.context().networkManager().registerService( SERVICE_NAME );
     }
 
     private synchronized void unDeployWebApp()
@@ -402,6 +407,10 @@ public class VpnTransformImpl extends AbstractTransform
             } else logger.warn( "Unable to unload openvpn web app" );
         }
         isWebAppDeployed = false;
+
+        
+        /* unregister the service with the MVVM */
+        MvvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
     }
 
     // AbstractTransform methods ----------------------------------------------
@@ -521,6 +530,9 @@ public class VpnTransformImpl extends AbstractTransform
         }
 
         this.assistant.configure( settings, false );
+
+        /* unregister the service with the MVVM */
+        MvvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
     }
 
     @Override protected void postDestroy() throws TransformException
