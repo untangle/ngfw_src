@@ -7,13 +7,21 @@ ACTIVATION_KEY_FILE_TMP="${ACTIVATION_KEY_FILE}.tmp"
 FAKE_KEY="0000-0000-0000-0000"
 REG_KEY="$1"
 
-if [ -f $ACTIVATION_KEY_FILE ] ; then
-    echo "Product has already been activated"
-    exit 2
+if [ -f "$CD_INSTALL" ]; then
+  echo "Adjusting sources list for CD install"
+  sed -i -e 's/release\.untangle\.com/release-cd.untangle.com/' @PREFIX@/etc/apt/sources.list
 fi
 
-# don't do anything for CD installs w/ initial fake key
-if [ ! -f $CD_INSTALL ] && [ $REG_KEY = $FAKE_KEY ] ; then
+if [ -n "$REG_KEY" ] ; then
+  # the install wizard is calling us
+  echo $FAKE_KEY > $ACTIVATION_KEY_FILE
+  # this one is what mvvm.sh uses to figure out if it needs to fetch a
+  # key or not, so we create it last
+  echo $REG_KEY > $ACTIVATION_KEY_FILE_TMP
+else
+  # we're being called through mvvm.sh, and the right key is in the 
+  # activation file already
+  REG_KEY=`cat $ACTIVATION_KEY_FILE`
   $KEY_VERIFICATION $REG_KEY 2> /dev/null
   VERIFY_RES="$?"
   if [ "$VERIFY_RES" -eq 1 ]; then
@@ -31,14 +39,4 @@ if [ ! -f $CD_INSTALL ] && [ $REG_KEY = $FAKE_KEY ] ; then
   # This next will fail if testing on development machines, which is "a good thing"
   echo "Installing sources list"
   cat @MVVM_HOME@/conf/etc/apt_sources.list | sed "s/XXX_REG_KEY_XXX/$REG_KEY/" > @PREFIX@/etc/apt/sources.list
-
-  if [ -f "$CD_INSTALL" ]; then
-      echo "Adjusting sources list for CD install"
-      sed -i -e 's/release\.untangle\.com/release-cd.untangle.com/' @PREFIX@/etc/apt/sources.list
-  fi
 fi
-
-echo $FAKE_KEY > $ACTIVATION_KEY_FILE
-# this one is what mvvm.sh uses to figure out if it needs to fetch a
-# key or not, so we create it last
-echo $REG_KEY > $ACTIVATION_KEY_FILE_TMP

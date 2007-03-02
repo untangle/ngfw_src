@@ -103,6 +103,7 @@ getLicenseKey() {
   if curl --insecure --fail -o $TMP_ARCHIVE ${ACTIVATION_URL}$KEY ; then
     tar -C / -xf $TMP_ARCHIVE
     rm -f $ACTIVATION_KEY_FILE_TMP
+    /usr/bin/mvactivate
   fi
 }
 
