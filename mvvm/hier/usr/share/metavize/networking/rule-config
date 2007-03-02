@@ -47,7 +47,7 @@ ANTISUBSCRIBES_LOCAL_TCP_PORTS="22 80_inside"
 
 ## Possible for NAT(53) and 1194 for open vpn.
 ## XXX Look into only using open vpn on the outside ###
-ANTISUBSCRIBES_LOCAL_UDP_PORTS="53,1194 161_inside"
+ANTISUBSCRIBES_LOCAL_UDP_PORTS="1194 53,161_inside"
 
 #### Handle all of the port guards
 
@@ -90,7 +90,7 @@ if [ "x$MVVM_ALLOW_IN_HTTP" = "xnevertrue" ]; then
     GUARD_INSIDE_TCP_PORTS="${GUARD_INSIDE_TCP_PORTS} 80"
 fi
 
-# if in the build
+# if in the build, disable all of the antisubscribes
 if [ "x" != "x@PREFIX@" ] ; then
     GUARD_OUTSIDE_TCP_PORTS=""
     GUARD_INSIDE_TCP_PORTS=""
@@ -100,5 +100,5 @@ else
 fi
 
 ## Port guards (always true)
-GUARD_OUTSIDE_UDP_PORTS="53"
+GUARD_OUTSIDE_UDP_PORTS=""
 
