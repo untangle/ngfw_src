@@ -627,9 +627,6 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
 	    int modelRow = getRowViewToModelIndex(viewRow);
 	    moveRow(modelRow, ((Integer)value)-1);
 	}
-    else{
-        System.out.println("order index: " + getOrderModelIndex() + " model col: " + modelCol );
-    }
 	if( getSortingStatus(modelCol) != NOT_SORTED ){
 	    fireTableDataChanged();  // because otherwise the table will only update the view of the changed column
 	}

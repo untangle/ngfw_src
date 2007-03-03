@@ -38,14 +38,28 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
     private static ImageIcon savedImageIcon;
         
     private static final Color unselectedOddColor = new Color(193, 193, 206);
-    private static final Color unselectedEvenColor = new Color(183, 183, 196);
+    private static final Color unselectedEvenColor = new Color(175, 175, 196);
     private static final Color uneditableOddColor = unselectedOddColor; //new Color(216, 193, 193);
     private static final Color uneditableEvenColor = unselectedEvenColor; //new Color(206, 183, 183);
     private static final MLineBorder unselectedOddBorder = new MLineBorder(unselectedOddColor, 2);
     private static final MLineBorder unselectedEvenBorder = new MLineBorder(unselectedEvenColor, 2);
     private static final MLineBorder uneditableOddBorder = unselectedOddBorder; //new MLineBorder(uneditableOddColor, 2);
     private static final MLineBorder uneditableEvenBorder = unselectedEvenBorder; //new MLineBorder(uneditableEvenColor, 2);
-    
+
+    public static final Color removedOddColor = new Color(255,109,109);
+    public static final Color removedEvenColor = new Color(255,81,81);
+    public static final Color addedOddColor = new Color(105,255,123);
+    public static final Color addedEvenColor = new Color(33,255,58);
+    public static final Color changedOddColor = new Color(255,179,100);
+    public static final Color changedEvenColor = new Color(255,158,57);
+    private static final MLineBorder removedEvenBorder = new MLineBorder(removedEvenColor, 2);
+    private static final MLineBorder removedOddBorder = new MLineBorder(removedOddColor, 2);    
+    private static final MLineBorder addedEvenBorder = new MLineBorder(addedEvenColor, 2);
+    private static final MLineBorder addedOddBorder = new MLineBorder(addedOddColor, 2);    
+    private static final MLineBorder changedEvenBorder = new MLineBorder(changedEvenColor, 2);
+    private static final MLineBorder changedOddBorder = new MLineBorder(changedOddColor, 2);    
+
+
     private static final Color unselectedColor = new Color(193, 193, 206);
     private static final Color selectedColor = new Color(193, 193, 226);
     
@@ -170,8 +184,10 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
             
             boolean isEditable = jTable.isCellEditable(row, col);
             JComponent renderJComponent;  //  renderComponent
-	    JComponent renderSecondaryJComponent = null;
+            JComponent renderSecondaryJComponent = null;
             
+            String rowStatus = (String)jTable.getModel().getValueAt(row,0);
+
             // CONTENT
 	    if(value instanceof ButtonRunnable ){
 		renderJButton.setText( ((ButtonRunnable)value).getButtonText() );
@@ -350,6 +366,38 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
                     }
                 }
             }
+
+            if(rowStatus.equals(MSortedTableModel.ROW_ADD)){
+                if(row % 2 == 0){
+                    backgroundColor = addedEvenColor;
+                    borderColor = addedEvenBorder;
+                }
+                else{
+                    backgroundColor = addedOddColor;
+                    borderColor = addedOddBorder;
+                }
+            }
+            else if(rowStatus.equals(MSortedTableModel.ROW_CHANGED)){
+                if(row % 2 == 0){
+                    backgroundColor = changedEvenColor;
+                    borderColor = changedEvenBorder;
+                }
+                else{
+                    backgroundColor = changedOddColor;
+                    borderColor = changedOddBorder;
+                }
+            }
+            else if(rowStatus.equals(MSortedTableModel.ROW_REMOVE)){
+                if(row % 2 == 0){
+                    backgroundColor = removedEvenColor;
+                    borderColor = removedEvenBorder;
+                }
+                else{
+                    backgroundColor = removedOddColor;
+                    borderColor = removedOddBorder;
+                }
+            }
+
 	    if( renderJComponent == renderJButton ){
 		//renderJComponent.setBorder( new CompoundBorder(borderColor, ((CompoundBorder)renderJButton.getBorder()).getInsideBorder()) );
 	    }
