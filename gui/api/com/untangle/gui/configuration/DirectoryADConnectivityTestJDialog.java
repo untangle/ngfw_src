@@ -78,8 +78,6 @@ public class DirectoryADConnectivityTestJDialog extends javax.swing.JDialog impl
                 closeJButton.setFont(new java.awt.Font("Default", 0, 12));
                 closeJButton.setText("<html><b>Close</b></html>");
                 closeJButton.setDoubleBuffered(true);
-                closeJButton.setFocusPainted(false);
-                closeJButton.setFocusable(false);
                 closeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 closeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 closeJButton.setMaximumSize(new java.awt.Dimension(125, 25));

@@ -26,8 +26,6 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Exit"/>
         <Property name="doubleBuffered" type="boolean" value="true"/>
-        <Property name="focusPainted" type="boolean" value="false"/>
-        <Property name="focusable" type="boolean" value="false"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="proceedJButtonActionPerformed"/>

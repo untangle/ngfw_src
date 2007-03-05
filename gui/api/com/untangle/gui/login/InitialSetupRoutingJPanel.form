@@ -49,8 +49,6 @@
             </Property>
             <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Router&lt;/b&gt;&lt;br&gt;This is recommended if the external ethernet port is connected to an internet connection.  (This enables NAT and DHCP)&lt;/html&gt;"/>
-            <Property name="focusPainted" type="boolean" value="false"/>
-            <Property name="focusable" type="boolean" value="false"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
           <Events>
@@ -156,8 +154,6 @@
               <Font name="Dialog" size="12" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Transparent Bridge&lt;/b&gt;&lt;br&gt;This is recommended if the external port is connected to a firewall or router. (This disables NAT and DHCP)&lt;/html&gt;"/>
-            <Property name="focusPainted" type="boolean" value="false"/>
-            <Property name="focusable" type="boolean" value="false"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
           <Events>

@@ -38,6 +38,13 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 
     public NetworkIPJPanel(MConfigJDialog mConfigJDialog) {
         initComponents();
+        MConfigJDialog.setInitialFocusComponent(dhcpEnabledRadioButton);
+        Util.addPanelFocus(this, dhcpEnabledRadioButton);
+        Util.addFocusHighlight(dhcpIPaddrJTextField);
+        Util.addFocusHighlight(dhcpNetmaskJTextField);
+        Util.addFocusHighlight(dhcpRouteJTextField);
+        Util.addFocusHighlight(dnsPrimaryJTextField);
+        Util.addFocusHighlight(dnsSecondaryJTextField);
         this.mConfigJDialog = mConfigJDialog;
     }
 
@@ -249,8 +256,6 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 dhcpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dhcpEnabledRadioButton.setText("<html><b>Automatically Set</b>  using the network's DHCP server.</html>");
                 dhcpEnabledRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
-                dhcpEnabledRadioButton.setFocusPainted(false);
-                dhcpEnabledRadioButton.setFocusable(false);
                 dhcpEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dhcpEnabledRadioButtonActionPerformed(evt);
@@ -267,8 +272,6 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 dhcpButtonGroup.add(dhcpDisabledRadioButton);
                 dhcpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dhcpDisabledRadioButton.setText("<html><b>Manually Set</b> using  the fields below.</html>");
-                dhcpDisabledRadioButton.setFocusPainted(false);
-                dhcpDisabledRadioButton.setFocusable(false);
                 dhcpDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dhcpDisabledRadioButtonActionPerformed(evt);
@@ -425,8 +428,6 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 
                 renewDhcpLeaseJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 renewDhcpLeaseJButton.setText("Renew DHCP Lease");
-                renewDhcpLeaseJButton.setFocusPainted(false);
-                renewDhcpLeaseJButton.setFocusable(false);
                 renewDhcpLeaseJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 renewDhcpLeaseJButtonActionPerformed(evt);
@@ -455,8 +456,6 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 
                 connectivityTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 connectivityTestJButton.setText("Run Connectivity Test");
-                connectivityTestJButton.setFocusPainted(false);
-                connectivityTestJButton.setFocusable(false);
                 connectivityTestJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 connectivityTestJButtonActionPerformed(evt);

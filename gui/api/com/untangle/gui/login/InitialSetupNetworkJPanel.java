@@ -522,8 +522,6 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 pppoeDisabledJRadioButton.setSelected(true);
                 pppoeDisabledJRadioButton.setText("<html><b>Disable</b>  PPPoE.  (This is the default setting)</html>");
                 pppoeDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
-                pppoeDisabledJRadioButton.setFocusPainted(false);
-                pppoeDisabledJRadioButton.setFocusable(false);
                 pppoeDisabledJRadioButton.setOpaque(false);
                 pppoeDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -541,8 +539,6 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
                 pppoeButtonGroup.add(pppoeEnabledJRadioButton);
                 pppoeEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 pppoeEnabledJRadioButton.setText("<html><b>Enable</b> PPPoE.</html>");
-                pppoeEnabledJRadioButton.setFocusPainted(false);
-                pppoeEnabledJRadioButton.setFocusable(false);
                 pppoeEnabledJRadioButton.setOpaque(false);
                 pppoeEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

@@ -33,6 +33,11 @@ public class NetworkPPPOEJPanel extends javax.swing.JPanel
 
     public NetworkPPPOEJPanel() {
         initComponents();
+        optionJScrollPane.getVerticalScrollBar().setFocusable(false);
+        Util.addPanelFocus(this, pppoeDisabledJRadioButton);
+        Util.addFocusHighlight(nameJTextField);
+        Util.addFocusHighlight(passwordJPasswordField);
+        Util.addFocusHighlight(optionJEditorPane);
     }
 
     public void doSave(NetworkCompoundSettings networkCompoundSettings, boolean validateOnly) throws Exception {
@@ -157,8 +162,6 @@ public class NetworkPPPOEJPanel extends javax.swing.JPanel
                 pppoeDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 pppoeDisabledJRadioButton.setText("<html><b>Disable</b>  PPPoE.  (This is the default setting)</html>");
                 pppoeDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
-                pppoeDisabledJRadioButton.setFocusPainted(false);
-                pppoeDisabledJRadioButton.setFocusable(false);
                 pppoeDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 pppoeDisabledJRadioButtonActionPerformed(evt);
@@ -175,8 +178,6 @@ public class NetworkPPPOEJPanel extends javax.swing.JPanel
                 pppoeButtonGroup.add(pppoeEnabledJRadioButton);
                 pppoeEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 pppoeEnabledJRadioButton.setText("<html><b>Enable</b> PPPoE..</html>");
-                pppoeEnabledJRadioButton.setFocusPainted(false);
-                pppoeEnabledJRadioButton.setFocusable(false);
                 pppoeEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 pppoeEnabledJRadioButtonActionPerformed(evt);

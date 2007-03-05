@@ -109,8 +109,6 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Close_Dialog_106x17.png")));
                 proceedJButton.setDoubleBuffered(true);
-                proceedJButton.setFocusPainted(false);
-                proceedJButton.setFocusable(false);
                 proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 proceedJButton.setMaximumSize(new java.awt.Dimension(125, 25));

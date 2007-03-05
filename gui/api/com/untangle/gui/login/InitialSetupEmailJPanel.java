@@ -205,8 +205,6 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 smtpDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 smtpDisabledJRadioButton.setText("<html>Send Email Directly (default)</html>");
                 smtpDisabledJRadioButton.setActionCommand("<html>Send Email Directly</html>");
-                smtpDisabledJRadioButton.setFocusPainted(false);
-                smtpDisabledJRadioButton.setFocusable(false);
                 smtpDisabledJRadioButton.setOpaque(false);
                 smtpDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -224,8 +222,6 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
                 smtpButtonGroup.add(smtpEnabledJRadioButton);
                 smtpEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 smtpEnabledJRadioButton.setText("<html>Send Email using the specified SMTP Server</html>");
-                smtpEnabledJRadioButton.setFocusPainted(false);
-                smtpEnabledJRadioButton.setFocusable(false);
                 smtpEnabledJRadioButton.setOpaque(false);
                 smtpEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

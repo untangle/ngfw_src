@@ -86,77 +86,75 @@ public class WhitelistUserJPanel extends javax.swing.JPanel
 	((MColoredJTable)entryJTable).doGreedyColumn(entryJScrollPane.getViewport().getExtentSize().width);
     }
     
-    private void initComponents() {//GEN-BEGIN:initComponents
-        java.awt.GridBagConstraints gridBagConstraints;
+        private void initComponents() {//GEN-BEGIN:initComponents
+                java.awt.GridBagConstraints gridBagConstraints;
 
-        contentJPanel = new javax.swing.JPanel();
-        eventJPanel = new javax.swing.JPanel();
-        removeJButton = new javax.swing.JButton();
-        entryJScrollPane = new javax.swing.JScrollPane();
-        entryJTable = new MColoredJTable();
+                contentJPanel = new javax.swing.JPanel();
+                eventJPanel = new javax.swing.JPanel();
+                removeJButton = new javax.swing.JButton();
+                entryJScrollPane = new javax.swing.JScrollPane();
+                entryJTable = new MColoredJTable();
 
-        setLayout(new java.awt.GridBagLayout());
+                setLayout(new java.awt.GridBagLayout());
 
-        setOpaque(false);
-        contentJPanel.setLayout(new java.awt.GridBagLayout());
+                setOpaque(false);
+                contentJPanel.setLayout(new java.awt.GridBagLayout());
 
-        contentJPanel.setOpaque(false);
-        eventJPanel.setLayout(new java.awt.GridBagLayout());
+                contentJPanel.setOpaque(false);
+                eventJPanel.setLayout(new java.awt.GridBagLayout());
 
-        eventJPanel.setFocusCycleRoot(true);
-        eventJPanel.setFocusable(false);
-        eventJPanel.setOpaque(false);
-        removeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        removeJButton.setText("<html><b>Remove</b> selected</html>");
-        removeJButton.setDoubleBuffered(true);
-        removeJButton.setFocusPainted(false);
-        removeJButton.setFocusable(false);
-        removeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        removeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        removeJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-        removeJButton.setMinimumSize(new java.awt.Dimension(125, 25));
-        removeJButton.setPreferredSize(new java.awt.Dimension(125, 25));
-        removeJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeJButtonActionPerformed(evt);
-            }
-        });
+                eventJPanel.setFocusCycleRoot(true);
+                eventJPanel.setFocusable(false);
+                eventJPanel.setOpaque(false);
+                removeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                removeJButton.setText("<html><b>Remove</b> selected</html>");
+                removeJButton.setDoubleBuffered(true);
+                removeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                removeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+                removeJButton.setMaximumSize(new java.awt.Dimension(125, 25));
+                removeJButton.setMinimumSize(new java.awt.Dimension(125, 25));
+                removeJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+                removeJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                removeJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        eventJPanel.add(removeJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                eventJPanel.add(removeJButton, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
-        contentJPanel.add(eventJPanel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
+                contentJPanel.add(eventJPanel, gridBagConstraints);
 
-        entryJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        entryJScrollPane.setDoubleBuffered(true);
-        entryJTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-        entryJTable.setDoubleBuffered(true);
-        entryJScrollPane.setViewportView(entryJTable);
+                entryJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                entryJScrollPane.setDoubleBuffered(true);
+                entryJTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+                entryJTable.setDoubleBuffered(true);
+                entryJScrollPane.setViewportView(entryJTable);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(2, 2, 0, 2);
-        contentJPanel.add(entryJScrollPane, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(2, 2, 0, 2);
+                contentJPanel.add(entryJScrollPane, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        add(contentJPanel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                add(contentJPanel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+        }//GEN-END:initComponents
 
     private void removeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeJButtonActionPerformed
 	if( Util.getIsDemo() )
@@ -219,13 +217,13 @@ public class WhitelistUserJPanel extends javax.swing.JPanel
         return selectedModelRows;
     }
     
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel contentJPanel;
-    protected javax.swing.JScrollPane entryJScrollPane;
-    protected javax.swing.JTable entryJTable;
-    private javax.swing.JPanel eventJPanel;
-    private javax.swing.JButton removeJButton;
-    // End of variables declaration//GEN-END:variables
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JPanel contentJPanel;
+        protected javax.swing.JScrollPane entryJScrollPane;
+        protected javax.swing.JTable entryJTable;
+        private javax.swing.JPanel eventJPanel;
+        private javax.swing.JButton removeJButton;
+        // End of variables declaration//GEN-END:variables
     
 }
 

@@ -99,7 +99,6 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
                 cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
                 cancelJButton.setText("<html><b>Cancel</b></html>");
                 cancelJButton.setDoubleBuffered(true);
-                cancelJButton.setFocusable(false);
                 cancelJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 cancelJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 cancelJButton.setMaximumSize(new java.awt.Dimension(130, 25));
@@ -116,8 +115,6 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setText("<html><b>Proceed</b></html>");
                 proceedJButton.setDoubleBuffered(true);
-                proceedJButton.setFocusPainted(false);
-                proceedJButton.setFocusable(false);
                 proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 proceedJButton.setMaximumSize(new java.awt.Dimension(150, 25));
@@ -152,12 +149,10 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
                 getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 200, -1, -1));
 
                 uidJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-                uidJComboBox.setFocusable(false);
                 getContentPane().add(uidJComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 140, 275, -1));
 
                 jButton1.setFont(new java.awt.Font("Dialog", 0, 12));
                 jButton1.setText("Open User Directory");
-                jButton1.setFocusable(false);
                 jButton1.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 jButton1ActionPerformed(evt);

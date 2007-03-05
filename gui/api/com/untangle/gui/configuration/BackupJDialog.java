@@ -199,8 +199,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 backupFileJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 backupFileJButton.setText("<html><b>Backup</b> to File</html>");
                 backupFileJButton.setDoubleBuffered(true);
-                backupFileJButton.setFocusPainted(false);
-                backupFileJButton.setFocusable(false);
                 backupFileJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backupFileJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 backupFileJButton.setMaximumSize(new java.awt.Dimension(155, 25));
@@ -255,8 +253,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 
                 backupUSBKeyJButton.setIcon(Util.getButtonBackupToUsbKey());
                 backupUSBKeyJButton.setDoubleBuffered(true);
-                backupUSBKeyJButton.setFocusPainted(false);
-                backupUSBKeyJButton.setFocusable(false);
                 backupUSBKeyJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backupUSBKeyJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 backupUSBKeyJButton.setMaximumSize(new java.awt.Dimension(155, 25));
@@ -311,8 +307,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 
                 backupHardDiskJButton.setIcon(Util.getButtonBackupToHardDisk());
                 backupHardDiskJButton.setDoubleBuffered(true);
-                backupHardDiskJButton.setFocusPainted(false);
-                backupHardDiskJButton.setFocusable(false);
                 backupHardDiskJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backupHardDiskJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 backupHardDiskJButton.setMaximumSize(new java.awt.Dimension(155, 25));
@@ -387,8 +381,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 restoreFileJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 restoreFileJButton.setText("<html><b>Restore</b> from File</html>");
                 restoreFileJButton.setDoubleBuffered(true);
-                restoreFileJButton.setFocusPainted(false);
-                restoreFileJButton.setFocusable(false);
                 restoreFileJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 restoreFileJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 restoreFileJButton.setMaximumSize(new java.awt.Dimension(155, 25));

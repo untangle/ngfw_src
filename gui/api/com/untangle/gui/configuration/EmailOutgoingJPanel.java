@@ -15,6 +15,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import com.untangle.gui.transform.*;
+import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.util.*;
 import com.untangle.mvvm.*;
 import com.untangle.mvvm.security.*;
@@ -31,7 +32,14 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 
     public EmailOutgoingJPanel() {
         initComponents();
-    Util.setPortView(portJSpinner, 25);
+        MConfigJDialog.setInitialFocusComponent(smtpDisabledJRadioButton);
+        Util.addPanelFocus(this, smtpDisabledJRadioButton);
+        Util.addFocusHighlight(hostJTextField);
+        Util.addFocusHighlight(portJSpinner);
+        Util.addFocusHighlight(smtpLoginJTextField);
+        Util.addFocusHighlight(smtpPasswordJPasswordField);
+        Util.addFocusHighlight(addressJTextField);
+        Util.setPortView(portJSpinner, 25);
     }
 
     public void doSave(EmailCompoundSettings emailCompoundSettings, boolean validateOnly) throws Exception {
@@ -199,8 +207,6 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 smtpDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 smtpDisabledJRadioButton.setText("<html>Send Email Directly</html>");
                 smtpDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
-                smtpDisabledJRadioButton.setFocusPainted(false);
-                smtpDisabledJRadioButton.setFocusable(false);
                 smtpDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 smtpDisabledJRadioButtonActionPerformed(evt);
@@ -217,8 +223,6 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
                 smtpButtonGroup.add(smtpEnabledJRadioButton);
                 smtpEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 smtpEnabledJRadioButton.setText("<html>Send Email using the specified SMTP Server</html>");
-                smtpEnabledJRadioButton.setFocusPainted(false);
-                smtpEnabledJRadioButton.setFocusable(false);
                 smtpEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 smtpEnabledJRadioButtonActionPerformed(evt);
@@ -394,8 +398,6 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 
                 connectivityTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 connectivityTestJButton.setText("Run Email Test");
-                connectivityTestJButton.setFocusPainted(false);
-                connectivityTestJButton.setFocusable(false);
                 connectivityTestJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 connectivityTestJButtonActionPerformed(evt);

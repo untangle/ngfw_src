@@ -384,8 +384,6 @@
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Disable&lt;/b&gt;  PPPoE.  (This is the default setting)&lt;/html&gt;"/>
                 <Property name="actionCommand" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Use DHCP&lt;/b&gt; to automatically set Untangle&apos;s IP address from the network&apos;s DHCP server.&lt;/html&gt;"/>
-                <Property name="focusPainted" type="boolean" value="false"/>
-                <Property name="focusable" type="boolean" value="false"/>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
               <Events>
@@ -409,8 +407,6 @@
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Enable&lt;/b&gt; PPPoE.&lt;/html&gt;"/>
-                <Property name="focusPainted" type="boolean" value="false"/>
-                <Property name="focusable" type="boolean" value="false"/>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
               <Events>

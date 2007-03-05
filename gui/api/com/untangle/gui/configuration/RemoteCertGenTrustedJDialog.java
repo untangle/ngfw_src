@@ -71,7 +71,6 @@ public class RemoteCertGenTrustedJDialog extends javax.swing.JDialog implements 
                 cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
                 cancelJButton.setText("<html><b>Close</b></html>");
                 cancelJButton.setDoubleBuffered(true);
-                cancelJButton.setFocusable(false);
                 cancelJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 cancelJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 cancelJButton.setMaximumSize(new java.awt.Dimension(130, 25));
@@ -88,8 +87,6 @@ public class RemoteCertGenTrustedJDialog extends javax.swing.JDialog implements 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setText("<html><b>Proceed</b></html>");
                 proceedJButton.setDoubleBuffered(true);
-                proceedJButton.setFocusPainted(false);
-                proceedJButton.setFocusable(false);
                 proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 proceedJButton.setMaximumSize(new java.awt.Dimension(150, 25));

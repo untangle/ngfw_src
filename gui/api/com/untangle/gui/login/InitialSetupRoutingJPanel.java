@@ -159,8 +159,6 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                 natEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 natEnabledJRadioButton.setSelected(true);
                 natEnabledJRadioButton.setText("<html><b>Router</b><br>This is recommended if the external ethernet port is connected to an internet connection.  (This enables NAT and DHCP)</html>");
-                natEnabledJRadioButton.setFocusPainted(false);
-                natEnabledJRadioButton.setFocusable(false);
                 natEnabledJRadioButton.setOpaque(false);
                 natEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -230,8 +228,6 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
                 natButtonGroup.add(natDisabledJRadioButton);
                 natDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 natDisabledJRadioButton.setText("<html><b>Transparent Bridge</b><br>This is recommended if the external port is connected to a firewall or router. (This disables NAT and DHCP)</html>");
-                natDisabledJRadioButton.setFocusPainted(false);
-                natDisabledJRadioButton.setFocusable(false);
                 natDisabledJRadioButton.setOpaque(false);
                 natDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

@@ -85,7 +85,6 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
                 cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
                 cancelJButton.setText("<html><b>Cancel</b></html>");
                 cancelJButton.setDoubleBuffered(true);
-                cancelJButton.setFocusable(false);
                 cancelJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 cancelJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 cancelJButton.setMaximumSize(new java.awt.Dimension(130, 25));
@@ -102,8 +101,6 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setText("<html><b>Proceed</b></html>");
                 proceedJButton.setDoubleBuffered(true);
-                proceedJButton.setFocusPainted(false);
-                proceedJButton.setFocusable(false);
                 proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 proceedJButton.setMaximumSize(new java.awt.Dimension(150, 25));
@@ -132,7 +129,6 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
                 buttonGroup1.add(emailJRadioButton);
                 emailJRadioButton.setSelected(true);
                 emailJRadioButton.setText("Distribute via Email");
-                emailJRadioButton.setFocusPainted(false);
                 emailJRadioButton.setOpaque(false);
                 emailJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -150,7 +146,6 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
 
                 buttonGroup1.add(usbJRadioButton);
                 usbJRadioButton.setText("Distribute via USB Key");
-                usbJRadioButton.setFocusPainted(false);
                 usbJRadioButton.setOpaque(false);
                 usbJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

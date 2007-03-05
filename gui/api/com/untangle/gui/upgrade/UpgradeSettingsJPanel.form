@@ -96,8 +96,6 @@
                         </Property>
                         <Property name="text" type="java.lang.String" value="Monday"/>
                         <Property name="doubleBuffered" type="boolean" value="true"/>
-                        <Property name="focusPainted" type="boolean" value="false"/>
-                        <Property name="focusable" type="boolean" value="false"/>
                         <Property name="opaque" type="boolean" value="false"/>
                       </Properties>
                       <Constraints>
@@ -113,8 +111,6 @@
                         </Property>
                         <Property name="text" type="java.lang.String" value="Tuesday"/>
                         <Property name="doubleBuffered" type="boolean" value="true"/>
-                        <Property name="focusPainted" type="boolean" value="false"/>
-                        <Property name="focusable" type="boolean" value="false"/>
                         <Property name="opaque" type="boolean" value="false"/>
                       </Properties>
                       <Constraints>
@@ -130,8 +126,6 @@
                         </Property>
                         <Property name="text" type="java.lang.String" value="Wednesday"/>
                         <Property name="doubleBuffered" type="boolean" value="true"/>
-                        <Property name="focusPainted" type="boolean" value="false"/>
-                        <Property name="focusable" type="boolean" value="false"/>
                         <Property name="opaque" type="boolean" value="false"/>
                       </Properties>
                       <Constraints>
@@ -147,8 +141,6 @@
                         </Property>
                         <Property name="text" type="java.lang.String" value="Thursday"/>
                         <Property name="doubleBuffered" type="boolean" value="true"/>
-                        <Property name="focusPainted" type="boolean" value="false"/>
-                        <Property name="focusable" type="boolean" value="false"/>
                         <Property name="opaque" type="boolean" value="false"/>
                       </Properties>
                       <Constraints>
@@ -164,8 +156,6 @@
                         </Property>
                         <Property name="text" type="java.lang.String" value="Friday"/>
                         <Property name="doubleBuffered" type="boolean" value="true"/>
-                        <Property name="focusPainted" type="boolean" value="false"/>
-                        <Property name="focusable" type="boolean" value="false"/>
                         <Property name="opaque" type="boolean" value="false"/>
                       </Properties>
                       <Constraints>
@@ -181,8 +171,6 @@
                         </Property>
                         <Property name="text" type="java.lang.String" value="Saturday"/>
                         <Property name="doubleBuffered" type="boolean" value="true"/>
-                        <Property name="focusPainted" type="boolean" value="false"/>
-                        <Property name="focusable" type="boolean" value="false"/>
                         <Property name="opaque" type="boolean" value="false"/>
                       </Properties>
                       <Constraints>
@@ -198,8 +186,6 @@
                         </Property>
                         <Property name="text" type="java.lang.String" value="Sunday"/>
                         <Property name="doubleBuffered" type="boolean" value="true"/>
-                        <Property name="focusPainted" type="boolean" value="false"/>
-                        <Property name="focusable" type="boolean" value="false"/>
                         <Property name="opaque" type="boolean" value="false"/>
                       </Properties>
                       <Constraints>
@@ -286,8 +272,6 @@
                         </Property>
                         <Property name="text" type="java.lang.String" value="&lt;html&gt; &lt;b&gt;Automatically install new upgrades&lt;/b&gt;&lt;br&gt;&#xa;If new upgrades are found after a &quot;Scheduled&lt;br&gt;&#xa;Automatic Upgrade&quot;, those upgrades will be&lt;br&gt;&#xa;automatically downloaded and installed.&lt;br&gt;&#xa;In the case of certain critical system upgrades,&lt;br&gt;&#xa;the system may be automatically restarted, and&lt;br&gt;&#xa;the user interface may not connect for a short&lt;br&gt;&#xa;period of time. &lt;/html&gt;"/>
                         <Property name="doubleBuffered" type="boolean" value="true"/>
-                        <Property name="focusPainted" type="boolean" value="false"/>
-                        <Property name="focusable" type="boolean" value="false"/>
                         <Property name="opaque" type="boolean" value="false"/>
                         <Property name="verticalTextPosition" type="int" value="1"/>
                       </Properties>
@@ -308,8 +292,6 @@
                         <Property name="selected" type="boolean" value="true"/>
                         <Property name="text" type="java.lang.String" value="&lt;html&gt;&#xa;&lt;b&gt;Do not automatically install new upgrades&lt;/b&gt;&lt;br&gt;&#xa;If new upgrades are found after a &quot;Scheduled&lt;br&gt;&#xa;Automatic Upgrade&quot;,  those upgrades will NOT&lt;br&gt;&#xa;be automatically installed.  The system&lt;br&gt;&#xa;administrator must manually upgrade the system&lt;br&gt;&#xa;through the &quot;Manual Upgrade&quot; tab of this window.&#xa;&lt;/html&gt;"/>
                         <Property name="doubleBuffered" type="boolean" value="true"/>
-                        <Property name="focusPainted" type="boolean" value="false"/>
-                        <Property name="focusable" type="boolean" value="false"/>
                         <Property name="opaque" type="boolean" value="false"/>
                         <Property name="verticalTextPosition" type="int" value="1"/>
                       </Properties>

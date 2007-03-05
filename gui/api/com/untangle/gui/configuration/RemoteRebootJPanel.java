@@ -30,7 +30,6 @@ public class RemoteRebootJPanel extends JPanel implements ActionListener {
         
         JButton rebootJButton;
         rebootJButton = new JButton("Reboot");
-        rebootJButton.setFocusPainted(false);
         rebootJButton.setFont(new java.awt.Font("Arial", 0, 11));
         rebootJButton.setPreferredSize(new Dimension(225, 25));
         rebootJButton.setMaximumSize(new Dimension(225, 25));
@@ -46,7 +45,8 @@ public class RemoteRebootJPanel extends JPanel implements ActionListener {
 	rebootJLabel.setText("<html><center><b>Warning: </b>Clicking this button will reboot the Untangle Server, temporarily<br>interrupting network activity.</center></html>");
 	this.add(rebootJLabel, rebootJLabelConstraints);
 
-							    
+    this.setFocusable(true);
+    Util.addPanelFocus(this, rebootJButton);
     }
 
     public void actionPerformed(ActionEvent ae){

@@ -30,7 +30,10 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel
     
     public RemoteSyslogJPanel() {
         initComponents();
-	Util.setPortView(portJSpinner, 514);
+        Util.addPanelFocus(this, syslogDisabledRadioButton);
+        Util.addFocusHighlight(hostJTextField);
+        Util.addFocusHighlight(portJSpinner);
+        Util.setPortView(portJSpinner, 514);
         for( SyslogFacility syslogFacility : SyslogFacility.values() )
             facilityJComboBox.addItem(syslogFacility.getFacilityName());
         for( SyslogPriority syslogPriority : SyslogPriority.values() )
@@ -147,8 +150,6 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel
                 syslogButtonGroup.add(syslogDisabledRadioButton);
                 syslogDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 syslogDisabledRadioButton.setText("<html><b>Disable</b> Syslog Monitoring. (This is the default setting.)</html>");
-                syslogDisabledRadioButton.setFocusPainted(false);
-                syslogDisabledRadioButton.setFocusable(false);
                 syslogDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 syslogDisabledRadioButtonActionPerformed(evt);
@@ -164,8 +165,6 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel
                 syslogButtonGroup.add(syslogEnabledRadioButton);
                 syslogEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 syslogEnabledRadioButton.setText("<html><b>Enable</b> Syslog Monitoring.</html>");
-                syslogEnabledRadioButton.setFocusPainted(false);
-                syslogEnabledRadioButton.setFocusable(false);
                 syslogEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 syslogEnabledRadioButtonActionPerformed(evt);
@@ -229,7 +228,6 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel
                 restrictIPJPanel.add(facilityJLabel, gridBagConstraints);
 
                 facilityJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-                facilityJComboBox.setFocusable(false);
                 facilityJComboBox.setMaximumSize(new java.awt.Dimension(150, 19));
                 facilityJComboBox.setMinimumSize(new java.awt.Dimension(150, 19));
                 facilityJComboBox.setPreferredSize(new java.awt.Dimension(150, 19));
@@ -249,7 +247,6 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel
                 restrictIPJPanel.add(thresholdJLabel, gridBagConstraints);
 
                 thresholdJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-                thresholdJComboBox.setFocusable(false);
                 thresholdJComboBox.setMaximumSize(new java.awt.Dimension(150, 19));
                 thresholdJComboBox.setMinimumSize(new java.awt.Dimension(150, 19));
                 thresholdJComboBox.setPreferredSize(new java.awt.Dimension(150, 19));

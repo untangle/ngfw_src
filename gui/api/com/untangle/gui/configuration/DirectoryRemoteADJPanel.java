@@ -281,8 +281,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 adDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 adDisabledJRadioButton.setText("<html><b>Disabled</b></html>");
                 adDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
-                adDisabledJRadioButton.setFocusPainted(false);
-                adDisabledJRadioButton.setFocusable(false);
                 adDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 adDisabledJRadioButtonActionPerformed(evt);
@@ -299,8 +297,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 adButtonGroup.add(adEnabledJRadioButton);
                 adEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 adEnabledJRadioButton.setText("<html><b>Enabled</b></html>");
-                adEnabledJRadioButton.setFocusPainted(false);
-                adEnabledJRadioButton.setFocusable(false);
                 adEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 adEnabledJRadioButtonActionPerformed(evt);
@@ -509,8 +505,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
                 adTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 adTestJButton.setText("Run Active Directory Test");
-                adTestJButton.setFocusPainted(false);
-                adTestJButton.setFocusable(false);
                 adTestJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 adTestJButtonActionPerformed(evt);
@@ -541,8 +535,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 serverDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 serverDisabledJRadioButton.setText("<html><b>Disabled</b></html>");
                 serverDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
-                serverDisabledJRadioButton.setFocusPainted(false);
-                serverDisabledJRadioButton.setFocusable(false);
                 serverDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 serverDisabledJRadioButtonActionPerformed(evt);
@@ -559,8 +551,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 serverButtonGroup.add(serverEnabledJRadioButton);
                 serverEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 serverEnabledJRadioButton.setText("<html><b>Enabled</b></html>");
-                serverEnabledJRadioButton.setFocusPainted(false);
-                serverEnabledJRadioButton.setFocusable(false);
                 serverEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 serverEnabledJRadioButtonActionPerformed(evt);

@@ -97,7 +97,6 @@ public class AboutTimezoneJPanel extends javax.swing.JPanel
                 restrictIPJPanel.add(jLabel5, gridBagConstraints);
 
                 timezoneJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-                timezoneJComboBox.setFocusable(false);
                 timezoneJComboBox.setMaximumSize(new java.awt.Dimension(425, 24));
                 timezoneJComboBox.setMinimumSize(new java.awt.Dimension(425, 24));
                 timezoneJComboBox.setPreferredSize(new java.awt.Dimension(425, 24));

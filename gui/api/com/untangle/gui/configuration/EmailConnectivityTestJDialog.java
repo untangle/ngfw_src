@@ -82,8 +82,6 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setText("<html><b>Proceed</b></html>");
                 proceedJButton.setDoubleBuffered(true);
-                proceedJButton.setFocusPainted(false);
-                proceedJButton.setFocusable(false);
                 proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 proceedJButton.setMaximumSize(new java.awt.Dimension(125, 25));
@@ -107,8 +105,6 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
                 closeJButton.setFont(new java.awt.Font("Default", 0, 12));
                 closeJButton.setText("<html><b>Close</b></html>");
                 closeJButton.setDoubleBuffered(true);
-                closeJButton.setFocusPainted(false);
-                closeJButton.setFocusable(false);
                 closeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 closeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 closeJButton.setMaximumSize(new java.awt.Dimension(125, 25));

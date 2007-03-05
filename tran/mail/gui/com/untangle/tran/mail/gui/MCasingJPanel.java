@@ -247,7 +247,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 smtpButtonGroup.add(smtpEnabledRadioButton);
                 smtpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 smtpEnabledRadioButton.setText("<html><b>Enable SMTP</b> email processing.  (This is the default setting)</html>");
-                smtpEnabledRadioButton.setFocusPainted(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -257,7 +256,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 smtpButtonGroup.add(smtpDisabledRadioButton);
                 smtpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 smtpDisabledRadioButton.setText("<html><b>Disable SMTP</b> email processing.</html>");
-                smtpDisabledRadioButton.setFocusPainted(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -274,7 +272,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 popButtonGroup.add(popEnabledRadioButton);
                 popEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 popEnabledRadioButton.setText("<html><b>Enable POP</b> email processing.  (This is the default setting)</html>");
-                popEnabledRadioButton.setFocusPainted(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -284,7 +281,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 popButtonGroup.add(popDisabledRadioButton);
                 popDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 popDisabledRadioButton.setText("<html><b>Disable POP</b> email processing.</html>");
-                popDisabledRadioButton.setFocusPainted(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -301,7 +297,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 imapButtonGroup.add(imapEnabledRadioButton);
                 imapEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 imapEnabledRadioButton.setText("<html><b>Enable IMAP</b> email processing.  (This is the default setting)</html>");
-                imapEnabledRadioButton.setFocusPainted(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -311,7 +306,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 imapButtonGroup.add(imapDisabledRadioButton);
                 imapDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 imapDisabledRadioButton.setText("<html><b>Disable IMAP</b> email processing.</html>");
-                imapDisabledRadioButton.setFocusPainted(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -354,7 +348,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 smtpJPanel.add(jLabel1, gridBagConstraints);
 
                 smtpInboundJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                smtpInboundJSpinner.setFocusable(false);
                 smtpInboundJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
                 smtpInboundJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
                 smtpInboundJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -374,7 +367,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 smtpJPanel.add(jLabel2, gridBagConstraints);
 
                 smtpOutboundJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                smtpOutboundJSpinner.setFocusable(false);
                 smtpOutboundJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
                 smtpOutboundJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
                 smtpOutboundJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -410,7 +402,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 popJPanel.add(jLabel5, gridBagConstraints);
 
                 popInboundJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                popInboundJSpinner.setFocusable(false);
                 popInboundJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
                 popInboundJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
                 popInboundJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -430,7 +421,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 popJPanel.add(jLabel6, gridBagConstraints);
 
                 popOutboundJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                popOutboundJSpinner.setFocusable(false);
                 popOutboundJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
                 popOutboundJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
                 popOutboundJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -466,7 +456,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 imapJPanel.add(jLabel7, gridBagConstraints);
 
                 imapInboundJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                imapInboundJSpinner.setFocusable(false);
                 imapInboundJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
                 imapInboundJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
                 imapInboundJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -486,7 +475,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 imapJPanel.add(jLabel8, gridBagConstraints);
 
                 imapOutboundJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                imapOutboundJSpinner.setFocusable(false);
                 imapOutboundJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
                 imapOutboundJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
                 imapOutboundJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));

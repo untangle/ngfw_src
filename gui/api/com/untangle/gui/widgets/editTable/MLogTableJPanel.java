@@ -110,7 +110,6 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
                 eventJPanel.setFocusCycleRoot(true);
                 eventJPanel.setFocusable(false);
                 queryJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-                queryJComboBox.setFocusable(false);
                 queryJComboBox.setMinimumSize(new java.awt.Dimension(230, 25));
                 queryJComboBox.setPreferredSize(new java.awt.Dimension(230, 25));
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -122,8 +121,6 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
                 refreshLogJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 refreshLogJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Refresh_Log_106x17.png")));
                 refreshLogJButton.setDoubleBuffered(true);
-                refreshLogJButton.setFocusPainted(false);
-                refreshLogJButton.setFocusable(false);
                 refreshLogJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 refreshLogJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 refreshLogJButton.setMaximumSize(new java.awt.Dimension(100, 25));
@@ -143,7 +140,6 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
 
                 streamingJToggleButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 streamingJToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Start_Auto_Refresh_106x17.png")));
-                streamingJToggleButton.setFocusPainted(false);
                 streamingJToggleButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 streamingJToggleButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 streamingJToggleButton.setMaximumSize(new java.awt.Dimension(125, 25));

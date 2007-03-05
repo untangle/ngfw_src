@@ -34,7 +34,11 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
     
     public RemoteRestrictionJPanel() {
         initComponents();
-	Util.setPortView(externalAccessPortJSpinner, 443);
+        Util.addPanelFocus(this, restrictAdminJCheckBox);
+        Util.addFocusHighlight(externalAccessPortJSpinner);
+        Util.addFocusHighlight(restrictIPaddrJTextField);
+        Util.addFocusHighlight(restrictNetmaskJTextField);
+        Util.setPortView(externalAccessPortJSpinner, 443);
     }
 
     public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {
@@ -200,7 +204,6 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 
                 restrictAdminJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
                 restrictAdminJCheckBox.setText("Enable Outside Administration");
-                restrictAdminJCheckBox.setFocusPainted(false);
                 restrictAdminJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 restrictAdminJCheckBoxActionPerformed(evt);
@@ -215,7 +218,6 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 
                 restrictReportingJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
                 restrictReportingJCheckBox.setText("Enable Outside Report Viewing");
-                restrictReportingJCheckBox.setFocusPainted(false);
                 restrictReportingJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 restrictReportingJCheckBoxActionPerformed(evt);
@@ -230,7 +232,6 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 
                 restrictQuarantineJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
                 restrictQuarantineJCheckBox.setText("Enable Outside Quarantine Access");
-                restrictQuarantineJCheckBox.setFocusPainted(false);
                 restrictQuarantineJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 restrictQuarantineJCheckBoxActionPerformed(evt);
@@ -297,8 +298,6 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 restrictAdminButtonGroup.add(externalAdminRestrictDisabledRadioButton);
                 externalAdminRestrictDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 externalAdminRestrictDisabledRadioButton.setText("<html><b>Allow</b> access to any outside IP address.</html>");
-                externalAdminRestrictDisabledRadioButton.setFocusPainted(false);
-                externalAdminRestrictDisabledRadioButton.setFocusable(false);
                 externalAdminRestrictDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 externalAdminRestrictDisabledRadioButtonActionPerformed(evt);
@@ -314,8 +313,6 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 restrictAdminButtonGroup.add(externalAdminRestrictEnabledRadioButton);
                 externalAdminRestrictEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 externalAdminRestrictEnabledRadioButton.setText("<html><b>Restrict</b> access to the IP address(es):</html>");
-                externalAdminRestrictEnabledRadioButton.setFocusPainted(false);
-                externalAdminRestrictEnabledRadioButton.setFocusable(false);
                 externalAdminRestrictEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 externalAdminRestrictEnabledRadioButtonActionPerformed(evt);
@@ -392,8 +389,6 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 internalAdminButtonGroup.add(internalAdminEnabledRadioButton);
                 internalAdminEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 internalAdminEnabledRadioButton.setText("<html><b>Allow</b> Remote Administration inside the local network, via http.<br>(This is the default setting.)</html>");
-                internalAdminEnabledRadioButton.setFocusPainted(false);
-                internalAdminEnabledRadioButton.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -403,8 +398,6 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
                 internalAdminButtonGroup.add(internalAdminDisabledRadioButton);
                 internalAdminDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 internalAdminDisabledRadioButton.setText("<html><b>Disallow</b> Remote Administration inside the local network, via http.</html>");
-                internalAdminDisabledRadioButton.setFocusPainted(false);
-                internalAdminDisabledRadioButton.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

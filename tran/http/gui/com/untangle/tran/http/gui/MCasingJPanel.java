@@ -172,7 +172,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 httpButtonGroup.add(httpEnabledRadioButton);
                 httpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 httpEnabledRadioButton.setText("<html><b>Enable Processing</b> of web traffic.  (This is the default setting)</html>");
-                httpEnabledRadioButton.setFocusPainted(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -182,7 +181,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 httpButtonGroup.add(httpDisabledRadioButton);
                 httpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 httpDisabledRadioButton.setText("<html><b>Disable Processing</b> of web traffic.</html>");
-                httpDisabledRadioButton.setFocusPainted(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -208,7 +206,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 longUriButtonGroup.add(longUriEnabledRadioButton);
                 longUriEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 longUriEnabledRadioButton.setText("<html><b>Enable Processing</b> of long URIs.  The traffic is considered \"Non-Http\".  (This is the default setting)</html>");
-                longUriEnabledRadioButton.setFocusPainted(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -218,7 +215,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 longUriButtonGroup.add(longUriDisabledRadioButton);
                 longUriDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 longUriDisabledRadioButton.setText("<html><b>Disable Processing</b> of long URIs.</html>");
-                longUriDisabledRadioButton.setFocusPainted(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -243,7 +239,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 uriSpinnerJPanel.add(jLabel3, gridBagConstraints);
 
                 maxUriJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                maxUriJSpinner.setFocusable(false);
                 maxUriJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
                 maxUriJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
                 maxUriJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -288,7 +283,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 headerButtonGroup.add(longHeadersEnabledRadioButton);
                 longHeadersEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 longHeadersEnabledRadioButton.setText("<html><b>Enable Processing</b> of long headers.  The traffic is considered \"Non-Http\".  (This is the default setting)</html>");
-                longHeadersEnabledRadioButton.setFocusPainted(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -298,7 +292,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 headerButtonGroup.add(longHeadersDisabledRadioButton);
                 longHeadersDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 longHeadersDisabledRadioButton.setText("<html><b>Disable Processing</b> of long headers.</html>");
-                longHeadersDisabledRadioButton.setFocusPainted(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -323,7 +316,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 headerSpinnerJpanel.add(jLabel5, gridBagConstraints);
 
                 maxHeaderJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                maxHeaderJSpinner.setFocusable(false);
                 maxHeaderJSpinner.setMaximumSize(new java.awt.Dimension(100, 20));
                 maxHeaderJSpinner.setMinimumSize(new java.awt.Dimension(100, 20));
                 maxHeaderJSpinner.setPreferredSize(new java.awt.Dimension(100, 20));
@@ -368,7 +360,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 nonHttpButtonGroup.add(nonHttpEnabledRadioButton);
                 nonHttpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 nonHttpEnabledRadioButton.setText("<html><b>Allow</b> non-Http traffic to travel over port 80.  (This is the default setting)</html>");
-                nonHttpEnabledRadioButton.setFocusPainted(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -378,7 +369,6 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
                 nonHttpButtonGroup.add(nonHttpDisabledRadioButton);
                 nonHttpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 nonHttpDisabledRadioButton.setText("<html><b>Stop</b> non-Http traffic from traveling over port 80.</html>");
-                nonHttpDisabledRadioButton.setFocusPainted(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

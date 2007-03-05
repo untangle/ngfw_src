@@ -33,9 +33,13 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
 
     public NetworkHostnameJPanel() {
         initComponents();
-	for(String provider : DynamicDNSSettings.getProviderEnumeration()){
-	    providerJComboBox.addItem(provider);
-	}
+        Util.addPanelFocus(this, hostnameJTextField);
+        Util.addFocusHighlight(hostnameJTextField);
+        Util.addFocusHighlight(loginJTextField);
+        Util.addFocusHighlight(passwordJPasswordField);
+        for(String provider : DynamicDNSSettings.getProviderEnumeration()){
+            providerJComboBox.addItem(provider);
+        }
     }
 
     public void doSave(NetworkCompoundSettings networkCompoundSettings, boolean validateOnly) throws Exception {
@@ -230,8 +234,6 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
                 hostnameJPanel.add(jLabel11, gridBagConstraints);
 
                 publicJCheckBox.setText("Hostname resolves publicly");
-                publicJCheckBox.setFocusPainted(false);
-                publicJCheckBox.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -263,7 +265,6 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
                 disabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 disabledJRadioButton.setText("<html><b>Disabled</b></html>");
                 disabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
-                disabledJRadioButton.setFocusPainted(false);
                 disabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 disabledJRadioButtonActionPerformed(evt);
@@ -280,7 +281,6 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
                 dnsButtonGroup.add(enabledJRadioButton);
                 enabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 enabledJRadioButton.setText("<html><b>Enabled</b></html>");
-                enabledJRadioButton.setFocusPainted(false);
                 enabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 enabledJRadioButtonActionPerformed(evt);
@@ -308,7 +308,6 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
                 staticIPJPanel.add(providerJLabel, gridBagConstraints);
 
                 providerJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-                providerJComboBox.setFocusable(false);
                 providerJComboBox.setMaximumSize(null);
                 providerJComboBox.setMinimumSize(null);
                 providerJComboBox.setPreferredSize(null);

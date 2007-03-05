@@ -85,100 +85,96 @@ public class QuarantineSingleUserJPanel extends javax.swing.JPanel
 	((MColoredJTable)entryJTable).doGreedyColumn(entryJScrollPane.getViewport().getExtentSize().width);
     }
     
-    private void initComponents() {//GEN-BEGIN:initComponents
-        java.awt.GridBagConstraints gridBagConstraints;
+        private void initComponents() {//GEN-BEGIN:initComponents
+                java.awt.GridBagConstraints gridBagConstraints;
 
-        contentJPanel = new javax.swing.JPanel();
-        eventJPanel = new javax.swing.JPanel();
-        purgeJButton = new javax.swing.JButton();
-        releaseJButton = new javax.swing.JButton();
-        entryJScrollPane = new javax.swing.JScrollPane();
-        entryJTable = new MColoredJTable();
+                contentJPanel = new javax.swing.JPanel();
+                eventJPanel = new javax.swing.JPanel();
+                purgeJButton = new javax.swing.JButton();
+                releaseJButton = new javax.swing.JButton();
+                entryJScrollPane = new javax.swing.JScrollPane();
+                entryJTable = new MColoredJTable();
 
-        setLayout(new java.awt.GridBagLayout());
+                setLayout(new java.awt.GridBagLayout());
 
-        setOpaque(false);
-        contentJPanel.setLayout(new java.awt.GridBagLayout());
+                setOpaque(false);
+                contentJPanel.setLayout(new java.awt.GridBagLayout());
 
-        contentJPanel.setOpaque(false);
-        eventJPanel.setLayout(new java.awt.GridBagLayout());
+                contentJPanel.setOpaque(false);
+                eventJPanel.setLayout(new java.awt.GridBagLayout());
 
-        eventJPanel.setFocusCycleRoot(true);
-        eventJPanel.setFocusable(false);
-        eventJPanel.setOpaque(false);
-        purgeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        purgeJButton.setText("<html><b>Purge</b> selected</html>");
-        purgeJButton.setDoubleBuffered(true);
-        purgeJButton.setFocusPainted(false);
-        purgeJButton.setFocusable(false);
-        purgeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        purgeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        purgeJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-        purgeJButton.setMinimumSize(new java.awt.Dimension(125, 25));
-        purgeJButton.setPreferredSize(new java.awt.Dimension(125, 25));
-        purgeJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                purgeJButtonActionPerformed(evt);
-            }
-        });
+                eventJPanel.setFocusCycleRoot(true);
+                eventJPanel.setFocusable(false);
+                eventJPanel.setOpaque(false);
+                purgeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                purgeJButton.setText("<html><b>Purge</b> selected</html>");
+                purgeJButton.setDoubleBuffered(true);
+                purgeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                purgeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+                purgeJButton.setMaximumSize(new java.awt.Dimension(125, 25));
+                purgeJButton.setMinimumSize(new java.awt.Dimension(125, 25));
+                purgeJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+                purgeJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                purgeJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
-        eventJPanel.add(purgeJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
+                eventJPanel.add(purgeJButton, gridBagConstraints);
 
-        releaseJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        releaseJButton.setText("<html><b>Release</b> selected</html>");
-        releaseJButton.setDoubleBuffered(true);
-        releaseJButton.setFocusPainted(false);
-        releaseJButton.setFocusable(false);
-        releaseJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        releaseJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        releaseJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-        releaseJButton.setMinimumSize(new java.awt.Dimension(125, 25));
-        releaseJButton.setPreferredSize(new java.awt.Dimension(125, 25));
-        releaseJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                releaseJButtonActionPerformed(evt);
-            }
-        });
+                releaseJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                releaseJButton.setText("<html><b>Release</b> selected</html>");
+                releaseJButton.setDoubleBuffered(true);
+                releaseJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                releaseJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+                releaseJButton.setMaximumSize(new java.awt.Dimension(125, 25));
+                releaseJButton.setMinimumSize(new java.awt.Dimension(125, 25));
+                releaseJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+                releaseJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                releaseJButtonActionPerformed(evt);
+                        }
+                });
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        eventJPanel.add(releaseJButton, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                eventJPanel.add(releaseJButton, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
-        contentJPanel.add(eventJPanel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
+                contentJPanel.add(eventJPanel, gridBagConstraints);
 
-        entryJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        entryJScrollPane.setDoubleBuffered(true);
-        entryJTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-        entryJTable.setDoubleBuffered(true);
-        entryJScrollPane.setViewportView(entryJTable);
+                entryJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                entryJScrollPane.setDoubleBuffered(true);
+                entryJTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+                entryJTable.setDoubleBuffered(true);
+                entryJScrollPane.setViewportView(entryJTable);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(2, 2, 0, 2);
-        contentJPanel.add(entryJScrollPane, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(2, 2, 0, 2);
+                contentJPanel.add(entryJScrollPane, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        add(contentJPanel, gridBagConstraints);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                add(contentJPanel, gridBagConstraints);
 
-    }//GEN-END:initComponents
+        }//GEN-END:initComponents
 
     private void releaseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_releaseJButtonActionPerformed
 	if( Util.getIsDemo() )
@@ -278,14 +274,14 @@ public class QuarantineSingleUserJPanel extends javax.swing.JPanel
         return selectedModelRows;
     }
     
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel contentJPanel;
-    protected javax.swing.JScrollPane entryJScrollPane;
-    protected javax.swing.JTable entryJTable;
-    private javax.swing.JPanel eventJPanel;
-    private javax.swing.JButton purgeJButton;
-    private javax.swing.JButton releaseJButton;
-    // End of variables declaration//GEN-END:variables
+        // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JPanel contentJPanel;
+        protected javax.swing.JScrollPane entryJScrollPane;
+        protected javax.swing.JTable entryJTable;
+        private javax.swing.JPanel eventJPanel;
+        private javax.swing.JButton purgeJButton;
+        private javax.swing.JButton releaseJButton;
+        // End of variables declaration//GEN-END:variables
 }
 
 

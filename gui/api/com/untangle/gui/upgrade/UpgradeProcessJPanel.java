@@ -149,8 +149,6 @@ public class UpgradeProcessJPanel extends JPanel
 
                 upgradeJButton.setText("Upgrade");
                 upgradeJButton.setDoubleBuffered(true);
-                upgradeJButton.setFocusPainted(false);
-                upgradeJButton.setFocusable(false);
                 upgradeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 upgradeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 upgradeJButton.setMaximumSize(new java.awt.Dimension(100, 25));

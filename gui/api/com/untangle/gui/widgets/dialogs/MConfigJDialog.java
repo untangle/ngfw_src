@@ -76,11 +76,17 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         }});
     }
 
+    private static JComponent initialFocusComponent;
+    public static void setInitialFocusComponent(JComponent c){
+        initialFocusComponent = c;
+    }
+    public static JComponent getInitialFocusComponent(){ return initialFocusComponent; }
+
     public void setVisible(boolean isVisible){
-	if(isVisible){
-	    new RefreshAllThread(true);
-	}
-	super.setVisible(isVisible);
+        if(isVisible){
+            new RefreshAllThread(true);
+        }
+        super.setVisible(isVisible);
     }
 
     private String helpSource;
@@ -99,16 +105,19 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         newJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
         newJTabbedPane.setFocusable(false);
         newJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
-	newJTabbedPane.setRequestFocusEnabled(false);
-	JPanel backJPanel = new JPanel();
-	backJPanel.setLayout(new BorderLayout());
-	backJPanel.add(newJTabbedPane);
-	addTab(name, icon, backJPanel);
-	return newJTabbedPane;
+        //newJTabbedPane.setRequestFocusEnabled(false);
+        JPanel backJPanel = new JPanel();
+        backJPanel.setLayout(new BorderLayout());
+        backJPanel.add(newJTabbedPane);
+        addTab(name, icon, backJPanel);
+        return newJTabbedPane;
     }
     public JScrollPane addScrollableTab(JTabbedPane parentJTabbedPane, String name, Icon icon,
 					Component childComponent, boolean scrollH, boolean scrollV){
 	JScrollPane newJScrollPane = new JScrollPane(childComponent);
+    newJScrollPane.setFocusable(false);
+    newJScrollPane.getHorizontalScrollBar().setFocusable(false);
+    newJScrollPane.getVerticalScrollBar().setFocusable(false);
 	newJScrollPane.setHorizontalScrollBarPolicy( scrollH ? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS : JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 	newJScrollPane.setVerticalScrollBarPolicy( scrollV ? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS : JScrollPane.VERTICAL_SCROLLBAR_NEVER );
 	if( parentJTabbedPane != null )
@@ -242,8 +251,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconClose_16x16.png")));
                 closeJButton.setText("Close");
                 closeJButton.setDoubleBuffered(true);
-                closeJButton.setFocusPainted(false);
-                closeJButton.setFocusable(false);
                 closeJButton.setIconTextGap(6);
                 closeJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 closeJButton.setOpaque(false);
@@ -264,7 +271,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 helpJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconHelp_18x16.png")));
                 helpJButton.setText("Help");
-                helpJButton.setFocusPainted(false);
                 helpJButton.setIconTextGap(6);
                 helpJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 helpJButton.setMaximumSize(null);
@@ -288,8 +294,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 reloadJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconCancel_16x16.png")));
                 reloadJButton.setText("Cancel");
                 reloadJButton.setDoubleBuffered(true);
-                reloadJButton.setFocusPainted(false);
-                reloadJButton.setFocusable(false);
                 reloadJButton.setIconTextGap(6);
                 reloadJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 reloadJButton.setOpaque(false);
@@ -310,8 +314,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 saveJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
                 saveJButton.setText("Save");
                 saveJButton.setDoubleBuffered(true);
-                saveJButton.setFocusPainted(false);
-                saveJButton.setFocusable(false);
                 saveJButton.setIconTextGap(6);
                 saveJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 saveJButton.setOpaque(false);
@@ -330,6 +332,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 
                 backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/DarkGreyBackground1600x100.png")));
                 backgroundJLabel.setDoubleBuffered(true);
+                backgroundJLabel.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -383,6 +386,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     public void windowDeiconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowIconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowOpened(java.awt.event.WindowEvent windowEvent) {}
+
 
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -458,6 +462,16 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	    }
 	    // END INFINITE PROGRESS
 	    infiniteProgressJComponent.stopLater(MIN_PROGRESS_MILLIS);
+        // FOCUS
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            JComponent target = MConfigJDialog.getInitialFocusComponent();
+            if(target != null){
+                target.requestFocus();
+                if(target instanceof JTextComponent)
+                    ((JTextComponent)target).selectAll();
+            }
+        }});
+
         }
     }
 }

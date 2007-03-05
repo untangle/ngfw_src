@@ -84,8 +84,6 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
                 sshButtonGroup.add(sshEnabledRadioButton);
                 sshEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 sshEnabledRadioButton.setText("<html><b>Allow</b> secure remote support for troubleshooting and assistance purposes.</html>");
-                sshEnabledRadioButton.setFocusPainted(false);
-                sshEnabledRadioButton.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -95,8 +93,6 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
                 sshButtonGroup.add(sshDisabledRadioButton);
                 sshDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 sshDisabledRadioButton.setText("<html><b>Disallow</b> secure remote support.  (This is the default setting.)</html>");
-                sshDisabledRadioButton.setFocusPainted(false);
-                sshDisabledRadioButton.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -112,8 +108,6 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
 
                 reportJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
                 reportJCheckBox.setText("<html><b>Report</b> any unexpected problems to Untangle support.  An email will be sent to Untangle if an unexpected condition occurs.  No information about your network traffic will be transmitted.  (This is disabled by default)</html>");
-                reportJCheckBox.setFocusPainted(false);
-                reportJCheckBox.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

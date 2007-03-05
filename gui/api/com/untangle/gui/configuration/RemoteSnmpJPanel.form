@@ -51,8 +51,6 @@
               <Font name="Dialog" size="12" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Disable&lt;/b&gt; SNMP Monitoring. (This is the default setting.)&lt;/html&gt;"/>
-            <Property name="focusPainted" type="boolean" value="false"/>
-            <Property name="focusable" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="snmpDisabledRadioButtonActionPerformed"/>
@@ -75,8 +73,6 @@
               <Font name="Dialog" size="12" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Enable&lt;/b&gt; SNMP Monitoring.&lt;/html&gt;"/>
-            <Property name="focusPainted" type="boolean" value="false"/>
-            <Property name="focusable" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="snmpEnabledRadioButtonActionPerformed"/>
@@ -247,7 +243,6 @@
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Disable Traps&lt;/b&gt; so no trap events are generated.  (This is the default setting.)&lt;/html&gt;"/>
-                <Property name="focusPainted" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="trapDisabledRadioButtonActionPerformed"/>
@@ -270,7 +265,6 @@
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Enable Traps&lt;/b&gt; so trap events are sent when they are generated.&lt;/html&gt;"/>
-                <Property name="focusPainted" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="trapEnabledRadioButtonActionPerformed"/>

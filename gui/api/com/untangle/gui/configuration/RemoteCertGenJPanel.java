@@ -21,8 +21,9 @@ public class RemoteCertGenJPanel extends javax.swing.JPanel {
     private MConfigJDialog mConfigJDialog;
 
     public RemoteCertGenJPanel(MConfigJDialog mConfigJDialog){
-	this.mConfigJDialog = mConfigJDialog;
-	initComponents();
+        this.mConfigJDialog = mConfigJDialog;
+        initComponents();
+        Util.addPanelFocus(this, selfSignedJButton);
     }
 
         private void initComponents() {//GEN-BEGIN:initComponents
@@ -48,8 +49,6 @@ public class RemoteCertGenJPanel extends javax.swing.JPanel {
                 selfSignedJPanel.setBorder(new javax.swing.border.EtchedBorder());
                 selfSignedJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 selfSignedJButton.setText("<html><center>Generate a<br><b>Self-Signed Certificate</b></center></html>");
-                selfSignedJButton.setFocusPainted(false);
-                selfSignedJButton.setFocusable(false);
                 selfSignedJButton.setMaximumSize(new java.awt.Dimension(175, 50));
                 selfSignedJButton.setMinimumSize(new java.awt.Dimension(175, 50));
                 selfSignedJButton.setPreferredSize(new java.awt.Dimension(175, 50));
@@ -90,8 +89,6 @@ public class RemoteCertGenJPanel extends javax.swing.JPanel {
                 trustedJPanel.setBorder(new javax.swing.border.EtchedBorder());
                 generateCSRJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 generateCSRJButton.setText("<html><center>Generate a<br><b>Certificate Signature Request</b></center></html>");
-                generateCSRJButton.setFocusPainted(false);
-                generateCSRJButton.setFocusable(false);
                 generateCSRJButton.setMaximumSize(new java.awt.Dimension(175, 50));
                 generateCSRJButton.setMinimumSize(new java.awt.Dimension(175, 50));
                 generateCSRJButton.setPreferredSize(new java.awt.Dimension(175, 50));
@@ -119,8 +116,6 @@ public class RemoteCertGenJPanel extends javax.swing.JPanel {
 
                 importCSRJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 importCSRJButton.setText("<html><center>Import a<br><b>Signed Certificate</b></center></html>");
-                importCSRJButton.setFocusPainted(false);
-                importCSRJButton.setFocusable(false);
                 importCSRJButton.setMaximumSize(new java.awt.Dimension(175, 50));
                 importCSRJButton.setMinimumSize(new java.awt.Dimension(175, 50));
                 importCSRJButton.setPreferredSize(new java.awt.Dimension(175, 50));

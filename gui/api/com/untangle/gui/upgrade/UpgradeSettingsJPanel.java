@@ -177,56 +177,42 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
                 mondayJCheckBox.setFont(new java.awt.Font("Default", 0, 12));
                 mondayJCheckBox.setText("Monday");
                 mondayJCheckBox.setDoubleBuffered(true);
-                mondayJCheckBox.setFocusPainted(false);
-                mondayJCheckBox.setFocusable(false);
                 mondayJCheckBox.setOpaque(false);
                 jPanel5.add(mondayJCheckBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, 91, -1));
 
                 tuesdayJCheckBox.setFont(new java.awt.Font("Default", 0, 12));
                 tuesdayJCheckBox.setText("Tuesday");
                 tuesdayJCheckBox.setDoubleBuffered(true);
-                tuesdayJCheckBox.setFocusPainted(false);
-                tuesdayJCheckBox.setFocusable(false);
                 tuesdayJCheckBox.setOpaque(false);
                 jPanel5.add(tuesdayJCheckBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, 91, -1));
 
                 wednesdayJCheckBox.setFont(new java.awt.Font("Default", 0, 12));
                 wednesdayJCheckBox.setText("Wednesday");
                 wednesdayJCheckBox.setDoubleBuffered(true);
-                wednesdayJCheckBox.setFocusPainted(false);
-                wednesdayJCheckBox.setFocusable(false);
                 wednesdayJCheckBox.setOpaque(false);
                 jPanel5.add(wednesdayJCheckBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, -1, -1));
 
                 thursdayJCheckBox.setFont(new java.awt.Font("Default", 0, 12));
                 thursdayJCheckBox.setText("Thursday");
                 thursdayJCheckBox.setDoubleBuffered(true);
-                thursdayJCheckBox.setFocusPainted(false);
-                thursdayJCheckBox.setFocusable(false);
                 thursdayJCheckBox.setOpaque(false);
                 jPanel5.add(thursdayJCheckBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, 91, -1));
 
                 fridayJCheckBox.setFont(new java.awt.Font("Default", 0, 12));
                 fridayJCheckBox.setText("Friday");
                 fridayJCheckBox.setDoubleBuffered(true);
-                fridayJCheckBox.setFocusPainted(false);
-                fridayJCheckBox.setFocusable(false);
                 fridayJCheckBox.setOpaque(false);
                 jPanel5.add(fridayJCheckBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 120, 91, -1));
 
                 saturdayJCheckBox.setFont(new java.awt.Font("Default", 0, 12));
                 saturdayJCheckBox.setText("Saturday");
                 saturdayJCheckBox.setDoubleBuffered(true);
-                saturdayJCheckBox.setFocusPainted(false);
-                saturdayJCheckBox.setFocusable(false);
                 saturdayJCheckBox.setOpaque(false);
                 jPanel5.add(saturdayJCheckBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, 91, -1));
 
                 sundayJCheckBox.setFont(new java.awt.Font("Default", 0, 12));
                 sundayJCheckBox.setText("Sunday");
                 sundayJCheckBox.setDoubleBuffered(true);
-                sundayJCheckBox.setFocusPainted(false);
-                sundayJCheckBox.setFocusable(false);
                 sundayJCheckBox.setOpaque(false);
                 jPanel5.add(sundayJCheckBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 160, 91, -1));
 
@@ -268,8 +254,6 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
                 yesAutoJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 yesAutoJRadioButton.setText("<html> <b>Automatically install new upgrades</b><br>\nIf new upgrades are found after a \"Scheduled<br>\nAutomatic Upgrade\", those upgrades will be<br>\nautomatically downloaded and installed.<br>\nIn the case of certain critical system upgrades,<br>\nthe system may be automatically restarted, and<br>\nthe user interface may not connect for a short<br>\nperiod of time. </html>");
                 yesAutoJRadioButton.setDoubleBuffered(true);
-                yesAutoJRadioButton.setFocusPainted(false);
-                yesAutoJRadioButton.setFocusable(false);
                 yesAutoJRadioButton.setOpaque(false);
                 yesAutoJRadioButton.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
                 jPanel6.add(yesAutoJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, -1, -1));
@@ -279,8 +263,6 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
                 noAutoJRadioButton.setSelected(true);
                 noAutoJRadioButton.setText("<html>\n<b>Do not automatically install new upgrades</b><br>\nIf new upgrades are found after a \"Scheduled<br>\nAutomatic Upgrade\",  those upgrades will NOT<br>\nbe automatically installed.  The system<br>\nadministrator must manually upgrade the system<br>\nthrough the \"Manual Upgrade\" tab of this window.\n</html>");
                 noAutoJRadioButton.setDoubleBuffered(true);
-                noAutoJRadioButton.setFocusPainted(false);
-                noAutoJRadioButton.setFocusable(false);
                 noAutoJRadioButton.setOpaque(false);
                 noAutoJRadioButton.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
                 jPanel6.add(noAutoJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 140, -1, -1));

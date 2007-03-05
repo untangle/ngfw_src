@@ -32,7 +32,10 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
 
     public RemotePublicAddressJPanel() {
         initComponents();
-	Util.setPortView(portJSpinner, 443);
+        Util.addPanelFocus(this, disabledJRadioButton);
+        Util.addFocusHighlight(addressJTextField);
+        Util.addFocusHighlight(portJSpinner);
+        Util.setPortView(portJSpinner, 443);
     }
 
     public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {
@@ -143,8 +146,6 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
                 disabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 disabledJRadioButton.setText("<html><b>Disabled</b></html>");
                 disabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
-                disabledJRadioButton.setFocusPainted(false);
-                disabledJRadioButton.setFocusable(false);
                 disabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 disabledJRadioButtonActionPerformed(evt);
@@ -160,8 +161,6 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
                 dnsButtonGroup.add(enabledJRadioButton);
                 enabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 enabledJRadioButton.setText("<html><b>Enabled</b></html>");
-                enabledJRadioButton.setFocusPainted(false);
-                enabledJRadioButton.setFocusable(false);
                 enabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 enabledJRadioButtonActionPerformed(evt);

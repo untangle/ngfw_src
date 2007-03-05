@@ -151,7 +151,7 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
     }
     
 
-    private void initComponents() {//GEN-BEGIN:initComponents
+        private void initComponents() {//GEN-BEGIN:initComponents
                 methodButtonGroup = new javax.swing.ButtonGroup();
                 jLabel2 = new javax.swing.JLabel();
                 serverJRadioButton = new javax.swing.JRadioButton();
@@ -189,7 +189,7 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
 
                 serverJLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
                 serverJLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                serverJLabel1.setText("Server Address:");
+                serverJLabel1.setText("Server IP Address:");
                 add(serverJLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 120, -1, -1));
 
                 passwordJTextField.setColumns(19);

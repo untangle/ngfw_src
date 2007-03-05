@@ -22,6 +22,10 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.event.FocusListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.WindowListener;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -37,6 +41,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 import javax.jnlp.*;
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 
 import com.untangle.gui.login.*;
 import com.untangle.gui.main.MMainJFrame;
@@ -517,6 +522,33 @@ public class Util {
     //////////////////////////////////////////////////////
 
     // FOCUS //
+    public static void addPanelFocus(final JComponent source, final JComponent target){
+        source.addFocusListener( new FocusListener(){
+                public void focusGained(FocusEvent e){
+                    target.requestFocus();
+                    if(target instanceof JTextComponent)
+                        ((JTextComponent)target).selectAll();
+                }
+                public void focusLost(FocusEvent e){}
+            });
+    }
+
+    public static void addFocusHighlight(final JComponent c){
+        c.addFocusListener( new FocusListener(){
+                public void focusGained(FocusEvent e){
+                    if(c instanceof JTextComponent){
+                        ((JTextComponent)e.getComponent()).selectAll();
+                    }
+                    else if(c instanceof JSpinner){
+                        JComponent editor = ((JSpinner)c).getEditor();
+                        if(editor instanceof JSpinner.DefaultEditor)
+                            ((JSpinner.DefaultEditor)editor).getTextField().selectAll();
+                    }
+                }
+                public void focusLost(FocusEvent e){ }
+            });
+    }
+
     public static String getSelectedTabTitle(JTabbedPane jTabbedPane){
 
         String focus;

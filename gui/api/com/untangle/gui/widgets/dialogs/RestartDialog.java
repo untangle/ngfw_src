@@ -63,8 +63,6 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
                 proceedJButton.setFont(new java.awt.Font("Default", 1, 12));
                 proceedJButton.setText("Exit");
                 proceedJButton.setDoubleBuffered(true);
-                proceedJButton.setFocusPainted(false);
-                proceedJButton.setFocusable(false);
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 proceedJButtonActionPerformed(evt);

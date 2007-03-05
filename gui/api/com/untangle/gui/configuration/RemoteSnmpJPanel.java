@@ -31,7 +31,14 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
     
     public RemoteSnmpJPanel() {
         initComponents();
-	Util.setPortView(trapPortJSpinner, 162);
+        Util.addPanelFocus(this, snmpDisabledRadioButton);
+        Util.addFocusHighlight(snmpCommunityJTextField);
+        Util.addFocusHighlight(snmpContactJTextField);
+        Util.addFocusHighlight(snmpLocationJTextField);
+        Util.addFocusHighlight(trapCommunityJTextField);
+        Util.addFocusHighlight(trapHostJTextField);
+        Util.addFocusHighlight(trapPortJSpinner);
+        Util.setPortView(trapPortJSpinner, 162);
     }
 
     public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {
@@ -190,8 +197,6 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
                 snmpButtonGroup.add(snmpDisabledRadioButton);
                 snmpDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 snmpDisabledRadioButton.setText("<html><b>Disable</b> SNMP Monitoring. (This is the default setting.)</html>");
-                snmpDisabledRadioButton.setFocusPainted(false);
-                snmpDisabledRadioButton.setFocusable(false);
                 snmpDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 snmpDisabledRadioButtonActionPerformed(evt);
@@ -207,8 +212,6 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
                 snmpButtonGroup.add(snmpEnabledRadioButton);
                 snmpEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 snmpEnabledRadioButton.setText("<html><b>Enable</b> SNMP Monitoring.</html>");
-                snmpEnabledRadioButton.setFocusPainted(false);
-                snmpEnabledRadioButton.setFocusable(false);
                 snmpEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 snmpEnabledRadioButtonActionPerformed(evt);
@@ -305,7 +308,6 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
                 trapButtonGroup.add(trapDisabledRadioButton);
                 trapDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 trapDisabledRadioButton.setText("<html><b>Disable Traps</b> so no trap events are generated.  (This is the default setting.)</html>");
-                trapDisabledRadioButton.setFocusPainted(false);
                 trapDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 trapDisabledRadioButtonActionPerformed(evt);
@@ -321,7 +323,6 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
                 trapButtonGroup.add(trapEnabledRadioButton);
                 trapEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 trapEnabledRadioButton.setText("<html><b>Enable Traps</b> so trap events are sent when they are generated.</html>");
-                trapEnabledRadioButton.setFocusPainted(false);
                 trapEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 trapEnabledRadioButtonActionPerformed(evt);

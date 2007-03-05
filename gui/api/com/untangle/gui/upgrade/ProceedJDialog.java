@@ -43,7 +43,6 @@ final public class ProceedJDialog extends javax.swing.JDialog implements java.aw
                 cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
                 cancelJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Cancel_Upgrade_106x17.png")));
                 cancelJButton.setDoubleBuffered(true);
-                cancelJButton.setFocusable(false);
                 cancelJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 cancelJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 cancelJButton.setMaximumSize(new java.awt.Dimension(130, 25));
@@ -65,8 +64,6 @@ final public class ProceedJDialog extends javax.swing.JDialog implements java.aw
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Continue_Upgrade_106x17.png")));
                 proceedJButton.setDoubleBuffered(true);
-                proceedJButton.setFocusPainted(false);
-                proceedJButton.setFocusable(false);
                 proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 proceedJButton.setMaximumSize(new java.awt.Dimension(150, 25));

@@ -135,8 +135,6 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
                 purgeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 purgeJButton.setText("<html><b>Purge</b> selected</html>");
                 purgeJButton.setDoubleBuffered(true);
-                purgeJButton.setFocusPainted(false);
-                purgeJButton.setFocusable(false);
                 purgeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 purgeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 purgeJButton.setMaximumSize(new java.awt.Dimension(125, 25));
@@ -157,8 +155,6 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
                 releaseJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 releaseJButton.setText("<html><b>Release</b> selected</html>");
                 releaseJButton.setDoubleBuffered(true);
-                releaseJButton.setFocusPainted(false);
-                releaseJButton.setFocusable(false);
                 releaseJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 releaseJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 releaseJButton.setMaximumSize(new java.awt.Dimension(125, 25));
@@ -179,8 +175,6 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
                 detailJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 detailJButton.setText("<html><b>Show</b> detail</html>");
                 detailJButton.setDoubleBuffered(true);
-                detailJButton.setFocusPainted(false);
-                detailJButton.setFocusable(false);
                 detailJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 detailJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 detailJButton.setMaximumSize(new java.awt.Dimension(125, 25));
