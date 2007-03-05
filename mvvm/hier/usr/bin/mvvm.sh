@@ -110,6 +110,7 @@ getLicenseKey() {
     tar -C / -xf $TMP_ARCHIVE
     rm -f $ACTIVATION_KEY_FILE_TMP
     /usr/bin/mvactivate
+    /usr/bin/mvregister # trigger root passwd generation
   fi
 }
 
