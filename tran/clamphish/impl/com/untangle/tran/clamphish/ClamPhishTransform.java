@@ -17,11 +17,15 @@ import java.net.URL;
 import java.util.List;
 
 import com.sleepycat.je.DatabaseException;
+import com.untangle.mvvm.LocalAppServerManager;
+import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.tapi.Affinity;
 import com.untangle.mvvm.tapi.Fitting;
 import com.untangle.mvvm.tapi.PipeSpec;
 import com.untangle.mvvm.tapi.SoloPipeSpec;
 import com.untangle.mvvm.tapi.TCPSession;
+import com.untangle.mvvm.util.OutsideValve;
 import com.untangle.tran.http.UserWhitelistMode;
 import com.untangle.tran.spam.SpamImpl;
 import com.untangle.tran.spam.SpamSettings;
@@ -31,6 +35,7 @@ import com.untangle.tran.util.EncryptedUrlList;
 import com.untangle.tran.util.PrefixUrlList;
 import com.untangle.tran.util.UrlDatabase;
 import com.untangle.tran.util.UrlList;
+import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 
 import static com.untangle.tran.util.Ascii.CRLF;
@@ -71,6 +76,8 @@ public class ClamPhishTransform extends SpamImpl
 
     private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
     private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;
+
+    private static boolean webappDeployed = false;
 
     // We want to make sure that phish is before spam,
     // before virus in the pipeline (towards the client for smtp,
@@ -147,6 +154,18 @@ public class ClamPhishTransform extends SpamImpl
     protected PipeSpec[] getPipeSpecs()
     {
         return pipeSpecs;
+    }
+
+    @Override
+    protected void postInit(String args[])
+    {
+        deployWebAppIfRequired(logger);
+    }
+
+    @Override
+    protected void postDestroy()
+    {
+        unDeployWebAppIfRequired(logger);
     }
 
     @Override
@@ -247,5 +266,66 @@ public class ClamPhishTransform extends SpamImpl
         return urlDatabase;
     }
 
+    // private methods --------------------------------------------------------
 
+    // XXX factor out this shit
+    private static synchronized void deployWebAppIfRequired(Logger logger) {
+        if (webappDeployed) {
+            return;
+        }
+
+        MvvmLocalContext mctx = MvvmContextFactory.context();
+        LocalAppServerManager asm = mctx.appServerManager();
+
+        Valve v = new OutsideValve()
+            {
+                protected boolean isInsecureAccessAllowed()
+                {
+                    return true;
+                }
+
+                /* Unified way to determine which parameter to check */
+                protected boolean isOutsideAccessAllowed()
+                {
+                    return false;
+                }
+
+                /* Unified way to determine which parameter to check */
+                protected String outsideErrorMessage()
+                {
+                    return "Off-site access prohibited";
+                }
+
+                protected String httpErrorMessage()
+                {
+                    return "Standard access prohibited";
+                }
+            };
+
+        if (asm.loadInsecureApp("/idblocker", "idblocker", v)) {
+            logger.debug("Deployed idblocker WebApp");
+        } else {
+            logger.error("Unable to deploy idblocker WebApp");
+        }
+
+        webappDeployed = true;
+    }
+
+    // XXX factor out this shit
+    private static synchronized void unDeployWebAppIfRequired(Logger logger) {
+        if (!webappDeployed) {
+            return;
+        }
+
+        MvvmLocalContext mctx = MvvmContextFactory.context();
+        LocalAppServerManager asm = mctx.appServerManager();
+
+        if (asm.unloadWebApp("/idblocker")) {
+            logger.debug("Unloaded idblocker WebApp");
+        } else {
+            logger.warn("Unable to unload idblocker WebApp");
+        }
+
+        webappDeployed = false;
+    }
 }

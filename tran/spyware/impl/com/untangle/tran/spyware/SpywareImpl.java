@@ -667,6 +667,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         }
     }
 
+    // XXX factor out this shit
     private static synchronized void deployWebAppIfRequired(Logger logger) {
         if (webappDeployed) {
             return;
@@ -709,6 +710,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         webappDeployed = true;
     }
 
+    // XXX factor out this shit
     private static synchronized void unDeployWebAppIfRequired(Logger logger) {
         if (!webappDeployed) {
             return;
