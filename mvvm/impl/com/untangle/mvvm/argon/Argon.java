@@ -44,6 +44,7 @@ public class Argon
     private static int MAX_THREADS = 10000;
 
     public static final int SCHED_NORMAL = 0;
+    public static final int SCHED_SOFTREAL = 4;
 
     /* The networking manager impl is passed in at init time */
     private NetworkManagerImpl networkManager = null;
@@ -63,8 +64,8 @@ public class Argon
 
     private LocalIntfManagerImpl intfManager;
     int sessionThreadLimit  = 10000;
-    int newSessionSchedPolicy  = SCHED_NORMAL;
-    int sessionSchedPolicy  = SCHED_NORMAL;
+    int newSessionSchedPolicy  = SCHED_SOFTREAL;
+    int sessionSchedPolicy  = SCHED_SOFTREAL;
     boolean isShieldEnabled = true;
     String shieldFile       = null;
     Shield shield;
