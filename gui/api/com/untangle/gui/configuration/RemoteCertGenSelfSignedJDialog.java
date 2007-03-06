@@ -54,6 +54,12 @@ public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implemen
     private void init(Window topLevelWindow, MConfigJDialog mConfigJDialog) {
 	this.mConfigJDialog = mConfigJDialog;
         initComponents();
+		MConfigJDialog.setInitialFocusComponent(organizationJTextField);
+		Util.addFocusHighlight(organizationJTextField);
+		Util.addFocusHighlight(organizationUnitJTextField);
+		Util.addFocusHighlight(cityJTextField);
+		Util.addFocusHighlight(stateJTextField);
+		Util.addFocusHighlight(countryJTextField);
         this.addWindowListener(this);
         this.setBounds( Util.generateCenteredBounds(topLevelWindow.getBounds(), this.getWidth(), this.getHeight()) );
 	new RefreshThread();
@@ -172,6 +178,7 @@ public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implemen
 
                 hostnameJTextField.setEditable(false);
                 hostnameJTextField.setText("querying...");
+                hostnameJTextField.setFocusable(false);
                 getContentPane().add(hostnameJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 250, 200, -1));
 
                 jProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));

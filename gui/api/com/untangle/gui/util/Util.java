@@ -22,6 +22,8 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.WindowListener;
@@ -534,19 +536,31 @@ public class Util {
     }
 
     public static void addFocusHighlight(final JComponent c){
-        c.addFocusListener( new FocusListener(){
-                public void focusGained(FocusEvent e){
-                    if(c instanceof JTextComponent){
-                        ((JTextComponent)e.getComponent()).selectAll();
-                    }
-                    else if(c instanceof JSpinner){
-                        JComponent editor = ((JSpinner)c).getEditor();
-                        if(editor instanceof JSpinner.DefaultEditor)
-                            ((JSpinner.DefaultEditor)editor).getTextField().selectAll();
-                    }
-                }
-                public void focusLost(FocusEvent e){ }
-            });
+        if(c instanceof JTextComponent)
+            c.addFocusListener(new FocusHighlightListener());
+        else if(c instanceof JSpinner){
+            JComponent editor = ((JSpinner)c).getEditor();
+            ((JSpinner.DefaultEditor)editor).getTextField().addFocusListener(new FocusHighlightListener());
+        }
+        if(c instanceof JTextArea){
+            ((JTextArea)c).setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null);
+            ((JTextArea)c).setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null);
+        }
+        else if(c instanceof JEditorPane){
+            ((JEditorPane)c).setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null);
+            ((JEditorPane)c).setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null);
+        }
+    }
+     
+    private static class FocusHighlightListener extends FocusAdapter {
+        public void focusGained(FocusEvent e){
+            if(e.getSource() instanceof JTextComponent){
+                final JTextComponent c = (JTextComponent) e.getSource();
+                SwingUtilities.invokeLater( new Runnable(){ public void run(){                    
+                    c.selectAll();
+                }});
+            }
+        }
     }
 
     public static String getSelectedTabTitle(JTabbedPane jTabbedPane){

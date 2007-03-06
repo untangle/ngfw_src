@@ -29,6 +29,17 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
 
     public InitialSetupContactJPanel() {
         initComponents();
+		Util.addFocusHighlight(companyJTextField);
+        Util.addFocusHighlight(firstNameJTextField);
+        Util.addFocusHighlight(lastNameJTextField);
+        Util.addFocusHighlight(address1JTextField);
+        Util.addFocusHighlight(address2JTextField);
+        Util.addFocusHighlight(cityJTextField);
+        Util.addFocusHighlight(stateJTextField);
+        Util.addFocusHighlight(zipcodeJTextField);
+        Util.addFocusHighlight(phoneJTextField);
+        Util.addFocusHighlight(emailJTextField);
+        Util.addFocusHighlight(countJTextField);
     }
 
     public void initialFocus(){

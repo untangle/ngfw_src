@@ -26,6 +26,7 @@ public class InitialSetupKeyJPanel extends MWizardPageJPanel {
 
     public InitialSetupKeyJPanel() {
         initComponents();
+        Util.addFocusHighlight(keyJTextField);
     }
 
     public void initialFocus(){

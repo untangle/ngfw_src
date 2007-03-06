@@ -13,6 +13,7 @@ package com.untangle.gui.configuration;
 
 import com.untangle.gui.transform.*;
 import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.dialogs.MConfigJDialog;
 
 import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.*;
@@ -27,6 +28,7 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
     
     public MaintenanceAccessJPanel() {
         initComponents();
+        MConfigJDialog.setInitialFocusComponent(sshEnabledRadioButton);
     }
 
     public void doSave(MaintenanceCompoundSettings maintenanceCompoundSettings, boolean validateOnly) throws Exception {

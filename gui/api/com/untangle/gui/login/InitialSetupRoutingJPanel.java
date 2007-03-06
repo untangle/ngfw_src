@@ -27,8 +27,8 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 		
     public InitialSetupRoutingJPanel() {
         initComponents();
-        
-
+        Util.addFocusHighlight(addressJTextField);
+		Util.addFocusHighlight(netmaskJTextField);
     }
 
     public void initialFocus(){

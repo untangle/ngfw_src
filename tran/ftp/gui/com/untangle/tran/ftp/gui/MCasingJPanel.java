@@ -29,6 +29,7 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
     
     public MCasingJPanel() {
         initComponents();
+        Util.addPanelFocus(this, ftpEnabledRadioButton);
     }
 
     public String getDisplayName(){ return "FTP Settings"; }

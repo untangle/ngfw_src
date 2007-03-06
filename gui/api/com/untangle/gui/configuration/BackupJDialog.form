@@ -33,8 +33,6 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Close"/>
         <Property name="doubleBuffered" type="boolean" value="true"/>
-        <Property name="focusPainted" type="boolean" value="false"/>
-        <Property name="focusable" type="boolean" value="false"/>
         <Property name="iconTextGap" type="int" value="6"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[2, 6, 2, 6]"/>
@@ -68,7 +66,6 @@
           <Image iconType="3" name="/com/untangle/gui/images/IconHelp_18x16.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Help"/>
-        <Property name="focusPainted" type="boolean" value="false"/>
         <Property name="iconTextGap" type="int" value="6"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[2, 6, 2, 6]"/>
@@ -87,7 +84,6 @@
     <Container class="javax.swing.JTabbedPane" name="jTabbedPane">
       <Properties>
         <Property name="doubleBuffered" type="boolean" value="true"/>
-        <Property name="focusable" type="boolean" value="false"/>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Default" size="12" style="0"/>
         </Property>
@@ -192,7 +188,7 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout"/>
                       <SubComponents>
-                        <Component class="javax.swing.JButton" name="backupFileJButton">
+                        <Component class="javax.swing.JButton" name="backupLocalFileJButton">
                           <Properties>
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                               <Font name="Dialog" size="12" style="0"/>
@@ -214,7 +210,7 @@
                             </Property>
                           </Properties>
                           <Events>
-                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="backupFileJButtonActionPerformed"/>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="backupLocalFileJButtonActionPerformed"/>
                           </Events>
                           <AuxValues>
                             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
@@ -276,7 +272,7 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout"/>
                       <SubComponents>
-                        <Component class="javax.swing.JButton" name="backupUSBKeyJButton">
+                        <Component class="javax.swing.JButton" name="backupUsbKeyJButton">
                           <Properties>
                             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                               <Connection code="Util.getButtonBackupToUsbKey()" type="code"/>
@@ -297,7 +293,7 @@
                             </Property>
                           </Properties>
                           <Events>
-                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="backupUSBKeyJButtonActionPerformed"/>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="backupUsbKeyJButtonActionPerformed"/>
                           </Events>
                           <AuxValues>
                             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
@@ -491,7 +487,7 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout"/>
                       <SubComponents>
-                        <Component class="javax.swing.JButton" name="restoreFileJButton">
+                        <Component class="javax.swing.JButton" name="restoreLocalFileJButton">
                           <Properties>
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                               <Font name="Dialog" size="12" style="0"/>
@@ -513,7 +509,7 @@
                             </Property>
                           </Properties>
                           <Events>
-                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="restoreFileJButtonActionPerformed"/>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="restoreLocalFileJButtonActionPerformed"/>
                           </Events>
                           <AuxValues>
                             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>

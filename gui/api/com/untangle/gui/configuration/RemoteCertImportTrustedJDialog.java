@@ -48,6 +48,9 @@ public class RemoteCertImportTrustedJDialog extends javax.swing.JDialog implemen
     private void init(Window topLevelWindow, MConfigJDialog mConfigJDialog) {
 	this.mConfigJDialog = mConfigJDialog;
         initComponents();
+		MConfigJDialog.setInitialFocusComponent(keyJTextArea);
+		Util.addFocusHighlight(keyJTextArea);
+		Util.addFocusHighlight(intermediateJTextArea);
         this.addWindowListener(this);
         this.setBounds( Util.generateCenteredBounds(topLevelWindow.getBounds(), this.getWidth(), this.getHeight()) );
     }

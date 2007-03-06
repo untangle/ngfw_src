@@ -35,6 +35,12 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
     
     public PolicyWizardJPanel(Vector newRow) {
         initComponents();
+		Util.addFocusHighlight(addressClientJTextField);
+		Util.addFocusHighlight(addressServerJTextField);
+		Util.addFocusHighlight(portServerJTextField);
+		Util.addFocusHighlight(timeStartJTextField);
+		Util.addFocusHighlight(timeEndJTextField);
+		Util.addFocusHighlight(rackDescJTextField);
         this.newRow = newRow;
         doRefresh(newRow);
     }

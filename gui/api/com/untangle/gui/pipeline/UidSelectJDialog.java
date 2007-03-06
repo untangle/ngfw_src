@@ -236,7 +236,7 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
             }
             catch(Exception f){
                 Util.handleExceptionNoRestart("Error doing refresh", f);
-                MOneButtonJDialog.factory(UidSelectJDialog.this, "Policy Manager", "There was a problem refreshing LDAP Directory users.  Please check your LDAP Directory settings and try again.",
+                MOneButtonJDialog.factory(UidSelectJDialog.this, "Policy Manager", "There was a problem refreshing Local Directory users.  Please check your Local Directory settings and try again.",
                                           "Policy Manager Warning", "Policy Manager Warning");
             }
             SwingUtilities.invokeLater( new Runnable(){ public void run(){
@@ -265,7 +265,7 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 	    switch(userEntry.getStoredIn()){
 	    case MS_ACTIVE_DIRECTORY : repository = "Active Directory";
 		break;
-	    case LOCAL_DIRECTORY : repository = "LDAP";
+	    case LOCAL_DIRECTORY : repository = "Local";
 		break;
 	    case NONE : repository = "UNKNOWN";
 	    default :;

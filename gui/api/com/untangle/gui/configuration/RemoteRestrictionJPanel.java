@@ -34,11 +34,11 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
     
     public RemoteRestrictionJPanel() {
         initComponents();
+        Util.setPortView(externalAccessPortJSpinner, 443);
         Util.addPanelFocus(this, restrictAdminJCheckBox);
         Util.addFocusHighlight(externalAccessPortJSpinner);
         Util.addFocusHighlight(restrictIPaddrJTextField);
         Util.addFocusHighlight(restrictNetmaskJTextField);
-        Util.setPortView(externalAccessPortJSpinner, 443);
     }
 
     public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {

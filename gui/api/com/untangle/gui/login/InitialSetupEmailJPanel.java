@@ -39,6 +39,14 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
         initComponents();
 	Util.setPortView(portJSpinner, 25);
 	smtpDisabledJRadioButton.setSelected(true);
+	
+	Util.addPanelFocus(this, smtpDisabledJRadioButton);
+	Util.addFocusHighlight(hostJTextField);
+	Util.addFocusHighlight(portJSpinner);
+	Util.addFocusHighlight(smtpLoginJTextField);
+	Util.addFocusHighlight(smtpPasswordJPasswordField);
+	Util.addFocusHighlight(addressJTextField);
+	
 	setMxRecordsEnabledDependency(true);
     }
     

@@ -103,9 +103,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     public JTabbedPane addTabbedPane(String name, Icon icon){
         JTabbedPane newJTabbedPane = new JTabbedPane();
         newJTabbedPane.setBorder(new EmptyBorder(7, 13, 13, 13));
-        newJTabbedPane.setFocusable(false);
         newJTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
-        //newJTabbedPane.setRequestFocusEnabled(false);
         JPanel backJPanel = new JPanel();
         backJPanel.setLayout(new BorderLayout());
         backJPanel.add(newJTabbedPane);
@@ -115,7 +113,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     public JScrollPane addScrollableTab(JTabbedPane parentJTabbedPane, String name, Icon icon,
 					Component childComponent, boolean scrollH, boolean scrollV){
 	JScrollPane newJScrollPane = new JScrollPane(childComponent);
-    newJScrollPane.setFocusable(false);
     newJScrollPane.getHorizontalScrollBar().setFocusable(false);
     newJScrollPane.getVerticalScrollBar().setFocusable(false);
 	newJScrollPane.setHorizontalScrollBarPolicy( scrollH ? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS : JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
@@ -235,7 +232,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 setTitle("");
                 setModal(true);
                 contentJTabbedPane.setDoubleBuffered(true);
-                contentJTabbedPane.setFocusable(false);
                 contentJTabbedPane.setFont(new java.awt.Font("Default", 0, 12));
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;

@@ -59,6 +59,7 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
 	    + vpnClient.getInternalName()
 	    + ".exe\n</html>";
         initComponents();
+		Util.addFocusHighlight(emailJTextField);
 	isUsbSelected = usbJRadioButton.isSelected();
         this.addWindowListener(this);
         this.setBounds( Util.generateCenteredBounds(topLevelWindow.getBounds(), this.getWidth(), this.getHeight()) );

@@ -32,6 +32,7 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 
     public EmailOutgoingJPanel() {
         initComponents();
+		Util.setPortView(portJSpinner, 25);
         MConfigJDialog.setInitialFocusComponent(smtpDisabledJRadioButton);
         Util.addPanelFocus(this, smtpDisabledJRadioButton);
         Util.addFocusHighlight(hostJTextField);
@@ -39,7 +40,6 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
         Util.addFocusHighlight(smtpLoginJTextField);
         Util.addFocusHighlight(smtpPasswordJPasswordField);
         Util.addFocusHighlight(addressJTextField);
-        Util.setPortView(portJSpinner, 25);
     }
 
     public void doSave(EmailCompoundSettings emailCompoundSettings, boolean validateOnly) throws Exception {

@@ -35,7 +35,16 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 
     public DirectoryRemoteADJPanel() {
         initComponents();
-	Util.setPortView(portJSpinner, 25);
+        Util.setPortView(portJSpinner, 25);
+        Util.addPanelFocus(this, adDisabledJRadioButton);
+        Util.addFocusHighlight(hostJTextField);
+        Util.addFocusHighlight(portJSpinner);
+        Util.addFocusHighlight(loginJTextField);
+        Util.addFocusHighlight(passwordJPasswordField);
+        Util.addFocusHighlight(baseJTextField);
+        Util.addFocusHighlight(orgJTextField);
+        Util.addFocusHighlight(serverIPJTextField);
+        Util.addFocusHighlight(urlJTextField);
     }
 
     public void doSave(DirectoryCompoundSettings directoryCompoundSettings, boolean validateOnly) throws Exception {
@@ -64,8 +73,8 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 	// PASSWORD /////
 	String password = new String(passwordJPasswordField.getPassword());
 
-        // DOMAIN /////
-        String domain = baseJTextField.getText();
+    // DOMAIN /////
+    String domain = baseJTextField.getText();
 
 	// ORG //
 	String org = orgJTextField.getText();

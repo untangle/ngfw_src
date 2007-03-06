@@ -57,7 +57,15 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
 							      (Long)(MailTransformSettings.TIMEOUT_MIN/1000l),
 							      (Long)(MailTransformSettings.TIMEOUT_MAX/1000l),
 							      (Long)1l) );
-	timeoutLimitsJLabel.setText("(max=" + (MailTransformSettings.TIMEOUT_MAX/1000l) + " min=" +  (MailTransformSettings.TIMEOUT_MIN/1000l) + ")");
+        timeoutLimitsJLabel.setText("(max=" + (MailTransformSettings.TIMEOUT_MAX/1000l) + " min=" +  (MailTransformSettings.TIMEOUT_MIN/1000l) + ")");
+
+        Util.addPanelFocus(this, smtpEnabledRadioButton);
+        Util.addFocusHighlight(smtpInboundJSpinner);
+        Util.addFocusHighlight(smtpOutboundJSpinner);
+        Util.addFocusHighlight(popInboundJSpinner);
+        Util.addFocusHighlight(popOutboundJSpinner);
+        Util.addFocusHighlight(imapInboundJSpinner);
+        Util.addFocusHighlight(imapOutboundJSpinner);
     }
 
     public String getDisplayName(){ return "Mail Settings"; }

@@ -29,6 +29,10 @@ public class MaintenancePingJPanel extends javax.swing.JPanel {
     
     public MaintenancePingJPanel() {
         initComponents();
+        jScrollPane1.getVerticalScrollBar().setFocusable(false);
+        Util.addPanelFocus(this, pingJTextField);
+        Util.addFocusHighlight(pingJTextField);
+        Util.addFocusHighlight(pingJEditorPane);
     }
 
 

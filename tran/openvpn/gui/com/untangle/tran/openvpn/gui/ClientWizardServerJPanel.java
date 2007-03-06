@@ -38,11 +38,18 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
     public ClientWizardServerJPanel(VpnTransform vpnTransform) {
         this.vpnTransform = vpnTransform;
         initComponents();
+		Util.addFocusHighlight(serverJTextField);
+		Util.addFocusHighlight(passwordJTextField);
 	setServerSelectedDependency(serverJRadioButton.isSelected());
 	keyJComboBox.addItem(NO_CONFIGURATIONS);
 	keyJComboBox.setSelectedItem(NO_CONFIGURATIONS);
     }
 
+	public void initialFocus(){
+			serverJRadioButton.requestFocus();
+	}
+	
+	
     boolean useServer;
     String address;
     HostAddress addressIPaddr;

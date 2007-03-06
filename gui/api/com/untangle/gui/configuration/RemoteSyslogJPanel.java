@@ -30,10 +30,10 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel
     
     public RemoteSyslogJPanel() {
         initComponents();
+		Util.setPortView(portJSpinner, 514);
         Util.addPanelFocus(this, syslogDisabledRadioButton);
         Util.addFocusHighlight(hostJTextField);
         Util.addFocusHighlight(portJSpinner);
-        Util.setPortView(portJSpinner, 514);
         for( SyslogFacility syslogFacility : SyslogFacility.values() )
             facilityJComboBox.addItem(syslogFacility.getFacilityName());
         for( SyslogPriority syslogPriority : SyslogPriority.values() )

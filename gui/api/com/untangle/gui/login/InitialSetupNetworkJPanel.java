@@ -43,6 +43,15 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
         setDhcpEnabledDependency(dhcpEnabledRadioButton.isSelected());
         setPPPOEEnabledDependency(pppoeEnabledJRadioButton.isSelected());
         hostnameJTextField.setText( "untangle" + "." + MailSender.DEFAULT_LOCAL_DOMAIN );
+		
+		Util.addFocusHighlight(hostnameJTextField);
+		Util.addFocusHighlight(dhcpIPaddrJTextField);
+        Util.addFocusHighlight(dhcpNetmaskJTextField);
+        Util.addFocusHighlight(dhcpRouteJTextField);
+        Util.addFocusHighlight(dnsPrimaryJTextField);
+        Util.addFocusHighlight(dnsSecondaryJTextField);
+		Util.addFocusHighlight(nameJTextField);
+		Util.addFocusHighlight(passwordJPasswordField);
     }
 
     public void initialFocus(){

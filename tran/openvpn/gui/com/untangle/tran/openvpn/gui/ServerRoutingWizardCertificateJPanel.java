@@ -32,8 +32,16 @@ public class ServerRoutingWizardCertificateJPanel extends MWizardPageJPanel {
     public ServerRoutingWizardCertificateJPanel(VpnTransform vpnTransform) {
 		this.vpnTransform = vpnTransform;
 		initComponents();
+		Util.addFocusHighlight(organizationJTextField);
+		Util.addFocusHighlight(countryJTextField);
+		Util.addFocusHighlight(stateJTextField);
+		Util.addFocusHighlight(localityJTextField);
     }
 
+	public void initialFocus(){
+		organizationJTextField.requestFocus();
+	}
+	
     String organization;
     String country;
     String state;

@@ -31,14 +31,14 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
     
     public RemoteSnmpJPanel() {
         initComponents();
+		Util.setPortView(trapPortJSpinner, 162);
         Util.addPanelFocus(this, snmpDisabledRadioButton);
         Util.addFocusHighlight(snmpCommunityJTextField);
         Util.addFocusHighlight(snmpContactJTextField);
         Util.addFocusHighlight(snmpLocationJTextField);
         Util.addFocusHighlight(trapCommunityJTextField);
         Util.addFocusHighlight(trapHostJTextField);
-        Util.addFocusHighlight(trapPortJSpinner);
-        Util.setPortView(trapPortJSpinner, 162);
+        Util.addFocusHighlight(trapPortJSpinner);        
     }
 
     public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {

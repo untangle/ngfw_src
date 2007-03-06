@@ -31,6 +31,8 @@ public class InitialSetupPasswordJPanel extends MWizardPageJPanel {
 	
     public InitialSetupPasswordJPanel() {
         initComponents();
+		Util.addFocusHighlight(passwordJPasswordField);
+		Util.addFocusHighlight(retypePasswordJPasswordField);
 		SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    for(TimeZone tz : TimeZone.values()){
             timezoneJComboBox.addItem(tz);

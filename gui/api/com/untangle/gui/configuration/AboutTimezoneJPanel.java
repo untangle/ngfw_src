@@ -29,6 +29,7 @@ public class AboutTimezoneJPanel extends javax.swing.JPanel
     
     public AboutTimezoneJPanel() {
         initComponents();
+        Util.addPanelFocus(this, timezoneJComboBox);
         for(TimeZone tz : TimeZone.values()){
             timezoneJComboBox.addItem(tz);
         }

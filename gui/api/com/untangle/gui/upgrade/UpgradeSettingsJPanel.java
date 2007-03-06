@@ -22,6 +22,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.text.*;
 import java.text.*;
 import java.util.*;
+import java.awt.Color;
 
 public class UpgradeSettingsJPanel extends javax.swing.JPanel
     implements Savable<UpgradeCompoundSettings>, Refreshable<UpgradeCompoundSettings> {
@@ -29,7 +30,9 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
     private static final String EXCEPTION_NO_DAY = "You must select at least one day to check for upgrades.";
 
     public UpgradeSettingsJPanel() {
-	initComponents();
+        initComponents();
+        Util.addPanelFocus(this, mondayJCheckBox);
+        Util.addFocusHighlight(timeJSpinner);
     }
     
     public void doSave(UpgradeCompoundSettings upgradeCompoundSettings, boolean validateOnly) throws Exception {
@@ -98,6 +101,7 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
         saturdayJCheckBox.setSelected( period.getSaturday() );
         // set time value
         timeJSpinner.setValue(calendar.getTime());
+		((JSpinner.DefaultEditor)timeJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
     }
 
 
@@ -108,8 +112,7 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
                 autoInstallButtonGroup = new javax.swing.ButtonGroup();
                 advancedJPanel = new javax.swing.JPanel();
                 jPanel3 = new javax.swing.JPanel();
-                detailNameJTextField2 = new javax.swing.JTextField();
-                jScrollPane2 = new javax.swing.JScrollPane();
+                jLabel1 = new javax.swing.JLabel();
                 jPanel5 = new javax.swing.JPanel();
                 mondayJCheckBox = new javax.swing.JCheckBox();
                 tuesdayJCheckBox = new javax.swing.JCheckBox();
@@ -133,16 +136,12 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
 
                 // Or use 24 hour mode
                 formatter.setFormat(new SimpleDateFormat("HH:mm " + "(" + "a" + ")"));
-                tf.setEditable(false);
-                tf.setOpaque(false);
                 timeJSpinner.setValue( calendar.getTime() );
                 contentJPanel2 = new javax.swing.JPanel();
-                jScrollPane1 = new javax.swing.JScrollPane();
+                jLabel2 = new javax.swing.JLabel();
                 jPanel6 = new javax.swing.JPanel();
                 yesAutoJRadioButton = new javax.swing.JRadioButton();
                 noAutoJRadioButton = new javax.swing.JRadioButton();
-                detailJTextArea1 = new javax.swing.JTextArea();
-                detailNameJTextField = new javax.swing.JTextField();
 
                 setLayout(new java.awt.GridBagLayout());
 
@@ -152,27 +151,19 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
                 jPanel3.setLayout(new java.awt.GridBagLayout());
 
                 jPanel3.setOpaque(false);
-                detailNameJTextField2.setEditable(false);
-                detailNameJTextField2.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-                detailNameJTextField2.setText("Check For Upgrades");
-                detailNameJTextField2.setDoubleBuffered(true);
-                detailNameJTextField2.setFocusable(false);
-                detailNameJTextField2.setMinimumSize(new java.awt.Dimension(4, 17));
-                detailNameJTextField2.setPreferredSize(new java.awt.Dimension(119, 17));
+                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel1.setText("Upgrade Check Days");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                jPanel3.add(detailNameJTextField2, gridBagConstraints);
+                jPanel3.add(jLabel1, gridBagConstraints);
 
-                jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-                jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-                jScrollPane2.setDoubleBuffered(true);
                 jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
                 jPanel5.setBackground(new java.awt.Color(213, 213, 226));
+                jPanel5.setBorder(new javax.swing.border.EtchedBorder());
                 jPanel5.setMinimumSize(new java.awt.Dimension(21, 185));
+                jPanel5.setOpaque(false);
                 jPanel5.setPreferredSize(new java.awt.Dimension(110, 250));
                 mondayJCheckBox.setFont(new java.awt.Font("Default", 0, 12));
                 mondayJCheckBox.setText("Monday");
@@ -218,37 +209,44 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
 
                 timeJSpinner.setFont(new java.awt.Font("Default", 0, 12));
                 timeJSpinner.setDoubleBuffered(true);
-                timeJSpinner.setOpaque(false);
-                timeJSpinner.setPreferredSize(null);
-                jPanel5.add(timeJSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(45, 200, 95, 30));
-
-                jScrollPane2.setViewportView(jPanel5);
+                timeJSpinner.setMaximumSize(new java.awt.Dimension(100, 19));
+                timeJSpinner.setMinimumSize(new java.awt.Dimension(100, 19));
+                timeJSpinner.setPreferredSize(new java.awt.Dimension(100, 19));
+                jPanel5.add(timeJSpinner, new org.netbeans.lib.awtextra.AbsoluteConstraints(45, 200, 100, 19));
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.ipadx = 70;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
-                jPanel3.add(jScrollPane2, gridBagConstraints);
+                jPanel3.add(jPanel5, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.ipadx = 65;
+                gridBagConstraints.ipadx = 40;
                 gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 15, 0);
+                gridBagConstraints.insets = new java.awt.Insets(15, 15, 15, 15);
                 advancedJPanel.add(jPanel3, gridBagConstraints);
 
                 contentJPanel2.setLayout(new java.awt.GridBagLayout());
 
-                jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-                jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-                jScrollPane1.setDoubleBuffered(true);
+                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel2.setText("Automatic Installation Of Upgrades");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                contentJPanel2.add(jLabel2, gridBagConstraints);
+
                 jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
                 jPanel6.setBackground(new java.awt.Color(213, 213, 226));
+                jPanel6.setBorder(new javax.swing.border.EtchedBorder());
                 jPanel6.setMinimumSize(new java.awt.Dimension(21, 185));
+                jPanel6.setOpaque(false);
                 jPanel6.setPreferredSize(new java.awt.Dimension(110, 250));
                 autoInstallButtonGroup.add(yesAutoJRadioButton);
                 yesAutoJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -267,33 +265,13 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
                 noAutoJRadioButton.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
                 jPanel6.add(noAutoJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 140, -1, -1));
 
-                jScrollPane1.setViewportView(jPanel6);
-
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
-                contentJPanel2.add(jScrollPane1, gridBagConstraints);
-
-                detailJTextArea1.setBackground(new java.awt.Color(213, 213, 226));
-                detailJTextArea1.setDoubleBuffered(true);
-                contentJPanel2.add(detailJTextArea1, new java.awt.GridBagConstraints());
-
-                detailNameJTextField.setEditable(false);
-                detailNameJTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-                detailNameJTextField.setText("Automatic Installation Of Upgrades");
-                detailNameJTextField.setDoubleBuffered(true);
-                detailNameJTextField.setFocusable(false);
-                detailNameJTextField.setMinimumSize(new java.awt.Dimension(4, 17));
-                detailNameJTextField.setPreferredSize(new java.awt.Dimension(119, 17));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 1);
-                contentJPanel2.add(detailNameJTextField, gridBagConstraints);
+                contentJPanel2.add(jPanel6, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
@@ -301,7 +279,7 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 15, 15);
+                gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 15);
                 advancedJPanel.add(contentJPanel2, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -317,15 +295,12 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
         private javax.swing.JPanel advancedJPanel;
         private javax.swing.ButtonGroup autoInstallButtonGroup;
         private javax.swing.JPanel contentJPanel2;
-        protected javax.swing.JTextArea detailJTextArea1;
-        protected javax.swing.JTextField detailNameJTextField;
-        protected javax.swing.JTextField detailNameJTextField2;
         private javax.swing.JCheckBox fridayJCheckBox;
+        private javax.swing.JLabel jLabel1;
+        private javax.swing.JLabel jLabel2;
         private javax.swing.JPanel jPanel3;
         private javax.swing.JPanel jPanel5;
         private javax.swing.JPanel jPanel6;
-        private javax.swing.JScrollPane jScrollPane1;
-        private javax.swing.JScrollPane jScrollPane2;
         private javax.swing.JCheckBox mondayJCheckBox;
         private javax.swing.JRadioButton noAutoJRadioButton;
         private javax.swing.JCheckBox saturdayJCheckBox;

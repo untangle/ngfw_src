@@ -45,6 +45,10 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
 							(Integer)1) );
         maxUriLimitsJLabel.setText("(max=" + HttpSettings.MAX_URI_LENGTH + " min=" + HttpSettings.MIN_URI_LENGTH + ")");
         maxHeaderLimitsJLabel.setText("(max=" + HttpSettings.MAX_HEADER_LENGTH + " min=" + HttpSettings.MIN_HEADER_LENGTH + ")");
+
+        Util.addPanelFocus(this, httpEnabledRadioButton);
+        Util.addFocusHighlight(maxUriJSpinner);
+        Util.addFocusHighlight(maxHeaderJSpinner);
     }
 
     public String getDisplayName(){ return "HTTP Settings"; }

@@ -32,10 +32,10 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
 
     public RemotePublicAddressJPanel() {
         initComponents();
-        Util.addPanelFocus(this, disabledJRadioButton);
+        Util.setPortView(portJSpinner, 443);
+		Util.addPanelFocus(this, disabledJRadioButton);
         Util.addFocusHighlight(addressJTextField);
         Util.addFocusHighlight(portJSpinner);
-        Util.setPortView(portJSpinner, 443);
     }
 
     public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {

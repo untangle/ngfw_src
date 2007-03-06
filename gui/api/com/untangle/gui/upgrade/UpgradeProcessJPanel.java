@@ -48,7 +48,8 @@ public class UpgradeProcessJPanel extends JPanel
         mEditTableJPanel.setTableModel( upgradeTableModel );
         mEditTableJPanel.getJTable().setRowHeight(49);
 
-	initComponents();
+        initComponents();
+        MConfigJDialog.setInitialFocusComponent(upgradeJButton);
     }
     
 
