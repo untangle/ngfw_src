@@ -73,6 +73,11 @@ class TransformContextImpl implements TransformContext
                          String mackageName, boolean isNew)
         throws DeployException
     {
+        if (null != tDesc.getTransformBase()) {
+            SchemaUtil.initSchema("settings", tDesc.getTransformBase());
+        }
+        SchemaUtil.initSchema("settings", tDesc.getName());
+
         MvvmContextImpl mctx = MvvmContextImpl.getInstance();
         transformManager = mctx.transformManager();
         toolboxManager = mctx.toolboxManager();

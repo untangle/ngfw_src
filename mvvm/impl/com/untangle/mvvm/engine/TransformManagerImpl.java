@@ -585,10 +585,6 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
                 throw new DeployException("TransformManager is shut down");
             }
 
-            if (null != tDesc.getTransformBase()) {
-                SchemaUtil.initSchema("settings", tDesc.getTransformBase());
-            }
-            SchemaUtil.initSchema("settings", tDesc.getName());
             TransformContextImpl tc = new TransformContextImpl
                 ((URLClassLoader)getClass().getClassLoader(), tDesc, mackageDesc.getName(), true);
             tids.put(tid, tc);
