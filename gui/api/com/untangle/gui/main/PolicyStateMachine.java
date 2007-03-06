@@ -1043,7 +1043,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         JButton storeSettingsJButton = new JButton();
                         storeSettingsJButton.setFocusPainted(false);
                         storeSettingsJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                        storeSettingsJButton.setText("Show Billing Info");
+                        storeSettingsJButton.setText("My Account");
                         storeSettingsJButton.addActionListener(new StoreSettingsActionListener());
                         storeJPanel.add(storeSettingsJButton, storeSettingsGridBagConstraints);
                         storeJPanel.revalidate();
@@ -1115,7 +1115,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private class StoreSettingsActionListener implements ActionListener{
         public void actionPerformed(ActionEvent e){
             try{
-                URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/");
+                URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/index.php?option=com_content&task=view&id=31&Itemid=63");
                 ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
             }
             catch(Exception f){
