@@ -77,15 +77,6 @@ public class PhishHttpHandler extends HttpStateMachine
             if (result.blacklisted()) {
                 InetAddress clientIp = getSession().clientAddr();
 
-                // XXX this code should be factored out
-                if (null == host) {
-                    host = requestHeader.getValue("host");
-                    if (null == host) {
-                        host = clientIp.getHostAddress();
-                    }
-                }
-                host = host.toLowerCase();
-
                 ClamPhishBlockDetails bd = new ClamPhishBlockDetails
                     (host, uri.toString(), clientIp);
 
