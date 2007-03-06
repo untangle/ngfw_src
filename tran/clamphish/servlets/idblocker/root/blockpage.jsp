@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.untangle.mvvm.*, com.untangle.mvvm.tran.*, com.untangle.mvvm.security.*, com.untangle.tran.clamphish.*"%>
+<%@ page language="java" import="com.untangle.mvvm.*,com.untangle.mvvm.tran.*, com.untangle.mvvm.security.*, com.untangle.tran.http.*, com.untangle.tran.clamphish.*"%>
 
 <%
 LocalTransformManager tman = MvvmContextFactory.context().transformManager();
@@ -8,8 +8,8 @@ String tidStr = request.getParameter("tid");
 Tid tid = new Tid(Long.parseLong(tidStr));
 
 TransformContext tctx = tman.transformContext(tid);
-ClamPhishTransform tran = (ClamPhishTransform)tctx.transform();
-//UserWhitelistMode mode = tran.getUserWhitelistMode(); // XXX
+ClamPhish tran = (ClamPhish)tctx.transform();
+UserWhitelistMode mode = tran.getUserWhitelistMode();
 ClamPhishBlockDetails bd = tran.getBlockDetails(nonce);
 
 String header = "Identity Theft Blocker";

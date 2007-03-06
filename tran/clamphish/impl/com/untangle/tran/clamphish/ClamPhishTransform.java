@@ -22,6 +22,7 @@ import com.untangle.mvvm.tapi.Fitting;
 import com.untangle.mvvm.tapi.PipeSpec;
 import com.untangle.mvvm.tapi.SoloPipeSpec;
 import com.untangle.mvvm.tapi.TCPSession;
+import com.untangle.tran.http.UserWhitelistMode;
 import com.untangle.tran.spam.SpamImpl;
 import com.untangle.tran.spam.SpamSettings;
 import com.untangle.tran.token.Token;
@@ -124,9 +125,20 @@ public class ClamPhishTransform extends SpamImpl
 
     // public methods ---------------------------------------------------------
 
-    public ClamPhishBlockDetails getDetails(String nonce)
+    public ClamPhishBlockDetails getBlockDetails(String nonce)
     {
         return replacementGenerator.getNonceData(nonce);
+    }
+
+    public UserWhitelistMode getUserWhitelistMode()
+    {
+        return UserWhitelistMode.USER_AND_GLOBAL; // XXX
+    }
+
+    public boolean unblockSite(String nonce, boolean global)
+    {
+        // XXX do it!
+        return true;
     }
 
     // protected methods ------------------------------------------------------

@@ -27,11 +27,11 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.untangle.mvvm.security.Tid;
 import com.untangle.mvvm.tran.IPMaddrRule;
 import com.untangle.mvvm.tran.StringRule;
+import com.untangle.tran.http.UserWhitelistMode;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 

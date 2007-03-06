@@ -47,6 +47,7 @@ import com.untangle.mvvm.tran.StringRule;
 import com.untangle.mvvm.tran.TransformContext;
 import com.untangle.mvvm.util.OutsideValve;
 import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.tran.http.UserWhitelistMode;
 import com.untangle.tran.token.Header;
 import com.untangle.tran.token.Token;
 import com.untangle.tran.token.TokenAdaptor;

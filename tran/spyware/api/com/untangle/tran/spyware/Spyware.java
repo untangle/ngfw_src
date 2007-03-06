@@ -13,6 +13,7 @@ package com.untangle.tran.spyware;
 
 import com.untangle.mvvm.logging.EventManager;
 import com.untangle.mvvm.tran.Transform;
+import com.untangle.tran.http.UserWhitelistMode;
 
 public interface Spyware extends Transform
 {

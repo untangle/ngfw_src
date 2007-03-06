@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.spyware;
+package com.untangle.tran.http;
 
 public enum UserWhitelistMode
 {

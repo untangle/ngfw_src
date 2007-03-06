@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.untangle.mvvm.*, com.untangle.mvvm.tran.*, com.untangle.mvvm.security.*, com.untangle.tran.spyware.*"%>
+<%@ page language="java" import="com.untangle.mvvm.*, com.untangle.mvvm.tran.*, com.untangle.mvvm.security.*,com.untangle.tran.spyware.*, com.untangle.tran.http.*"%>
 
 <%
 LocalTransformManager tman = MvvmContextFactory.context().transformManager();

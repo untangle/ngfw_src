@@ -11,9 +11,12 @@
 
 package com.untangle.tran.clamphish;
 
+import com.untangle.tran.http.UserWhitelistMode;
 import com.untangle.tran.spam.SpamTransform;
 
 public interface ClamPhish extends SpamTransform
 {
-    ClamPhishBlockDetails getDetails(String nonce);
+    ClamPhishBlockDetails getBlockDetails(String nonce);
+    boolean unblockSite(String nonce, boolean global);
+    UserWhitelistMode getUserWhitelistMode();
 }
