@@ -166,13 +166,6 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         return replacementGenerator.getNonceData(nonce);
     }
 
-    public String generateNonce(String host, String uri, InetAddress addr)
-    {
-        SpywareBlockDetails bd = new SpywareBlockDetails(host, uri, addr);
-
-        return replacementGenerator.generateNonce(bd);
-    }
-
     public boolean unblockSite(String nonce, boolean global)
     {
         SpywareBlockDetails bd = replacementGenerator.removeNonce(nonce);
@@ -307,13 +300,19 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     // package private methods ------------------------------------------------
 
-
     Token[] generateResponse(SpywareBlockDetails bd, TCPSession sess,
                              String uri, Header header, boolean persistent)
     {
         String n = replacementGenerator.generateNonce(bd);
         return replacementGenerator.generateResponse(n, sess, uri, header,
                                                      persistent);
+    }
+
+    String generateNonce(String host, String uri, InetAddress addr)
+    {
+        SpywareBlockDetails bd = new SpywareBlockDetails(host, uri, addr);
+
+        return replacementGenerator.generateNonce(bd);
     }
 
     boolean isBlacklistDomain(String domain, URI uri)

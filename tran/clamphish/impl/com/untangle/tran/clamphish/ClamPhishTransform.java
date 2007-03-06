@@ -4,10 +4,11 @@
  *
  * This software is the confidential and proprietary information of
  * Untangle, Inc. ("Confidential Information"). You shall
-p * not disclose such Confidential Information.
+ * not disclose such Confidential Information.
  *
  * $Id$
  */
+
 package com.untangle.tran.clamphish;
 
 import java.io.File;
@@ -20,8 +21,10 @@ import com.untangle.mvvm.tapi.Affinity;
 import com.untangle.mvvm.tapi.Fitting;
 import com.untangle.mvvm.tapi.PipeSpec;
 import com.untangle.mvvm.tapi.SoloPipeSpec;
+import com.untangle.mvvm.tapi.TCPSession;
 import com.untangle.tran.spam.SpamImpl;
 import com.untangle.tran.spam.SpamSettings;
+import com.untangle.tran.token.Token;
 import com.untangle.tran.token.TokenAdaptor;
 import com.untangle.tran.util.EncryptedUrlList;
 import com.untangle.tran.util.PrefixUrlList;
@@ -32,6 +35,7 @@ import org.apache.log4j.Logger;
 import static com.untangle.tran.util.Ascii.CRLF;
 
 public class ClamPhishTransform extends SpamImpl
+    implements ClamPhish
 {
     private static final String OUT_MOD_SUB_TEMPLATE =
       "[PHISH] $MIMEMessage:SUBJECT$";
@@ -78,26 +82,31 @@ public class ClamPhishTransform extends SpamImpl
     };
 
     private final UrlDatabase urlDatabase;
+    private final PhishReplacementGenerator replacementGenerator;
 
     private final Logger logger = Logger.getLogger(getClass());
+
+    // constructors -----------------------------------------------------------
 
     public ClamPhishTransform()
     {
         super(new ClamPhishScanner());
 
+        replacementGenerator = new PhishReplacementGenerator(getTid());
+
         urlDatabase = new UrlDatabase();
 
         // XXX post/pre init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         File dbHome = new File(System.getProperty("bunnicula.db.dir"), "clamphish");
-//         try {
-//             URL url = new URL("http://sb.google.com/safebrowsing/update?version=goog-black-url:1:1");
-//             UrlList ul = new PrefixUrlList(dbHome, "goog-black-url", url);
-//             urlDatabase.addBlacklist("goog-black-url", ul);
-//         } catch (DatabaseException exn) {
-//             logger.warn("could not open database", exn);
-//         } catch (IOException exn) {
-//             logger.warn("could not open database", exn);
-//         }
+        try {
+            URL url = new URL("http://sb.google.com/safebrowsing/update?version=goog-black-url:1:1");
+            UrlList ul = new PrefixUrlList(dbHome, "goog-black-url", url);
+            urlDatabase.addBlacklist("goog-black-url", ul);
+        } catch (DatabaseException exn) {
+            logger.warn("could not open database", exn);
+        } catch (IOException exn) {
+            logger.warn("could not open database", exn);
+        }
 
         try {
             URL url = new URL("http://sb.google.com/safebrowsing/update?version=goog-black-enchash:1:1");
@@ -112,6 +121,15 @@ public class ClamPhishTransform extends SpamImpl
         urlDatabase.updateAll();
         // XXX post/pre init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
+
+    // public methods ---------------------------------------------------------
+
+    public ClamPhishBlockDetails getDetails(String nonce)
+    {
+        return replacementGenerator.getNonceData(nonce);
+    }
+
+    // protected methods ------------------------------------------------------
 
     @Override
     protected PipeSpec[] getPipeSpecs()
@@ -204,8 +222,18 @@ public class ClamPhishTransform extends SpamImpl
         return; // does not apply to clamphish
     }
 
+    // package private methods ------------------------------------------------
+
+    Token[] generateResponse(ClamPhishBlockDetails bd, TCPSession session,
+                             boolean persistent)
+    {
+        return replacementGenerator.generateResponse(bd, session, persistent);
+    }
+
     UrlDatabase getUrlDatabase()
     {
         return urlDatabase;
     }
+
+
 }

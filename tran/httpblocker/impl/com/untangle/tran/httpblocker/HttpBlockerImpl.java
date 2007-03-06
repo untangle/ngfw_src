@@ -117,26 +117,6 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         return replacementGenerator.getNonceData(nonce);
     }
 
-    public String generateNonce(HttpBlockerBlockDetails details)
-    {
-        return replacementGenerator.generateNonce(details);
-    }
-
-    public Token[] generateResponse(String nonce, TCPSession session,
-                                    String uri, Header header,
-                                    boolean persistent)
-    {
-        return replacementGenerator.generateResponse(nonce, session, uri,
-                                                     header, persistent);
-    }
-
-    public Token[] generateResponse(String nonce, TCPSession session,
-                                    boolean persistent)
-    {
-        return replacementGenerator.generateResponse(nonce, session,
-                                                     persistent);
-    }
-
     // Transform methods ------------------------------------------------------
 
     @Override
@@ -374,6 +354,25 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     void log(HttpBlockerEvent se)
     {
         eventLogger.log(se);
+    }
+
+    String generateNonce(HttpBlockerBlockDetails details)
+    {
+        return replacementGenerator.generateNonce(details);
+    }
+
+    Token[] generateResponse(String nonce, TCPSession session, String uri,
+                             Header header, boolean persistent)
+    {
+        return replacementGenerator.generateResponse(nonce, session, uri,
+                                                     header, persistent);
+    }
+
+    Token[] generateResponse(String nonce, TCPSession session,
+                             boolean persistent)
+    {
+        return replacementGenerator.generateResponse(nonce, session,
+                                                     persistent);
     }
 
     // private methods --------------------------------------------------------

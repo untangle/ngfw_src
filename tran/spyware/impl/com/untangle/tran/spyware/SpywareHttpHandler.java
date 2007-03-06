@@ -91,6 +91,7 @@ public class SpywareHttpHandler extends HttpStateMachine
         RequestLineToken requestLine = getRequestLine();
         URI uri = requestLine.getRequestUri();
 
+        // XXX this code should be factored out
         String host = uri.getHost();
         if (null == host) {
             host = requestHeader.getValue("host");

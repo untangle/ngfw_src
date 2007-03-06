@@ -70,6 +70,20 @@ public abstract class ReplacementGenerator<T extends BlockDetails>
         return nonceFactory.removeNonce(nonce);
     }
 
+    public Token[] generateResponse(T o, TCPSession session,
+                                    boolean persistent)
+    {
+        return generateResponse(o, session, null, null, persistent);
+    }
+
+    public Token[] generateResponse(T o, TCPSession session,
+                                    String uri, Header requestHeader,
+                                    boolean persistent)
+    {
+        String n = generateNonce(o);
+        return generateResponse(n, session, uri, requestHeader, persistent);
+    }
+
     public Token[] generateResponse(String nonce, TCPSession session,
                                     boolean persistent)
     {
