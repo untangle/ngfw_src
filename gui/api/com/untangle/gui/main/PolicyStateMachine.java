@@ -462,8 +462,18 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 addToRack(policy, mTransformJPanel,true);
                 // FOCUS AND HIGHLIGHT IN CURRENT RACK
                 focusInRack(mTransformJPanel);
-                // REMIND USER TO START THAT SUCKER
-                mTransformJPanel.setPowerOnHintVisible(true);
+                // AUTO ON
+                if( transformDesc.getName().startsWith("nat") || transformDesc.getName().startsWith("openvpn") ){
+                    mTransformJPanel.setPowerOnHintVisible(true);
+                    MOneButtonJDialog.factory( Util.getMMainJFrame(), "",					       
+                                               "This product can not be automatically turned on:<br>"
+                                               + transformDesc.getDisplayName()
+                                               + "<br>Please configure its settings first.",
+                                               transformDesc.getDisplayName() + " Warning", "");
+                }
+                else{
+                    mTransformJPanel.powerJToggleButton().doClick();
+                }
             }
             catch(Exception e){
                 try{ Util.handleExceptionWithRestart("Error moving from toolbox to rack", e); }
@@ -813,6 +823,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         Thread.currentThread().sleep(DEPLOY_FINAL_PAUSE_MILLIS);
                         addToRack(newPolicy, mTransformJPanel, true);
                         focusInRack(mTransformJPanel);
+                        // AUTO ON
                         if( newMackageDesc.getName().startsWith("nat") || newMackageDesc.getName().startsWith("openvpn") ){
                             mTransformJPanel.setPowerOnHintVisible(true);
                             MOneButtonJDialog.factory( Util.getMMainJFrame(), "",					       
