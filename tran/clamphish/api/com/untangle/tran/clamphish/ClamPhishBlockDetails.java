@@ -11,14 +11,27 @@
 
 package com.untangle.tran.clamphish;
 
+import java.net.InetAddress;
+
 import com.untangle.tran.http.BlockDetails;
 
 public class ClamPhishBlockDetails extends BlockDetails
 {
+    private final InetAddress clientAddr;
+
     // constructor ------------------------------------------------------------
 
-    public ClamPhishBlockDetails(String host, String uri)
+    public ClamPhishBlockDetails(String host, String uri,
+                                 InetAddress clientAddr)
     {
         super(host, uri);
+        this.clientAddr = clientAddr;
+    }
+
+    // public methods ---------------------------------------------------------
+
+    public InetAddress getClientAddress()
+    {
+        return clientAddr;
     }
 }

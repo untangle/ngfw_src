@@ -13,8 +13,13 @@ package com.untangle.tran.clamphish;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.sleepycat.je.DatabaseException;
 import com.untangle.mvvm.LocalAppServerManager;
@@ -90,6 +95,8 @@ public class ClamPhishTransform extends SpamImpl
     };
 
     private final UrlDatabase urlDatabase;
+    private final Map<InetAddress, Set<String>> hostWhitelists
+        = new HashMap<InetAddress, Set<String>>();
     private final PhishReplacementGenerator replacementGenerator;
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -139,13 +146,33 @@ public class ClamPhishTransform extends SpamImpl
 
     public UserWhitelistMode getUserWhitelistMode()
     {
-        return UserWhitelistMode.USER_AND_GLOBAL; // XXX
+        return UserWhitelistMode.USER_ONLY; // XXX
     }
 
     public boolean unblockSite(String nonce, boolean global)
     {
-        // XXX do it!
-        return true;
+        ClamPhishBlockDetails bd = replacementGenerator.getNonceData(nonce);
+
+        // XXX we do not do global right now
+        String site = bd.getWhitelistHost();
+        if (null == site) {
+            logger.warn("cannot unblock null host");
+            return false;
+        } else {
+            logger.warn("temporarily unblocking site: " + site);
+            InetAddress addr = bd.getClientAddress();
+
+            synchronized (this) {
+                Set<String> wl = hostWhitelists.get(addr);
+                if (null == wl) {
+                    wl = new HashSet<String>();
+                    hostWhitelists.put(addr, wl);
+                }
+                wl.add(site);
+            }
+
+            return true;
+        }
     }
 
     // protected methods ------------------------------------------------------
@@ -261,6 +288,20 @@ public class ClamPhishTransform extends SpamImpl
         return replacementGenerator.generateResponse(bd, session, persistent);
     }
 
+    boolean isWhitelistedDomain(String host, InetAddress clientAddr)
+    {
+        Set<String> l = hostWhitelists.get(clientAddr);
+        if (null != l) {
+            for (String d = host; null != d; d = nextHost(d)) {
+                if (l.contains(d)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     UrlDatabase getUrlDatabase()
     {
         return urlDatabase;
@@ -327,5 +368,16 @@ public class ClamPhishTransform extends SpamImpl
         }
 
         webappDeployed = false;
+    }
+
+    // XXX factor this shit out!
+    private String nextHost(String host)
+    {
+        int i = host.indexOf('.');
+        if (0 > i || i == host.lastIndexOf('.')) {
+            return null;  /* skip TLD */
+        }
+
+        return host.substring(i + 1);
     }
 }

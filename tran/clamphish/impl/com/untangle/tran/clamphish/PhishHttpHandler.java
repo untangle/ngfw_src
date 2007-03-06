@@ -20,8 +20,8 @@ import com.untangle.tran.http.RequestLineToken;
 import com.untangle.tran.http.StatusLine;
 import com.untangle.tran.token.Chunk;
 import com.untangle.tran.token.Header;
-import com.untangle.tran.util.UrlDatabaseResult;
 import com.untangle.tran.token.Token;
+import com.untangle.tran.util.UrlDatabaseResult;
 
 public class PhishHttpHandler extends HttpStateMachine
 {
@@ -52,25 +52,42 @@ public class PhishHttpHandler extends HttpStateMachine
     {
         URI uri = getRequestLine().getRequestUri();
 
-        UrlDatabaseResult result = transform.getUrlDatabase()
-            .search(getSession(), uri, requestHeader);
+        // XXX this code should be factored out
+        String host = uri.getHost();
+        if (null == host) {
+            host = requestHeader.getValue("host");
+            if (null == host) {
+                InetAddress clientIp = getSession().clientAddr();
+                host = clientIp.getHostAddress();
+            }
+        }
+        host = host.toLowerCase();
+
+        // XXX yuck
+        UrlDatabaseResult result;
+        if (transform.isWhitelistedDomain(host, getSession().clientAddr())) {
+            result = null;
+        } else {
+            result = transform.getUrlDatabase()
+                .search(getSession(), uri, requestHeader);
+        }
 
         if (null != result) {
             // XXX fire off event
             if (result.blacklisted()) {
+                InetAddress clientIp = getSession().clientAddr();
+
                 // XXX this code should be factored out
-                String host = uri.getHost();
                 if (null == host) {
                     host = requestHeader.getValue("host");
                     if (null == host) {
-                        InetAddress clientIp = getSession().clientAddr();
                         host = clientIp.getHostAddress();
                     }
                 }
                 host = host.toLowerCase();
 
                 ClamPhishBlockDetails bd = new ClamPhishBlockDetails
-                    (host, uri.toString());
+                    (host, uri.toString(), clientIp);
 
                 Token[] r = transform.generateResponse(bd, getSession(),
                                                        isRequestPersistent());

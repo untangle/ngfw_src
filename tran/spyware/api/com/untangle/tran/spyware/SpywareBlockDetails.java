@@ -24,6 +24,9 @@ public class SpywareBlockDetails extends BlockDetails
         super(host, uri);
         this.clientAddr = clientAddr;
     }
+
+    // public methods ---------------------------------------------------------
+
     public InetAddress getClientAddress()
     {
         return clientAddr;

@@ -399,6 +399,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         return false;
     }
 
+    // XXX factor this shit out!
     private String nextHost(String host)
     {
         int i = host.indexOf('.');
