@@ -242,6 +242,8 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     protected void preDestroy() {
         deregisterApps();
 
+        setPortalSettings(PortalSettings.getBlankSettings());
+
         /* unregister the service with the MVVM */
         MvvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
     }
