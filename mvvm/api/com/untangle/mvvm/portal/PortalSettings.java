@@ -51,6 +51,15 @@ public class PortalSettings implements Serializable
 
     public PortalSettings() { }
 
+    public static PortalSettings getBlankSettings()
+    {
+        PortalSettings ps = new PortalSettings();
+        PortalGlobal pg = new PortalGlobal();
+        pg.setPortalHomeSettings(new PortalHomeSettings());
+        ps.setGlobal(pg);
+        return ps;
+    }
+
     // business methods ------------------------------------------------------
 
     public PortalUser addUser(String uid)

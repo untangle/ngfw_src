@@ -108,10 +108,7 @@ class PortalManagerImpl implements LocalPortalManager
                     portalSettings = (PortalSettings)q.uniqueResult();
 
                     if (null == portalSettings) {
-                        portalSettings = new PortalSettings();
-                        PortalGlobal pg = new PortalGlobal();
-                        pg.setPortalHomeSettings(new PortalHomeSettings());
-                        portalSettings.setGlobal(pg);
+                        portalSettings = PortalSettings.getBlankSettings();
                         s.save(portalSettings);
                     }
                     return true;
