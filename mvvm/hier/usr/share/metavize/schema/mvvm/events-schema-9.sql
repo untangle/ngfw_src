@@ -29,7 +29,6 @@ CREATE TABLE events.pl_endp (
     time_stamp timestamp,
     session_id int4,
     proto int2,
-    create_date timestamp,
     client_intf int2,
     server_intf int2,
     c_client_addr inet,
@@ -130,6 +129,10 @@ CREATE TABLE events.mvvm_lookup_evt (
     time_stamp  TIMESTAMP,
     PRIMARY KEY (event_id));
 
+CREATE TABLE events.event_data_days (
+        day_name text NOT NULL,
+        day_begin date NOT NULL);
+
 ----------------
 -- constraints |
 ----------------
@@ -137,7 +140,7 @@ CREATE TABLE events.mvvm_lookup_evt (
 -- indeces for reporting
 
 CREATE INDEX pl_endp_sid_idx ON events.pl_endp (session_id);
-CREATE INDEX pl_endp_cdate_idx ON events.pl_endp (create_date);
+CREATE INDEX pl_endp_ts_idx ON events.pl_endp (time_stamp);
 CREATE INDEX pl_stats_plepid_idx ON events.pl_stats (pl_endp_id);
 
 
