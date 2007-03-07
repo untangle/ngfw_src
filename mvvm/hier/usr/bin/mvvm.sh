@@ -282,15 +282,15 @@ while true; do
     echo "*** copied $MVVM_CONSOLE_LOG to $MVVM_CONSOLE_LOG.crash ***" >> $MVVM_WRAPPER_LOG
     echo "*** copied $MVVM_MVVM_LOG to $MVVM_MVVM_LOG.crash ***" >> $MVVM_WRAPPER_LOG
     echo "*** copied $MVVM_GC_LOG to $MVVM_GC_LOG.crash ***" >> $MVVM_WRAPPER_LOG
-    cp -f $MVVM_CONSOLE_LOG.crash.1 $MVVM_CONSOLE_LOG.crash.2
-    cp -f $MVVM_CONSOLE_LOG.crash $MVVM_CONSOLE_LOG.crash.1
-    cp -f $MVVM_CONSOLE_LOG $MVVM_CONSOLE_LOG.crash
-    cp -f $MVVM_MVVM_LOG.crash.1 $MVVM_MVVM_LOG.crash.2
-    cp -f $MVVM_MVVM_LOG.crash $MVVM_MVVM_LOG.crash.1
-    cp -f $MVVM_MVVM_LOG $MVVM_MVVM_LOG.crash
-    cp -f $MVVM_GC_LOG.crash.1 $MVVM_GC_LOG.crash.2
-    cp -f $MVVM_GC_LOG.crash $MVVM_GC_LOG.crash.1
-    cp -f $MVVM_GC_LOG $MVVM_GC_LOG.crash
+    cp -fa $MVVM_CONSOLE_LOG.crash.1 $MVVM_CONSOLE_LOG.crash.2
+    cp -fa $MVVM_CONSOLE_LOG.crash $MVVM_CONSOLE_LOG.crash.1
+    cp -fa $MVVM_CONSOLE_LOG $MVVM_CONSOLE_LOG.crash
+    cp -fa $MVVM_MVVM_LOG.crash.1 $MVVM_MVVM_LOG.crash.2
+    cp -fa $MVVM_MVVM_LOG.crash $MVVM_MVVM_LOG.crash.1
+    cp -fa $MVVM_MVVM_LOG $MVVM_MVVM_LOG.crash
+    cp -fa $MVVM_GC_LOG.crash.1 $MVVM_GC_LOG.crash.2
+    cp -fa $MVVM_GC_LOG.crash $MVVM_GC_LOG.crash.1
+    cp -fa $MVVM_GC_LOG $MVVM_GC_LOG.crash
 
     sleep 2
     echo "*** restarting on `date` ***" >> $MVVM_WRAPPER_LOG
