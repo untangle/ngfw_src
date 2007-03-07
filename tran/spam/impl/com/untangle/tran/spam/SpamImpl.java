@@ -318,7 +318,8 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         // with required system def confs
         saDefFile.readFromFile(saDefList);
         initSpamAssassinDefList(saDefList);
-        saDefFile.writeToFile(saDefList);
+        // Writing disabled for 4.2... jdi XXXXXXXXXXXXXXXX
+        // saDefFile.writeToFile(saDefList);
         // note that we automatically restart spamd
         // after we've initialized because there may be changes
         if (false == restartSpamAssassinDaemon())
