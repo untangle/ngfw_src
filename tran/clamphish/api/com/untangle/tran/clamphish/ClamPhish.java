@@ -16,6 +16,9 @@ import com.untangle.tran.spam.SpamTransform;
 
 public interface ClamPhish extends SpamTransform
 {
+    void setClamPhishSettings(ClamPhishSettings spamSettings);
+    ClamPhishSettings getClamPhishSettings();
+
     ClamPhishBlockDetails getBlockDetails(String nonce);
     boolean unblockSite(String nonce, boolean global);
     UserWhitelistMode getUserWhitelistMode();

@@ -42,6 +42,8 @@ import com.untangle.tran.util.UrlDatabase;
 import com.untangle.tran.util.UrlList;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import static com.untangle.tran.util.Ascii.CRLF;
 
@@ -139,6 +141,17 @@ public class ClamPhishTransform extends SpamImpl
 
     // public methods ---------------------------------------------------------
 
+    public void setClamPhishSettings(ClamPhishSettings spamSettings)
+    {
+        setSpamSettings(spamSettings);
+    }
+
+    public ClamPhishSettings getClamPhishSettings()
+    {
+        return (ClamPhishSettings)getSpamSettings();
+    }
+
+
     public ClamPhishBlockDetails getBlockDetails(String nonce)
     {
         return replacementGenerator.getNonceData(nonce);
@@ -175,6 +188,16 @@ public class ClamPhishTransform extends SpamImpl
         }
     }
 
+    public void initializeSettings()
+    {
+        logger.debug("Initializing Settings");
+
+        ClamPhishSettings tmpSpamSettings = new ClamPhishSettings(getTid());
+        tmpSpamSettings.setEnableGooglePhishList(true);
+        configureSpamSettings(tmpSpamSettings);
+        setSpamSettings(tmpSpamSettings);
+    }
+
     // protected methods ------------------------------------------------------
 
     @Override
@@ -193,6 +216,14 @@ public class ClamPhishTransform extends SpamImpl
     protected void postDestroy()
     {
         unDeployWebAppIfRequired(logger);
+    }
+
+    @Override
+    protected Query getSettingsQuery(Session s)
+    {
+        Query q = s.createQuery("from ClamPhishSettings ss where ss.tid = :tid");
+        q.setParameter("tid", getTid());
+        return q;
     }
 
     @Override

@@ -27,10 +27,11 @@ import com.untangle.mvvm.tran.Transform;
 import com.untangle.mvvm.tran.TransformContext;
 import com.untangle.mvvm.util.TransactionWork;
 import com.untangle.tran.token.TokenAdaptor;
-import static com.untangle.tran.util.Ascii.CRLF;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+
+import static com.untangle.tran.util.Ascii.CRLF;
 
 public class SpamImpl extends AbstractTransform implements SpamTransform
 {
@@ -432,46 +433,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         return;
     }
 
-    public SpamSettings getSpamSettings()
-    {
-        if( this.spamSettings == null )
-            logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
-
-        return this.spamSettings;
-    }
-
-    public void setSpamSettings(final SpamSettings newSpamSettings)
-    {
-        //TEMP HACK, Until we move the templates to database
-        ensureTemplateSettings(newSpamSettings);
-        // set lists if not already set
-        initSpamRBLList(newSpamSettings);
-        initSpamAssassinLclList(newSpamSettings);
-        initSpamAssassinDefList(newSpamSettings); // def must be last
-
-        TransactionWork tw = new TransactionWork()
-            {
-                public boolean doWork(Session s)
-                {
-                    s.merge(newSpamSettings);
-                    SpamImpl.this.spamSettings = newSpamSettings;
-
-                    return true;
-                }
-
-                public Object getResult() { return null; }
-            };
-        getTransformContext().runTransaction(tw);
-
-        return;
-    }
-
-    public void initializeSettings()
-    {
-        logger.debug("Initializing Settings");
-
-        SpamSettings tmpSpamSettings = new SpamSettings(getTid());
-
+    protected void configureSpamSettings(SpamSettings tmpSpamSettings) {
         tmpSpamSettings.setSMTPInbound(
           new SpamSMTPConfig(true,
                              SMTPSpamMessageAction.QUARANTINE,
@@ -548,8 +510,50 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                              getDefaultIndicatorHeaderValue(true),
                              getDefaultIndicatorHeaderValue(false) ));
 
-        setSpamSettings(tmpSpamSettings);
         return;
+    }
+
+    public SpamSettings getSpamSettings()
+    {
+        if( this.spamSettings == null )
+            logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+
+        return this.spamSettings;
+    }
+
+    public void setSpamSettings(final SpamSettings newSpamSettings)
+    {
+        //TEMP HACK, Until we move the templates to database
+        ensureTemplateSettings(newSpamSettings);
+        // set lists if not already set
+        initSpamRBLList(newSpamSettings);
+        initSpamAssassinLclList(newSpamSettings);
+        initSpamAssassinDefList(newSpamSettings); // def must be last
+
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.merge(newSpamSettings);
+                    SpamImpl.this.spamSettings = newSpamSettings;
+
+                    return true;
+                }
+
+                public Object getResult() { return null; }
+            };
+        getTransformContext().runTransaction(tw);
+
+        return;
+    }
+
+    public void initializeSettings()
+    {
+        logger.debug("Initializing Settings");
+
+        SpamSettings tmpSpamSettings = new SpamSettings(getTid());
+        configureSpamSettings(tmpSpamSettings);
+        setSpamSettings(tmpSpamSettings);
     }
 
     // convenience method for GUI
@@ -637,14 +641,14 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         return pipeSpecs;
     }
 
+    @Override
     protected void preInit(String args[])
     {
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
                 {
-                    Query q = s.createQuery
-                        ("from SpamSettings ss where ss.tid = :tid");
+                    Query q = getSettingsQuery(s);
                     q.setParameter("tid", getTid());
                     spamSettings = (SpamSettings)q.uniqueResult();
 
@@ -662,6 +666,13 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         getTransformContext().runTransaction(tw);
 
         return;
+    }
+
+    protected Query getSettingsQuery(Session s)
+    {
+        Query q = s.createQuery("from SpamSettings ss where ss.tid = :tid");
+        q.setParameter("tid", getTid());
+        return q;
     }
 
     public SpamScanner getScanner()
