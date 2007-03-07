@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2006 Untangle, Inc.
+ * Copyright (c) 2003-2007 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -112,7 +112,6 @@ class VirusHttpHandler extends HttpStateMachine
         if (null != requestHeader.getValue("range")) {
             String ua = requestHeader.getValue("user-agent");
             if (ua.startsWith("Microsoft BITS")) {
-                System.out.println("FUCK YEAH");
                 requestHeader.removeField("range");
             }
         }
