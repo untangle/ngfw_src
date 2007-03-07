@@ -10,7 +10,19 @@ MVVM_GC_LOG=${MVVM_GC_LOG:-"@PREFIX@/var/log/mvvm/gc.log"}
 MVVM_WRAPPER_LOG=${MVVM_WRAPPER_LOG:-"@PREFIX@/var/log/mvvm/wrapper.log"}
 MVVM_LAUNCH=${MVVM_LAUNCH:-"@PREFIX@/usr/bin/bunnicula"}
 
-PGDATA=${POSTGRES_DATA:-/var/lib/postgres/data}
+# fucking hideous.  XXX
+PGMV82="`dpkg --get-selections postgresql-mv-8.2 | egrep 'install$' | awk '{print $1}'`"
+PGMV81="`dpkg --get-selections postgresql-mv-8.1 | egrep 'install$' | awk '{print $1}'`"
+if [ ! -z "$PGMV82" ] ; then
+    PGDATA=${POSTGRES_DATA:-/var/lib/postgresql/8.2/main}
+    PGSERVICE="postgresql-8.2"
+elif [ ! -z "$PGMV81" ] ; then
+    PGDATA=${POSTGRES_DATA:-/var/lib/postgresql/8.1/main}
+    PGSERVICE="postgresql-8.1"
+else
+    PGDATA=${POSTGRES_DATA:-/var/lib/postgres/data}
+    PGSERVICE=="postgresql"
+fi
 
 # Short enough to restart mvvm promptly
 SLEEP_TIME=5
@@ -126,8 +138,9 @@ restartServiceIfNeeded() {
 
   case $serviceName in
     postgresql)
-      pidFile=$PGDATE/postmaster.pid
+      pidFile=$PGDATA/postmaster.pid
       isServiceRunning postmaster && return
+      serviceName=$PGSERVICE
       needToRun=yes # always has to run
       ;;
     slapd)
@@ -253,7 +266,7 @@ while true; do
             nukeIt
             break
         fi
-	restartServiceIfNeeded postgresql
+        restartServiceIfNeeded postgresql
 	restartServiceIfNeeded clamav-freshclam
 	restartServiceIfNeeded clamav-daemon
 	restartServiceIfNeeded spamassassin
