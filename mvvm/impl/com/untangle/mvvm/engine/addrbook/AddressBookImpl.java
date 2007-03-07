@@ -165,16 +165,20 @@ public class AddressBookImpl implements AddressBook {
         ActiveDirectoryLdapAdapter adAdapter = m_adAdapter;
 
         if(adAdapter != null) {
-            if(adAdapter.authenticate(uid, pwd)) {
-                return true;
-            }
-            else {
-                //Need to differentiate between "false" meaning there
-                //is no such account and "false" meaning "wrong password"
-                if(containsUid(uid, RepositoryType.MS_ACTIVE_DIRECTORY) ==
-                   RepositoryType.MS_ACTIVE_DIRECTORY) {
-                    return false;
+            try {
+                if(adAdapter.authenticate(uid, pwd)) {
+                    return true;
                 }
+                else {
+                    //Need to differentiate between "false" meaning there
+                    //is no such account and "false" meaning "wrong password"
+                    if(containsUid(uid, RepositoryType.MS_ACTIVE_DIRECTORY) ==
+                       RepositoryType.MS_ACTIVE_DIRECTORY) {
+                        return false;
+                    }
+                }
+            } catch (ServiceUnavailableException x) {
+                // Already warned below.  Just go on and try local if possible.
             }
         }
         return isNotConfigured()?
@@ -239,16 +243,20 @@ public class AddressBookImpl implements AddressBook {
         ActiveDirectoryLdapAdapter adAdapter = m_adAdapter;
 
         if(adAdapter != null) {
-            if(adAdapter.authenticateByEmail(email, pwd)) {
-                return true;
-            }
-            else {
-                //Need to differentiate between "false" meaning there
-                //is no such account and "false" meaning "wrong password"
-                if(containsEmail(email, RepositoryType.MS_ACTIVE_DIRECTORY) ==
-                   RepositoryType.MS_ACTIVE_DIRECTORY) {
-                    return false;
+            try {
+                if(adAdapter.authenticateByEmail(email, pwd)) {
+                    return true;
                 }
+                else {
+                    //Need to differentiate between "false" meaning there
+                    //is no such account and "false" meaning "wrong password"
+                    if(containsEmail(email, RepositoryType.MS_ACTIVE_DIRECTORY) ==
+                       RepositoryType.MS_ACTIVE_DIRECTORY) {
+                        return false;
+                    }
+                }
+            } catch (ServiceUnavailableException x) {
+                // Already warned below.  Just go on and try local if possible.
             }
         }
         return isNotConfigured()?
@@ -424,7 +432,12 @@ public class AddressBookImpl implements AddressBook {
         ActiveDirectoryLdapAdapter adAdapter = m_adAdapter;
 
         if(adAdapter != null) {
-            List<UserEntry> adRet = adAdapter.listAll();
+            List<UserEntry> adRet = null;
+            try {
+                adAdapter.listAll();
+            } catch (ServiceUnavailableException x) {
+                adRet = new ArrayList<UserEntry>();
+            }
             List<UserEntry> localRet = m_localAdapter.listAll();
             adRet.addAll(localRet);
             return adRet;
