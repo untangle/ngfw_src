@@ -50,3 +50,5 @@ DROP TABLE newpages;
 
 CREATE INDEX webpages_reqid_idx_:dayname ON webpages_:dayname (request_id);
 CREATE INDEX webpages_ts_idx_:dayname ON webpages_:dayname (time_stamp);
+CREATE INDEX webpages_hname_idx_:dayname ON webpages_:dayname (hname);
+CREATE INDEX webpages_uid_idx_:dayname ON webpages_:dayname (uid);

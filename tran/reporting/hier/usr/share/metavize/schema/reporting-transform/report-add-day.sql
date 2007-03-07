@@ -29,13 +29,13 @@ CREATE TABLE sessions_:dayname (
 
 DROP TABLE newsessions;
 CREATE TABLE newsessions AS
-  SELECT endp.event_id, endp.create_date as time_stamp, mam.name,
+  SELECT endp.event_id, endp.time_stamp, mam.name,
          endp.c_client_addr, endp.c_server_addr, endp.c_server_port, endp.client_intf
     FROM pl_endp endp
     LEFT OUTER JOIN merged_address_map mam
-      ON (endp.c_client_addr = mam.addr AND endp.create_date >= mam.start_time
-          AND endp.create_date < mam.end_time)
-   WHERE endp.create_date >= TIMESTAMP :daybegin AND endp.create_date <= TIMESTAMP :dayend;
+      ON (endp.c_client_addr = mam.addr AND endp.time_stamp >= mam.start_time
+          AND endp.time_stamp < mam.end_time)
+   WHERE endp.time_stamp >= TIMESTAMP :daybegin AND endp.time_stamp <= TIMESTAMP :dayend;
 
 -- Note -- do *not* analyze here or the following query runs 4 times slower!!!
 
@@ -51,3 +51,5 @@ DROP TABLE newsessions;
 
 --CREATE INDEX sessions_reqid_idx_:dayname ON sessions_:dayname (request_id);
 CREATE INDEX sessions_ts_idx_:dayname ON sessions_:dayname (time_stamp);
+CREATE INDEX sessions_hname_idx_:dayname ON sessions_:dayname (hname);
+CREATE INDEX sessions_uid_idx_:dayname ON sessions_:dayname (uid);

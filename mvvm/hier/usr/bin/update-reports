@@ -7,6 +7,8 @@ if [ $# -gt 1 ]; then
 fi
 #
 
+PSQL="/usr/bin/psql -U postgres -X"
+
 REPORT_TYPE_MARK="REPORT_TYPE_MARK"
 IS_DETAILED_MARK="IS_DETAILED_MARK"
 EMAIL_BASE_NAME="${REPORT_TYPE_MARK}_${IS_DETAILED_MARK}"
@@ -78,20 +80,57 @@ function exitOnMvvmError()
     fi
 }
 
-# Use 16Meg of memory for sorting, 64Meg for vacuuming, assume 90Meg of linux caching
-# (tilts optimizer towards use of indices)
-PGOPTIONS="-c sort_mem=16384 -c vacuum_mem=65536 -c effective_cache_size=9000"
-
-export PGOPTIONS
-
 REPORT_DIR=@MVVM_WEB@/reports
+
+# New for 4.2 -- if we're still reporting from yesterday, just keep going.
+isrunning=$(@USR_BIN@/mcli -t 3600 isReportingRunning)
+if [ "${isrunning}x" = "truex" ]; then
+    echo "reports still running from yesterday, waiting for those to finish"
+    exit 1
+fi
 
 ################################################################################
 # CLEANUP SECTION
-# roll up logs, deleting any more than 31 days old (and thus unreportable  on)
-@USR_BIN@/rollup-logs $midnight 31
 
-echo "VACUUM ANALYZE;" | psql -U postgres mvvm
+# We keep more than 30 days so that we'll have all the session starts, dhcp
+# starts, etc for the 30 day period.
+NUMDAYSTOKEEP=33
+
+# Build list of event & report days for which generation is needed.
+$PSQL -v midnight="'$midnight'" -v daystosave="$NUMDAYSTOKEEP" -v intable="events.event_data_days" -v outtable="events.daystoadd" -f @MVVM_SCHEMA@/mvvm/getdaystoadd.sql mvvm
+$PSQL -v midnight="'$midnight'" -v daystosave="$NUMDAYSTOKEEP" -v intable="reports.report_data_days" -v outtable="reports.daystoadd" -f @MVVM_SCHEMA@/mvvm/getdaystoadd.sql mvvm
+
+# roll up logs, deleting any more than $NUMDAYSTOKEEP days old (and thus unreportable  on)
+@USR_BIN@/rollup-logs $midnight $NUMDAYSTOKEEP
+
+# Build event partitions
+daystoadd=`mktemp`
+$PSQL --pset tuples_only mvvm > $daystoadd <<EOF
+  select day_name, day_begin from events.daystoadd ;
+EOF
+while read dayname ignore daybegin; do
+    for basetablename in `cat @MVVM_SCHEMA@/*/partitioned-tables`; do
+        dayend="'$daybegin' + interval '1 days'"
+        tablename=${basetablename}_$dayname
+        $PSQL -v tablename="$tablename" -v basetablename="$basetablename" -v daybegin="'$daybegin'" -v dayend="$dayend" -f @MVVM_SCHEMA@/mvvm/buildpartition.sql mvvm
+        rowcount=`$PSQL --pset tuples_only mvvm -c "select count(*) from $tablename;"`
+        if [ "$rowcount" -eq 0 ]; then
+            $PSQL mvvm -c "DROP TABLE $tablename;"
+        else
+            indicestoadd=`mktemp`
+            $PSQL --tuples-only mvvm -c "select indexdef from pg_indexes where tablename = '$basetablename';" > $indicestoadd
+            sed -i $indicestoadd -e "s/$basetablename/$tablename/g" -e "s/\$/;/"
+            $PSQL -f $indicestoadd mvvm
+            rm $indicestoadd
+        fi
+    done
+    $PSQL -v dayname="'$dayname'" -v daybegin="'$daybegin'" mvvm <<EOF
+      insert into events.event_data_days values (:dayname, DATE :daybegin);
+EOF
+done < $daystoadd
+# rm $daystoadd
+
+echo "VACUUM ANALYZE;" | $PSQL mvvm
 
 # END CLEANUP SECTION
 ################################################################################
@@ -110,24 +149,30 @@ exitOnMvvmError $? mvvm
 if [ $is_reporting_enabled == 'true' ]; then
 
     # Build the DHCP Merged Address Map (needed for running start-reports scripts)
-    @USR_BIN@/mcli -t 3600 prepareReports -o $REPORT_DIR -d 90 -n $midnight
+    @USR_BIN@/mcli -t 3600 prepareReports -o $REPORT_DIR -d 60 -n $midnight
     exitOnMvvmError $? reporter
     # note that Reporter has just created settings.env and daystoadd
 
-    if [ -h $REPORT_DIR/current -a -f $REPORT_DIR/current/daystoadd ]; then
+    if [ -h $REPORT_DIR/current -a -f $REPORT_DIR/current/settings.env ]; then
         source $REPORT_DIR/current/settings.env
 
         # Build pre-joined reports tables
-        while read dayname daybegin dayend; do
+        daystoadd=`mktemp`
+        $PSQL --pset tuples_only mvvm > $daystoadd <<EOF
+          select day_name, day_begin from reports.daystoadd ;
+EOF
+        while read dayname ignore daybegin; do
             for c in @MVVM_SCHEMA@/*/report-add-day.sql; do
-                psql -U postgres -v dayname="$dayname" -v daybegin="'$daybegin'" -v dayend="'$dayend'" -f $c mvvm
+                dayend="'$daybegin' + interval '1 days'"
+                $PSQL -v dayname="$dayname" -v daybegin="'$daybegin'" -v dayend="'$dayend'" -f $c mvvm
             done
-            psql -U postgres -v dayname="'$dayname'" -v daybegin="'$daybegin'" mvvm <<EOF
+            $PSQL -v dayname="'$dayname'" -v daybegin="'$daybegin'" mvvm <<EOF
 insert into reports.report_data_days values (:dayname, DATE :daybegin);
 EOF
-        done < $REPORT_DIR/current/daystoadd
+        done < $daystoadd
+        # rm $daystoadd
 
-        echo "ANALYZE;" | psql -U postgres mvvm
+        echo "ANALYZE;" | $PSQL mvvm
 
         # create files w/ username and hostname lists for usersummary-reports
         rm -f $REPORT_DIR/current/uname.lst
@@ -210,7 +255,7 @@ EOF
     fi
 
 # No need for this at the end anymore.
-#    echo "VACUUM ANALYZE;" | psql -U postgres mvvm
+#    echo "VACUUM ANALYZE;" | $PSQL mvvm
 else
     echo "reporting is disabled"
 fi

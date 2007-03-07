@@ -1,8 +1,3 @@
-DELETE FROM tr_virus_evt WHERE time_stamp < (:cutoff)::timestamp;
-DELETE FROM tr_virus_evt_http WHERE time_stamp < (:cutoff)::timestamp;
-DELETE FROM tr_virus_evt_smtp WHERE time_stamp < (:cutoff)::timestamp;
-DELETE FROM tr_virus_evt_mail WHERE time_stamp < (:cutoff)::timestamp;
-
 -- fix up event tables if message info data is:
 -- 1- invalid (events refer to null messages)
 DELETE FROM tr_virus_evt_smtp
