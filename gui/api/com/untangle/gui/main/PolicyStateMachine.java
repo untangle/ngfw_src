@@ -743,7 +743,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 // INSTALL INTO TOOLBOX
                 long installStartTime = System.currentTimeMillis();
                 SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                    mTransformJButton.setProgress("Installing...", 101);
+                    mTransformJButton.setDeployingView(); //Progress("Installing...", 101);
                 }});
                 boolean mackageInstalled = false;
                 MackageDesc[] currentInstalledMackages = null;
@@ -753,9 +753,6 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     for( MackageDesc mackageDesc : currentInstalledMackages ){
                         if(mackageDesc.getName().equals(installName)){
                             mackageInstalled = true;
-                            SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                                mTransformJButton.setProgress("Installed!", 100);
-                            }});
                             break;
                         }
                     }
@@ -764,11 +761,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 }
                 if( !mackageInstalled )
                     throw new Exception();
-                Thread.currentThread().sleep(INSTALL_FINAL_PAUSE_MILLIS);
                 // UPDATE PROTOCOL SETTINGS CACHE
                 loadAllCasings(false);
-                // REMOVE FROM STORE / UPDATE STORE MODEL
-                updateStoreModel();
                 // BRING MAIN WINDOW TO FRONT
                 SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                     Util.getMMainJFrame().setVisible(true);
@@ -806,9 +800,6 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                                                          currentInstalledMackages,
                                                          false);
                 //// AUTO-INSTALL INTO RACK
-                SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                    mTransformJButton.setProgress("Deploying...", 101);
-                }});
                 for( MackageDesc newMackageDesc : newMackageDescs ){
                     if( isMackageStoreItem(newMackageDesc) || !isMackageVisible(newMackageDesc) )
                         continue;
@@ -850,9 +841,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         }
                     }
                 }
+                // SHOW DEPLOYED PROGRESS
                 SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                    mTransformJButton.setProgress("Deployed!", 100);
+                    mTransformJButton.setProgress("Installed!", 100);
+                    mTransformJButton.setEnabled(false);
                 }});
+                Thread.currentThread().sleep(INSTALL_FINAL_PAUSE_MILLIS);
                 // REFRESH STATE OF ALL EXISTING APPLIANCES
                 for(Policy policy : policyRackMap.keySet()){
                     for(MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values()){
@@ -886,7 +880,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 }
             }
             finally{
-                //mTransformJButton.setIsTrial(false);  dont need this shite
+                // REMOVE FROM STORE / UPDATE STORE MODEL
+                updateStoreModel();
             }
         }
     }
@@ -972,22 +967,23 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 try{
                     initStoreModel();
                     synchronized(this){
-			if(stop)
-			    break;
-                        else if( doUpdate )
+                        if(stop)
+                            break;
+                        else if( doUpdate ){
                             doUpdate = false;
-                        else{
-			    if(stop)
-				break;
                             wait(STORE_UPDATE_CHECK_SLEEP);
-			    if(stop)
-				break;
-			}
+                        }
+                        else{
+                            if(stop)
+                                break;
+                            wait(STORE_UPDATE_CHECK_SLEEP);
+                            if(stop)
+                                break;
+                        }
                     }
                 }
                 catch(InterruptedException e){ continue; }
             }
-	    Util.printMessage("StoreModelThread Stopped");
         }
         private void initStoreModel(){
 	    // REFRESH STATE OF ALL EXISTING APPLIANCES
