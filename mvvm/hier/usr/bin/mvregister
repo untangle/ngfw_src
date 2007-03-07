@@ -2,15 +2,19 @@
 
 set -e
 
-REGISTRATION_URL="https://poptrack.untangle.com/register/custreg.php"
+. @PREFIX@/etc/default/mvvm
 
-REGDONE="@MVVM_HOME@/.regdone"
-REGINFO="@MVVM_HOME@/registration.info"
 NEWPWFILE="/tmp/newpw$$"
 
-/bin/rm -f "$REGDONE"
+/bin/rm -f "$REGISTRATION_DONE_FILE"
 /bin/rm -f "$NEWPWFILE"
-/usr/bin/wget --timeout=30 --output-document="$NEWPWFILE" --tries=1 --post-file="$REGINFO" "$REGISTRATION_URL"
+
+# this is unelegant, but as of now the registration info is written
+# during the setup wizard, yet it doesn't have the actual key at that
+# time, so this file always contains only 0s...
+perl -npe "s/$FAKE_KEY/`cat $ACTIVATION_KEY_FILE`" $REGISTRATION_INFO_FILE
+
+/usr/bin/wget --timeout=30 --output-document="$NEWPWFILE" --tries=1 --post-file="$REGISTRATION_INFO_FILE" "$REGISTRATION_URL"
 if [ "$?" -eq "0" ]; then
     NEWPW=$(/bin/cat "$NEWPWFILE")
     /bin/rm -f "$NEWPWFILE"
@@ -20,5 +24,5 @@ if [ "$?" -eq "0" ]; then
     else
         echo "root:$NEWPW" | /usr/sbin/chpasswd -e
     fi
-    /bin/touch "$REGDONE"
+    /bin/touch "$REGISTRATION_DONE_FILE"
 fi

@@ -23,10 +23,14 @@ MVVM_SESSION_LIMIT=""
 
 MVVM_ARGS=""
 
-# activation files
-ACTIVATION_KEY_FILE=@PREFIX@/usr/share/metavize/activation.key
+# activation stuff...
+REGISTRATION_DONE_FILE=@MVVM_HOME@/.regdone
+REGISTRATION_INFO_FILE=@MVVM_HOME@/registration.info
+REGISTRATION_URL=https://poptrack.untangle.com/register/custreg.php
+ACTIVATION_KEY_FILE=@MVVM_HOME@/activation.key
 ACTIVATION_KEY_FILE_TMP=${ACTIVATION_KEY_FILE}.tmp
 TMP_ARCHIVE=@PREFIX@/tmp/activation.tar
+# FIXME: metaloft -> untangle
 ACTIVATION_URL="https://ob1.metaloft.com/cgi-bin/get-license-key.rb?license_key="
 FAKE_KEY=0000-0000-0000-0000
 
@@ -131,7 +135,7 @@ MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
 if [ $MEM -gt 2000000 ] ; then
   MAX_HEAP_SIZE=640m
   MAX_VIRTUAL_SIZE=1500000
-elif [ $MEM -gt 1000000 ] ; then
+elif [ $MEM -gt 999999 ] ; then
   MAX_HEAP_SIZE=320m
   MAX_VIRTUAL_SIZE=950000
 else

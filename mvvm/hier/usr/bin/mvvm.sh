@@ -188,10 +188,10 @@ needToRestart() {
                 ;;
             2)
                 # 384Meg < native heap < 640Meg
-            if [ $MEM -lt 1000000 ] || [ `date +%H` -eq 1 ] ; then
+                if [ $MEM -lt 1000000 ] || [ `date +%H` -eq 1 ] ; then
                     echo "*** bunnicula heap soft limit on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
                     return 0;
-        fi
+                fi
                 ;;
             3 | 4 | 5 | 6 | 7 | 8 | 9)
                 # native heap > 640Meg
