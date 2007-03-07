@@ -109,7 +109,7 @@ class VirusHttpHandler extends HttpStateMachine
     {
         logger.debug("got a request header");
 
-        requestHeader.removeField("range");
+        //requestHeader.removeField("range");
 
         return requestHeader;
     }
