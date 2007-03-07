@@ -27,6 +27,8 @@ import javax.swing.event.*;
 
 public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
     
+    private static final String NAME_STATUS = "Status";
+    private static final String NAME_ADVANCED = "Advanced Settings";
     private static final String NAME_RULE_LIST = "Rule List";
     private static final String NAME_VARIABLE_LIST = "Variable List";
     private static final String NAME_LOG = "Event Log";
@@ -36,24 +38,33 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
     }
 
     public void generateGui(){
-	// RULE LIST /////
-	IDSConfigJPanel idsConfigJPanel = new IDSConfigJPanel();
-    addTab(NAME_RULE_LIST, null, idsConfigJPanel);
-	addSavable(NAME_RULE_LIST, idsConfigJPanel);
-	addRefreshable(NAME_RULE_LIST, idsConfigJPanel);
-	idsConfigJPanel.setSettingsChangedListener(this);
 
-	// VARIABLE LIST /////
-	IDSVariableJPanel idsVariableJPanel = new IDSVariableJPanel();
-    addTab(NAME_VARIABLE_LIST, null, idsVariableJPanel);
-	addSavable(NAME_VARIABLE_LIST, idsVariableJPanel);
-	addRefreshable(NAME_VARIABLE_LIST, idsVariableJPanel);
-	idsVariableJPanel.setSettingsChangedListener(this);
+        // STATUS
+        IDSStatusJPanel idsStatusJPanel = new IDSStatusJPanel();
+        addTab(NAME_STATUS, null, idsStatusJPanel);
+        addRefreshable(NAME_STATUS, idsStatusJPanel);
 
-    // EVENT LOG ///////
-    LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
-    addTab(NAME_LOG, null, logJPanel);
-	addShutdownable(NAME_LOG, logJPanel);
+        // ADVACED
+        JTabbedPane advancedJTabbedPane = addTabbedPane(NAME_ADVANCED, null);
+        
+        // RULE LIST /////
+        IDSConfigJPanel idsConfigJPanel = new IDSConfigJPanel();
+        advancedJTabbedPane.addTab(NAME_RULE_LIST, null, idsConfigJPanel);
+        addSavable(NAME_RULE_LIST, idsConfigJPanel);
+        addRefreshable(NAME_RULE_LIST, idsConfigJPanel);
+        idsConfigJPanel.setSettingsChangedListener(this);
+        
+        // VARIABLE LIST /////
+        IDSVariableJPanel idsVariableJPanel = new IDSVariableJPanel();
+        advancedJTabbedPane.addTab(NAME_VARIABLE_LIST, null, idsVariableJPanel);
+        addSavable(NAME_VARIABLE_LIST, idsVariableJPanel);
+        addRefreshable(NAME_VARIABLE_LIST, idsVariableJPanel);
+        idsVariableJPanel.setSettingsChangedListener(this);
+        
+        // EVENT LOG ///////
+        LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
+        addTab(NAME_LOG, null, logJPanel);
+        addShutdownable(NAME_LOG, logJPanel);
     }
 
 
