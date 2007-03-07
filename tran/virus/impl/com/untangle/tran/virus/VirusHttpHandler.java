@@ -110,8 +110,9 @@ class VirusHttpHandler extends HttpStateMachine
         logger.debug("got a request header");
 
         if (null != requestHeader.getValue("range")) {
-            String ua = request.getValue("user-agent");
+            String ua = requestHeader.getValue("user-agent");
             if (ua.startsWith("Microsoft BITS")) {
+                System.out.println("FUCK YEAH");
                 requestHeader.removeField("range");
             }
         }
