@@ -321,9 +321,7 @@ public class Reporter implements Runnable
     private static void setConnectionProperties(Connection conn)
         throws SQLException
     {
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate("set sort_mem=16384");
-        stmt.executeUpdate("set effective_cache_size=3000");
+        // Nowadays we just use the normal settings, so there's not much here.
     }
 
     private static void addParam(BufferedWriter w, String name, java.util.Date value) throws IOException
