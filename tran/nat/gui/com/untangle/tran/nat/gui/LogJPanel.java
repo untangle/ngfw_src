@@ -81,7 +81,7 @@ public class LogJPanel extends MLogTableJPanel
                 PipelineEndpoints pe = log.getPipelineEndpoints();
 
                 event = new Vector(8);
-                event.add( null == pe ? "" : pe.getCreateDate() );
+                event.add( null == pe ? "" : pe.getTimeStamp() );
                 event.add( log.getIsDmz() ? "dmz host" : "redirect" );
                 event.add( null == pe ? "" : pe.getProtocolName());
                 event.add( null == pe ? new IPPortString() : new IPPortString(pe.getCClientAddr(), pe.getCClientPort()) );

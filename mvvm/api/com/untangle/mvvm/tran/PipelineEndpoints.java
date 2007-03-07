@@ -52,8 +52,6 @@ public class PipelineEndpoints extends LogEvent
 
     private short protocol;
 
-    private Date createDate;
-
     private byte clientIntf;
     private byte serverIntf;
 
@@ -84,8 +82,6 @@ public class PipelineEndpoints extends LogEvent
 
         protocol = (short)begin.protocol();
 
-        createDate = new Date();
-
         cClientAddr = begin.clientAddr();
         cClientPort = begin.clientPort();
         cServerAddr = begin.serverAddr();
@@ -109,7 +105,6 @@ public class PipelineEndpoints extends LogEvent
     {
         sessionId = begin.id();
         protocol = (short)begin.protocol();
-        createDate = new Date();
         clientIntf = begin.clientIntf();
         // Don't fill in anything that can change later.
     }
@@ -181,23 +176,6 @@ public class PipelineEndpoints extends LogEvent
     public void setProtocol(short protocol)
     {
         this.protocol = protocol;
-    }
-
-    /**
-     * Time the session began
-     *
-     * @return the time the session began
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="create_date")
-    public Date getCreateDate()
-    {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate)
-    {
-        this.createDate = createDate;
     }
 
     /**
@@ -415,7 +393,7 @@ public class PipelineEndpoints extends LogEvent
     public void appendSyslog(SyslogBuilder sb)
     {
         sb.startSection("endpoints");
-        sb.addField("create-date", createDate);
+        sb.addField("create-date", getTimeStamp());
         sb.addField("session-id", sessionId);
         sb.addField("protocol", getProtocolName());
 
