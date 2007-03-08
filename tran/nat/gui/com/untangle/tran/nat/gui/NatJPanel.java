@@ -30,6 +30,9 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
     public NatJPanel(MTransformControlsJPanel mTransformControlsJPanel) {
 	this.mTransformControlsJPanel = mTransformControlsJPanel;
         initComponents();
+		Util.addPanelFocus(this, natEnabledJRadioButton);
+		Util.addFocusHighlight(internalAddressIPaddrJTextField);
+		Util.addFocusHighlight(internalSubnetIPaddrJTextField);
     }
         
     // SETTINGS CHANGE NOTIFICATION /////////
@@ -169,6 +172,7 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 jTextArea2.setLineWrap(true);
                 jTextArea2.setText("NAT allows multiple computers in the internal network to share internet access through a single shared public IP address.");
                 jTextArea2.setWrapStyleWord(true);
+                jTextArea2.setFocusable(false);
                 jTextArea2.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -183,8 +187,6 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 enabledButtonGroup.add(natEnabledJRadioButton);
                 natEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 natEnabledJRadioButton.setText("Enabled");
-                natEnabledJRadioButton.setFocusPainted(false);
-                natEnabledJRadioButton.setFocusable(false);
                 natEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 natEnabledJRadioButtonActionPerformed(evt);
@@ -201,8 +203,6 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 enabledButtonGroup.add(natDisabledJRadioButton);
                 natDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 natDisabledJRadioButton.setText("Disabled");
-                natDisabledJRadioButton.setFocusPainted(false);
-                natDisabledJRadioButton.setFocusable(false);
                 natDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 natDisabledJRadioButtonActionPerformed(evt);
@@ -244,8 +244,9 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 externalRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Internal Address (Gateway)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jTextArea3.setEditable(false);
                 jTextArea3.setLineWrap(true);
-                jTextArea3.setText("The internal address is the address on the internal network which computers will use as their gateway.  This address is also used to contact the Untangle Server for configuration.");
+                jTextArea3.setText("The internal address is the address on the internal network, which computers will use as their gateway.  This address is also used to contact the Untangle Server for configuration.");
                 jTextArea3.setWrapStyleWord(true);
+                jTextArea3.setFocusable(false);
                 jTextArea3.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -346,6 +347,7 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 jTextArea1.setLineWrap(true);
                 jTextArea1.setText("The external address is the Untangle Server's address on the external network.  This is specified through the \"Networking\" Config Panel.");
                 jTextArea1.setWrapStyleWord(true);
+                jTextArea1.setFocusable(false);
                 jTextArea1.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;

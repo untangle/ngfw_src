@@ -27,6 +27,9 @@ public class DhcpGeneralJPanel extends javax.swing.JPanel implements Savable<Obj
 
     public DhcpGeneralJPanel() {
         initComponents();
+		Util.addPanelFocus(this, dhcpEnabledJRadioButton);
+		Util.addFocusHighlight(startAddressIPaddrJTextField);
+		Util.addFocusHighlight(endAddressIPaddrJTextField);
     }    
     
     // SETTINGS CHANGE NOTIFICATION /////////
@@ -137,6 +140,7 @@ public class DhcpGeneralJPanel extends javax.swing.JPanel implements Savable<Obj
                 jTextArea2.setLineWrap(true);
                 jTextArea2.setText("DHCP dynamically assigns IP addresses to computers in the internal network.  The Address Map can be used in addition to this to statically assign IP addresses to computers in the internal network, based on the computers' MAC addresses.");
                 jTextArea2.setWrapStyleWord(true);
+                jTextArea2.setFocusable(false);
                 jTextArea2.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -151,8 +155,6 @@ public class DhcpGeneralJPanel extends javax.swing.JPanel implements Savable<Obj
                 enabledButtonGroup.add(dhcpEnabledJRadioButton);
                 dhcpEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dhcpEnabledJRadioButton.setText("Enabled");
-                dhcpEnabledJRadioButton.setFocusPainted(false);
-                dhcpEnabledJRadioButton.setFocusable(false);
                 dhcpEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dhcpEnabledJRadioButtonActionPerformed(evt);
@@ -169,8 +171,6 @@ public class DhcpGeneralJPanel extends javax.swing.JPanel implements Savable<Obj
                 enabledButtonGroup.add(dhcpDisabledJRadioButton);
                 dhcpDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dhcpDisabledJRadioButton.setText("Disabled");
-                dhcpDisabledJRadioButton.setFocusPainted(false);
-                dhcpDisabledJRadioButton.setFocusable(false);
                 dhcpDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dhcpDisabledJRadioButtonActionPerformed(evt);
@@ -214,6 +214,7 @@ public class DhcpGeneralJPanel extends javax.swing.JPanel implements Savable<Obj
                 jTextArea3.setLineWrap(true);
                 jTextArea3.setText("DHCP assigns dynamic addresses from a pool.  The pool of IP addresses must be specified as a range, with a beginning (start) and an end.  You can use the Address Map to specify that a computer on the internal network should be assigned a static address.");
                 jTextArea3.setWrapStyleWord(true);
+                jTextArea3.setFocusable(false);
                 jTextArea3.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;

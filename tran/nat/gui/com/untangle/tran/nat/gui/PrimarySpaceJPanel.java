@@ -34,6 +34,7 @@ public class PrimarySpaceJPanel extends javax.swing.JPanel implements Savable<Ob
 	initNetworkSpace = networkSpace;
         initComponents();
 	mtuJSpinner.setModel(new SpinnerNumberModel(NetworkSpace.DEFAULT_MTU, NetworkSpace.MIN_MTU, NetworkSpace.MAX_MTU, 1));
+	Util.addFocusHighlight(mtuJSpinner);
     }
         
     // SETTINGS CHANGE NOTIFICATION /////////
@@ -118,6 +119,7 @@ public class PrimarySpaceJPanel extends javax.swing.JPanel implements Savable<Ob
                 jTextArea2.setLineWrap(true);
                 jTextArea2.setText("The Public Space is the Space that is bound to the External network interface.  Most of its settings are configured through a config panel in Config -> Networking.  However, for advanced purposes, you may specify the MTU here.");
                 jTextArea2.setWrapStyleWord(true);
+                jTextArea2.setFocusable(false);
                 jTextArea2.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -139,6 +141,7 @@ public class PrimarySpaceJPanel extends javax.swing.JPanel implements Savable<Ob
                 mtuJPanel.setBorder(new javax.swing.border.TitledBorder(null, "MTU (Maximum Transfer Unit)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel5.setText("<html>The MTU specifies the maximum amount of data per packet that should be transferred out of this Space.  This value should not be changed unless explicitly necessary.</html>");
+                jLabel5.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;

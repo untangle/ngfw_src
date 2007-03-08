@@ -29,6 +29,7 @@ public class UrlConfigJPanel extends javax.swing.JPanel implements Savable<Objec
     
     public UrlConfigJPanel() {
         initComponents();
+		Util.addPanelFocus(this, urlEnabledRadioButton);
     }
 
     // SETTINGS CHANGE NOTIFICATION /////////
@@ -84,7 +85,6 @@ public class UrlConfigJPanel extends javax.swing.JPanel implements Savable<Objec
                 ftpButtonGroup.add(urlEnabledRadioButton);
                 urlEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 urlEnabledRadioButton.setText("<html><b>Enable</b> spyware and ad URL blocking</html>");
-                urlEnabledRadioButton.setFocusPainted(false);
                 urlEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 urlEnabledRadioButtonActionPerformed(evt);
@@ -100,7 +100,6 @@ public class UrlConfigJPanel extends javax.swing.JPanel implements Savable<Objec
                 ftpButtonGroup.add(urlDisabledRadioButton);
                 urlDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 urlDisabledRadioButton.setText("<html><b>Disable</b> spyware and ad URL blocking</html>");
-                urlDisabledRadioButton.setFocusPainted(false);
                 urlDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 urlDisabledRadioButtonActionPerformed(evt);

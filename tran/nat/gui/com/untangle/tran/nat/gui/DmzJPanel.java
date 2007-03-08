@@ -27,6 +27,9 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
 
     public DmzJPanel() {
         initComponents();
+		Util.addPanelFocus(this, dmzEnabledJRadioButton);
+		Util.addFocusHighlight(targetAddressIPaddrJTextField);
+		
     }
     
     // SETTINGS CHANGE NOTIFICATION /////////
@@ -136,6 +139,7 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 jTextArea2.setLineWrap(true);
                 jTextArea2.setText("DMZ Host allows you to direct all incoming traffic to a specific computer on your internal network.  This is typically used for web servers or other servers which must be accessible from outside your secured internal network.  (Note:  Redirect takes precedence over DMZ Host)");
                 jTextArea2.setWrapStyleWord(true);
+                jTextArea2.setFocusable(false);
                 jTextArea2.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -150,8 +154,6 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 enabledButtonGroup.add(dmzEnabledJRadioButton);
                 dmzEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dmzEnabledJRadioButton.setText("Enabled");
-                dmzEnabledJRadioButton.setFocusPainted(false);
-                dmzEnabledJRadioButton.setFocusable(false);
                 dmzEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dmzEnabledJRadioButtonActionPerformed(evt);
@@ -168,8 +170,6 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 enabledButtonGroup.add(dmzDisabledJRadioButton);
                 dmzDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dmzDisabledJRadioButton.setText("Disabled");
-                dmzDisabledJRadioButton.setFocusPainted(false);
-                dmzDisabledJRadioButton.setFocusable(false);
                 dmzDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dmzDisabledJRadioButtonActionPerformed(evt);
@@ -246,6 +246,7 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 jTextArea3.setLineWrap(true);
                 jTextArea3.setText("The target address is the address of the computer inside your network that will receive all incoming traffic when DMZ Host is enabled.");
                 jTextArea3.setWrapStyleWord(true);
+                jTextArea3.setFocusable(false);
                 jTextArea3.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -269,6 +270,7 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 jTextArea4.setLineWrap(true);
                 jTextArea4.setText("If DMZ Host Logging is enabled, then all traffic inbound to the DMZ Host will be logged.  This information will then appear in the Event Log as well as in Untangle Reports.");
                 jTextArea4.setWrapStyleWord(true);
+                jTextArea4.setFocusable(false);
                 jTextArea4.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -283,8 +285,6 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 logButtonGroup.add(dmzLogEnabledJRadioButton);
                 dmzLogEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dmzLogEnabledJRadioButton.setText("Enabled");
-                dmzLogEnabledJRadioButton.setFocusPainted(false);
-                dmzLogEnabledJRadioButton.setFocusable(false);
                 dmzLogEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dmzLogEnabledJRadioButtonActionPerformed(evt);
@@ -301,8 +301,6 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 logButtonGroup.add(dmzLogDisabledJRadioButton);
                 dmzLogDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dmzLogDisabledJRadioButton.setText("Disabled");
-                dmzLogDisabledJRadioButton.setFocusPainted(false);
-                dmzLogDisabledJRadioButton.setFocusable(false);
                 dmzLogDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dmzLogDisabledJRadioButtonActionPerformed(evt);

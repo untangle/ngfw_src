@@ -55,7 +55,6 @@
             <Container class="javax.swing.JTabbedPane" name="mTabbedPane">
               <Properties>
                 <Property name="doubleBuffered" type="boolean" value="true"/>
-                <Property name="focusable" type="boolean" value="false"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Arial" size="11" style="0"/>
                 </Property>
@@ -106,8 +105,6 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Remove"/>
                 <Property name="doubleBuffered" type="boolean" value="true"/>
-                <Property name="focusPainted" type="boolean" value="false"/>
-                <Property name="focusable" type="boolean" value="false"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                   <Insets value="[2, 6, 2, 6]"/>
@@ -132,7 +129,6 @@
                   <Image iconType="3" name="/com/untangle/gui/images/IconHelp_18x16.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Help"/>
-                <Property name="focusPainted" type="boolean" value="false"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                   <Insets value="[2, 6, 2, 6]"/>
@@ -158,8 +154,6 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Enlarge"/>
                 <Property name="doubleBuffered" type="boolean" value="true"/>
-                <Property name="focusPainted" type="boolean" value="false"/>
-                <Property name="focusable" type="boolean" value="false"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                   <Insets value="[2, 6, 2, 6]"/>
@@ -188,8 +182,6 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Cancel"/>
                 <Property name="doubleBuffered" type="boolean" value="true"/>
-                <Property name="focusPainted" type="boolean" value="false"/>
-                <Property name="focusable" type="boolean" value="false"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                   <Insets value="[2, 6, 2, 6]"/>
@@ -218,8 +210,6 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Save"/>
                 <Property name="doubleBuffered" type="boolean" value="true"/>
-                <Property name="focusPainted" type="boolean" value="false"/>
-                <Property name="focusable" type="boolean" value="false"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                   <Insets value="[2, 6, 2, 6]"/>

@@ -23,6 +23,7 @@ public class SettingsJPanel extends javax.swing.JPanel implements Savable<Object
 
     public SettingsJPanel() {
         initComponents();
+        Util.addPanelFocus(this, defaultAcceptJRadioButton);
     }
         
     // SETTINGS CHANGE NOTIFICATION /////////
@@ -84,6 +85,7 @@ public class SettingsJPanel extends javax.swing.JPanel implements Savable<Object
                 jTextArea2.setLineWrap(true);
                 jTextArea2.setText("The default action specifies what will happen to traffic if no block or pass rules apply.");
                 jTextArea2.setWrapStyleWord(true);
+                jTextArea2.setFocusable(false);
                 jTextArea2.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -98,7 +100,6 @@ public class SettingsJPanel extends javax.swing.JPanel implements Savable<Object
                 enabledButtonGroup.add(defaultAcceptJRadioButton);
                 defaultAcceptJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 defaultAcceptJRadioButton.setText("Pass");
-                defaultAcceptJRadioButton.setFocusPainted(false);
                 defaultAcceptJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 defaultAcceptJRadioButtonActionPerformed(evt);
@@ -115,7 +116,6 @@ public class SettingsJPanel extends javax.swing.JPanel implements Savable<Object
                 enabledButtonGroup.add(defaultBlockJRadioButton);
                 defaultBlockJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 defaultBlockJRadioButton.setText("Block");
-                defaultBlockJRadioButton.setFocusPainted(false);
                 defaultBlockJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 defaultBlockJRadioButtonActionPerformed(evt);

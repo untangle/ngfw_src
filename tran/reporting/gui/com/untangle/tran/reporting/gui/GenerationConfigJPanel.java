@@ -33,6 +33,7 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
     public GenerationConfigJPanel() {
         initComponents();
+		Util.addPanelFocus(this, dailyEverydayJCheckBox);
 	monthlyOnceJComboBox.addItem( DAY_SUNDAY );
 	monthlyOnceJComboBox.addItem( DAY_MONDAY );
 	monthlyOnceJComboBox.addItem( DAY_TUESDAY );
@@ -272,6 +273,7 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
                 explanationJPanel1.setBorder(new javax.swing.border.TitledBorder(null, "Daily Report Delivery", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel1.setText("<html>This report is delivered at midnight and covers events from the previous 24 hours, up to, but not including the day of delivery.</html>");
+                jLabel1.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -283,7 +285,6 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 dailyEverydayJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
                 dailyEverydayJCheckBox.setText("Every Day");
-                dailyEverydayJCheckBox.setFocusable(false);
                 dailyEverydayJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dailyEverydayJCheckBoxActionPerformed(evt);
@@ -328,7 +329,6 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 weeklySundayJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
                 weeklySundayJCheckBox.setText("Sunday");
-                weeklySundayJCheckBox.setFocusable(false);
                 weeklySundayJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 weeklySundayJCheckBoxActionPerformed(evt);
@@ -342,7 +342,6 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 weeklyMondayJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
                 weeklyMondayJCheckBox.setText("Monday");
-                weeklyMondayJCheckBox.setFocusable(false);
                 weeklyMondayJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 weeklyMondayJCheckBoxActionPerformed(evt);
@@ -356,7 +355,6 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 weeklyTuesdayJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
                 weeklyTuesdayJCheckBox.setText("Tuesday");
-                weeklyTuesdayJCheckBox.setFocusable(false);
                 weeklyTuesdayJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 weeklyTuesdayJCheckBoxActionPerformed(evt);
@@ -370,7 +368,6 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 weeklyWednesdayJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
                 weeklyWednesdayJCheckBox.setText("Wednesday");
-                weeklyWednesdayJCheckBox.setFocusable(false);
                 weeklyWednesdayJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 weeklyWednesdayJCheckBoxActionPerformed(evt);
@@ -384,7 +381,6 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 weeklyThursdayJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
                 weeklyThursdayJCheckBox.setText("Thursday");
-                weeklyThursdayJCheckBox.setFocusable(false);
                 weeklyThursdayJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 weeklyThursdayJCheckBoxActionPerformed(evt);
@@ -398,7 +394,6 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 weeklyFridayJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
                 weeklyFridayJCheckBox.setText("Friday");
-                weeklyFridayJCheckBox.setFocusable(false);
                 weeklyFridayJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 weeklyFridayJCheckBoxActionPerformed(evt);
@@ -412,7 +407,6 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 weeklySaturdayJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
                 weeklySaturdayJCheckBox.setText("Saturday");
-                weeklySaturdayJCheckBox.setFocusable(false);
                 weeklySaturdayJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 weeklySaturdayJCheckBoxActionPerformed(evt);
@@ -448,7 +442,6 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
                 monthlyButtonGroup.add(monthlyNoneJRadioButton);
                 monthlyNoneJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 monthlyNoneJRadioButton.setText("Never");
-                monthlyNoneJRadioButton.setFocusPainted(false);
                 monthlyNoneJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 monthlyNoneJRadioButtonActionPerformed(evt);
@@ -462,7 +455,6 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
                 monthlyButtonGroup.add(monthlyFirstJRadioButton);
                 monthlyFirstJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 monthlyFirstJRadioButton.setText("First Day of the Month");
-                monthlyFirstJRadioButton.setFocusPainted(false);
                 monthlyFirstJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 monthlyFirstJRadioButtonActionPerformed(evt);
@@ -478,7 +470,6 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
                 monthlyButtonGroup.add(monthlyEverydayJRadioButton);
                 monthlyEverydayJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 monthlyEverydayJRadioButton.setText("Everyday");
-                monthlyEverydayJRadioButton.setFocusPainted(false);
                 monthlyEverydayJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 monthlyEverydayJRadioButtonActionPerformed(evt);
@@ -494,7 +485,6 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
                 monthlyButtonGroup.add(monthlyOnceJRadioButton);
                 monthlyOnceJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 monthlyOnceJRadioButton.setText("Once Per Week");
-                monthlyOnceJRadioButton.setFocusPainted(false);
                 monthlyOnceJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 monthlyOnceJRadioButtonActionPerformed(evt);
@@ -508,7 +498,6 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
                 jPanel3.add(monthlyOnceJRadioButton, gridBagConstraints);
 
                 monthlyOnceJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-                monthlyOnceJComboBox.setFocusable(false);
                 monthlyOnceJComboBox.setMaximumSize(new java.awt.Dimension(150, 24));
                 monthlyOnceJComboBox.setMinimumSize(new java.awt.Dimension(150, 24));
                 monthlyOnceJComboBox.setPreferredSize(new java.awt.Dimension(150, 24));
@@ -535,6 +524,7 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel3.setText("<html>This report is delivered at midnight and covers events from the previous 30 days, up to, but not including the day of delivery.</html>");
+                jLabel3.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -557,7 +547,6 @@ public class GenerationConfigJPanel extends javax.swing.JPanel implements Savabl
 
                 includeIncidentsJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
                 includeIncidentsJCheckBox.setText("<html><b>Include Incident Lists in Emails</b> - this makes emailed reports larger, but includes information about each policy incident.</html>");
-                includeIncidentsJCheckBox.setFocusable(false);
                 includeIncidentsJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 includeIncidentsJCheckBoxActionPerformed(evt);

@@ -36,6 +36,10 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 	initNetworkSpace = networkSpace;
         initComponents();
 	mtuJSpinner.setModel(new SpinnerNumberModel(NetworkSpace.DEFAULT_MTU, NetworkSpace.MIN_MTU, NetworkSpace.MAX_MTU, 1));
+	aliasJScrollPane.getVerticalScrollBar().setFocusable(false);
+	Util.addPanelFocus(this, natEnabledJRadioButton);
+	Util.addFocusHighlight(aliasJTextArea);
+	Util.addFocusHighlight(mtuJSpinner);
     }
         
     // SETTINGS CHANGE NOTIFICATION /////////
@@ -249,7 +253,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 aliasJPanel = new javax.swing.JPanel();
                 jTextArea3 = new javax.swing.JTextArea();
                 restrictIPJPanel = new javax.swing.JPanel();
-                jScrollPane1 = new javax.swing.JScrollPane();
+                aliasJScrollPane = new javax.swing.JScrollPane();
                 aliasJTextArea = new javax.swing.JTextArea();
                 forwardingJPanel = new javax.swing.JPanel();
                 jLabel3 = new javax.swing.JLabel();
@@ -274,6 +278,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 jTextArea2.setLineWrap(true);
                 jTextArea2.setText("NAT allows multiple computers in the internal network to share internet access through a single shared public IP address.");
                 jTextArea2.setWrapStyleWord(true);
+                jTextArea2.setFocusable(false);
                 jTextArea2.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -288,8 +293,6 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 natButtonGroup.add(natEnabledJRadioButton);
                 natEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 natEnabledJRadioButton.setText("Enabled");
-                natEnabledJRadioButton.setFocusPainted(false);
-                natEnabledJRadioButton.setFocusable(false);
                 natEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 natEnabledJRadioButtonActionPerformed(evt);
@@ -306,8 +309,6 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 natButtonGroup.add(natDisabledJRadioButton);
                 natDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 natDisabledJRadioButton.setText("Disabled");
-                natDisabledJRadioButton.setFocusPainted(false);
-                natDisabledJRadioButton.setFocusable(false);
                 natDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 natDisabledJRadioButtonActionPerformed(evt);
@@ -346,6 +347,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 
                 nattedJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 nattedJLabel.setText("<html>You must choose a NAT address, which is the address that traffic from this Space will appear to be coming from.</html>");
+                nattedJLabel.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 3;
@@ -357,7 +359,6 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 jPanel2.setLayout(new java.awt.GridBagLayout());
 
                 nattedJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-                nattedJComboBox.setFocusable(false);
                 nattedJComboBox.setMaximumSize(new java.awt.Dimension(400, 24));
                 nattedJComboBox.setMinimumSize(new java.awt.Dimension(400, 24));
                 nattedJComboBox.setPreferredSize(new java.awt.Dimension(400, 24));
@@ -392,6 +393,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 jTextArea3.setLineWrap(true);
                 jTextArea3.setText("Network Aliases are the networks (masked IP addresses) that this Space will accept traffic from.");
                 jTextArea3.setWrapStyleWord(true);
+                jTextArea3.setFocusable(false);
                 jTextArea3.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -403,8 +405,8 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 
                 restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
 
-                jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-                jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                aliasJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                aliasJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
                 aliasJTextArea.setLineWrap(true);
                 aliasJTextArea.setWrapStyleWord(true);
                 aliasJTextArea.addCaretListener(new javax.swing.event.CaretListener() {
@@ -413,13 +415,13 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                         }
                 });
 
-                jScrollPane1.setViewportView(aliasJTextArea);
+                aliasJScrollPane.setViewportView(aliasJTextArea);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
-                restrictIPJPanel.add(jScrollPane1, gridBagConstraints);
+                restrictIPJPanel.add(aliasJScrollPane, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -442,6 +444,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 forwardingJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Traffic Forwarding", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel3.setText("<html>Traffic Forwarding allows traffic to flow between two different Spaces.  If this is disabled, this Space will be isolated from communicating with other Spaces.</html>");
+                jLabel3.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -455,8 +458,6 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 forwardingButtonGroup.add(forwardingEnabledJRadioButton);
                 forwardingEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 forwardingEnabledJRadioButton.setText("Enabled");
-                forwardingEnabledJRadioButton.setFocusPainted(false);
-                forwardingEnabledJRadioButton.setFocusable(false);
                 forwardingEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 forwardingEnabledJRadioButtonActionPerformed(evt);
@@ -473,8 +474,6 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 forwardingButtonGroup.add(forwardingDisabledJRadioButton);
                 forwardingDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 forwardingDisabledJRadioButton.setText("Disabled");
-                forwardingDisabledJRadioButton.setFocusPainted(false);
-                forwardingDisabledJRadioButton.setFocusable(false);
                 forwardingDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 forwardingDisabledJRadioButtonActionPerformed(evt);
@@ -516,6 +515,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
                 mtuJPanel.setBorder(new javax.swing.border.TitledBorder(null, "MTU (Maximum Transfer Unit)", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
                 jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel5.setText("<html>The MTU specifies the maximum amount of data per packet that should be transferred out of this Space.  This value should not be changed unless explicitly necessary.</html>");
+                jLabel5.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -615,6 +615,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JPanel aliasJPanel;
+        private javax.swing.JScrollPane aliasJScrollPane;
         private javax.swing.JTextArea aliasJTextArea;
         private javax.swing.ButtonGroup forwardingButtonGroup;
         public javax.swing.JRadioButton forwardingDisabledJRadioButton;
@@ -629,7 +630,6 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
         private javax.swing.JPanel jPanel2;
         private javax.swing.JPanel jPanel3;
         private javax.swing.JPanel jPanel4;
-        private javax.swing.JScrollPane jScrollPane1;
         private javax.swing.JSeparator jSeparator1;
         private javax.swing.JTextArea jTextArea2;
         private javax.swing.JTextArea jTextArea3;

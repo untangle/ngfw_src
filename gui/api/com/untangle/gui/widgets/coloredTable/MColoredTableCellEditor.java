@@ -70,7 +70,6 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	jButton = new JButton();
 	jButton.setOpaque(false);
 	jButton.setFont(new java.awt.Font("Default", 0, 12));
-	jButton.setFocusable(false);
 	jButton.addActionListener(this);
 	jButtonJPanel = new JPanel();
 	jButtonJPanel.setOpaque(false);
@@ -84,14 +83,12 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	jCheckBox.setBorderPainted(true);
 	jCheckBox.setBorder(mLineBorder);
 	jCheckBox.setBackground(focusBackgroundColor);
-	jCheckBox.setFocusable(false);
 	jCheckBox.addActionListener(this);
 	
 	jComboBox = new JComboBox();
 	jComboBox.setFont(font);
 	jComboBox.setOpaque(true);
 	jComboBox.setBorder(mLineBorder);
-	jComboBox.setFocusable(false);
 	jComboBox.addActionListener(this);
 	
 	jTextField = new JTextField();
@@ -117,7 +114,6 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	
 	jSlider = new JSlider();
 	jSlider.setOpaque(false);
-	jSlider.setFocusable(false);
 	jSlider.setMajorTickSpacing(25);
 	jSlider.setMinorTickSpacing(10);
 	jSlider.setPaintLabels(true);
@@ -127,7 +123,6 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	jSlider.addChangeListener(this);
 	
 	jSpinner = new JSpinner();
-	jSpinner.setFocusable(true);
 	jSpinner.setOpaque(true);
     jSpinner.setBackground(new Color(0f, 0f, 0f, 0f));
 	jSpinner.setFont(new java.awt.Font("Default", 0, 10));
@@ -135,17 +130,14 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	jSpinner.getEditor().setOpaque(false);
 	((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setOpaque(true);
 	((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setBackground(new Color(0f,0f,0f,0f));
-	((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setFocusable(true);
 	jSpinner.addChangeListener(this);
 
 	jDateSpinner = new JSpinner( new SpinnerDateModel((new GregorianCalendar()).getTime(), null, null, Calendar.MINUTE) );
-	jDateSpinner.setFocusable(true);
 	jDateSpinner.setOpaque(false);
 	jDateSpinner.setFont(new java.awt.Font("Default", 0, 10));
 	jDateSpinner.setBorder(mLineBorder);
 	jDateSpinner.getEditor().setOpaque(false);
 	((JSpinner.DefaultEditor)jDateSpinner.getEditor()).getTextField().setOpaque(false);
-	((JSpinner.DefaultEditor)jDateSpinner.getEditor()).getTextField().setFocusable(true);
 	jDateSpinner.addChangeListener(this);
 	JFormattedTextField tf = ((JSpinner.DefaultEditor)jDateSpinner.getEditor()).getTextField();
 	DefaultFormatterFactory factory = (DefaultFormatterFactory)tf.getFormatterFactory();
@@ -174,12 +166,18 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    for( ActionListener actionListener : actionListeners )
 		jButton.removeActionListener(actionListener);
 	    jButton.addActionListener( (ButtonRunnable) value );
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    jButton.requestFocusInWindow();
+		}});
 	    return jButtonJPanel;
 	}
 	else if(value instanceof ComboBoxModel){
 	    selectedValue  = ((ComboBoxModel)value).getSelectedItem();
 	    editedComponent = jComboBox;
 	    ((JComboBox)editedComponent).setModel((ComboBoxModel) value);
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    jComboBox.requestFocusInWindow();
+		}});
 	}
 	else if(value instanceof AbstractSpinnerModel){
 	    if(value instanceof SpinnerDateModel){
@@ -190,7 +188,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 		((JSpinner)editedComponent).setValue( calendar.getTime() );
 		SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		    ((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().requestFocusInWindow();
-		    ((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setCaretPosition(0);
+		    ((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().selectAll();
 		}});
 	    }
 	    else{
@@ -199,7 +197,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 		((JSpinner)editedComponent).setModel((AbstractSpinnerModel) value);
 		SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		    ((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().requestFocusInWindow();
-		    ((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setCaretPosition(0);
+		    ((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().selectAll();
 		}});
 	    }
 	}
@@ -207,6 +205,9 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    selectedValue = (Boolean) value;
 	    editedComponent = jCheckBox;
 	    ((JCheckBox)editedComponent).setSelected((Boolean) value );
+		SwingUtilities.invokeLater( new Runnable(){ public void run(){
+		    jCheckBox.requestFocusInWindow();
+		}});
 	}
 	else if(value instanceof String){
 	    selectedValue = ((String)value).trim();
@@ -240,7 +241,7 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 									  1, mSortedTableModel.getRowCount(), 1 ));
 	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().requestFocusInWindow();
-		((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().setCaretPosition(0);
+		((JSpinner.DefaultEditor)jSpinner.getEditor()).getTextField().selectAll();
 	    }});
 	}
 	else{
@@ -251,16 +252,25 @@ public class MColoredTableCellEditor extends DefaultCellEditor implements KeyLis
 	    editedComponent.setOpaque(true);
 	    ((JTextField)editedComponent).setText("UNSUPPORTED EDITOR for: " + value.getClass());
 	}
-	/*  this shit dont work right now
+
+    jTextField.setEditable(mSortedTableModel.getAlwaysEditable());
+
+    // AUTO HIGHLIGHT
 	if( editedComponent == jTextField ){
 	    final JTextField selectedJTextField = jTextField;
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		selectedJTextField.requestFocusInWindow();
-		selectedJTextField.selectAll();
-	    }});
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            selectedJTextField.requestFocusInWindow();
+            selectedJTextField.selectAll();
+        }});
 	}
-	*/
-    jTextField.setEditable(mSortedTableModel.getAlwaysEditable());
+    else if( editedComponent == mPasswordField ){
+	    final MPasswordField selectedMPasswordField = mPasswordField;
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            selectedMPasswordField.requestFocusInWindow();
+            selectedMPasswordField.selectAll();
+        }});
+    }
+
 	return editedComponent;
     }
     

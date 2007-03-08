@@ -45,6 +45,7 @@
             <Property name="lineWrap" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="DMZ Host allows you to direct all incoming traffic to a specific computer on your internal network.  This is typically used for web servers or other servers which must be accessible from outside your secured internal network.  (Note:  Redirect takes precedence over DMZ Host)"/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
+            <Property name="focusable" type="boolean" value="false"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
           <Constraints>
@@ -71,8 +72,6 @@
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Enabled"/>
-                <Property name="focusPainted" type="boolean" value="false"/>
-                <Property name="focusable" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dmzEnabledJRadioButtonActionPerformed"/>
@@ -95,8 +94,6 @@
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Disabled"/>
-                <Property name="focusPainted" type="boolean" value="false"/>
-                <Property name="focusable" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dmzDisabledJRadioButtonActionPerformed"/>
@@ -199,6 +196,7 @@
             <Property name="lineWrap" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="The target address is the address of the computer inside your network that will receive all incoming traffic when DMZ Host is enabled."/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
+            <Property name="focusable" type="boolean" value="false"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
           <Constraints>
@@ -233,6 +231,7 @@
             <Property name="lineWrap" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="If DMZ Host Logging is enabled, then all traffic inbound to the DMZ Host will be logged.  This information will then appear in the Event Log as well as in Untangle Reports."/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
+            <Property name="focusable" type="boolean" value="false"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
           <Constraints>
@@ -259,8 +258,6 @@
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Enabled"/>
-                <Property name="focusPainted" type="boolean" value="false"/>
-                <Property name="focusable" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dmzLogEnabledJRadioButtonActionPerformed"/>
@@ -283,8 +280,6 @@
                   <Font name="Dialog" size="12" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Disabled"/>
-                <Property name="focusPainted" type="boolean" value="false"/>
-                <Property name="focusable" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dmzLogDisabledJRadioButtonActionPerformed"/>

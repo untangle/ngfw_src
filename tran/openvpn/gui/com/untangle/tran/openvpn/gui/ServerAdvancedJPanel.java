@@ -45,6 +45,10 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
         initComponents();
 	    Util.setPortView(portJSpinner, VpnSettings.DEFAULT_PUBLIC_PORT);
 		defaultJLabel.setText("(default: UDP " + VpnSettings.DEFAULT_PUBLIC_PORT + ")");
+		Util.addPanelFocus(this, portJSpinner);
+		Util.addFocusHighlight(nameJTextField);
+		Util.addFocusHighlight(primaryDNSIPaddrJTextField);
+		Util.addFocusHighlight(secondaryDNSIPaddrJTextField);
     }
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {
@@ -319,8 +323,6 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
                 overrideButtonGroup.add(overrideEnabledJRadioButton);
                 overrideEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 overrideEnabledJRadioButton.setText("Enabled");
-                overrideEnabledJRadioButton.setFocusPainted(false);
-                overrideEnabledJRadioButton.setFocusable(false);
                 overrideEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 overrideEnabledJRadioButtonActionPerformed(evt);
@@ -337,8 +339,6 @@ public class ServerAdvancedJPanel extends javax.swing.JPanel
                 overrideButtonGroup.add(overrideDisabledJRadioButton);
                 overrideDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 overrideDisabledJRadioButton.setText("Disabled");
-                overrideDisabledJRadioButton.setFocusPainted(false);
-                overrideDisabledJRadioButton.setFocusable(false);
                 overrideDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 overrideDisabledJRadioButtonActionPerformed(evt);

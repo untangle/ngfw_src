@@ -90,6 +90,8 @@ public class MEditTableJPanel extends javax.swing.JPanel
         entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
         entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
 	entryJScrollPane.addComponentListener(this);
+		entryJScrollPane.getHorizontalScrollBar().setFocusable(false);
+		entryJScrollPane.getVerticalScrollBar().setFocusable(false);
         this.setOpaque(true);
         contentJPanel.setOpaque(true);
             
@@ -253,8 +255,6 @@ public class MEditTableJPanel extends javax.swing.JPanel
                 addJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/widgets/editTable/IconPlus24x24.png")));
                 addJButton.setToolTipText("<html><b>Add New Row</b> - Use this button to insert a new row at a selected point in the table.<br>Hold down the shift key when clicking in order to insert at the end of the table.</html>");
                 addJButton.setDoubleBuffered(true);
-                addJButton.setFocusPainted(false);
-                addJButton.setFocusable(false);
                 addJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 addJButton.setIconTextGap(0);
                 addJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -280,8 +280,6 @@ public class MEditTableJPanel extends javax.swing.JPanel
                 removeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/widgets/editTable/IconMinus24x24.png")));
                 removeJButton.setToolTipText("<html><b>Remove Row</b> - Use this button to remove selected rows in a table.</html>");
                 removeJButton.setDoubleBuffered(true);
-                removeJButton.setFocusPainted(false);
-                removeJButton.setFocusable(false);
                 removeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 removeJButton.setIconTextGap(0);
                 removeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -307,8 +305,6 @@ public class MEditTableJPanel extends javax.swing.JPanel
                 refreshJButton.setText("Refresh");
                 refreshJButton.setToolTipText("");
                 refreshJButton.setDoubleBuffered(true);
-                refreshJButton.setFocusPainted(false);
-                refreshJButton.setFocusable(false);
                 refreshJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 refreshJButton.setIconTextGap(0);
                 refreshJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));

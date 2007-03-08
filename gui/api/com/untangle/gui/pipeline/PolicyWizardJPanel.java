@@ -13,6 +13,7 @@ package com.untangle.gui.pipeline;
 
 import com.untangle.gui.transform.*;
 import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.dialogs.MConfigJDialog;
 import com.untangle.mvvm.snmp.*;
 import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.*;
@@ -35,6 +36,7 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
     
     public PolicyWizardJPanel(Vector newRow) {
         initComponents();
+		MConfigJDialog.setInitialFocusComponent(protocolSettingJComboBox);
 		Util.addFocusHighlight(addressClientJTextField);
 		Util.addFocusHighlight(addressServerJTextField);
 		Util.addFocusHighlight(portServerJTextField);

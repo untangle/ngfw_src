@@ -57,6 +57,9 @@ public class MMainJFrame extends javax.swing.JFrame {
         storeJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
         toolboxJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
         configurationJScrollPane.getVerticalScrollBar().setUnitIncrement(5);
+		storeJScrollPane.getVerticalScrollBar().setFocusable(false);
+		toolboxJScrollPane.getVerticalScrollBar().setFocusable(false);
+		configurationJScrollPane.getVerticalScrollBar().setFocusable(false);
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
 
@@ -538,8 +541,6 @@ public class MMainJFrame extends javax.swing.JFrame {
                 helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/IconHelp36x36.png")));
                 helpJButton.setText("Help");
                 helpJButton.setDoubleBuffered(true);
-                helpJButton.setFocusPainted(false);
-                helpJButton.setFocusable(false);
                 helpJButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
                 helpJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 helpJButton.setOpaque(false);

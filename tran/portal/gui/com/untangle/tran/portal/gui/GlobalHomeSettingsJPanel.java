@@ -31,6 +31,13 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
 	timeoutJSpinner.setModel(new SpinnerNumberModel((int)(PortalHomeSettings.IDLE_TIMEOUT_DEFAULT/60000l),
 							(int)(PortalHomeSettings.IDLE_TIMEOUT_MIN/60000l),
 							(int)(PortalHomeSettings.IDLE_TIMEOUT_MAX/60000l), 1));
+		Util.addPanelFocus(this, loginTitleJTextField);
+		Util.addFocusHighlight(loginTitleJTextField);
+		Util.addFocusHighlight(loginTextJTextField);
+		Util.addFocusHighlight(pageTitleJTextField);
+		Util.addFocusHighlight(pageTextJTextField);
+		Util.addFocusHighlight(bookmarksJTextField);
+		Util.addFocusHighlight(timeoutJSpinner);
     }
         
     // SETTINGS CHANGE NOTIFICATION /////////
@@ -147,7 +154,6 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
 	showAddBookmarksCurrent = portalHomeSettings.isShowAddBookmark();
 	addJCheckBox.setSelected( showAddBookmarksCurrent );
 	addJCheckBox.setEnabled(showBookmarksCurrent);
-	addUserBookmarksJLabel.setEnabled(showBookmarksCurrent);
         
 	// TIMEOUT //
 	timeoutCurrent = (int)(portalHomeSettings.getIdleTimeout()/60000l);
@@ -175,7 +181,6 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
                 externalRemoteJPanel2 = new javax.swing.JPanel();
                 jTextArea6 = new javax.swing.JTextArea();
                 restrictIPJPanel4 = new javax.swing.JPanel();
-                explorerJLabel1 = new javax.swing.JLabel();
                 autoCreateJCheckBox = new javax.swing.JCheckBox();
                 explanationJPanel = new javax.swing.JPanel();
                 jTextArea2 = new javax.swing.JTextArea();
@@ -189,9 +194,6 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
                 externalRemoteJPanel = new javax.swing.JPanel();
                 jTextArea3 = new javax.swing.JTextArea();
                 restrictIPJPanel = new javax.swing.JPanel();
-                explorerJLabel = new javax.swing.JLabel();
-                userBookmarksJLabel = new javax.swing.JLabel();
-                addUserBookmarksJLabel = new javax.swing.JLabel();
                 explorerJCheckBox = new javax.swing.JCheckBox();
                 bookmarksJCheckBox = new javax.swing.JCheckBox();
                 addJCheckBox = new javax.swing.JCheckBox();
@@ -213,6 +215,7 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
                 jTextArea5.setLineWrap(true);
                 jTextArea5.setText("This text will appear on the portal login page.");
                 jTextArea5.setWrapStyleWord(true);
+                jTextArea5.setFocusable(false);
                 jTextArea5.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -294,6 +297,7 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
                 jTextArea6.setLineWrap(true);
                 jTextArea6.setText("These features will be available at the login page.");
                 jTextArea6.setWrapStyleWord(true);
+                jTextArea6.setFocusable(false);
                 jTextArea6.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -305,15 +309,8 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
 
                 restrictIPJPanel4.setLayout(new java.awt.GridBagLayout());
 
-                explorerJLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                explorerJLabel1.setText("Create Accounts On Demand From User Directory: ");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                restrictIPJPanel4.add(explorerJLabel1, gridBagConstraints);
-
-                autoCreateJCheckBox.setFocusable(false);
+                autoCreateJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                autoCreateJCheckBox.setText("Create Accounts On Demand From User Directory");
                 autoCreateJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 autoCreateJCheckBoxActionPerformed(evt);
@@ -348,6 +345,7 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
                 jTextArea2.setLineWrap(true);
                 jTextArea2.setText("This text will appear on the user's home page.");
                 jTextArea2.setWrapStyleWord(true);
+                jTextArea2.setFocusable(false);
                 jTextArea2.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -453,6 +451,7 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
                 jTextArea3.setLineWrap(true);
                 jTextArea3.setText("These features will be available on the user's home page.");
                 jTextArea3.setWrapStyleWord(true);
+                jTextArea3.setFocusable(false);
                 jTextArea3.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -464,31 +463,8 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
 
                 restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
 
-                explorerJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                explorerJLabel.setText("Show Application List: ");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                restrictIPJPanel.add(explorerJLabel, gridBagConstraints);
-
-                userBookmarksJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                userBookmarksJLabel.setText("Show Bookmarks: ");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                restrictIPJPanel.add(userBookmarksJLabel, gridBagConstraints);
-
-                addUserBookmarksJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                addUserBookmarksJLabel.setText("Allow User Added Bookmarks: ");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 2;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                restrictIPJPanel.add(addUserBookmarksJLabel, gridBagConstraints);
-
-                explorerJCheckBox.setFocusable(false);
+                explorerJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                explorerJCheckBox.setText("Show Application List");
                 explorerJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 explorerJCheckBoxActionPerformed(evt);
@@ -501,7 +477,8 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 restrictIPJPanel.add(explorerJCheckBox, gridBagConstraints);
 
-                bookmarksJCheckBox.setFocusable(false);
+                bookmarksJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                bookmarksJCheckBox.setText("Show Bookmarks");
                 bookmarksJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 bookmarksJCheckBoxActionPerformed(evt);
@@ -514,7 +491,8 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 restrictIPJPanel.add(bookmarksJCheckBox, gridBagConstraints);
 
-                addJCheckBox.setFocusable(false);
+                addJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                addJCheckBox.setText("Allow User Added Boommarks");
                 addJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 addJCheckBoxActionPerformed(evt);
@@ -549,6 +527,7 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
                 jTextArea4.setLineWrap(true);
                 jTextArea4.setText("This sets how long a login can be idle before being logged out.");
                 jTextArea4.setWrapStyleWord(true);
+                jTextArea4.setFocusable(false);
                 jTextArea4.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -641,7 +620,6 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
 	if( settingsChangedListener != null )
 	    settingsChangedListener.settingsChanged(this);
 	addJCheckBox.setEnabled(bookmarksJCheckBox.isSelected());
-	addUserBookmarksJLabel.setEnabled(bookmarksJCheckBox.isSelected());
     }//GEN-LAST:event_bookmarksJCheckBoxActionPerformed
     
     private void explorerJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_explorerJCheckBoxActionPerformed
@@ -668,7 +646,6 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
     
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JCheckBox addJCheckBox;
-        private javax.swing.JLabel addUserBookmarksJLabel;
         private javax.swing.JCheckBox autoCreateJCheckBox;
         private javax.swing.JCheckBox bookmarksJCheckBox;
         public javax.swing.JTextField bookmarksJTextField;
@@ -677,8 +654,6 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
         private javax.swing.JPanel explanationJPanel;
         private javax.swing.JPanel explanationJPanel1;
         private javax.swing.JCheckBox explorerJCheckBox;
-        private javax.swing.JLabel explorerJLabel;
-        private javax.swing.JLabel explorerJLabel1;
         private javax.swing.JPanel externalRemoteJPanel;
         private javax.swing.JPanel externalRemoteJPanel1;
         private javax.swing.JPanel externalRemoteJPanel2;
@@ -703,7 +678,6 @@ public class GlobalHomeSettingsJPanel extends javax.swing.JPanel implements Sava
         private javax.swing.JLabel timeoutJLabel;
         private javax.swing.JLabel timeoutJLabel1;
         private javax.swing.JSpinner timeoutJSpinner;
-        private javax.swing.JLabel userBookmarksJLabel;
         // End of variables declaration//GEN-END:variables
     
 }

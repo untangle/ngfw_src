@@ -45,6 +45,7 @@
             <Property name="lineWrap" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="The Public Space is the Space that is bound to the External network interface.  Most of its settings are configured through a config panel in Config -&gt; Networking.  However, for advanced purposes, you may specify the MTU here."/>
             <Property name="wrapStyleWord" type="boolean" value="true"/>
+            <Property name="focusable" type="boolean" value="false"/>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
           <Constraints>
@@ -79,6 +80,7 @@
               <Font name="Dialog" size="12" style="0"/>
             </Property>
             <Property name="text" type="java.lang.String" value="&lt;html&gt;The MTU specifies the maximum amount of data per packet that should be transferred out of this Space.  This value should not be changed unless explicitly necessary.&lt;/html&gt;"/>
+            <Property name="focusable" type="boolean" value="false"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">

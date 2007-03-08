@@ -115,8 +115,6 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
                 clientJPanel.setPreferredSize(new java.awt.Dimension(1061, 64));
                 advancedJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 advancedJButton.setText("<html><center>Configure in<br><b>Advanced Mode</b></center></html>");
-                advancedJButton.setFocusPainted(false);
-                advancedJButton.setFocusable(false);
                 advancedJButton.setMaximumSize(new java.awt.Dimension(175, 50));
                 advancedJButton.setMinimumSize(new java.awt.Dimension(175, 50));
                 advancedJButton.setPreferredSize(new java.awt.Dimension(175, 50));
@@ -160,8 +158,6 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
                 serverRoutingJPanel.setMinimumSize(new java.awt.Dimension(1061, 64));
                 standardJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 standardJButton.setText("<html><center>Configure in<br><b>Standard Mode</b></center></html>");
-                standardJButton.setFocusPainted(false);
-                standardJButton.setFocusable(false);
                 standardJButton.setMaximumSize(new java.awt.Dimension(175, 50));
                 standardJButton.setMinimumSize(new java.awt.Dimension(175, 50));
                 standardJButton.setPreferredSize(new java.awt.Dimension(175, 50));

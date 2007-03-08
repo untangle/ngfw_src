@@ -24,6 +24,9 @@ public class GlobalLoginSettingsJPanel extends javax.swing.JPanel implements Sav
 
     public GlobalLoginSettingsJPanel() {
         initComponents();
+		Util.addPanelFocus(this, pageTitleJTextField);
+		Util.addFocusHighlight(pageTitleJTextField);
+		Util.addFocusHighlight(pageTextJTextField);
     }
         
     // SETTINGS CHANGE NOTIFICATION /////////
@@ -92,7 +95,6 @@ public class GlobalLoginSettingsJPanel extends javax.swing.JPanel implements Sav
                 externalRemoteJPanel = new javax.swing.JPanel();
                 jTextArea3 = new javax.swing.JTextArea();
                 restrictIPJPanel = new javax.swing.JPanel();
-                explorerJLabel = new javax.swing.JLabel();
                 autoJCheckBox = new javax.swing.JCheckBox();
 
                 setLayout(new java.awt.GridBagLayout());
@@ -106,6 +108,7 @@ public class GlobalLoginSettingsJPanel extends javax.swing.JPanel implements Sav
                 jTextArea2.setLineWrap(true);
                 jTextArea2.setText("This is the text that will appear on the user's home page.");
                 jTextArea2.setWrapStyleWord(true);
+                jTextArea2.setFocusable(false);
                 jTextArea2.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -187,6 +190,7 @@ public class GlobalLoginSettingsJPanel extends javax.swing.JPanel implements Sav
                 jTextArea3.setLineWrap(true);
                 jTextArea3.setText("These are the features that available to the user on the home page.");
                 jTextArea3.setWrapStyleWord(true);
+                jTextArea3.setFocusable(false);
                 jTextArea3.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -198,15 +202,8 @@ public class GlobalLoginSettingsJPanel extends javax.swing.JPanel implements Sav
 
                 restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
 
-                explorerJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                explorerJLabel.setText("Automatically Create New Users From Directory: ");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                restrictIPJPanel.add(explorerJLabel, gridBagConstraints);
-
-                autoJCheckBox.setFocusable(false);
+                autoJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                autoJCheckBox.setText("Automatically Create New Users From Directory");
                 autoJCheckBox.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 autoJCheckBoxActionPerformed(evt);
@@ -259,7 +256,6 @@ public class GlobalLoginSettingsJPanel extends javax.swing.JPanel implements Sav
         private javax.swing.JCheckBox autoJCheckBox;
         private javax.swing.ButtonGroup enabledButtonGroup;
         private javax.swing.JPanel explanationJPanel;
-        private javax.swing.JLabel explorerJLabel;
         private javax.swing.JPanel externalRemoteJPanel;
         private javax.swing.JTextArea jTextArea2;
         private javax.swing.JTextArea jTextArea3;

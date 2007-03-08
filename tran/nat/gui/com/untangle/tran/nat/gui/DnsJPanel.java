@@ -28,6 +28,8 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Re
         
     public DnsJPanel() {
         initComponents();
+		Util.addPanelFocus(this, dnsMasqEnabledJRadioButton);
+		Util.addFocusHighlight(suffixJTextField);
     }
     
     // SETTINGS CHANGE NOTIFICATION /////////
@@ -115,6 +117,7 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 jTextArea1.setLineWrap(true);
                 jTextArea1.setText("DNS Forwarding allows your Untangle Server to act as a DNS server for the internal network.  (Note: This will also serve hostnames from the DHCP Address map and the DNS Forwarding Address Map, if they are enabled.)");
                 jTextArea1.setWrapStyleWord(true);
+                jTextArea1.setFocusable(false);
                 jTextArea1.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -129,8 +132,6 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 enabledButtonGroup.add(dnsMasqEnabledJRadioButton);
                 dnsMasqEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dnsMasqEnabledJRadioButton.setText("Enabled");
-                dnsMasqEnabledJRadioButton.setFocusPainted(false);
-                dnsMasqEnabledJRadioButton.setFocusable(false);
                 dnsMasqEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dnsMasqEnabledJRadioButtonActionPerformed(evt);
@@ -147,8 +148,6 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 enabledButtonGroup.add(dnsMasqDisabledJRadioButton);
                 dnsMasqDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 dnsMasqDisabledJRadioButton.setText("Disabled");
-                dnsMasqDisabledJRadioButton.setFocusPainted(false);
-                dnsMasqDisabledJRadioButton.setFocusable(false);
                 dnsMasqDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 dnsMasqDisabledJRadioButtonActionPerformed(evt);
@@ -192,6 +191,7 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Re
                 jTextArea3.setLineWrap(true);
                 jTextArea3.setText("For example, \"acme.com\".  The Domain Name Suffix allows hosts on the internal network to be accessible by fully qualified hostname, such as \"host1.acme.com\".  The suffix is appended to unqualified hostnames in the DNS Forwarding Address Map and the DHCP Address Map.  This functionality is enabled only when DNS Forwarding is enabled.");
                 jTextArea3.setWrapStyleWord(true);
+                jTextArea3.setFocusable(false);
                 jTextArea3.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;

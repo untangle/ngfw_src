@@ -334,7 +334,6 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 
                 contentJPanel.setOpaque(false);
                 mTabbedPane.setDoubleBuffered(true);
-                mTabbedPane.setFocusable(false);
                 mTabbedPane.setFont(new java.awt.Font("Arial", 0, 11));
                 mTabbedPane.setRequestFocusEnabled(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -367,8 +366,6 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 removeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconRemove_16x16.png")));
                 removeJButton.setText("Remove");
                 removeJButton.setDoubleBuffered(true);
-                removeJButton.setFocusPainted(false);
-                removeJButton.setFocusable(false);
                 removeJButton.setIconTextGap(6);
                 removeJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 removeJButton.setOpaque(false);
@@ -381,7 +378,6 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 helpJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconHelp_18x16.png")));
                 helpJButton.setText("Help");
-                helpJButton.setFocusPainted(false);
                 helpJButton.setIconTextGap(6);
                 helpJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 helpJButton.setOpaque(false);
@@ -401,8 +397,6 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 expandJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconEnlarge_43x16.png")));
                 expandJButton.setText("Enlarge");
                 expandJButton.setDoubleBuffered(true);
-                expandJButton.setFocusPainted(false);
-                expandJButton.setFocusable(false);
                 expandJButton.setIconTextGap(6);
                 expandJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 expandJButton.setOpaque(false);
@@ -422,8 +416,6 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 reloadJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconCancel_16x16.png")));
                 reloadJButton.setText("Cancel");
                 reloadJButton.setDoubleBuffered(true);
-                reloadJButton.setFocusPainted(false);
-                reloadJButton.setFocusable(false);
                 reloadJButton.setIconTextGap(6);
                 reloadJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 reloadJButton.setOpaque(false);
@@ -444,8 +436,6 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 saveJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
                 saveJButton.setText("Save");
                 saveJButton.setDoubleBuffered(true);
-                saveJButton.setFocusPainted(false);
-                saveJButton.setFocusable(false);
                 saveJButton.setIconTextGap(6);
                 saveJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 saveJButton.setOpaque(false);

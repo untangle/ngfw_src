@@ -85,8 +85,6 @@
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Add New Row&lt;/b&gt; - Use this button to insert a new row at a selected point in the table.&lt;br&gt;Hold down the shift key when clicking in order to insert at the end of the table.&lt;/html&gt;"/>
                 <Property name="doubleBuffered" type="boolean" value="true"/>
-                <Property name="focusPainted" type="boolean" value="false"/>
-                <Property name="focusable" type="boolean" value="false"/>
                 <Property name="horizontalTextPosition" type="int" value="0"/>
                 <Property name="iconTextGap" type="int" value="0"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
@@ -122,8 +120,6 @@
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Remove Row&lt;/b&gt; - Use this button to remove selected rows in a table.&lt;/html&gt;"/>
                 <Property name="doubleBuffered" type="boolean" value="true"/>
-                <Property name="focusPainted" type="boolean" value="false"/>
-                <Property name="focusable" type="boolean" value="false"/>
                 <Property name="horizontalTextPosition" type="int" value="0"/>
                 <Property name="iconTextGap" type="int" value="0"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
@@ -157,8 +153,6 @@
                 <Property name="text" type="java.lang.String" value="Refresh"/>
                 <Property name="toolTipText" type="java.lang.String" value=""/>
                 <Property name="doubleBuffered" type="boolean" value="true"/>
-                <Property name="focusPainted" type="boolean" value="false"/>
-                <Property name="focusable" type="boolean" value="false"/>
                 <Property name="horizontalTextPosition" type="int" value="0"/>
                 <Property name="iconTextGap" type="int" value="0"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">

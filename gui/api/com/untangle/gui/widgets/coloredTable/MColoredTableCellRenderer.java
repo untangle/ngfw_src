@@ -114,7 +114,6 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
                 savedImageIcon = new ImageIcon( this.getClass().getResource("/com/untangle/gui/widgets/coloredTable/IconSaved13x13.png") );
             
 	    renderJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-	    renderJButton.setFocusable(false);
 	    renderJButton.setEnabled(true);
 	    renderJButton.setOpaque(false);
 	    renderJButtonJPanel = new JPanel();
@@ -126,28 +125,23 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
             renderJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
             renderJLabel.setHorizontalAlignment(JTextField.LEFT);
             renderJLabel.setOpaque(true);
-            renderJLabel.setFocusable(false);
             //renderJLabel.setBorder(mLineEditableBorder);
             
             renderJTextField.setFont(new java.awt.Font("Dialog", 0, 12));
             renderJTextField.setHorizontalAlignment(JTextField.LEFT);
             renderJTextField.setOpaque(true);
-            renderJTextField.setFocusable(false);
             renderJTextField.setEditable(false);
             
             renderJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
             renderJComboBox.setOpaque(true);
             //renderJComboBox.setBorder(mLineEditableBorder);
-            renderJComboBox.setFocusable(false);
             
             renderJCheckBox.setHorizontalAlignment(JCheckBox.CENTER);
             renderJCheckBox.setOpaque(true);
             //renderJCheckBox.setBorder(mLineEditableBorder);
             renderJCheckBox.setBorderPainted(true);
-            renderJCheckBox.setFocusable(false);
             
             renderJSlider.setOpaque(false);
-            renderJSlider.setFocusable(false);
             renderJSlider.setMajorTickSpacing(25);
             renderJSlider.setMinorTickSpacing(10);
             renderJSlider.setPaintLabels(true);
@@ -155,14 +149,12 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
             renderJSlider.setBackground(new Color(0f, 0f, 0f, 0f));
             
             renderJSpinner.setOpaque(true);
-            renderJSpinner.setFocusable(false);
             renderJSpinner.setFont(new java.awt.Font("Default", 0, 10));
             renderJSpinner.setBackground(new Color(0f, 0f, 0f, 0f));
             ((JSpinner.DefaultEditor)renderJSpinner.getEditor()).getTextField().setOpaque(true);
             ((JSpinner.DefaultEditor)renderJSpinner.getEditor()).getTextField().setBackground(new Color(0f, 0f, 0f, 0f));
 
             renderDateJSpinner.setOpaque(true);
-            renderDateJSpinner.setFocusable(false);
             renderDateJSpinner.setFont(new java.awt.Font("Default", 0, 10));
             renderDateJSpinner.setBackground(new Color(0f, 0f, 0f, 0f));
             ((JSpinner.DefaultEditor)renderDateJSpinner.getEditor()).getTextField().setOpaque(true);
@@ -175,11 +167,10 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
             renderMPasswordField.setFont(new java.awt.Font("Dialog", 0, 12));
             renderMPasswordField.setHorizontalAlignment(JTextField.LEFT);
             renderMPasswordField.setOpaque(true);
-            renderMPasswordField.setFocusable(false);
             renderMPasswordField.setEditable(false);
         }
         
-        public Component getTableCellRendererComponent(JTable jTable, Object value, boolean isSelected, boolean hasFocus, int row, int col){
+        public Component getTableCellRendererComponent(final JTable jTable, Object value, boolean isSelected, boolean hasFocus, final int row, final int col){
             super.getTableCellRendererComponent(jTable, value, isSelected, hasFocus, row, col);
             
             boolean isEditable = jTable.isCellEditable(row, col);
@@ -407,10 +398,25 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
 	    }
 
 	    if( renderSecondaryJComponent != null )
-		renderSecondaryJComponent.setBackground(backgroundColor);
-            return renderJComponent;
+            renderSecondaryJComponent.setBackground(backgroundColor);
+       
+    
+        // select the contents if its editable text sucka fish
+        if(hasFocus &&
+           ( (renderJComponent == renderJLabel) 
+             || (renderJComponent == renderJSpinner) 
+             || (renderJComponent == renderJCheckBox) 
+             || (renderJComponent == renderJComboBox) 
+             || (renderJComponent == renderMPasswordField) ) ){
+            SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                jTable.editCellAt(row,col);
+            }});
         }
-        
+
+        return renderJComponent;
+
+        }
+
     }
 
 

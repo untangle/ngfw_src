@@ -32,7 +32,6 @@ public class BrowserLaunchJPanel extends JPanel implements ActionListener {
 
         JButton launchJButton;
         launchJButton = new JButton("Launch Web Browser");
-        launchJButton.setFocusPainted(false);
         launchJButton.setFont(new java.awt.Font("Arial", 0, 11));
         launchJButton.setPreferredSize(new Dimension(225, 25));
         launchJButton.setMaximumSize(new Dimension(225, 25));
