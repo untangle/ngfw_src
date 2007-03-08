@@ -41,6 +41,7 @@ public class SMTPSpamMessageAction implements Serializable
     public static final SMTPSpamMessageAction OVERSIZE = new SMTPSpamMessageAction(OVERSIZE_KEY, "pass message");
 
     // do not include SAFELIST or OVERSIZE in INSTANCES map
+    // because GUI will display them as setting actions
     static {
         INSTANCES.put(PASS.getKey(), PASS);
         INSTANCES.put(MARK.getKey(), MARK);

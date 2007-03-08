@@ -37,7 +37,20 @@ public class SpamMessageActionUserType implements UserType
         if (true == rs.wasNull() || 1 != s.length()) {
             return null;
         } else {
-            return SpamMessageAction.getInstance(s.charAt(0));
+            char actionKey = s.charAt(0);
+            Object smAction = SpamMessageAction.getInstance(actionKey);
+            if (null == smAction) {
+                // these actions are not in the instances map
+                // - for an explanation, see SpamMessageAction
+                if (SpamMessageAction.SAFELIST_KEY == actionKey) {
+                    smAction = (Object) SpamMessageAction.SAFELIST;
+                } else if (SpamMessageAction.OVERSIZE_KEY == actionKey) {
+                    smAction = (Object) SpamMessageAction.OVERSIZE;
+                } else { // need to add new action -> default to PASS for now
+                    smAction = (Object) SpamMessageAction.PASS;
+                }
+            }
+            return smAction;
         }
     }
 

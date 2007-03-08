@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=LoggedDetail
-REPORT_TITLE=Web Content Control - Logged Violations (time)
+REPORT_TITLE=Web Content Control - Logged Violations (client name)
 
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
@@ -29,7 +29,7 @@ SELECT blk.time_stamp, page.uid AS uname, page.hname, \
   WHERE (blk.time_stamp >= $P{startTime} \
     AND blk.time_stamp < $P{endTime} \
     AND blk.action = 'B') \
-  ORDER BY blk.time_stamp DESC
+  ORDER BY page.hname ASC, blk.time_stamp DESC
 
 TOPLEFT.label=Timestamp
 TOPLMID.label=User

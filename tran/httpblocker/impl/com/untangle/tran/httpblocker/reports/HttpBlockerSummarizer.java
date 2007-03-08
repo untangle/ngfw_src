@@ -26,7 +26,7 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {
         long hitCount = 0l;
-        long blockCount = 0l;
+        long logCount = 0l; // logged (passed and blocked) visits
         long webTraffic = 0l; // filtered web traffic (to other transforms)
 
         try {
@@ -50,7 +50,7 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
             ps.setTimestamp(2, endDate);
             rs = ps.executeQuery();
             rs.first();
-            blockCount = rs.getLong(1);
+            logCount = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -72,8 +72,8 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
         addEntry("&nbsp;", "&nbsp;");
 
         addEntry("Scanned web visits", Util.trimNumber("",hitCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Logged web visits", Util.trimNumber("",blockCount), Util.percentNumber(blockCount,hitCount));
-        addEntry("&nbsp;&nbsp;&nbsp;Passed web visits", Util.trimNumber("",hitCount-blockCount), Util.percentNumber(hitCount-blockCount,hitCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Logged web visits", Util.trimNumber("",logCount), Util.percentNumber(logCount,hitCount));
+        addEntry("&nbsp;&nbsp;&nbsp;Passed web visits", Util.trimNumber("",hitCount-logCount), Util.percentNumber(hitCount-logCount,hitCount));
 
         // XXXX
         String tranName = "Web Content Control";

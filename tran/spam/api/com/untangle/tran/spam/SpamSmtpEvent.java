@@ -66,7 +66,7 @@ public class SpamSmtpEvent extends SpamEvent
     @Transient
     public int getActionType()
     {
-        char type = action.getKey();
+        char type = (null == action) ? SMTPSpamMessageAction.PASS_KEY : action.getKey();
         if (SMTPSpamMessageAction.PASS_KEY == type) {
             return PASSED;
         } else if (SMTPSpamMessageAction.MARK_KEY == type) {
@@ -81,7 +81,11 @@ public class SpamSmtpEvent extends SpamEvent
     @Transient
     public String getActionName()
     {
-        return action.toString();
+        if (null == action) {
+            return SMTPSpamMessageAction.PASS.toString();
+        } else {
+            return action.toString();
+        }
     }
 
     // Better sender/receiver info available for smtp

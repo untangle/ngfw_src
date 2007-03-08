@@ -27,6 +27,10 @@ import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 
+// for now, phishhttp counts are added to email phish counts
+// because it is assumed that email phish volume overwhelms phishhttp volume
+// - if this assumption proves to be incorrect,
+//   we can use datasetA to separate phishhttp counts from email phish counts
 public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 {
     private String chartTitle;
@@ -40,7 +44,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
     public SummaryGraph() {          // out, in, total
         // Total counts (identified as "A") are not displayed
-        this("Traffic", true, true, "Total", "Phish Detected", "Clean/Passed", "Email/min.");
+        this("Traffic", true, true, "Total", "Phish Detected", "Clean/Passed", "Incidents/min.");
     }
 
     // Produces a single line graph of one series
@@ -162,7 +166,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         try { stmt.close(); } catch (SQLException x) { }
 
         sql = "SELECT trunc_ts, SUM(clam_ct), SUM(clean_ct)"
-            + "  FROM (SELECT date_trunc('minute', time_stamp) AS trunc_ts,"
+            + "  FROM (SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
             + "          COUNT(CASE is_spam WHEN true THEN 1 ELSE null END) AS clam_ct,"
             + "          COUNT(CASE is_spam WHEN false THEN 1 ELSE null END) AS clean_ct"
             + "        FROM tr_spam_evt_smtp"
@@ -198,6 +202,47 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             //countsA[bucket] += countA;
             countsB[bucket] += countB;
             countsC[bucket] += countC;
+        }
+        try { stmt.close(); } catch (SQLException x) { }
+
+        // XXX count doesn't include clean/passed events
+        // because phishhttp doesn't track them
+        // - if it is added, rewrite query and update count loop
+        sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts, COUNT(*)"
+            + " FROM tr_phishhttp_evt"
+            + " WHERE time_stamp >= ? AND time_stamp < ? AND action = 'B'"
+            + " GROUP BY trunc_ts"
+            + " ORDER BY trunc_ts";
+
+        bindIdx = 1;
+        stmt = con.prepareStatement(sql);
+        stmt.setTimestamp(bindIdx++, startTimestamp);
+        stmt.setTimestamp(bindIdx++, endTimestamp);
+
+        rs = stmt.executeQuery();
+        totalQueryTime = System.currentTimeMillis() - totalQueryTime;
+        totalProcessTime = System.currentTimeMillis();
+
+        // PROCESS EACH ROW
+        while (rs.next()) {
+            // GET RESULTS
+            eventDate = rs.getTimestamp(1);
+            //countA = rs.getLong(2) + rs.getLong(3);
+            countB = rs.getLong(2);
+            // XXX count doesn't include clean/passed events
+            // because phishhttp doesn't track them
+            //countC = rs.getLong(3);
+
+            // ALLOCATE COUNT TO EACH MINUTE WE WERE ALIVE EQUALLY
+            eventStart = (eventDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
+            realStart = eventStart < startMinuteInMillis ? (long) 0 : eventStart - startMinuteInMillis;
+            startInterval = (int)(realStart / MINUTE_INTERVAL)/MINUTES_PER_BUCKET;
+            bucket = startInterval%BUCKETS;
+
+            // COMPUTE COUNTS IN INTERVALS
+            //countsA[bucket] += countA;
+            countsB[bucket] += countB;
+            //countsC[bucket] += countC;
         }
         try { stmt.close(); } catch (SQLException x) { }
 

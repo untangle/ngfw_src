@@ -9,8 +9,9 @@
  * $Id$
  */
 
-package com.untangle.tran.spam;
+package com.untangle.tran.clamphish;
 
+import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,39 +19,25 @@ import java.sql.Types;
 
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
-import java.io.Serializable;
 
-public class SMTPSpamMessageActionUserType implements UserType
+public class ActionUserType implements UserType
 {
     private static final int[] SQL_TYPES = { Types.CHAR };
 
     public int[] sqlTypes() { return SQL_TYPES; }
-    public Class returnedClass() { return SMTPSpamMessageAction.class; }
+    public Class returnedClass() { return Action.class; }
     public boolean equals(Object x, Object y) { return x == y; }
-    public Object deepCopy(Object value) { return value; }
+    public Object deepCopy(Object v) { return v; }
     public boolean isMutable() { return false; }
 
     public Object nullSafeGet(ResultSet rs, String[] names, Object owner)
         throws HibernateException, SQLException
     {
         String s = rs.getString(names[0]);
-        if (true == rs.wasNull() || 1 != s.length()) {
+        if (rs.wasNull() || 1 != s.length()) {
             return null;
         } else {
-            char actionKey = s.charAt(0);
-            Object smAction = SMTPSpamMessageAction.getInstance(actionKey);
-            if (null == smAction) {
-                // these actions are not in the instances map
-                // - for an explanation, see SMTPSpamMessageAction
-                if (SMTPSpamMessageAction.SAFELIST_KEY == actionKey) {
-                    smAction = (Object) SMTPSpamMessageAction.SAFELIST;
-                } else if (SMTPSpamMessageAction.OVERSIZE_KEY == actionKey) {
-                    smAction = (Object) SMTPSpamMessageAction.OVERSIZE;
-                } else { // need to add new action -> default to PASS for now
-                    smAction = (Object) SMTPSpamMessageAction.PASS;
-                }
-            }
-            return smAction;
+            return Action.getInstance(s.charAt(0));
         }
     }
 
@@ -61,11 +48,9 @@ public class SMTPSpamMessageActionUserType implements UserType
             // 0 means no value/null
             ps.setString(i, "0");
         } else {
-            SMTPSpamMessageAction a = (SMTPSpamMessageAction)v;
-            ps.setString(i, Character.toString(a.getKey()));
+            Action r = (Action)v;
+            ps.setString(i, Character.toString(r.getKey()));
         }
-
-        return;
     }
 
     public Object replace(Object original, Object target, Object owner)

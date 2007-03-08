@@ -23,6 +23,11 @@ import java.util.Set;
 
 import com.sleepycat.je.DatabaseException;
 import com.untangle.mvvm.LocalAppServerManager;
+import com.untangle.mvvm.logging.EventLogger;
+import com.untangle.mvvm.logging.EventLoggerFactory;
+import com.untangle.mvvm.logging.EventManager;
+import com.untangle.mvvm.logging.ListEventFilter;
+import com.untangle.mvvm.logging.SimpleEventFilter;
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.tapi.Affinity;
@@ -50,6 +55,8 @@ import static com.untangle.tran.util.Ascii.CRLF;
 public class ClamPhishTransform extends SpamImpl
     implements ClamPhish
 {
+    private final Logger logger = Logger.getLogger(getClass());
+
     private static final String OUT_MOD_SUB_TEMPLATE =
       "[PHISH] $MIMEMessage:SUBJECT$";
     private static final String OUT_MOD_BODY_TEMPLATE =
@@ -101,7 +108,7 @@ public class ClamPhishTransform extends SpamImpl
         = new HashMap<InetAddress, Set<String>>();
     private final PhishReplacementGenerator replacementGenerator;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final EventLogger<PhishHttpEvent> phishHttpEventLogger;
 
     // constructors -----------------------------------------------------------
 
@@ -137,9 +144,23 @@ public class ClamPhishTransform extends SpamImpl
 
         urlDatabase.updateAll();
         // XXX post/pre init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        phishHttpEventLogger = EventLoggerFactory.factory().getEventLogger(getTransformContext());
+
+        SimpleEventFilter sef = new PhishHttpBlockedFilter();
+        phishHttpEventLogger.addSimpleEventFilter(sef);
+        ListEventFilter lef = new PhishHttpAllFilter();
+        phishHttpEventLogger.addListEventFilter(lef);
+        lef = new PhishHttpPassedFilter();
+        phishHttpEventLogger.addListEventFilter(lef);
     }
 
     // public methods ---------------------------------------------------------
+
+    public EventManager<PhishHttpEvent> getPhishHttpEventManager()
+    {
+        return phishHttpEventLogger;
+    }
 
     public void setClamPhishSettings(ClamPhishSettings spamSettings)
     {
@@ -312,6 +333,11 @@ public class ClamPhishTransform extends SpamImpl
     }
 
     // package private methods ------------------------------------------------
+
+    void logHttp(PhishHttpEvent phishHttpEvent)
+    {
+        phishHttpEventLogger.log(phishHttpEvent);
+    }
 
     Token[] generateResponse(ClamPhishBlockDetails bd, TCPSession session,
                              boolean persistent)

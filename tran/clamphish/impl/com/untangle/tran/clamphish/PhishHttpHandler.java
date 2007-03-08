@@ -22,11 +22,13 @@ import com.untangle.tran.token.Chunk;
 import com.untangle.tran.token.Header;
 import com.untangle.tran.token.Token;
 import com.untangle.tran.util.UrlDatabaseResult;
+import org.apache.log4j.Logger;
 
 public class PhishHttpHandler extends HttpStateMachine
 {
-    private final ClamPhishTransform transform;
+    private final Logger logger = Logger.getLogger(getClass());
 
+    private final ClamPhishTransform transform;
 
     // constructors -----------------------------------------------------------
 
@@ -50,7 +52,8 @@ public class PhishHttpHandler extends HttpStateMachine
     @Override
     protected Header doRequestHeader(Header requestHeader)
     {
-        URI uri = getRequestLine().getRequestUri();
+        RequestLineToken rlToken = getRequestLine();
+        URI uri = rlToken.getRequestUri();
 
         // XXX this code should be factored out
         String host = uri.getHost();
@@ -75,6 +78,9 @@ public class PhishHttpHandler extends HttpStateMachine
         if (null != result) {
             // XXX fire off event
             if (result.blacklisted()) {
+                // XXX change this category value
+                transform.logHttp(new PhishHttpEvent(rlToken.getRequestLine(), Action.BLOCK, "Google Safe Browsing"));
+
                 InetAddress clientIp = getSession().clientAddr();
 
                 ClamPhishBlockDetails bd = new ClamPhishBlockDetails
@@ -84,10 +90,10 @@ public class PhishHttpHandler extends HttpStateMachine
                                                        isRequestPersistent());
 
                 blockRequest(r);
-            }
-        }
-        return requestHeader;
+            } // else log Action.PASS now
+        } // else log Action.PASS now
 
+        return requestHeader;
     }
 
     @Override

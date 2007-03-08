@@ -1,6 +1,6 @@
 TEMPLATE=MasterOfTwoChildren
 REPORT_NAME=SpywareHNameMaster
-REPORT_TITLE=Spyware Blocker - User Summary
+REPORT_TITLE=Spyware Blocker - Client Summary
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
 SUBREPORT_1=reports/SpywareHNameSources.jasper

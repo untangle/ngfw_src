@@ -1,6 +1,6 @@
 TEMPLATE=MasterOfTwoChildren
 REPORT_NAME=ProtoFilterHNameMaster
-REPORT_TITLE=Protocol Control - User Summary
+REPORT_TITLE=Protocol Control - Client Summary
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
 SUBREPORT_1=reports/ProtoFilterHNameLogged.jasper

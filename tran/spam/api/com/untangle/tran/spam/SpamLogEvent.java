@@ -65,7 +65,8 @@ public class SpamLogEvent extends SpamEvent
     @Transient
     public int getActionType()
     {
-        if (SpamMessageAction.PASS_KEY == action.getKey()) {
+        if (null == action ||
+            SpamMessageAction.PASS_KEY == action.getKey()) {
             return PASSED;
         } else {
             return MARKED;
@@ -75,7 +76,11 @@ public class SpamLogEvent extends SpamEvent
     @Transient
     public String getActionName()
     {
-        return action.toString();
+        if (null == action) {
+            return SpamMessageAction.PASS.toString();
+        } else {
+            return action.toString();
+        }
     }
 
     // accessors --------------------------------------------------------------

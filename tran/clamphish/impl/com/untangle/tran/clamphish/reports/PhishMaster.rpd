@@ -1,4 +1,4 @@
-TEMPLATE=MasterOfTwoChildren
+TEMPLATE=MasterOfThreeChildren
 REPORT_NAME=PhishMaster
 REPORT_TITLE=Identity Theft Blocker - Summary
 EXTRA_PARAM_1.name=spamVendor
@@ -7,3 +7,4 @@ EXTRA_PARAM_2.name=reportTitlePrefix
 EXTRA_PARAM_2.type=java.lang.String
 SUBREPORT_1=reports/TopPhishSmtp.jasper
 SUBREPORT_2=reports/TopPhishPop.jasper
+SUBREPORT_3=reports/TopPhishHttp.jasper

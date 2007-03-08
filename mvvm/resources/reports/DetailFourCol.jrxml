@@ -37,7 +37,7 @@
       </image>
 
       <textField pattern="">
-        <reportElement key="textField" positionType="Float" mode="Opaque" x="215" y="30" width="357" height="18"/>
+        <reportElement key="textField" positionType="Float" mode="Opaque" x="175" y="30" width="397" height="18"/>
         <box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#FFFFFF"/>
         <textElement textAlignment="Right">
           <font fontName="SansSerif" size="14" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>

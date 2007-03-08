@@ -29,14 +29,16 @@ public class PhishSummarizer extends BaseSummarizer {
 
         logger.info("Identity Theft Blocker Vendor: " + spamVendor);
 
-        int smtpScanned = 0;
-        int smtpMarked = 0;
-        int smtpBlocked = 0;
-        int smtpPassed = 0;
-        int smtpQuarantined = 0;
-        int popimapScanned = 0;
-        int popimapMarked = 0;
-        int popimapPassed = 0;
+        long smtpScanned = 0l;
+        long smtpMarked = 0l;
+        long smtpBlocked = 0l;
+        long smtpPassed = 0l;
+        long smtpQuarantined = 0l;
+        long popimapScanned = 0l;
+        long popimapMarked = 0l;
+        long popimapPassed = 0l;
+
+        long httpBlocked = 0l;
 
         try {
             String sql;
@@ -50,7 +52,7 @@ public class PhishSummarizer extends BaseSummarizer {
             ps.setString(3, spamVendor);
             rs = ps.executeQuery();
             rs.first();
-            smtpScanned = rs.getInt(1);
+            smtpScanned = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -61,7 +63,7 @@ public class PhishSummarizer extends BaseSummarizer {
             ps.setString(3, spamVendor);
             rs = ps.executeQuery();
             rs.first();
-            smtpMarked = rs.getInt(1);
+            smtpMarked = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -72,7 +74,7 @@ public class PhishSummarizer extends BaseSummarizer {
             ps.setString(3, spamVendor);
             rs = ps.executeQuery();
             rs.first();
-            smtpPassed = rs.getInt(1);
+            smtpPassed = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -83,7 +85,7 @@ public class PhishSummarizer extends BaseSummarizer {
             ps.setString(3, spamVendor);
             rs = ps.executeQuery();
             rs.first();
-            smtpBlocked = rs.getInt(1);
+            smtpBlocked = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -94,7 +96,7 @@ public class PhishSummarizer extends BaseSummarizer {
             ps.setString(3, spamVendor);
             rs = ps.executeQuery();
             rs.first();
-            smtpQuarantined = rs.getInt(1);
+            smtpQuarantined = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -105,7 +107,7 @@ public class PhishSummarizer extends BaseSummarizer {
             ps.setString(3, spamVendor);
             rs = ps.executeQuery();
             rs.first();
-            popimapScanned = rs.getInt(1);
+            popimapScanned = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -116,7 +118,7 @@ public class PhishSummarizer extends BaseSummarizer {
             ps.setString(3, spamVendor);
             rs = ps.executeQuery();
             rs.first();
-            popimapPassed = rs.getInt(1);
+            popimapPassed = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -127,7 +129,17 @@ public class PhishSummarizer extends BaseSummarizer {
             ps.setString(3, spamVendor);
             rs = ps.executeQuery();
             rs.first();
-            popimapMarked = rs.getInt(1);
+            popimapMarked = rs.getLong(1);
+            rs.close();
+            ps.close();
+
+            sql = "SELECT COUNT(*) FROM tr_phishhttp_evt WHERE time_stamp >= ? AND time_stamp < ? AND action = 'B'";
+            ps = conn.prepareStatement(sql);
+            ps.setTimestamp(1, startDate);
+            ps.setTimestamp(2, endDate);
+            rs = ps.executeQuery();
+            rs.first();
+            httpBlocked = rs.getLong(1);
             rs.close();
             ps.close();
 
@@ -140,7 +152,7 @@ public class PhishSummarizer extends BaseSummarizer {
         addEntry("&nbsp;&nbsp;&nbsp;Phish & Blocked", Util.trimNumber("",smtpBlocked), Util.percentNumber(smtpBlocked, smtpScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Phish & Marked", Util.trimNumber("",smtpMarked), Util.percentNumber(smtpMarked, smtpScanned));
         addEntry("&nbsp;&nbsp;&nbsp;Phish & Passed", Util.trimNumber("",smtpPassed), Util.percentNumber(smtpPassed, smtpScanned));
-        int totalSpam = smtpQuarantined + smtpBlocked + smtpMarked + smtpPassed;
+        long totalSpam = smtpQuarantined + smtpBlocked + smtpMarked + smtpPassed;
         addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",smtpScanned-totalSpam), Util.percentNumber(smtpScanned-totalSpam, smtpScanned));
 
         addEntry("&nbsp;","&nbsp;");
@@ -150,6 +162,10 @@ public class PhishSummarizer extends BaseSummarizer {
         addEntry("&nbsp;&nbsp;&nbsp;Phish & Passed", Util.trimNumber("",popimapPassed), Util.percentNumber(popimapPassed, popimapScanned));
         totalSpam = popimapMarked + popimapPassed;
         addEntry("&nbsp;&nbsp;&nbsp;Clean & Passed", Util.trimNumber("",popimapScanned-totalSpam), Util.percentNumber(popimapScanned-totalSpam, popimapScanned));
+
+        addEntry("&nbsp;","&nbsp;");
+
+        addEntry("Web logged violations: Phish & Blocked", Util.trimNumber("",httpBlocked));
 
         String tranName = "Identity Theft Blocker";
 
