@@ -48,7 +48,7 @@ class VirusHttpHandler extends HttpStateMachine
         = "<HTML><HEAD>"
         + "<TITLE>403 Forbidden</TITLE>"
         + "</HEAD><BODY>"
-        + "<center><b>%s AntiVirus Scanner</b></center>"
+        + "<center><b>Virus Blocked!</b></center>"
         + "<p>This site blocked because it contained a virus</p>"
         + "<p>Host: %s</p>"
         + "<p>URI: %s</p>"
@@ -270,7 +270,7 @@ class VirusHttpHandler extends HttpStateMachine
         String uri = null != rl ? rl.getRequestUri().toString() : "";
         String host = getResponseHost();
 
-        String message = String.format(BLOCK_MESSAGE, vendor, host, uri);
+        String message = String.format(BLOCK_MESSAGE, host, uri);
 
         Header h = new Header();
         h.addField("Content-Length", Integer.toString(message.length()));
