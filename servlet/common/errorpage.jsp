@@ -1,7 +1,4 @@
 <%@ page isErrorPage="true" import="com.untangle.mvvm.LocalAppServerManager,org.apache.log4j.Logger,org.apache.catalina.Globals,org.apache.catalina.valves.Constants,org.apache.catalina.util.StringManager"%>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-
 <%
 // See LocalStrings.properties in the apache package for message
 // format. XXX we could make our own friendlier version.
@@ -12,6 +9,11 @@ String errorMessage = null != o && o instanceof String ? (String)o : null;
 if (null == errorMessage) {
     ErrorData ed = pageContext.getErrorData();
     Throwable t = null == ed ? null : ed.getThrowable();
+
+    if ( ed.getStatusCode() == 401 ) {
+        response.addHeader( "WWW-Authenticate", "Basic realm=\"Untangle Platform\"" );
+    }
+
     if (null == t) {
         o = request.getAttribute(Globals.STATUS_CODE_ATTR);
         int statusCode = null != o && o instanceof Integer ? (Integer)o : 0;
@@ -27,6 +29,8 @@ if (null == errorMessage) {
     }
 }
 %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <html>
   <head>
