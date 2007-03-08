@@ -27,6 +27,7 @@ import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import org.apache.log4j.Logger;
+import com.sleepycat.je.Cursor;
 
 public class PrefixUrlList extends UrlList
 {
@@ -100,8 +101,20 @@ public class PrefixUrlList extends UrlList
 
     protected String updateDatabase(Database db, String version) throws IOException
     {
-        // XXX implement update
-        return null;
+        // XXX implement proper updating
+        try {
+            DatabaseEntry k = new DatabaseEntry();
+            DatabaseEntry v = new DatabaseEntry();
+
+            Cursor c = db.openCursor(null, null);
+            while (OperationStatus.SUCCESS == c.getNext(k, v, LockMode.DEFAULT)) {
+                c.delete();
+            }
+        } catch (DatabaseException exn) {
+            logger.warn("could not clear database");
+        }
+
+        return initDatabase(db);
     }
 
     protected byte[] getKey(byte[] host)
