@@ -92,7 +92,10 @@ class LocalLdapAdapter extends LdapAdapter {
 
     @Override
     public String getSuperuserDN() {
-        return "cn=" + m_settings.getSuperuser() + "," + getSearchBase();
+        String sustring = m_settings.getSuperuser();
+        if (sustring.toUpperCase().startsWith("CN="))
+            return sustring;
+        return "cn=" + sustring + "," + getSearchBase();
     }
 
     @Override

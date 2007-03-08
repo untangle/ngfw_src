@@ -680,6 +680,8 @@ abstract class LdapAdapter {
     // Helper
     protected String domainComponents(String dom)
     {
+        if (dom.toUpperCase().startsWith("DC="))
+            return dom;
         while (dom.endsWith("."))
             dom = dom.substring(0, dom.length() - 1);
         return "DC=" + dom.replace(".", ",DC=");
