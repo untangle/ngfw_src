@@ -14,8 +14,6 @@ package com.untangle.tran.clamphish;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 
 import com.untangle.mvvm.security.Tid;
@@ -29,7 +27,6 @@ import com.untangle.tran.spam.SpamSettings;
  */
 @Entity
 @Table(name="tr_clamphish_settings", schema="settings")
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public class ClamPhishSettings extends SpamSettings implements Serializable
 {
     // XXX

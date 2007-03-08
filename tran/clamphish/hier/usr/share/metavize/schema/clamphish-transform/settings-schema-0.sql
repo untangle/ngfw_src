@@ -9,6 +9,7 @@ CREATE TABLE settings.tr_clamphish_settings (
     pop_outbound int8 NOT NULL,
     imap_inbound int8 NOT NULL,
     imap_outbound int8 NOT NULL,
+    enable_google_sb bool NOT NULL,
     PRIMARY KEY (settings_id));
 
 -- foreign key constraints

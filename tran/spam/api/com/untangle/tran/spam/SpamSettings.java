@@ -20,12 +20,13 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.untangle.mvvm.security.Tid;
 import org.hibernate.annotations.Cascade;
@@ -39,6 +40,7 @@ import org.hibernate.annotations.IndexColumn;
  */
 @Entity
 @Table(name="tr_spam_settings", schema="settings")
+@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public class SpamSettings implements Serializable
 {
     private static final long serialVersionUID = -7246008133224040004L;
