@@ -15,6 +15,8 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.untangle.mvvm.tapi.TCPSession;
 import com.untangle.tran.token.Header;
@@ -22,10 +24,14 @@ import org.apache.log4j.Logger;
 
 public class UrlDatabase<T>
 {
+    private static final int UPDATE_PERIOD = 2 * 60 * 60 * 1000;
+
     private final Map<T, UrlList> whitelists = new HashMap<T, UrlList>();
     private final Map<T, UrlList> blacklists = new HashMap<T, UrlList>();
 
     private final Logger logger = Logger.getLogger(getClass());
+
+    private Timer timer;
 
     public void addBlacklist(T o, UrlList blacklist)
     {
@@ -99,5 +105,33 @@ public class UrlDatabase<T>
         }
 
         return host.substring(i + 1);
+    }
+
+    public void startUpdateTimer()
+    {
+        synchronized (this) {
+            if (null != timer) {
+                timer.cancel();
+            }
+
+            timer = new Timer(true);
+            TimerTask t = new TimerTask() {
+                    public void run()
+                    {
+                        updateAll(false);
+                    }
+                };
+            timer.scheduleAtFixedRate(t, UPDATE_PERIOD, UPDATE_PERIOD);
+        }
+    }
+
+    public void stopUpdateTimer()
+    {
+        synchronized (this) {
+            if (null != timer) {
+                timer.cancel();
+            }
+            timer = null;
+        }
     }
 }

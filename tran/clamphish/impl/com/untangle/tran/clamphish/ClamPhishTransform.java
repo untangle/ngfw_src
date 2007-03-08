@@ -231,11 +231,13 @@ public class ClamPhishTransform extends SpamImpl
     protected void postInit(String args[])
     {
         deployWebAppIfRequired(logger);
+        urlDatabase.startUpdateTimer();
     }
 
     @Override
     protected void postDestroy()
     {
+        urlDatabase.stopUpdateTimer();
         unDeployWebAppIfRequired(logger);
     }
 
