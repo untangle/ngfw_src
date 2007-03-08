@@ -21,13 +21,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.sleepycat.je.Cursor;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import org.apache.log4j.Logger;
-import com.sleepycat.je.Cursor;
 
 public class PrefixUrlList extends UrlList
 {
@@ -102,16 +102,25 @@ public class PrefixUrlList extends UrlList
     protected String updateDatabase(Database db, String version) throws IOException
     {
         // XXX implement proper updating
+        Cursor c = null;
         try {
             DatabaseEntry k = new DatabaseEntry();
             DatabaseEntry v = new DatabaseEntry();
 
-            Cursor c = db.openCursor(null, null);
+            c = db.openCursor(null, null);
             while (OperationStatus.SUCCESS == c.getNext(k, v, LockMode.DEFAULT)) {
                 c.delete();
             }
         } catch (DatabaseException exn) {
             logger.warn("could not clear database");
+        } finally {
+            if (null != c) {
+                try {
+                    c.close();
+                } catch (DatabaseException exn) {
+                    logger.warn("could not close cursor", exn);
+                }
+            }
         }
 
         return initDatabase(db);

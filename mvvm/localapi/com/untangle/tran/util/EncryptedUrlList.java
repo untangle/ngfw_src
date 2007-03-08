@@ -100,16 +100,25 @@ public class EncryptedUrlList extends UrlList
         throws IOException
     {
         // XXX implement proper updating
+        Cursor c = null;
         try {
             DatabaseEntry k = new DatabaseEntry();
             DatabaseEntry v = new DatabaseEntry();
 
-            Cursor c = db.openCursor(null, null);
+            c = db.openCursor(null, null);
             while (OperationStatus.SUCCESS == c.getNext(k, v, LockMode.DEFAULT)) {
                 c.delete();
             }
         } catch (DatabaseException exn) {
             logger.warn("could not clear database");
+        } finally {
+            if (null != c) {
+                try {
+                    c.close();
+                } catch (DatabaseException exn) {
+                    logger.warn("could not close cursor", exn);
+                }
+            }
         }
 
         return initDatabase(db);

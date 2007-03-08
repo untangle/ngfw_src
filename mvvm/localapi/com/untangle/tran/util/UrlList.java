@@ -32,14 +32,19 @@ public abstract class UrlList
     private static final byte[] VERSION_KEY = "__version".getBytes();
 
     private final Database db;
+    private final String dbLock;
 
     private final Logger logger = Logger.getLogger(getClass());
+
+    private boolean updating = false;
 
     // constructors -----------------------------------------------------------
 
     public UrlList(File dbHome, String dbName)
         throws DatabaseException
     {
+        dbLock = new File(dbHome, dbName).getAbsolutePath().intern();
+
         EnvironmentConfig envCfg = new EnvironmentConfig();
         envCfg.setAllowCreate(true);
         Environment dbEnv = new Environment(dbHome, envCfg);
@@ -52,28 +57,18 @@ public abstract class UrlList
 
     // public methods ---------------------------------------------------------
 
-    public void update()
-        throws DatabaseException, IOException
-    {
-        try {
-            DatabaseEntry k = new DatabaseEntry(VERSION_KEY);
-            DatabaseEntry v = new DatabaseEntry();
-
-            String version;
-            OperationStatus s = db.get(null, k, v, LockMode.READ_UNCOMMITTED);
-            if (OperationStatus.SUCCESS == s) {
-                byte[] d = v.getData();
-                version = updateDatabase(db, new String(d));
-            } else {
-                version = initDatabase(db);
-            }
-            if (null != version) {
-                db.put(null, new DatabaseEntry(VERSION_KEY), new DatabaseEntry(version.getBytes()));
-            }
-
-            db.getEnvironment().sync();
-        } catch (DatabaseException exn) {
-            logger.warn("could not get database version", exn);
+    public void update(boolean async) {
+        if (async) {
+            Thread t = new Thread(new Runnable() {
+                    public void run()
+                    {
+                        update();
+                    }
+                }, "update-" + dbLock);
+                t.setDaemon(true);
+                t.start();
+        } else {
+            update();
         }
     }
 
@@ -130,8 +125,7 @@ public abstract class UrlList
 
     // private methods --------------------------------------------------------
 
-    // XXX private
-    public List<String> getPatterns(String hostStr)
+    private List<String> getPatterns(String hostStr)
     {
         byte[] host = hostStr.getBytes();
 
@@ -161,5 +155,46 @@ public abstract class UrlList
         } else {
             return Collections.emptyList();
         }
+    }
+
+    private void update()
+    {
+        logger.info("updating UrlList: " + dbLock);
+        synchronized (dbLock) {
+            if (updating) {
+                return;
+            } else {
+                updating = true;
+            }
+        }
+
+        try {
+            DatabaseEntry k = new DatabaseEntry(VERSION_KEY);
+            DatabaseEntry v = new DatabaseEntry();
+
+            String version;
+            OperationStatus s = db.get(null, k, v, LockMode.READ_UNCOMMITTED);
+            if (OperationStatus.SUCCESS == s) {
+                byte[] d = v.getData();
+                version = updateDatabase(db, new String(d));
+            } else {
+                version = initDatabase(db);
+            }
+            if (null != version) {
+                db.put(null, new DatabaseEntry(VERSION_KEY), new DatabaseEntry(version.getBytes()));
+            }
+
+            db.getEnvironment().sync();
+        } catch (DatabaseException exn) {
+            logger.warn("could not update database", exn);
+        } catch (IOException exn) {
+            logger.warn("could not update database", exn);
+        } finally {
+            synchronized (dbLock) {
+                updating = false;
+            }
+        }
+
+        System.out.println("updated UrlList: " + dbLock);
     }
 }

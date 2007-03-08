@@ -23,13 +23,13 @@ import java.util.Set;
 
 import com.sleepycat.je.DatabaseException;
 import com.untangle.mvvm.LocalAppServerManager;
+import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.logging.EventLogger;
 import com.untangle.mvvm.logging.EventLoggerFactory;
 import com.untangle.mvvm.logging.EventManager;
 import com.untangle.mvvm.logging.ListEventFilter;
 import com.untangle.mvvm.logging.SimpleEventFilter;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.tapi.Affinity;
 import com.untangle.mvvm.tapi.Fitting;
 import com.untangle.mvvm.tapi.PipeSpec;
@@ -142,7 +142,7 @@ public class ClamPhishTransform extends SpamImpl
             logger.warn("could not open database", exn);
         }
 
-        urlDatabase.updateAll();
+        urlDatabase.updateAll(true);
         // XXX post/pre init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         phishHttpEventLogger = EventLoggerFactory.factory().getEventLogger(getTransformContext());

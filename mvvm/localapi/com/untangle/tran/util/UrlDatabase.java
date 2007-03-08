@@ -11,13 +11,11 @@
 
 package com.untangle.tran.util;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sleepycat.je.DatabaseException;
 import com.untangle.mvvm.tapi.TCPSession;
 import com.untangle.tran.token.Header;
 import org.apache.log4j.Logger;
@@ -39,20 +37,14 @@ public class UrlDatabase<T>
         whitelists.put(o, whitelist);
     }
 
-    public void updateAll()
+    public void updateAll(boolean async)
     {
-        try {
-            for (T o : whitelists.keySet()) {
-                whitelists.get(o).update();
-            }
+        for (T o : whitelists.keySet()) {
+            whitelists.get(o).update(async);
+        }
 
-            for (T o : blacklists.keySet()) {
-                blacklists.get(o).update();
-            }
-        } catch (IOException exn) {
-            logger.warn("could not update db", exn);
-        } catch (DatabaseException exn) {
-            logger.warn("could not update db", exn);
+        for (T o : blacklists.keySet()) {
+            blacklists.get(o).update(async);
         }
     }
 
