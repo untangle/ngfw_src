@@ -4,10 +4,14 @@ REGDONE="@MVVM_HOME@/.regdone"
 REGINFO="@MVVM_HOME@/registration.info"
 
 if [ -f "@MVVM_HOME@/activation.key" ]; then
+    mkdir -p @MVVM_HOME@/autodump
+    /usr/bin/mvvmdb-backup local @MVVM_HOME@/autodump
+
     /usr/bin/update-reports &> @MVVM_LOG@/report.log
 
     /usr/bin/find /tmp -mtime +31 -name "*.tmp" | /usr/bin/xargs -r /bin/rm
     /usr/bin/find @MVVM_HOME@/tmp -name velocity -prune -type f -mtime +31 | /usr/bin/xargs -r /bin/rm
+    /usr/bin/find @MVVM_HOME@/autodump -type f -mtime +31 | /usr/bin/xargs -r /bin/rm
 
     if [ -f "$REGINFO" ]; then
         if [ ! -f "$REGDONE" -o "$REGDONE" -ot "$REGINFO" ]; then
