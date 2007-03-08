@@ -195,6 +195,6 @@ public abstract class UrlList
             }
         }
 
-        System.out.println("updated UrlList: " + dbLock);
+        logger.info("updated UrlList: " + dbLock);
     }
 }
