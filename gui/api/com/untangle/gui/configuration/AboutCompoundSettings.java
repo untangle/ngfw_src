@@ -31,6 +31,10 @@ public class AboutCompoundSettings implements CompoundSettings {
     private String installedVersion;
     public String getInstalledVersion(){ return installedVersion; }
 
+    // KEY
+    private String activationKey;
+    public String getActivationKey(){ return activationKey; }
+
     // LICENSE //
     private URL licenseURL;
     public URL getLicenseURL(){ return licenseURL; }
@@ -57,7 +61,7 @@ public class AboutCompoundSettings implements CompoundSettings {
 	    installedVersion = "unknown";
 	else
 	    installedVersion = mackageDesc.getInstalledVersion();
-	
+	activationKey = Util.getMvvmContext().getActivationKey();
 	licenseURL = Util.getClassLoader().getResource("License.txt");
 	timeZone = Util.getAdminManager().getTimeZone();
 	date = Util.getAdminManager().getDate();

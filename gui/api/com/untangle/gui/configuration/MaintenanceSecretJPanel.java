@@ -28,6 +28,13 @@ public class MaintenanceSecretJPanel extends javax.swing.JPanel
     
     public MaintenanceSecretJPanel() {
         initComponents();
+		jScrollPane1.getVerticalScrollBar().setFocusable(false);
+		jScrollPane1.getHorizontalScrollBar().setFocusable(false);
+		jScrollPane2.getVerticalScrollBar().setFocusable(false);
+		jScrollPane2.getHorizontalScrollBar().setFocusable(false);
+		Util.addPanelFocus(this, script1JTextArea);
+		Util.addFocusHighlight(script1JTextArea);
+		Util.addFocusHighlight(script2JTextArea);
     }
 
     public void doSave(MaintenanceCompoundSettings maintenanceCompoundSettings, boolean validateOnly) throws Exception {

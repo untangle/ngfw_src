@@ -104,13 +104,15 @@ public class AboutJDialog extends MConfigJDialog {
 	    containingJScrollPane = jScrollPane;
 	}
 	public void doRefresh(AboutCompoundSettings aboutCompoundSettings){
-	    String buildString = "<html><b>Build:</b> " + aboutCompoundSettings.getInstalledVersion();
+	    String versionString = "<html><b>Build: </b> " + aboutCompoundSettings.getInstalledVersion()
+            + "<br><b>Activation Key: </b>" + aboutCompoundSettings.getActivationKey()
+            + "</html>";
 
 	    try{
-		setText(buildString);
+            setText(versionString);
 	    }
 	    catch(Exception e){
-		Util.handleExceptionNoRestart("Error setting about info", e);
+            Util.handleExceptionNoRestart("Error setting about info", e);
 	    }
 	    containingJScrollPane.getVerticalScrollBar().setValue(0);
 	}
