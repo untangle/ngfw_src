@@ -1050,7 +1050,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         JButton storeSettingsJButton = new JButton();
                         storeSettingsJButton.setFocusPainted(false);
                         storeSettingsJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                        storeSettingsJButton.setText("My Account");
+                        storeSettingsJButton.setText("Show My Account");
                         storeSettingsJButton.addActionListener(new StoreSettingsActionListener());
                         storeJPanel.add(storeSettingsJButton, storeSettingsGridBagConstraints);
                         storeJPanel.revalidate();
@@ -1196,6 +1196,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         }});
     }
     private void initRackModel(final JProgressBar progressBar){
+        boolean addedNothing = true;
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             progressBar.setValue(16);
             if( policyTidMap.keySet().size() == 1 )
@@ -1218,20 +1219,22 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             policyRackJPanelMap.put(policy,rackJPanel);
             policyRackMap.put(policy,new TreeMap<ButtonKey,MTransformJPanel>());
             for( Tid tid : policyTidMap.get(policy) ){
+                addedNothing = false;
                 new LoadApplianceThread(policy,tid,overall,progressBar);
             }
         }
         // NON-SECURITY
         for( Tid tid : nonPolicyTidList ){
+            addedNothing = false;
             new LoadApplianceThread(null,tid,overall,progressBar);
         }
         try{
             while( applianceLoadProgress < overall ){
                 Thread.currentThread().sleep(100);
             }
-            revalidateRacks();
         }
         catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping while product loading",e); }
+        Util.getMPipelineJPanel().setStoreWizardButtonVisible(addedNothing);
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             progressBar.setValue(64);
         }});
@@ -1354,7 +1357,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 if( utilRackMap.isEmpty() ){
                     rackViewJPanel.remove( utilSeparator );
                     rackViewJPanel.remove( utilRackJPanel );
-		    rackViewJPanel.revalidate();
+                    rackViewJPanel.revalidate();
                     rackViewJPanel.repaint();
                 }
             }
@@ -1363,10 +1366,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 // REMOVE FROM RACK MODEL
                 policyRackMap.get(policy).remove(buttonKey);
 		// SEE IF ALL POLICIES ARE EMPTY
-		boolean allEmpty = true;
+		boolean allPolicyEmpty = true;
 		for( Policy policy : policyRackMap.keySet() ){
 		    if(policyRackMap.get(policy).size()>0){
-			allEmpty = false;
+			allPolicyEmpty = false;
 			break;
 		    }
 		}
@@ -1374,7 +1377,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 rackJPanel.remove(mTransformJPanel);
                 rackJPanel.revalidate();
 		// REMOVE SEPARATOR IF ALL EMPTY (AND SET TO THE INITIAL VALUE)
-		if( allEmpty ){
+		if( allPolicyEmpty ){
 		    viewSelector.setSelectedIndex(0);
 		    rackViewJPanel.remove( policySeparator );
 		    rackViewJPanel.remove( policyRackJPanelMap.get(policy) );
@@ -1396,6 +1399,16 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     rackViewJPanel.repaint();
                 }
             }
+
+            boolean allEmpty = true;
+            for( Policy policy : policyRackMap.keySet() ){
+                if(policyRackMap.get(policy).size()>0){
+                    allEmpty = false;
+                    break;
+                }
+            }
+            if( coreRackMap.isEmpty() && utilRackMap.isEmpty() && allEmpty)
+                Util.getMPipelineJPanel().setStoreWizardButtonVisible(true);
         }});
     }
     ///////////////////////////////////////
@@ -1505,6 +1518,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private void addToRack(final Policy policy, final MTransformJPanel mTransformJPanel, final boolean doRevalidate){
         final ButtonKey buttonKey = new ButtonKey(mTransformJPanel);
         SwingUtilities.invokeLater( new Runnable() { public void run() {
+            Util.getMPipelineJPanel().setStoreWizardButtonVisible(false);
             if( mTransformJPanel.getMackageDesc().isUtil() || mTransformJPanel.getMackageDesc().isService()){
                 // DEAL WITH SPACER
                 if( utilRackMap.isEmpty() ){
