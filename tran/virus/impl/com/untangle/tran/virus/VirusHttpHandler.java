@@ -111,7 +111,7 @@ class VirusHttpHandler extends HttpStateMachine
 
         if (null != requestHeader.getValue("range")) {
             String ua = requestHeader.getValue("user-agent");
-            if (ua.startsWith("Microsoft BITS")) {
+            if (!ua.startsWith("Microsoft BITS")) {
                 requestHeader.removeField("range");
             }
         }
