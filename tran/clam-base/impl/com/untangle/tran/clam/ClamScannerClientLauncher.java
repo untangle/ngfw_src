@@ -92,7 +92,9 @@ public class ClamScannerClientLauncher extends VirusScannerClientLauncher {
 
     private VirusScannerResult getResult() {
         VirusScannerResult result = cContext.getResult();
-        if (false == result.isClean()) {
+        if (null == result) {
+            result = VirusScannerResult.ERROR;
+        } else if (false == result.isClean()) {
             String virusName = result.getVirusName();
             for (String invalid : invalidVirusNames) {
                 if (true == virusName.equalsIgnoreCase(invalid)) {

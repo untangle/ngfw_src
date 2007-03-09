@@ -139,11 +139,11 @@ public class SpamAssassinScannerClientLauncher {
 
     public void consolidate(List<ReportItem> baseItemList, SpamReport result) {
         if (null == result)
-            return;
+            return; // same as itemList that is empty
 
         List<ReportItem> itemList = result.getItems();
-
         if (true == baseItemList.isEmpty()) {
+            // it's okay if itemList is empty
             baseItemList.addAll(itemList);
             return;
         }
