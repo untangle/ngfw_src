@@ -126,7 +126,7 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 
 		private void storeWizardJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_storeWizardJButtonActionPerformed
 				try{
-					URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/index.php?option=com_content&task=view&id=31&Itemid=63");
+					URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/index.php?option=com_wizard&Itemid=92");
 					((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
 				}
 				catch(Exception f){

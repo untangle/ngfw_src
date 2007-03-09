@@ -1196,7 +1196,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         }});
     }
     private void initRackModel(final JProgressBar progressBar){
-        boolean addedNothing = true;
+        int addCount = 0;
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             progressBar.setValue(16);
             if( policyTidMap.keySet().size() == 1 )
@@ -1219,13 +1219,13 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             policyRackJPanelMap.put(policy,rackJPanel);
             policyRackMap.put(policy,new TreeMap<ButtonKey,MTransformJPanel>());
             for( Tid tid : policyTidMap.get(policy) ){
-                addedNothing = false;
+                addCount++;
                 new LoadApplianceThread(policy,tid,overall,progressBar);
             }
         }
         // NON-SECURITY
         for( Tid tid : nonPolicyTidList ){
-            addedNothing = false;
+            addCount++;
             new LoadApplianceThread(null,tid,overall,progressBar);
         }
         try{
@@ -1234,7 +1234,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             }
         }
         catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping while product loading",e); }
-        Util.getMPipelineJPanel().setStoreWizardButtonVisible(addedNothing);
+        Util.getMPipelineJPanel().setStoreWizardButtonVisible( addCount<=1 );
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             progressBar.setValue(64);
         }});
@@ -1400,14 +1400,11 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 }
             }
 
-            boolean allEmpty = true;
+            int policyCount = 0;
             for( Policy policy : policyRackMap.keySet() ){
-                if(policyRackMap.get(policy).size()>0){
-                    allEmpty = false;
-                    break;
-                }
+                policyCount += policyRackMap.get(policy).size();
             }
-            if( coreRackMap.isEmpty() && utilRackMap.isEmpty() && allEmpty)
+            if( (coreRackMap.size() + utilRackMap.size() + policyCount) <= 1 )
                 Util.getMPipelineJPanel().setStoreWizardButtonVisible(true);
         }});
     }
@@ -1518,7 +1515,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private void addToRack(final Policy policy, final MTransformJPanel mTransformJPanel, final boolean doRevalidate){
         final ButtonKey buttonKey = new ButtonKey(mTransformJPanel);
         SwingUtilities.invokeLater( new Runnable() { public void run() {
-            Util.getMPipelineJPanel().setStoreWizardButtonVisible(false);
+            
             if( mTransformJPanel.getMackageDesc().isUtil() || mTransformJPanel.getMackageDesc().isService()){
                 // DEAL WITH SPACER
                 if( utilRackMap.isEmpty() ){
@@ -1581,6 +1578,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 if(doRevalidate)
                     coreRackJPanel.revalidate();
             }
+            int policyCount = 0;
+            for( Policy policy : policyRackMap.keySet() ){
+                policyCount += policyRackMap.get(policy).size();
+            }
+            if( (coreRackMap.size() + utilRackMap.size() + policyCount) > 1 )
+                Util.getMPipelineJPanel().setStoreWizardButtonVisible(false);
         }});
     }
     ///////////////////////////////////////
