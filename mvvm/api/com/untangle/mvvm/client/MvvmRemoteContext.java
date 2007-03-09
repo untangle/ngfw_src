@@ -174,6 +174,13 @@ public interface MvvmRemoteContext
     String version();
 
     /**
+     * Get the activation key.
+     *
+     * @return the activation key.
+     */
+    String getActivationKey();
+
+    /**
      * Create a backup which the client can save to a local disk.  The
      * returned bytes are for a .tar.gz file, so it is a good idea to
      * either use a ".tar.gz" extension so basic validation can be

@@ -154,10 +154,16 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
         return context.version();
     }
 
+    public String getActivationKey()
+    {
+        return context.getActivationKey();
+    }
+
     public byte[] createBackup() throws IOException
     {
         return context.createBackup();
     }
+
     public void restoreBackup(byte[] backupBytes)
       throws IOException, IllegalArgumentException
     {
