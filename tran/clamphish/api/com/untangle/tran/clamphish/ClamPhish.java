@@ -11,11 +11,14 @@
 
 package com.untangle.tran.clamphish;
 
+import com.untangle.mvvm.logging.EventManager;
 import com.untangle.tran.http.UserWhitelistMode;
 import com.untangle.tran.spam.SpamTransform;
 
 public interface ClamPhish extends SpamTransform
 {
+    EventManager<PhishHttpEvent> getPhishHttpEventManager();
+
     void setClamPhishSettings(ClamPhishSettings spamSettings);
     ClamPhishSettings getClamPhishSettings();
 
