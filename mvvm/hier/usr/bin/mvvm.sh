@@ -21,7 +21,7 @@ elif [ ! -z "$PGMV81" ] ; then
     PGSERVICE="postgresql-8.1"
 else
     PGDATA=${POSTGRES_DATA:-/var/lib/postgres/data}
-    PGSERVICE=="postgresql"
+    PGSERVICE="postgresql"
 fi
 
 # Short enough to restart mvvm promptly
