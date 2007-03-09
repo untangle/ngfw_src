@@ -438,6 +438,7 @@ cat >> $main_index <<EOF
                   </td></tr>
 EOF
 
+## This assumes that mcli never returns transform names that contain spaces
 for f in $ordered_tran_list; do
     if [ -d $f ]; then
         generate_report_menu_entry $f
@@ -491,6 +492,7 @@ cat >> $main_index <<EOF
               <!-- SUMMARY AREA -->
 EOF
 
+## This assumes that mcli never returns transform names that contain spaces
 for f in $ordered_tran_list; do
     if [ -d $f ]; then
         generate_summary_entry $f false
@@ -498,6 +500,7 @@ for f in $ordered_tran_list; do
 done
 
 
+## This assumes that mcli never returns transform names that contain spaces
 for f in $ordered_tran_list; do
     if [ -d $f ]; then
         generate_summary_entry $f true

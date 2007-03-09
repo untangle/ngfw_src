@@ -248,8 +248,8 @@ generate_user_content_area ()
             continue
         fi
 
-        local UNAME=$(echo ${line} | cut -d' ' -f1)
-        local UNAME_FN=$(echo ${line} | cut -d' ' -f2)
+        local UNAME_FN=$(echo ${line} | cut -d' ' -f1)
+        local UNAME=$(echo ${line} | cut -d' ' -f2-)
         local UNAMESUM_HTML=`echo ${rep_base}--${UNAME_FN}--${period}.html`
         local UNAMESUM_PDF=`echo ${rep_base}--${UNAME_FN}--${period}.pdf`
 
@@ -324,8 +324,8 @@ generate_hname_content_area ()
             continue
         fi
 
-        local HNAME=$(echo ${line} | cut -d' ' -f1)
-        local HNAME_FN=$(echo ${line} | cut -d' ' -f2)
+        local HNAME_FN=$(echo ${line} | cut -d' ' -f1)
+        local HNAME=$(echo ${line} | cut -d' ' -f2-)
         local HNAMESUM_HTML=`echo ${rep_base}--${HNAME_FN}--${period}.html`
         local HNAMESUM_PDF=`echo ${rep_base}--${HNAME_FN}--${period}.pdf`
 

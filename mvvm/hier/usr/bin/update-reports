@@ -175,19 +175,27 @@ EOF
         echo "ANALYZE;" | $PSQL mvvm
 
         # create files w/ username and hostname lists for usersummary-reports
+        psql -qt -U postgres mvvm -c "SELECT DISTINCT username FROM events.mvvm_lookup_evt;" -o $REPORT_DIR/current/uname.tmp2
+        grep -v "^$" $REPORT_DIR/current/uname.tmp2 > $REPORT_DIR/current/uname.tmp
+        psql -qt -U postgres mvvm -c "SELECT DISTINCT hname FROM reports.sessions WHERE client_intf=1;" -o $REPORT_DIR/current/hname.tmp2
+        grep -v "^$" $REPORT_DIR/current/hname.tmp2 > $REPORT_DIR/current/hname.tmp
+        rm -f $REPORT_DIR/current/uname.tmp2
+        rm -f $REPORT_DIR/current/hname.tmp2
+
         rm -f $REPORT_DIR/current/uname.lst
         rm -f $REPORT_DIR/current/hname.lst
-        psql -qt -U postgres mvvm -c "SELECT DISTINCT username FROM events.mvvm_lookup_evt;" -o $REPORT_DIR/current/uname.tmp
-        psql -qt -U postgres mvvm -c "SELECT DISTINCT hname FROM reports.sessions WHERE client_intf=1;" -o $REPORT_DIR/current/hname.tmp
-        # strip all dir seps from name b/c name is used in filename
+        # strip all dir seps and spaces from name
+        # because this name is used to generate a filename
         while read line
         do
-            echo ${line} ${line//\//} >> $REPORT_DIR/current/uname.lst
+            echo ${line//[\/| ]/} ${line} >> $REPORT_DIR/current/uname.lst
         done < $REPORT_DIR/current/uname.tmp
+        touch $REPORT_DIR/current/uname.lst
         while read line
         do
-            echo ${line} ${line//\//} >> $REPORT_DIR/current/hname.lst
+            echo ${line//[\/| ]/} ${line} >> $REPORT_DIR/current/hname.lst
         done < $REPORT_DIR/current/hname.tmp
+        touch $REPORT_DIR/current/hname.lst
         rm -f $REPORT_DIR/current/uname.tmp
         rm -f $REPORT_DIR/current/hname.tmp
 

@@ -100,6 +100,7 @@ function generateSubReports()
     ## This is the report field description
     echo "reports.fields='title:string','properties:string','briefingTemplate:string','detailedTemplate:string','iconDescription:string','iconOrganization:string','link:string', 'detailed:string'" >> ${topLevel}
 
+    ## This assumes that mcli never returns transform names that contain spaces
     for t_reportDir in ${orderedTransformList}; do
         ## Don't iterate the transforms that don't have reports.
         ls ${t_reportDir}/*.html >/dev/null 2>&1 || continue
@@ -246,7 +247,6 @@ function generateUserSummary()
             local rep_base=$(echo $line | cut -d: -f3-)
             break
         fi
-
     done < ${t_baseDir}/report-files
 
     if [ x = "x$rep_base" ] ; then
@@ -264,8 +264,8 @@ function generateUserSummary()
             continue
         fi
 
-        local UNAME=$(echo ${line} | cut -d' ' -f1)
-        local UNAME_FN=$(echo ${line} | cut -d' ' -f2)
+        local UNAME_FN=$(echo ${line} | cut -d' ' -f1)
+        local UNAME=$(echo ${line} | cut -d' ' -f2-)
         local UNAMESUM=${UNAME_FN}--${REPORT_TYPE}
         local UNAMESUM_PDF=`echo ${rep_base}--${UNAMESUM}.pdf`
 
@@ -280,7 +280,6 @@ function generateUserSummary()
         echo "unamesum.${ucnt}='${UNAME}','${t_key}/${UNAMESUM_PDF}'" >> ${t_properties}
 
         ucnt=$((ucnt+1))
-
     done < $DIRECTORY_PDF/uname.lst
 
     echo -e "\nhnamesum.fields='userName:string','filename:string'" >> ${t_properties}
@@ -294,8 +293,8 @@ function generateUserSummary()
             continue
         fi
 
-        local HNAME=$(echo ${line} | cut -d' ' -f1)
-        local HNAME_FN=$(echo ${line} | cut -d' ' -f2)
+        local HNAME_FN=$(echo ${line} | cut -d' ' -f1)
+        local HNAME=$(echo ${line} | cut -d' ' -f2-)
         local HNAMESUM=${HNAME_FN}--${REPORT_TYPE}
         local HNAMESUM_PDF=`echo ${rep_base}--${HNAMESUM}.pdf`
 
@@ -310,7 +309,6 @@ function generateUserSummary()
         echo "hnamesum.${hcnt}='${HNAME}','${t_key}/${HNAMESUM_PDF}'" >> ${t_properties}
 
         hcnt=$((hcnt+1))
-
     done < $DIRECTORY_PDF/hname.lst
 
     ## Now actually generate standalone user summary PDFs

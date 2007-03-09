@@ -419,8 +419,9 @@ public class TranReporter {
         Map<String, Object> params = new HashMap<String, Object>();
         String baseName;
         for (String userName : userNames) {
-            // strip all dir seps from name b/c name is used in filename
-            baseName = baseTag + "--" + userName.replaceAll("/","") + periodTag;
+            // strip all dir seps and spaces from name
+            // because this name is used to generate the filename
+            baseName = baseTag + "--" + userName.replaceAll("[/ ]","") + periodTag;
 
             params.putAll(baseParams);
             // JasperReports automatically adds quotes to this literal value
