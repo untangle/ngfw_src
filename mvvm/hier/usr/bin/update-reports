@@ -106,7 +106,7 @@ $PSQL -v midnight="'$midnight'" -v daystosave="$NUMDAYSTOKEEP" -v intable="repor
 # Build event partitions
 daystoadd=`mktemp`
 $PSQL --pset tuples_only mvvm > $daystoadd <<EOF
-  select day_name, day_begin from events.daystoadd ;
+  select day_name, day_begin from events.daystoadd order by day_begin ;
 EOF
 while read dayname ignore daybegin; do
     for basetablename in `cat @MVVM_SCHEMA@/*/partitioned-tables`; do
@@ -159,7 +159,7 @@ if [ $is_reporting_enabled == 'true' ]; then
         # Build pre-joined reports tables
         daystoadd=`mktemp`
         $PSQL --pset tuples_only mvvm > $daystoadd <<EOF
-          select day_name, day_begin from reports.daystoadd ;
+          select day_name, day_begin from reports.daystoadd order by day_begin;
 EOF
         while read dayname ignore daybegin; do
             for c in @MVVM_SCHEMA@/*/report-add-day.sql; do
