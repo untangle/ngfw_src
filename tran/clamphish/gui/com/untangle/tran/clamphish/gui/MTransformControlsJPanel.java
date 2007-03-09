@@ -21,16 +21,26 @@ import com.untangle.mvvm.tran.TransformContext;
 
 public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
     
-    private static final String NAME_SPAM_SMTP = "SMTP";
+    private static final String NAME_SPAM_GOOGLE = "Web";
+	private static final String NAME_WEB_LOG = "Web Event Log";
+	
+	private static final String NAME_SPAM_SMTP = "SMTP";
     private static final String NAME_SPAM_POP = "POP";
     private static final String NAME_SPAM_IMAP = "IMAP";
-    private static final String NAME_LOG = "Event Log";
+    private static final String NAME_EMAIL_LOG = "Email Event Log";
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel)  {
         super(mTransformJPanel);
     }
 
     public void generateGui(){
+	// HTTP ////////		
+	GoogleConfigJPanel googleConfigJPanel = new GoogleConfigJPanel();
+	addTab(NAME_SPAM_GOOGLE, null, googleConfigJPanel);
+	addSavable(NAME_SPAM_GOOGLE, googleConfigJPanel);
+	addRefreshable(NAME_SPAM_GOOGLE, googleConfigJPanel);
+	googleConfigJPanel.setSettingsChangedListener(this);
+	
 	// SMTP ////////
 	SmtpConfigJPanel smtpConfigJPanel = new SmtpConfigJPanel();
 	addTab(NAME_SPAM_SMTP, null, smtpConfigJPanel);
@@ -52,10 +62,15 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
 	addRefreshable(NAME_SPAM_IMAP, imapConfigJPanel);
 	imapConfigJPanel.setSettingsChangedListener(this);
 
-	// EVENT LOG /////
-	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
-	addTab(NAME_LOG, null, logJPanel);
-	addShutdownable(NAME_LOG, logJPanel);
+	// WEB EVENT LOG /////
+	WebLogJPanel webLogJPanel = new WebLogJPanel(mTransformJPanel.getTransform(), this);
+	addTab(NAME_WEB_LOG, null, webLogJPanel);
+	addShutdownable(NAME_WEB_LOG, webLogJPanel);
+	
+	// EMAIL EVENT LOG /////
+	EmailLogJPanel emailLogJPanel = new EmailLogJPanel(mTransformJPanel.getTransform(), this);
+	addTab(NAME_EMAIL_LOG, null, emailLogJPanel);
+	addShutdownable(NAME_EMAIL_LOG, emailLogJPanel);
     }
     
 }

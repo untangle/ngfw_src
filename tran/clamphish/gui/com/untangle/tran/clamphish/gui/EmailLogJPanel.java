@@ -25,11 +25,11 @@ import com.untangle.mvvm.logging.RepositoryDesc;
 import com.untangle.mvvm.tran.Transform;
 import com.untangle.tran.spam.*;
 
-public class LogJPanel extends MLogTableJPanel {
+public class EmailLogJPanel extends MLogTableJPanel {
 
     private static final String BLOCKED_EVENTS_STRING = "Phish detected events";
 
-    public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
+    public EmailLogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
         super(transform, mTransformControlsJPanel);
 
         final SpamTransform spam = (SpamTransform)logTransform;
