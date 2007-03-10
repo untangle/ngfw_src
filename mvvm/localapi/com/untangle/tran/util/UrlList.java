@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.sleepycat.je.Cursor;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseEntry;
@@ -26,7 +27,6 @@ import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import org.apache.log4j.Logger;
-import com.sleepycat.je.Cursor;
 
 public abstract class UrlList
 {
@@ -58,18 +58,33 @@ public abstract class UrlList
 
     // public methods ---------------------------------------------------------
 
-    public void update(boolean async) {
+    public void initOrUpdate(boolean async) {
         if (async) {
             Thread t = new Thread(new Runnable() {
                     public void run()
                     {
-                        update();
+                        initOrUpdate();
                     }
-                }, "update-" + dbLock);
+                }, "init-or-update-" + dbLock);
                 t.setDaemon(true);
                 t.start();
         } else {
-            update();
+            initOrUpdate();
+        }
+    }
+
+    public void init(boolean async) {
+        if (async) {
+            Thread t = new Thread(new Runnable() {
+                    public void run()
+                    {
+                        init();
+                    }
+                }, "init-" + dbLock);
+                t.setDaemon(true);
+                t.start();
+        } else {
+            init();
         }
     }
 
@@ -182,9 +197,38 @@ public abstract class UrlList
         }
     }
 
-    private void update()
+    private String getVersion(Database db)
     {
-        logger.info("updating UrlList: " + dbLock);
+        DatabaseEntry k = new DatabaseEntry(VERSION_KEY);
+        DatabaseEntry v = new DatabaseEntry();
+        try {
+            OperationStatus s = db.get(null, k, v, LockMode.READ_UNCOMMITTED);
+            if (OperationStatus.SUCCESS == s) {
+                return new String(v.getData());
+            } else {
+                return null;
+            }
+        } catch (DatabaseException exn) {
+            return null;
+        }
+    }
+
+    private void setVersion(Database db, String version)
+    {
+        if (null != version) {
+            try {
+            DatabaseEntry k = new DatabaseEntry(VERSION_KEY);
+            DatabaseEntry v = new DatabaseEntry(version.getBytes());
+            db.put(null, k, v);
+            } catch (DatabaseException exn) {
+                logger.warn("could not set version", exn);
+            }
+        }
+    }
+
+    private void init()
+    {
+        logger.info("initializing UrlList: " + dbLock);
         synchronized (dbLock) {
             if (updating) {
                 return;
@@ -194,19 +238,13 @@ public abstract class UrlList
         }
 
         try {
-            DatabaseEntry k = new DatabaseEntry(VERSION_KEY);
-            DatabaseEntry v = new DatabaseEntry();
-
-            String version;
-            OperationStatus s = db.get(null, k, v, LockMode.READ_UNCOMMITTED);
-            if (OperationStatus.SUCCESS == s) {
-                byte[] d = v.getData();
-                version = updateDatabase(db, new String(d));
+            String version = getVersion(db);
+            if (null != version) {
+                logger.info("already initialized: " + dbLock);
+                return;
             } else {
                 version = initDatabase(db);
-            }
-            if (null != version) {
-                db.put(null, new DatabaseEntry(VERSION_KEY), new DatabaseEntry(version.getBytes()));
+                setVersion(db, version);
             }
 
             db.getEnvironment().sync();
@@ -220,6 +258,41 @@ public abstract class UrlList
             }
         }
 
-        logger.info("updated UrlList: " + dbLock);
+        logger.info("initialized UrlList: " + dbLock);
+    }
+
+    private void initOrUpdate()
+    {
+        logger.info("initializing or updating UrlList: " + dbLock);
+        synchronized (dbLock) {
+            if (updating) {
+                return;
+            } else {
+                updating = true;
+            }
+        }
+
+        try {
+            String version = getVersion(db);
+            if (null != version) {
+                version = updateDatabase(db, version);
+            } else {
+                version = initDatabase(db);
+            }
+
+            setVersion(db, version);
+
+            db.getEnvironment().sync();
+        } catch (DatabaseException exn) {
+            logger.warn("could not update database", exn);
+        } catch (IOException exn) {
+            logger.warn("could not update database", exn);
+        } finally {
+            synchronized (dbLock) {
+                updating = false;
+            }
+        }
+
+        logger.info("initialized or updated UrlList: " + dbLock);
     }
 }

@@ -51,6 +51,10 @@ public class PrefixUrlList extends UrlList
     {
         clearDatabase();
 
+        if (null == databaseUrl) {
+            return null;
+        }
+
         InputStream is = databaseUrl.openStream();
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
@@ -102,6 +106,10 @@ public class PrefixUrlList extends UrlList
 
     protected String updateDatabase(Database db, String version) throws IOException
     {
+        if (databaseUrl == null) {
+            return null;
+        }
+
         // XXX implement proper updating
         return initDatabase(db);
     }

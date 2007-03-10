@@ -142,7 +142,7 @@ public class ClamPhishTransform extends SpamImpl
             logger.warn("could not open database", exn);
         }
 
-        urlDatabase.updateAll(true);
+        urlDatabase.initOrUpdateAll(true);
         // XXX post/pre init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         phishHttpEventLogger = EventLoggerFactory.factory().getEventLogger(getTransformContext());

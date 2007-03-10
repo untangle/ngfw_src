@@ -11,15 +11,18 @@
 
 package com.untangle.tran.httpblocker;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sleepycat.je.DatabaseException;
 import com.untangle.mvvm.tran.IPMaddrRule;
 import com.untangle.mvvm.tran.MimeType;
 import com.untangle.mvvm.tran.MimeTypeRule;
@@ -27,6 +30,9 @@ import com.untangle.mvvm.tran.StringRule;
 import com.untangle.tran.http.RequestLineToken;
 import com.untangle.tran.token.Header;
 import com.untangle.tran.util.CharSequenceUtil;
+import com.untangle.tran.util.PrefixUrlList;
+import com.untangle.tran.util.UrlDatabase;
+import com.untangle.tran.util.UrlList;
 import org.apache.log4j.Logger;
 
 /**
@@ -37,17 +43,18 @@ import org.apache.log4j.Logger;
  */
 class Blacklist
 {
+    private static final String BLACKLIST_HOME = "file:///var/lib/urlblacklist.com/";
+    private static final File DB_HOME = new File(System.getProperty("bunnicula.db.dir"), "httpblocker");
+
     private final Logger logger = Logger.getLogger(Blacklist.class);
 
     private final HttpBlockerImpl transform;
 
-    private volatile Map<String, CharSequence[]> urls = Collections.emptyMap();
-    private volatile Map<String, CharSequence[]> domains = Collections.emptyMap();
-
-    private volatile String[] blockedUrls = new String[0];
-    private volatile String[] passedUrls = new String[0];
+    private final UrlDatabase<String> urlDatabase = new UrlDatabase<String>();
 
     private volatile HttpBlockerSettings settings;
+    private volatile String[] blockedUrls = new String[0];
+    private volatile String[] passedUrls = new String[0];
 
     // XXX support expressions
 
@@ -56,12 +63,6 @@ class Blacklist
     Blacklist(HttpBlockerImpl transform)
     {
         this.transform = transform;
-
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException exn) {
-            throw new RuntimeException("could not load Postgres driver", exn);
-        }
     }
 
     // blacklist methods ------------------------------------------------------
@@ -73,36 +74,44 @@ class Blacklist
 
     synchronized void reconfigure()
     {
-        Map<String, CharSequence[]> u = new HashMap<String, CharSequence[]>();
-        Map<String, CharSequence[]> d = new HashMap<String, CharSequence[]>();
-
-        BlacklistCache cache = BlacklistCache.cache();
+        urlDatabase.clear();
 
         for (BlacklistCategory cat : settings.getBlacklistCategories()) {
-            String name = cat.getName();
-            if (cat.getBlockUrls()) {
-                u.put(name, cache.getUrlBlacklist(name));
+            String catName = cat.getName();
+            if (cat.getBlockDomains()) {
+                String dbName = catName + "-domains";
+                try {
+                    URL url = new URL(BLACKLIST_HOME + catName + "/domains");
+                    UrlList ul = new PrefixUrlList(DB_HOME, dbName, url);
+                    urlDatabase.addBlacklist(dbName, ul);
+                } catch (IOException exn) {
+                    logger.warn("could not open: " + dbName, exn);
+                } catch (DatabaseException exn) {
+                    logger.warn("could not open: " + dbName, exn);
+                }
             }
 
-            if (cat.getBlockDomains()) {
-                d.put(name, cache.getDomainBlacklist(name));
+            if (cat.getBlockUrls()) {
+                String dbName = catName + "-urls";
+                try {
+                    URL url = new URL(BLACKLIST_HOME + catName + "/urls");
+                    UrlList ul = new PrefixUrlList(DB_HOME, dbName, url);
+                    urlDatabase.addBlacklist(dbName, ul);
+                } catch (IOException exn) {
+                    logger.warn("could not open: " + dbName, exn);
+                } catch (DatabaseException exn) {
+                    logger.warn("could not open: " + dbName, exn);
+                }
             }
         }
 
-        urls = u;
-        domains = d;
+        urlDatabase.initAll(true);
 
         blockedUrls = makeCustomList(settings.getBlockedUrls());
         passedUrls = makeCustomList(settings.getPassedUrls());
     }
 
-    void destroy()
-    {
-        urls = Collections.emptyMap();
-        domains = Collections.emptyMap();
-        blockedUrls = new String[0];
-        passedUrls = new String[0];
-    }
+    void destroy() { }
 
     /**
      * Checks if the request should be blocked, giving an appropriate
@@ -246,7 +255,7 @@ class Blacklist
     private String checkBlacklist(String host,
                                   RequestLineToken requestLine)
     {
-        URI uri = requestLine.getRequestUri().normalize();
+        String uri = requestLine.getRequestUri().normalize().toString();
         String category = null;
         StringRule stringRule = null;
         Reason reason = null;
@@ -258,15 +267,14 @@ class Blacklist
                 (requestLine.getRequestLine(), Action.BLOCK, r, c);
             transform.log(hbe);
 
-            BlacklistCache cache = BlacklistCache.cache();
             HttpBlockerBlockDetails bd = new HttpBlockerBlockDetails
-                (settings, host, uri.toString(), "not allowed");
+                (settings, host, uri, "not allowed");
             return transform.generateNonce(bd);
         }
 
         String dom = host;
         while (null == category && null != dom) {
-            String url = dom + uri.toString();
+            String url = dom + uri;
 
             stringRule = findCategory(blockedUrls, url,
                                       settings.getBlockedUrls());
@@ -274,8 +282,8 @@ class Blacklist
             if (null != category) {
                 reason = Reason.BLOCK_URL;
             } else {
-                String[] categories = findCategories(urls, url);
-                category = mostSpecificCategory(categories);
+                List<String> all = urlDatabase.findAllBlacklisted("http", dom, uri);
+                category = mostSpecificCategory(all);
 
                 if (null != category) {
                     reason = Reason.BLOCK_CATEGORY;
@@ -285,16 +293,6 @@ class Blacklist
             if (null == category) {
                 dom = nextHost(dom);
             }
-        }
-
-        if (null == category) {
-            StringBuilder sb = new StringBuilder(host);
-            sb.reverse();
-            sb.append(".");
-            String revHost = sb.toString();
-            String[] categories = findCategories(domains, revHost);
-            category = mostSpecificCategory(categories);
-            reason = null == category ? null : Reason.BLOCK_CATEGORY;
         }
 
         if (null != category) {
@@ -311,7 +309,7 @@ class Blacklist
                 return null;
             } else {
                 HttpBlockerBlockDetails bd = new HttpBlockerBlockDetails
-                    (settings, host, uri.toString(), category);
+                    (settings, host, uri, category);
                 return transform.generateNonce(bd);
             }
         }
@@ -319,17 +317,21 @@ class Blacklist
         return null;
     }
 
-    private String mostSpecificCategory(String[] categories) {
+    private String mostSpecificCategory(List<String> dbNames) {
         String category = null;
-        if (categories != null)
-            for (int i = 0; i < categories.length; i++) {
+        if (dbNames != null)
+            for (String dbName : dbNames) {
+                int i = dbName.indexOf('-');
+                String cat = 0 > i ? dbName : dbName.substring(0, i);
+
                 if (category == null) {
-                    category = categories[i];
+                    category = cat;
                 } else {
-                    BlacklistCategory bc = settings.getBlacklistCategory(categories[i]);
-                    if (bc.getLogOnly())
+                    BlacklistCategory bc = settings.getBlacklistCategory(cat);
+                    if (null == bc || bc.getLogOnly()) {
                         continue;
-                    category = categories[i];
+                    }
+                    category = cat;
                 }
             }
         return category;

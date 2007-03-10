@@ -13,7 +13,9 @@ package com.untangle.tran.util;
 
 import java.net.InetAddress;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -33,6 +35,12 @@ public class UrlDatabase<T>
 
     private Timer timer;
 
+    public void clear()
+    {
+        whitelists.clear();
+        blacklists.clear();
+    }
+
     public void addBlacklist(T o, UrlList blacklist)
     {
         blacklists.put(o, blacklist);
@@ -43,14 +51,37 @@ public class UrlDatabase<T>
         whitelists.put(o, whitelist);
     }
 
-    public void updateAll(boolean async)
+    public void initAll(boolean async)
     {
         for (T o : whitelists.keySet()) {
-            whitelists.get(o).update(async);
+            UrlList ul = whitelists.get(o);
+            if (null != ul) {
+                ul.init(async);
+            }
         }
 
         for (T o : blacklists.keySet()) {
-            blacklists.get(o).update(async);
+            UrlList ul = blacklists.get(o);
+            if (null != ul) {
+                ul.init(async);
+            }
+        }
+    }
+
+    public void initOrUpdateAll(boolean async)
+    {
+        for (T o : whitelists.keySet()) {
+            UrlList ul = whitelists.get(o);
+            if (null != ul) {
+                ul.initOrUpdate(async);
+            }
+        }
+
+        for (T o : blacklists.keySet()) {
+            UrlList ul = blacklists.get(o);
+            if (null != ul) {
+                ul.initOrUpdate(async);
+            }
         }
     }
 
@@ -80,6 +111,9 @@ public class UrlDatabase<T>
     {
         for (T o : whitelists.keySet()) {
             UrlList ul = whitelists.get(o);
+            if (null == ul) {
+                continue;
+            }
 
             if (ul.contains(proto, host, uri)) {
                 return new UrlDatabaseResult(false, o);
@@ -88,6 +122,9 @@ public class UrlDatabase<T>
 
         for (T o : blacklists.keySet()) {
             UrlList ul = blacklists.get(o);
+            if (null == ul) {
+                continue;
+            }
 
             if (ul.contains(proto, host, uri)) {
                 return new UrlDatabaseResult(true, o);
@@ -95,6 +132,27 @@ public class UrlDatabase<T>
         }
 
         return null;
+    }
+
+    public List<T> findAllBlacklisted(String proto, String host, String uri)
+    {
+        List<T> l = null;
+
+        for (T o : blacklists.keySet()) {
+            UrlList ul = blacklists.get(o);
+            if (null == ul) {
+                continue;
+            }
+
+            if (ul.contains(proto, host, uri)) {
+                if (null == l) {
+                    l = new ArrayList<T>();
+                }
+                l.add(o);
+            }
+        }
+
+        return l;
     }
 
     public String nextHost(String host)
@@ -118,7 +176,7 @@ public class UrlDatabase<T>
             TimerTask t = new TimerTask() {
                     public void run()
                     {
-                        updateAll(false);
+                        initOrUpdateAll(false);
                     }
                 };
             timer.scheduleAtFixedRate(t, UPDATE_PERIOD, UPDATE_PERIOD);
