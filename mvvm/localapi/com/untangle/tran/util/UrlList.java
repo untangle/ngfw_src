@@ -26,6 +26,7 @@ import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import org.apache.log4j.Logger;
+import com.sleepycat.je.Cursor;
 
 public abstract class UrlList
 {
@@ -121,6 +122,30 @@ public abstract class UrlList
         l.add(sb.toString());
 
         return l;
+    }
+
+    protected void clearDatabase()
+    {
+        Cursor c = null;
+        try {
+            DatabaseEntry k = new DatabaseEntry();
+            DatabaseEntry v = new DatabaseEntry();
+
+            c = db.openCursor(null, null);
+            while (OperationStatus.SUCCESS == c.getNext(k, v, LockMode.DEFAULT)) {
+                c.delete();
+            }
+        } catch (DatabaseException exn) {
+            logger.warn("could not clear database");
+        } finally {
+            if (null != c) {
+                try {
+                    c.close();
+                } catch (DatabaseException exn) {
+                    logger.warn("could not close cursor", exn);
+                }
+            }
+        }
     }
 
     // private methods --------------------------------------------------------

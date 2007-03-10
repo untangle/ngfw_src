@@ -29,12 +29,9 @@ import java.util.regex.Pattern;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.sleepycat.je.Cursor;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.LockMode;
-import com.sleepycat.je.OperationStatus;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Decoder;
 
@@ -62,6 +59,8 @@ public class EncryptedUrlList extends UrlList
     protected String initDatabase(Database db)
         throws IOException
     {
+        clearDatabase();
+
         InputStream is = databaseUrl.openStream();
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
@@ -99,28 +98,6 @@ public class EncryptedUrlList extends UrlList
     protected String updateDatabase(Database db, String version)
         throws IOException
     {
-        // XXX implement proper updating
-        Cursor c = null;
-        try {
-            DatabaseEntry k = new DatabaseEntry();
-            DatabaseEntry v = new DatabaseEntry();
-
-            c = db.openCursor(null, null);
-            while (OperationStatus.SUCCESS == c.getNext(k, v, LockMode.DEFAULT)) {
-                c.delete();
-            }
-        } catch (DatabaseException exn) {
-            logger.warn("could not clear database");
-        } finally {
-            if (null != c) {
-                try {
-                    c.close();
-                } catch (DatabaseException exn) {
-                    logger.warn("could not close cursor", exn);
-                }
-            }
-        }
-
         return initDatabase(db);
     }
 
