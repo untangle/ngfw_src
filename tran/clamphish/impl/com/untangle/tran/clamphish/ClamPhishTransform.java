@@ -91,6 +91,8 @@ public class ClamPhishTransform extends SpamImpl
     private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
     private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;
 
+    private static UrlDatabase urlDatabase = null;
+    private static int urlDatabaseCount = 0;
     private static boolean webappDeployed = false;
 
     // We want to make sure that phish is before spam,
@@ -103,7 +105,6 @@ public class ClamPhishTransform extends SpamImpl
         new SoloPipeSpec("phish-http", this, new TokenAdaptor(this, new PhishHttpFactory(this)), Fitting.HTTP_TOKENS, Affinity.CLIENT, 12)
     };
 
-    private final UrlDatabase urlDatabase;
     private final Map<InetAddress, Set<String>> hostWhitelists
         = new HashMap<InetAddress, Set<String>>();
     private final PhishReplacementGenerator replacementGenerator;
@@ -118,32 +119,11 @@ public class ClamPhishTransform extends SpamImpl
 
         replacementGenerator = new PhishReplacementGenerator(getTid());
 
-        urlDatabase = new UrlDatabase();
-
-        // XXX post/pre init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        File dbHome = new File(System.getProperty("bunnicula.db.dir"), "clamphish");
-        try {
-            URL url = new URL("http://sb.google.com/safebrowsing/update?version=goog-black-url:1:1");
-            UrlList ul = new PrefixUrlList(dbHome, "goog-black-url", url);
-            urlDatabase.addBlacklist("goog-black-url", ul);
-        } catch (DatabaseException exn) {
-            logger.warn("could not open database", exn);
-        } catch (IOException exn) {
-            logger.warn("could not open database", exn);
+        synchronized (ClamPhishTransform.class) {
+            if (null == urlDatabase) {
+                urlDatabase = makeUrlDatabase();
+            }
         }
-
-        try {
-            URL url = new URL("http://sb.google.com/safebrowsing/update?version=goog-black-enchash:1:1");
-            UrlList ul = new EncryptedUrlList(dbHome, "goog-black-enchash", url);
-            urlDatabase.addBlacklist("goog-black-enchash", ul);
-        } catch (DatabaseException exn) {
-            logger.warn("could not open database", exn);
-        } catch (IOException exn) {
-            logger.warn("could not open database", exn);
-        }
-
-        urlDatabase.initOrUpdateAll(true);
-        // XXX post/pre init!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         phishHttpEventLogger = EventLoggerFactory.factory().getEventLogger(getTransformContext());
 
@@ -230,14 +210,24 @@ public class ClamPhishTransform extends SpamImpl
     @Override
     protected void postInit(String args[])
     {
+        synchronized (ClamPhishTransform.class) {
+            if (0 == urlDatabaseCount) {
+                urlDatabase.startUpdateTimer();
+            }
+            urlDatabaseCount++;
+        }
         deployWebAppIfRequired(logger);
-        urlDatabase.startUpdateTimer();
     }
 
     @Override
     protected void postDestroy()
     {
-        urlDatabase.stopUpdateTimer();
+        synchronized (ClamPhishTransform.class) {
+            urlDatabaseCount--;
+            if (0 == urlDatabaseCount) {
+                urlDatabase.stopUpdateTimer();
+            }
+        }
         unDeployWebAppIfRequired(logger);
     }
 
@@ -438,5 +428,35 @@ public class ClamPhishTransform extends SpamImpl
         }
 
         return host.substring(i + 1);
+    }
+
+    private UrlDatabase makeUrlDatabase()
+    {
+        urlDatabase = new UrlDatabase();
+
+        File dbHome = new File(System.getProperty("bunnicula.db.dir"), "clamphish");
+        try {
+            URL url = new URL("http://sb.google.com/safebrowsing/update?version=goog-black-url:1:1");
+            UrlList ul = new PrefixUrlList(dbHome, "goog-black-url", url);
+            urlDatabase.addBlacklist("goog-black-url", ul);
+        } catch (DatabaseException exn) {
+            logger.warn("could not open database", exn);
+        } catch (IOException exn) {
+            logger.warn("could not open database", exn);
+        }
+
+        try {
+            URL url = new URL("http://sb.google.com/safebrowsing/update?version=goog-black-enchash:1:1");
+            UrlList ul = new EncryptedUrlList(dbHome, "goog-black-enchash", url);
+            urlDatabase.addBlacklist("goog-black-enchash", ul);
+        } catch (DatabaseException exn) {
+            logger.warn("could not open database", exn);
+        } catch (IOException exn) {
+            logger.warn("could not open database", exn);
+        }
+
+        urlDatabase.initOrUpdateAll(true);
+
+        return urlDatabase;
     }
 }
