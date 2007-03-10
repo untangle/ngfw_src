@@ -32,30 +32,6 @@ ALTER TABLE settings.split_schema_ver
 
 ALTER TABLE split_schema_ver ALTER COLUMN component SET NOT NULL;
 
--- hack for version 2.5
--- convert clam, fprot, hauri, and sophos to use virus-base schema
-INSERT INTO split_schema_ver (
-    SELECT 'virus-base' AS component, settings_version, events_version
-    FROM split_schema_ver WHERE component = 'clam-transform' OR component = 'fprot-transform'
-         OR component = 'hauri-transform' OR component = 'sophos-transform'
-    ORDER BY settings_version LIMIT 1);
-
-DELETE FROM split_schema_ver
-WHERE component = 'clam-transform' OR component = 'fprot-transform'
-      OR component = 'hauri-transform' OR component = 'sophos-transform';
-
--- hack for version 2.5
--- convert spamassassin, clamphish to use spam-base schema
-INSERT INTO split_schema_ver (
-    SELECT 'spam-base' AS component, settings_version, events_version
-    FROM split_schema_ver
-    WHERE component = 'spamassassin-transform'
-          OR component = 'clamphish-transform'
-    ORDER BY settings_version LIMIT 1);
-
-DELETE FROM split_schema_ver
-WHERE component = 'spamassassin-transform' OR component = 'clamphish-transform';
-
 EOF
 
 type=$1
