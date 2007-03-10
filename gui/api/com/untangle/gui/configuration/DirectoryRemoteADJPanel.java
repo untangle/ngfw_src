@@ -246,7 +246,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 	    serverEnabledJRadioButton.setSelected( true );
 	else
 	    serverDisabledJRadioButton.setSelected( true );
-	serverEnabledDependency( serverEnabledCurrent );
+	serverEnabledDependency( enabledCurrent && serverEnabledCurrent );
     
     // SERVER ADDRESS
     serverAddressCurrent = directoryCompoundSettings.getWMISettings().getAddress().toString();
@@ -261,11 +261,11 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 	else
 		domainEnabledCurrent = true;
 	domainJCheckBox.setSelected(domainEnabledCurrent);
+    domainEnabledDependency( enabledCurrent && serverEnabledCurrent && domainEnabledCurrent);
 	domainLoginJTextField.setText(domainLoginCurrent);
 	domainLoginJTextField.setBackground(Color.WHITE);
 	domainPasswordJPasswordField.setText(domainPasswordCurrent);
 	domainPasswordJPasswordField.setBackground(Color.WHITE);
-	domainEnabledDependency( domainEnabledCurrent );
 	
     // SERVER URL
     serverURLCurrent = directoryCompoundSettings.getWMISettings().getUrl();

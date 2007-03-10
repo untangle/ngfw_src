@@ -127,30 +127,31 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
         // OUTSIDE ACCESS ENABLED //////
         boolean isOutsideAccessEnabled = isOutsideAdministrationEnabled || isOutsideReportingEnabled || isOutsideQuarantineEnabled;
 
-	// PORT ///
-	int httpsPort = addressSettings.getHttpsPort();
-	externalAccessPortJSpinner.setValue( httpsPort );
-	((JSpinner.DefaultEditor)externalAccessPortJSpinner.getEditor()).getTextField().setText(Integer.toString(httpsPort));
-	((JSpinner.DefaultEditor)externalAccessPortJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+        // PORT ///
+        int httpsPort = addressSettings.getHttpsPort();
+        externalAccessPortJSpinner.setValue( httpsPort );
+        ((JSpinner.DefaultEditor)externalAccessPortJSpinner.getEditor()).getTextField().setText(Integer.toString(httpsPort));
+        ((JSpinner.DefaultEditor)externalAccessPortJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
 	
-	// OUTSIDE ACCESS IP RESTRICTED /////
-	boolean isOutsideAccessRestricted = accessSettings.getIsOutsideAccessRestricted();
-	if( isOutsideAccessRestricted )
+        // OUTSIDE ACCESS IP RESTRICTED /////
+        boolean isOutsideAccessRestricted = accessSettings.getIsOutsideAccessRestricted();
+        if( isOutsideAccessRestricted )
             externalAdminRestrictEnabledRadioButton.setSelected(true);
         else
             externalAdminRestrictDisabledRadioButton.setSelected(true);
+        setOutsideAccessRestrictedDependency(isOutsideAccessRestricted);
         
-	// OUTSIDE ACCESS IP RESTRICTED NETWORK //////
+        // OUTSIDE ACCESS IP RESTRICTED NETWORK //////
         restrictIPaddrJTextField.setText( accessSettings.getOutsideNetwork().toString() );
-	restrictIPaddrJTextField.setBackground( Color.WHITE );
+        restrictIPaddrJTextField.setBackground( Color.WHITE );
 
-	// OUTSIDE ACCESS IP RESTRICTED NETMASK /////
+        // OUTSIDE ACCESS IP RESTRICTED NETMASK /////
         restrictNetmaskJTextField.setText( accessSettings.getOutsideNetmask().toString() );
-	restrictNetmaskJTextField.setBackground( Color.WHITE );
+        restrictNetmaskJTextField.setBackground( Color.WHITE );
         
-	// INSIDE INSECURE ENABLED ///////
-	boolean isInsideInsecureEnabled = accessSettings.getIsInsideInsecureEnabled();
-	if( isInsideInsecureEnabled )
+        // INSIDE INSECURE ENABLED ///////
+        boolean isInsideInsecureEnabled = accessSettings.getIsInsideInsecureEnabled();
+        if( isInsideInsecureEnabled )
             internalAdminEnabledRadioButton.setSelected(true);
         else
             internalAdminDisabledRadioButton.setSelected(true);

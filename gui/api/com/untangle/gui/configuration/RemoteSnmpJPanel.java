@@ -113,11 +113,11 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
 
 	// SNMP ENABLED //////
 	boolean isSnmpEnabled = snmpSettings.isEnabled();
-	setSnmpEnabledDependency( isSnmpEnabled );
 	if( isSnmpEnabled )
-            snmpEnabledRadioButton.setSelected(true);
-        else
-            snmpDisabledRadioButton.setSelected(true);
+        snmpEnabledRadioButton.setSelected(true);
+    else
+        snmpDisabledRadioButton.setSelected(true);
+	setSnmpEnabledDependency( isSnmpEnabled );
 
 	// SNMP COMMUNITY /////
 	String snmpCommunity = snmpSettings.getCommunityString();
@@ -134,11 +134,11 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
 
 	// TRAP ENABLED /////
 	boolean isTrapEnabled = snmpSettings.isSendTraps();
-	setTrapEnabledDependency( isTrapEnabled );
 	if( isTrapEnabled )
-            trapEnabledRadioButton.setSelected(true);
-        else
-            trapDisabledRadioButton.setSelected(true);
+        trapEnabledRadioButton.setSelected(true);
+    else
+        trapDisabledRadioButton.setSelected(true);
+	setTrapEnabledDependency( isSnmpEnabled && isTrapEnabled );
         
 	// TRAP COMMUNITY //////
 	String trapCommunity = snmpSettings.getTrapCommunity();
@@ -427,12 +427,10 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
 
     private void snmpDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_snmpDisabledRadioButtonActionPerformed
         setSnmpEnabledDependency( false );
-	setTrapEnabledDependency( false );
     }//GEN-LAST:event_snmpDisabledRadioButtonActionPerformed
 
     private void snmpEnabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_snmpEnabledRadioButtonActionPerformed
         setSnmpEnabledDependency( true );
-	setTrapEnabledDependency( trapEnabledRadioButton.isSelected() );
     }//GEN-LAST:event_snmpEnabledRadioButtonActionPerformed
     
 
@@ -445,6 +443,10 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
 	snmpLocationJLabel.setEnabled( enabled );
 	trapEnabledRadioButton.setEnabled( enabled );
 	trapDisabledRadioButton.setEnabled( enabled );
+    if(!enabled)
+        setTrapEnabledDependency(false);
+    else
+        setTrapEnabledDependency( trapEnabledRadioButton.isSelected() );        
     }
 
     private void setTrapEnabledDependency(boolean enabled){
