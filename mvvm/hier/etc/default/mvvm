@@ -135,13 +135,19 @@ MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
 if [ $MEM -gt 2000000 ] ; then
   MAX_HEAP_SIZE=640m
   MAX_VIRTUAL_SIZE=1500000
+  MAX_UCB_DB_MEG=40
 elif [ $MEM -gt 999999 ] ; then
   MAX_HEAP_SIZE=320m
   MAX_VIRTUAL_SIZE=950000
+  MAX_UCB_DB_MEG=16
 else
   MAX_HEAP_SIZE=240m
   MAX_VIRTUAL_SIZE=850000
+  MAX_UCB_DB_MEG=8
 fi
+
+## Limit Berkeley DB caching to 5% of java heap
+MVVM_ARGS="${MVVM_ARGS} -Dje.maxMemoryPercent=${MAX_UCB_DB_MEG}"
 
 if [ "x$USE_THROUGHPUT_COLLECTOR" = "xyes" ] ; then
 # Goals: 85% throughput (don't set maxpausegcmillis here, you'll regret it)
