@@ -177,7 +177,7 @@ public class NetworkPPPOEJPanel extends javax.swing.JPanel
 
                 pppoeButtonGroup.add(pppoeEnabledJRadioButton);
                 pppoeEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                pppoeEnabledJRadioButton.setText("<html><b>Enable</b> PPPoE..</html>");
+                pppoeEnabledJRadioButton.setText("<html><b>Enable</b> PPPoE.</html>");
                 pppoeEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 pppoeEnabledJRadioButtonActionPerformed(evt);
