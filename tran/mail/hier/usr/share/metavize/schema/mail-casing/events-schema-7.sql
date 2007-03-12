@@ -36,5 +36,5 @@ CREATE TABLE events.tr_mail_message_stats (
 
 -- indexes for reporting
 
-CREATE INDEX tr_mail_mio_plepid_idx ON events.tr_mail_message_info (pl_endp_id);
-CREATE INDEX tr_mail_mioa_parent_idx ON events.tr_mail_message_info_addr (msg_id);
+CREATE INDEX tr_mail_message_info_plepid_idx ON events.tr_mail_message_info (pl_endp_id);
+CREATE INDEX tr_mail_message_info_addr_parent_idx ON events.tr_mail_message_info_addr (msg_id);
