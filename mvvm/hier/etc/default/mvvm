@@ -147,7 +147,7 @@ else
 fi
 
 ## Limit Berkeley DB caching to 5% of java heap
-MVVM_ARGS="${MVVM_ARGS} -Dje.maxMemoryPercent=${MAX_UCB_DB_MEG}"
+MVVM_ARGS="${MVVM_ARGS} -Dje.maxMemory=${MAX_UCB_DB_MEG}"
 
 if [ "x$USE_THROUGHPUT_COLLECTOR" = "xyes" ] ; then
 # Goals: 85% throughput (don't set maxpausegcmillis here, you'll regret it)
