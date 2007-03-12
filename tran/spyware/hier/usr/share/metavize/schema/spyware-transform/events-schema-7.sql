@@ -53,7 +53,7 @@ CREATE TABLE events.tr_spyware_statistic_evt (
 
 CREATE INDEX tr_spyware_evt_cookie_rid_idx
     ON events.tr_spyware_evt_cookie (request_id);
-CREATE INDEX tr_spywareevt_blacklist_rid_idx
+CREATE INDEX tr_spyware_evt_blacklist_rid_idx
     ON events.tr_spyware_evt_blacklist (request_id);
 CREATE INDEX tr_spyware_evt_activex_rid_idx
     ON events.tr_spyware_evt_activex (request_id);
