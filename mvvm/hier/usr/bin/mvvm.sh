@@ -127,7 +127,11 @@ getLicenseKey() {
 }
 
 isServiceRunning() {
-  pidof "$1"
+  if [[ -n $2 ]] ; then
+    extraArgs="-x"
+    shift
+  fi
+  pidof $extraArgs "$1"
   return $?
 }
 
@@ -150,7 +154,7 @@ restartServiceIfNeeded() {
       ;;
     spamassassin)
       pidFile=/var/run/spamd.pid
-      isServiceRunning spamd && return
+      isServiceRunning --find-shell spamd && return
       confFile=/etc/default/spamassassin
       [ -f $confFile ] && grep -q ENABLED=1 $confFile && needToRun=yes
       ;;
