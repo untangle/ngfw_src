@@ -80,6 +80,22 @@ function exitOnMvvmError()
     fi
 }
 
+## Parameters:
+## <tablename>: name of table to test for
+function doesEventTableExist()
+{
+    local t_tname=$1
+    local t_num=`$PSQL -qt -c "select count(*) from pg_tables where schemaname='events' and tablename='$1';" mvvm`
+    if [ -n "$t_num" -a "$t_num" -gt 0 ]; then
+        # exists
+        return 0
+    else
+        # does not exist
+        return 1
+    fi
+}
+    
+
 REPORT_DIR=@MVVM_WEB@/reports
 
 # New for 4.2 -- if we're still reporting from yesterday, just keep going.
@@ -105,20 +121,25 @@ $PSQL -v midnight="'$midnight'" -v daystosave="$NUMDAYSTOKEEP" -v intable="repor
 
 # Build event partitions
 daystoadd=`mktemp`
-$PSQL --pset tuples_only mvvm > $daystoadd <<EOF
+$PSQL -qt mvvm > $daystoadd <<EOF
   select day_name, day_begin from events.daystoadd order by day_begin ;
 EOF
 while read dayname ignore daybegin; do
+    # Skip blank lines
+    if [ x"$dayname" = x ]; then
+        continue
+    fi
     for basetablename in `cat @MVVM_SCHEMA@/*/partitioned-tables`; do
+        doesEventTableExist $basetablename || continue
         dayend="'$daybegin' + interval '1 days'"
         tablename=${basetablename}_$dayname
         $PSQL -v tablename="$tablename" -v basetablename="$basetablename" -v daybegin="'$daybegin'" -v dayend="$dayend" -f @MVVM_SCHEMA@/mvvm/buildpartition.sql mvvm
-        rowcount=`$PSQL --pset tuples_only mvvm -c "select count(*) from $tablename;"`
-        if [ "$rowcount" -eq 0 ]; then
+        rowcount=`$PSQL -qt mvvm -c "select count(*) from $tablename;"`
+        if [ -n "$rowcount" -a "$rowcount" -eq 0 ]; then
             $PSQL mvvm -c "DROP TABLE $tablename;"
         else
             indicestoadd=`mktemp`
-            $PSQL --tuples-only mvvm -c "select indexdef from pg_indexes where tablename = '$basetablename';" > $indicestoadd
+            $PSQL -qt mvvm -c "select indexdef from pg_indexes where tablename = '$basetablename';" > $indicestoadd
             sed -i $indicestoadd -e "s/$basetablename/$tablename/g" -e "s/\$/;/"
             $PSQL -f $indicestoadd mvvm
             rm $indicestoadd
@@ -158,10 +179,14 @@ if [ $is_reporting_enabled == 'true' ]; then
 
         # Build pre-joined reports tables
         daystoadd=`mktemp`
-        $PSQL --pset tuples_only mvvm > $daystoadd <<EOF
+        $PSQL -qt mvvm > $daystoadd <<EOF
           select day_name, day_begin from reports.daystoadd order by day_begin;
 EOF
         while read dayname ignore daybegin; do
+            # Skip blank lines
+            if [ x"$dayname" = x ]; then
+                continue
+            fi
             for c in @MVVM_SCHEMA@/*/report-add-day.sql; do
                 dayend="'$daybegin' + interval '1 days'"
                 $PSQL -v dayname="$dayname" -v daybegin="'$daybegin'" -v dayend="'$dayend'" -f $c mvvm
@@ -175,9 +200,9 @@ EOF
         echo "ANALYZE;" | $PSQL mvvm
 
         # create files w/ username and hostname lists for usersummary-reports
-        psql -qt -U postgres mvvm -c "SELECT DISTINCT username FROM events.mvvm_lookup_evt;" -o $REPORT_DIR/current/uname.tmp2
+        $PSQL -qt mvvm -c "SELECT DISTINCT username FROM events.mvvm_lookup_evt;" -o $REPORT_DIR/current/uname.tmp2
         grep -v "^$" $REPORT_DIR/current/uname.tmp2 > $REPORT_DIR/current/uname.tmp
-        psql -qt -U postgres mvvm -c "SELECT DISTINCT hname FROM reports.sessions WHERE client_intf=1;" -o $REPORT_DIR/current/hname.tmp2
+        $PSQL -qt mvvm -c "SELECT DISTINCT hname FROM reports.sessions WHERE client_intf=1;" -o $REPORT_DIR/current/hname.tmp2
         grep -v "^$" $REPORT_DIR/current/hname.tmp2 > $REPORT_DIR/current/hname.tmp
         rm -f $REPORT_DIR/current/uname.tmp2
         rm -f $REPORT_DIR/current/hname.tmp2
