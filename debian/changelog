@@ -1,3 +1,9 @@
+untangle-java (0.2.0-1065) stable; urgency=low
+
+  * auto build
+
+ -- Buildbot <buildbot@bebe.metavize.com>  Mon, 12 Mar 2007 01:24:27 -0700
+
 untangle-java (0.2.0-1064) stable; urgency=low
 
   * auto build
