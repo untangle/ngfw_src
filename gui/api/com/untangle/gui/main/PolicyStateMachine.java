@@ -1122,7 +1122,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private class StoreSettingsActionListener implements ActionListener{
         public void actionPerformed(ActionEvent e){
             try{
-                URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/index.php?option=com_content&task=view&id=31&Itemid=63");
+                String authNonce = Util.getAdminManager().generateAuthNonce();
+                URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/index.php?option=com_content&task=view&id=31&Itemid=63&"+ authNonce);
                 ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
             }
             catch(Exception f){

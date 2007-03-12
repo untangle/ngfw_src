@@ -78,7 +78,9 @@ public class MPipelineJPanel extends javax.swing.JPanel {
                         }
                 });
 
-                jPanel1.add(storeWizardJButton, new java.awt.GridBagConstraints());
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.insets = new java.awt.Insets(150, 0, 0, 0);
+                jPanel1.add(storeWizardJButton, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -126,7 +128,8 @@ public class MPipelineJPanel extends javax.swing.JPanel {
 
 		private void storeWizardJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_storeWizardJButtonActionPerformed
 				try{
-					URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/index.php?option=com_wizard&Itemid=92");
+                    String authNonce = Util.getAdminManager().generateAuthNonce();
+					URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/index.php?option=com_wizard&Itemid=92&" + authNonce);
 					((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
 				}
 				catch(Exception f){
