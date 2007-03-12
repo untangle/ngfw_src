@@ -17,4 +17,20 @@ INSERT INTO events.new_tr_mail_message_info_addr
 DROP TABLE events.tr_mail_message_info_addr;
 ALTER TABLE events.new_tr_mail_message_info_addr RENAME TO tr_mail_message_info_addr;
 
+CREATE TABLE events.new_tr_mail_message_stats (
+    id int8 NOT NULL,
+    msg_id int8,
+    msg_bytes int8,
+    msg_attachments int4,
+    time_stamp timestamp,
+    PRIMARY KEY (id));
+
+INSERT INTO events.new_tr_mail_message_stats
+  SELECT stats.*, msg.time_stamp FROM tr_mail_message_stats stats
+  INNER JOIN tr_mail_message_info msg ON (msg.id = stats.msg_id);
+
+DROP TABLE events.tr_mail_message_stats;
+ALTER TABLE events.new_tr_mail_message_stats RENAME TO tr_mail_message_stats;
+
+
 CREATE INDEX tr_mail_mioa_parent_idx ON events.tr_mail_message_info_addr (msg_id);
