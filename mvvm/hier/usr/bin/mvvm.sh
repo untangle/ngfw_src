@@ -143,7 +143,8 @@ restartServiceIfNeeded() {
 
   case $serviceName in
     postgresql)
-      pidFile=$PGDATA/postmaster.pid
+# Removing the postgres pid file just makes restarting harder.  The init.d script deals ok as is.
+      pidFile=
       isServiceRunning postmaster && return
       serviceName=$PGSERVICE
       needToRun=yes # always has to run
@@ -173,7 +174,9 @@ restartServiceIfNeeded() {
 
   if [ $needToRun == "yes" ] ; then
     echo "*** restarting missing $serviceName on `date` ***" >> $MVVM_WRAPPER_LOG
-    rm -f $pidFile
+    if [ -n "$pidFile" ]; then
+        rm -f $pidFile
+    fi
 #    /etc/init.d/$serviceName stop
     /etc/init.d/$serviceName start
   fi
@@ -262,20 +265,23 @@ while true; do
         getLicenseKey &
 
         sleep $SLEEP_TIME
-        if [ ! -d /proc/$pid ] ; then
-            echo "*** restarting missing bunnicula $? on `date` ***" >> $MVVM_WRAPPER_LOG
-            break
+
+        if [ "x" = "x@PREFIX@" ] ; then
+            if [ ! -d /proc/$pid ] ; then
+                echo "*** restarting missing bunnicula $? on `date` ***" >> $MVVM_WRAPPER_LOG
+                break
+            fi
+            if needToRestart; then
+                echo "*** need to restart bunnicula $? on `date` ***" >> $MVVM_WRAPPER_LOG
+                nukeIt
+                break
+            fi
+            restartServiceIfNeeded postgresql
+            restartServiceIfNeeded clamav-freshclam
+            restartServiceIfNeeded clamav-daemon
+            restartServiceIfNeeded spamassassin
+            restartServiceIfNeeded slapd
         fi
-        if needToRestart; then
-            echo "*** need to restart bunnicula $? on `date` ***" >> $MVVM_WRAPPER_LOG
-            nukeIt
-            break
-        fi
-        restartServiceIfNeeded postgresql
-	restartServiceIfNeeded clamav-freshclam
-	restartServiceIfNeeded clamav-daemon
-	restartServiceIfNeeded spamassassin
-	restartServiceIfNeeded slapd
     done
 
 # Clean up the zombie.  Risky? XXX
