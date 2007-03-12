@@ -127,6 +127,7 @@ getLicenseKey() {
 }
 
 isServiceRunning() {
+  extraArgs=""
   if [[ -n $2 ]] ; then
     extraArgs="-x"
     shift
