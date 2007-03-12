@@ -127,7 +127,7 @@ getLicenseKey() {
 }
 
 isServiceRunning() {
-  ps aux -w -w | grep -v "grep -q $1" | grep -q "$1"
+  pidof "$1"
   return $?
 }
 
