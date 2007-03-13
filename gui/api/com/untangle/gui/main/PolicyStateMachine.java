@@ -472,7 +472,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                                                transformDesc.getDisplayName() + " Warning", "");
                 }
                 else{
-                    mTransformJPanel.powerJToggleButton().doClick();
+                    while(!mTransformJPanel.getDoneRefreshing())
+                        sleep(100L);
+                    final MTransformJPanel target = mTransformJPanel;
+                    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                        target.powerJToggleButton().doClick();
+                    }});
                 }
             }
             catch(Exception e){
@@ -824,7 +829,12 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                                                        newMackageDesc.getDisplayName() + " Warning", "");
                         }
                         else{
-                            mTransformJPanel.powerJToggleButton().doClick();
+                            while(!mTransformJPanel.getDoneRefreshing())
+                                sleep(100L);
+                            final MTransformJPanel target = mTransformJPanel;
+                            SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                                target.powerJToggleButton().doClick();
+                            }});
                         }
                     }
                     catch(Exception e){

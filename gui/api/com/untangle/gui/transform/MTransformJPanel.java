@@ -210,6 +210,8 @@ public class MTransformJPanel extends javax.swing.JPanel {
         mTransformControlsJPanel.removeJButton().addActionListener(mStateMachine);
     }
 
+    public boolean getDoneRefreshing(){ return mStateMachine.getDoneRefreshing(); }
+
     public void highlight(){ new FadeTask(effectsJPanel,true); }
 
     public void setProblemView(boolean doLater){ mStateMachine.setProblemView(doLater); }

@@ -300,6 +300,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                         powerJToggleButton.setEnabled(true);
                     }
                     stateJLabel.setViewState( ledState );
+                    doneRefreshing = true;
                 }
             };
         if( doLater )
@@ -312,6 +313,9 @@ public class MStateMachine implements java.awt.event.ActionListener {
 
 
     // STATE REFRESHING //////////////////////////
+    private volatile boolean doneRefreshing = false;
+    public boolean getDoneRefreshing(){ return doneRefreshing; }
+
     public void doRefreshState(){
         new RefreshStateThread();	
     }
@@ -336,7 +340,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
     class RefreshStateThread extends Thread{
         public RefreshStateThread(){
             super("MVCLIENT-StateMachineRefreshStateThread: " + displayName );
-	    setDaemon(true);
+            setDaemon(true);
             start();
         }
         public void run(){
