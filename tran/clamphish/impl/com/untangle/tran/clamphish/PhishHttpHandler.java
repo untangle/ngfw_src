@@ -90,9 +90,11 @@ public class PhishHttpHandler extends HttpStateMachine
                                                        isRequestPersistent());
 
                 blockRequest(r);
+                return requestHeader;
             } // else log Action.PASS now
         } // else log Action.PASS now
 
+        releaseRequest();
         return requestHeader;
     }
 
