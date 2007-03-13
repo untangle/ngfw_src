@@ -177,7 +177,9 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
             JComponent renderJComponent;  //  renderComponent
             JComponent renderSecondaryJComponent = null;
             
-            String rowStatus = (String)jTable.getModel().getValueAt(row,0);
+            String rowStatus = "";
+            try{ rowStatus = (String)jTable.getModel().getValueAt(row,0); }
+            catch(Exception e){}
 
             // CONTENT
 	    if(value instanceof ButtonRunnable ){
