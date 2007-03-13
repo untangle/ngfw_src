@@ -46,11 +46,11 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
         private void initComponents() {//GEN-BEGIN:initComponents
                 labelJLabel = new javax.swing.JLabel();
                 messageJLabel = new javax.swing.JLabel();
-                jProgressBar = new javax.swing.JProgressBar();
-                proceedJButton = new javax.swing.JButton();
                 jLabel1 = new javax.swing.JLabel();
                 emailAddressJTextField = new javax.swing.JTextField();
+                jProgressBar = new javax.swing.JProgressBar();
                 closeJButton = new javax.swing.JButton();
+                proceedJButton = new javax.swing.JButton();
                 backgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
 
                 getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -67,9 +67,15 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
 
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                messageJLabel.setText("<html><center> Enter an email address which you would like to send a test message to, and then press \"Proceed\". </center></html>");
+                messageJLabel.setText("<html><center> Enter an email address which you would like to send a test message to, and then press \"Proceed\".  You should receive an email shortly after running the test.  If not, your email settings may not be correct.</center></html>");
                 messageJLabel.setDoubleBuffered(true);
                 getContentPane().add(messageJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 309, -1));
+
+                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel1.setText("Email Address:");
+                getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 160, -1, -1));
+
+                getContentPane().add(emailAddressJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 160, 200, -1));
 
                 jProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
                 jProgressBar.setMaximumSize(new java.awt.Dimension(32767, 20));
@@ -77,30 +83,7 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
                 jProgressBar.setPreferredSize(new java.awt.Dimension(148, 20));
                 jProgressBar.setString("");
                 jProgressBar.setStringPainted(true);
-                getContentPane().add(jProgressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 134, 309, -1));
-
-                proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
-                proceedJButton.setText("<html><b>Proceed</b></html>");
-                proceedJButton.setDoubleBuffered(true);
-                proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                proceedJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-                proceedJButton.setMinimumSize(new java.awt.Dimension(125, 25));
-                proceedJButton.setOpaque(false);
-                proceedJButton.setPreferredSize(new java.awt.Dimension(125, 25));
-                proceedJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                proceedJButtonActionPerformed(evt);
-                        }
-                });
-
-                getContentPane().add(proceedJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 162, -1, -1));
-
-                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel1.setText("Email Address:");
-                getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 110, -1, -1));
-
-                getContentPane().add(emailAddressJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 109, 200, -1));
+                getContentPane().add(jProgressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 190, 309, -1));
 
                 closeJButton.setFont(new java.awt.Font("Default", 0, 12));
                 closeJButton.setText("<html><b>Close</b></html>");
@@ -117,7 +100,24 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
                         }
                 });
 
-                getContentPane().add(closeJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 162, -1, -1));
+                getContentPane().add(closeJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 220, -1, -1));
+
+                proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
+                proceedJButton.setText("<html><b>Proceed</b></html>");
+                proceedJButton.setDoubleBuffered(true);
+                proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+                proceedJButton.setMaximumSize(new java.awt.Dimension(125, 25));
+                proceedJButton.setMinimumSize(new java.awt.Dimension(125, 25));
+                proceedJButton.setOpaque(false);
+                proceedJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+                proceedJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                proceedJButtonActionPerformed(evt);
+                        }
+                });
+
+                getContentPane().add(proceedJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 220, -1, -1));
 
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -126,10 +126,10 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
                 backgroundJLabel.setFocusable(false);
                 backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setOpaque(true);
-                getContentPane().add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 369, 200));
+                getContentPane().add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 369, 300));
 
                 java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-                setBounds((screenSize.width-369)/2, (screenSize.height-222)/2, 369, 222);
+                setBounds((screenSize.width-369)/2, (screenSize.height-300)/2, 369, 300);
         }//GEN-END:initComponents
 
 		private void closeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeJButtonActionPerformed
