@@ -35,7 +35,8 @@ public class MaintenanceInterfaceJPanel extends MEditTableJPanel{
         super.setTableTitle("");
         super.setDetailsTitle("");
         super.setAddRemoveEnabled(false);
-	super.setAuxJPanelEnabled(true);
+        super.setAuxJPanelEnabled(true);
+        super.setRefreshJButtonEnabled(true);
 
 	// add a basic description
 	JLabel descriptionJLabel = new JLabel("<html>Press the Refresh Settings Button to get an updated network interface readout</html>");

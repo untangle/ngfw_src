@@ -284,9 +284,12 @@ public class MStateMachine implements java.awt.event.ActionListener {
     void setRemovingView(boolean doLater){ setStoppingView(doLater); }
     private void setOnView(boolean doLater){
         setView( doLater, true, true, true, true, true, true, true,  BlinkJLabel.ON_STATE );
-	mTransformJPanel.setPowerOnHintVisible(false);
+        mTransformJPanel.setPowerOnHintVisible(false);
     }
-    private void setOffView(boolean doLater){       setView( doLater, true, true, true, true, true, false, false, BlinkJLabel.OFF_STATE ); }
+    private void setOffView(boolean doLater){
+        setView( doLater, true, true, true, true, true, false, false, BlinkJLabel.OFF_STATE );
+        mTransformJPanel.setPowerOnHintVisible(true);
+    }
     void setDisabledView(boolean doLater){    setView( doLater, false, false, false, true,  false, null, false, BlinkJLabel.DISABLED_STATE ); }
 
     private void setView(final boolean doLater, final boolean allControlsEnabled, final boolean saveEnabled,

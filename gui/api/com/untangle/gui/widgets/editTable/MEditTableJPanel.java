@@ -12,6 +12,7 @@
 package com.untangle.gui.widgets.editTable;
 
 import com.untangle.gui.widgets.coloredTable.*;
+import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.transform.*;
 import com.untangle.gui.util.*;
 
@@ -30,6 +31,7 @@ public class MEditTableJPanel extends javax.swing.JPanel
 
     private JLabel messageJLabel;    
     private MTransformJPanel mTransformJPanel;
+    private MConfigJDialog mConfigJDialog;
     
     // the table model and table
     private MColoredJTable mColoredJTable;
@@ -73,6 +75,12 @@ public class MEditTableJPanel extends javax.swing.JPanel
     public void setMTransformJPanel(MTransformJPanel mTransformJPanel){
         this.mTransformJPanel = mTransformJPanel;
     }
+
+
+    public void setMConfigJDialog(MConfigJDialog mConfigJDialog){
+        this.mConfigJDialog = mConfigJDialog;
+    }
+
     
     public MEditTableJPanel() {
         this(false, false);
@@ -342,7 +350,10 @@ public class MEditTableJPanel extends javax.swing.JPanel
         }//GEN-END:initComponents
 
 		private void refreshJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshJButtonActionPerformed
-            mTransformJPanel.mTransformControlsJPanel().refreshGui();
+            if(mTransformJPanel != null)
+                mTransformJPanel.mTransformControlsJPanel().refreshGui();
+            else if(mConfigJDialog != null)
+                mConfigJDialog.refreshGui();
 		}//GEN-LAST:event_refreshJButtonActionPerformed
 
 

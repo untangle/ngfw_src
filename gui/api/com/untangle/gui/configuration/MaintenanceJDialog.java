@@ -72,6 +72,7 @@ public class MaintenanceJDialog extends MConfigJDialog {
 
 	// NETWORK INTERFACES //////
 	MaintenanceInterfaceJPanel maintenanceInterfaceJPanel = new MaintenanceInterfaceJPanel();
+    maintenanceInterfaceJPanel.setMConfigJDialog(this);
 	addTab(NAME_NETWORK_INTERFACES, null, maintenanceInterfaceJPanel);
 	addSavable(NAME_NETWORK_INTERFACES, maintenanceInterfaceJPanel);
 	addRefreshable(NAME_NETWORK_INTERFACES, maintenanceInterfaceJPanel);
