@@ -27,14 +27,14 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 		
     public InitialSetupRoutingJPanel() {
         initComponents();
+        addressJTextField.setText(INIT_ADDRESS);
+        netmaskJTextField.setText(INIT_NETMASK);
         Util.addFocusHighlight(addressJTextField);
 		Util.addFocusHighlight(netmaskJTextField);
     }
 
     public void initialFocus(){
 	natEnabledJRadioButton.requestFocus();
-	addressJTextField.setText(INIT_ADDRESS);
-	netmaskJTextField.setText(INIT_NETMASK);
 	new AutoDetectThread();	
     }
     
