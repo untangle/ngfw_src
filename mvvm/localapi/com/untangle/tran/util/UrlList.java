@@ -15,7 +15,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.sleepycat.je.Cursor;
 import com.sleepycat.je.Database;
@@ -32,12 +34,12 @@ public abstract class UrlList
 {
     private static final byte[] VERSION_KEY = "__version".getBytes();
 
+    private static final Set<String> DB_LOCKS = new HashSet<String>();
+
     private final Database db;
     private final String dbLock;
 
     private final Logger logger = Logger.getLogger(getClass());
-
-    private boolean updating = false;
 
     // constructors -----------------------------------------------------------
 
@@ -229,11 +231,11 @@ public abstract class UrlList
     private void init()
     {
         logger.info("initializing UrlList: " + dbLock);
-        synchronized (dbLock) {
-            if (updating) {
+        synchronized (DB_LOCKS) {
+            if (DB_LOCKS.contains(dbLock)) {
                 return;
             } else {
-                updating = true;
+                DB_LOCKS.add(dbLock);
             }
         }
 
@@ -254,7 +256,7 @@ public abstract class UrlList
             logger.warn("could not update database", exn);
         } finally {
             synchronized (dbLock) {
-                updating = false;
+                DB_LOCKS.remove(dbLock);
             }
         }
 
@@ -264,11 +266,11 @@ public abstract class UrlList
     private void initOrUpdate()
     {
         logger.info("initializing or updating UrlList: " + dbLock);
-        synchronized (dbLock) {
-            if (updating) {
+        synchronized (DB_LOCKS) {
+            if (DB_LOCKS.contains(dbLock)) {
                 return;
             } else {
-                updating = true;
+                DB_LOCKS.add(dbLock);
             }
         }
 
@@ -289,7 +291,7 @@ public abstract class UrlList
             logger.warn("could not update database", exn);
         } finally {
             synchronized (dbLock) {
-                updating = false;
+                DB_LOCKS.remove(dbLock);
             }
         }
 
