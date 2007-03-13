@@ -132,13 +132,13 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
         totalQueryTime = System.currentTimeMillis();
 
-        String sql = "SELECT client_intf, DATE_TRUNC('minute', create_date) AS cd, DATE_TRUNC('minute', raze_date) AS rd,"
+        String sql = "SELECT client_intf, DATE_TRUNC('minute', endp.time_stamp) AS cd, DATE_TRUNC('minute', stats.time_stamp) AS rd,"
             + " SUM(c2p_bytes), SUM(p2s_bytes), SUM(s2p_bytes), SUM(p2c_bytes)"
             + " FROM pl_endp endp JOIN pl_stats stats ON (endp.event_id = stats.pl_endp_id)"
             + " WHERE";
         if (!doIncomingSessions || !doOutgoingSessions)
             sql += " client_intf = ? AND";
-        sql += " create_date >= ? AND raze_date < ?"
+        sql += " endp.time_stamp >= ? AND stats.time_stamp < ?"
             + " GROUP BY cd, rd, client_intf"
             + " ORDER BY cd, rd";
 

@@ -81,7 +81,7 @@ public class TrafficDayByMinuteGraph extends DayByMinuteTimeSeriesGraph
         }
 
         // Load up the datasets
-        String sql = "SELECT client_intf, create_date, raze_date, c2p_bytes, p2s_bytes, s2p_bytes, p2c_bytes FROM pl_endp endp JOIN pl_stats stats ON endp.event_id = stats.pl_endp_id where ";
+        String sql = "SELECT client_intf, endp.time_stamp AS create_date, stats.time_stamp AS raze_date, c2p_bytes, p2s_bytes, s2p_bytes, p2c_bytes FROM pl_endp endp JOIN pl_stats stats ON endp.event_id = stats.pl_endp_id where ";
         if (!doIncomingSessions || !doOutgoingSessions)
             sql += "client_intf = ? AND ";
         sql += "create_date <= ? AND raze_date >= ? ORDER BY create_date";

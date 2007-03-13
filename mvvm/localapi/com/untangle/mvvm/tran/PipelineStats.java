@@ -39,8 +39,6 @@ public class PipelineStats extends PipelineEvent
 {
     private static final long serialVersionUID = 2479594766473917892L;
 
-    private Date razeDate;
-
     private long c2pBytes = 0;
     private long p2sBytes = 0;
     private long s2pBytes = 0;
@@ -62,8 +60,6 @@ public class PipelineStats extends PipelineEvent
     {
         super(pe);
 
-        razeDate = new Date();
-
         c2pBytes = begin.c2tBytes();
         p2cBytes = begin.t2cBytes();
         c2pChunks = begin.c2tChunks();
@@ -78,23 +74,6 @@ public class PipelineStats extends PipelineEvent
     }
 
     // accessors --------------------------------------------------------------
-
-    /**
-     * Time the session ended
-     *
-     * @return the time the session ended
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="raze_date")
-    public Date getRazeDate()
-    {
-        return razeDate;
-    }
-
-    public void setRazeDate(Date razeDate)
-    {
-        this.razeDate = razeDate;
-    }
 
     /**
      * Total bytes send from client to pipeline
@@ -246,7 +225,7 @@ public class PipelineStats extends PipelineEvent
         getPipelineEndpoints().appendSyslog(sb);
 
         sb.startSection("stats");
-        sb.addField("raze-date", razeDate);
+        sb.addField("raze-date", getTimeStamp());
         sb.addField("c2pBytes", c2pBytes);
         sb.addField("p2sBytes", p2sBytes);
         sb.addField("s2pBytes", s2pBytes);

@@ -65,7 +65,7 @@ public class TrafficByPortGraph extends TopTenPieGraph
         String sql = "SELECT proto, s_server_port, client_intf, count(*), sum(c2p_bytes), sum(p2s_bytes), sum(s2p_bytes), sum(p2c_bytes) FROM pl_endp endp JOIN pl_stats stats ON endp.event_id = stats.pl_endp_id WHERE ";
         if (!doIncomingSessions || !doOutgoingSessions)
             sql += "client_intf = ? AND ";
-        sql += "create_date <= ? and raze_date >= ? GROUP BY client_intf, proto, s_server_port";
+        sql += "endp.time_stamp <= ? and stats.time_stamp >= ? GROUP BY client_intf, proto, s_server_port";
         int sidx = 1;
         PreparedStatement stmt = con.prepareStatement(sql);
         if (doIncomingSessions && !doOutgoingSessions) {

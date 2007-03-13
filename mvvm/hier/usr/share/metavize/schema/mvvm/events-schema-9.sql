@@ -48,7 +48,6 @@ CREATE TABLE events.pl_stats (
     event_id int8 NOT NULL,
     time_stamp timestamp,
     pl_endp_id int8,
-    raze_date timestamp,
     c2p_bytes int8,
     s2p_bytes int8,
     p2c_bytes int8,
