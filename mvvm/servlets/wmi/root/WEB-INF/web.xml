@@ -51,9 +51,4 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
   <welcome-file-list>
     <welcome-file>Index.jsp</welcome-file>
   </welcome-file-list>
-    
-  <error-page>
-    <error-code>404</error-code>
-    <location>/errorpage.jsp</location>
-  </error-page>
 </web-app>

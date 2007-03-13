@@ -25,6 +25,7 @@ import org.apache.catalina.Valve;
  */
 public interface LocalAppServerManager
 {
+    // XXX duplicated from MvvmErrorReportValve
     final String MVVM_WEB_MESSAGE_ATTR = "com.untangle.mvvm.web.message";
 
     /**

@@ -19,16 +19,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpSession;
 
-import com.untangle.mvvm.tran.script.ScriptRunner;
 import com.untangle.mvvm.tran.TransformException;
-
+import com.untangle.mvvm.tran.script.ScriptRunner;
 import org.apache.log4j.Logger;
 
 public class Downloader extends HttpServlet
@@ -36,9 +33,9 @@ public class Downloader extends HttpServlet
     private static final String WMI_INSTALLER_FILE_NAME = "/tmp/setup-wmi.exe";
     private static final String WMI_DOWNLOAD_NAME = "setup.exe";
     private static final String WMI_DOWNLOAD_TYPE = "application/download";
-    private static final String GENERATE_INSTALLER_SCRIPT = 
+    private static final String GENERATE_INSTALLER_SCRIPT =
         System.getProperty( "bunnicula.home" ) + "/installers/wmimapper/makeinstaller";
-    
+
     private final Logger logger = Logger.getLogger( this.getClass());
 
     protected void doGet( HttpServletRequest request,  HttpServletResponse response )
@@ -47,7 +44,7 @@ public class Downloader extends HttpServlet
         generateInstaller();
         streamFile( request, response, WMI_INSTALLER_FILE_NAME, WMI_DOWNLOAD_NAME, WMI_DOWNLOAD_TYPE );
     }
-    
+
     private void generateInstaller() throws ServletException
     {
         try {
@@ -79,10 +76,9 @@ public class Downloader extends HttpServlet
             length = file.length();
         } catch ( FileNotFoundException e ) {
             logger.info( "The file '" + fileName + "' does not exist" );
-            
+
             /* Indicate that the response was not rejected */
-            response.setStatus( HttpServletResponse.SC_FORBIDDEN );
-            request.getRequestDispatcher( "/errorpage.jsp" ).forward( request, response );
+            response.sendError( HttpServletResponse.SC_FORBIDDEN );
             return;
         }
 

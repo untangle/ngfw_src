@@ -48,4 +48,3 @@ ALTER TABLE settings.tr_clamphish_settings
     ADD CONSTRAINT fk_out_ss_imap_cfg
     FOREIGN KEY (imap_outbound)
     REFERENCES settings.tr_spam_imap_config;
-

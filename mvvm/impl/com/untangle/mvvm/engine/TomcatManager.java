@@ -271,6 +271,7 @@ class TomcatManager
             baseHost.setUnpackWARs(true);
             baseHost.setDeployOnStartup(true);
             baseHost.setAutoDeploy(true);
+            baseHost.setErrorReportValveClass("com.untangle.mvvm.engine.MvvmErrorReportValve");
             OurSingleSignOn ourSsoWorkaroundValve = new OurSingleSignOn();
             /* XXXXX Hackstered to get single sign on to ignore certain contexts */
             SingleSignOn ssoValve = new SpecialSingleSignOn( mvvmContext, "/session-dumper", "/webstart", "", "/reports",
