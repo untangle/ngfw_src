@@ -132,17 +132,17 @@ JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
 
 # The maximum heap/virtual sizes depend on the memory available
 MEM=$(awk '/MemTotal/ { print $2 }' < /proc/meminfo)
-if [ $MEM -gt 2000000 ] ; then
+if [ $MEM -gt 1900000 ] ; then
   MAX_HEAP_SIZE=640m
   MAX_VIRTUAL_SIZE=1500000
   MAX_UCB_DB_MEG=40
-elif [ $MEM -gt 999999 ] ; then
+elif [ $MEM -gt 900000 ] ; then
   MAX_HEAP_SIZE=320m
   MAX_VIRTUAL_SIZE=950000
   MAX_UCB_DB_MEG=16
 else
-  MAX_HEAP_SIZE=240m
-  MAX_VIRTUAL_SIZE=850000
+  MAX_HEAP_SIZE=220m
+  MAX_VIRTUAL_SIZE=800000
   MAX_UCB_DB_MEG=8
 fi
 
