@@ -8,7 +8,7 @@ CREATE TABLE :tablename (
 
 INSERT INTO :tablename
   SELECT *
-    FROM :basetablename
+    FROM ONLY :basetablename
    WHERE time_stamp >= TIMESTAMP :daybegin AND time_stamp < TIMESTAMP :dayend;
 
 DELETE FROM ONLY :basetablename

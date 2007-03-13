@@ -4,6 +4,7 @@ main_index=@MVVM_REPORTS@/current/$1
 index=$1
 period=$2
 generate_email_index=$3
+midnight=$4
 mail_reports_arguments_daily=@PREFIX@/tmp/mail_reports_arguments_daily.txt
 mail_reports_arguments_weekly=@PREFIX@/tmp/mail_reports_arguments_weekly.txt
 mail_reports_arguments_monthly=@PREFIX@/tmp/mail_reports_arguments_monthly.txt
@@ -253,7 +254,8 @@ EOF
     fi
 fi
 
-/bin/date -d'yesterday' +'%A %B %e, %Y' >> $main_index
+echo 
+/bin/date -d''$midnight'' +'%A %B %e, %Y' >> $main_index
 
 cat >> $main_index <<EOF
     </td><tr>

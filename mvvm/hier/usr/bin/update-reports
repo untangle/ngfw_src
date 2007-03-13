@@ -240,13 +240,13 @@ EOF
 
 # generate the web viewable page
         if [ $MV_EG_DAILY_REPORT == 'y' ]; then
-            @USR_BIN@/index-reports index.html daily false
+            @USR_BIN@/index-reports index.html daily false $midnight
         fi
         if [ $MV_EG_WEEKLY_REPORT == 'y' ]; then
-            @USR_BIN@/index-reports index_online_weekly.html weekly false
+            @USR_BIN@/index-reports index_online_weekly.html weekly false $midnight
         fi
         if [ $MV_EG_MONTHLY_REPORT == 'y' ]; then
-            @USR_BIN@/index-reports index_online_monthly.html monthly false
+            @USR_BIN@/index-reports index_online_monthly.html monthly false $midnight
         fi
 
 # convert all non-index html pages to have MV look-n-feel
