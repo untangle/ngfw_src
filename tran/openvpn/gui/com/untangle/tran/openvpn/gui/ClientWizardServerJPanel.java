@@ -39,7 +39,7 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
         this.vpnTransform = vpnTransform;
         initComponents();
 		Util.addFocusHighlight(serverJTextField);
-		Util.addFocusHighlight(passwordJTextField);
+		Util.addFocusHighlight(passwordJPasswordField);
 	setServerSelectedDependency(serverJRadioButton.isSelected());
 	keyJComboBox.addItem(NO_CONFIGURATIONS);
 	keyJComboBox.setSelectedItem(NO_CONFIGURATIONS);
@@ -65,11 +65,11 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
         
 	SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
 	    serverJTextField.setBackground( Color.WHITE );
-            passwordJTextField.setBackground( Color.WHITE );
+            passwordJPasswordField.setBackground( Color.WHITE );
 
 	    useServer = serverJRadioButton.isSelected();
 	    address = serverJTextField.getText().trim();
-            password = passwordJTextField.getText().trim();
+            password = passwordJPasswordField.getText().trim();
             selection = (String) keyJComboBox.getSelectedItem();
 
 	    exception = null;
@@ -103,7 +103,7 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
 		}
 		
 		if( password.length() <= 0 ){
-		    passwordJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+		    passwordJPasswordField.setBackground( Util.INVALID_BACKGROUND_COLOR );
 		    exception = new Exception(EXCEPTION_NO_PASSWORD);
 		    return;
 		}
@@ -164,7 +164,7 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
                 serverJRadioButton = new javax.swing.JRadioButton();
                 serverJTextField = new javax.swing.JTextField();
                 serverJLabel1 = new javax.swing.JLabel();
-                passwordJTextField = new javax.swing.JTextField();
+                passwordJPasswordField = new javax.swing.JPasswordField();
                 serverJLabel2 = new javax.swing.JLabel();
                 jLabel3 = new javax.swing.JLabel();
                 keyJRadioButton = new javax.swing.JRadioButton();
@@ -192,20 +192,24 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
                 add(serverJRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 100, -1, -1));
 
                 serverJTextField.setColumns(19);
-                add(serverJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 120, -1, -1));
+                serverJTextField.setMaximumSize(new java.awt.Dimension(213, 19));
+                serverJTextField.setMinimumSize(new java.awt.Dimension(213, 19));
+                add(serverJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 120, 213, 19));
 
                 serverJLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
                 serverJLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
                 serverJLabel1.setText("Server IP Address:");
-                add(serverJLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 120, -1, -1));
+                add(serverJLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 122, -1, -1));
 
-                passwordJTextField.setColumns(19);
-                add(passwordJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 140, -1, -1));
+                passwordJPasswordField.setMaximumSize(new java.awt.Dimension(213, 19));
+                passwordJPasswordField.setMinimumSize(new java.awt.Dimension(213, 19));
+                passwordJPasswordField.setPreferredSize(new java.awt.Dimension(213, 19));
+                add(passwordJPasswordField, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 140, 213, 19));
 
                 serverJLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
                 serverJLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
                 serverJLabel2.setText("Password:");
-                add(serverJLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 140, -1, -1));
+                add(serverJLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(157, 142, -1, -1));
 
                 jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/tran/openvpn/gui/ProductShot.png")));
                 add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(-130, 230, -1, -1));
@@ -274,7 +278,7 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
 	serverJLabel1.setEnabled(enabled);
 	serverJLabel2.setEnabled(enabled);
 	serverJTextField.setEnabled(enabled);
-	passwordJTextField.setEnabled(enabled);
+	passwordJPasswordField.setEnabled(enabled);
 	refreshKeyJButton.setEnabled(!enabled);
 	keyJComboBox.setEnabled(!enabled);
     }
@@ -285,7 +289,7 @@ public class ClientWizardServerJPanel extends MWizardPageJPanel {
         private javax.swing.JComboBox keyJComboBox;
         private javax.swing.JRadioButton keyJRadioButton;
         private javax.swing.ButtonGroup methodButtonGroup;
-        private javax.swing.JTextField passwordJTextField;
+        private javax.swing.JPasswordField passwordJPasswordField;
         private javax.swing.JButton refreshKeyJButton;
         private javax.swing.JLabel serverJLabel1;
         private javax.swing.JLabel serverJLabel2;
