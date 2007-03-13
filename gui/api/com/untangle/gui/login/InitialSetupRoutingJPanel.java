@@ -227,7 +227,7 @@ public class InitialSetupRoutingJPanel extends MWizardPageJPanel {
 
                 natButtonGroup.add(natDisabledJRadioButton);
                 natDisabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                natDisabledJRadioButton.setText("<html><b>Transparent Bridge</b><br>This is recommended if the external port is connected to a firewall or router. (This disables NAT and DHCP)</html>");
+                natDisabledJRadioButton.setText("<html><b>Transparent Bridge</b><br>This is recommended if the external port is connected to some other firewall or router. (This disables NAT and DHCP)</html>");
                 natDisabledJRadioButton.setOpaque(false);
                 natDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
