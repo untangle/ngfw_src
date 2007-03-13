@@ -129,20 +129,22 @@ while read dayname ignore daybegin; do
     if [ x"$dayname" = x ]; then
         continue
     fi
+    dayend="'$daybegin' + interval '1 days'"
     for basetablename in `cat @MVVM_SCHEMA@/*/partitioned-tables`; do
         doesEventTableExist $basetablename || continue
-        dayend="'$daybegin' + interval '1 days'"
         tablename=${basetablename}_$dayname
         $PSQL -v tablename="$tablename" -v basetablename="$basetablename" -v daybegin="'$daybegin'" -v dayend="$dayend" -f @MVVM_SCHEMA@/mvvm/buildpartition.sql mvvm
         rowcount=`$PSQL -qt mvvm -c "select count(*) from $tablename;"`
-        if [ -n "$rowcount" -a "$rowcount" -eq 0 ]; then
-            $PSQL mvvm -c "DROP TABLE $tablename;"
-        else
-            indicestoadd=`mktemp`
-            $PSQL -qt mvvm -c "select indexdef from pg_indexes where tablename = '$basetablename';" > $indicestoadd
-            sed -i $indicestoadd -e "s/$basetablename/$tablename/g" -e "s/\$/;/"
-            $PSQL -f $indicestoadd mvvm
-            rm $indicestoadd
+        if [ -n "$rowcount" ]; then
+            if [ -a "$rowcount" -eq 0 ]; then
+                $PSQL mvvm -c "DROP TABLE $tablename;"
+            else
+                indicestoadd=`mktemp`
+                $PSQL -qt mvvm -c "select indexdef from pg_indexes where tablename = '$basetablename';" > $indicestoadd
+                sed -i $indicestoadd -e "s/$basetablename/$tablename/g" -e "s/\$/;/"
+                $PSQL -f $indicestoadd mvvm
+                rm $indicestoadd
+            fi
         fi
     done
     $PSQL -v dayname="'$dayname'" -v daybegin="'$daybegin'" mvvm <<EOF
@@ -187,9 +189,9 @@ EOF
             if [ x"$dayname" = x ]; then
                 continue
             fi
+            dayend="'$daybegin' + interval '1 days'"
             for c in @MVVM_SCHEMA@/*/report-add-day.sql; do
-                dayend="'$daybegin' + interval '1 days'"
-                $PSQL -v dayname="$dayname" -v daybegin="'$daybegin'" -v dayend="'$dayend'" -f $c mvvm
+                $PSQL -v dayname="$dayname" -v daybegin="'$daybegin'" -v dayend="$dayend" -f $c mvvm
             done
             $PSQL -v dayname="'$dayname'" -v daybegin="'$daybegin'" mvvm <<EOF
 insert into reports.report_data_days values (:dayname, DATE :daybegin);
