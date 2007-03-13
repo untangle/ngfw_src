@@ -18,6 +18,7 @@ import java.util.Map;
 import com.untangle.mvvm.logging.ListEventFilter;
 import com.untangle.mvvm.logging.RepositoryDesc;
 import com.untangle.tran.http.RequestLine;
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -60,9 +61,12 @@ public class HttpBlockerPassedFilter implements ListEventFilter<HttpBlockerEvent
             HttpBlockerEvent evt = (HttpBlockerEvent)evtQ.uniqueResult();
             if (null == evt) {
                 evt = new HttpBlockerEvent(rl, null, null, null, true);
+                Hibernate.initialize(rl);
                 l.add(evt);
                 c++;
             } else if (Action.PASS == evt.getAction()) {
+                Hibernate.initialize(evt);
+                Hibernate.initialize(evt.getRequestLine());
                 l.add(evt);
                 c++;
             }
