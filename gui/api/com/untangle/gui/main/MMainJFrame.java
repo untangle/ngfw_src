@@ -12,6 +12,8 @@
 
 package com.untangle.gui.main;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Window;
 import java.awt.Frame;
 import java.awt.Dimension;
@@ -40,9 +42,11 @@ import com.untangle.mvvm.tran.*;
 
 public class MMainJFrame extends javax.swing.JFrame {
     // CONSTANTS
-    private static final Dimension MIN_SIZE = new Dimension(640, Util.determineMinHeight(480));
+    private static final Dimension MIN_SIZE = new Dimension(1000, 480);
     private static final Dimension MAX_SIZE = new Dimension(2560, 1600); // the 30-inch cinema display max
 
+    private ImageIcon mainLeftBackground;
+    private ImageIcon mainRightBackground;
 
     public MMainJFrame() {
     getRootPane().setDoubleBuffered(true);
@@ -50,6 +54,8 @@ public class MMainJFrame extends javax.swing.JFrame {
         Util.setMMainJFrame(this);
 
         // INIT GUI
+        mainLeftBackground = new ImageIcon(getClass().getResource("/com/untangle/gui/main/MainBackgroundLeft_202x100.png"));
+        mainRightBackground = new ImageIcon(getClass().getResource("/com/untangle/gui/main/MainBackgroundRight_1398x100.png"));
         initComponents();
 
         mTabbedPane.addChangeListener(new TabSelectionChangeListener());
@@ -72,6 +78,29 @@ public class MMainJFrame extends javax.swing.JFrame {
         // UPDATE/UPGRADE
         UpdateCheckThread updateCheckThread = new UpdateCheckThread();
 	Util.addShutdownable("UpdateCheckThread", updateCheckThread);
+    }
+
+    private class BackgroundJPanel extends JPanel {
+        public BackgroundJPanel(){
+            //   setOpaque(true);
+        }
+        public void paintComponent(Graphics g){
+            super.paintComponent(g);
+            int width = getWidth();
+            int height = getHeight();
+            
+            int rows = (height/100) +1; // +1 to capture any extra less than one full row
+            int cols = ((width-202)/1398) +1; // +1 to capture any extra less than one full col
+            
+            for(int x=0; x<cols; x++){
+                for(int y=0; y<rows; y++){
+                    if(x==0){
+                        mainLeftBackground.paintIcon(this, g, 0, y*100);
+                    }
+                    mainRightBackground.paintIcon(this, g, 202 + (1398*x), y*100);
+                }
+            }
+        }
     }
 
     private class TabSelectionChangeListener implements ChangeListener {
@@ -152,7 +181,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 configurationSpacerJPanel1 = new javax.swing.JPanel();
                 helpJButton = new javax.swing.JButton();
                 mPipelineJPanel = new com.untangle.gui.pipeline.MPipelineJPanel();
-                backgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
+                backgroundJPanel = new BackgroundJPanel();
 
                 getContentPane().setLayout(new java.awt.GridBagLayout());
 
@@ -574,10 +603,6 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.weighty = 1.0;
                 getContentPane().add(mPipelineJPanel, gridBagConstraints);
 
-                backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/MainBackground1600x100.png")));
-                backgroundJLabel.setDoubleBuffered(true);
-                backgroundJLabel.setFocusable(false);
-                backgroundJLabel.setOpaque(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -585,7 +610,7 @@ public class MMainJFrame extends javax.swing.JFrame {
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
-                getContentPane().add(backgroundJLabel, gridBagConstraints);
+                getContentPane().add(backgroundJPanel, gridBagConstraints);
 
                 java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
                 setBounds((screenSize.width-1024)/2, (screenSize.height-768)/2, 1024, 768);
@@ -718,6 +743,11 @@ public class MMainJFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_aboutJButtonActionPerformed
 
+    public void setVisible(boolean isVisible){
+        super.setVisible(isVisible);
+        Util.resizeCheck(this, MIN_SIZE, MAX_SIZE);
+    }
+
     private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
         Util.resizeCheck(this, MIN_SIZE, MAX_SIZE);
     }//GEN-LAST:event_formComponentResized
@@ -745,7 +775,7 @@ public class MMainJFrame extends javax.swing.JFrame {
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JButton aboutJButton;
-        private javax.swing.JLabel backgroundJLabel;
+        private javax.swing.JPanel backgroundJPanel;
         private javax.swing.JButton backupJButton;
         private javax.swing.JPanel configurationJPanel;
         private javax.swing.JScrollPane configurationJScrollPane;
