@@ -27,9 +27,9 @@ import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
 
-public class RoutingJPanel extends MEditTableJPanel{
+public class SpaceRoutingJPanel extends MEditTableJPanel{
 
-    public RoutingJPanel() {
+    public SpaceRoutingJPanel() {
         super(true, true);
         super.setFillJButtonEnabled( true );
         super.setInsets(new Insets(4, 4, 2, 2));
@@ -62,12 +62,12 @@ class RoutingTableModel extends MSortedTableModel<Object>{
         
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min    rsz    edit   remv   desc   typ            def
-        addTableColumn( tableColumnModel,  0,  C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
+        addTableColumn( tableColumnModel,  0,  C0_MW, false, false, true,  false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW, false, false, false, false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  C2_MW, false, true,  false, false, Boolean.class, "false", sc.bold("enable<br>rule") );
         addTableColumn( tableColumnModel,  3,  C3_MW,  true, true,  false, false, String.class, "1.2.3.4/255.255.255.0", sc.html("traffic destined to<br>this <b>IP Network</b>") );
         addTableColumn( tableColumnModel,  4,  C4_MW,  true, true,  false, false, String.class, "1.2.3.4", sc.html("will be sent to<br>this <b>IP Address</b>") );
-        addTableColumn( tableColumnModel,  5,  C5_MW,  true, true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
+        addTableColumn( tableColumnModel,  5,  C5_MW,  true, true,  true,  false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
         addTableColumn( tableColumnModel,  6,  C6_MW,  true, true,  false,  true, String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
         addTableColumn( tableColumnModel,  7,   10,   false, false, true,  false, Route.class, null, "");
         return tableColumnModel;

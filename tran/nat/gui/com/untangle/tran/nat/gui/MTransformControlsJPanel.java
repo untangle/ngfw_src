@@ -145,7 +145,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
 		addSavable(NAME_SPACE_LIST, spaceListJPanel);
 		addRefreshable(NAME_SPACE_LIST, spaceListJPanel);
 		// ROUTING //
-		RoutingJPanel routingJPanel = new RoutingJPanel();
+		SpaceRoutingJPanel routingJPanel = new SpaceRoutingJPanel();
 		addTab(1, NAME_ROUTING, null, routingJPanel);
 		addSavable(NAME_ROUTING, routingJPanel);
 		addRefreshable(NAME_ROUTING, routingJPanel);

@@ -108,7 +108,7 @@ class RedirectTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel, 10, C10_MW, true,  true,  false, false, String.class, "2-5", sc.html("destination<br>port") );
         addTableColumn( tableColumnModel, 11, C11_MW, true,  true,  false, false, String.class, "1.2.3.4", sc.html("redirect to<br>new address") );
         addTableColumn( tableColumnModel, 12, C12_MW, true,  true,  false, false, String.class, "5", sc.html("redirect to<br>new port") );
-        addTableColumn( tableColumnModel, 13, C13_MW, true,  true,  false, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
+        addTableColumn( tableColumnModel, 13, C13_MW, true,  true,  true,  false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY);
         addTableColumn( tableColumnModel, 14, C14_MW, true,  true,  false, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         addTableColumn( tableColumnModel, 15, 10,     false, false, true,  false, RedirectRule.class, null, "");
         return tableColumnModel;
