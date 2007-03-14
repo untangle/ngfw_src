@@ -27,9 +27,9 @@ import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
 
-public class InterfaceMapJPanel extends MEditTableJPanel{
+public class SpaceInterfaceMapJPanel extends MEditTableJPanel{
 
-    public InterfaceMapJPanel() {
+    public SpaceInterfaceMapJPanel() {
         super(true, true);
         super.setFillJButtonEnabled( true );
         super.setInsets(new Insets(4, 4, 2, 2));
@@ -57,7 +57,7 @@ class InterfaceTableModel extends MSortedTableModel<Object>{
         
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min    rsz    edit   remv   desc   typ            def
-        addTableColumn( tableColumnModel,  0,  C0_MW, false, false, false, false, String.class,  null, sc.TITLE_STATUS );
+        addTableColumn( tableColumnModel,  0,  C0_MW, false, false, true,  false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2,  C2_MW, true,  false, false, false, String.class, null, sc.html("map this<br>ethernet <b>interface</b>") );
         addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  false, false, ComboBoxModel.class, null, sc.html("to this<br>net <b>space</b>") );

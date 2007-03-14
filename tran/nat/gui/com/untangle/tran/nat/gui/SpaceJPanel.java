@@ -36,6 +36,7 @@ public class SpaceJPanel extends javax.swing.JPanel implements Savable<Object>, 
 	initNetworkSpace = networkSpace;
         initComponents();
 	mtuJSpinner.setModel(new SpinnerNumberModel(NetworkSpace.DEFAULT_MTU, NetworkSpace.MIN_MTU, NetworkSpace.MAX_MTU, 1));
+    ((JSpinner.NumberEditor)mtuJSpinner.getEditor()).getFormat().setGroupingUsed(false);
 	aliasJScrollPane.getVerticalScrollBar().setFocusable(false);
 	Util.addPanelFocus(this, natEnabledJRadioButton);
 	Util.addFocusHighlight(aliasJTextArea);

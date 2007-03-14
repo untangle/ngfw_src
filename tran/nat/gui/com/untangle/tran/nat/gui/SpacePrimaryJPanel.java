@@ -23,17 +23,18 @@ import java.util.List;
 import javax.swing.*;
 
 
-public class PrimarySpaceJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
+public class SpacePrimaryJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
 
     private static final String EXCEPTION_MTU = "The MTU must be an integer value between "
 	+ NetworkSpace.MIN_MTU + " and " + NetworkSpace.MAX_MTU + ".";
     
     private NetworkSpace initNetworkSpace;
 
-    public PrimarySpaceJPanel(NetworkSpace networkSpace) {
+    public SpacePrimaryJPanel(NetworkSpace networkSpace) {
 	initNetworkSpace = networkSpace;
         initComponents();
 	mtuJSpinner.setModel(new SpinnerNumberModel(NetworkSpace.DEFAULT_MTU, NetworkSpace.MIN_MTU, NetworkSpace.MAX_MTU, 1));
+    ((JSpinner.NumberEditor)mtuJSpinner.getEditor()).getFormat().setGroupingUsed(false);
 	Util.addFocusHighlight(mtuJSpinner);
     }
         

@@ -133,7 +133,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
 		// NET SPACES
 		spacesJTabbedPane = addTabbedPane(0, NAME_NET_SPACES, null);
 		// INTERFACE MAP //
-		InterfaceMapJPanel interfaceMapJPanel = new InterfaceMapJPanel();
+		SpaceInterfaceMapJPanel interfaceMapJPanel = new SpaceInterfaceMapJPanel();
 		spacesJTabbedPane.addTab(NAME_INTERFACE_MAP, null, interfaceMapJPanel);
 		interfaceMapJPanel.setSettingsChangedListener(this);
 		addSavable(NAME_INTERFACE_MAP, interfaceMapJPanel);
@@ -167,7 +167,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
 	    JComponent spaceJComponent;
 	    for( NetworkSpace networkSpace : networkSpaceList ){
 		if( networkSpace.getIsPrimary() ){
-		    PrimarySpaceJPanel primarySpaceJPanel = new PrimarySpaceJPanel(networkSpace);
+		    SpacePrimaryJPanel primarySpaceJPanel = new SpacePrimaryJPanel(networkSpace);
 		    primarySpaceJPanel.setSettingsChangedListener(this);
 		    spaceJComponent = primarySpaceJPanel;
 		}
