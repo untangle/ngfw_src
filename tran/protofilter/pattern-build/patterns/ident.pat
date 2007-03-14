@@ -1,5 +1,5 @@
 # Ident - Identification Protocol - RFC 1413
-# Pattern attributes: good veryfast
+# Pattern attributes: good fast fast
 # Protocol groups: networking ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/Ident
 #

@@ -1,5 +1,5 @@
 # DNS - Domain Name System - RFC 1035
-# Pattern attributes: great notsofast
+# Pattern attributes: great slow fast
 # Protocol groups: networking ietf_internet_standard
 # Wiki: http://www.protocolinfo.org/wiki/DNS
 

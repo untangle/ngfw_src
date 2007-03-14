@@ -1,5 +1,5 @@
 # Half-Life 2 Deathmatch - popular computer game
-# Pattern attributes: good veryfast
+# Pattern attributes: good veryfast fast
 # Protocol groups: game proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Half-Life
 # 

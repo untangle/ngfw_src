@@ -1,5 +1,5 @@
 # Quicktime HTTP 
-# Pattern attributes: good fast subset
+# Pattern attributes: good notsofast notsofast subset
 # Protocol groups: streaming_video streaming_audio ietf_draft_standard
 # Wiki: http://protocolinfo.org/wiki/HTTP
 #

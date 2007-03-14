@@ -1,5 +1,5 @@
 # RTSP - Real Time Streaming Protocol - http://www.rtsp.org - RFC 2326
-# Pattern attributes: good fast
+# Pattern attributes: good notsofast notsofast
 # Protocol groups: streaming_video ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/RTSP
 #

@@ -1,5 +1,5 @@
 # (S)NTP - (Simple) Network Time Protocol - RFCs 1305 and 2030
-# Pattern attributes: good veryfast overmatch 
+# Pattern attributes: good fast fast overmatch 
 # Protocol groups: time_synchronization ietf_draft_standard
 # Wiki: http://www.protocolinfo.org/wiki/NTP
 #

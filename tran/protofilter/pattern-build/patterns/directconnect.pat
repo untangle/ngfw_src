@@ -1,5 +1,5 @@
 # Direct Connect - P2P filesharing - http://www.neo-modus.com
-# Pattern attributes: good veryfast
+# Pattern attributes: good fast fast
 # Protocol groups: p2p
 # Wiki: http://www.protocolinfo.org/wiki/Direct_Connect
 #

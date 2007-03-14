@@ -1,5 +1,5 @@
 # BGP - Border Gateway Protocol - RFC 1771
-# Pattern attributes: ok veryfast
+# Pattern attributes: ok veryfast fast
 # Protocol groups: networking ietf_draft_standard
 # Wiki: http://www.protocolinfo.org/wiki/BGP
 #

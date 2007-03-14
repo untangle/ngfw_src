@@ -1,5 +1,5 @@
 # Battlefield 1942 - An EA game
-# Pattern attributes: ok veryfast
+# Pattern attributes: ok veryfast fast
 # Protocol groups: game proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Battlefield_1942
 #

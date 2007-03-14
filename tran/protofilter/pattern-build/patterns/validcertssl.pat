@@ -1,5 +1,5 @@
 # Valid certificate SSL 
-# Pattern attributes: good notsofast subset
+# Pattern attributes: good slow fast subset
 # Protocol groups: secure ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/SSL
 
@@ -21,4 +21,4 @@
 # a different rule
 
 validcertssl
-^.?.?\x01\x03\x01?.*\x0b.*(thawte|equifax secure certificate authority|rsa data security, inc|verisign, inc|gte cybertrust root|entrust\.net limited)
+^(.?.?\x16\x03.*\x16\x03|.?.?\x01\x03\x01?.*\x0b).*(thawte|equifax secure|rsa data security, inc|verisign, inc|gte cybertrust root|entrust\.net limited)

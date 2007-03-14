@@ -1,5 +1,5 @@
 # Subversion - a version control system
-# Pattern attributes: ok veryfast
+# Pattern attributes: ok veryfast fast
 # Protocol groups: version_control open_source
 # Wiki: http://www.protocolinfo.org/wiki/Subversion
 #
@@ -8,4 +8,5 @@
 # Subversion uses TCP port 3690 by default.
 
 subversion
+# This is not a valid basic GNU regular expression.
 ^\( success \( 1 2 \(

@@ -1,12 +1,12 @@
 # SOCKS Version 5 - Firewall traversal protocol - RFC 1928
-# Pattern attributes: ok fast
+# Pattern attributes: good notsofast notsofast
 # Protocol groups: networking ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/SOCKS
 #
 # Usually runs on port 1080
 # Also useful: http://www.iana.org/assignments/socks-methods
 #
-# We have had one report that this pattern works.
+# We have had two reports that this pattern works.
 
 # method request, no private methods	\x05[\x01-\x08]*
 # method reply, assumes sucess		\x05[\x01-\x08]?

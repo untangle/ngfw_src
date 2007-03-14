@@ -1,5 +1,5 @@
 # X Windows Version 11 - Networked GUI system used in most Unices
-# Pattern attributes: good veryfast
+# Pattern attributes: good veryfast fast
 # Protocol groups: remote_access x_consortium_standard
 # Wiki: http://www.protocolinfo.org/wiki/X11
 #
@@ -18,3 +18,5 @@ x11
 # For some reason, protocol-minor-version is 0, not 6, so can't match it.
 # This pattern is too general. 
 ^[lb].?\x0b
+userspace pattern=^[lB].?\x0b
+userspace flags=REG_NOSUB

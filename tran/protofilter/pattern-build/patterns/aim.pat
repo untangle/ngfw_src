@@ -1,5 +1,5 @@
 # AIM - AOL instant messenger (OSCAR and TOC)
-# Pattern attributes: good notsofast
+# Pattern attributes: good slow notsofast
 # Protocol groups: chat proprietary
 # Wiki: http://www.protocolinfo.org/wiki/AIM
 #

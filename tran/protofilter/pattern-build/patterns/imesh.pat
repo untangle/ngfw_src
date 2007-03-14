@@ -1,5 +1,5 @@
 # iMesh - the native protocol of iMesh, a P2P application - http://imesh.com
-# Pattern attributes: ok fast
+# Pattern attributes: ok fast fast
 # Protocol groups: p2p
 # Wiki:   http://protocolinfo.org/wiki/iMesh
 #

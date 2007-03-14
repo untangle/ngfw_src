@@ -1,5 +1,5 @@
 # FTP - File Transfer Protocol - RFC 959
-# Pattern attributes: great fast
+# Pattern attributes: great notsofast fast
 # Protocol groups: document_retrieval ietf_internet_standard
 # Wiki: http://protocolinfo.org/wiki/FTP
 #

@@ -1,5 +1,5 @@
 # RDP - Remote Desktop Protocol (used in Windows Terminal Services)
-# Pattern attributes: ok fast
+# Pattern attributes: ok notsofast notsofast
 # Protocol groups: remote_access proprietary
 # Wiki: http://www.protocolinfo.org/wiki/RDP
 #
@@ -7,6 +7,8 @@
 # following conditions: "WinXP Pro with all the patches, rdesktop server 
 # running on port 7000 instead of 3389 --> WinXP Pro Remote Desktop Client."
 # Also tested is WinXP to Win 2000 Server.
+
+# At least one other person has reported it to work as well.
 
 rdp
 rdpdr.*cliprdr.*rdpsnd

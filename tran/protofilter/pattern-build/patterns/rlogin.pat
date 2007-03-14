@@ -1,5 +1,5 @@
 # rlogin - remote login - RFC 1282
-# Pattern attributes: ok veryfast
+# Pattern attributes: ok fast fast
 # Protocol groups: remote_access ietf_rfc_documented
 # Wiki: http://www.protocolinfo.org/wiki/Rlogin
 #

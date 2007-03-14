@@ -1,5 +1,5 @@
 # SMTP - Simple Mail Transfer Protocol - RFC 2821 (See also RFC 1869)
-# Pattern attributes: great fast
+# Pattern attributes: great notsofast fast
 # Protocol groups: mail ietf_internet_standard
 # Wiki: http://www.protocolinfo.org/wiki/SMTP
 #
@@ -7,16 +7,11 @@
 # 
 # This pattern has been tested and is believed to work well.
 
-smtp
 # As usual, no text is required after "220", but all known servers have some
 # there.  It (almost?) always has string "smtp" in it.  The RFC examples
 # does not, so we match those too, just in case anyone has copied them 
 # literally.
-^220[\x09-\x0d -~]* (e?smtp|simple mail)
-
-# This is ~3x faster if the stream starts with "220" 
-#^220.* (e?smtp|simple mail)
-
+#
 # Some examples:
 # 220 mail.stalker.com ESMTP CommuniGate Pro 4.1.3
 # 220 mail.vieodata.com ESMTP Merak 6.1.0; Mon, 15 Sep 2003 13:48:11 -0400
@@ -37,3 +32,7 @@ smtp
 # RFC examples:
 # 220 xyz.com Simple Mail Transfer Service Ready (RFC example)
 # 220 dbc.mtview.ca.us SMTP service ready
+
+smtp
+^220[\x09-\x0d -~]* (e?smtp|simple mail)
+userspace flags=REG_NOSUB REG_ICASE

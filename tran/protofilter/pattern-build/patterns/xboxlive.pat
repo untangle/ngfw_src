@@ -1,5 +1,5 @@
 # XBox Live - Console gaming
-# pattern attributes: marginal notsofast
+# pattern attributes: marginal slow notsofast
 # Protocol groups: game proprietary
 # Wiki: http://www.protocolinfo.org/wiki/XBox_Live
 #

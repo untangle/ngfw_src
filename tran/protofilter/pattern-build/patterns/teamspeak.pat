@@ -1,5 +1,5 @@
 # TeamSpeak - VoIP application - http://goteamspeak.com
-# Pattern attributes: good veryfast
+# Pattern attributes: good veryfast fast
 # Protocol groups: voip proprietary
 # Wiki: http://www.protocolinfo.org/wiki/TeamSpeak
 #

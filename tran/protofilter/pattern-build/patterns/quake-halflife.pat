@@ -1,5 +1,5 @@
 # Half Life 1 engine games (HL 1, Quake 2/3/World, Counterstrike 1.6, etc.)
-# Pattern attributes: good veryfast
+# Pattern attributes: good veryfast fast
 # Protocol groups: game proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Half-Life http://www.protocolinfo.org/wiki/Counter-Strike http://www.protocolinfo.org/wiki/Day_of_Defeat
 #

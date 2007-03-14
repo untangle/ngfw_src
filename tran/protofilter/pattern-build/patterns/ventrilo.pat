@@ -1,5 +1,5 @@
 # Ventrilo - VoIP - http://ventrilo.com
-# Pattern attributes: good veryfast
+# Pattern attributes: good fast fast
 # Protocol groups: voip proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Ventrilo
 #

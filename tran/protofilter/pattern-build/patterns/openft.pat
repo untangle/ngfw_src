@@ -1,5 +1,5 @@
 # OpenFT - P2P filesharing (implemented in giFT library)
-# Pattern attributes: good fast
+# Pattern attributes: good notsofast notsofast
 # Protocol groups: p2p open_source
 # Wiki: http://www.protocolinfo.org/wiki/OpenFT
 

@@ -1,5 +1,5 @@
 # Code Red - a worm that attacks Microsoft IIS web servers
-# Pattern attributes: ok fast subset
+# Pattern attributes: ok notsofast notsofast subset
 # Protocol groups: worm
 # Wiki: http://www.protocolinfo.org/wiki/CodeRed
 

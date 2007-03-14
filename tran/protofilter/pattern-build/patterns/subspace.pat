@@ -1,5 +1,5 @@
 # Subspace - 2D asteroids-style space game - http://sscentral.com
-# Pattern attributes: marginal veryfast
+# Pattern attributes: marginal veryfast fast
 # Protocol groups: game
 # Wiki: http://www.protocolinfo.org/wiki/Subspace
 #

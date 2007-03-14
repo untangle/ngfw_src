@@ -1,5 +1,5 @@
 # KuGoo - a Chinese P2P program - http://www.kugoo.com
-# Pattern attributes: ok veryfast
+# Pattern attributes: ok veryfast fast
 # Protocol groups: p2p
 # Wiki: http://www.protocolinfo.org/wiki/KuGoo
 #

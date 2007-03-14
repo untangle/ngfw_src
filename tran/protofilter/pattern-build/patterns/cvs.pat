@@ -1,5 +1,5 @@
 # CVS - Concurrent Versions System
-# Pattern attributes: good veryfast
+# Pattern attributes: good veryfast fast
 # Protocol groups: version_control open_source
 # Wiki: http://www.protocolinfo.org/wiki/CVS
 

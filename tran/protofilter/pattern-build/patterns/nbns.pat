@@ -1,5 +1,5 @@
 # NBNS - NetBIOS name service
-# Pattern attributes: good notsofast
+# Pattern attributes: good slow notsofast
 # Protocol groups: networking proprietary
 # Wiki: http://www.protocolinfo.org/wiki/NBNS
 #
@@ -15,4 +15,5 @@
 # 0\x10 means release
 
 nbns
+# This is not a valid basic GNU regular expression.
 \x01\x10\x01|\)\x10\x01\x01|0\x10\x01

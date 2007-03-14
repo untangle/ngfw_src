@@ -1,5 +1,5 @@
 # SNMP - Simple Network Management Protocol - RFC 1157
-# Pattern attributes: good veryfast superset
+# Pattern attributes: good veryfast fast superset
 # Protocol groups: networking ietf_internet_standard
 # Wiki: http://www.protocolinfo.org/wiki/SNMP
 #

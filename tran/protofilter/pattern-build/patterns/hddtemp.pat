@@ -1,5 +1,5 @@
 # hddtemp - Hard drive temperature reporting
-# Pattern attributes: great veryfast
+# Pattern attributes: great veryfast fast
 # Protocol groups: monitoring open_source
 # Wiki: http://www.protocolinfo.org/wiki/HDDtemp
 # 

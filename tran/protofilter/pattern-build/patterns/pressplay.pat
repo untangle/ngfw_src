@@ -1,5 +1,5 @@
 # pressplay - A legal music distribution site - http://pressplay.com
-# Pattern attributes: ok fast
+# Pattern attributes: ok notsofast notsofast
 # Protocol groups: document_retrieval obsolete proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Pressplay
 #

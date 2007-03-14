@@ -1,5 +1,5 @@
 # 100bao - a Chinese P2P protocol/program - http://www.100bao.com
-# Pattern attributes: ok veryfast
+# Pattern attributes: ok veryfast fast
 # Protocol groups: p2p
 # Wiki: http://www.protocolinfo.org/wiki/100Bao
 #

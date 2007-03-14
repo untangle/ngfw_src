@@ -1,5 +1,5 @@
 # HTTP - HyperText Transfer Protocol - RFC 2616
-# Pattern attributes: great notsofast superset
+# Pattern attributes: great slow notsofast superset
 # Protocol groups: document_retrieval ietf_draft_standard
 # Wiki: http://protocolinfo.org/wiki/HTTP
 #

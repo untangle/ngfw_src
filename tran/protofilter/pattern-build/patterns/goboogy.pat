@@ -1,5 +1,5 @@
 # GoBoogy - a Korean P2P protocol
-# Pattern attributes: marginal notsofast
+# Pattern attributes: marginal slow notsofast
 # Protocol groups: p2p
 # Wiki: http://www.protocolinfo.org/wiki/GoBoogy
 # 

@@ -1,5 +1,5 @@
 # MSN (Microsoft Network) Messenger file transfers (MSNFTP and MSNSLP)
-# Pattern attributes: good veryfast
+# Pattern attributes: good fast fast
 # Protocol groups: chat document_retrieval proprietary
 # Wiki: http://www.protocolinfo.org/wiki/MSN_Messenger
 #
@@ -7,7 +7,7 @@
 
 # NOTE!  This pattern does not catch the modern type of MSN filetransfers
 # because they use the same TCP connection as the chat itself.  See 
-# ../examples/msn_chat_and_file_transfer.txt for a demonstration.
+# ../example_traffic/msn_chat_and_file_transfer.txt for a demonstration.
 
 # This pattern has been tested and seems to work well.  It, does,
 # however, require more testing with various versions of the official

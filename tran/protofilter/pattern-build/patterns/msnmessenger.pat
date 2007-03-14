@@ -1,5 +1,5 @@
 # MSN Messenger - Microsoft Network chat client
-# Pattern attributes: good notsofast
+# Pattern attributes: good slow notsofast
 # Protocol groups: chat proprietary
 # Wiki: http://www.protocolinfo.org/wiki/MSN_Messenger
 #

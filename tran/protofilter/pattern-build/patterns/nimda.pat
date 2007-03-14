@@ -1,5 +1,5 @@
 # Nimda - a worm that attacks Microsoft IIS web servers, and MORE!
-# Pattern attributes: ok fast subset
+# Pattern attributes: ok notsofast notsofast subset
 # Protocol groups: worm
 # Wiki: http://www.protocolinfo.org/wiki/Nimda
 

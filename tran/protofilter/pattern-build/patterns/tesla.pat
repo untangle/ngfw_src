@@ -1,5 +1,5 @@
 # Tesla Advanced Communication - P2P filesharing (?)
-# Pattern attributes: marginal notsofast
+# Pattern attributes: marginal slow notsofast
 # Protocol groups: p2p
 # Wiki: http://www.protocolinfo.org/wiki/Tesla
 #

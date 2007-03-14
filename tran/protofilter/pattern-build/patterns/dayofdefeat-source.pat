@@ -1,5 +1,5 @@
 # Day of Defeat: Source - game (Half-Life 2 mod) - http://www.valvesoftware.com
-# Pattern attributes: good veryfast
+# Pattern attributes: good veryfast fast
 # Protocol groups: game proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Day_of_Defeat:Source
 #

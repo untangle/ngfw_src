@@ -1,5 +1,5 @@
 # Yahoo messenger - an instant messenger protocol - http://yahoo.com
-# Pattern attributes: good veryfast
+# Pattern attributes: good fast fast
 # Protocol groups: chat proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Yahoo_Messenger
 #

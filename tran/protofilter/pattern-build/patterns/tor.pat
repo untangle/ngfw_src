@@ -1,5 +1,5 @@
 # Tor - The Onion Router - used for anonymization - http://tor.eff.org
-# Pattern attributes: good fast
+# Pattern attributes: good notsofast notsofast
 # Protocol groups: networking
 # Wiki: http://protocolinfo.org/wiki/Tor
 #

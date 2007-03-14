@@ -1,5 +1,5 @@
 # live365 - An Internet radio site - http://live365.com
-# Pattern attributes: marginal fast
+# Pattern attributes: marginal notsofast notsofast
 # Protocol groups: streaming_audio
 # Wiki: http://www.protocolinfo.org/wiki/Live365
 #

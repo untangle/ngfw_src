@@ -1,5 +1,5 @@
 # SSDP - Simple Service Discovery Protocol - easy discovery of network devices
-# Pattern attributes: good notsofast
+# Pattern attributes: good slow notsofast
 # Protocol groups: networking ietf_draft_standard
 # Wiki: http://www.protocolinfo.org/wiki/SSDP
 

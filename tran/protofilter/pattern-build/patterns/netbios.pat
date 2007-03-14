@@ -1,5 +1,5 @@
 # NetBIOS - Network Basic Input Output System
-# Pattern attributes: marginal fast
+# Pattern attributes: marginal notsofast notsofast
 # Protocol groups: networking ietf_internet_standard proprietary
 # Wiki: http://www.protocolinfo.org/wiki/NetBIOS
 #

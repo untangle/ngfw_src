@@ -15,6 +15,7 @@ wget -l2 -nd -r --accept="pressplay.pat" http://l7-filter.sourceforge.net/layer7
 # unneeded
 rm unknown.pat
 rm testing.pat
+rm unset.pat
 rm uucp.pat
 
 # an untested hack:

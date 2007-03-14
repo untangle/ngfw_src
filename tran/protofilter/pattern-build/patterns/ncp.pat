@@ -1,5 +1,5 @@
 # NCP - Novell Core Protocol
-# Pattern attributes: good veryfast
+# Pattern attributes: good fast fast
 # Protocol groups: networking proprietary
 # Wiki: http://www.protocolinfo.org/wiki/NCP
 #

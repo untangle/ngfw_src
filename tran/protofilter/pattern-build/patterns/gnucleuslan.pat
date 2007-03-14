@@ -1,5 +1,5 @@
 # GnucleusLAN - LAN-only P2P filesharing
-# Pattern attributes: good fast
+# Pattern attributes: good notsofast notsofast
 # Protocol groups: p2p open_source
 # Wiki: http://www.protocolinfo.org/wiki/GnucleusLAN
 #

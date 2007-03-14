@@ -1,5 +1,5 @@
 # Apple Juice - P2P filesharing - http://www.applejuicenet.de
-# Pattern attributes: great veryfast
+# Pattern attributes: great veryfast fast
 # Protocol groups: p2p
 # Wiki: http://www.protocolinfo.org/wiki/AppleJuice
 #

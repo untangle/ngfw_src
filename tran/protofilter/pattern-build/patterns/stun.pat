@@ -1,5 +1,5 @@
 # STUN - Simple Traversal of UDP Through NAT - RFC 3489
-# Pattern attributes: ok veryfast
+# Pattern attributes: ok veryfast fast
 # Protocol groups: networking ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/STUN
 #

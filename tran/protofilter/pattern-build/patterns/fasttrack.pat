@@ -1,5 +1,5 @@
 # FastTrack - P2P filesharing (Kazaa, Morpheus, iMesh, Grokster, etc)
-# Pattern attributes: good notsofast
+# Pattern attributes: good slow notsofast
 # Protocol groups: p2p
 # Wiki: http://www.protocolinfo.org/wiki/Fasttrack
 #

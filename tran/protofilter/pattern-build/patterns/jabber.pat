@@ -1,5 +1,5 @@
 # Jabber (XMPP) - open instant messenger protocol - RFC 3920 - http://jabber.org
-# Pattern attributes: good fast
+# Pattern attributes: good notsofast notsofast
 # Protocol groups: chat ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/Jabber
 #

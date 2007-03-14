@@ -1,5 +1,5 @@
 # Telnet - Insecure remote login - RFC 854
-# Pattern attributes: good veryfast
+# Pattern attributes: good veryfast fast
 # Protocol groups: remote_access obsolete ietf_internet_standard
 # Wiki: http://www.protocolinfo.org/wiki/Telnet
 #

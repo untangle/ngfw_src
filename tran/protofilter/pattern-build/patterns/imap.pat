@@ -1,5 +1,5 @@
 # IMAP - Internet Message Access Protocol (A common e-mail protocol)
-# Pattern attributes: good veryfast
+# Pattern attributes: good fast fast
 # Protocol groups: mail ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/IMAP
 #
@@ -11,4 +11,3 @@
 # some unknown reason can happen at the start of a connection?)  
 imap
 ^(\* ok|a[0-9]+ noop)
-

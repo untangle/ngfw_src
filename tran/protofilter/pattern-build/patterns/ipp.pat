@@ -1,5 +1,5 @@
 # IP printing - a new standard for UNIX printing - RFC 2911
-# Pattern attributes: good fast
+# Pattern attributes: good notsofast notsofast
 # Protocol groups: printer ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/IPP
 #

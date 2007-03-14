@@ -1,5 +1,5 @@
 # Ares - P2P filesharing - http://aresgalaxy.sf.net
-# Pattern attributes: good veryfast undermatch
+# Pattern attributes: good veryfast fast undermatch
 # Protocol groups: p2p open_source
 # Wiki: http://www.protocolinfo.org/wiki/Ares
 

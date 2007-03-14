@@ -1,5 +1,5 @@
 # POCO and PP365 - Chinese P2P filesharing - http://pp365.com http://poco.cn
-# Pattern attributes: ok veryfast
+# Pattern attributes: ok veryfast fast
 # Protocol groups: p2p
 # Wiki: http://www.protocolinfo.org/wiki/Poco
 #

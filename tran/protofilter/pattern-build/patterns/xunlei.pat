@@ -1,5 +1,5 @@
 # Xunlei - Chinese P2P filesharing - http://xunlei.com
-# Pattern attributes: good veryfast
+# Pattern attributes: good veryfast fast
 # Protocol groups: p2p
 # Wiki: http://www.protocolinfo.org/wiki/Xunlei
 #

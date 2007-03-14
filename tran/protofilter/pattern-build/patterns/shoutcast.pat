@@ -1,5 +1,5 @@
 # Shoutcast and Icecast - streaming audio
-# Pattern attributes: good fast
+# Pattern attributes: good notsofast notsofast
 # Protocol groups: streaming_audio
 # Wiki: http://www.protocolinfo.org/wiki/Icecast
 #
@@ -11,6 +11,9 @@
 # would filter JUST shoutcast packets."
 #
 # Should now match both Shoutcast and Icecast.  Tested with Winamp.
+#
+# On 27 Oct 2006, a post to the list described this pattern as "works
+# randomly"
 # 
 # http://sander.vanzoest.com/talks/2002/audio_and_apache/
 # http://forums.radiotoolbox.com/viewtopic.php?t=74

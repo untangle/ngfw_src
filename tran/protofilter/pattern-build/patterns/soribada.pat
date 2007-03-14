@@ -1,5 +1,5 @@
 # Soribada - A Korean P2P filesharing program/protocol - http://www.soribada.com
-# Pattern attributes: good notsofast
+# Pattern attributes: good slow notsofast
 # Protocol groups: p2p
 # Wiki: http://www.protocolinfo.org/wiki/Soribada
 

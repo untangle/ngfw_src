@@ -1,5 +1,5 @@
 # Cisco VPN - VPN client software to a Cisco VPN server
-# Pattern attributes: ok veryfast
+# Pattern attributes: ok veryfast fast
 # Protocol groups: remote_access proprietary
 # Wiki: http://www.protocolinfo.org/wiki/Cisco_VPN
 # 

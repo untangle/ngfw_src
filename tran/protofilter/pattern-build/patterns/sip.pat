@@ -1,5 +1,5 @@
 # SIP - Session Initiation Protocol - Internet telephony - RFC 3261
-# Pattern attributes: ok veryfast
+# Pattern attributes: ok fast fast
 # Protocol groups: voip ietf_proposed_standard
 # Wiki: http://www.protocolinfo.org/wiki/SIP
 #
