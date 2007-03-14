@@ -872,6 +872,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             }
             catch(InterruptedException e){ throw e; }
             catch(Exception e){
+                e.printStackTrace();
                 if( !isInterrupted() ){
                     try{
                         Util.handleExceptionWithRestart("Error purchasing: " +  mTransformJButton.getName(),  e);
