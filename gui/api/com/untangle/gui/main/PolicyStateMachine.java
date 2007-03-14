@@ -655,6 +655,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 purchaseBlockingQueue.put(new PurchaseWrapper(mTransformJButton, purchasePolicy));
             }
             catch (Exception e) {
+                e.printStackTrace();
                 Util.handleExceptionNoRestart("Error purchasing", e);
                 mTransformJButton.setFailedProcureView();
             }
