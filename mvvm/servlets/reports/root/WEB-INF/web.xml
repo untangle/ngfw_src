@@ -17,6 +17,8 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
 
   <security-constraint>
     <web-resource-collection>
+      <http-method>GET</http-method>
+      <http-method>POST</http-method>
       <url-pattern>/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
