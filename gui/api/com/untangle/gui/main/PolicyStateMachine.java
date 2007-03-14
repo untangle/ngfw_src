@@ -645,8 +645,14 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 }
             }
             try{
-                if(mTransformJButton == null)
-                    throw new Exception();
+                if(mTransformJButton == null){
+                    MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
+                                              "A problem occurred while purchasing:<br>"
+                                              + mTransformJButton.getDisplayName()
+                                              + "<br>Please try again.",
+                                              mTransformJButton.getDisplayName() + " Warning", "");
+                    return;
+                }
                 Policy purchasePolicy;
                 if(mTransformJButton.getMackageDesc().isCore())
                     purchasePolicy = null;
