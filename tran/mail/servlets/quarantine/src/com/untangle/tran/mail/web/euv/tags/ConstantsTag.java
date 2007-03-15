@@ -42,6 +42,7 @@ public final class ConstantsTag
     String s = null;
     if(getKeyName() != null) {
       String keyName = getKeyName().toLowerCase().trim();
+
       if(keyName.equals(Constants.AUTH_TOKEN_RP)) {
         s = Constants.AUTH_TOKEN_RP;
       } else if(keyName.equals(Constants.ACTION_RP)) {
@@ -56,11 +57,14 @@ public final class ConstantsTag
         s = Constants.SORT_ASCEND_RP;
       } else if(keyName.equals(Constants.FIRST_RECORD_RP)) {
         s = Constants.FIRST_RECORD_RP;
+      } else if(keyName.equals(Constants.ROWS_PER_PAGE_RP)) {
+        s = Constants.ROWS_PER_PAGE_RP;
       } else if(keyName.equals(Constants.SAFELIST_TARGET_ADDR_RP)) {
         s = Constants.SAFELIST_TARGET_ADDR_RP;
       }
     } else if(getValueName() != null) {
       String valueName = getValueName().trim().toLowerCase();
+
       if(valueName.equals(Constants.PURGE_RV)) {
         s = Constants.PURGE_RV;
       } else if(valueName.equals(Constants.RESCUE_RV)) {
@@ -79,6 +83,7 @@ public final class ConstantsTag
         s = Constants.VIEW_INBOX_RV;
       }                       
     }
+
     return s;  
   }
 }

@@ -12,7 +12,6 @@ package com.untangle.tran.mail.web.euv.tags;
 
 import javax.servlet.ServletRequest;
 
-
 /**
  * Includes/excludes body chunks if the
  * current RowsPerPage option is currently active

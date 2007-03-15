@@ -56,21 +56,19 @@ public class InboxMaintenenceControler
       //Defaults for the view of the user's list.
       InboxRecordComparator.SortBy sortBy =
         Util.stringToSortBy(req.getParameter(Constants.SORT_BY_RP),
-          InboxRecordComparator.SortBy.INTERN_DATE);
+                            InboxRecordComparator.SortBy.INTERN_DATE);
       boolean ascending = Util.readBooleanParam(req, Constants.SORT_ASCEND_RP, false);
       int startingAt = Util.readIntParam(req, Constants.FIRST_RECORD_RP, 0);
-      int rowsPerPage = Util.readIntParam(req, "rowsPerPage", Constants.RECORDS_PER_PAGE);
+      int rowsPerPage = Util.readIntParam(req, Constants.ROWS_PER_PAGE_RP, Constants.RECORDS_PER_PAGE);
 
 //      System.out.println("*** DEBUG ***" +
 //        "SortBy: " + sortBy + ", Ascending: " + ascending + ", startingAt: " + startingAt);
 
-      //No matter what action we take, the outcome
-      //is an Index
+      //No matter what action we take, the outcome is an Index
       InboxIndex index = null;
 
       if(action.equals(Constants.PURGE_RV) ||
          action.equals(Constants.RESCUE_RV)) {
-
         String[] mids = req.getParameterValues(Constants.MAIL_ID_RP);
         log("[InboxMaintenenceControler]" + (mids==null?"0":mids.length) + " Mail IDs");
 
@@ -89,7 +87,7 @@ public class InboxMaintenenceControler
             mids.length + " message" + (mids.length>1?"s":"") + " released");
         }
       }
-      
+
       if(action.equals(Constants.SAFELIST_ADD_RV)) {
         String[] targetAddresses = req.getParameterValues(Constants.SAFELIST_TARGET_ADDR_RP);
         if(targetAddresses != null && targetAddresses.length > 0) {
@@ -103,8 +101,7 @@ public class InboxMaintenenceControler
         index = quarantine.getInboxIndex(account);
       }
 
-      //Set the flag for whether the user does/does not
-      //have a Safelist
+      //Set the flag for whether the user does/does not have a Safelist
       HasSafelistTag.setCurrent(req, safelist.hasOrCanHaveSafelist(account));
 
       InboxIndexTag.setCurrentIndex(req,
@@ -133,6 +130,5 @@ public class InboxMaintenenceControler
       req.getRequestDispatcher(Constants.SERVER_UNAVAILABLE_ERRO_VIEW).forward(req, resp);
       return;    
     }
-
   }
 } 

@@ -15,15 +15,14 @@ import com.untangle.tran.mail.papi.quarantine.WebConstants;
 /**
  * Constants used in this web app
  */
-public final class Constants
-  extends WebConstants {
-
+public final class Constants extends WebConstants {
   public static final String REQ_DIGEST_ADDR_RP = "draddr";
 
   public static final String SORT_BY_RP = "sort";
   public static final String SORT_ASCEND_RP = "ascend";
   public static final String FIRST_RECORD_RP = "first";
 
+  public static final String ROWS_PER_PAGE_RP = "rowsperpage";
   public static final int RECORDS_PER_PAGE = 25;
 
   /**

@@ -23,24 +23,28 @@ import java.util.Iterator;
  * the whole thing is fake, as we have access to the entire
  * set. 
  */
-public final class InboxRecordCursor
-  implements Iterable<InboxRecord> {
-
+public final class InboxRecordCursor implements Iterable<InboxRecord> {
+  private InboxRecord[] m_records;
+  private InboxRecordComparator.SortBy m_sortedBy;
   private int m_thisStartingWith;
   private int m_firstID;
   private int m_lastID;
-  private InboxRecord[] m_records;
+  private int m_windowSz;
+  private int m_nextWindowSz;
+  private int m_prevWindowSz;
   private long m_inboxCount;
   private long m_inboxSize;
   private boolean m_hasNext;
   private boolean m_hasPrev;
-  private InboxRecordComparator.SortBy m_sortedBy;
   private boolean m_ascending;
 
   private InboxRecordCursor(
     int thisStartingWith,
     int firstID,
     int lastID,
+    int windowSz,
+    int nextWindowSz,
+    int prevWindowSz,
     InboxRecord[] records,
     int inboxCount,
     long inboxSize,
@@ -52,6 +56,9 @@ public final class InboxRecordCursor
     m_thisStartingWith = thisStartingWith;
     m_firstID = firstID;
     m_lastID = lastID;
+    m_windowSz = windowSz;
+    m_nextWindowSz = nextWindowSz;
+    m_prevWindowSz = prevWindowSz;
     m_records = records;
     m_inboxCount = inboxCount;
     m_inboxSize = inboxSize;
@@ -103,7 +110,7 @@ public final class InboxRecordCursor
   public boolean hasNext() {
     return m_hasNext;
   }
-  
+
   /**
    * Is there a logical "previous" to the current records, based on
    * its position in the larger set
@@ -124,9 +131,9 @@ public final class InboxRecordCursor
    * If {@link hasPrev there is a previous set}, this defines the starting
    * index to be passed to {@link #get get}.
    */   
-  public int getPrevStartingAt(int windowSz) {
-    int ret = m_firstID - windowSz;
-    return ret<0?0:ret;
+  public int getPrevStartingAt() {
+    int ret = m_firstID - m_prevWindowSz;
+    return ret < 0 ? 0 : ret;
   }
 
   public int getCurrentStartingAt() {
@@ -139,6 +146,10 @@ public final class InboxRecordCursor
 
   public boolean isAscending() {
     return m_ascending;
+  }
+
+  public int getCurrentRowsPerPage() {
+    return m_windowSz;
   }
 
   public static InboxRecordCursor get(
@@ -158,12 +169,18 @@ public final class InboxRecordCursor
       startingAt = 0;
     }
 
+    int nextWindowSz;
+
     if((startingAt + windowSz) > allRecords.length) {
-      windowSz = allRecords.length - startingAt;
+      nextWindowSz = allRecords.length - startingAt;
+    } else {
+      nextWindowSz = windowSz;
     }
 
-    InboxRecord[] ret = new InboxRecord[windowSz];
-    System.arraycopy(allRecords, startingAt, ret, 0, windowSz);
+    int prevWindowSz = (0 > startingAt - windowSz) ? startingAt : windowSz;
+
+    InboxRecord[] records = new InboxRecord[nextWindowSz];
+    System.arraycopy(allRecords, startingAt, records, 0, nextWindowSz);
 
     long inboxSize = 0;
     for (InboxRecord iRecord : allRecords) {
@@ -172,11 +189,14 @@ public final class InboxRecordCursor
 
     return new InboxRecordCursor(startingAt,
       startingAt,
-      startingAt + windowSz,
-      ret,
+      startingAt + nextWindowSz, // start of next window
+      windowSz,
+      nextWindowSz,
+      prevWindowSz,
+      records,
       allRecords.length,
       inboxSize,
-      startingAt + windowSz < allRecords.length,
+      startingAt + nextWindowSz < allRecords.length,
       startingAt > 0,
       sortBy,
       ascending);

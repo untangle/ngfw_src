@@ -17,17 +17,10 @@ import java.net.URLEncoder;
 
 import javax.servlet.ServletRequest;
 
-
-/**
- *
- * 
- */
-public final class PagnationPropertiesTag
-  extends SingleValueTag {
+public final class PagnationPropertiesTag extends SingleValueTag {
 
   private static final String KEY = "untangle.pagnationproperties.rowsperpage";
   private String m_propName;
-
 
   public String getPropName() {
     return m_propName;
@@ -50,16 +43,13 @@ public final class PagnationPropertiesTag
   public static String getCurrentRowsPerPAge(ServletRequest request) {
     return (String) request.getAttribute(KEY);
   }
-
   static boolean hasCurrentRowsPerPAge(ServletRequest request) {
     return getCurrentRowsPerPAge(request) != null;
   }   
 
-
   @Override
   protected String getValue() {
-    InboxRecordCursor cursor =
-      InboxIndexTag.getCurrentIndex(pageContext.getRequest());
+    InboxRecordCursor cursor = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
     if(cursor == null) {
       return "";
     }
@@ -71,7 +61,7 @@ public final class PagnationPropertiesTag
       return "" + cursor.isAscending();
     }
     else if(getPropName().equalsIgnoreCase("prevId")) {
-      return "" + cursor.getPrevStartingAt(Constants.RECORDS_PER_PAGE);
+      return "" + cursor.getPrevStartingAt();
     }
     else if(getPropName().equalsIgnoreCase("nextId")) {
       return "" + cursor.getNextStartingAt();
@@ -79,10 +69,10 @@ public final class PagnationPropertiesTag
     else if(getPropName().equalsIgnoreCase("thisId")) {
       return "" + cursor.getCurrentStartingAt();
     }
-    else if(getPropName().equalsIgnoreCase("rowsPerPage")) {
+    else if(getPropName().equalsIgnoreCase("rPPOption")) {
       return getCurrentRowsPerPAge(pageContext.getRequest());
     }         
+
     return "";
   }
-
 }

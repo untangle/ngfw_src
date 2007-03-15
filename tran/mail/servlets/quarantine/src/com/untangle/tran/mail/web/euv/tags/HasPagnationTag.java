@@ -12,7 +12,6 @@ package com.untangle.tran.mail.web.euv.tags;
 
 import com.untangle.tran.mail.papi.quarantine.InboxRecordCursor;
 
-
 /**
  * Includes/excludes body chunks if there
  * is a "prev" or "next" page to be shown
@@ -21,7 +20,6 @@ public final class HasPagnationTag
   extends IfElseTag {
 
   private String m_linkType;
-
 
   public String getLinkType() {
     return m_linkType;
@@ -32,9 +30,7 @@ public final class HasPagnationTag
 
   @Override
   protected boolean isConditionTrue() {
-
-    InboxRecordCursor cursor =
-      InboxIndexTag.getCurrentIndex(pageContext.getRequest());
+    InboxRecordCursor cursor = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
     if(cursor == null) {
       return false;
     }

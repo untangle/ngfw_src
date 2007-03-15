@@ -204,6 +204,7 @@
     "prevId"
     "nextId"
     "thisId"
+    "rPPOption"
   -->
   <tag>
     <name>pagnationProperties</name>
@@ -335,6 +336,7 @@
     "ascend"
     "first"
     "sladdr"
+    "rowsperpage"
 
     Valid values for "valueName" include:
 

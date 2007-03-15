@@ -15,7 +15,6 @@ import com.untangle.tran.mail.web.euv.Constants;
 import com.untangle.tran.mail.web.euv.Util;
 import java.net.URLEncoder;
 
-
 /**
  * Constructs the "next/prev" query string.  Does <b>not</b>
  * check if there <i>should</i> be "prev/next" links.
@@ -28,7 +27,6 @@ public final class PagnationLinksTag
 
   private String m_linkType;
 
-
   public String getLinkType() {
     return m_linkType;
   }
@@ -36,18 +34,15 @@ public final class PagnationLinksTag
     m_linkType = t;
   }
 
-  
-
 //InboxRecordCursor getCurrentIndex(ServletRequest request) {  
-  
   
   @Override
   protected String getValue() {
-    InboxRecordCursor cursor =
-      InboxIndexTag.getCurrentIndex(pageContext.getRequest());
+    InboxRecordCursor cursor = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
     if(cursor == null) {
       return "";
     }
+
     StringBuilder sb = new StringBuilder();
     sb.append(Constants.INBOX_MAINTENENCE_CTL).append('?');
     addKVP(Constants.ACTION_RP, Constants.VIEW_INBOX_RV, sb);
@@ -59,16 +54,18 @@ public final class PagnationLinksTag
     addKVP(Constants.SORT_ASCEND_RP, "" + cursor.isAscending(), sb);
     sb.append('&');
     if(getLinkType().equalsIgnoreCase("prev")) {
-      addKVP(Constants.FIRST_RECORD_RP, "" + cursor.getPrevStartingAt(Constants.RECORDS_PER_PAGE), sb);
+      addKVP(Constants.FIRST_RECORD_RP, "" + cursor.getPrevStartingAt(), sb);
     }
     else {
       addKVP(Constants.FIRST_RECORD_RP, "" + cursor.getNextStartingAt(), sb);
     }
+    sb.append('&');
+    addKVP(Constants.ROWS_PER_PAGE_RP, "" + cursor.getCurrentRowsPerPage(), sb);
+
     return sb.toString();
   }
 
   private static void addKVP(String key, String value, StringBuilder sb) {
     sb.append(key).append('=').append(/*URLEncoder.encode(*/value/*)*/);
   }
-
 }

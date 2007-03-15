@@ -93,6 +93,7 @@
         document.form1.<quarantine:constants keyName="first"/>.value = <quarantine:pagnationProperties propName="nextId"/>;
         document.form1.submit();
       }
+
       function mv_doPrev() {
         document.form1.<quarantine:constants keyName="first"/>.value = <quarantine:pagnationProperties propName="prevId"/>;
         document.form1.submit();
@@ -322,7 +323,7 @@
                         <tr>
                           <td colspan="3">
                             Mails Per Page: &nbsp;
-                            <select name="rowsPerPage" onChange="doRefresh();">
+                            <select name="rowsperpage" onChange="doRefresh();">
                             <quarantine:forEachRPPOption>
                               <quarantine:isRPPOptionSelected includeIfTrue="true">
                                 <option value="<quarantine:rPPOption/>" selected="selected"><quarantine:rPPOption/></option>
@@ -368,7 +369,7 @@
                             <td>
                               <quarantine:inboxRecord prop="tsender" JSEscape="true"/>
                               <quarantine:hasSafelist includeIfTrue="true">
-                                <a href="/quarantine/manageuser?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="sladd"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="true"/>&<quarantine:constants keyName="sort"/>=<quarantine:pagnationProperties propName="sorting"/>&<quarantine:constants keyName="ascend"/>=<quarantine:pagnationProperties propName="ascending"/>&<quarantine:constants keyName="first"/>=<quarantine:pagnationProperties propName="thisId"/>&<quarantine:constants keyName="sladdr"/>=<quarantine:inboxRecord prop="sender"/>"><br/>(Safelist)</a>
+                                <a href="/quarantine/manageuser?<quarantine:constants keyName="action"/>=<quarantine:constants valueName="sladd"/>&<quarantine:constants keyName="tkn"/>=<quarantine:currentAuthToken encoded="true"/>&<quarantine:constants keyName="sort"/>=<quarantine:pagnationProperties propName="sorting"/>&<quarantine:constants keyName="ascend"/>=<quarantine:pagnationProperties propName="ascending"/>&<quarantine:constants keyName="first"/>=<quarantine:pagnationProperties propName="thisId"/>&<quarantine:constants keyName="rowsperpage"/>=<quarantine:pagnationProperties propName="rPPOption"/>&<quarantine:constants keyName="sladdr"/>=<quarantine:inboxRecord prop="sender"/>"><br/>(Safelist)</a>
                               </quarantine:hasSafelist>
                             </td>
                             <quarantine:hasAttachments includeIfTrue="true">

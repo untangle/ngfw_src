@@ -19,16 +19,12 @@ import javax.servlet.ServletRequest;
  * Utility methods
  */
 public class Util {
-
-  private static HashMap<String, InboxRecordComparator.SortBy> m_stringToSB
-    = new HashMap<String, InboxRecordComparator.SortBy>();
-  private static HashMap<InboxRecordComparator.SortBy, String> m_sbToString
-    = new HashMap<InboxRecordComparator.SortBy, String>();
+  private static HashMap<String, InboxRecordComparator.SortBy> m_stringToSB = new HashMap<String, InboxRecordComparator.SortBy>();
+  private static HashMap<InboxRecordComparator.SortBy, String> m_sbToString = new HashMap<InboxRecordComparator.SortBy, String>();
 
   static {
-    InboxRecordComparator.SortBy[] allSortings =
-      InboxRecordComparator.SortBy.values();
-    for(int i = 0; i<allSortings.length; i++) {
+    InboxRecordComparator.SortBy[] allSortings = InboxRecordComparator.SortBy.values();
+    for(int i = 0; i < allSortings.length; i++) {
       String key = Integer.toString(i);
       m_stringToSB.put(key, allSortings[i]);
       m_sbToString.put(allSortings[i], key);
@@ -50,10 +46,7 @@ public class Util {
    * @param def the default, should <code>s</code> not be 
    *        convertable to a SortBy
    */
-  public static InboxRecordComparator.SortBy stringToSortBy(
-    String s,
-    InboxRecordComparator.SortBy def) {
-
+  public static InboxRecordComparator.SortBy stringToSortBy(String s, InboxRecordComparator.SortBy def) {
     if(s == null) {
       return def;
     }
@@ -61,38 +54,38 @@ public class Util {
     
     InboxRecordComparator.SortBy ret = m_stringToSB.get(s);
     
-    return ret==null?
-      def:ret;
+    return ret == null ? def : ret;
   }
 
   /**
    * Read a boolean parameter
    */
-  public static boolean readBooleanParam(ServletRequest req,
-    String paramName,
-    boolean def) {
-    if(req.getParameter(paramName) == null) {
+  public static boolean readBooleanParam(ServletRequest req, String paramName, boolean def) {
+    String parameter = req.getParameter(paramName);
+    if(parameter == null) {
       return def;
     }
     try {
-      return Boolean.parseBoolean(req.getParameter(paramName));
+      return Boolean.parseBoolean(parameter);
     }
-    catch(Exception ex) {
-    }
+    catch(Exception ex) { }
+
     return def;
   }  
 
   /**
    * Read an int parameter
    */
-  public static int readIntParam(ServletRequest req,
-    String paramName,
-    int def) {
+  public static int readIntParam(ServletRequest req, String paramName, int def) {
+    String parameter = req.getParameter(paramName);
+    if(parameter == null) {
+      return def;
+    }
     try {
-      return Integer.parseInt(req.getParameter(paramName));
+      return Integer.parseInt(parameter);
     }
-    catch(Exception ex) {
-    }
+    catch(Exception ex) { }
+
     return def;
   }
 }
