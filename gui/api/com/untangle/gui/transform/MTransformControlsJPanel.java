@@ -252,8 +252,10 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 	}        
 	// SEND SETTINGS TO SERVER
 	mTransformJPanel.getTransform().setSettings( settings );
-    saveJButton.setEnabled(false);
-    reloadJButton.setEnabled(false);
+    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+        saveJButton.setEnabled(false);
+        reloadJButton.setEnabled(false);
+    }});
 	setSaveSettingsHintVisible(false);
     }
 
@@ -295,8 +297,10 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
 		}
 	    }});
 	}
-    saveJButton.setEnabled(false);
-    reloadJButton.setEnabled(false);
+    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+        saveJButton.setEnabled(false);
+        reloadJButton.setEnabled(false);
+    }});
 	setSaveSettingsHintVisible(false);
     }
     

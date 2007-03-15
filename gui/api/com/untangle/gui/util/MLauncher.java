@@ -72,7 +72,7 @@ public class MLauncher {
         Util.setClassLoader( mUrlClassLoader );
 	
         // SET THE REPAINT OPTIONS
-        //RepaintManager.setCurrentManager( new DebugRepaintManager() );
+        RepaintManager.setCurrentManager( new DebugRepaintManager() );
         try{
             Toolkit.getDefaultToolkit().setDynamicLayout(true);
         }
