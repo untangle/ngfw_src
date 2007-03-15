@@ -679,7 +679,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 loginJPanel.add(domainJCheckBox, gridBagConstraints);
 
                 domainLoginJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                domainLoginJLabel.setText("Domain Administrarot Login:");
+                domainLoginJLabel.setText("Domain Administrator Login:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 2;
