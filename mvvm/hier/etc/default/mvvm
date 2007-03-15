@@ -31,7 +31,7 @@ ACTIVATION_KEY_FILE=@MVVM_HOME@/activation.key
 ACTIVATION_KEY_FILE_TMP=${ACTIVATION_KEY_FILE}.tmp
 TMP_ARCHIVE=@PREFIX@/tmp/activation.tar
 # FIXME: metaloft -> untangle
-ACTIVATION_URL="https://ob1.metaloft.com/cgi-bin/get-license-key.rb?license_key="
+ACTIVATION_URL="https://activation.untangle.com/cgi-bin/get-license-key.rb?license_key="
 FAKE_KEY=0000-0000-0000-0000
 
 ## For testing, uncomment and setup interfaces here, the values below should not be modified.
