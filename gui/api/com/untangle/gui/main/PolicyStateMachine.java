@@ -85,6 +85,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private JPanel             coreToolboxJPanel;
     private JPanel             coreRackJPanel;
     // MISC REFERENCES ////////
+    private JButton             storeWizardJButton;
     private JTabbedPane         actionJTabbedPane;
     private JComboBox           viewSelector;
     private Policy              selectedPolicy;
@@ -109,6 +110,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private GridBagConstraints policySeparatorGridBagConstraints;
     private GridBagConstraints coreGridBagConstraints;
     private GridBagConstraints coreSeparatorGridBagConstraints;
+    private GridBagConstraints storeWizardGridBagConstraints;
     private Separator utilSeparator;
     private Separator policySeparator;    
     private Separator coreSeparator;
@@ -158,7 +160,25 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         policyToolboxJPanelMap = new HashMap<Policy,JPanel>();
         policyRackJPanelMap = new HashMap<Policy,JPanel>();
         coreToolboxJPanel = new JPanel();
+
+        storeWizardJButton = new JButton();
+        storeWizardJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        storeWizardJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconWizard_32x32.png")));
+        storeWizardJButton.setText("What should I put in my rack?");
+        storeWizardJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+        storeWizardJButton.setOpaque(false);
+        storeWizardJButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    storeWizardJButtonActionPerformed(evt);
+                }
+            });
+        storeWizardGridBagConstraints = new GridBagConstraints(0, 10, 1, 1, 0d, 0d,
+                                                           GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                                                           new Insets(0,0,100,0), 0, 0);
+
         coreRackJPanel = new JPanel();
+        //rackViewJPanel.add(storeWizardJButton, storeWizardGridBagConstraints);
+
         utilToolboxJPanel.setOpaque(false);
         utilRackJPanel.setOpaque(false);
         coreToolboxJPanel.setOpaque(false);
@@ -222,6 +242,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                                                            GridBagConstraints.SOUTH, GridBagConstraints.NONE,
                                                            new Insets(51,0,0,12), 0, 0);
 
+
         loadSemaphore = new Semaphore(CONCURRENT_LOAD_MAX);
         try{
             // LET THE FUN BEGIN
@@ -257,6 +278,17 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 
     // HANDLERS ///////////////////////////////////////////
     ///////////////////////////////////////////////////////
+    private void storeWizardJButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        try{
+            String authNonce = Util.getAdminManager().generateAuthNonce();
+            URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/index.php?option=com_wizard&Itemid=92&" + authNonce);
+            ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
+        }
+        catch(Exception f){
+            Util.handleExceptionNoRestart("Error showing store wizard.", f);
+        }
+    }
+
     public void actionPerformed(ActionEvent actionEvent){
         if( actionEvent.getSource().equals(viewSelector) ){
             handleViewSelector();
@@ -1253,7 +1285,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             }
         }
         catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping while product loading",e); }
-        Util.getMPipelineJPanel().setStoreWizardButtonVisible( addCount<=1 );
+        rackViewJPanel.add(storeWizardJButton, storeWizardGridBagConstraints);
+        //Util.getMPipelineJPanel().setStoreWizardButtonVisible( addCount<=1 );
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             progressBar.setValue(64);
         }});
@@ -1419,12 +1452,23 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 }
             }
 
-            int policyCount = 0;
+            int count = 0;
+            boolean nonNatFound = false;
             for( Policy policy : policyRackMap.keySet() ){
-                policyCount += policyRackMap.get(policy).size();
+                count += policyRackMap.get(policy).size();
             }
-            if( (coreRackMap.size() + utilRackMap.size() + policyCount) <= 1 )
-                Util.getMPipelineJPanel().setStoreWizardButtonVisible(true);
+            if(count>0)
+                nonNatFound = true;
+            count += utilRackMap.size();
+            if(count>0)
+                nonNatFound = true;
+            count += coreRackMap.size();
+            for( MTransformJPanel target : coreRackMap.values() )
+                if(!target.getMackageDesc().getName().equals("nat-transform"))
+                    nonNatFound = true;
+            if( (count <= 1) && (!nonNatFound) && (storeWizardJButton.getParent()==null) )
+                rackViewJPanel.add(storeWizardJButton, storeWizardGridBagConstraints);
+            //  Util.getMPipelineJPanel().setStoreWizardButtonVisible(true);
         }});
     }
     ///////////////////////////////////////
@@ -1597,12 +1641,24 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 if(doRevalidate)
                     coreRackJPanel.revalidate();
             }
-            int policyCount = 0;
+            int count = 0;
+            boolean nonNatFound = false;
             for( Policy policy : policyRackMap.keySet() ){
-                policyCount += policyRackMap.get(policy).size();
+                count += policyRackMap.get(policy).size();
             }
-            if( (coreRackMap.size() + utilRackMap.size() + policyCount) > 1 )
-                Util.getMPipelineJPanel().setStoreWizardButtonVisible(false);
+            if(count>0)
+                nonNatFound = true;
+            count += utilRackMap.size();
+            if(count>0)
+                nonNatFound = true;
+            count += coreRackMap.size();
+            for( MTransformJPanel target : coreRackMap.values() )
+                if(!target.getMackageDesc().getName().equals("nat-transform"))
+                    nonNatFound = true;
+            if( ((count > 1) || (nonNatFound)) && (storeWizardJButton.getParent()!=null) )
+                rackViewJPanel.remove(storeWizardJButton);
+            //if( (coreRackMap.size() + utilRackMap.size() + policyCount) > 1 )
+            //  Util.getMPipelineJPanel().setStoreWizardButtonVisible(false);
         }});
     }
     ///////////////////////////////////////

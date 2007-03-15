@@ -36,6 +36,8 @@ public class MLoginJFrame extends javax.swing.JFrame {
         // CREATE AND SHOW THE LOGIN
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             initComponents();
+            Util.addFocusHighlight(loginJTextField);
+            Util.addFocusHighlight(passJPasswordField);           
             Util.setMLoginJFrame(MLoginJFrame.this);
             Util.setStatusJProgressBar(statusJProgressBar);
             MLoginJFrame.this.setBounds( Util.generateCenteredBounds((Dialog)null, MLoginJFrame.this.getWidth(), MLoginJFrame.this.getHeight()) );
@@ -620,12 +622,15 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     break;
                 }
                 catch(com.untangle.mvvm.client.InvocationTargetExpiredException e){
+                    e.printStackTrace();
                     //Util.handleExceptionNoRestart("Error:", e);
                 }
                 catch(com.untangle.mvvm.client.InvocationConnectionException e){
+                    e.printStackTrace();
                     //Util.handleExceptionNoRestart("Error:", e);
                 }
                 catch(Exception e){
+                    e.printStackTrace();
                     //Util.handleExceptionNoRestart("Error:", e);
                 }
                 finally{
