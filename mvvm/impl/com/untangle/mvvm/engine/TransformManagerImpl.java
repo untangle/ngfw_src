@@ -396,7 +396,8 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
                                                                     tDescs,
                                                                     loadedParents);
             if (0 == startQueue.size()) {
-                logger.warn("could not restart all transforms");
+                 logger.info("not all parents loaded, proceeding");
+                 startUnloaded(unloaded, tDescs, loadedParents);
                 break;
             }
 

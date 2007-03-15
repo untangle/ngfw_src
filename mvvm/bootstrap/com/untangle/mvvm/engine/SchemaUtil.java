@@ -41,7 +41,6 @@ public class SchemaUtil
     public static void initSchema(String type, String component)
     {
         String key = type + "," + component;
-
         synchronized (CONVERTS) {
             while (CONVERTS.contains(key)) {
                 try {

@@ -40,7 +40,7 @@ import org.hibernate.annotations.IndexColumn;
  */
 @Entity
 @Table(name="tr_spam_settings", schema="settings")
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy=InheritanceType.JOINED)
 public class SpamSettings implements Serializable
 {
     private static final long serialVersionUID = -7246008133224040004L;
