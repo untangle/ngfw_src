@@ -13,6 +13,7 @@ package com.untangle.tran.spamassassin;
 
 import java.io.BufferedReader;
 import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -68,6 +69,11 @@ public final class SpamAssassinClientSocket {
     // for reads from socket
     public BufferedReader getBufferedReader() {
         return bufReader;
+    }
+
+    public void shutdownOutput() throws IOException {
+	if (socket != null)
+	    socket.shutdownOutput();
     }
 
     public void close(String host, int port) throws Exception {

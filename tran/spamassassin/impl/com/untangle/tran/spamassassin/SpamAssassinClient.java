@@ -187,7 +187,9 @@ public final class SpamAssassinClient implements Runnable {
             rBuf = CRLF.getBytes(); // add extra CRLF
             bufOutputStream.write(rBuf, 0, rBuf.length);
             bufOutputStream.flush();
-            bufOutputStream.close();
+	    // Can't close the bufOutputStream here or it closes the
+	    // whole socket.  Instead shutdown.
+	    spamcSocket.shutdownOutput();
             fInputStream.close();
             fInputStream = null;
             rBuf = null;
