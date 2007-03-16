@@ -68,8 +68,8 @@ public class IDSRule extends Rule implements Serializable
     }
 
     @Transient
-    public long getKeyValue() { return super.getId(); }
-    public void setKeyValue(Long val) { super.setId(val); }
+    public long getKeyValue() { return getId(); }
+    public void setKeyValue(Long val) { setId(val); }
 
     @Transient
     public boolean getModified() { return modified; }
