@@ -307,7 +307,8 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
             // if need be, update existing list here
             //
             // write to file and on return, save to database
-            saDefFile.writeToFile(saDefList);
+            // Writing disabled for 4.2... jdi XXXXXXXXXXXXXXXX
+            // saDefFile.writeToFile(saDefList);
             // note that we do not automatically restart spamd
             // after every write to file because there may be no changes
             // - someone needs to separately call restartSpamAssassinDaemon
@@ -323,8 +324,9 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         // saDefFile.writeToFile(saDefList);
         // note that we automatically restart spamd
         // after we've initialized because there may be changes
-        if (false == restartSpamAssassinDaemon())
-            logger.error("Could not restart SpamAssassin Mail Filter Daemon");
+        // Restarting disabled (not writing) for 4.2... jdi XXXXXXXXXXXXXXXX
+        // if (false == restartSpamAssassinDaemon())
+        //    logger.error("Could not restart SpamAssassin Mail Filter Daemon");
 
         return;
     }
