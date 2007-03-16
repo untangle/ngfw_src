@@ -1,7 +1,6 @@
 -- settings schema for release 4.2
 
 CREATE TABLE settings.tr_clamphish_settings (
-    settings_id int8 NOT NULL,
     spam_settings_id int8 NOT NULL,
     enable_google_sb bool NOT NULL,
     PRIMARY KEY (settings_id));
@@ -18,7 +17,7 @@ ALTER TABLE settings.tr_clamphish_settings
 -- schema.
 
 INSERT INTO tr_clamphish_settings
-    SELECT nextval('hibernate_sequence'), ss.settings_id, true
+    SELECT ss.settings_id, true
     FROM transform_persistent_state
     JOIN tr_spam_settings ss USING (tid)
     WHERE name = 'clamphish-transform';
