@@ -183,11 +183,11 @@ public final class SpamAssassinClient implements Runnable {
             int rLen;
             while (0 < (rLen = fInputStream.read(rBuf))) {
                 bufOutputStream.write(rBuf, 0, rLen);
-                bufOutputStream.flush();
             }
             rBuf = CRLF.getBytes(); // add extra CRLF
             bufOutputStream.write(rBuf, 0, rBuf.length);
             bufOutputStream.flush();
+            bufOutputStream.close();
             fInputStream.close();
             fInputStream = null;
             rBuf = null;

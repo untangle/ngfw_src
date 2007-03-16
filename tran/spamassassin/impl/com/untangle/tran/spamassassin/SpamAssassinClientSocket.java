@@ -80,8 +80,6 @@ public final class SpamAssassinClientSocket {
                 // until we are ready to close socket
                 bufOutputStream.close();
                 bufReader.close();
-                socket.shutdownOutput();
-                socket.shutdownInput();
                 socket.close();
             } catch (Exception e) {
                 throw new Exception("Could not close socket: " + host + ":" + port, e);
