@@ -45,7 +45,6 @@ final public class LoginStolenJDialog extends javax.swing.JDialog implements jav
                 setResizable(false);
                 proceedJButton.setFont(new java.awt.Font("Default", 1, 12));
                 proceedJButton.setText("Exit");
-                proceedJButton.setDoubleBuffered(true);
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 proceedJButtonActionPerformed(evt);
@@ -62,7 +61,6 @@ final public class LoginStolenJDialog extends javax.swing.JDialog implements jav
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 messageJLabel.setText("<html><center>\nYou must now exit this program.<br>\n<br>\nYou can log in again after a brief period.<br>\n</center></html>");
-                messageJLabel.setDoubleBuffered(true);
                 messageJLabel.setPreferredSize(new java.awt.Dimension(400, 45));
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -75,7 +73,6 @@ final public class LoginStolenJDialog extends javax.swing.JDialog implements jav
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 labelJLabel.setText("Logout Warning:");
-                labelJLabel.setDoubleBuffered(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -87,7 +84,6 @@ final public class LoginStolenJDialog extends javax.swing.JDialog implements jav
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
-                backgroundJLabel.setDoubleBuffered(true);
                 backgroundJLabel.setFocusable(false);
                 backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setOpaque(true);

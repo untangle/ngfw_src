@@ -44,8 +44,6 @@ public class NetworkCompoundSettings implements CompoundSettings {
     }
 
     public void validate() throws Exception {
-        System.err.println( "need validation for basic network settings" );
-        // basicSettings.validate();
         addressSettings.validate();
     }
 

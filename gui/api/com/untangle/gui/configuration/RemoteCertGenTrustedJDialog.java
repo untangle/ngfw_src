@@ -72,7 +72,6 @@ public class RemoteCertGenTrustedJDialog extends javax.swing.JDialog implements 
                 setResizable(false);
                 cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
                 cancelJButton.setText("<html><b>Close</b></html>");
-                cancelJButton.setDoubleBuffered(true);
                 cancelJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 cancelJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 cancelJButton.setMaximumSize(new java.awt.Dimension(130, 25));
@@ -88,7 +87,6 @@ public class RemoteCertGenTrustedJDialog extends javax.swing.JDialog implements 
 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setText("<html><b>Proceed</b></html>");
-                proceedJButton.setDoubleBuffered(true);
                 proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 proceedJButton.setMaximumSize(new java.awt.Dimension(150, 25));
@@ -105,13 +103,11 @@ public class RemoteCertGenTrustedJDialog extends javax.swing.JDialog implements 
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 labelJLabel.setText("Certificate Signature Request");
-                labelJLabel.setDoubleBuffered(true);
                 getContentPane().add(labelJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 456, -1));
 
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 messageJLabel.setText("<html>Click the Proceed button to generate a signature below.  Copy the signature (Control-C), and paste it into the necessary form from your Certificate Authority (Verisign, Thawte, etc.).</html>");
-                messageJLabel.setDoubleBuffered(true);
                 getContentPane().add(messageJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, 320, -1));
 
                 jProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -129,7 +125,6 @@ public class RemoteCertGenTrustedJDialog extends javax.swing.JDialog implements 
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
-                backgroundJLabel.setDoubleBuffered(true);
                 backgroundJLabel.setFocusable(false);
                 backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setOpaque(true);

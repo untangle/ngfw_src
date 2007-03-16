@@ -71,7 +71,6 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 labelJLabel.setText("Checking Connectivity:");
-                labelJLabel.setDoubleBuffered(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -83,7 +82,6 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 messageJLabel.setText("<html><center> This test can take up to 40 seconds to complete.  This will<br> determine if DNS and TCP connectivity are working.<br> <br> </center></html>");
-                messageJLabel.setDoubleBuffered(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -108,7 +106,6 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Close_Dialog_106x17.png")));
-                proceedJButton.setDoubleBuffered(true);
                 proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 proceedJButton.setMaximumSize(new java.awt.Dimension(125, 25));
@@ -131,7 +128,6 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
-                backgroundJLabel.setDoubleBuffered(true);
                 backgroundJLabel.setFocusable(false);
                 backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setOpaque(true);

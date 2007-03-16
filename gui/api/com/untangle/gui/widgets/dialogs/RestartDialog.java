@@ -62,7 +62,6 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
                 setResizable(false);
                 proceedJButton.setFont(new java.awt.Font("Default", 1, 12));
                 proceedJButton.setText("Exit");
-                proceedJButton.setDoubleBuffered(true);
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 proceedJButtonActionPerformed(evt);
@@ -79,7 +78,6 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 messageJLabel.setText("<html><center>\nYou must now exit this program.<br>\nYou can log in again after a brief period.<br>\n<font color=\"FF0000\"><b>DO NOT MANUALLY SHUTDOWN OR RESTART THE UNTANGLE SERVER WHILE IT IS UPGRADING!</b></font>\n</center></html>");
-                messageJLabel.setDoubleBuffered(true);
                 messageJLabel.setPreferredSize(new java.awt.Dimension(400, 45));
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -92,7 +90,6 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 labelJLabel.setText("Attention:");
-                labelJLabel.setDoubleBuffered(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -104,7 +101,6 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
-                backgroundJLabel.setDoubleBuffered(true);
                 backgroundJLabel.setFocusable(false);
                 backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setOpaque(true);

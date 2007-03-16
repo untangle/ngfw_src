@@ -31,7 +31,6 @@
           <Font name="Default" size="12" style="0"/>
         </Property>
         <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Cancel&lt;/b&gt;&lt;/html&gt;"/>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[0, 0, 0, 0]"/>
@@ -64,7 +63,6 @@
           <Font name="Default" size="12" style="0"/>
         </Property>
         <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Proceed&lt;/b&gt;&lt;/html&gt;"/>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[0, 0, 0, 0]"/>
@@ -98,7 +96,6 @@
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="&lt;html&gt;Please fill out the following fields, which will be used to generate your self-signed certificate.&lt;/html&gt;"/>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
@@ -116,7 +113,6 @@
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="Generate Self-Signed Certificate"/>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
@@ -305,7 +301,6 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/com/untangle/gui/images/LightGreyBackground1600x100.png"/>
         </Property>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="focusable" type="boolean" value="false"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
         <Property name="opaque" type="boolean" value="true"/>

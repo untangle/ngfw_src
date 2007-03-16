@@ -1807,7 +1807,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     }
     private void focusInRack(final MTransformJPanel mTransformJPanel){
         SwingUtilities.invokeLater( new Runnable() { public void run() {
-            if( mTransformJPanel.getParent() != policyRackJPanelMap.get(selectedPolicy) ) // the selected policy is not the policy of the app
+            if( (mTransformJPanel.getParent() != policyRackJPanelMap.get(selectedPolicy))
+                && (mTransformJPanel.getParent() != coreRackJPanel) ) // the selected policy is not the policy of the app
                 return;
             rackJScrollPane.getViewport().validate();
             Rectangle scrollRect = SwingUtilities.convertRectangle(mTransformJPanel.getParent(),

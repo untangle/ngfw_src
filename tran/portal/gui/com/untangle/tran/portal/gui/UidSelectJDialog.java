@@ -98,7 +98,6 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
                 setResizable(false);
                 cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
                 cancelJButton.setText("<html><b>Cancel</b></html>");
-                cancelJButton.setDoubleBuffered(true);
                 cancelJButton.setFocusable(false);
                 cancelJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 cancelJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -115,7 +114,6 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setText("<html><b>Proceed</b></html>");
-                proceedJButton.setDoubleBuffered(true);
                 proceedJButton.setFocusPainted(false);
                 proceedJButton.setFocusable(false);
                 proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -134,13 +132,11 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 labelJLabel.setText("Select a user ID/Login:");
-                labelJLabel.setDoubleBuffered(true);
                 getContentPane().add(labelJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 456, -1));
 
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 messageJLabel.setText("<html>You may choose a user ID/Login that exists in the User Directory (either local LDAP or remote Active Directory), or you can add a new user to the User Directory, and then choose that user.</html>");
-                messageJLabel.setDoubleBuffered(true);
                 getContentPane().add(messageJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, 396, -1));
 
                 jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -169,7 +165,6 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
-                backgroundJLabel.setDoubleBuffered(true);
                 backgroundJLabel.setFocusable(false);
                 backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setOpaque(true);

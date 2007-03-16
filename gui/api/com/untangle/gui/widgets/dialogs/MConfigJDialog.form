@@ -21,7 +21,6 @@
   <SubComponents>
     <Container class="javax.swing.JTabbedPane" name="contentJTabbedPane">
       <Properties>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Default" size="12" style="0"/>
         </Property>
@@ -46,7 +45,6 @@
           <Image iconType="3" name="/com/untangle/gui/images/IconClose_16x16.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Close"/>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="iconTextGap" type="int" value="6"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[2, 6, 2, 6]"/>
@@ -104,7 +102,6 @@
           <Image iconType="3" name="/com/untangle/gui/images/IconCancel_16x16.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Cancel"/>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="iconTextGap" type="int" value="6"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[2, 6, 2, 6]"/>
@@ -132,7 +129,6 @@
           <Image iconType="3" name="/com/untangle/gui/images/IconSave_23x16.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Save"/>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="iconTextGap" type="int" value="6"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[2, 6, 2, 6]"/>
@@ -156,8 +152,8 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/com/untangle/gui/images/DarkGreyBackground1600x100.png"/>
         </Property>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="focusable" type="boolean" value="false"/>
+        <Property name="opaque" type="boolean" value="true"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new com.untangle.gui.widgets.MTiledIconLabel();"/>

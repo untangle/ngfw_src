@@ -27,7 +27,6 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/com/untangle/gui/images/Button_Cancel_Settings_106x17.png"/>
         </Property>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[0, 0, 0, 0]"/>
@@ -59,7 +58,6 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/com/untangle/gui/images/Button_Save_Settings_106x17.png"/>
         </Property>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[0, 0, 0, 0]"/>
@@ -90,7 +88,6 @@
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;center&gt;&#xa;These settings are critical to the proper operation of the Untangle&lt;br&gt;&#xa;Server and must be set correctly.&lt;br&gt;&#xa;&lt;b&gt;You may be logged out.&lt;/b&gt;&lt;br&gt;&#xa;&lt;br&gt;&#xa;Would you like to save your settings?&#xa;&lt;/center&gt;&lt;/html&gt;"/>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -105,7 +102,6 @@
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="Warning:"/>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -122,7 +118,6 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/com/untangle/gui/images/LightGreyBackground1600x100.png"/>
         </Property>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="focusable" type="boolean" value="false"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
         <Property name="opaque" type="boolean" value="true"/>

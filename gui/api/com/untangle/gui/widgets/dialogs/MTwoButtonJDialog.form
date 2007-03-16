@@ -27,7 +27,6 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/com/untangle/gui/images/Button_Cancel_Upgrade_106x17.png"/>
         </Property>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[0, 0, 0, 0]"/>
@@ -62,7 +61,6 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/com/untangle/gui/images/Button_Continue_Upgrade_106x17.png"/>
         </Property>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[0, 0, 0, 0]"/>
@@ -96,7 +94,6 @@
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;center&gt;&#xa;This upgrade requires that the Untangle Client be&lt;br&gt;&#xa;automatically shut down.  The Untangle Server may also be&lt;br&gt;&#xa;automatically restarted.  You may log in again after a restart.&lt;br&gt;&#xa;&lt;br&gt;&#xa;Would you like to continue with this upgrade?&#xa;&lt;/center&gt;&lt;/html&gt;"/>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="4"/>
@@ -114,7 +111,6 @@
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
         <Property name="text" type="java.lang.String" value="Warning:"/>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
       </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -131,7 +127,6 @@
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
           <Image iconType="3" name="/com/untangle/gui/images/LightGreyBackground1600x100.png"/>
         </Property>
-        <Property name="doubleBuffered" type="boolean" value="true"/>
         <Property name="focusable" type="boolean" value="false"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
         <Property name="opaque" type="boolean" value="true"/>

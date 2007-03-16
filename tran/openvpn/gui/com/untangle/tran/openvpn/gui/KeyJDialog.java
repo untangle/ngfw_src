@@ -85,7 +85,6 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
                 setResizable(false);
                 cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
                 cancelJButton.setText("<html><b>Cancel</b></html>");
-                cancelJButton.setDoubleBuffered(true);
                 cancelJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 cancelJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 cancelJButton.setMaximumSize(new java.awt.Dimension(130, 25));
@@ -101,7 +100,6 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setText("<html><b>Proceed</b></html>");
-                proceedJButton.setDoubleBuffered(true);
                 proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 proceedJButton.setMaximumSize(new java.awt.Dimension(150, 25));
@@ -118,13 +116,11 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 messageJLabel.setText(message);
-                messageJLabel.setDoubleBuffered(true);
                 getContentPane().add(messageJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, 396, -1));
 
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 labelJLabel.setText("Question:");
-                labelJLabel.setDoubleBuffered(true);
                 getContentPane().add(labelJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 456, -1));
 
                 buttonGroup1.add(emailJRadioButton);
@@ -159,7 +155,6 @@ public class KeyJDialog extends javax.swing.JDialog implements java.awt.event.Wi
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
-                backgroundJLabel.setDoubleBuffered(true);
                 backgroundJLabel.setFocusable(false);
                 backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setOpaque(true);

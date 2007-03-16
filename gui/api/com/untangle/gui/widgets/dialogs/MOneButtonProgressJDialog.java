@@ -53,7 +53,6 @@ public class MOneButtonProgressJDialog extends javax.swing.JDialog implements ja
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 labelJLabel.setText("Warning:");
-                labelJLabel.setDoubleBuffered(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -65,7 +64,6 @@ public class MOneButtonProgressJDialog extends javax.swing.JDialog implements ja
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 messageJLabel.setText("<html><center>\nYou must now shut down the Untangle Client.<br>\n<br>\nYou can log in again after shutting down, after a brief period.<br>\n</center></html>");
-                messageJLabel.setDoubleBuffered(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -76,7 +74,6 @@ public class MOneButtonProgressJDialog extends javax.swing.JDialog implements ja
 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Close_Dialog_106x17.png")));
-                proceedJButton.setDoubleBuffered(true);
                 proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 proceedJButton.setMaximumSize(new java.awt.Dimension(125, 25));
@@ -111,7 +108,6 @@ public class MOneButtonProgressJDialog extends javax.swing.JDialog implements ja
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
-                backgroundJLabel.setDoubleBuffered(true);
                 backgroundJLabel.setFocusable(false);
                 backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setOpaque(true);

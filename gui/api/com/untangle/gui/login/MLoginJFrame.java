@@ -30,8 +30,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
     private DropdownLoginTask dropdownLoginTask;
 
     public MLoginJFrame(final String[] args) {
-	getRootPane().setDoubleBuffered(true);
-	RepaintManager.currentManager(this).setDoubleBufferingEnabled(true);
 
         // CREATE AND SHOW THE LOGIN
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
@@ -163,7 +161,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 contentJPanel.setPreferredSize(new java.awt.Dimension(330, 400));
                 logoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 logoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/Logo150x96.png")));
-                logoLabel.setDoubleBuffered(true);
                 logoLabel.setFocusable(false);
                 logoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 logoLabel.setIconTextGap(0);
@@ -176,7 +173,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 contentJPanel.add(logoLabel, gridBagConstraints);
 
                 upperBackgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
-                upperBackgroundJLabel.setDoubleBuffered(true);
                 upperBackgroundJLabel.setFocusable(false);
                 upperBackgroundJLabel.setMaximumSize(null);
                 upperBackgroundJLabel.setMinimumSize(null);
@@ -201,7 +197,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 loginJTextField.setFont(new java.awt.Font("Arial", 0, 12));
                 loginJTextField.setHorizontalAlignment(javax.swing.JTextField.LEFT);
                 loginJTextField.setText("admin");
-                loginJTextField.setDoubleBuffered(true);
                 loginJTextField.setMinimumSize(new java.awt.Dimension(150, 20));
                 loginJTextField.setPreferredSize(new java.awt.Dimension(150, 20));
                 loginJTextField.setVerifyInputWhenFocusTarget(false);
@@ -220,7 +215,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 inputJPanel.add(loginJTextField, gridBagConstraints);
 
                 passJPasswordField.setFont(new java.awt.Font("Arial", 0, 12));
-                passJPasswordField.setDoubleBuffered(true);
                 passJPasswordField.setMinimumSize(new java.awt.Dimension(4, 20));
                 passJPasswordField.setPreferredSize(new java.awt.Dimension(150, 20));
                 passJPasswordField.setVerifyInputWhenFocusTarget(false);
@@ -240,7 +234,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
                 serverJTextField.setEditable(false);
                 serverJTextField.setFont(new java.awt.Font("Arial", 0, 12));
-                serverJTextField.setDoubleBuffered(true);
                 serverJTextField.setFocusable(false);
                 serverJTextField.setMaximumSize(new java.awt.Dimension(133, 20));
                 serverJTextField.setMinimumSize(new java.awt.Dimension(133, 20));
@@ -263,7 +256,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
                 protocolJTextField.setEditable(false);
                 protocolJTextField.setFont(new java.awt.Font("Arial", 0, 12));
-                protocolJTextField.setDoubleBuffered(true);
                 protocolJTextField.setFocusable(false);
                 protocolJTextField.setMaximumSize(new java.awt.Dimension(133, 20));
                 protocolJTextField.setMinimumSize(new java.awt.Dimension(133, 20));
@@ -280,7 +272,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 loginJLabel.setFont(new java.awt.Font("Arial", 0, 12));
                 loginJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
                 loginJLabel.setText("Login: ");
-                loginJLabel.setDoubleBuffered(true);
                 loginJLabel.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -292,7 +283,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 passJLabel.setFont(new java.awt.Font("Arial", 0, 12));
                 passJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
                 passJLabel.setText("Password: ");
-                passJLabel.setDoubleBuffered(true);
                 passJLabel.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -304,7 +294,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 serverJLabel.setFont(new java.awt.Font("Arial", 0, 12));
                 serverJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
                 serverJLabel.setText("Server: ");
-                serverJLabel.setDoubleBuffered(true);
                 serverJLabel.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -316,7 +305,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 protocolJLabel.setFont(new java.awt.Font("Arial", 0, 12));
                 protocolJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
                 protocolJLabel.setText("Connection: ");
-                protocolJLabel.setDoubleBuffered(true);
                 protocolJLabel.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -326,7 +314,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
                 acceptJButton.setFont(new java.awt.Font("Default", 0, 12));
                 acceptJButton.setText("Login");
-                acceptJButton.setDoubleBuffered(true);
                 acceptJButton.setOpaque(false);
                 acceptJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -354,7 +341,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 contentJPanel.add(inputJPanel, gridBagConstraints);
 
                 statusJProgressBar.setFont(new java.awt.Font("Default", 0, 12));
-                statusJProgressBar.setDoubleBuffered(true);
                 statusJProgressBar.setFocusable(false);
                 statusJProgressBar.setMaximumSize(new java.awt.Dimension(270, 20));
                 statusJProgressBar.setMinimumSize(new java.awt.Dimension(270, 20));
@@ -369,7 +355,6 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 contentJPanel.add(statusJProgressBar, gridBagConstraints);
 
                 lowerBackgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
-                lowerBackgroundJLabel.setDoubleBuffered(true);
                 lowerBackgroundJLabel.setFocusable(false);
                 lowerBackgroundJLabel.setMaximumSize(null);
                 lowerBackgroundJLabel.setMinimumSize(null);

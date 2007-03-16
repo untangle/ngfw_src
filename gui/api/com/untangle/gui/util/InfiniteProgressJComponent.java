@@ -168,7 +168,7 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 	actionTimer.stop();
 	removeMouseListener(this);
 	setVisible(false);
-	repaint();
+	getTopLevelAncestor().repaint();
 	for (int i = 0; i < ticker.length; i++)  // put back to corner for the next use
 	    ticker[i].transform(AffineTransform.getTranslateInstance(-newCenterX, -newCenterY));	
     }

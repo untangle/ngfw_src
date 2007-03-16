@@ -117,7 +117,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 closeJButton.setFont(new java.awt.Font("Default", 0, 12));
                 closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconClose_16x16.png")));
                 closeJButton.setText("Close");
-                closeJButton.setDoubleBuffered(true);
                 closeJButton.setIconTextGap(6);
                 closeJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 closeJButton.setMaximumSize(null);
@@ -156,7 +155,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 gridBagConstraints.insets = new java.awt.Insets(0, 170, 15, 0);
                 getContentPane().add(helpJButton, gridBagConstraints);
 
-                jTabbedPane.setDoubleBuffered(true);
                 jTabbedPane.setFont(new java.awt.Font("Default", 0, 12));
                 jPanel1.setLayout(new java.awt.BorderLayout());
 
@@ -199,7 +197,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
 
                 backupLocalFileJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 backupLocalFileJButton.setText("<html><b>Backup</b> to File</html>");
-                backupLocalFileJButton.setDoubleBuffered(true);
                 backupLocalFileJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backupLocalFileJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 backupLocalFileJButton.setMaximumSize(new java.awt.Dimension(155, 25));
@@ -253,7 +250,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 actionJPanel1.setLayout(new java.awt.GridBagLayout());
 
                 backupUsbKeyJButton.setIcon(Util.getButtonBackupToUsbKey());
-                backupUsbKeyJButton.setDoubleBuffered(true);
                 backupUsbKeyJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backupUsbKeyJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 backupUsbKeyJButton.setMaximumSize(new java.awt.Dimension(155, 25));
@@ -307,7 +303,6 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 actionJPanel.setLayout(new java.awt.GridBagLayout());
 
                 backupHardDiskJButton.setIcon(Util.getButtonBackupToHardDisk());
-                backupHardDiskJButton.setDoubleBuffered(true);
                 backupHardDiskJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backupHardDiskJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 backupHardDiskJButton.setMaximumSize(new java.awt.Dimension(155, 25));
@@ -448,7 +443,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 getContentPane().add(jTabbedPane, gridBagConstraints);
 
                 backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/DarkGreyBackground1600x100.png")));
-                backgroundJLabel.setDoubleBuffered(true);
+                backgroundJLabel.setOpaque(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;

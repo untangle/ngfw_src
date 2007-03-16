@@ -44,7 +44,6 @@ final public class NetworkSaveSettingsProceedJDialog extends javax.swing.JDialog
                 setResizable(false);
                 cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
                 cancelJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Cancel_Settings_106x17.png")));
-                cancelJButton.setDoubleBuffered(true);
                 cancelJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 cancelJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 cancelJButton.setMaximumSize(new java.awt.Dimension(130, 25));
@@ -65,7 +64,6 @@ final public class NetworkSaveSettingsProceedJDialog extends javax.swing.JDialog
 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Save_Settings_106x17.png")));
-                proceedJButton.setDoubleBuffered(true);
                 proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 proceedJButton.setMaximumSize(new java.awt.Dimension(130, 25));
@@ -87,7 +85,6 @@ final public class NetworkSaveSettingsProceedJDialog extends javax.swing.JDialog
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 messageJLabel.setText("<html><center>\nThese settings are critical to the proper operation of the Untangle<br>\nServer and must be set correctly.<br>\n<b>You may be logged out.</b><br>\n<br>\nWould you like to save your settings?\n</center></html>");
-                messageJLabel.setDoubleBuffered(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -99,7 +96,6 @@ final public class NetworkSaveSettingsProceedJDialog extends javax.swing.JDialog
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 labelJLabel.setText("Warning:");
-                labelJLabel.setDoubleBuffered(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -111,7 +107,6 @@ final public class NetworkSaveSettingsProceedJDialog extends javax.swing.JDialog
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
-                backgroundJLabel.setDoubleBuffered(true);
                 backgroundJLabel.setFocusable(false);
                 backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setOpaque(true);

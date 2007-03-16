@@ -528,8 +528,6 @@ public class Util {
         source.addFocusListener( new FocusListener(){
                 public void focusGained(FocusEvent e){
                     target.requestFocus();
-                    if(target instanceof JTextComponent)
-                        ((JTextComponent)target).selectAll();
                 }
                 public void focusLost(FocusEvent e){}
             });
@@ -558,6 +556,14 @@ public class Util {
                 final JTextComponent c = (JTextComponent) e.getSource();
                 SwingUtilities.invokeLater( new Runnable(){ public void run(){                    
                     c.selectAll();
+                }});
+            }
+        }
+        public void focusLost(FocusEvent e){
+            if(e.getSource() instanceof JTextComponent){
+                final JTextComponent c = (JTextComponent) e.getSource();
+                SwingUtilities.invokeLater( new Runnable(){ public void run(){                    
+                    c.select(0,0);
                 }});
             }
         }

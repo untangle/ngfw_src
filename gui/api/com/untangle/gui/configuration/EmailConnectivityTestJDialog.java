@@ -62,13 +62,11 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 labelJLabel.setText("Email Test:");
-                labelJLabel.setDoubleBuffered(true);
                 getContentPane().add(labelJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 369, -1));
 
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 messageJLabel.setText("<html><center> Enter an email address which you would like to send a test message to, and then press \"Proceed\".  You should receive an email shortly after running the test.  If not, your email settings may not be correct.</center></html>");
-                messageJLabel.setDoubleBuffered(true);
                 getContentPane().add(messageJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 309, -1));
 
                 jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -87,7 +85,6 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
 
                 closeJButton.setFont(new java.awt.Font("Default", 0, 12));
                 closeJButton.setText("<html><b>Close</b></html>");
-                closeJButton.setDoubleBuffered(true);
                 closeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 closeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 closeJButton.setMaximumSize(new java.awt.Dimension(125, 25));
@@ -104,7 +101,6 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setText("<html><b>Proceed</b></html>");
-                proceedJButton.setDoubleBuffered(true);
                 proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 proceedJButton.setMaximumSize(new java.awt.Dimension(125, 25));
@@ -122,7 +118,6 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
-                backgroundJLabel.setDoubleBuffered(true);
                 backgroundJLabel.setFocusable(false);
                 backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setOpaque(true);

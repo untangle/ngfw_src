@@ -12,6 +12,7 @@
 
 package com.untangle.gui.main;
 
+import java.awt.Rectangle;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Window;
@@ -49,8 +50,6 @@ public class MMainJFrame extends javax.swing.JFrame {
     private ImageIcon mainRightBackground;
 
     public MMainJFrame() {
-    getRootPane().setDoubleBuffered(true);
-    RepaintManager.currentManager(this).setDoubleBufferingEnabled(true);
         Util.setMMainJFrame(this);
 
         // INIT GUI
@@ -81,27 +80,44 @@ public class MMainJFrame extends javax.swing.JFrame {
     }
 
     private class BackgroundJPanel extends JPanel {
-        public BackgroundJPanel(){
-            //   setOpaque(true);
-        }
+        int iconLeftWidth = mainLeftBackground.getIconWidth();
+        int iconLeftHeight = mainLeftBackground.getIconHeight();
+        int iconRightWidth = mainRightBackground.getIconWidth();
+        int iconRightHeight = mainRightBackground.getIconHeight();
+        Rectangle leftClipMask  = new Rectangle(0,0,iconLeftWidth,Integer.MAX_VALUE);
+        Rectangle rightClipMask = new Rectangle(iconLeftWidth,0,Integer.MAX_VALUE,Integer.MAX_VALUE);
+
         public void paintComponent(Graphics g){
-            super.paintComponent(g);
-            int width = getWidth();
-            int height = getHeight();
-            
-            int rows = (height/100) +1; // +1 to capture any extra less than one full row
-            int cols = ((width-202)/1398) +1; // +1 to capture any extra less than one full col
-            
-            for(int x=0; x<cols; x++){
-                for(int y=0; y<rows; y++){
-                    if(x==0){
-                        mainLeftBackground.paintIcon(this, g, 0, y*100);
+            Rectangle clipRect = g.getClipBounds();
+            Rectangle leftClip  = leftClipMask.intersection(clipRect);
+            Rectangle rightClip = rightClipMask.intersection(clipRect);
+
+            if(!leftClip.isEmpty()){
+                int xStart = leftClip.x/iconLeftWidth;
+                int xEnd   = (leftClip.x+leftClip.width)/iconLeftWidth;
+                int yStart = leftClip.y/iconLeftHeight;
+                int yEnd   = (leftClip.y+leftClip.height)/iconLeftHeight;
+                for(int x=xStart; x<=xEnd; x++){
+                    for(int y=yStart; y<=yEnd; y++){
+                        mainLeftBackground.paintIcon(this, g, x*iconLeftWidth, y*iconLeftHeight);
                     }
-                    mainRightBackground.paintIcon(this, g, 202 + (1398*x), y*100);
+                }
+            }
+
+            if(!rightClip.isEmpty()){
+                int xStart = (rightClip.x-iconLeftWidth)/iconRightWidth;
+                int xEnd   = ((rightClip.x-iconLeftWidth)+rightClip.width)/iconRightWidth;
+                int yStart = rightClip.y/iconRightHeight;
+                int yEnd   = (rightClip.y+rightClip.height)/iconRightHeight;
+                for(int x=xStart; x<=xEnd; x++){
+                    for(int y=yStart; y<=yEnd; y++){
+                        mainRightBackground.paintIcon(this, g, iconLeftWidth + x*iconRightWidth, y*iconRightHeight);
+                    }
                 }
             }
         }
     }
+
 
     private class TabSelectionChangeListener implements ChangeListener {
         private int lastSelection = 0;

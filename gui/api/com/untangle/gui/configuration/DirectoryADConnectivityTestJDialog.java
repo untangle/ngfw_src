@@ -64,7 +64,6 @@ public class DirectoryADConnectivityTestJDialog extends javax.swing.JDialog impl
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 labelJLabel.setText("Active Directory Test:");
-                labelJLabel.setDoubleBuffered(true);
                 getContentPane().add(labelJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 369, -1));
 
                 jProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -77,7 +76,6 @@ public class DirectoryADConnectivityTestJDialog extends javax.swing.JDialog impl
 
                 closeJButton.setFont(new java.awt.Font("Default", 0, 12));
                 closeJButton.setText("<html><b>Close</b></html>");
-                closeJButton.setDoubleBuffered(true);
                 closeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 closeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
                 closeJButton.setMaximumSize(new java.awt.Dimension(125, 25));
@@ -95,7 +93,6 @@ public class DirectoryADConnectivityTestJDialog extends javax.swing.JDialog impl
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
-                backgroundJLabel.setDoubleBuffered(true);
                 backgroundJLabel.setFocusable(false);
                 backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setOpaque(true);

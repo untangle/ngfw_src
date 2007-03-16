@@ -142,7 +142,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 		}
 	    }});
 	    if(saveException != null){
-            saveException.printStackTrace();
 		ValidateFailureDialog.factory( (Window) MConfigJDialog.this,
 					       getTitle(), componentName, saveException.getMessage() );
 		throw new ValidationException();
@@ -231,7 +230,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
                 setTitle("");
                 setModal(true);
-                contentJTabbedPane.setDoubleBuffered(true);
                 contentJTabbedPane.setFont(new java.awt.Font("Default", 0, 12));
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -246,7 +244,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 closeJButton.setFont(new java.awt.Font("Default", 0, 12));
                 closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconClose_16x16.png")));
                 closeJButton.setText("Close");
-                closeJButton.setDoubleBuffered(true);
                 closeJButton.setIconTextGap(6);
                 closeJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 closeJButton.setOpaque(false);
@@ -289,7 +286,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 reloadJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 reloadJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconCancel_16x16.png")));
                 reloadJButton.setText("Cancel");
-                reloadJButton.setDoubleBuffered(true);
                 reloadJButton.setIconTextGap(6);
                 reloadJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 reloadJButton.setOpaque(false);
@@ -309,7 +305,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 saveJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 saveJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
                 saveJButton.setText("Save");
-                saveJButton.setDoubleBuffered(true);
                 saveJButton.setIconTextGap(6);
                 saveJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 saveJButton.setOpaque(false);
@@ -327,8 +322,8 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 getContentPane().add(saveJButton, gridBagConstraints);
 
                 backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/DarkGreyBackground1600x100.png")));
-                backgroundJLabel.setDoubleBuffered(true);
                 backgroundJLabel.setFocusable(false);
+                backgroundJLabel.setOpaque(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
