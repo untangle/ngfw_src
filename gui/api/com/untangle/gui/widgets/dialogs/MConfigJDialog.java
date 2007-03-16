@@ -203,12 +203,9 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 
     // ACTION BUTTONS /////////////////////
     public void refreshGui(){
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    reloadJButton.doClick();
-	}});
+        new RefreshAllThread(false);
     }
     public void removeActionButtons(){
-	reloadJButton.setVisible(false);
 	saveJButton.setVisible(false);
     }
     ///////////////////////////////////////
@@ -221,7 +218,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 contentJTabbedPane = new javax.swing.JTabbedPane();
                 closeJButton = new javax.swing.JButton();
                 helpJButton = new javax.swing.JButton();
-                reloadJButton = new javax.swing.JButton();
                 saveJButton = new javax.swing.JButton();
                 backgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
 
@@ -243,7 +239,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 
                 closeJButton.setFont(new java.awt.Font("Default", 0, 12));
                 closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconClose_16x16.png")));
-                closeJButton.setText("Close");
+                closeJButton.setText("Cancel");
                 closeJButton.setIconTextGap(6);
                 closeJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
                 closeJButton.setOpaque(false);
@@ -254,11 +250,10 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 });
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridx = 2;
                 gridBagConstraints.gridy = 1;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 15, 15, 0);
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 15);
                 getContentPane().add(closeJButton, gridBagConstraints);
 
                 helpJButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -280,27 +275,9 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
-                gridBagConstraints.insets = new java.awt.Insets(0, 170, 15, 0);
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 15, 15, 0);
                 getContentPane().add(helpJButton, gridBagConstraints);
-
-                reloadJButton.setFont(new java.awt.Font("Arial", 0, 12));
-                reloadJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconCancel_16x16.png")));
-                reloadJButton.setText("Cancel");
-                reloadJButton.setIconTextGap(6);
-                reloadJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
-                reloadJButton.setOpaque(false);
-                reloadJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                reloadJButtonActionPerformed(evt);
-                        }
-                });
-
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 2;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 15);
-                getContentPane().add(reloadJButton, gridBagConstraints);
 
                 saveJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 saveJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
@@ -358,10 +335,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         new SaveAllThread();
     }//GEN-LAST:event_saveJButtonActionPerformed
 
-    private void reloadJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reloadJButtonActionPerformed
-        new RefreshAllThread(false);
-    }//GEN-LAST:event_reloadJButtonActionPerformed
-
     private void closeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeJButtonActionPerformed
         windowClosing(null);
     }//GEN-LAST:event_closeJButtonActionPerformed
@@ -386,7 +359,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         private javax.swing.JButton closeJButton;
         protected javax.swing.JTabbedPane contentJTabbedPane;
         private javax.swing.JButton helpJButton;
-        protected javax.swing.JButton reloadJButton;
         protected javax.swing.JButton saveJButton;
         // End of variables declaration//GEN-END:variables
 

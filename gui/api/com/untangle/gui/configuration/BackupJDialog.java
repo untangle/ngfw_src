@@ -116,13 +116,10 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 setResizable(false);
                 closeJButton.setFont(new java.awt.Font("Default", 0, 12));
                 closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconClose_16x16.png")));
-                closeJButton.setText("Close");
+                closeJButton.setText("Cancel");
                 closeJButton.setIconTextGap(6);
                 closeJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
-                closeJButton.setMaximumSize(null);
-                closeJButton.setMinimumSize(null);
                 closeJButton.setOpaque(false);
-                closeJButton.setPreferredSize(null);
                 closeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 closeJButtonActionPerformed(evt);
@@ -132,8 +129,9 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
-                gridBagConstraints.insets = new java.awt.Insets(0, 15, 15, 0);
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 15);
                 getContentPane().add(closeJButton, gridBagConstraints);
 
                 helpJButton.setFont(new java.awt.Font("Dialog", 0, 12));
@@ -152,7 +150,8 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHWEST;
-                gridBagConstraints.insets = new java.awt.Insets(0, 170, 15, 0);
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 15, 15, 0);
                 getContentPane().add(helpJButton, gridBagConstraints);
 
                 jTabbedPane.setFont(new java.awt.Font("Default", 0, 12));

@@ -35,9 +35,9 @@ public class PolicyWizardJDialog extends MConfigJDialog {
     public PolicyWizardJDialog( Dialog parentDialog, Vector newRow ) {
         super(parentDialog);
         setTitle("Policy Manager");
+        setHelpSource("policy_manager");
         this.newRow = newRow;
-        saveJButton.setText("<html><b>Continue</b></html>");
-        reloadJButton.setVisible(false);
+        saveJButton.setText("Continue");
         compoundSettings = new CompoundVector(newRow);
     }
 
