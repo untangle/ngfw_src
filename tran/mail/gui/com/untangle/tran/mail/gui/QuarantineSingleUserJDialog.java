@@ -53,7 +53,6 @@ public class QuarantineSingleUserJDialog extends MConfigJDialog {
     
     protected void generateGui(){
         this.setTitle(NAME_ALL_ACCOUNTS + account);
-	reloadJButton.setVisible(false);
         saveJButton.setVisible(false);
 
         // ALL ACCOUNTS //////

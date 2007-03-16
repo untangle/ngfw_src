@@ -54,7 +54,6 @@ public class WhitelistUserJDialog extends MConfigJDialog {
     
     protected void generateGui(){
         this.setTitle(NAME_WHITELIST_USER + account);
-        reloadJButton.setVisible(false);
         saveJButton.setVisible(false);
         
         // ALL ACCOUNTS //////
