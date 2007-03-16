@@ -18,8 +18,13 @@ import com.untangle.mvvm.util.MetaEnv;
 
 public final class ScanLoadChecker {
 
+    // For every concurrent scan that is running, wait this many milliseconds before
+    // accepting a new one.
+    public static final String SMTP_SCAN_CONCURRENT_DELAY_PROPERTY = "mvvm.smtp.scan.concurrent.delay";
+    public static final long SMTP_SCAN_CONCURRENT_DELAY_DEFAULT = 200;
+
     public static final String SMTP_SCAN_REJECT_SCANS_PROPERTY = "mvvm.smtp.scan.reject.scans";
-    public static final int SMTP_SCAN_REJECT_SCANS_DEFAULT = 8;
+    public static final int SMTP_SCAN_REJECT_SCANS_DEFAULT = 15;
 
     public static final String SMTP_SCAN_REJECT_LOAD_PROPERTY = "mvvm.smtp.scan.reject.load";
     public static final float SMTP_SCAN_REJECT_LOAD_DEFAULT = 7.0f;
@@ -29,13 +34,23 @@ public final class ScanLoadChecker {
 
     public static final float ALLOW_ANYWAY_CHANCE = 0.05f;
 
+    public static long SMTP_SCAN_CONCURRENT_DELAY;
     public static float SMTP_SCAN_REJECT_LOAD;
     public static int SMTP_SCAN_REJECT_SCANS;
     public static int SMTP_SCAN_REJECT_RUNNING;
 
     static {
+        SMTP_SCAN_CONCURRENT_DELAY = SMTP_SCAN_CONCURRENT_DELAY_DEFAULT;
+        String p = System.getProperty(SMTP_SCAN_CONCURRENT_DELAY_PROPERTY);
+        if (p != null) {
+            try {
+                SMTP_SCAN_CONCURRENT_DELAY = Long.parseLong(p);
+            } catch (NumberFormatException x) {
+                System.err.println("cannot parse concurrent delay: " + p);
+            }
+        }
         SMTP_SCAN_REJECT_LOAD = SMTP_SCAN_REJECT_LOAD_DEFAULT;
-        String p = System.getProperty(SMTP_SCAN_REJECT_LOAD_PROPERTY);
+        p = System.getProperty(SMTP_SCAN_REJECT_LOAD_PROPERTY);
         if (p != null) {
             try {
                 SMTP_SCAN_REJECT_LOAD = Float.parseFloat(p);
@@ -87,6 +102,11 @@ public final class ScanLoadChecker {
             }
             logger.warn("Load too high: " + la);
             return true;
+        }
+        long delay = activeCount * SMTP_SCAN_CONCURRENT_DELAY;
+        try {
+            Thread.sleep(delay);
+        } catch (InterruptedException x) {
         }
         return false;
     }
