@@ -48,6 +48,7 @@ public class RemoteJDialog extends MConfigJDialog {
 	addTab(NAME_ADMIN_ACCOUNTS, null, remoteAdminJPanel);
 	addSavable(NAME_ADMIN_ACCOUNTS, remoteAdminJPanel);
 	addRefreshable(NAME_ADMIN_ACCOUNTS, remoteAdminJPanel);
+	remoteAdminJPanel.setSettingsChangedListener(this);
 	
 	// ACCESS //
         JTabbedPane accessJTabbedPane = addTabbedPane(NAME_ACCESS_TAB, null);
@@ -57,12 +58,14 @@ public class RemoteJDialog extends MConfigJDialog {
         addScrollableTab(accessJTabbedPane, NAME_ACCESS_RESTRICTIONS, null, remoteRestrictionJPanel, false, true);
         addSavable(NAME_ACCESS_RESTRICTIONS, remoteRestrictionJPanel);
         addRefreshable(NAME_ACCESS_RESTRICTIONS, remoteRestrictionJPanel);
+		remoteRestrictionJPanel.setSettingsChangedListener(this);
 
 	// ACCESS PUBLIC ADDRESS //
 	RemotePublicAddressJPanel remotePublicAddressJPanel = new RemotePublicAddressJPanel();
 	addScrollableTab(accessJTabbedPane, NAME_ACCESS_PUBLIC, null, remotePublicAddressJPanel, false, true);
 	addSavable(NAME_ACCESS_PUBLIC, remotePublicAddressJPanel);
 	addRefreshable(NAME_ACCESS_PUBLIC, remotePublicAddressJPanel);
+	remotePublicAddressJPanel.setSettingsChangedListener(this);
 	
         // CERTIFICATES /////////////
         JTabbedPane certificateJTabbedPane = addTabbedPane(NAME_CERTIFICATE_TAB, null);
@@ -84,12 +87,14 @@ public class RemoteJDialog extends MConfigJDialog {
 	addScrollableTab(monitoringJTabbedPane, NAME_MONITORING_SNMP, null, remoteSnmpJPanel, false, true);
         addSavable(NAME_MONITORING_SNMP, remoteSnmpJPanel);
         addRefreshable(NAME_MONITORING_SNMP, remoteSnmpJPanel);
+		remoteSnmpJPanel.setSettingsChangedListener(this);
 	
         // SYSLOG MONITORING //////
         RemoteSyslogJPanel remoteSyslogJPanel = new RemoteSyslogJPanel();
 	addScrollableTab(monitoringJTabbedPane, NAME_MONITORING_SYSLOG, null, remoteSyslogJPanel, false, true);
         addSavable(NAME_MONITORING_SYSLOG, remoteSyslogJPanel);
         addRefreshable(NAME_MONITORING_SYSLOG, remoteSyslogJPanel);
+		remoteSyslogJPanel.setSettingsChangedListener(this);
 	
         // MANUAL REBOOT //////
         RemoteRebootJPanel remoteRebootJPanel = new RemoteRebootJPanel();

@@ -53,6 +53,13 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
 
     public String getDisplayName(){ return "HTTP Settings"; }
 
+	// SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     public void doSave(MaintenanceCompoundSettings maintenanceCompoundSettings, boolean validateOnly) throws Exception {
 
         // HTTP ENABLED ///////////
@@ -96,6 +103,8 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
             httpEnabledRadioButton.setSelected(true);
         else
             httpDisabledRadioButton.setSelected(true);
+		Util.addSettingChangeListener(settingsChangedListener, this, httpEnabledRadioButton);
+		Util.addSettingChangeListener(settingsChangedListener, this, httpDisabledRadioButton);
         
         // LONG URIS ////////////
         boolean blockLongUris = httpSettings.getBlockLongUris();
@@ -103,10 +112,14 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
             longUriDisabledRadioButton.setSelected(true);
         else
             longUriEnabledRadioButton.setSelected(true);
-        
+        Util.addSettingChangeListener(settingsChangedListener, this, longUriEnabledRadioButton);
+		Util.addSettingChangeListener(settingsChangedListener, this, longUriDisabledRadioButton);
+		
         int maxUriLength = httpSettings.getMaxUriLength();
         maxUriJSpinner.setValue( (Integer) maxUriLength );
 	((JSpinner.DefaultEditor)maxUriJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+	Util.addSettingChangeListener(settingsChangedListener, this, maxUriJSpinner);
+
 
         // LONG HEADERS ////////////
         boolean blockLongHeaders = httpSettings.getBlockLongHeaders();
@@ -114,9 +127,12 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
             longHeadersDisabledRadioButton.setSelected(true);
         else
             longHeadersEnabledRadioButton.setSelected(true);
+		Util.addSettingChangeListener(settingsChangedListener, this, longHeadersEnabledRadioButton);
+		Util.addSettingChangeListener(settingsChangedListener, this, longHeadersDisabledRadioButton);
         
         int maxHeaderLength = httpSettings.getMaxHeaderLength();
         maxHeaderJSpinner.setValue( (Integer) maxHeaderLength );
+		Util.addSettingChangeListener(settingsChangedListener, this, maxHeaderJSpinner);
         
         // NON-HTTP BLOCKED /////////
         boolean nonHttpBlocked = httpSettings.isNonHttpBlocked();
@@ -124,6 +140,8 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
             nonHttpDisabledRadioButton.setSelected(true);
         else
             nonHttpEnabledRadioButton.setSelected(true);
+		Util.addSettingChangeListener(settingsChangedListener, this, nonHttpEnabledRadioButton);
+		Util.addSettingChangeListener(settingsChangedListener, this, nonHttpDisabledRadioButton);
     }
     
     

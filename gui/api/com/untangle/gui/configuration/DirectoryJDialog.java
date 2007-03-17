@@ -49,12 +49,14 @@ public class DirectoryJDialog extends MConfigJDialog {
 	addTab(NAME_LOCAL_DIRECTORY, null, directoryLocalJPanel);
 	addSavable(NAME_LOCAL_DIRECTORY, directoryLocalJPanel);
 	addRefreshable(NAME_LOCAL_DIRECTORY, directoryLocalJPanel);
+	directoryLocalJPanel.setSettingsChangedListener(this);
 
 	// REMOTE ACTIVE DIRECTORY ////////
 	DirectoryRemoteADJPanel directoryRemoteADJPanel = new DirectoryRemoteADJPanel();
 	addScrollableTab(null, NAME_REMOTE_ACTIVE_DIRECTORY, null, directoryRemoteADJPanel, false, true);
 	addSavable(NAME_REMOTE_ACTIVE_DIRECTORY, directoryRemoteADJPanel);
 	addRefreshable(NAME_REMOTE_ACTIVE_DIRECTORY, directoryRemoteADJPanel);
+	directoryRemoteADJPanel.setSettingsChangedListener(this);
     }
 
 }

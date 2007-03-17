@@ -41,6 +41,13 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
         Util.addFocusHighlight(trapPortJSpinner);        
     }
 
+	// SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {
 
 	// SNMP ENABLED ////////
@@ -118,19 +125,24 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
     else
         snmpDisabledRadioButton.setSelected(true);
 	setSnmpEnabledDependency( isSnmpEnabled );
+	Util.addSettingChangeListener(settingsChangedListener, this, snmpEnabledRadioButton);
+	Util.addSettingChangeListener(settingsChangedListener, this, snmpDisabledRadioButton);
 
 	// SNMP COMMUNITY /////
 	String snmpCommunity = snmpSettings.getCommunityString();
 	snmpCommunityJTextField.setText( snmpCommunity );
 	snmpCommunityJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, snmpCommunityJTextField);
 
 	// SNMP CONTACT //////
 	String snmpContact = snmpSettings.getSysContact();
 	snmpContactJTextField.setText( snmpContact );
+	Util.addSettingChangeListener(settingsChangedListener, this, snmpContactJTextField);
 
 	// SNMP LOCATION /////
 	String snmpLocation = snmpSettings.getSysLocation();
 	snmpLocationJTextField.setText( snmpLocation );
+	Util.addSettingChangeListener(settingsChangedListener, this, snmpLocationJTextField);
 
 	// TRAP ENABLED /////
 	boolean isTrapEnabled = snmpSettings.isSendTraps();
@@ -139,22 +151,27 @@ public class RemoteSnmpJPanel extends javax.swing.JPanel
     else
         trapDisabledRadioButton.setSelected(true);
 	setTrapEnabledDependency( isSnmpEnabled && isTrapEnabled );
+	Util.addSettingChangeListener(settingsChangedListener, this, trapEnabledRadioButton);
+	Util.addSettingChangeListener(settingsChangedListener, this, trapDisabledRadioButton);
         
 	// TRAP COMMUNITY //////
 	String trapCommunity = snmpSettings.getTrapCommunity();
 	trapCommunityJTextField.setText( trapCommunity );
 	trapCommunityJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, trapCommunityJTextField);
 
 	// TRAP HOST /////
 	String trapHost = snmpSettings.getTrapHost();
 	trapHostJTextField.setText( trapHost );
 	trapHostJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, trapHostJTextField);
 
         // TRAP PORT //////
 	int trapPort = snmpSettings.getTrapPort();
 	trapPortJSpinner.setValue( trapPort );
 	((JSpinner.DefaultEditor)trapPortJSpinner.getEditor()).getTextField().setText(Integer.toString(trapPort));    	
 	((JSpinner.DefaultEditor)trapPortJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);        	
+	Util.addSettingChangeListener(settingsChangedListener, this, trapPortJSpinner);
     }
     
     

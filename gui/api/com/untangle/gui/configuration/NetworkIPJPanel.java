@@ -48,6 +48,13 @@ public class NetworkIPJPanel extends javax.swing.JPanel
         this.mConfigJDialog = mConfigJDialog;
     }
 
+    // SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     public void doSave(NetworkCompoundSettings networkCompoundSettings, boolean validateOnly) throws Exception {
 
         // DHCP ENABLED //////////
@@ -166,26 +173,32 @@ public class NetworkIPJPanel extends javax.swing.JPanel
             dhcpEnabledRadioButton.setSelected(true);
         else
             dhcpDisabledRadioButton.setSelected(true);
+		Util.addSettingChangeListener(settingsChangedListener, this, dhcpEnabledRadioButton);
+		Util.addSettingChangeListener(settingsChangedListener, this, dhcpDisabledRadioButton);
         
 	// DHCP HOST ////
 	dhcpIPaddrCurrent = basicSettings.host().toString();
 	dhcpIPaddrJTextField.setText( dhcpIPaddrCurrent );
 	dhcpIPaddrJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, dhcpIPaddrJTextField);
 	
 	// DHCP NETMASK /////
 	dhcpNetmaskCurrent = basicSettings.netmask().toString();
         dhcpNetmaskJTextField.setText( dhcpNetmaskCurrent );
 	dhcpNetmaskJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, dhcpNetmaskJTextField);
 
 	// DHCP DEFAULT ROUTE ////////
 	dhcpRouteCurrent = basicSettings.gateway().toString();
         dhcpRouteJTextField.setText( dhcpRouteCurrent );
 	dhcpRouteJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, dhcpRouteJTextField);
 
 	// DNS1 ///////////
 	dnsPrimaryCurrent = basicSettings.dns1().toString();
         dnsPrimaryJTextField.setText( dnsPrimaryCurrent );
 	dnsPrimaryJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, dnsPrimaryJTextField);
 
 	// DNS2 //////////
         if ( basicSettings.hasDns2()) {
@@ -196,6 +209,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
             dnsSecondaryJTextField.setText( EMPTY_DNS2 );
         }
 	dnsSecondaryJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, dnsSecondaryJTextField);
 
 	// ENABLE BUTTONS
 	connectivityTestJButton.setEnabled(true); // dhcp lease is take care of above	

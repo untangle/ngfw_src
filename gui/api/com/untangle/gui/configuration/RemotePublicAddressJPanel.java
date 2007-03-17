@@ -38,6 +38,13 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
         Util.addFocusHighlight(portJSpinner);
     }
 
+	// SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {
 
         // PUBLIC ADDRESS ENABLED //////////
@@ -91,6 +98,8 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
             enabledJRadioButton.setSelected(true);
         else
             disabledJRadioButton.setSelected(true);
+	Util.addSettingChangeListener(settingsChangedListener, this, enabledJRadioButton);
+	Util.addSettingChangeListener(settingsChangedListener, this, disabledJRadioButton);
 
         // ADDRESS //
         addressCurrent = addressSettings.getPublicIPaddr();
@@ -100,12 +109,14 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
             addressJTextField.setText(addressCurrent.toString());
         }
         addressJTextField.setBackground(Color.WHITE);
+		Util.addSettingChangeListener(settingsChangedListener, this, addressJTextField);
 	
         // PORT //
         portCurrent = addressSettings.getPublicPort();
         portJSpinner.setValue(portCurrent);
 	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(portCurrent));
 	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+	Util.addSettingChangeListener(settingsChangedListener, this, portJSpinner);
     }
     
     

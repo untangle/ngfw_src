@@ -40,6 +40,13 @@ public class NetworkPPPOEJPanel extends javax.swing.JPanel
         Util.addFocusHighlight(optionJEditorPane);
     }
 
+    // SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     public void doSave(NetworkCompoundSettings networkCompoundSettings, boolean validateOnly) throws Exception {
 
         // PPPOE ENABLED //////////
@@ -104,20 +111,25 @@ public class NetworkPPPOEJPanel extends javax.swing.JPanel
             pppoeEnabledJRadioButton.setSelected(true);
         else
             pppoeDisabledJRadioButton.setSelected(true);
+		Util.addSettingChangeListener(settingsChangedListener, this, pppoeEnabledJRadioButton);
+		Util.addSettingChangeListener(settingsChangedListener, this, pppoeDisabledJRadioButton);
         
         // NAME ////
         nameCurrent = connectionRule.getUsername();
         nameJTextField.setText( nameCurrent );
         nameJTextField.setBackground( Color.WHITE );
+		Util.addSettingChangeListener(settingsChangedListener, this, nameJTextField);
 
         // PASSWORD ////
         passwordCurrent = connectionRule.getPassword();
         passwordJPasswordField.setText( passwordCurrent );
         passwordJPasswordField.setBackground( Color.WHITE );
+		Util.addSettingChangeListener(settingsChangedListener, this, passwordJPasswordField);
 
         // OPTIONS //
         optionCurrent = connectionRule.getSecretField();
         optionJEditorPane.setText( optionCurrent );
+		Util.addSettingChangeListener(settingsChangedListener, this, optionJEditorPane);
 
     }
     

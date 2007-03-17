@@ -21,6 +21,7 @@ public abstract class MCasingJPanel<T extends CompoundSettings> extends javax.sw
     public MCasingJPanel(){
     }
 
+    public abstract void setSettingsChangedListener(SettingsChangedListener settingsChangedListener);
     public abstract String getDisplayName();
     public abstract void doSave(T compoundSettings, boolean validateOnly) throws Exception;
     public abstract void doRefresh(T compoundSettings);

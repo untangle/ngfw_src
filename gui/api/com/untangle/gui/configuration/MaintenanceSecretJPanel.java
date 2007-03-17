@@ -37,6 +37,13 @@ public class MaintenanceSecretJPanel extends javax.swing.JPanel
 		Util.addFocusHighlight(script2JTextArea);
     }
 
+    // SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     public void doSave(MaintenanceCompoundSettings maintenanceCompoundSettings, boolean validateOnly) throws Exception {
 
         // SCRIPT ///
@@ -62,11 +69,13 @@ public class MaintenanceSecretJPanel extends javax.swing.JPanel
         script1JTextArea.setBackground( Color.WHITE );
         String script1 = miscSettings.getPostConfigurationScript();
         script1JTextArea.setText( script1 );
+		Util.addSettingChangeListener(settingsChangedListener, this, script1JTextArea);
 
         // CUSTOM RULES //
         script2JTextArea.setBackground( Color.WHITE );
         String rules = miscSettings.getCustomRules();
         script2JTextArea.setText( rules );
+		Util.addSettingChangeListener(settingsChangedListener, this, script2JTextArea);
     }
     
     

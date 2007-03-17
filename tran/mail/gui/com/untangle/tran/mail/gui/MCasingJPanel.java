@@ -70,6 +70,13 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
 
     public String getDisplayName(){ return "Mail Settings"; }
 
+	// SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     public void doSave(MaintenanceCompoundSettings maintenanceCompoundSettings, boolean validateOnly) throws Exception {
 
         // EMAIL ENABLED ///////////
@@ -171,35 +178,47 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
             smtpEnabledRadioButton.setSelected(true);
         else
             smtpDisabledRadioButton.setSelected(true);
+		Util.addSettingChangeListener(settingsChangedListener, this, smtpEnabledRadioButton);
+		Util.addSettingChangeListener(settingsChangedListener, this, smtpDisabledRadioButton);
 
         if( isPopEnabled )
             popEnabledRadioButton.setSelected(true);
         else
             popDisabledRadioButton.setSelected(true);
+		Util.addSettingChangeListener(settingsChangedListener, this, popEnabledRadioButton);
+		Util.addSettingChangeListener(settingsChangedListener, this, popDisabledRadioButton);
 
         if( isImapEnabled )
             imapEnabledRadioButton.setSelected(true);
         else
             imapDisabledRadioButton.setSelected(true);
+		Util.addSettingChangeListener(settingsChangedListener, this, imapEnabledRadioButton);
+		Util.addSettingChangeListener(settingsChangedListener, this, imapDisabledRadioButton);
         
         // EMAIL TIMEOUT /////////////
         smtpInboundJSpinner.setValue( (Long) (mailTransformSettings.getSmtpInboundTimeout()/1000l) );
 	((JSpinner.DefaultEditor)smtpInboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+	Util.addSettingChangeListener(settingsChangedListener, this, smtpInboundJSpinner);
 
         smtpOutboundJSpinner.setValue( (Long) (mailTransformSettings.getSmtpOutboundTimeout()/1000l) );
 	((JSpinner.DefaultEditor)smtpOutboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+	Util.addSettingChangeListener(settingsChangedListener, this, smtpOutboundJSpinner);
 
         popInboundJSpinner.setValue( (Long) (mailTransformSettings.getPopInboundTimeout()/1000l) );
 	((JSpinner.DefaultEditor)popInboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+	Util.addSettingChangeListener(settingsChangedListener, this, popInboundJSpinner);
 
         popOutboundJSpinner.setValue( (Long) (mailTransformSettings.getPopOutboundTimeout()/1000l) );
 	((JSpinner.DefaultEditor)popOutboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+	Util.addSettingChangeListener(settingsChangedListener, this, popOutboundJSpinner);
 
         imapInboundJSpinner.setValue( (Long) (mailTransformSettings.getImapInboundTimeout()/1000l) );
 	((JSpinner.DefaultEditor)imapInboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+	Util.addSettingChangeListener(settingsChangedListener, this, imapInboundJSpinner);
 
         imapOutboundJSpinner.setValue( (Long) (mailTransformSettings.getImapOutboundTimeout()/1000l) );
 	((JSpinner.DefaultEditor)imapOutboundJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+	Util.addSettingChangeListener(settingsChangedListener, this, imapOutboundJSpinner);
     }
     
     

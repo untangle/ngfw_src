@@ -51,6 +51,13 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         Util.addFocusHighlight(urlJTextArea);
     }
 
+    // SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     public void doSave(DirectoryCompoundSettings directoryCompoundSettings, boolean validateOnly) throws Exception {
 
 	// ENABLED //
@@ -204,37 +211,45 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 	else
 	    adDisabledJRadioButton.setSelected( true );
 	adEnabledDependency( enabledCurrent );
+	Util.addSettingChangeListener(settingsChangedListener, this, adEnabledJRadioButton);
+	Util.addSettingChangeListener(settingsChangedListener, this, adDisabledJRadioButton);
 
 	// HOST /////
 	hostCurrent = repositorySettings.getLDAPHost();
 	hostJTextField.setText( hostCurrent );
 	hostJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, hostJTextField);
 
 	// PORT /////
 	portCurrent = repositorySettings.getLDAPPort();
 	portJSpinner.setValue( portCurrent );
 	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(portCurrent));
 	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+	Util.addSettingChangeListener(settingsChangedListener, this, portJSpinner);
 
 	// LOGIN //////
 	loginCurrent = repositorySettings.getSuperuser();
 	loginJTextField.setText( loginCurrent );
 	loginJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, loginJTextField);
 
 	// PASSWORD /////
 	passwordCurrent = repositorySettings.getSuperuserPass();
 	passwordJPasswordField.setText( passwordCurrent );
 	passwordJPasswordField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, passwordJPasswordField);
 
 	// DOMAIN //////
 	domainCurrent = repositorySettings.getDomain();
 	baseJTextField.setText( domainCurrent );	
 	baseJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, baseJTextField);
 
 	// ORG //
 	orgCurrent = repositorySettings.getOUFilter();
 	orgJTextField.setText( orgCurrent );
 	orgJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, orgJTextField);
 
     // TEST BUTTON //
     if( enabledCurrent )
@@ -247,11 +262,14 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 	else
 	    serverDisabledJRadioButton.setSelected( true );
 	serverEnabledDependency( enabledCurrent && serverEnabledCurrent );
+	Util.addSettingChangeListener(settingsChangedListener, this, serverEnabledJRadioButton);
+	Util.addSettingChangeListener(settingsChangedListener, this, serverDisabledJRadioButton);
     
     // SERVER ADDRESS
     serverAddressCurrent = directoryCompoundSettings.getWMISettings().getAddress().toString();
     serverIPJTextField.setText( serverAddressCurrent );
     serverIPJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, serverIPJTextField);
 
 	// DOMAIN LOGIN & PASSWORD
 	domainLoginCurrent = directoryCompoundSettings.getWMISettings().getUsername();
@@ -261,11 +279,14 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 	else
 		domainEnabledCurrent = true;
 	domainJCheckBox.setSelected(domainEnabledCurrent);
+	Util.addSettingChangeListener(settingsChangedListener, this, domainJCheckBox);
     domainEnabledDependency( enabledCurrent && serverEnabledCurrent && domainEnabledCurrent);
 	domainLoginJTextField.setText(domainLoginCurrent);
 	domainLoginJTextField.setBackground(Color.WHITE);
+	Util.addSettingChangeListener(settingsChangedListener, this, domainLoginJTextField);
 	domainPasswordJPasswordField.setText(domainPasswordCurrent);
 	domainPasswordJPasswordField.setBackground(Color.WHITE);
+	Util.addSettingChangeListener(settingsChangedListener, this, domainPasswordJPasswordField);
 	
     // SERVER URL
     serverURLCurrent = directoryCompoundSettings.getWMISettings().getUrl();

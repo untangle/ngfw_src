@@ -42,6 +42,13 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
         Util.addFocusHighlight(addressJTextField);
     }
 
+    // SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     public void doSave(EmailCompoundSettings emailCompoundSettings, boolean validateOnly) throws Exception {
 
     // ENABLED //
@@ -127,32 +134,39 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
         smtpDisabledJRadioButton.setSelected( true );
     else
         smtpEnabledJRadioButton.setSelected( true );
+	Util.addSettingChangeListener(settingsChangedListener, this, smtpEnabledJRadioButton);
+	Util.addSettingChangeListener(settingsChangedListener, this, smtpDisabledJRadioButton);
 
     // HOST /////
     hostCurrent = mailSettings.getSmtpHost();
     hostJTextField.setText( hostCurrent );
     hostJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, hostJTextField);
 
     // PORT /////
     portCurrent = mailSettings.getSmtpPort();
     portJSpinner.setValue( portCurrent );
     ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(portCurrent));
     ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+	Util.addSettingChangeListener(settingsChangedListener, this, portJSpinner);
 
     // LOGIN //////
     loginCurrent = mailSettings.getAuthUser();
     smtpLoginJTextField.setText( loginCurrent );
     smtpLoginJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, smtpLoginJTextField);
 
     // PASSWORD /////
     passwordCurrent = mailSettings.getAuthPass();
     smtpPasswordJPasswordField.setText( passwordCurrent );
     smtpPasswordJPasswordField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, smtpPasswordJPasswordField);
 
     // FROM ADDRESS //////
     addressCurrent = mailSettings.getFromAddress();
     addressJTextField.setText( addressCurrent );
     addressJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, addressJTextField);
 
     // CONNECTIVITY TEST //
     connectivityTestJButton.setEnabled(true);

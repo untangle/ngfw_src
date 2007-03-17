@@ -268,7 +268,6 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 descriptionTextJLabel.setForeground(new java.awt.Color(124, 123, 123));
                 descriptionTextJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 descriptionTextJLabel.setText("SuperTransform");
-                descriptionTextJLabel.setDoubleBuffered(true);
                 descriptionTextJLabel.setFocusable(false);
                 descriptionTextJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 descriptionTextJLabel.setIconTextGap(0);
@@ -277,7 +276,6 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 nbPowerOnHintJLabel.setFont(new java.awt.Font("Arial", 0, 18));
                 nbPowerOnHintJLabel.setForeground(new java.awt.Color(255, 0, 0));
                 nbPowerOnHintJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                nbPowerOnHintJLabel.setDoubleBuffered(true);
                 nbPowerOnHintJLabel.setFocusable(false);
                 nbPowerOnHintJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 nbPowerOnHintJLabel.setIconTextGap(0);
@@ -290,9 +288,6 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 controlsJToggleButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconControlsClosed28x28.png")));
                 controlsJToggleButton.setText("Show Settings");
                 controlsJToggleButton.setAlignmentX(0.5F);
-                controlsJToggleButton.setDoubleBuffered(true);
-                controlsJToggleButton.setFocusPainted(false);
-                controlsJToggleButton.setFocusable(false);
                 controlsJToggleButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
                 controlsJToggleButton.setIconTextGap(0);
                 controlsJToggleButton.setMargin(new java.awt.Insets(0, 0, 1, 3));
@@ -309,7 +304,6 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 helpJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 helpJButton.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconHelp28x28.png")));
                 helpJButton.setText("Help");
-                helpJButton.setFocusPainted(false);
                 helpJButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
                 helpJButton.setIconTextGap(0);
                 helpJButton.setMargin(new java.awt.Insets(0, 0, 0, 3));
@@ -326,19 +320,18 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
                 descriptionIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 descriptionIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconDesc42x42.png")));
-                descriptionIconJLabel.setDoubleBuffered(true);
                 descriptionIconJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 add(descriptionIconJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 6, 42, 42));
 
                 organizationIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 organizationIconJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/IconOrg42x42.png")));
                 organizationIconJLabel.setAlignmentX(0.5F);
-                organizationIconJLabel.setDoubleBuffered(true);
                 organizationIconJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 organizationIconJLabel.setIconTextGap(0);
                 add(organizationIconJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 51, 42, 42));
 
                 jProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
+                jProgressBar.setFocusable(false);
                 jProgressBar.setMaximumSize(new java.awt.Dimension(232, 20));
                 jProgressBar.setMinimumSize(new java.awt.Dimension(232, 20));
                 jProgressBar.setPreferredSize(new java.awt.Dimension(232, 20));
@@ -350,7 +343,6 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 messageTextJLabel.setForeground(new java.awt.Color(68, 91, 255));
                 messageTextJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 messageTextJLabel.setText("SuperTransform");
-                messageTextJLabel.setDoubleBuffered(true);
                 messageTextJLabel.setFocusable(false);
                 messageTextJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 messageTextJLabel.setIconTextGap(0);
@@ -362,7 +354,6 @@ public class MTransformJPanel extends javax.swing.JPanel {
                 powerJToggleButton.setAlignmentX(0.5F);
                 powerJToggleButton.setBorderPainted(false);
                 powerJToggleButton.setContentAreaFilled(false);
-                powerJToggleButton.setDoubleBuffered(true);
                 powerJToggleButton.setFocusPainted(false);
                 powerJToggleButton.setFocusable(false);
                 powerJToggleButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -379,7 +370,6 @@ public class MTransformJPanel extends javax.swing.JPanel {
 
                 backgroundJLabel.setIcon(new javax.swing.ImageIcon( Util.getClassLoader().getResource("com/untangle/gui/transform/TransformBackground688x100.png")));
                 backgroundJLabel.setDisabledIcon(new javax.swing.ImageIcon(""));
-                backgroundJLabel.setDoubleBuffered(true);
                 backgroundJLabel.setOpaque(true);
                 add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 688, 100));
 

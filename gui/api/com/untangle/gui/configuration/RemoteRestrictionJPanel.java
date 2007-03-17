@@ -41,6 +41,13 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
         Util.addFocusHighlight(restrictNetmaskJTextField);
     }
 
+	// SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {
 
 	// OUTSIDE ACCESS RESTRICTIONS /////
@@ -119,10 +126,13 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
 		// OUTSIDE ACCESS RESTRICTIONS ////
         boolean isOutsideAdministrationEnabled = accessSettings.getIsOutsideAdministrationEnabled();
         restrictAdminJCheckBox.setSelected(isOutsideAdministrationEnabled);
+		Util.addSettingChangeListener(settingsChangedListener, this, restrictAdminJCheckBox);
         boolean isOutsideReportingEnabled = accessSettings.getIsOutsideReportingEnabled();
         restrictReportingJCheckBox.setSelected(isOutsideReportingEnabled);
+		Util.addSettingChangeListener(settingsChangedListener, this, restrictReportingJCheckBox);
         boolean isOutsideQuarantineEnabled = accessSettings.getIsOutsideQuarantineEnabled();
         restrictQuarantineJCheckBox.setSelected(isOutsideQuarantineEnabled);
+		Util.addSettingChangeListener(settingsChangedListener, this, restrictQuarantineJCheckBox);
 
         // OUTSIDE ACCESS ENABLED //////
         boolean isOutsideAccessEnabled = isOutsideAdministrationEnabled || isOutsideReportingEnabled || isOutsideQuarantineEnabled;
@@ -132,6 +142,7 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
         externalAccessPortJSpinner.setValue( httpsPort );
         ((JSpinner.DefaultEditor)externalAccessPortJSpinner.getEditor()).getTextField().setText(Integer.toString(httpsPort));
         ((JSpinner.DefaultEditor)externalAccessPortJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+		Util.addSettingChangeListener(settingsChangedListener, this, externalAccessPortJSpinner);
 	
         // OUTSIDE ACCESS IP RESTRICTED /////
         boolean isOutsideAccessRestricted = accessSettings.getIsOutsideAccessRestricted();
@@ -140,14 +151,18 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
         else
             externalAdminRestrictDisabledRadioButton.setSelected(true);
         setOutsideAccessRestrictedDependency(isOutsideAccessRestricted);
-        
+Util.addSettingChangeListener(settingsChangedListener, this, externalAdminRestrictEnabledRadioButton);
+Util.addSettingChangeListener(settingsChangedListener, this, externalAdminRestrictDisabledRadioButton);		
+
         // OUTSIDE ACCESS IP RESTRICTED NETWORK //////
         restrictIPaddrJTextField.setText( accessSettings.getOutsideNetwork().toString() );
         restrictIPaddrJTextField.setBackground( Color.WHITE );
+		Util.addSettingChangeListener(settingsChangedListener, this, restrictIPaddrJTextField);
 
         // OUTSIDE ACCESS IP RESTRICTED NETMASK /////
         restrictNetmaskJTextField.setText( accessSettings.getOutsideNetmask().toString() );
         restrictNetmaskJTextField.setBackground( Color.WHITE );
+		Util.addSettingChangeListener(settingsChangedListener, this, restrictNetmaskJTextField);
         
         // INSIDE INSECURE ENABLED ///////
         boolean isInsideInsecureEnabled = accessSettings.getIsInsideInsecureEnabled();
@@ -155,6 +170,8 @@ public class RemoteRestrictionJPanel extends javax.swing.JPanel
             internalAdminEnabledRadioButton.setSelected(true);
         else
             internalAdminDisabledRadioButton.setSelected(true);
+		Util.addSettingChangeListener(settingsChangedListener, this, internalAdminEnabledRadioButton);
+		Util.addSettingChangeListener(settingsChangedListener, this, internalAdminDisabledRadioButton);
         	
     }
     

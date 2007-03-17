@@ -52,6 +52,13 @@ public class PolicyWizardJDialog extends MConfigJDialog {
         addSavable(NAME_POLICY_WIZARD, policyWizardJPanel);
     }
     
+	protected void populateAll() throws Exception {
+		super.populateAll();
+	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+				saveJButton.setEnabled(true);
+		}});
+	}
+	
     protected void saveAll() throws Exception{
         super.saveAll();
         isProceeding = true;

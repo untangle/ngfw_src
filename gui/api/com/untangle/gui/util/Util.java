@@ -23,6 +23,8 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.KeyboardFocusManager;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusListener;
 import java.awt.event.FocusEvent;
@@ -44,6 +46,10 @@ import java.util.Vector;
 import javax.jnlp.*;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
+import javax.swing.event.CaretListener;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 
 import com.untangle.gui.login.*;
 import com.untangle.gui.main.MMainJFrame;
@@ -51,6 +57,7 @@ import com.untangle.gui.main.PolicyStateMachine;
 import com.untangle.gui.pipeline.MPipelineJPanel;
 import com.untangle.gui.pipeline.MRackJPanel;
 import com.untangle.gui.transform.CompoundSettings;
+import com.untangle.gui.transform.SettingsChangedListener;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.*;
 import com.untangle.mvvm.addrbook.*;
@@ -522,6 +529,85 @@ public class Util {
         }
     }
     //////////////////////////////////////////////////////
+
+
+    public static void addSettingChangeListener(final SettingsChangedListener s,
+                                                final Object source,
+                                                final JComponent c){
+        if(s==null)
+            return;
+        if(c instanceof JComboBox){
+            JComboBox cb = (JComboBox) c;
+            for( ActionListener a : cb.getActionListeners() ){
+                if(a instanceof SettingChangeListener )
+                    cb.removeActionListener(a);
+            }
+            cb.addActionListener(new SettingChangeListener(s, source, cb.getSelectedItem()));
+        }
+        else if(c instanceof JTextComponent){
+            JTextComponent tc = (JTextComponent) c;
+            for( CaretListener cl : tc.getCaretListeners() ){
+                if(cl instanceof SettingChangeListener )
+                    tc.removeCaretListener(cl);
+            }
+            tc.addCaretListener(new SettingChangeListener(s, source, tc.getText()));
+        }
+        else if(c instanceof AbstractButton){
+            AbstractButton ab = (AbstractButton) c;
+            for( ActionListener a : ab.getActionListeners() ){
+                if(a instanceof SettingChangeListener )
+                    ab.removeActionListener(a);
+            }
+            ab.addActionListener(new SettingChangeListener(s, source, ab.isSelected()));
+        }
+        else if(c instanceof JSpinner){
+            JSpinner js = (JSpinner) c;
+            for( ChangeListener cl : js.getChangeListeners() ){
+                if(cl instanceof SettingChangeListener )
+                    js.removeChangeListener(cl);
+            }
+            js.addChangeListener(new SettingChangeListener(s, source, js.getValue()));
+        }
+    }
+
+    private static class SettingChangeListener implements ActionListener, CaretListener, ChangeListener {
+        private Object source;
+        private SettingsChangedListener s;
+        private Object setting;
+        public SettingChangeListener(SettingsChangedListener s, Object source, Object setting){            
+            this.s = s;
+            this.source = source;
+            this.setting = setting;
+        }
+        public void stateChanged(ChangeEvent e){
+            Object source = e.getSource();
+            if(source instanceof JSpinner){
+                JSpinner js = (JSpinner) source;
+                if( !js.getValue().equals(setting) )
+                    s.settingsChanged(source);
+            }
+        }
+        public void caretUpdate(CaretEvent e){
+            Object source = e.getSource();
+            if(source instanceof JTextComponent){
+                JTextComponent tc = (JTextComponent) source;
+                String lastSetting = (String) setting;
+                if( !tc.getText().trim().equals(lastSetting.trim())  )
+                    s.settingsChanged(source);
+            }
+        }
+        public void actionPerformed(ActionEvent e){
+            Object source = e.getSource();
+            if(source instanceof JComboBox){
+                if( !((JComboBox)source).getSelectedItem().equals(setting) )
+                    s.settingsChanged(source);
+            }
+            else if(source instanceof AbstractButton){
+                if( ! (((AbstractButton)source).isSelected() == (Boolean)setting) )
+                    s.settingsChanged(source);
+            }
+        }
+    }
 
     // FOCUS //
     public static void addPanelFocus(final JComponent source, final JComponent target){

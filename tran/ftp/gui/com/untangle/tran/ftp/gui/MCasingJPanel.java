@@ -34,6 +34,13 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
 
     public String getDisplayName(){ return "FTP Settings"; }
 
+	// SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     public void doSave(MaintenanceCompoundSettings maintenanceCompoundSettings, boolean validateOnly) throws Exception {
 
         // FTP ENABLED ///////////
@@ -55,7 +62,9 @@ public class MCasingJPanel extends com.untangle.gui.transform.MCasingJPanel<Main
         if( isFtpEnabled )
             ftpEnabledRadioButton.setSelected(true);
         else
-            ftpDisabledRadioButton.setSelected(true); 
+            ftpDisabledRadioButton.setSelected(true);
+		Util.addSettingChangeListener(settingsChangedListener, this, ftpEnabledRadioButton);
+		Util.addSettingChangeListener(settingsChangedListener, this, ftpDisabledRadioButton);
     }
     
     

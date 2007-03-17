@@ -12,6 +12,7 @@
 package com.untangle.gui.widgets.dialogs;
 
 import com.untangle.gui.transform.*;
+import com.untangle.gui.widgets.*;
 import com.untangle.gui.widgets.coloredTable.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.util.*;
@@ -33,7 +34,7 @@ import java.net.URL;
 import javax.jnlp.BasicService;
 import javax.jnlp.ServiceManager;
 
-public abstract class MConfigJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
+public abstract class MConfigJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener, SettingsChangedListener {
     
     // SAVING/REFRESHING ///////////
     protected boolean settingsSaved;
@@ -51,6 +52,9 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     protected InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
     public InfiniteProgressJComponent getInfiniteProgressJComponent(){ return infiniteProgressJComponent; }
     private static final long MIN_PROGRESS_MILLIS = 1000;
+	private static final int HELPER_SAVE_SETTINGS_BLINK = 200;
+    private static ImageIcon[] saveSettingsImageIcons;
+    CycleJLabel saveSettingsHintJLabel;
     ///////////////////////////////
 
     public MConfigJDialog(Dialog parentDialog){
@@ -64,6 +68,22 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     }
     
     private void init(Window parentWindow){
+			
+	synchronized( this ){
+	    if( saveSettingsImageIcons == null ){
+		String[] saveSettingsImagePaths = { "com/untangle/gui/transform/IconSaveSettingsHint30.png",
+						    "com/untangle/gui/transform/IconSaveSettingsHint40.png",
+						    "com/untangle/gui/transform/IconSaveSettingsHint50.png",
+						    "com/untangle/gui/transform/IconSaveSettingsHint60.png",
+						    "com/untangle/gui/transform/IconSaveSettingsHint70.png",
+						    "com/untangle/gui/transform/IconSaveSettingsHint80.png",
+						    "com/untangle/gui/transform/IconSaveSettingsHint90.png",
+						    "com/untangle/gui/transform/IconSaveSettingsHint100.png" };
+		saveSettingsImageIcons = Util.getImageIcons(saveSettingsImagePaths);
+	    }
+	}
+	saveSettingsHintJLabel = new CycleJLabel(saveSettingsImageIcons, HELPER_SAVE_SETTINGS_BLINK, true, true);
+	
         getRootPane().setDoubleBuffered(true);
         RepaintManager.currentManager(this).setDoubleBufferingEnabled(true);
         initComponents();
@@ -74,6 +94,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         addComponentListener( new ComponentAdapter() { public void componentResized(ComponentEvent evt) {
             dialogResized();
         }});
+		setSaveSettingsHintVisible(false);
     }
 
     private static JComponent initialFocusComponent;
@@ -95,8 +116,22 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         helpJButton.setVisible(true);
     }
 
+	public void settingsChanged(Object source){
+        saveJButton.setEnabled(true);
+        setSaveSettingsHintVisible(true);
+    }
+		
     protected abstract void generateGui();
 
+	public void setSaveSettingsHintVisible(boolean isVisible){
+	if( isVisible ){
+	    if( !saveSettingsHintJLabel.isRunning() )
+		saveSettingsHintJLabel.start();
+	}
+	else
+	    saveSettingsHintJLabel.stop();
+    }
+		
     // TABS AND TABBED PANES //////////////
     public JTabbedPane getMTabbedPane(){ return contentJTabbedPane; }
     public void addTab(String name, Icon icon, Component component){ contentJTabbedPane.addTab(name, icon, component); }
@@ -163,6 +198,10 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 
 	// RECORD THE FACT THAT SETTINGS WERE SAVED FOR WHEN THE DIALOG RETURNS
 	settingsSaved = true;
+    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+        saveJButton.setEnabled(false);
+    }});
+	setSaveSettingsHintVisible(false);
     }
 
 
@@ -186,6 +225,10 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 		}
 	    }});
 	}
+    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+        saveJButton.setEnabled(false);
+    }});
+	setSaveSettingsHintVisible(false);
     }
     ////////////////////////////////////////////
 
@@ -216,8 +259,9 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 
                 buttonGroup1 = new javax.swing.ButtonGroup();
                 contentJTabbedPane = new javax.swing.JTabbedPane();
-                closeJButton = new javax.swing.JButton();
+                nbSaveSettingsHintJLabel = saveSettingsHintJLabel;
                 helpJButton = new javax.swing.JButton();
+                closeJButton = new javax.swing.JButton();
                 saveJButton = new javax.swing.JButton();
                 backgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
 
@@ -230,31 +274,27 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
-                gridBagConstraints.gridwidth = 4;
+                gridBagConstraints.gridwidth = 3;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(15, 15, 15, 15);
                 getContentPane().add(contentJTabbedPane, gridBagConstraints);
 
-                closeJButton.setFont(new java.awt.Font("Default", 0, 12));
-                closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconClose_16x16.png")));
-                closeJButton.setText("Cancel");
-                closeJButton.setIconTextGap(6);
-                closeJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
-                closeJButton.setOpaque(false);
-                closeJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                closeJButtonActionPerformed(evt);
-                        }
-                });
-
+                nbSaveSettingsHintJLabel.setFont(new java.awt.Font("Arial", 0, 18));
+                nbSaveSettingsHintJLabel.setForeground(new java.awt.Color(255, 0, 0));
+                nbSaveSettingsHintJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+                nbSaveSettingsHintJLabel.setFocusable(false);
+                nbSaveSettingsHintJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+                nbSaveSettingsHintJLabel.setIconTextGap(0);
                 gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 2;
-                gridBagConstraints.gridy = 1;
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridwidth = 3;
+                gridBagConstraints.gridheight = 2;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 15);
-                getContentPane().add(closeJButton, gridBagConstraints);
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 34, 60);
+                getContentPane().add(nbSaveSettingsHintJLabel, gridBagConstraints);
 
                 helpJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconHelp_18x16.png")));
@@ -279,6 +319,25 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 gridBagConstraints.insets = new java.awt.Insets(0, 15, 15, 0);
                 getContentPane().add(helpJButton, gridBagConstraints);
 
+                closeJButton.setFont(new java.awt.Font("Default", 0, 12));
+                closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconClose_16x16.png")));
+                closeJButton.setText("Cancel");
+                closeJButton.setIconTextGap(6);
+                closeJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
+                closeJButton.setOpaque(false);
+                closeJButton.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                closeJButtonActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 15);
+                getContentPane().add(closeJButton, gridBagConstraints);
+
                 saveJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 saveJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
                 saveJButton.setText("Save");
@@ -292,7 +351,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 });
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 3;
+                gridBagConstraints.gridx = 2;
                 gridBagConstraints.gridy = 1;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 15);
@@ -359,6 +418,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         private javax.swing.JButton closeJButton;
         protected javax.swing.JTabbedPane contentJTabbedPane;
         private javax.swing.JButton helpJButton;
+        protected javax.swing.JLabel nbSaveSettingsHintJLabel;
         protected javax.swing.JButton saveJButton;
         // End of variables declaration//GEN-END:variables
 

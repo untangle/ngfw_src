@@ -35,6 +35,13 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
         Util.addFocusHighlight(timeJSpinner);
     }
     
+	// SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     public void doSave(UpgradeCompoundSettings upgradeCompoundSettings, boolean validateOnly) throws Exception {
         Calendar tempCalendar = new GregorianCalendar();
         tempCalendar.setTime((Date)timeJSpinner.getValue());
@@ -82,26 +89,36 @@ public class UpgradeSettingsJPanel extends javax.swing.JPanel
         else{
             noAutoJRadioButton.setSelected(true);
         }
+		Util.addSettingChangeListener(settingsChangedListener, this, yesAutoJRadioButton);
+		Util.addSettingChangeListener(settingsChangedListener, this, noAutoJRadioButton);
+		
         Period period = upgradeSettings.getPeriod();
-
         hour = period.getHour();
         minute = period.getMinute();
 
-        // set time
-        Calendar calendar = new GregorianCalendar();
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
+        
         //set days
         sundayJCheckBox.setSelected( period.getSunday() );
+		Util.addSettingChangeListener(settingsChangedListener, this, sundayJCheckBox);
         mondayJCheckBox.setSelected( period.getMonday() );
+		Util.addSettingChangeListener(settingsChangedListener, this, mondayJCheckBox);
         tuesdayJCheckBox.setSelected( period.getTuesday() );
+		Util.addSettingChangeListener(settingsChangedListener, this, tuesdayJCheckBox);
         wednesdayJCheckBox.setSelected( period.getWednesday() );
+		Util.addSettingChangeListener(settingsChangedListener, this, wednesdayJCheckBox);
         thursdayJCheckBox.setSelected( period.getThursday() );
+		Util.addSettingChangeListener(settingsChangedListener, this, thursdayJCheckBox);
         fridayJCheckBox.setSelected( period.getFriday() );
+		Util.addSettingChangeListener(settingsChangedListener, this, fridayJCheckBox);
         saturdayJCheckBox.setSelected( period.getSaturday() );
+		Util.addSettingChangeListener(settingsChangedListener, this, saturdayJCheckBox);
         // set time value
+		Calendar calendar = new GregorianCalendar();
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
         timeJSpinner.setValue(calendar.getTime());
 		((JSpinner.DefaultEditor)timeJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+		Util.addSettingChangeListener(settingsChangedListener, this, timeJSpinner);
     }
 
 

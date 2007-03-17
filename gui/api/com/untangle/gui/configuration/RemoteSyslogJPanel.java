@@ -40,6 +40,13 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel
             thresholdJComboBox.addItem(syslogPriority.getName());
     }
 
+	// SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {
 
 	// SYSLOG ENABLED ////////
@@ -97,25 +104,31 @@ public class RemoteSyslogJPanel extends javax.swing.JPanel
             syslogEnabledRadioButton.setSelected(true);
         else
             syslogDisabledRadioButton.setSelected(true);
+	Util.addSettingChangeListener(settingsChangedListener, this, syslogEnabledRadioButton);
+	Util.addSettingChangeListener(settingsChangedListener, this, syslogDisabledRadioButton);
 
         // TRAP HOST /////
 	String host = loggingSettings.getSyslogHost();
 	hostJTextField.setText( host );
 	hostJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, hostJTextField);
         
         // PORT /////
 	int port = loggingSettings.getSyslogPort();
 	portJSpinner.setValue( port );
 	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(port));
 	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+	Util.addSettingChangeListener(settingsChangedListener, this, portJSpinner);
         
         // FACILITY /////
         SyslogFacility syslogFacility = loggingSettings.getSyslogFacility();
         facilityJComboBox.setSelectedItem( syslogFacility.getFacilityName() );
+		Util.addSettingChangeListener(settingsChangedListener, this, facilityJComboBox);
         
         // PRIORITY /////
         SyslogPriority syslogPriority = loggingSettings.getSyslogThreshold();
         thresholdJComboBox.setSelectedItem( syslogPriority.getName() );
+		Util.addSettingChangeListener(settingsChangedListener, this, thresholdJComboBox);
         	
     }
     

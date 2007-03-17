@@ -45,7 +45,13 @@ public class AboutRegistrationJPanel extends JPanel
     }
 
 	
-
+    // SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     Exception exception;
     
     public void doSave(AboutCompoundSettings aboutCompoundSettings, boolean validateOnly) throws Exception {
@@ -139,50 +145,61 @@ public class AboutRegistrationJPanel extends JPanel
 	String company = registrationInfo.getCompanyName();
 	companyJTextField.setText( company );
 	companyJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, companyJTextField);
 	
 	// FIRST NAME /////
 	String firstName = registrationInfo.getFirstName();
 	firstNameJTextField.setText( firstName );
 	firstNameJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, firstNameJTextField);
 	
 	// LAST NAME /////
 	String lastName = registrationInfo.getLastName();
 	lastNameJTextField.setText( lastName );
 	lastNameJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, lastNameJTextField);
 	
 	// ADDRESS 1 /////
 	String address1 = registrationInfo.getAddress1();
 	address1JTextField.setText( address1 );
+	Util.addSettingChangeListener(settingsChangedListener, this, address1JTextField);
 	
 	// ADDRESS 2 /////
 	String address2 = registrationInfo.getAddress2();
 	address2JTextField.setText( address2 );
+	Util.addSettingChangeListener(settingsChangedListener, this, address2JTextField);
 	
 	// CITY NAME /////
 	String city = registrationInfo.getCity();
 	cityJTextField.setText( city );
+	Util.addSettingChangeListener(settingsChangedListener, this, cityJTextField);
 	
 	// STATE NAME /////
 	String state = registrationInfo.getState();
 	stateJTextField.setText( state );
+	Util.addSettingChangeListener(settingsChangedListener, this, stateJTextField);
 
 	// ZIPCODE NAME /////
 	String zipcode = registrationInfo.getZipcode();
 	zipcodeJTextField.setText( zipcode );
+	Util.addSettingChangeListener(settingsChangedListener, this, zipcodeJTextField);
 	
 	// PHONE NAME /////
 	String phone = registrationInfo.getPhone();
 	phoneJTextField.setText( phone );
+	Util.addSettingChangeListener(settingsChangedListener, this, phoneJTextField);
 	
 	// EMAIL NAME /////
 	String email = registrationInfo.getEmailAddr();
 	emailJTextField.setText( email );
 	emailJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, emailJTextField);
 
 	// COMPUTER COUNT //
 	int count = registrationInfo.getNumSeats();
 	countJTextField.setText( Integer.toString(count) );
 	countJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, countJTextField);
 	
     }
         private void initComponents() {//GEN-BEGIN:initComponents

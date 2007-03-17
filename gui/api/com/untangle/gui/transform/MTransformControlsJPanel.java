@@ -353,7 +353,6 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 nbSaveSettingsHintJLabel.setFont(new java.awt.Font("Arial", 0, 18));
                 nbSaveSettingsHintJLabel.setForeground(new java.awt.Color(255, 0, 0));
                 nbSaveSettingsHintJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                nbSaveSettingsHintJLabel.setDoubleBuffered(true);
                 nbSaveSettingsHintJLabel.setFocusable(false);
                 nbSaveSettingsHintJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 nbSaveSettingsHintJLabel.setIconTextGap(0);

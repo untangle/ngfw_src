@@ -36,6 +36,13 @@ public class AboutTimezoneJPanel extends javax.swing.JPanel
         
     }
 
+    // SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     public void doSave(AboutCompoundSettings aboutCompoundSettings, boolean validateOnly) throws Exception {
 
 	// TIMEZONE ///////
@@ -53,6 +60,7 @@ public class AboutTimezoneJPanel extends javax.swing.JPanel
         // TIMEZONE ////
         TimeZone tz = TimeZone.getValue(aboutCompoundSettings.getTimeZone().getID());
         timezoneJComboBox.setSelectedItem(tz);
+		Util.addSettingChangeListener(settingsChangedListener, this, timezoneJComboBox);
 
 
 	// DATE //

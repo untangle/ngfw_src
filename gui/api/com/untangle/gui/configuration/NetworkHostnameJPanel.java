@@ -42,6 +42,13 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
         }
     }
 
+    // SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     public void doSave(NetworkCompoundSettings networkCompoundSettings, boolean validateOnly) throws Exception {
 
 	// HOSTNAME ///////
@@ -118,10 +125,12 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
 	hostnameCurrent = addressSettings.getHostName().toString();
 	hostnameJTextField.setText( hostnameCurrent );
 	hostnameJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, hostnameJTextField);
 
 	// IS HOSTNAME PUBLIC
 	isHostnamePublicCurrent = addressSettings.getIsHostNamePublic();
 	publicJCheckBox.setSelected(isHostnamePublicCurrent);
+	Util.addSettingChangeListener(settingsChangedListener, this, publicJCheckBox);
 			
         DynamicDNSSettings dynamicDNSSettings = networkCompoundSettings.getDynamicDNSSettings();
         
@@ -132,21 +141,27 @@ public class NetworkHostnameJPanel extends javax.swing.JPanel
             enabledJRadioButton.setSelected(true);
         else
             disabledJRadioButton.setSelected(true);
+	Util.addSettingChangeListener(settingsChangedListener, this, enabledJRadioButton);
+	Util.addSettingChangeListener(settingsChangedListener, this, disabledJRadioButton);
 
 	// PROVIDER //
 	providerCurrent = dynamicDNSSettings.getProvider();
 	providerJComboBox.setSelectedItem(providerCurrent);
+	Util.addSettingChangeListener(settingsChangedListener, this, providerJComboBox);
 
 	// LOGIN //
 	loginCurrent = dynamicDNSSettings.getLogin();
 	loginJTextField.setText(loginCurrent);
 	loginJTextField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, loginJTextField);
 
 	// PASSWORD //
 	passwordCurrent = dynamicDNSSettings.getPassword();
 	passwordJPasswordField.setText(passwordCurrent);
 	passwordJPasswordField.setBackground( Color.WHITE );
+	Util.addSettingChangeListener(settingsChangedListener, this, passwordJPasswordField);
     }
+	
     
     
         private void initComponents() {//GEN-BEGIN:initComponents

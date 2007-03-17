@@ -48,6 +48,7 @@ public class MaintenanceJDialog extends MConfigJDialog {
 	addScrollableTab(null, NAME_REMOTE_SETTINGS, null, maintenanceAccessJPanel, false, true);
 	addSavable(NAME_REMOTE_SETTINGS, maintenanceAccessJPanel);
 	addRefreshable(NAME_REMOTE_SETTINGS, maintenanceAccessJPanel);
+	maintenanceAccessJPanel.setSettingsChangedListener(this);
 
 	// CASINGS //
         MCasingJPanel[] mCasingJPanels = ((MaintenanceCompoundSettings)compoundSettings).getCasingJPanels();
@@ -58,6 +59,7 @@ public class MaintenanceJDialog extends MConfigJDialog {
 		addScrollableTab(overrideJTabbedPane, casingDisplayName, null, mCasingJPanel, false, true);
 		addSavable(casingDisplayName, mCasingJPanel);
 		addRefreshable(casingDisplayName, mCasingJPanel);
+		mCasingJPanel.setSettingsChangedListener(this);
 	    }
 	}
 	else {
@@ -76,6 +78,7 @@ public class MaintenanceJDialog extends MConfigJDialog {
 	addTab(NAME_NETWORK_INTERFACES, null, maintenanceInterfaceJPanel);
 	addSavable(NAME_NETWORK_INTERFACES, maintenanceInterfaceJPanel);
 	addRefreshable(NAME_NETWORK_INTERFACES, maintenanceInterfaceJPanel);
+	maintenanceInterfaceJPanel.setSettingsChangedListener(this);
 
     // PING TEST //
     MaintenancePingJPanel maintenancePingJPanel = new MaintenancePingJPanel();
@@ -87,6 +90,7 @@ public class MaintenanceJDialog extends MConfigJDialog {
 	    addTab(NAME_SECRET_PANEL, null, maintenanceSecretJPanel);
 	    addSavable(NAME_SECRET_PANEL, maintenanceSecretJPanel);
 	    addRefreshable(NAME_SECRET_PANEL, maintenanceSecretJPanel);
+		maintenanceSecretJPanel.setSettingsChangedListener(this);
 	}
     }
 

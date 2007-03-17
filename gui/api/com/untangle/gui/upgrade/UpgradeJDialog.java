@@ -70,6 +70,7 @@ public class UpgradeJDialog extends MConfigJDialog {
 	addTab(NAME_SETTINGS, null, upgradeSettingsJPanel);
         addSavable(NAME_SETTINGS, upgradeSettingsJPanel);
         addRefreshable(NAME_SETTINGS, upgradeSettingsJPanel);
+		upgradeSettingsJPanel.setSettingsChangedListener(this);
     }
 
 }

@@ -49,24 +49,28 @@ public class NetworkJDialog extends MConfigJDialog {
         addScrollableTab(null, NAME_NETWORK_SETTINGS, null, ipJPanel, false, true);
         addSavable(NAME_NETWORK_SETTINGS, ipJPanel);
         addRefreshable(NAME_NETWORK_SETTINGS, ipJPanel);
+		ipJPanel.setSettingsChangedListener(this);
         	
         // ALIASES /////
         NetworkAliasJPanel aliasJPanel = new NetworkAliasJPanel();
         addTab(NAME_ALIAS_PANEL, null, aliasJPanel );
         addSavable(NAME_ALIAS_PANEL, aliasJPanel );
         addRefreshable(NAME_ALIAS_PANEL, aliasJPanel );
+		aliasJPanel.setSettingsChangedListener(this);
 
         // HOSTNAME //////
         NetworkHostnameJPanel hostnameJPanel = new NetworkHostnameJPanel();
         addScrollableTab(null, NAME_HOSTNAME, null, hostnameJPanel, false, true);
         addSavable(NAME_HOSTNAME, hostnameJPanel);
         addRefreshable(NAME_HOSTNAME, hostnameJPanel);
+		hostnameJPanel.setSettingsChangedListener(this);
 
         // PPPOE //
         NetworkPPPOEJPanel pppoeJPanel = new NetworkPPPOEJPanel();
         addScrollableTab(null, NAME_PPPOE, null, pppoeJPanel, false, true);
         addSavable(NAME_PPPOE, pppoeJPanel);
         addRefreshable(NAME_PPPOE, pppoeJPanel);
+		pppoeJPanel.setSettingsChangedListener(this);
         
     }   
 

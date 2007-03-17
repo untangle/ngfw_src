@@ -53,18 +53,21 @@ public class PolicyJDialog extends MConfigJDialog {
         policiesJTabbedPane.addTab(NAME_SYSTEM_POLICIES, null, policyDefaultJPanel);
 	addSavable(NAME_SYSTEM_POLICIES, policyDefaultJPanel);
 	addRefreshable(NAME_SYSTEM_POLICIES, policyDefaultJPanel);
+	policyDefaultJPanel.setSettingsChangedListener(this);
 
         // USER POLICIES //////
         PolicyCustomJPanel policyCustomJPanel = new PolicyCustomJPanel(this);
         policiesJTabbedPane.addTab(NAME_USER_POLICIES, null, policyCustomJPanel);
 	addSavable(NAME_USER_POLICIES, policyCustomJPanel);
 	addRefreshable(NAME_USER_POLICIES, policyCustomJPanel);
+	policyCustomJPanel.setSettingsChangedListener(this);
 
         // AVAILABLE RACKS ////// (THIS MUST BE LAST BECAUSE IT VALIDATES SETTINGS)
         PolicyAvailableJPanel policyAvailableJPanel = new PolicyAvailableJPanel();
         addTab(NAME_AVAILABLE_POLICIES, null, policyAvailableJPanel);
 	addSavable(NAME_AVAILABLE_POLICIES, policyAvailableJPanel);
 	addRefreshable(NAME_AVAILABLE_POLICIES, policyAvailableJPanel);
+	policyAvailableJPanel.setSettingsChangedListener(this);
     }
     
     protected void saveAll() throws Exception{

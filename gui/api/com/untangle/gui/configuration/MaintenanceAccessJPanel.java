@@ -31,6 +31,13 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
         MConfigJDialog.setInitialFocusComponent(sshEnabledRadioButton);
     }
 
+    // SETTINGS CHANGE NOTIFICATION /////////
+    private SettingsChangedListener settingsChangedListener;
+    public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
+	this.settingsChangedListener = settingsChangedListener;
+    }
+    ///////////////////////////////////////////
+	
     public void doSave(MaintenanceCompoundSettings maintenanceCompoundSettings, boolean validateOnly) throws Exception {
 
         // SSH ENABLED ////////
@@ -58,10 +65,13 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
             sshEnabledRadioButton.setSelected(true);
         else
             sshDisabledRadioButton.setSelected(true);
+	Util.addSettingChangeListener(settingsChangedListener, this, sshEnabledRadioButton);
+	Util.addSettingChangeListener(settingsChangedListener, this, sshDisabledRadioButton);
         
         // REPORTING ENABLED ////
         boolean isExceptionReportingEnabled = miscSettings.getIsExceptionReportingEnabled();
         reportJCheckBox.setSelected( isExceptionReportingEnabled );
+		Util.addSettingChangeListener(settingsChangedListener, this, reportJCheckBox);
     }
     
     
