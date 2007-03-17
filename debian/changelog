@@ -1,3 +1,9 @@
+untangle-java (0.2.0-1073) stable; urgency=low
+
+  * auto build
+
+ -- root <root@bebe.metavize.com>  Fri, 16 Mar 2007 18:27:43 -0700
+
 untangle-java (0.2.0-1072) stable; urgency=low
 
   * auto build
