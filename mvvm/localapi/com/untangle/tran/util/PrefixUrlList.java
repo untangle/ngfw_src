@@ -61,7 +61,7 @@ public class PrefixUrlList extends UrlList
         String line = br.readLine();
         if (null == line) {
             logger.warn("could not read from url: " + databaseUrl);
-            return;
+            return null;
         }
 
         String version;
