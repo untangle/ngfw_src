@@ -172,8 +172,9 @@
           The emails listed below have been quarantined by the Untangle Server and
           will be deleted automatically after <quarantine:maxDaysToIntern/> days.
           <br><br>
-          To release or delete emails from the quarantine and
-          have them delivered to your inbox,
+          To release emails from the quarantine and
+          have them delivered to your email account or
+          to delete emails from the quarantine,
           click the checkboxes for one or more emails and
           click <code>Release</code> or <code>Delete</code>, respectively.
           <br><br>

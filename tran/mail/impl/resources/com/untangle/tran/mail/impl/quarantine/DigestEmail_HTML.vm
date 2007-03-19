@@ -437,7 +437,8 @@ hr {
         The emails listed below have been quarantined by Untangle Server and
         will be deleted automatically after $daysToIntern days.
         <br><br>
-        To release or delete a specific email from the quarantine and have it delivered to your inbox,
+        To release a specific email from the quarantine and have it delivered to your email account or
+        to delete an email from the quarantine,
         click <code>Release</code> or <code>Delete</code>, respectively.
         <br><br>
         You may also <a href="$linkgenerator.generateInboxLink()">visit your online quarantine</a> for more options.
