@@ -59,6 +59,10 @@ public class PrefixUrlList extends UrlList
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
         String line = br.readLine();
+        if (null == line) {
+            logger.warn("could not read from url: " + databaseUrl);
+            return;
+        }
 
         String version;
 
