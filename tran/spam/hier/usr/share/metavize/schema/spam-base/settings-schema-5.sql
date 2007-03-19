@@ -47,13 +47,13 @@ CREATE TABLE settings.tr_spam_settings (
 
 -- BEGIN dirty hack, make settings.tr_clamphish_settings
 CREATE TABLE settings.tr_clamphish_settings (
-    settings_id int8 NOT NULL,
+    spam_settings_id int8 NOT NULL,
     enable_google_sb bool NOT NULL,
-    PRIMARY KEY (settings_id));
+    PRIMARY KEY (spam_settings_id));
 
 ALTER TABLE settings.tr_clamphish_settings
     ADD CONSTRAINT fk_clamphish_to_spam_settings
-    FOREIGN KEY (settings_id)
+    FOREIGN KEY (spam_settings_id)
     REFERENCES settings.tr_spam_settings;
 -- END dirty hack, make settings.tr_clamphish_settings
 
