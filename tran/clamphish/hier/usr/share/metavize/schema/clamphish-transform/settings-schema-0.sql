@@ -1,7 +1,7 @@
 -- settings schema for release 4.2
 
 CREATE TABLE settings.tr_clamphish_settings (
-    spam_settings_id int8 NOT NULL,
+    settings_id int8 NOT NULL,
     enable_google_sb bool NOT NULL,
     PRIMARY KEY (settings_id));
 
@@ -9,7 +9,7 @@ CREATE TABLE settings.tr_clamphish_settings (
 
 ALTER TABLE settings.tr_clamphish_settings
     ADD CONSTRAINT fk_clamphish_to_spam_settings
-    FOREIGN KEY (spam_settings_id)
+    FOREIGN KEY (settings_id)
     REFERENCES settings.tr_spam_settings;
 
 -- this is a conversion step in case the user has a pre-existing
@@ -17,7 +17,7 @@ ALTER TABLE settings.tr_clamphish_settings
 -- schema.
 
 INSERT INTO tr_clamphish_settings
-    SELECT ss.settings_id, true
+    SELECT ss.settings_id AS settings_id, true AS enable_google_sb
     FROM transform_persistent_state
     JOIN tr_spam_settings ss USING (tid)
     WHERE name = 'clamphish-transform';
