@@ -189,7 +189,8 @@ public final class SpamAssassinClient implements Runnable {
             bufOutputStream.flush();
 	    // Can't close the bufOutputStream here or it closes the
 	    // whole socket.  Instead shutdown.
-	    spamcSocket.shutdownOutput();
+	    // Ack we can't shutdown either. This sucks donkey balls.
+//	    spamcSocket.shutdownOutput();
             fInputStream.close();
             fInputStream = null;
             rBuf = null;
