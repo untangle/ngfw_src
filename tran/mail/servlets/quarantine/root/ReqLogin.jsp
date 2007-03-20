@@ -78,8 +78,8 @@
         You can request that an email message, of your quarantined emails, be sent to your email account.
         <br/><br/>
         Please enter your email address into the form below and click <code>Submit</code>.
-        You will receive an email message containing a list of your recent quarantined emails and a link to your quarantined emails page.
-        When you receive this email message, you can delete or release your quarantined emails from this list or access your quarantined emails page from your browser to delete or release your quarantined emails.
+        You will receive an email message containing a list of your recent quarantined emails and a link to your quarantined email page.
+        When you receive this email message, you can release or delete your quarantined emails from this list or access your quarantined email page from your browser to release or delete your quarantined emails.
         <br/>
 
         <!-- MAIN MESSAGE -->
