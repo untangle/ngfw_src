@@ -1285,7 +1285,24 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             }
         }
         catch(Exception e){ Util.handleExceptionNoRestart("Error sleeping while product loading",e); }
-        rackViewJPanel.add(storeWizardJButton, storeWizardGridBagConstraints);
+
+
+        int count = 0;
+        boolean nonNatFound = false;
+        for( Policy policy : policyRackMap.keySet() ){
+            count += policyRackMap.get(policy).size();
+        }
+        if(count>0)
+            nonNatFound = true;
+        count += utilRackMap.size();
+        if(count>0)
+            nonNatFound = true;
+        count += coreRackMap.size();
+        for( MTransformJPanel target : coreRackMap.values() )
+            if(!target.getMackageDesc().getName().equals("nat-transform"))
+                nonNatFound = true;
+        if( (count <= 1) && (!nonNatFound) )
+            rackViewJPanel.add(storeWizardJButton, storeWizardGridBagConstraints);
         //Util.getMPipelineJPanel().setStoreWizardButtonVisible( addCount<=1 );
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             progressBar.setValue(64);
