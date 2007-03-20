@@ -332,6 +332,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
             logger.debug("IN POSTINIT SET BLACKLIST " + settings);
         }
         blacklist.configure(settings);
+        blacklist.startUpdateTimer();
         reconfigure();
 
         deployWebAppIfRequired(logger);
@@ -341,7 +342,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     protected void postDestroy()
     {
         unDeployWebAppIfRequired(logger);
-        blacklist.destroy();
+        blacklist.stopUpdateTimer();
     }
 
     // package protected methods ----------------------------------------------

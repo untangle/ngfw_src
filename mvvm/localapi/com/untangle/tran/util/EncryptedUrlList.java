@@ -39,7 +39,6 @@ public class EncryptedUrlList extends UrlList
 {
     private static final byte[] DB_SALT = "oU3q.72p".getBytes();
 
-    private static final Pattern VERSION_PATTERN = Pattern.compile("\\[[^ ]+ ([0-9.]+)\\]");
     private static final Pattern TUPLE_PATTERN = Pattern.compile("\\+([0-9A-F]+)\t([A-Za-z0-9+/=]+)");
 
     private final URL databaseUrl;
@@ -64,41 +63,32 @@ public class EncryptedUrlList extends UrlList
         InputStream is = databaseUrl.openStream();
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
-        String line = br.readLine();
-
-        String version;
-
-        Matcher matcher = VERSION_PATTERN.matcher(line);
-        if (matcher.find()) {
-            version = matcher.group(1);
-        } else {
-            version = null;
-            logger.warn("No version number: " + line);
+        try {
+            String version = getVersion(br.readLine());
+            doIt(db, br);
+            return version;
+        } finally {
+            br.close();
         }
-
-        while (null != (line = br.readLine())) {
-            matcher = TUPLE_PATTERN.matcher(line);
-            if (matcher.find()) {
-                byte[] host = new BigInteger(matcher.group(1), 16).toByteArray();
-                byte[] b64Data = matcher.group(2).getBytes();
-                byte[] regexp = base64Decode(matcher.group(2));
-
-                try {
-                    db.put(null, new DatabaseEntry(host),
-                           new DatabaseEntry(regexp));
-                } catch (DatabaseException exn) {
-                    logger.warn("could not add database entry", exn);
-                }
-            }
-        }
-
-        return version;
     }
 
-    protected String updateDatabase(Database db, String version)
+    protected String updateDatabase(Database db, String oldVersion)
         throws IOException
     {
-        return initDatabase(db);
+        InputStream is = databaseUrl.openStream();
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+        try {
+            String version = getVersion(br.readLine());
+            if (null != version && !version.equals(oldVersion)) {
+                // XXX implement real update!
+                clearDatabase();
+                doIt(db, br);
+            }
+            return version;
+        } finally {
+            br.close();
+        }
     }
 
     protected byte[] getKey(byte[] host)
@@ -169,6 +159,26 @@ public class EncryptedUrlList extends UrlList
         } catch (IOException exn) {
             logger.warn("could not decode", exn);
             return new byte[0];
+        }
+    }
+
+    private void doIt(Database db, BufferedReader br) throws IOException
+    {
+        String line;
+        while (null != (line = br.readLine())) {
+            Matcher matcher = TUPLE_PATTERN.matcher(line);
+            if (matcher.find()) {
+                byte[] host = new BigInteger(matcher.group(1), 16).toByteArray();
+                byte[] b64Data = matcher.group(2).getBytes();
+                byte[] regexp = base64Decode(matcher.group(2));
+
+                try {
+                    db.put(null, new DatabaseEntry(host),
+                           new DatabaseEntry(regexp));
+                } catch (DatabaseException exn) {
+                    logger.warn("could not add database entry", exn);
+                }
+            }
         }
     }
 }

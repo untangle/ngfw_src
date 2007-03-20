@@ -30,7 +30,6 @@ import org.apache.log4j.Logger;
 
 public class PrefixUrlList extends UrlList
 {
-    private static final Pattern VERSION_PATTERN = Pattern.compile("\\[[^ ]+ ([0-9.]+)\\]");
     private static final Pattern TUPLE_PATTERN = Pattern.compile("\\+(https?://([^/\t]+)/[^\t]*)\tc");
 
     private final URL databaseUrl;
@@ -51,31 +50,61 @@ public class PrefixUrlList extends UrlList
     {
         clearDatabase();
 
-        if (null == databaseUrl) {
-            return null;
-        }
-
         InputStream is = databaseUrl.openStream();
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
-        String line = br.readLine();
-        if (null == line) {
-            logger.warn("could not read from url: " + databaseUrl);
-            return null;
-        }
 
-        String version;
-
-        Matcher matcher = VERSION_PATTERN.matcher(line);
-        if (matcher.find()) {
-            version = matcher.group(1);
-        } else {
-            logger.warn("No version number: " + line);
-            version = null;
+        try {
+            String version = getVersion(br.readLine());
+            doIt(db, br);
+            return version;
+        } finally {
+            br.close();
         }
+    }
+
+    protected String updateDatabase(Database db, String oldVersion)
+        throws IOException
+    {
+        InputStream is = databaseUrl.openStream();
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+        try {
+            String version = getVersion(br.readLine());
+            if (null != version && !version.equals(oldVersion)) {
+                // XXX implement real update!
+                clearDatabase();
+                doIt(db, br);
+            }
+            return version;
+        } finally {
+            br.close();
+        }
+    }
+
+    protected byte[] getKey(byte[] host)
+    {
+        return host;
+    }
+
+    protected List<String> getValues(byte[] host, byte[] data)
+    {
+        return split(data);
+    }
+
+    protected boolean matches(String str, String pat)
+    {
+        return str.startsWith(pat);
+    }
+
+    // private methods ----------------------------------------------------------
+
+    private void doIt(Database db, BufferedReader br) throws IOException
+    {
+        String line;
 
         while (null != (line = br.readLine())) {
-            matcher = TUPLE_PATTERN.matcher(line);
+            Matcher matcher = TUPLE_PATTERN.matcher(line);
             if (matcher.find()) {
                 byte[] prefix = matcher.group(1).getBytes();
                 byte[] host = matcher.group(2).getBytes();
@@ -104,32 +133,5 @@ public class PrefixUrlList extends UrlList
                 }
             }
         }
-
-        return version;
-    }
-
-    protected String updateDatabase(Database db, String version) throws IOException
-    {
-        if (databaseUrl == null) {
-            return null;
-        }
-
-        // XXX implement proper updating
-        return initDatabase(db);
-    }
-
-    protected byte[] getKey(byte[] host)
-    {
-        return host;
-    }
-
-    protected List<String> getValues(byte[] host, byte[] data)
-    {
-        return split(data);
-    }
-
-    protected boolean matches(String str, String pat)
-    {
-        return str.startsWith(pat);
     }
 }

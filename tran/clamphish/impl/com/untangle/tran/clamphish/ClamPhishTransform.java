@@ -455,7 +455,7 @@ public class ClamPhishTransform extends SpamImpl
             logger.warn("could not open database", exn);
         }
 
-        urlDatabase.initOrUpdateAll(true);
+        urlDatabase.updateAll(true);
 
         return urlDatabase;
     }

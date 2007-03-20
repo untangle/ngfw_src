@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.sleepycat.je.Cursor;
 import com.sleepycat.je.Database;
@@ -33,6 +35,8 @@ import org.apache.log4j.Logger;
 public abstract class UrlList
 {
     private static final byte[] VERSION_KEY = "__version".getBytes();
+    private static final Pattern VERSION_PATTERN = Pattern.compile("\\[[^ ]+ ([0-9.]+)\\]");
+
 
     private static final Set<String> DB_LOCKS = new HashSet<String>();
 
@@ -60,33 +64,18 @@ public abstract class UrlList
 
     // public methods ---------------------------------------------------------
 
-    public void initOrUpdate(boolean async) {
+    public void update(boolean async) {
         if (async) {
             Thread t = new Thread(new Runnable() {
                     public void run()
                     {
-                        initOrUpdate();
+                        update();
                     }
-                }, "init-or-update-" + dbLock);
+                }, "update-" + dbLock);
                 t.setDaemon(true);
                 t.start();
         } else {
-            initOrUpdate();
-        }
-    }
-
-    public void init(boolean async) {
-        if (async) {
-            Thread t = new Thread(new Runnable() {
-                    public void run()
-                    {
-                        init();
-                    }
-                }, "init-" + dbLock);
-                t.setDaemon(true);
-                t.start();
-        } else {
-            init();
+            update();
         }
     }
 
@@ -139,6 +128,22 @@ public abstract class UrlList
         l.add(sb.toString());
 
         return l;
+    }
+
+    protected String getVersion(String line)
+    {
+        if (null == line) {
+            logger.warn("null version line" + line);
+            return null;
+        }
+
+        Matcher matcher = VERSION_PATTERN.matcher(line);
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            logger.warn("No version number: " + line);
+            return null;
+        }
     }
 
     protected void clearDatabase()
@@ -228,42 +233,7 @@ public abstract class UrlList
         }
     }
 
-    private void init()
-    {
-        logger.info("initializing UrlList: " + dbLock);
-        synchronized (DB_LOCKS) {
-            if (DB_LOCKS.contains(dbLock)) {
-                return;
-            } else {
-                DB_LOCKS.add(dbLock);
-            }
-        }
-
-        try {
-            String version = getVersion(db);
-            if (null != version) {
-                logger.info("already initialized: " + dbLock);
-                return;
-            } else {
-                version = initDatabase(db);
-                setVersion(db, version);
-            }
-
-            db.getEnvironment().sync();
-        } catch (DatabaseException exn) {
-            logger.warn("could not update database", exn);
-        } catch (IOException exn) {
-            logger.warn("could not update database", exn);
-        } finally {
-            synchronized (dbLock) {
-                DB_LOCKS.remove(dbLock);
-            }
-        }
-
-        logger.info("initialized UrlList: " + dbLock);
-    }
-
-    private void initOrUpdate()
+    private void update()
     {
         logger.info("initializing or updating UrlList: " + dbLock);
         synchronized (DB_LOCKS) {

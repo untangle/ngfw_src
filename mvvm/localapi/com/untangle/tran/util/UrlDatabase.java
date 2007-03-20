@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 
 public class UrlDatabase<T>
 {
-    private static final int UPDATE_PERIOD = 2 * 60 * 60 * 1000;
+    private static final int UPDATE_PERIOD = 21600000; // 6 hours
 
     private final Map<T, UrlList> whitelists = new HashMap<T, UrlList>();
     private final Map<T, UrlList> blacklists = new HashMap<T, UrlList>();
@@ -51,36 +51,19 @@ public class UrlDatabase<T>
         whitelists.put(o, whitelist);
     }
 
-    public void initAll(boolean async)
+    public void updateAll(boolean async)
     {
         for (T o : whitelists.keySet()) {
             UrlList ul = whitelists.get(o);
             if (null != ul) {
-                ul.init(async);
+                ul.update(async);
             }
         }
 
         for (T o : blacklists.keySet()) {
             UrlList ul = blacklists.get(o);
             if (null != ul) {
-                ul.init(async);
-            }
-        }
-    }
-
-    public void initOrUpdateAll(boolean async)
-    {
-        for (T o : whitelists.keySet()) {
-            UrlList ul = whitelists.get(o);
-            if (null != ul) {
-                ul.initOrUpdate(async);
-            }
-        }
-
-        for (T o : blacklists.keySet()) {
-            UrlList ul = blacklists.get(o);
-            if (null != ul) {
-                ul.initOrUpdate(async);
+                ul.update(async);
             }
         }
     }
@@ -167,6 +150,11 @@ public class UrlDatabase<T>
 
     public void startUpdateTimer()
     {
+        startUpdateTimer(UPDATE_PERIOD);
+    }
+
+    public void startUpdateTimer(long updatePeriod)
+    {
         synchronized (this) {
             if (null != timer) {
                 timer.cancel();
@@ -176,10 +164,10 @@ public class UrlDatabase<T>
             TimerTask t = new TimerTask() {
                     public void run()
                     {
-                        initOrUpdateAll(false);
+                        updateAll(false);
                     }
                 };
-            timer.scheduleAtFixedRate(t, UPDATE_PERIOD, UPDATE_PERIOD);
+            timer.scheduleAtFixedRate(t, updatePeriod, updatePeriod);
         }
     }
 

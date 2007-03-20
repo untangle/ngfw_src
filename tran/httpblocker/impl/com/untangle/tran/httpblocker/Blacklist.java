@@ -105,13 +105,21 @@ class Blacklist
             }
         }
 
-        urlDatabase.initAll(true);
+        urlDatabase.updateAll(true);
 
         blockedUrls = makeCustomList(settings.getBlockedUrls());
         passedUrls = makeCustomList(settings.getPassedUrls());
     }
 
-    void destroy() { }
+    void startUpdateTimer()
+    {
+        urlDatabase.startUpdateTimer(1800000); // 30 min
+    }
+
+    void stopUpdateTimer()
+    {
+        urlDatabase.stopUpdateTimer();
+    }
 
     /**
      * Checks if the request should be blocked, giving an appropriate
