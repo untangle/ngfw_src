@@ -445,7 +445,7 @@ class InstallTarget < Target
 
       registerInstallTargets(is) do |f|
         if sign
-          JavaCompiler.jarSigner(f, 'gui/keystore', 'key', 'ohF3deeTjai7Thic')
+          JavaCompiler.jarSigner(f, 'gui/keystore', 'key', 'Boo4fiuzaiph7ahH')
         end
       end
     end
