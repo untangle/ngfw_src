@@ -253,7 +253,7 @@ abstract class ArgonHook implements Runnable
                 logger.error( "Exception executing argon hook:", e );
             }
         }
-        
+
         try {
             /* Must raze sessions all sessions in the session list */
             razeSessions();
@@ -263,8 +263,11 @@ abstract class ArgonHook implements Runnable
 
         try {
             /* Let the pipeline foundry know */
-            if (clientSide != null)
+            if (clientSide != null) {
+                /* Don't log endpoints that don't complete properly */
+                if (( endpoints != null ) && ( endpoints.getCClientAddr() == null )) endpoints = null;
                 pipelineFoundry.destroy(clientSide, serverSide, endpoints, sessionGlobalState.user());
+            }
 
             /* Remove the vector from the vectron table */
             /* You must remove the vector before razing, or else
