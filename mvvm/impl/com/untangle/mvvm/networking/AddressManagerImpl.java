@@ -234,14 +234,24 @@ class AddressManagerImpl implements LocalAddressManager
         }
 
         /* The address and port of the external router that is in front of us */
-        IPaddr externalRouterIP = this.addressSettings.getPublicIPaddr();
-        int externalRouterPort  = this.addressSettings.getPublicPort();
-        
-        if (( externalRouterIP != null ) && !externalRouterIP.isEmpty() && 
-            ( externalRouterPort > 0 ) && ( externalRouterPort < 0xFFFF )) {
-            scriptWriter.appendVariable( FLAG_EXTERNAL_ROUTER_ADDR, externalRouterIP.toString());
-            scriptWriter.appendVariable( FLAG_EXTERNAL_ROUTER_PORT, String.valueOf( externalRouterPort ));
+        IPaddr ip = NetworkUtil.BOGUS_DHCP_ADDRESS;
+
+        HostAddress currentAddress = this.addressSettings.getCurrentAddress();
+        if (( currentAddress != null ) && ( currentAddress.getIp() != null ) && 
+            !currentAddress.getIp().isEmpty()) {
+            ip = currentAddress.getIp();
+        } else {
+            logger.warn( "The current address is not properly initialized: <" + currentAddress + ">" );
         }
+
+        int port = this.addressSettings.getCurrentPublicPort();
+        if ( port < 0 || port > 0xFFFF ) {
+            logger.warn( "The current port is not properly initialized: <" + port + ">" );
+            port = 443;
+        }
+        
+        scriptWriter.appendVariable( FLAG_EXTERNAL_ROUTER_ADDR, ip.toString());
+        scriptWriter.appendVariable( FLAG_EXTERNAL_ROUTER_PORT, String.valueOf( port ));
         
         if ( this.addressSettings.getIsPublicAddressEnabled()) {
             scriptWriter.appendVariable( FLAG_EXTERNAL_ROUTER_EN, "true" );
