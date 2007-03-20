@@ -84,7 +84,7 @@ public class GoogleConfigJPanel extends javax.swing.JPanel implements Savable<Ob
                 contentJPanel.setBorder(new javax.swing.border.EtchedBorder());
                 ftpButtonGroup.add(urlEnabledRadioButton);
                 urlEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                urlEnabledRadioButton.setText("<html><b>Enable</b> Google phish list blocking</html>");
+                urlEnabledRadioButton.setText("<html><b>Enable</b> phish list blocking</html>");
                 urlEnabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 urlEnabledRadioButtonActionPerformed(evt);
@@ -99,7 +99,7 @@ public class GoogleConfigJPanel extends javax.swing.JPanel implements Savable<Ob
 
                 ftpButtonGroup.add(urlDisabledRadioButton);
                 urlDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                urlDisabledRadioButton.setText("<html><b>Disable</b> Google phish list blocking</html>");
+                urlDisabledRadioButton.setText("<html><b>Disable</b> phish list blocking</html>");
                 urlDisabledRadioButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 urlDisabledRadioButtonActionPerformed(evt);
