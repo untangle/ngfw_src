@@ -17,7 +17,6 @@ import com.untangle.mvvm.LocalAppServerManager;
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventLoggerFactory;
 import com.untangle.mvvm.logging.EventManager;
 import com.untangle.mvvm.logging.SimpleEventFilter;
 import com.untangle.mvvm.portal.Application;
@@ -242,10 +241,13 @@ public class PortalImpl extends AbstractTransform implements PortalTransform
     protected void preDestroy() {
         deregisterApps();
 
-        setPortalSettings(PortalSettings.getBlankSettings());
-
         /* unregister the service with the MVVM */
         MvvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
+    }
+
+    public void destroySettings()
+    {
+        MvvmContextFactory.context().portalManager().destroyPortalSettings();
     }
 
     // Portal methods ----------------------------------------------

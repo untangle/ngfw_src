@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.naming.ServiceUnavailableException;
-import javax.servlet.http.HttpSession;
 
 import com.untangle.mvvm.addrbook.AddressBook;
 import com.untangle.mvvm.addrbook.AddressBookConfiguration;
@@ -32,7 +31,6 @@ import com.untangle.mvvm.logging.EventLoggerFactory;
 import com.untangle.mvvm.portal.Application;
 import com.untangle.mvvm.portal.Bookmark;
 import com.untangle.mvvm.portal.LocalPortalManager;
-import com.untangle.mvvm.portal.PortalGlobal;
 import com.untangle.mvvm.portal.PortalGroup;
 import com.untangle.mvvm.portal.PortalHomeSettings;
 import com.untangle.mvvm.portal.PortalLogin;
@@ -170,6 +168,21 @@ class PortalManagerImpl implements LocalPortalManager
         mvvmContext.runTransaction(tw);
 
         this.portalSettings = settings;
+    }
+
+    public void destroyPortalSettings()
+    {
+        TransactionWork tw = new TransactionWork()
+            {
+                public boolean doWork(Session s)
+                {
+                    s.delete(PortalManagerImpl.this.portalSettings);
+                    return true;
+                }
+            };
+        mvvmContext.runTransaction(tw);
+
+        this.portalSettings = null;
     }
 
     public PortalHomeSettings getPortalHomeSettings(PortalUser user)

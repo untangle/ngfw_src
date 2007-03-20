@@ -296,6 +296,7 @@ class TransformContextImpl implements TransformContext
                 transform.stop();
             }
             transform.destroy();
+            transform.destroySettings();
         } catch (TransformException exn) {
             throw new UndeployException(exn);
         } finally {

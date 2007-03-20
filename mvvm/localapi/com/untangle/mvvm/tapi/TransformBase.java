@@ -178,8 +178,18 @@ public abstract class TransformBase implements Transform
     /**
      * Called when the transform is new, initial settings should be
      * created and saved in this method.
+     *
+     * XXX rename these methods to something more general
      */
     public void initializeSettings() { }
+
+    /**
+     * Called when the transform is new, initial settings should be
+     * created and saved in this method.
+     *
+     * XXX rename these methods to something more general
+     */
+    public void destroySettings() { }
 
     public void init(String[] args)
         throws TransformException, IllegalStateException

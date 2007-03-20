@@ -81,6 +81,8 @@ public interface LocalPortalManager
 
     PortalSettings getPortalSettings();
 
+    void destroyPortalSettings();
+
     void setPortalSettings(PortalSettings settings);
 
     List<PortalLogin> getActiveLogins();
