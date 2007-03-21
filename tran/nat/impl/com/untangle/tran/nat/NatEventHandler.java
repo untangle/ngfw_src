@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2007 Untangle, Inc.
+ * Copyright (c) 2003-2006 Untangle, Inc.
  * All rights reserved.
  *
  * This software is the confidential and proprietary information of
@@ -65,16 +65,20 @@ import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 
 import org.apache.log4j.Logger;
 
-/* Import all of the constants from NatConstants (1.5 feature) */
 import static com.untangle.tran.nat.NatConstants.*;
 
 class NatEventHandler extends AbstractEventHandler
 {
     private final Logger logger = Logger.getLogger(NatEventHandler.class);
-
-    /* Number of milliseconds to wait in between updating the address and updating the mvvm */
-    private static final int SLEEP_TIME = 1000;
-
+    
+    private static final String PROPERTY_BASE = "com.untangle.tran.nat.";
+    private static final String PROPERTY_TCP_PORT_START = PROPERTY_BASE + "tcp-port-start";
+    private static final String PROPERTY_TCP_PORT_END   = PROPERTY_BASE + "tcp-port-end";
+    private static final String PROPERTY_UDP_PORT_START = PROPERTY_BASE + "udp-port-start";
+    private static final String PROPERTY_UDP_PORT_END   = PROPERTY_BASE + "udp-port-end";
+    private static final String PROPERTY_ICMP_PID_START = PROPERTY_BASE + "icmp-pid-start";
+    private static final String PROPERTY_ICMP_PID_END   = PROPERTY_BASE + "icmp-pid-end";
+    
     /* match to determine whether a session is natted */
     private List<NatMatcher> natMatchers     = Collections.emptyList();
 
@@ -116,9 +120,17 @@ class NatEventHandler extends AbstractEventHandler
     {
         super(transform);
 
-        tcpPortList = PortList.makePortList( TCP_NAT_PORT_START, TCP_NAT_PORT_END );
-        udpPortList = PortList.makePortList( UDP_NAT_PORT_START, UDP_NAT_PORT_END );
-        icmpPidList = PortList.makePortList( ICMP_PID_START, ICMP_PID_END );
+        int start = Integer.getInteger( PROPERTY_TCP_PORT_START, TCP_NAT_PORT_START );
+        int end = Integer.getInteger( PROPERTY_TCP_PORT_END, TCP_NAT_PORT_END );
+        tcpPortList = PortList.makePortList( start, end );
+
+        start = Integer.getInteger( PROPERTY_UDP_PORT_START, UDP_NAT_PORT_START );
+        end = Integer.getInteger( PROPERTY_UDP_PORT_END, UDP_NAT_PORT_END );
+        udpPortList = PortList.makePortList( start, end );
+
+        start = Integer.getInteger( PROPERTY_ICMP_PID_START, ICMP_PID_START );
+        end = Integer.getInteger( PROPERTY_ICMP_PID_END, ICMP_PID_END );
+        icmpPidList = PortList.makePortList( start, end );
         this.transform = transform;
     }
 
