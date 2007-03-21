@@ -102,15 +102,17 @@ raiseFdLimit() {
 }
 
 getLicenseKey() {
-  # if the temp file isn't there, it means we already have a valid
-  # key, or the wizard hasn't run yet; in either case we don't want to
+  # the wizard has not run yet, exit right away
+  [[ ! -f $ACTIVATION_KEY_FILE ]] && return
+
+  # if the activation temp file isn't there, but the activation one
+  # is, it means we already have a valid key, so we don't want to
   # proceed any further.
   #
   # Copyright TeamJanky 2007: the double test is to avoid a possible
   # race condition where we pass 1), but the other backgrounded curl
   # completes before 2), and then when we reach 3) our temp file has
   # already been deleted and we're left in the cold...
-
   [[ -f $ACTIVATION_KEY_FILE_TMP ]] || return
   killall curl
   [[ -f $ACTIVATION_KEY_FILE_TMP ]] || return
@@ -264,8 +266,8 @@ while true; do
     while true; do
 
         # try to fetch a key right away; bg'ed so as to not block the
-        # rest of the mvvm.sh tasks. We ensure only one key-fetching function runs at all times
-
+        # rest of the mvvm.sh tasks. We ensure only one key-fetching
+        # function runs at all times
         getLicenseKey &
 
         sleep $SLEEP_TIME
