@@ -44,6 +44,6 @@ else
 
   # This next will fail if testing on development machines, which is "a good thing"
   echo "Installing sources list"
-  cat @MVVM_HOME@/conf/etc/apt_sources.list | sed "s/XXX_REG_KEY_XXX/$REG_KEY/" > @PREFIX@/etc/apt/sources.list
+  cat @MVVM_HOME@/conf/etc/apt_sources.list | sed "s/XXX_REG_KEY_XXX/`cat $ACTIVATION_KEY_FILE`/" > @PREFIX@/etc/apt/sources.list
   apt-get update
 fi
