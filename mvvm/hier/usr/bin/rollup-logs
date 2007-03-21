@@ -10,7 +10,7 @@ cutoff="date '$1' - interval '$2 days'"
 echo "Purging all report data older than $cutoff"
 
 # First do events
-echo "Purging base events"
+echo "Purging partitioned events"
 daystoremove=`mktemp`
 psql -U postgres -X -v cutoff="$cutoff" --pset tuples_only mvvm > $daystoremove <<EOF
   select day_name from events.event_data_days where day_begin < :cutoff ;
@@ -28,17 +28,17 @@ EOF
 done
 rm $daystoremove
 
-echo "Purging derived events"
-for c in @MVVM_SCHEMA@/*/rollup.sql; do
-    psql -U postgres -v cutoff="$cutoff" -f $c mvvm
-done
-
-# For safety, since we might have events in the parent tables.
-echo "Purging leftover events"
+# Also must purge the unpartitioned versions
+echo "Purging unpartitioned events"
 for c in `cat @MVVM_SCHEMA@/*/partitioned-tables`; do
     psql -U postgres -v cutoff="$cutoff" mvvm <<EOF
       DELETE FROM $c WHERE time_stamp < (:cutoff)::timestamp ;
 EOF
+done
+
+echo "Purging derived events"
+for c in @MVVM_SCHEMA@/*/rollup.sql; do
+    psql -U postgres -v cutoff="$cutoff" -f $c mvvm
 done
 
 # Then do reports

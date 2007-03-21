@@ -15,6 +15,9 @@ CREATE TABLE webpages (
         host text,
         content_length int4);
 
+-- Just in case
+DELETE FROM ONLY reports.webpages;
+
 
 --------------------------------------------------------------------------------
 -- Do the day

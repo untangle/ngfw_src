@@ -28,6 +28,9 @@ CREATE TABLE reports.emails_smtp (
         s_server_addr inet,
         PRIMARY KEY (msg_id));
 
+-- Just in case
+DELETE FROM ONLY reports.emails;
+DELETE FROM ONLY reports.emails_smtp;
 
 --------------------------------------------------------------------------------
 -- Do the day
@@ -49,14 +52,14 @@ CREATE TABLE reports.newemails AS
    WHERE msg.time_stamp >= TIMESTAMP :daybegin AND msg.time_stamp <= TIMESTAMP :dayend;
 
 INSERT INTO reports.emails_:dayname
-  SELECT msg.msg_id, time_stamp, subject, server_type, recip_addr.addr AS recip_addr, recip_addr.kind AS recip_kind, from_addr.addr AS from_addr, c_client_addr, s_server_addr
+  SELECT msg.msg_id, msg.time_stamp, subject, server_type, recip_addr.addr AS recip_addr, recip_addr.kind AS recip_kind, from_addr.addr AS from_addr, c_client_addr, s_server_addr
     FROM reports.newemails msg
          LEFT OUTER JOIN tr_mail_message_info_addr recip_addr ON (msg.msg_id = recip_addr.msg_id AND recip_addr.kind = 'U' and recip_addr.position = 1)
          LEFT OUTER JOIN tr_mail_message_info_addr from_addr ON (msg.msg_id = from_addr.msg_id AND from_addr.kind = 'F' and from_addr.position = 1)
    WHERE server_type != 'S';
 
 INSERT INTO reports.emails_smtp_:dayname
-  SELECT msg.msg_id, time_stamp, subject, server_type, recip_addr.addr AS recip_addr, recip_addr.kind AS recip_kind, from_addr.addr AS from_addr, c_client_addr, s_server_addr
+  SELECT msg.msg_id, msg.time_stamp, subject, server_type, recip_addr.addr AS recip_addr, recip_addr.kind AS recip_kind, from_addr.addr AS from_addr, c_client_addr, s_server_addr
     FROM reports.newemails msg
          LEFT OUTER JOIN tr_mail_message_info_addr recip_addr ON (msg.msg_id = recip_addr.msg_id AND recip_addr.kind = 'B' and recip_addr.position = 1)
          LEFT OUTER JOIN tr_mail_message_info_addr from_addr ON (msg.msg_id = from_addr.msg_id AND from_addr.kind = 'F' and from_addr.position = 1)

@@ -19,6 +19,8 @@ CREATE TABLE sessions (
         p2s_bytes int8,
         PRIMARY KEY (pl_endp_id));
 
+-- Just in case
+DELETE FROM ONLY reports.sessions;
 
 --------------------------------------------------------------------------------
 -- Do the day

@@ -120,37 +120,39 @@ $PSQL -v midnight="'$midnight'" -v daystosave="$NUMDAYSTOKEEP" -v intable="repor
 @USR_BIN@/rollup-logs $midnight $NUMDAYSTOKEEP
 
 # Build event partitions
-daystoadd=`mktemp`
-$PSQL -qt mvvm > $daystoadd <<EOF
-  select day_name, day_begin from events.daystoadd order by day_begin ;
-EOF
-while read dayname ignore daybegin; do
-    # Skip blank lines
-    if [ x"$dayname" = x ]; then
-        continue
-    fi
-    dayend="'$daybegin' + interval '1 days'"
-    for basetablename in `cat @MVVM_SCHEMA@/*/partitioned-tables`; do
-        doesEventTableExist $basetablename || continue
-        tablename=${basetablename}_$dayname
-        $PSQL -v tablename="$tablename" -v basetablename="$basetablename" -v daybegin="'$daybegin'" -v dayend="$dayend" -f @MVVM_SCHEMA@/mvvm/buildpartition.sql mvvm
-        rowcount=`$PSQL -qt mvvm -c "select count(*) from $tablename;"`
-        if [ -n "$rowcount" ]; then
-            if [ -a "$rowcount" -eq 0 ]; then
-                $PSQL mvvm -c "DROP TABLE $tablename;"
-            else
-                indicestoadd=`mktemp`
-                $PSQL -qt mvvm -c "select indexdef from pg_indexes where tablename = '$basetablename';" > $indicestoadd
-                sed -i $indicestoadd -e "s/$basetablename/$tablename/g" -e "s/\$/;/"
-                $PSQL -f $indicestoadd mvvm
-                rm $indicestoadd
-            fi
-        fi
-    done
-    $PSQL -v dayname="'$dayname'" -v daybegin="'$daybegin'" mvvm <<EOF
-      insert into events.event_data_days values (:dayname, DATE :daybegin);
-EOF
-done < $daystoadd
+# For 4.2, disabled.
+#
+# daystoadd=`mktemp`
+# $PSQL -qt mvvm > $daystoadd <<EOF
+#   select day_name, day_begin from events.daystoadd order by day_begin ;
+# EOF
+# while read dayname ignore daybegin; do
+#     # Skip blank lines
+#     if [ x"$dayname" = x ]; then
+#         continue
+#     fi
+#     dayend="'$daybegin' + interval '1 days'"
+#     for basetablename in `cat @MVVM_SCHEMA@/*/partitioned-tables`; do
+#         doesEventTableExist $basetablename || continue
+#         tablename=${basetablename}_$dayname
+#         $PSQL -v tablename="$tablename" -v basetablename="$basetablename" -v daybegin="'$daybegin'" -v dayend="$dayend" -f @MVVM_SCHEMA@/mvvm/buildpartition.sql mvvm
+#         rowcount=`$PSQL -qt mvvm -c "select count(*) from $tablename;"`
+#         if [ -n "$rowcount" ]; then
+#             if [ -a "$rowcount" -eq 0 ]; then
+#                 $PSQL mvvm -c "DROP TABLE $tablename;"
+#             else
+#                 indicestoadd=`mktemp`
+#                 $PSQL -qt mvvm -c "select indexdef from pg_indexes where tablename = '$basetablename';" > $indicestoadd
+#                 sed -i $indicestoadd -e "s/$basetablename/$tablename/g" -e "s/\$/;/"
+#                 $PSQL -f $indicestoadd mvvm
+#                 rm $indicestoadd
+#             fi
+#         fi
+#     done
+#     $PSQL -v dayname="'$dayname'" -v daybegin="'$daybegin'" mvvm <<EOF
+#       insert into events.event_data_days values (:dayname, DATE :daybegin);
+# EOF
+# done < $daystoadd
 # rm $daystoadd
 
 echo "VACUUM ANALYZE;" | $PSQL mvvm
@@ -197,7 +199,7 @@ EOF
 insert into reports.report_data_days values (:dayname, DATE :daybegin);
 EOF
         done < $daystoadd
-        # rm $daystoadd
+        rm $daystoadd
 
         echo "ANALYZE;" | $PSQL mvvm
 
