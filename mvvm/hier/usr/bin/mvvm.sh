@@ -102,11 +102,15 @@ raiseFdLimit() {
 }
 
 getLicenseKey() {
-  # if the temp file isn't there, it means we already have a valid key
+  # if the temp file isn't there, it means we already have a valid
+  # key, or the wizard hasn't run yet; in either case we don't want to
+  # proceed any further.
+  #
   # Copyright TeamJanky 2007: the double test is to avoid a possible
   # race condition where we pass 1), but the other backgrounded curl
   # completes before 2), and then when we reach 3) our temp file has
   # already been deleted and we're left in the cold...
+
   [[ -f $ACTIVATION_KEY_FILE_TMP ]] || return
   killall curl
   [[ -f $ACTIVATION_KEY_FILE_TMP ]] || return
