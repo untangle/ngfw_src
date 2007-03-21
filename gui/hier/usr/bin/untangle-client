@@ -9,6 +9,7 @@
 #
 # $Id: untangle-client,v 1.11 2005/02/24 04:38:35 inieves Exp $
 
+. @PREFIX@/etc/default/mvvm
 
 JAVA_HOME=${JAVA_HOME:-/opt/java}
 
@@ -27,7 +28,7 @@ ${JAVA_HOME}/bin/javaws -updateVersions
 #echo "Attempting to clear Webstart cache"
 #${JAVA_HOME}/bin/javaws -Xclearcache
 
-if [ -f /usr/share/metavize/.cdinstall ] ; then
+if [ -f $CD_INSTALL ] ; then
   jnlpFile=gui-local-cd.jnlp
 else
   jnlpFile=gui-local.jnlp

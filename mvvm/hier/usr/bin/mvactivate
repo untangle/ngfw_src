@@ -1,10 +1,7 @@
 #!/bin/sh
 
-KEY_VERIFICATION="@MVVM_HOME@/conf/etc/mvverifykey"
-CD_INSTALL="@MVVM_HOME@/.cdinstall"
-ACTIVATION_KEY_FILE="@MVVM_HOME@/activation.key"
-ACTIVATION_KEY_FILE_TMP="${ACTIVATION_KEY_FILE}.tmp"
-FAKE_KEY="0000-0000-0000-0000"
+. @PREFIX@/etc/default/mvvm
+
 REG_KEY="$1"
 
 if [ -f "$CD_INSTALL" ]; then
@@ -22,7 +19,7 @@ if [ -n "$REG_KEY" ] ; then # the install wizard is calling us
   # there: if it is, it means we're reinstalling after resetting to
   # factory defaults, and in this case we'd like to keep the same
   # key for POPtracking reasons (bug #2510)
-  if [[ ! -f $CD_INSTALL && ! -f $ACTIVATION_KEY_FILE_TMP ]] ; then
+  if [[ ! -f $ACTIVATION_KEY_FILE_TMP ]] ; then
     echo $REG_KEY > $ACTIVATION_KEY_FILE_TMP
   fi
 else
