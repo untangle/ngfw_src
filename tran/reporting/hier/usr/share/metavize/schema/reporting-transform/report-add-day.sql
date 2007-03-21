@@ -51,7 +51,7 @@ INSERT INTO sessions_:dayname
 
 DROP TABLE newsessions;
 
---CREATE INDEX sessions_reqid_idx_:dayname ON sessions_:dayname (request_id);
+CREATE INDEX sessions_plendp_idx_:dayname ON sessions_:dayname (pl_endp_id);
 CREATE INDEX sessions_ts_idx_:dayname ON sessions_:dayname (time_stamp);
 CREATE INDEX sessions_hname_idx_:dayname ON sessions_:dayname (hname);
 CREATE INDEX sessions_uid_idx_:dayname ON sessions_:dayname (uid);

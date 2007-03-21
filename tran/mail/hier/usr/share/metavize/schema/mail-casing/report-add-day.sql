@@ -67,8 +67,8 @@ INSERT INTO reports.emails_smtp_:dayname
 
 DROP TABLE newemails;
 
--- CREATE INDEX emails_msgid_idx_:dayname ON emails_:dayname (msg_id);
+CREATE INDEX emails_msgid_idx_:dayname ON emails_:dayname (msg_id);
 CREATE INDEX emails_ts_idx_:dayname ON emails_:dayname (time_stamp);
 
--- CREATE INDEX emails_smtp_msgid_idx_:dayname ON emails_smtp_:dayname (msg_id);
+CREATE INDEX emails_smtp_msgid_idx_:dayname ON emails_smtp_:dayname (msg_id);
 CREATE INDEX emails_smtp_ts_idx_:dayname ON emails_smtp_:dayname (time_stamp);
