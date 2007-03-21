@@ -131,7 +131,7 @@ public final class RBLClient implements Runnable {
             cContext.setResult(isBlacklisted);
 
             synchronized(this) {
-                this.notify(); // notify waiting thread and finish run()
+                this.notifyAll(); // notify waiting thread and finish run()
             }
 
             return;

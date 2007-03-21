@@ -46,6 +46,7 @@ public class ClamScannerClientLauncher extends VirusScannerClientLauncher {
         "Zip.ExceededFilesLimit",
         "GZip.ExceededFileSize",
         "BZip.ExceededFileSize",
+        "CAB.ExceededFileSize",
         "MSCAB.ExceededFileSize",
         "Archive.ExceededRecursionLimit",
         "PE.UPX.ExceededFileSize"

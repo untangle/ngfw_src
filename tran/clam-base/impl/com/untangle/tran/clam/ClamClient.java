@@ -61,7 +61,7 @@ public class ClamClient extends VirusClient {
         try {
             clamcSocket = VirusClientSocket.create(cContext.getHost(), cContext.getPort());
         } catch (Exception e) {
-            clogger.warn(dbgName + ", finish, clamc could not connect to main clamd (" + cContext.getHost() + ":" + cContext.getPort() + "); please confirm that clamd is properly configured", e);
+            clogger.warn(dbgName + ", finish, clamc could not connect to main clamd; clamd may not be configured or clamd may be overloaded", e);
             cleanExit();
             return;
         }
@@ -108,40 +108,63 @@ public class ClamClient extends VirusClient {
                 clamcSocket = null;
                 return;
             }
+
             BufferedOutputStream bufMsgOutputStream = msgcSocket.getBufferedOutputStream();
+            try {
+               // send message (on msg socket)
+               //
+               // if msg socket is interrupted (because of a thrown exception),
+               // we don't exit until we've checked the main socket
+               // - clamd will always have a result to report
 
-            // send message (on msg socket)
-            FileInputStream fInputStream = new FileInputStream(cContext.getMsgFile());
-            rBuf = new byte[READ_SZ];
+               FileInputStream fInputStream = new FileInputStream(cContext.getMsgFile());
+               rBuf = new byte[READ_SZ];
 
-            int rLen;
-            while (0 < (rLen = fInputStream.read(rBuf))) {
-                bufMsgOutputStream.write(rBuf, 0, rLen);
-                bufMsgOutputStream.flush();
+               int rLen;
+               while (0 < (rLen = fInputStream.read(rBuf))) {
+                   bufMsgOutputStream.write(rBuf, 0, rLen);
+                   bufMsgOutputStream.flush();
+               }
+               fInputStream.close();
+               fInputStream = null;
+               rBuf = null;
+            } catch (SocketException e) {
+                // thrown during read block
+                clogger.warn(dbgName + ", clamc msg socket closed/interrupted: " + clamcSocket + ", " + msgcSocket, e);
+                // fall through and check clamd result
+            } catch (IOException e) {
+                // not thrown
+                clogger.warn(dbgName + ", clamc msg i/o exception: " + clamcSocket + ", " + msgcSocket, e);
+                // fall through and check clamd result
+            } catch (Exception e) {
+                clogger.warn(dbgName + ", clamc msg failed", e);
+                // fall through and check clamd result
             }
-            fInputStream.close();
-            fInputStream = null;
-            rBuf = null;
+
             bufMsgOutputStream = null;
 
             // signal end of msg by closing msg socket
             cleanup(msgcSocket, cContext.getHost(), msgPort);
             msgcSocket = null;
 
-            if (true == this.stop) {
-                clogger.warn(dbgName + ", clamc interrupted post msg stream");
-                return; // return after finally
-            }
+            // ignore interrupt because one of above exceptions can force
+            // clamd to report "premature" result
+            // if (true == this.stop) {
+            //     clogger.warn(dbgName + ", clamc interrupted post msg stream");
+            //     return; // return after finally
+            // }
 
             // receive clamd result (on main socket)
             if (null == (line = bufReader.readLine()))
                 throw new Exception(dbgName + ", clamd/clamc terminated connection early (did not report result)");
 
             clogger.debug(dbgName + ", " + line); // stream: <result>
-            if (true == this.stop) {
-                clogger.warn(dbgName + ", clamc interrupted post clamd result");
-                return; // return after finally
-            }
+            // ignore interrupt because one of above exceptions can force
+            // clamd to report "premature" result
+            // if (true == this.stop) {
+            //     clogger.warn(dbgName + ", clamc interrupted post clamd result");
+            //     return; // return after finally
+            // }
 
             clamdMatcher = REP_RESULTP.matcher(line);
             if (false == clamdMatcher.find())
@@ -227,7 +250,7 @@ public class ClamClient extends VirusClient {
 
     private void parseClamdResult(String result) throws Exception {
         StringTokenizer sTokenizer = new StringTokenizer(result);
-        String virusName = "";
+        StringBuilder virusName = new StringBuilder();
         int tIdx = 0;
         boolean clean = true;
 
@@ -240,19 +263,26 @@ public class ClamClient extends VirusClient {
                     break; // skip stream: tag
                 case 1:
                     if (false == RESULT_OK.equalsIgnoreCase(tStr)) {
-                        virusName = tStr;
+                        virusName.append(tStr);
                         clean = false;
                     }
                     break;
                 case 2:
                     if (false == RESULT_FOUND.equalsIgnoreCase(tStr)) {
-                        clogger.warn(dbgName + ", clamd did not confirm OK or virus FOUND: " + virusName + " " + tStr + ", assuming clean");
-                        virusName = "";
-                        clean = true;
+                        if (true == result.toUpperCase().endsWith(RESULT_FOUND)) {
+                            clogger.warn(dbgName + ", clamd changed format of result: " + result);
+                            virusName.append(" ").append(tStr);
+                        } else {
+                            clogger.warn(dbgName + ", clamd reported error result: " + result);
+                            cContext.setResultError();
+                            return;
+                        }
                     }
                     break;
                 default:
-                    clogger.warn(dbgName + ", clamd result has extra parameter: " + tStr);
+                    if (false == RESULT_FOUND.equalsIgnoreCase(tStr)) {
+                        virusName.append(" ").append(tStr);
+                    }
                     break;
             }
             tIdx++;
@@ -263,7 +293,7 @@ public class ClamClient extends VirusClient {
         if (CLAMD_RESULT_PARAM_CNT > tIdx)
             throw new Exception(dbgName + ", clamd response has less than " + CLAMD_RESULT_PARAM_CNT + " parameters");
 
-        cContext.setResult(clean, virusName, false);
+        cContext.setResult(clean, virusName.toString(), false);
         return;
     }
 }

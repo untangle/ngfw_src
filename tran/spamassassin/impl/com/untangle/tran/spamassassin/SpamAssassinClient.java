@@ -146,7 +146,7 @@ public final class SpamAssassinClient implements Runnable {
         try {
             spamcSocket = SpamAssassinClientSocket.create(cContext.getHost(), cContext.getPort());
         } catch (Exception e) {
-            logger.warn(dbgName + ", finish, spamc could not connect to spamd (" + cContext.getHost() + ":" + cContext.getPort() + "); please confirm that spamd is configured", e);
+            logger.warn(dbgName + ", finish, spamc could not connect to spamd; spamd may not be configured or spamd may be overloaded", e);
             cleanExit();
             return;
         }
@@ -340,7 +340,7 @@ public final class SpamAssassinClient implements Runnable {
 
     private void cleanExit() {
         synchronized (this) {
-            this.notify(); // notify waiting thread and finish run()
+            this.notifyAll(); // notify waiting thread and finish run()
             return;
         }
     }

@@ -96,7 +96,7 @@ abstract public class VirusClient implements Runnable {
 
     public void cleanExit() {
         synchronized (this) {
-            this.notify(); // notify waiting thread and finish run()
+            this.notifyAll(); // notify waiting thread and finish run()
             return;
         }
     }

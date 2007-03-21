@@ -34,6 +34,11 @@ public final class VirusClientContext {
         return iSettings.getPort();
     }
 
+    public void setResultError() {
+        this.virusReport = VirusScannerResult.ERROR;
+        return;
+    }
+
     public void setResult(boolean clean, String virusName, boolean virusCleaned) {
         if (true == clean) {
             this.virusReport = VirusScannerResult.CLEAN;
