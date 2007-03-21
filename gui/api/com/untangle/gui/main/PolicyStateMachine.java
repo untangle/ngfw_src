@@ -497,9 +497,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 // AUTO ON
                 if( transformDesc.getName().startsWith("nat") || transformDesc.getName().startsWith("openvpn") ){
                     mTransformJPanel.setPowerOnHintVisible(true);
-                    MOneButtonJDialog.factory( Util.getMMainJFrame(), "",					       
-                                               "This product can not be automatically turned on:<br>"
-                                               + transformDesc.getDisplayName()
+                    MOneButtonJDialog.factory( Util.getMMainJFrame(), "", transformDesc.getDisplayName() 
+                                               + " can not be automatically turned on."
                                                + "<br>Please configure its settings first.",
                                                transformDesc.getDisplayName() + " Warning", "");
                 }
@@ -861,9 +860,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         // AUTO ON
                         if( newMackageDesc.getName().startsWith("nat") || newMackageDesc.getName().startsWith("openvpn") ){
                             mTransformJPanel.setPowerOnHintVisible(true);
-                            MOneButtonJDialog.factory( Util.getMMainJFrame(), "",					       
-                                                       "This product can not be automatically turned on:<br>"
-                                                       + newMackageDesc.getDisplayName()
+                            MOneButtonJDialog.factory( Util.getMMainJFrame(), "", newMackageDesc.getDisplayName()
+                                                       + " can not be automatically turned on."
                                                        + "<br>Please configure its settings first.",
                                                        newMackageDesc.getDisplayName() + " Warning", "");
                         }
@@ -1194,7 +1192,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 	}
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             progressBar.setValue(64);
-            progressBar.setString("Populating Toolbox...");
+            progressBar.setString("Populating My Apps...");
         }});
         int progress = 0;
         final float overallFinal = (float) (installedMackageMap.size() * (policyTidMap.size()+2)); // +1 for cores, +1 for util&serv
