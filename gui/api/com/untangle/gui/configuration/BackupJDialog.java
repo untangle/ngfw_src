@@ -166,7 +166,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 contentJPanel3.setLayout(new java.awt.GridBagLayout());
 
                 jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel4.setText("<html> You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \".egbackup\"<br> <br> After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".</html>");
+                jLabel4.setText("<html> You can backup your current system configuration to a file on your local computer for later restoration, in the event that you would like to replace new settings with your current settings.  The file name will end with \"" + BACKUP_EXTENSION + "\"<br> <br> After backing up your current system configuration to a file, you can then restore that configuration through this dialog by going to \"Restore\" -> \"From Local File\".</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -345,7 +345,7 @@ public class BackupJDialog extends javax.swing.JDialog implements java.awt.event
                 contentJPanel4.setLayout(new java.awt.GridBagLayout());
 
                 jLabel5.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel5.setText("<html> You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \".egbackup\"</html>");
+                jLabel5.setText("<html> You can restore a previous system configuration from a backup file on your local computer.  The backup file name ends with \"" + BACKUP_EXTENSION + "\"</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
