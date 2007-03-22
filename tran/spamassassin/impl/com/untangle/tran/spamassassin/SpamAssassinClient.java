@@ -41,7 +41,8 @@ public final class SpamAssassinClient implements Runnable {
     private final static String LWSPO = "(\\p{Blank})+"; // linear-white-spaces
     private final static String LWSPA = "(\\p{Blank})*"; // any lwsp
     private final static String DGT = "(\\p{Digit})+"; // digits -> integer
-    private final static String NMBR = DGT + "\\." + DGT; // number
+    private final static String P_NMBR = DGT + "\\." + DGT; // pos number
+    private final static String NMBR = "(-)?" + DGT + "\\." + DGT; // pos or neg number
     private final static String ALPHA = "(\\p{Alpha})+"; // alpha chars
     private final static String EX_CODE = ALPHA + "_" + ALPHA; // exit code
 
@@ -56,7 +57,7 @@ public final class SpamAssassinClient implements Runnable {
     private final static String REQ_CONTENTLEN_TAG = CONTENTLEN + " ";
 
     // spam daemon hdr - checked during run-time
-    private final static String REPLY_DHDR = "^SPAMD/" + NMBR + LWSPO + DGT + LWSPO;
+    private final static String REPLY_DHDR = "^SPAMD/" + P_NMBR + LWSPO + DGT + LWSPO;
     private final static String REP_CONTENTLEN_DHDR = "^" + CONTENTLEN + LWSPA + DGT;
     private final static String REP_SPAM_DHDR = "^Spam:" + LWSPA + ALPHA + LWSPA + ";" + LWSPA + NMBR + LWSPA + "/" + LWSPA + NMBR;
     private final static Pattern REPLY_DHDRP = Pattern.compile(REPLY_DHDR, Pattern.CASE_INSENSITIVE);
