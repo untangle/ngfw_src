@@ -138,8 +138,15 @@ isServiceRunning() {
     extraArgs="-x"
     shift
   fi
-  pidof $extraArgs "$1"
-  return $?
+  # I cannot fucking believe I have to call pidof 3 times in a row to
+  # "make sure" (#2534)
+  let i=0
+  while [[ $i -lt 3 ]] ; do
+    pidof $extraArgs "$1" && return 0
+    let i=$i+1
+    sleep .5
+  done
+  return 1
 }
 
 restartServiceIfNeeded() {
