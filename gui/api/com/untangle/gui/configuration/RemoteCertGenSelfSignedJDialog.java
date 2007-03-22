@@ -317,7 +317,6 @@ public class RemoteCertGenSelfSignedJDialog extends javax.swing.JDialog implemen
     public void run(){
         try{
         final String hostname = Util.getNetworkManager().getHostname().toString();
-        hostnameJTextField.setText(hostname);
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             hostnameJTextField.setText(hostname);
         }});
