@@ -127,8 +127,8 @@ getLicenseKey() {
   if curl --insecure --fail -o $TMP_ARCHIVE `printf ${ACTIVATION_URL_TEMPLATE} $KEY $(/usr/bin/mvip)`; then
     tar -C / -xf $TMP_ARCHIVE
     rm -f $ACTIVATION_KEY_FILE_TMP
-    /usr/bin/mvactivate
-    /usr/bin/mvregister # trigger root passwd generation
+    @PREFIX@/usr/bin/mvactivate
+    @PREFIX@/usr/bin/mvregister # trigger root passwd generation
   fi
 }
 
