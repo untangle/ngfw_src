@@ -64,11 +64,9 @@ public class Quarantine
 
   private static final long ONE_DAY = (1000L * 60L * 60L * 24L);
 
-  private final Logger m_logger =
-    Logger.getLogger(Quarantine.class);
+  private final Logger m_logger = Logger.getLogger(Quarantine.class);
   private QuarantineStore m_store;
-  private RescueEjectionHandler m_rescueHandler =
-    new RescueEjectionHandler();
+  private RescueEjectionHandler m_rescueHandler = new RescueEjectionHandler();
   private DigestGenerator m_digestGenerator;
   private AuthTokenManager m_atm;
   private QuarantineSettings m_settings = new QuarantineSettings();
@@ -152,12 +150,12 @@ public class Quarantine
           }
 
           Runnable r = new Runnable()
+          {
+              public void run()
               {
-                  public void run()
-                  {
-                      cronCallback();
-                  }
-              };
+                  cronCallback();
+              }
+          };
           m_cronJob = MvvmContextFactory.context().makeCronJob(p, r);
         }
       }
@@ -199,29 +197,26 @@ public class Quarantine
    */
   public void sendDigestsNow() {
     List<Inbox> allInboxes = m_store.listInboxes();
-
     long cutoff = System.currentTimeMillis() - ONE_DAY;
 
     for(Inbox inbox : allInboxes) {
       Pair<QuarantineStore.GenericStatus, InboxIndexImpl> result =
         m_store.getIndex(inbox.getAddress());
+
       if(result.a == QuarantineStore.GenericStatus.SUCCESS) {
         if(result.b.size() > 0) {
           if(result.b.getNewestMailTimestamp() < cutoff) {
             m_logger.debug("No need to send digest to \"" +
               inbox.getAddress() + "\", no new mails in last 24 hours (" +
                 result.b.getNewestMailTimestamp() + " millis)");
-          }
-          else {
+          } else {
             if(sendDigestEmail(inbox.getAddress(), result.b)) {
               m_logger.debug("Sent digest to \"" + inbox.getAddress() + "\"");
-            }
-            else {
+            } else {
               m_logger.warn("Unable to send digest to \"" + inbox.getAddress() + "\"");
             }
           }
-        }
-        else {
+        } else {
           m_logger.debug("No need to send digest to \"" + inbox.getAddress() + "\", no mails");
         }
       }
@@ -231,7 +226,6 @@ public class Quarantine
   private String getInternalIPAsString() {
     return MvvmContextFactory.context().networkManager().getPublicAddress();
   }
-
 
   //--QuarantineTransformView--
 
@@ -257,8 +251,7 @@ public class Quarantine
     if(getInternalIPAsString() == null) {
       //TODO bscott It would be nice to not repeat
       //     this warning msg
-      m_logger.warn("No inside interface, so no way for folks to release inbox.  Abort " +
-        "quarantining");
+      m_logger.warn("No inside interface, so no way for folks to release inbox.  Abort quarantining");
       return false;
     }
 
@@ -300,8 +293,7 @@ public class Quarantine
 
       if(inboxAddress != null) {
          m_logger.debug("Recipient \"" + recipientAddress + "\" remaps to \"" + inboxAddress + "\"");
-      }
-      else {
+      } else {
         inboxAddress = recipientAddress;
       }
 
@@ -309,7 +301,7 @@ public class Quarantine
       if(listForInbox == null) {
         listForInbox = new ArrayList<String>();
         recipientGroupings.put(inboxAddress, listForInbox);
-      };
+      }
       listForInbox.add(recipientAddress);
     }
 
@@ -319,7 +311,6 @@ public class Quarantine
     boolean allSuccess = true;
 
     for(Map.Entry<String, List<String>> entry : recipientGroupings.entrySet()) {
-
       String inboxAddress = entry.getKey();
 
       //Get recipients as an array
@@ -336,16 +327,14 @@ public class Quarantine
       if(result.a == QuarantineStore.AdditionStatus.FAILURE) {
         allSuccess = false;
         break;
-      }
-      else {
+      } else {
         outcomeList.add(new Pair<String, String>(inboxAddress, result.b));
       }
     }
 
     //Rollback
     if(!allSuccess) {
-      m_logger.debug("Quarantine for multiple recipients had failure.  Rollback " +
-        "any success");
+      m_logger.debug("Quarantine for multiple recipients had failure.  Rollback any success");
       for(Pair<String, String> addition : outcomeList) {
         m_store.purge(addition.a, addition.b);
       }
@@ -379,8 +368,7 @@ public class Quarantine
             sRecipients.get(0),
             summary,
             true).a != QuarantineStore.AdditionStatus.FAILURE;
-    }
-    else {
+    } else {
       ArrayList<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
       boolean allSuccess = true;
       for(String addr : sRecipients) {
@@ -608,8 +596,7 @@ public class Quarantine
                                                     m_atm);
 
     if(msg == null) {
-      m_logger.debug("Unable to generate digest message " +
-        "for \"" + account + "\"");
+      m_logger.debug("Unable to generate digest message for \"" + account + "\"");
       return false;
     }
 
@@ -618,8 +605,7 @@ public class Quarantine
     try {
       ByteBuffer buf = msg.toByteBuffer();
       in = new ByteBufferInputStream(buf);
-    }
-    catch(Exception ex) {
+    } catch(Exception ex) {
       m_logger.error("Exception converting MIMEMessage to a byte[]", ex);
       IOUtil.close(in);
       return false;
@@ -639,8 +625,7 @@ public class Quarantine
 
     if(status == QuarantineStore.GenericStatus.NO_SUCH_INBOX) {
       throw new NoSuchInboxException(account);
-    }
-    else if(status == QuarantineStore.GenericStatus.ERROR) {
+    } else if(status == QuarantineStore.GenericStatus.ERROR) {
       throw new QuarantineUserActionFailedException();
     }
   }
@@ -704,8 +689,7 @@ public class Quarantine
         if(success) {
           m_logger.debug("Released mail \"" + record.getMailID() + "\" for " + recipients.length +
             " recipients from inbox \"" + inboxAddress + "\"");
-        }
-        else {
+        } else {
           m_logger.warn("Unable to release mail \"" + record.getMailID() + "\" for " + recipients.length +
             " recipients from inbox \"" + inboxAddress + "\"");
         }
