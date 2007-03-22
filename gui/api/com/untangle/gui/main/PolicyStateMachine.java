@@ -746,7 +746,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             }
             Util.printMessage("MoveFromStoreToToolboxThread Stopped");
         }
-        private void purchase(final MTransformJButton mTransformJButton, final Policy targetPolicy) throws InterruptedException {
+        private void purchase(MTransformJButton mTransformJButton, final Policy targetPolicy) throws InterruptedException {
             try{
                 //// MAKE SURE NOT PREVIOUSLY INSTALLED AS PART OF A BUNDLE
                 MackageDesc[] originalUninstalledMackages = Util.getToolboxManager().uninstalled();
@@ -759,6 +759,13 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 }
                 if( installed )
                     return;
+                //// GET THE CORRECT BUTTON TO MESS WIT CAUSE STORE REFRESH MAY HAVE SHANKED US
+                for( MTransformJButton storeButton : storeMap.values() ){
+                    if( storeButton.getName().equals(mTransformJButton.getName()) ){
+                        mTransformJButton = storeButton;
+                        break;
+                    }
+                }
                 //// DOWNLOAD FROM SERVER
                 MackageDesc[] originalInstalledMackages = Util.getToolboxManager().installed(); // for use later
                 String installName = mTransformJButton.getName();
@@ -785,8 +792,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 Thread.currentThread().sleep(DOWNLOAD_FINAL_PAUSE_MILLIS);
                 // INSTALL INTO TOOLBOX
                 long installStartTime = System.currentTimeMillis();
+                final MTransformJButton finalJButton = mTransformJButton;
                 SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                    mTransformJButton.setDeployingView(); //Progress("Installing...", 101);
+                    finalJButton.setDeployingView(); //Progress("Installing...", 101);
                 }});
                 boolean mackageInstalled = false;
                 MackageDesc[] currentInstalledMackages = null;
@@ -889,9 +897,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     }
                 }
                 // SHOW DEPLOYED PROGRESS
+                final MTransformJButton finalJButton2 = mTransformJButton;
                 SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                    mTransformJButton.setProgress("Installed!", 100);
-                    mTransformJButton.setEnabled(false);
+                    finalJButton2.setProgress("Installed!", 100);
+                    finalJButton2.setEnabled(false);
                 }});
                 Thread.currentThread().sleep(INSTALL_FINAL_PAUSE_MILLIS);
                 // REFRESH STATE OF ALL EXISTING APPLIANCES
@@ -917,19 +926,20 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     catch(Exception f){
                         Util.handleExceptionNoRestart("Error purchasing:", f);
                         mTransformJButton.setFailedProcureView();
+                        final MTransformJButton finalJButton3 = mTransformJButton;
                         SwingUtilities.invokeLater( new Runnable(){ public void run(){
                             MOneButtonJDialog.factory(Util.getMMainJFrame(), "",						  
                                                       "A problem occurred while purchasing:<br>"
-                                                      + mTransformJButton.getDisplayName()
+                                                      + finalJButton3.getDisplayName()
                                                       + "<br>Please try again or contact Untangle Support for assistance.",
-                                                      mTransformJButton.getDisplayName() + " Warning", "");
+                                                      finalJButton3.getDisplayName() + " Warning", "");
                         }});
                     }
                 }
             }
             finally{
                 // REMOVE FROM STORE / UPDATE STORE MODEL
-                updateStoreModel();
+                updateStoreModelBlocking();
             }
         }
     }
@@ -980,6 +990,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     }
 
     public void updateStoreModel(){ storeModelThread.updateStoreModel(); }
+    public void updateStoreModelBlocking(){ storeModelThread.updateStoreModelBlocking(); }
     private class StoreModelThread extends Thread implements Shutdownable {
         private JProgressBar storeProgressBar;
         private volatile boolean doUpdate = false;
@@ -1002,13 +1013,16 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             doUpdate = true;
             notify();
         }
-	public synchronized void doShutdown(){
-	    if(!stop){
-		stop = true;
-		notify();
-		interrupt();
-	    }
-	}
+        public synchronized void updateStoreModelBlocking(){
+            initStoreModel();
+        }
+        public synchronized void doShutdown(){
+            if(!stop){
+                stop = true;
+                notify();
+                interrupt();
+            }
+        }
         public void run(){
             // MAIN STORE EVENT LOOP
             while(!stop){
@@ -1046,6 +1060,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 	    for(MTransformJPanel mTransformJPanel : coreRackMap.values()){
 		mTransformJPanel.doRefreshState();
 	    }
+
+
             // SHOW THE USER WHATS GOING ON
             SwingUtilities.invokeLater( new Runnable(){ public void run(){
                 // CLEAR OUT THE STORE
@@ -1058,25 +1074,27 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 storeJPanel.revalidate();
                 storeJPanel.repaint();
             }});
-            // CHECK FOR STORE CONNECTIVITY AND AVAILABLE ITEMS
-            boolean connectedToStore = false;
-            MackageDesc[] storeItemsAvailable = null;
-            try{
-                Util.getToolboxManager().update();
-                storeItemsAvailable = Util.getToolboxManager().uninstalled();
-                /*
-                if( storeItemsAvailable == null )
-                    System.out.println("items: null");
-                else
-                    System.out.println("items: " + storeItemsAvailable.length);
-                */
-                connectedToStore = true;
-            }
-            catch(Exception e){
-                Util.handleExceptionNoRestart("Error: unable to connect to store",e);
-            }
-            // SHOW RESULTS
-            if( !connectedToStore ){
+
+
+        // CHECK FOR STORE CONNECTIVITY AND AVAILABLE ITEMS
+        boolean connectedToStore = false;
+        MackageDesc[] storeItemsAvailable = null;
+        try{
+            Util.getToolboxManager().update();
+            storeItemsAvailable = Util.getToolboxManager().uninstalled();
+            /*
+              if( storeItemsAvailable == null )
+              System.out.println("items: null");
+              else
+              System.out.println("items: " + storeItemsAvailable.length);
+            */
+            connectedToStore = true;
+        }
+        catch(Exception e){
+            Util.handleExceptionNoRestart("Error: unable to connect to store",e);
+        }
+        // SHOW RESULTS
+        if( !connectedToStore ){
                 // NO CONNECTION
                 SwingUtilities.invokeLater( new Runnable(){ public void run(){
                     storeProgressBar.setValue(1);
@@ -1148,6 +1166,49 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 			    addToStore(mackageDesc,false);
 		        }
 		    */
+
+                    
+                    /*
+            // COMPUTE REMOVED BUTTONS
+            Vector<MTransformJButton> removedVector = new Vector<MTransformJButton>();
+            for( MTransformJButton storeButton : storeMap.values() ){
+                String storeButtonName = storeButton.getName().substring(0, storeButtonName.indexOf('-'));
+                boolean found = false;
+                for( MackageDesc mackageDesc : storeItemsAvailable ){
+                    String mackageDescName = mackageDesc.getName();
+                    if( mackageDescName.endsWith(STOREITEM_EXTENSION) && !mackageDescName.endsWith(TRIAL_EXTENSION) ){
+                        mackageDescName = mackageDescName.substring(0, mackageDescName.indexOf('-'));
+                        if( storeButtonName.equals(mackageDescName) ){
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if(!found)
+                    removedVector.add(storeButton);
+            }
+
+            // COMPUTE ADDABLE MACKAGES
+            Vector<MackageDesc> addableVector = new Vector<MackageDesc>();
+            for( MackageDesc mackageDesc : storeItemsAvailable ){
+                String mackageDescName = mackageDesc.getName();
+                boolean found = false;
+                if( mackageDescName.endsWith(STOREITEM_EXTENSION) && !mackageDescName.endsWith(TRIAL_EXTENSION) ){
+                    mackageDescName = mackageDescName.substring(0, mackageDescName.indexOf('-'));
+                    for( MTransformJButton storeButton : storeMap.values() ){
+                        String storeButtonName = storeButton.getName().substring(0, storeButtonName.indexOf('-'));
+                        if( storeButtonName.equals(mackageDescName) ){
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if(!found)
+                    addableVector.add(mackageDesc);
+            }
+                    */
+
+            
 		    // ADD TO STORE IF NOT A TRIAL
 		    for( MackageDesc mackageDesc : storeItemsAvailable ){
 			String name = mackageDesc.getName();
@@ -1160,7 +1221,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 //System.out.println("failed");
             }
 		    }			    
-
+            
                     revalidateStore();
                 }
             }
