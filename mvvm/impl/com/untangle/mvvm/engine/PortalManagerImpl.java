@@ -177,12 +177,12 @@ class PortalManagerImpl implements LocalPortalManager
                 public boolean doWork(Session s)
                 {
                     s.delete(PortalManagerImpl.this.portalSettings);
+                    PortalManagerImpl.this.portalSettings = PortalSettings.getBlankSettings();
+                    s.save(PortalManagerImpl.this.portalSettings);
                     return true;
                 }
             };
         mvvmContext.runTransaction(tw);
-
-        this.portalSettings = null;
     }
 
     public PortalHomeSettings getPortalHomeSettings(PortalUser user)

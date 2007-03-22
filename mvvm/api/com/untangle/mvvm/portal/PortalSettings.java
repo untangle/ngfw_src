@@ -65,8 +65,9 @@ public class PortalSettings implements Serializable
     public PortalUser addUser(String uid)
     {
         PortalUser newUser = new PortalUser(uid, null);
-        if (users == null)
+        if (users == null) {
             users = new ArrayList();
+        }
         users.add(newUser);
         return newUser;
     }
