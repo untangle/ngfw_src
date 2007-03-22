@@ -111,6 +111,7 @@ public class MaintenanceSecretJPanel extends javax.swing.JPanel
                 gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
                 externalRemoteJPanel.add(jLabel1, gridBagConstraints);
 
+                script1JTextArea.setFont(new java.awt.Font("Monospaced", 0, 12));
                 jScrollPane1.setViewportView(script1JTextArea);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
@@ -121,6 +122,7 @@ public class MaintenanceSecretJPanel extends javax.swing.JPanel
                 gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
                 externalRemoteJPanel.add(jScrollPane1, gridBagConstraints);
 
+                script2JTextArea.setFont(new java.awt.Font("Monospaced", 0, 12));
                 jScrollPane2.setViewportView(script2JTextArea);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();

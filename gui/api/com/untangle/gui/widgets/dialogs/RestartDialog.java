@@ -20,6 +20,7 @@ import java.awt.Dialog;
 
 final public class RestartDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
+	private Window window;
     public static RestartDialog factory(Container parentContainer){
 	if(parentContainer instanceof Dialog)
 	    return new RestartDialog((Dialog)parentContainer);
@@ -42,16 +43,31 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
     private void init(Window parentWindow){
 	initComponents();
         addWindowListener(this);
-        setBounds( Util.generateCenteredBounds(parentWindow, this.getWidth(), this.getHeight()) );
+		this.window = window;        
         setVisible(true);
     }
 
+	public void setVisible(boolean isVisible){
+		if(isVisible){
+				pack();
+				setBounds( Util.generateCenteredBounds(window, this.getWidth(), this.getHeight()) );		
+		}
+		super.setVisible(isVisible);
+		if(!isVisible){
+				dispose();
+				Util.exit(0);		
+		}
+	    
+	}
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
 
-                proceedJButton = new javax.swing.JButton();
-                messageJLabel = new javax.swing.JLabel();
+                iconJLabel = new javax.swing.JLabel();
+                dividerJPanel = new javax.swing.JPanel();
+                jPanel1 = new javax.swing.JPanel();
                 labelJLabel = new javax.swing.JLabel();
+                messageJLabel = new javax.swing.JLabel();
+                proceedJButton = new javax.swing.JButton();
                 backgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
 
                 getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -60,6 +76,62 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
                 setTitle("Confirm Restart...");
                 setModal(true);
                 setResizable(false);
+                iconJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconDialogStop_96x96.png")));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 20);
+                getContentPane().add(iconJLabel, gridBagConstraints);
+
+                dividerJPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(154, 154, 154)));
+                dividerJPanel.setMaximumSize(new java.awt.Dimension(1, 1600));
+                dividerJPanel.setMinimumSize(new java.awt.Dimension(1, 10));
+                dividerJPanel.setOpaque(false);
+                dividerJPanel.setPreferredSize(new java.awt.Dimension(1, 10));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(20, 0, 20, 0);
+                getContentPane().add(dividerJPanel, gridBagConstraints);
+
+                jPanel1.setLayout(new java.awt.GridBagLayout());
+
+                jPanel1.setMaximumSize(null);
+                jPanel1.setMinimumSize(null);
+                jPanel1.setOpaque(false);
+                labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
+                labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                labelJLabel.setText("Attention:");
+                labelJLabel.setFocusable(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
+                jPanel1.add(labelJLabel, gridBagConstraints);
+
+                messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                messageJLabel.setText("<html><center>\nYou must now exit this program.<br>\nYou can log in again after a brief period.<br>\n<font color=\"FF0000\"><b>DO NOT MANUALLY SHUTDOWN OR RESTART THE UNTANGLE SERVER WHILE IT IS UPGRADING!</b></font>\n</center></html>");
+                messageJLabel.setFocusable(false);
+                messageJLabel.setMaximumSize(null);
+                messageJLabel.setMinimumSize(null);
+                messageJLabel.setPreferredSize(null);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
+                jPanel1.add(messageJLabel, gridBagConstraints);
+
                 proceedJButton.setFont(new java.awt.Font("Default", 1, 12));
                 proceedJButton.setText("Exit");
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
@@ -70,33 +142,13 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 13, 0);
-                getContentPane().add(proceedJButton, gridBagConstraints);
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.weightx = 1.0;
+                jPanel1.add(proceedJButton, gridBagConstraints);
 
-                messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                messageJLabel.setText("<html><center>\nYou must now exit this program.<br>\nYou can log in again after a brief period.<br>\n<font color=\"FF0000\"><b>DO NOT MANUALLY SHUTDOWN OR RESTART THE UNTANGLE SERVER WHILE IT IS UPGRADING!</b></font>\n</center></html>");
-                messageJLabel.setPreferredSize(new java.awt.Dimension(400, 45));
                 gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-                gridBagConstraints.insets = new java.awt.Insets(50, 30, 0, 30);
-                getContentPane().add(messageJLabel, gridBagConstraints);
-
-                labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
-                labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                labelJLabel.setText("Attention:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-                gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
-                getContentPane().add(labelJLabel, gridBagConstraints);
+                gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 20);
+                getContentPane().add(jPanel1, gridBagConstraints);
 
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -107,13 +159,12 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridwidth = 3;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
                 getContentPane().add(backgroundJLabel, gridBagConstraints);
 
-                java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-                setBounds((screenSize.width-466)/2, (screenSize.height-220)/2, 466, 220);
         }//GEN-END:initComponents
 
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
@@ -123,8 +174,6 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
 
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
         this.setVisible(false);
-        dispose();
-        Util.exit(0);
     }
 
 
@@ -138,6 +187,9 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JLabel backgroundJLabel;
+        private javax.swing.JPanel dividerJPanel;
+        private javax.swing.JLabel iconJLabel;
+        private javax.swing.JPanel jPanel1;
         private javax.swing.JLabel labelJLabel;
         private javax.swing.JLabel messageJLabel;
         private javax.swing.JButton proceedJButton;

@@ -78,7 +78,6 @@ public class InitialSetupNetworkJPanel extends MWizardPageJPanel {
     String pppoeName;
     String pppoePassword;
     
-    MProgressJDialog mProgressJDialog;
     JProgressBar jProgressBar;
 
     public void doSave(Object settings, boolean validateOnly) throws Exception {

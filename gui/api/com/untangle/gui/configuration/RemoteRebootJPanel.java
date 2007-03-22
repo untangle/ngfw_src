@@ -17,6 +17,7 @@ import com.untangle.gui.widgets.dialogs.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.border.EtchedBorder;
 
 
 public class RemoteRebootJPanel extends JPanel implements ActionListener {
@@ -27,7 +28,6 @@ public class RemoteRebootJPanel extends JPanel implements ActionListener {
 
     public RemoteRebootJPanel(){
 	this.setLayout(new GridBagLayout());
-        
         JButton rebootJButton;
         rebootJButton = new JButton("Reboot");
         rebootJButton.setFont(new java.awt.Font("Arial", 0, 11));
@@ -53,8 +53,9 @@ public class RemoteRebootJPanel extends JPanel implements ActionListener {
 	if( Util.getIsDemo() )
 	    return;
 	MTwoButtonJDialog warningJDialog = MTwoButtonJDialog.factory((Window)this.getTopLevelAncestor(), "",
-				  "You are about to manually reboot.  This will interrupt normal network operations" +
-				  " until the Untangle Server is finished automatically restarting.  This may take up to several minutes to complete.",
+				  "You are about to manually reboot.  This will interrupt normal network operations<br>" +
+				  "until the Untangle Server is finished automatically restarting.<br>" +
+				  "This may take up to several minutes to complete.",
 				  "Manual Reboot Warning", "Warning");
 	warningJDialog.setVisible(true);
 	if( warningJDialog.isProceeding() ){

@@ -22,6 +22,7 @@ public class StealLoginJDialog extends javax.swing.JDialog implements java.awt.e
         messageJLabel.setText("<html><center>" + loginName + " is is currently logged in at " + (loginAddress.equals("127.0.0.1")?"the console.":loginAddress)
                               + "<br><br>You may cancel your login, or you can continue your login<br>which will automatically logout the other user.</center></html>");
         this.addWindowListener(this);
+		pack();
         this.setBounds( Util.generateCenteredBounds(Util.getMLoginJFrame().getBounds(), this.getWidth(), this.getHeight()) );
         this.setVisible(true);
     }
@@ -29,10 +30,14 @@ public class StealLoginJDialog extends javax.swing.JDialog implements java.awt.e
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
 
+                iconJLabel = new javax.swing.JLabel();
+                dividerJPanel = new javax.swing.JPanel();
+                jPanel1 = new javax.swing.JPanel();
+                labelJLabel = new javax.swing.JLabel();
+                messageJLabel = new javax.swing.JLabel();
+                jPanel2 = new javax.swing.JPanel();
                 cancelJButton = new javax.swing.JButton();
                 proceedJButton = new javax.swing.JButton();
-                messageJLabel = new javax.swing.JLabel();
-                labelJLabel = new javax.swing.JLabel();
                 backgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
 
                 getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -41,6 +46,58 @@ public class StealLoginJDialog extends javax.swing.JDialog implements java.awt.e
                 setTitle("Confirm Login...");
                 setModal(true);
                 setResizable(false);
+                iconJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconDialogAttention_96x96.png")));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 20);
+                getContentPane().add(iconJLabel, gridBagConstraints);
+
+                dividerJPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(154, 154, 154)));
+                dividerJPanel.setMaximumSize(new java.awt.Dimension(1, 1600));
+                dividerJPanel.setMinimumSize(new java.awt.Dimension(1, 10));
+                dividerJPanel.setOpaque(false);
+                dividerJPanel.setPreferredSize(new java.awt.Dimension(1, 10));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(20, 0, 20, 0);
+                getContentPane().add(dividerJPanel, gridBagConstraints);
+
+                jPanel1.setLayout(new java.awt.GridBagLayout());
+
+                jPanel1.setOpaque(false);
+                labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
+                labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                labelJLabel.setText("Login Warning:");
+                labelJLabel.setFocusable(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
+                jPanel1.add(labelJLabel, gridBagConstraints);
+
+                messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                messageJLabel.setFocusable(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
+                jPanel1.add(messageJLabel, gridBagConstraints);
+
+                jPanel2.setLayout(new java.awt.GridBagLayout());
+
+                jPanel2.setOpaque(false);
                 cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
                 cancelJButton.setText("<html><b>Cancel</b> Login</html>");
                 cancelJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -57,9 +114,10 @@ public class StealLoginJDialog extends javax.swing.JDialog implements java.awt.e
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 13, 180);
-                getContentPane().add(cancelJButton, gridBagConstraints);
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                gridBagConstraints.weightx = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
+                jPanel2.add(cancelJButton, gridBagConstraints);
 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setText("<html><b>Continue</b> Login</html>");
@@ -75,32 +133,28 @@ public class StealLoginJDialog extends javax.swing.JDialog implements java.awt.e
                 });
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridx = 1;
                 gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-                gridBagConstraints.insets = new java.awt.Insets(0, 180, 13, 0);
-                getContentPane().add(proceedJButton, gridBagConstraints);
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.weightx = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+                jPanel2.add(proceedJButton, gridBagConstraints);
 
-                messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridy = 2;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-                gridBagConstraints.insets = new java.awt.Insets(40, 30, 0, 30);
-                getContentPane().add(messageJLabel, gridBagConstraints);
+                gridBagConstraints.weightx = 1.0;
+                jPanel1.add(jPanel2, gridBagConstraints);
 
-                labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
-                labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                labelJLabel.setText("Login Warning:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridx = 2;
                 gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-                gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
-                getContentPane().add(labelJLabel, gridBagConstraints);
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 20);
+                getContentPane().add(jPanel1, gridBagConstraints);
 
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -111,6 +165,7 @@ public class StealLoginJDialog extends javax.swing.JDialog implements java.awt.e
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridwidth = 3;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
@@ -150,6 +205,10 @@ public class StealLoginJDialog extends javax.swing.JDialog implements java.awt.e
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JLabel backgroundJLabel;
         protected javax.swing.JButton cancelJButton;
+        private javax.swing.JPanel dividerJPanel;
+        private javax.swing.JLabel iconJLabel;
+        private javax.swing.JPanel jPanel1;
+        private javax.swing.JPanel jPanel2;
         private javax.swing.JLabel labelJLabel;
         protected javax.swing.JLabel messageJLabel;
         protected javax.swing.JButton proceedJButton;

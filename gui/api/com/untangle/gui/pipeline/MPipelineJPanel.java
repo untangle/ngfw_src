@@ -64,7 +64,6 @@ public class MPipelineJPanel extends javax.swing.JPanel {
                 mPipelineJScrollPane.setBorder(null);
                 mPipelineJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
                 mPipelineJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-                mPipelineJScrollPane.setDoubleBuffered(true);
                 mPipelineJScrollPane.setMinimumSize(new java.awt.Dimension(720, 21));
                 mPipelineJScrollPane.setOpaque(false);
                 mPipelineJScrollPane.getViewport().setOpaque(false);
@@ -82,9 +81,12 @@ public class MPipelineJPanel extends javax.swing.JPanel {
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
                 add(mPipelineJScrollPane, gridBagConstraints);
 
+                scrollbarBackground.setBackground(new java.awt.Color(204, 51, 0));
                 scrollbarBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/pipeline/VerticalScrollBar42x100.png")));
-                scrollbarBackground.setDoubleBuffered(true);
+                scrollbarBackground.setMaximumSize(null);
+                scrollbarBackground.setMinimumSize(null);
                 scrollbarBackground.setOpaque(true);
+                scrollbarBackground.setPreferredSize(null);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;

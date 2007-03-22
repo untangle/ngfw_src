@@ -27,7 +27,8 @@ final public class NetworkDhcpRenewDialog extends MOneButtonProgressJDialog {
 	super(parentDialog);
         this.setTitle("Renewing DHCP Lease");
         this.labelJLabel.setText("Renewing DHCP Lease");
-        this.messageJLabel.setText("<html><center>You have requested that the Untangle Server contact the network's DHCP<br>server in order to renew its lease on DHCP settings.</center></html>");
+        this.messageJLabel.setText("<html>You have requested that the Untangle Server contact the networks"
+									+"<br>DHCP server in order to renew its lease on DHCP settings.</html>");
         new DhcpLeaseRenewThread();
         this.setVisible(true);
     }
@@ -47,7 +48,7 @@ final public class NetworkDhcpRenewDialog extends MOneButtonProgressJDialog {
         public DhcpLeaseRenewThread(){
 	    super("MVCLIENT-DhcpLeaseRenewThread");
 	    setDaemon(true);
-            NetworkDhcpRenewDialog.this.jProgressBar.setValue(0);
+            NetworkDhcpRenewDialog.this.jProgressBar.setValue(1);
             NetworkDhcpRenewDialog.this.jProgressBar.setIndeterminate(true);
             NetworkDhcpRenewDialog.this.jProgressBar.setString("Renewing DHCP lease...");
 	    NetworkDhcpRenewDialog.this.proceedJButton.setEnabled(false);

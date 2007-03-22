@@ -34,6 +34,8 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
     private void init(Window window){
         initComponents();
         this.addWindowListener(this);
+		Util.addFocusHighlight(emailAddressJTextField);
+		pack();
 	this.setBounds( Util.generateCenteredBounds(window.getBounds(), this.getWidth(), this.getHeight()) );
     }
     
@@ -44,45 +46,119 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
 
     
         private void initComponents() {//GEN-BEGIN:initComponents
+                java.awt.GridBagConstraints gridBagConstraints;
+
+                iconJLabel = new javax.swing.JLabel();
+                dividerJPanel = new javax.swing.JPanel();
+                jPanel1 = new javax.swing.JPanel();
                 labelJLabel = new javax.swing.JLabel();
                 messageJLabel = new javax.swing.JLabel();
                 jLabel1 = new javax.swing.JLabel();
                 emailAddressJTextField = new javax.swing.JTextField();
                 jProgressBar = new javax.swing.JProgressBar();
+                jPanel2 = new javax.swing.JPanel();
                 closeJButton = new javax.swing.JButton();
                 proceedJButton = new javax.swing.JButton();
                 backgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
 
-                getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                getContentPane().setLayout(new java.awt.GridBagLayout());
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
                 setTitle("Email Test");
                 setModal(true);
                 setResizable(false);
+                iconJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconDialogWizard_96x96.png")));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 20);
+                getContentPane().add(iconJLabel, gridBagConstraints);
+
+                dividerJPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(154, 154, 154)));
+                dividerJPanel.setMaximumSize(new java.awt.Dimension(1, 1600));
+                dividerJPanel.setMinimumSize(new java.awt.Dimension(1, 10));
+                dividerJPanel.setOpaque(false);
+                dividerJPanel.setPreferredSize(new java.awt.Dimension(1, 10));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(20, 0, 20, 0);
+                getContentPane().add(dividerJPanel, gridBagConstraints);
+
+                jPanel1.setLayout(new java.awt.GridBagLayout());
+
+                jPanel1.setMaximumSize(null);
+                jPanel1.setOpaque(false);
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 labelJLabel.setText("Email Test:");
-                getContentPane().add(labelJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 369, -1));
+                labelJLabel.setFocusable(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
+                jPanel1.add(labelJLabel, gridBagConstraints);
 
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                messageJLabel.setText("<html><center> Enter an email address which you would like to send a test message to, and then press \"Proceed\".  You should receive an email shortly after running the test.  If not, your email settings may not be correct.</center></html>");
-                getContentPane().add(messageJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 309, -1));
+                messageJLabel.setText("<html><center>\nEnter an email address which you would like to send a test message to,<br>\nand then press \"Proceed\".  You should receive an email shortly after<br>\nrunning the test.  If not, your email settings may not be correct.\n</center></html>");
+                messageJLabel.setFocusable(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
+                jPanel1.add(messageJLabel, gridBagConstraints);
 
                 jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 jLabel1.setText("Email Address:");
-                getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 160, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+                jPanel1.add(jLabel1, gridBagConstraints);
 
-                getContentPane().add(emailAddressJTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 160, 200, -1));
+                emailAddressJTextField.setMaximumSize(new java.awt.Dimension(200, 19));
+                emailAddressJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
+                emailAddressJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 3;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
+                jPanel1.add(emailAddressJTextField, gridBagConstraints);
 
                 jProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
+                jProgressBar.setFocusable(false);
                 jProgressBar.setMaximumSize(new java.awt.Dimension(32767, 20));
                 jProgressBar.setMinimumSize(new java.awt.Dimension(10, 20));
                 jProgressBar.setPreferredSize(new java.awt.Dimension(148, 20));
                 jProgressBar.setString("");
                 jProgressBar.setStringPainted(true);
-                getContentPane().add(jProgressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 190, 309, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 4;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
+                jPanel1.add(jProgressBar, gridBagConstraints);
 
+                jPanel2.setLayout(new java.awt.GridBagLayout());
+
+                jPanel2.setMaximumSize(null);
+                jPanel2.setMinimumSize(null);
+                jPanel2.setOpaque(false);
+                jPanel2.setPreferredSize(null);
                 closeJButton.setFont(new java.awt.Font("Default", 0, 12));
                 closeJButton.setText("<html><b>Close</b></html>");
                 closeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -97,7 +173,13 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
                         }
                 });
 
-                getContentPane().add(closeJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 220, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                gridBagConstraints.weightx = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
+                jPanel2.add(closeJButton, gridBagConstraints);
 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setText("<html><b>Proceed</b></html>");
@@ -113,7 +195,29 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
                         }
                 });
 
-                getContentPane().add(proceedJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 220, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.weightx = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+                jPanel2.add(proceedJButton, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 6;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                jPanel1.add(jPanel2, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 2;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 20);
+                getContentPane().add(jPanel1, gridBagConstraints);
 
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -121,10 +225,15 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
                 backgroundJLabel.setFocusable(false);
                 backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setOpaque(true);
-                getContentPane().add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 369, 300));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridwidth = 3;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                getContentPane().add(backgroundJLabel, gridBagConstraints);
 
-                java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-                setBounds((screenSize.width-369)/2, (screenSize.height-300)/2, 369, 300);
         }//GEN-END:initComponents
 
 		private void closeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeJButtonActionPerformed
@@ -152,8 +261,12 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JLabel backgroundJLabel;
         private javax.swing.JButton closeJButton;
+        private javax.swing.JPanel dividerJPanel;
         private javax.swing.JTextField emailAddressJTextField;
+        private javax.swing.JLabel iconJLabel;
         private javax.swing.JLabel jLabel1;
+        private javax.swing.JPanel jPanel1;
+        private javax.swing.JPanel jPanel2;
         private javax.swing.JProgressBar jProgressBar;
         private javax.swing.JLabel labelJLabel;
         private javax.swing.JLabel messageJLabel;
@@ -191,7 +304,7 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
                 
                 SwingUtilities.invokeLater( new Runnable(){ public void run(){
                     EmailConnectivityTestJDialog.this.jProgressBar.setIndeterminate(false);
-                    EmailConnectivityTestJDialog.this.jProgressBar.setValue(0);
+                    EmailConnectivityTestJDialog.this.jProgressBar.setValue(1);
                     EmailConnectivityTestJDialog.this.jProgressBar.setString("Warning!  Test failed.  Check your settings.");
 		    EmailConnectivityTestJDialog.this.proceedJButton.setEnabled(true);
                 }});

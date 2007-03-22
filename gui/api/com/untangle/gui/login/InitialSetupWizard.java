@@ -78,9 +78,8 @@ public class InitialSetupWizard extends MWizardJDialog {
         }
 
 
-        MTwoButtonJDialog dialog = MTwoButtonJDialog.factory(this, "Setup Wizard", "If you exit now, " +
-                                                             "some of your settings may not be saved properly.  " +
-                                                             "You should continue, if possible.  ", "Setup Wizard Warning", "Warning");
+        MTwoButtonJDialog dialog = MTwoButtonJDialog.factory(this, "Setup Wizard", "If you exit now, some of your settings may not be saved properly.<br>" +
+                                                                                   "You should continue, if possible.  ", "Setup Wizard Warning", "Warning");
         dialog.setProceedText("<html><b>Exit</b> Wizard</html>");
         dialog.setCancelText("<html><b>Continue</b> Wizard</html>");
         dialog.setVisible(true);

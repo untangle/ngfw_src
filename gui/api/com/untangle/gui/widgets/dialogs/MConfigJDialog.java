@@ -108,6 +108,9 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
             new RefreshAllThread(true);
         }
         super.setVisible(isVisible);
+		if(!isVisible){
+				dispose();
+		}
     }
 
     private String helpSource;
@@ -400,7 +403,6 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
         this.setVisible(false);
-        this.dispose();
     }
 
     public void windowClosed(java.awt.event.WindowEvent windowEvent) {}

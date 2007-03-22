@@ -36,7 +36,8 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 
     private String uid;
     private boolean isProceeding;
-
+	private Window window;
+	
     public static UidSelectJDialog factory(Container topLevelContainer){
 	UidSelectJDialog uidSelectJDialog;
 	if(topLevelContainer instanceof Frame)
@@ -57,12 +58,12 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 	init( topLevelFrame );
     }
     
-    private void init(Window topLevelWindow) {
+    private void init(Window window) {
         initComponents();
         this.addWindowListener(this);
-        this.setBounds( Util.generateCenteredBounds(topLevelWindow.getBounds(), this.getWidth(), this.getHeight()) );
-	setGlassPane(infiniteProgressJComponent);
-	new PerformRefreshThread();
+		this.window = window;
+	    setGlassPane(infiniteProgressJComponent);
+	    new PerformRefreshThread();
     }
 
     public String getUid(){ return uid; }
@@ -77,25 +78,142 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 	for( UserEntryWrapper userEntryWrapper : treeMap.keySet() )		
 	    uidJComboBox.addItem( userEntryWrapper );
     }
-    
+   
+	 public void setVisible(boolean isVisible){
+        if(isVisible){
+			pack();
+			this.setBounds( Util.generateCenteredBounds(window, this.getWidth(), this.getHeight()) );
+        }
+		super.setVisible(isVisible);
+        if(!isVisible){
+            dispose();
+        }
+    }
         private void initComponents() {//GEN-BEGIN:initComponents
+                java.awt.GridBagConstraints gridBagConstraints;
+
                 buttonGroup1 = new javax.swing.ButtonGroup();
-                cancelJButton = new javax.swing.JButton();
-                proceedJButton = new javax.swing.JButton();
+                iconJLabel = new javax.swing.JLabel();
+                dividerJPanel = new javax.swing.JPanel();
+                jPanel1 = new javax.swing.JPanel();
                 labelJLabel = new javax.swing.JLabel();
                 messageJLabel = new javax.swing.JLabel();
                 jLabel1 = new javax.swing.JLabel();
-                jLabel2 = new javax.swing.JLabel();
                 uidJComboBox = new javax.swing.JComboBox();
+                jLabel2 = new javax.swing.JLabel();
                 jButton1 = new javax.swing.JButton();
+                jPanel2 = new javax.swing.JPanel();
+                cancelJButton = new javax.swing.JButton();
+                proceedJButton = new javax.swing.JButton();
                 backgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
 
-                getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                getContentPane().setLayout(new java.awt.GridBagLayout());
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
                 setTitle("Portal Question");
                 setModal(true);
                 setResizable(false);
+                iconJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconDialogQuestion_96x96.png")));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 20);
+                getContentPane().add(iconJLabel, gridBagConstraints);
+
+                dividerJPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(154, 154, 154)));
+                dividerJPanel.setMaximumSize(new java.awt.Dimension(1, 1600));
+                dividerJPanel.setMinimumSize(new java.awt.Dimension(1, 10));
+                dividerJPanel.setOpaque(false);
+                dividerJPanel.setPreferredSize(new java.awt.Dimension(1, 10));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(20, 0, 20, 0);
+                getContentPane().add(dividerJPanel, gridBagConstraints);
+
+                jPanel1.setLayout(new java.awt.GridBagLayout());
+
+                jPanel1.setOpaque(false);
+                labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
+                labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                labelJLabel.setText("Select a user ID/Login:");
+                labelJLabel.setFocusable(false);
+                labelJLabel.setMaximumSize(null);
+                labelJLabel.setMinimumSize(null);
+                labelJLabel.setPreferredSize(null);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
+                jPanel1.add(labelJLabel, gridBagConstraints);
+
+                messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+                messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                messageJLabel.setText("<html>\n<center>\nYou may choose a user ID/Login that exists in the User Directory<br>\n(either local LDAP or remote Active Directory), or you can add a new <br>\nuser to the User Directory, and then choose that user.\n</center></html>");
+                messageJLabel.setFocusable(false);
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
+                jPanel1.add(messageJLabel, gridBagConstraints);
+
+                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                jLabel1.setText("Select an existing user:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+                jPanel1.add(jLabel1, gridBagConstraints);
+
+                uidJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
+                uidJComboBox.setMaximumSize(new java.awt.Dimension(250, 24));
+                uidJComboBox.setMinimumSize(new java.awt.Dimension(250, 24));
+                uidJComboBox.setPreferredSize(new java.awt.Dimension(250, 24));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 3;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
+                jPanel1.add(uidJComboBox, gridBagConstraints);
+
+                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+                jLabel2.setText("Add a new user:");
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 4;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+                jPanel1.add(jLabel2, gridBagConstraints);
+
+                jButton1.setFont(new java.awt.Font("Dialog", 0, 12));
+                jButton1.setText("Open User Directory");
+                jButton1.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                jButton1ActionPerformed(evt);
+                        }
+                });
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 5;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
+                jPanel1.add(jButton1, gridBagConstraints);
+
+                jPanel2.setLayout(new java.awt.GridBagLayout());
+
+                jPanel2.setOpaque(false);
                 cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
                 cancelJButton.setText("<html><b>Cancel</b></html>");
                 cancelJButton.setDoubleBuffered(true);
@@ -110,7 +228,13 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
                         }
                 });
 
-                getContentPane().add(cancelJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(73, 295, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+                gridBagConstraints.weightx = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
+                jPanel2.add(cancelJButton, gridBagConstraints);
 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setText("<html><b>Proceed</b></html>");
@@ -126,40 +250,30 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
                         }
                 });
 
-                getContentPane().add(proceedJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(243, 295, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+                gridBagConstraints.weightx = 0.5;
+                gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+                jPanel2.add(proceedJButton, gridBagConstraints);
 
-                labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
-                labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                labelJLabel.setText("Select a user ID/Login:");
-                labelJLabel.setDoubleBuffered(true);
-                getContentPane().add(labelJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 456, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 6;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(20, 0, 0, 0);
+                jPanel1.add(jPanel2, gridBagConstraints);
 
-                messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                messageJLabel.setText("<html>You may choose a user ID/Login that exists in the User Directory (either local LDAP or remote Active Directory), or you can add a new user to the User Directory, and then choose that user.</html>");
-                messageJLabel.setDoubleBuffered(true);
-                getContentPane().add(messageJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, 396, -1));
-
-                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel1.setText("Select an existing user:");
-                getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 120, -1, -1));
-
-                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("Add a new user:");
-                getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 200, -1, -1));
-
-                uidJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-                getContentPane().add(uidJComboBox, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 140, 275, -1));
-
-                jButton1.setFont(new java.awt.Font("Dialog", 0, 12));
-                jButton1.setText("Open User Directory");
-                jButton1.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                jButton1ActionPerformed(evt);
-                        }
-                });
-
-                getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 220, 275, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 2;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 20);
+                getContentPane().add(jPanel1, gridBagConstraints);
 
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -168,10 +282,15 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
                 backgroundJLabel.setFocusable(false);
                 backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setOpaque(true);
-                getContentPane().add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 456, 333));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridwidth = 3;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                getContentPane().add(backgroundJLabel, gridBagConstraints);
 
-                java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-                setBounds((screenSize.width-456)/2, (screenSize.height-379)/2, 456, 379);
         }//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -208,7 +327,6 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 	if( !isProceeding )
 	    uid = "any";
         this.setVisible(false);
-        dispose();
     }    
 
 
@@ -308,9 +426,13 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
         private javax.swing.JLabel backgroundJLabel;
         private javax.swing.ButtonGroup buttonGroup1;
         protected javax.swing.JButton cancelJButton;
+        private javax.swing.JPanel dividerJPanel;
+        private javax.swing.JLabel iconJLabel;
         private javax.swing.JButton jButton1;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JLabel jLabel2;
+        private javax.swing.JPanel jPanel1;
+        private javax.swing.JPanel jPanel2;
         private javax.swing.JLabel labelJLabel;
         protected javax.swing.JLabel messageJLabel;
         protected javax.swing.JButton proceedJButton;
