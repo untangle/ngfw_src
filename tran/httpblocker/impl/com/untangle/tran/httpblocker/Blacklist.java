@@ -304,13 +304,19 @@ class Blacklist
         }
 
         if (null != category) {
-            if (null == stringRule || stringRule.getLog()) {
+            BlacklistCategory bc = settings.getBlacklistCategory(category);
+
+            if (null != bc) {
+                Action a = bc.getLogOnly() ? Action.PASS : Action.BLOCK;
+                HttpBlockerEvent hbe = new HttpBlockerEvent
+                    (requestLine.getRequestLine(), a, reason, category);
+                transform.log(hbe);
+            } else if (null == stringRule || stringRule.getLog()) {
                 HttpBlockerEvent hbe = new HttpBlockerEvent
                     (requestLine.getRequestLine(), Action.BLOCK, reason, category);
                 transform.log(hbe);
             }
 
-            BlacklistCategory bc = settings.getBlacklistCategory(category);
             if (null == bc && null != stringRule && !stringRule.isLive()) {
                 return null;
             } else if (null != bc && bc.getLogOnly()) {

@@ -26,7 +26,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.untangle.mvvm.security.Tid;
 import com.untangle.mvvm.tran.IPMaddrRule;
@@ -84,7 +83,7 @@ public class HttpBlockerSettings implements Serializable
     {
         for (Iterator i = blacklistCategories.iterator(); i.hasNext(); ) {
             BlacklistCategory bc = (BlacklistCategory)i.next();
-            if (bc.getName() == name) {
+            if (name.equals(bc.getName())) {
                 return bc;
             }
         }
