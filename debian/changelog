@@ -1,3 +1,9 @@
+untangle-java (0.2.0-1092) stable; urgency=low
+
+  * auto build
+
+ -- Ian Nieves <inieves@bebe.metavize.com>  Fri, 23 Mar 2007 17:10:10 -0700
+
 untangle-java (0.2.0-1091) stable; urgency=low
 
   * auto build
