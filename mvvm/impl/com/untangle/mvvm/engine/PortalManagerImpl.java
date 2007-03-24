@@ -103,6 +103,7 @@ class PortalManagerImpl implements LocalPortalManager
                 public boolean doWork(Session s)
                 {
                     Query q = s.createQuery("from PortalSettings");
+                    q.setMaxResults(1)
                     portalSettings = (PortalSettings)q.uniqueResult();
 
                     if (null == portalSettings) {
