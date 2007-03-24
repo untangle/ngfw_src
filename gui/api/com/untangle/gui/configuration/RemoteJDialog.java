@@ -97,8 +97,8 @@ public class RemoteJDialog extends MConfigJDialog {
 		remoteSyslogJPanel.setSettingsChangedListener(this);
 	
         // MANUAL REBOOT //////
-        RemoteRebootJPanel remoteRebootJPanel = new RemoteRebootJPanel();
-        addTab(NAME_MANUAL_REBOOT, null, remoteRebootJPanel);
+        RemoteRestartJPanel remoteRestartJPanel = new RemoteRestartJPanel();
+        addTab(NAME_MANUAL_REBOOT, null, remoteRestartJPanel);
     }
 
     protected void saveAll() throws Exception {

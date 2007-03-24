@@ -71,11 +71,11 @@ public class Visitor implements ProgressVisitor{
                 progressString = "Downloading file " + (currentFileIndex+1) + " of " + fileCountTotal
                     + " (" + byteCountTotal/1000 + "KBytes " + "@ "  + dp.getSpeed() + ")";
                 ((JProgressBar)visualizer).setString( progressString );
-                ((JProgressBar)visualizer).setValue( progressIndex );
+                ((JProgressBar)visualizer).setValue(progressIndex );
             }
             else{
                 progressString = "Get @ "  + dp.getSpeed();
-                ((MTransformJButton)visualizer).setProgress(progressString, progressIndex);
+                ((MTransformJButton)visualizer).setProgress(progressString, progressIndex );
             }
         }});
     }
@@ -88,7 +88,7 @@ public class Visitor implements ProgressVisitor{
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             currentByteIndex += currentByteIncrement;
             currentFileIndex++;
-            if(!isSuccessful){
+            if(!dc.getSuccess()){
                 if(isProgressBar){
                     ((JProgressBar)visualizer).setString( "Download failed.  Please try again." );
                     ((JProgressBar)visualizer).setValue(100);
@@ -104,13 +104,14 @@ public class Visitor implements ProgressVisitor{
         isSuccessful = ic.getSuccess();
         isDone = true;
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-            if(isSuccessful){
+            if(ic.getSuccess()){
                 if(isProgressBar){
                     ((JProgressBar)visualizer).setString( "Download successful." );
                     ((JProgressBar)visualizer).setValue(100);
                 }
                 else{
                     ((MTransformJButton)visualizer).setProgress("Download complete", 100);
+                    ((MTransformJButton)visualizer).setEnabled(false);
                 }
             }
             else{
@@ -120,6 +121,7 @@ public class Visitor implements ProgressVisitor{
                 }
                 else{
                     ((MTransformJButton)visualizer).setProgress("Failed", 100);
+                    ((MTransformJButton)visualizer).setEnabled(true);
                 }
             }
         }});

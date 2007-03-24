@@ -656,49 +656,58 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 	}
     }
 
+
+    private Object storeLock = new Object();
+
     private class StoreMessageVisitor implements ToolboxMessageVisitor {
         public void visitMackageInstallRequest(MackageInstallRequest req) {
-            String purchasedMackageName = req.getMackageName();
-            // FIND THE BUTTON THAT WOULD HAVE BEEN CLICKED
-            MTransformJButton mTransformJButton = null;
-            for( MTransformJButton storeButton : storeMap.values() ){
-                String storeButtonName = storeButton.getName();
-                storeButtonName = storeButtonName.substring(0, storeButtonName.indexOf('-'));
-                if( purchasedMackageName.startsWith(storeButtonName) ){
-                    mTransformJButton = storeButton;
-                    if( purchasedMackageName.endsWith(TRIAL_EXTENSION) ){
-                        mTransformJButton.setIsTrial(true);
+            synchronized(storeLock){
+                String purchasedMackageName = req.getMackageName();
+                // FIND THE BUTTON THAT WOULD HAVE BEEN CLICKED
+                MTransformJButton mTransformJButton = null;
+                for( MTransformJButton storeButton : storeMap.values() ){
+                    String storeButtonName = storeButton.getName();
+                    storeButtonName = storeButtonName.substring(0, storeButtonName.indexOf('-'));
+                    if( purchasedMackageName.startsWith(storeButtonName) ){
+                        mTransformJButton = storeButton;
+                        if( purchasedMackageName.endsWith(TRIAL_EXTENSION) ){
+                            mTransformJButton.setIsTrial(true);
+                        }
+                        else{
+                            mTransformJButton.setIsTrial(false);
+                        }
+                        break;
                     }
-                    else{
-                        mTransformJButton.setIsTrial(false);
+                }
+                try{
+                    if(mTransformJButton == null){
+                        MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
+                                                  "A problem occurred while purchasing:<br>"
+                                                  + mTransformJButton.getDisplayName()
+                                                  + "<br>Please try again.",
+                                                  mTransformJButton.getDisplayName() + " Warning", "");
+                        return;
                     }
-                    break;
+                    Policy purchasePolicy;
+                    if(mTransformJButton.getMackageDesc().isCore())
+                        purchasePolicy = null;
+                    else
+                        purchasePolicy = selectedPolicy;
+                    final MTransformJButton target = mTransformJButton;
+                    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+                        target.setProcuringView();
+                    }});
+                    purchaseBlockingQueue.put(new PurchaseWrapper(mTransformJButton, purchasePolicy));
                 }
-            }
-            try{
-                if(mTransformJButton == null){
-                    MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
-                                              "A problem occurred while purchasing:<br>"
-                                              + mTransformJButton.getDisplayName()
-                                              + "<br>Please try again.",
-                                              mTransformJButton.getDisplayName() + " Warning", "");
-                    return;
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Util.handleExceptionNoRestart("Error purchasing", e);
+                    mTransformJButton.setFailedProcureView();
                 }
-                Policy purchasePolicy;
-                if(mTransformJButton.getMackageDesc().isCore())
-                    purchasePolicy = null;
-                else
-                    purchasePolicy = selectedPolicy;
-                purchaseBlockingQueue.put(new PurchaseWrapper(mTransformJButton, purchasePolicy));
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                Util.handleExceptionNoRestart("Error purchasing", e);
-                mTransformJButton.setFailedProcureView();
             }
         }
     }
-
+    
     private class PurchaseWrapper {
         private MTransformJButton mTransformJButton;
         private Policy selectedPolicy;
@@ -766,6 +775,19 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         break;
                     }
                 }
+
+                //// SHOW PENDING PURCHASES IF ANY
+                for( PurchaseWrapper purchaseWrapper : purchaseBlockingQueue ){
+                    for( final MTransformJButton storeButton : storeMap.values() ){
+                        if( purchaseWrapper.getMTransformJButton().getName().equals(storeButton.getName()) ){
+                            SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+                                storeButton.setProcuringView();
+                            }});
+                            break;
+                        }
+                    }
+                }
+
                 //// DOWNLOAD FROM SERVER
                 MackageDesc[] originalInstalledMackages = Util.getToolboxManager().installed(); // for use later
                 String installName = mTransformJButton.getName();
@@ -989,8 +1011,16 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             nonPolicyNameMap.put(tid.getTransformName(),null);
     }
 
-    public void updateStoreModel(){ storeModelThread.updateStoreModel(); }
-    public void updateStoreModelBlocking(){ storeModelThread.updateStoreModelBlocking(); }
+    public void updateStoreModel(){
+        synchronized(storeLock){
+            storeModelThread.updateStoreModel();
+        }
+    }
+    public void updateStoreModelBlocking(){
+        synchronized(storeLock){
+            storeModelThread.updateStoreModelBlocking();
+        }
+    }
     private class StoreModelThread extends Thread implements Shutdownable {
         private JProgressBar storeProgressBar;
         private volatile boolean doUpdate = false;
@@ -1141,6 +1171,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                             firstRun = false;
                         }
                     }});
+
+
 
 		    // REMOVE TRIAL IF THE ACTUAL THING WAS PURCHASED (IS NO LONGER IN THE STORE)
 		    /*
