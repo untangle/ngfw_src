@@ -200,7 +200,9 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 	if( Util.getIsDemo() )
 	    return;
         standardJButton.setEnabled(false);
-	MTwoButtonJDialog proceedJDialog = MTwoButtonJDialog.factory((Window)getTopLevelAncestor(), "Router", "Proceeding will cause your currently saved settings to be reset to defaults.<br><b>Your GUI may be logged out.</b>", "Router Warning", "Router Warning");
+	MTwoButtonJDialog proceedJDialog = MTwoButtonJDialog.factory((Window)getTopLevelAncestor(), "Router",
+                                                                 "Proceeding will cause your currently saved settings to be reset to defaults.<br>"
+                                                               + "<b>Your GUI may be logged out.</b>", "Router Warning", "Router Warning");
 	proceedJDialog.setVisible(true);
 	if( proceedJDialog.isProceeding() )
 	    new NatModeResetThread(false);
@@ -211,7 +213,10 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 	if( Util.getIsDemo() )
 	    return;
 	advancedJButton.setEnabled(false);
-	MTwoButtonJDialog proceedJDialog = MTwoButtonJDialog.factory((Window)getTopLevelAncestor(), "Router", "You should only use this mode if Standard Mode can not handle your network configuration.<br><b>Your current settings will automatically be converted, but you can not go back to Standard Mode without losing your converted settings.  </b>", "Router Warning", "Router Warning");
+	MTwoButtonJDialog proceedJDialog = MTwoButtonJDialog.factory((Window)getTopLevelAncestor(), "Router",
+                                                                 "You should only use this mode if Standard Mode can not handle your network configuration.<br>"
+                                                            + "<b>Your current settings will automatically be converted, but you can not go back to Standard Mode<br>"
+                                                               + "without losing your converted settings.</b>", "Router Warning", "Router Warning");
 	proceedJDialog.setVisible(true);
 	if( proceedJDialog.isProceeding() )
 	    new NatModeResetThread(true);
