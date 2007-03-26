@@ -4,6 +4,9 @@
 -- settings |
 -------------
 
+-- enable throttle (RBL checking) when scan is enabled
+UPDATE settings.tr_spam_smtp_config SET throttle = true WHERE throttle = false AND scan = true;
+
 -- com.untangle.tran.spam.SpamSettings.spamRBLList (list construct)
 CREATE TABLE settings.tr_spam_rbl_list (
     settings_id int8 NOT NULL,

@@ -41,7 +41,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
     private static final long serialVersionUID = 7520156745253589107L;
 
     /* settings */
-    private boolean throttle = false;
+    private boolean throttle = true;
     private int throttleSec = 15;
     private SMTPSpamMessageAction zMsgAction = SMTPSpamMessageAction.QUARANTINE;
     private SpamSMTPNotifyAction zNotifyAction = SpamSMTPNotifyAction.NEITHER;
@@ -207,10 +207,10 @@ public class SpamSMTPConfig extends SpamProtoConfig
     }
 
     /**
-     * throttle: a boolean specifying whether or not to throttle a
+     * throttle: a boolean specifying whether or not to reject a
      * connection from a suspect spammer
      *
-     * @return whether or not to throttle a spammer
+     * @return whether or not to reject a spammer
      */
     @Column(nullable=false)
     public boolean getThrottle()
@@ -225,8 +225,9 @@ public class SpamSMTPConfig extends SpamProtoConfig
     }
 
     /**
+     *
      * throttleSec: a integer specifying how long to delay a
-     * connection from a suspect spammer if throttling
+     * connection from a suspect spammer if throttling XXX NO LONGER USED
      *
      * @return how long to delay the connection if throttling
      */

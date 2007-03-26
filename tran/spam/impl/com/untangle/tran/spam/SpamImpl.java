@@ -449,7 +449,7 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                              getDefaultIndicatorHeaderValue(false),
                              getDefaultNotifySubjectTemplate(true),
                              getDefaultNotifyBodyTemplate(true),
-                             false,
+                             true,
                              15));
 
         tmpSpamSettings.setSMTPOutbound(
