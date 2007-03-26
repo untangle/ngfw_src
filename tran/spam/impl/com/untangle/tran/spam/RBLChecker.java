@@ -73,7 +73,7 @@ public class RBLChecker {
     */
 
     public boolean check(TCPNewSessionRequest tsr) {
-        String ipAddr = tsr.clientAddr().getHostName();
+        String ipAddr = tsr.clientAddr().getHostAddress();
         String invertedIPAddr = invertIPAddress(ipAddr);
 
         RBLClient[] clients = createClients(ipAddr, invertedIPAddr); // create checkers
