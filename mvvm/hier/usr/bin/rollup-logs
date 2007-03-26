@@ -19,7 +19,7 @@ for day in `cat $daystoremove`; do
     echo "Purging event data for $day"
     for c in `cat @MVVM_SCHEMA@/*/partitioned-tables`; do
         psql -U postgres -v day="$day" mvvm<<EOF
-          DROP TABLE $c_$day ; 
+          DROP TABLE ${c}_${day} ; 
 EOF
     done
     psql -U postgres -v dayname="'$day'" mvvm <<EOF
