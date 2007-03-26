@@ -375,7 +375,7 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 	    switch(userEntry.getStoredIn()){
 	    case MS_ACTIVE_DIRECTORY : repository = "Active Directory";
 		break;
-	    case LOCAL_DIRECTORY : repository = "LDAP";
+	    case LOCAL_DIRECTORY : repository = "local";
 		break;
 	    case NONE : repository = "UNKNOWN";
 	    default :;
