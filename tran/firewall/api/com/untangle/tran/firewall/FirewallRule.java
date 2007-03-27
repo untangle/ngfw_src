@@ -38,7 +38,7 @@ import com.untangle.mvvm.tran.firewall.protocol.ProtocolDBMatcher;
  * @version 1.0
  */
 @Entity
-@Table(name="firewall_rule", schema="settings")
+@Table(name="tr_firewall_rule", schema="settings")
 public class FirewallRule extends TrafficDirectionRule
 {
     private static final long serialVersionUID = -5024800839738084290L;
