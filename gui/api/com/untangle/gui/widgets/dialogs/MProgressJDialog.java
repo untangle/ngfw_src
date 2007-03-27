@@ -39,7 +39,7 @@ public class MProgressJDialog extends javax.swing.JDialog implements java.awt.ev
         init(label, message, topLevelDialog);
     }
     
-    private void init(String label, String message, Window window) {
+    protected void init(String label, String message, Window window) {
         initComponents();
         labelJLabel.setText(label);
         messageJLabel.setText(message);
@@ -102,10 +102,7 @@ public class MProgressJDialog extends javax.swing.JDialog implements java.awt.ev
 
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 
-                jPanel1.setMaximumSize(null);
-                jPanel1.setMinimumSize(null);
                 jPanel1.setOpaque(false);
-                jPanel1.setPreferredSize(null);
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 labelJLabel.setText("Warning:");

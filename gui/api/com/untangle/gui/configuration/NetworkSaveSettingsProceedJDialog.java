@@ -102,10 +102,7 @@ final public class NetworkSaveSettingsProceedJDialog extends javax.swing.JDialog
 
                 jPanel2.setLayout(new java.awt.GridBagLayout());
 
-                jPanel2.setMaximumSize(null);
-                jPanel2.setMinimumSize(null);
                 jPanel2.setOpaque(false);
-                jPanel2.setPreferredSize(null);
                 cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
                 cancelJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Cancel_Settings_106x17.png")));
                 cancelJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -173,6 +170,7 @@ final public class NetworkSaveSettingsProceedJDialog extends javax.swing.JDialog
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridwidth = 3;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;

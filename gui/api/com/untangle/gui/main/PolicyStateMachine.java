@@ -298,16 +298,15 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         Policy newPolicy;
         if( viewSelector.getSelectedItem() instanceof String ){
             if( viewSelector.getSelectedItem().equals(POLICY_MANAGER_OPTION) ){
-                try{
-                    PolicyJDialog policyJDialog = new PolicyJDialog(Util.getMMainJFrame());
-                    policyJDialog.setVisible(true);
-                    viewSelector.setSelectedItem(selectedPolicy);
-                    updatePolicyRacks();
-                }
-                catch(Exception e){
-                    try{ Util.handleExceptionWithRestart("Error handling policy manager action", e); }
-                    catch(Exception f){ Util.handleExceptionNoRestart("Error handling policy manager action", f); }
-                }
+                PolicyJDialog policyJDialog = new PolicyJDialog(Util.getMMainJFrame());
+                policyJDialog.setVisible(true);
+                viewSelector.setSelectedItem(selectedPolicy);
+                PolicyUpdateProgressJDialog pupJDialog = new PolicyUpdateProgressJDialog(Util.getMMainJFrame());
+                pupJDialog.setVisible(true);
+                List<Policy> policies = pupJDialog.getPolicies();
+                if(policies==null)
+                    return;
+                updatePolicyRacks(policies);
             }
             else
                 viewSelector.setSelectedItem(selectedPolicy);
@@ -384,13 +383,13 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 
     // POLICY UPDATING ////////////////////////////////////
     ///////////////////////////////////////////////////////
-    private void updatePolicyRacks() throws Exception {
+    private void updatePolicyRacks(List<Policy> policies) {
         // BUILD A GUI MODEL AND MVVM MODEL
         Map<Policy,Object> currentPolicyRacks = new HashMap<Policy,Object>();
         Map<Policy,Object> newPolicyRacks = new LinkedHashMap<Policy,Object>();
         for(int i=0; i<((DefaultComboBoxModel)viewSelector.getModel()).getSize()-2; i++) // -2 for the last 2 policy manager options
             currentPolicyRacks.put( (Policy) ((DefaultComboBoxModel)viewSelector.getModel()).getElementAt(i), null );
-        for( Policy policy : (List<Policy>) Util.getPolicyManager().getPolicyConfiguration().getPolicies() )
+        for( Policy policy : policies )
             newPolicyRacks.put( policy, null );
         // FIND THE DIFFERENCES
         Vector<Policy> addedPolicyVector = new Vector<Policy>();
