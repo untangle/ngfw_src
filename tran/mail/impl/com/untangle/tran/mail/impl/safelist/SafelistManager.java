@@ -516,7 +516,6 @@ public class SafelistManager
         String sndr;
 
         for (SafelistSettings safelist : safelists) {
-
             // we implicitly ignore duplicates w/ HashMap
             slRcpnt = safelist.getRecipient();
             rcpnt = slRcpnt.getAddr().toLowerCase();
@@ -524,7 +523,7 @@ public class SafelistManager
             slSndr = safelist.getSender();
             sndr = slSndr.getAddr().toLowerCase();
 
-            m_logger.debug("using safelist: " + safelist + ", recipient: " + rcpnt + ", sender: " + sndr);
+            //m_logger.debug("using safelist: " + safelist + ", recipient: " + rcpnt + ", sender: " + sndr);
 
             addSndr(allSndrs, sndr);
 
