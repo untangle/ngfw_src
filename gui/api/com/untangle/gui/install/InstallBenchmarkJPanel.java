@@ -21,20 +21,23 @@ import java.text.DecimalFormat;
 
 public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 
-    private static final String FAILURE_MESSAGE = "<html><font color=\"#FF0000\"><b>Warning!</b>"
-	+ " Your hardware does not meet all requirements. Press the Next button in the main window to exit now.</font></html>";
-    private static final String WARNING_MESSAGE = "<html><font color=\"#FF9B00\"><b>Warning!</b>"
-	+ " Your hardware meets minimum requirements, but performance may not be optimal. Press the Next button"
-	+ " in the main window to continue.</font></html>";
-    private static final String PASSED_MESSAGE = "<html><font color=\"#445BFF\"><b>Success!</b>"
-	+ " Your hardware meets all requirements. Press the Next button in the main window to continue.</font></html>";
+    private static final String FAILURE_MESSAGE = "<html><font color=\"#FF0000\"><b>Warning!</b><br>"
+	+ "Your hardware does not meet minimum requirements. This system may not function properly.<br>"
+    + "You may continue installation, but it is recommended that you upgrade your system hardware.<br><br>"
+    + "Press the Next button in the main window to continue.</font></html>";
+    private static final String WARNING_MESSAGE = "<html><font color=\"#FF9B00\"><b>Warning!</b><br>"
+	+ "Your hardware meets minimum requirements, but performance may not be optimal.<br>"
+    + "Press the Next button in the main window to continue.</font></html>";
+    private static final String PASSED_MESSAGE = "<html><font color=\"#445BFF\"><b>Success!</b><br>"
+	+ "Your hardware meets all requirements.<br>"
+    + "Press the Next button in the main window to continue.</font></html>";
 
-    private static final int MEMORY_MIN_MEGS   = 500;
+    private static final int MEMORY_MIN_MEGS   = 475;
     private static final int MEMORY_GOOD_MEGS  = 1000;
     private static final int MEMORY_GREAT_MEGS = 2000;
     private static final String MEMORY_REQUIRED = "("+MEMORY_MIN_MEGS+" MB required)";
 
-    private static final int CPU_MIN_MHZ   = 1000;
+    private static final int CPU_MIN_MHZ   = 750;
     private static final int CPU_GOOD_MHZ  = 1600;
     private static final int CPU_GREAT_MHZ = 3000;
     private static final String CPU_REQUIRED = "("+CPU_MIN_MHZ+" MHz required)";
@@ -140,7 +143,7 @@ public class InstallBenchmarkJPanel extends MWizardPageJPanel {
 		   || ((Integer)diskResults[1]<25) || ((Integer)nicsResults[1]<=25)){
 		    resultMessage = FAILURE_MESSAGE;
 		    //resultJLabel.setText(FAILURE_MESSAGE);
-		    testPassed = false;
+		    testPassed = true;
 		}
 		else if(((Integer)memoryResults[1]<50) || ((Integer)cpuResults[1]<50)
 			|| ((Integer)diskResults[1]<50)){
