@@ -19,7 +19,7 @@ public class SpywareBlockedFilter implements SimpleEventFilter<SpywareEvent>
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Blocked Events");
 
     private static final String ACCESS_QUERY
-        = "FROM SpywareAccessEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC"; // only logged - no longer blocked
+        = "FROM SpywareAccessEvent evt WHERE evt.blocked AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
     private static final String ACTIVEX_QUERY
         = "FROM SpywareActiveXEvent evt WHERE evt.requestLine.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
     private static final String BLACKLIST_QUERY
