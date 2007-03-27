@@ -64,6 +64,7 @@ public class UserSettingsJDialog extends MConfigJDialog implements SettingsChang
     private void init(PortalUser portalUser, MTransformControlsJPanel mTransformControlsJPanel){
         this.portalUser = portalUser;
         this.mTransformControlsJPanel = mTransformControlsJPanel;
+        setHelpSource("remote_access_portal");
         applications = new Vector<Application>();
         //saveJButton.setText("<html><b>Change</b> Settings</html>");
     }
@@ -96,6 +97,7 @@ public class UserSettingsJDialog extends MConfigJDialog implements SettingsChang
 
     public void settingsChanged(Object source){
         settingsChanged = true;
+        super.settingsChanged(source);
     }
 
     protected void generateGui(){
