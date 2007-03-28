@@ -1,0 +1,170 @@
+HTTP/1.1 200 OK
+Date: Fri, 23 Mar 2007 01:03:24 GMT
+Server: Apache/1.3.33 (Debian GNU/Linux) PHP/4.3.10-18
+X-Powered-By: PHP/4.3.10-18
+Set-Cookie: b0ce164054f40f1f8faf234d9dc8660b=-; path=/
+Expires: Mon, 26 Jul 1997 05:00:00 GMT
+Last-Modified: Fri, 23 Mar 2007 01:03:24 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Cache-Control: post-check=0, pre-check=0
+Pragma: no-cache
+Keep-Alive: timeout=15, max=100
+Connection: Keep-Alive
+Transfer-Encoding: chunked
+Content-Type: text/html; charset=iso-8859-1
+
+5cac
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+."http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+.<head>
+<script type="text/javascript" src="http://www.untangle.com/includes/js/divswap.js"></script>
+<script>
+
+.function setUpMainNav() {
+..var btns = new Array();
+..var x = document.getElementById("mainnav").getElementsByTagName("UL").item(0).getElementsByTagName("LI");
+..var j=0;
+..for(var i =0; i < x.length; i++) {
+...
+if(x[i].getElementsByTagName("A").item(0).className.indexOf("mainlevel")!=-1) btns[j] = x[i].getElementsByTagName("A").item(0);
+...j++;
+..}
+..btns[0].className+=" first";
+..btns[btns.length-1].className+=" last";
+.}
+
+.function getParentByTagName(el,tagname) {
+..var Parent;
+..if(el.parentNode.nodeName==tagname) Parent = el.parentNode;
+..else Parent = getParentByTagName(el.parentNode,tagname);
+..return Parent;
+.}
+
+.sfHover
+ = function() {
+.var sfEls = document.getElementById("mainnav").getElementsByTagName("LI");
+.for (var i=0; i<sfEls.length; i++) {
+..sfEls[i].onmouseover=function() {
+...this.className+=" sfhover";
+...if(this.getElementsByTagName("A").item(0).className.indexOf("mainlevel")==-1) {
+....var parent = getParentByTagName(this,"LI");
+....parent.className+=" sfhover";
+...}
+..}
+..sfEls[i].onmouseout=function() {
+...this.className=this.className.replace(new RegExp(" sfhover\\b"), "");
+...if(this.getElementsByTagName("A").item(0).className.indexOf("mainlevel")==-1) {
+....var parent = getParentByTagName(this,"LI");
+....parent.className=parent.className.replace(new RegExp(" sfhover\\b"), "");
+...}
+..}
+.}
+}
+if (window.attachEvent) window.attachEvent("onload", sfHover);
+window.onload = setUpMainNav;
+</script>
+....<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+..<title>Untangle - Home Page</title>
+<meta name="description" content="Untangle Networks" />
+<meta name="keywords" content="myspace, stop s
+pam," />
+<meta name="Generator" content="Joomla! - Copyright (C) 2005 - 2006 Open Source Matters. All rights reserved." />
+<meta name="robots" content="index, follow" />
+.<link rel="shortcut icon" href="http://www.untangle.com/images/favicon.ico" />
+.....<link rel="stylesheet" href="http://www.untangle.com/templates/untangle/css/b.css" type="text/css" title="default" media="all" />
+..<link rel="stylesheet" href="http://w
+ww.untangle.com/templates/untangle/css/p.css" type="text/css" title="default" media="print" />
+..
+....
+
+.</head>
+.<body id="frontpage">
+
+..<div id="site">
+...<div id="header">
+....<h1 id="logo" class="leftcol"><a href="http://www.untangle.com/" title="Untangle Networks [home]"><img src="http://www.untangle.com/templates/untangle/images/logo.gif" alt="Untangle Networks [home]" width="197" height="112" /></a></h1>
+....<div id="topnav">
+.....
+<ul>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=34&amp;Itemid=65" class="mainlevel" ><span>About Us</span></a></li>
+<li><span class="mainlevel" >|</span></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=45&amp;Itemid=66" class="mainlevel" ><span>Partners</span></a></li>
+<li><span class="mainlevel" >|</span></li>
+<li><a href="http://blog.untangle.com" target="_blank" class="mainlevel" ><span>Founder's Blog</span></a></li>
+<li><span class="mainlevel" ></span></li>
+</ul>.....<!--<form action
+="index.php?option=com_search" method="get">......<fieldset>
+.......<label for="mod_search_searchword">Search</label>
+.......<input name="searchword" id="mod_search_searchword" maxlength="20" alt="search" class="inputbox" type="text" size="20" value="search..."  onblur="if(this.value=='') this.value='search...';" onfocus="if(this.value=='search...') this.value='';" />
+.......<input type="image" src="/nav-top-go.gif" alt=
+"nav-top-go" />
+.......<input type="hidden" name="option" value="com_search" />
+.......<input type="hidden" name="Itemid" value="" />
+......</fieldset>.
+.....</form>-->
+....</div>
+....<div id="mainnav">
+.....
+<ul>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=46&amp;Itemid=74" class="mainlevel" ><span>What We Do</span></a>
+<ul>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=58&amp;Itemid=124" class="sublevel" ><span>Stop Spam</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=57&amp;Itemid=128" class="sublevel" ><span>Control MySpace</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=56&amp;Itemid=125" class="sublevel" ><span>Block Online Poker</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=55&amp;Itemid=123" class="sublevel" ><span>Block Adware</span></a></li>
+<li><a href
+="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=54&amp;Itemid=122" class="sublevel" ><span>Stop Music Downloads</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=51&amp;Itemid=127" class="sublevel" ><span>Control IM</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=59&amp;Itemid=260" class
+="sublevel" ><span>Set Up Remote Workers</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=60&amp;Itemid=261" class="sublevel" ><span>Enable Offsite IT</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=61&amp;Itemid=262" class="sublevel" ><span>Stop Identity Theft</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=62&amp;Itemid=263" class="sublevel" ><span>Stop Spyware</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=63&amp;Itemid=264" class="sublevel" ><span>Block Viruses</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=64&amp;Itemid=265" class="sublevel" ><span>Block Network Attacks</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=65&amp;Itemid=266" class="sublevel" ><span>Block Hijacking</spa
+n></a></li>
+</ul></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=47&amp;Itemid=139" class="mainlevel" ><span>Products</span></a>
+<ul>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=86&amp;Itemid=179" class="sublevel" ><span>Software</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=87&
+amp;Itemid=269" class="sublevel" ><span>Servers</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=88&amp;Itemid=178" class="sublevel" ><span>Pricing</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=141&amp;Itemid=361" class="sublevel" ><span>Case Studies</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=102&amp;Itemid=477" class="sublevel" ><span>Why Untangle Is Better</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=91&amp;Itemid=176" class="sublevel" ><span>FAQs</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=92&amp;Itemid=177" class="sublevel" ><span>How It Works</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=103&amp;Itemid=274" class="sublevel" ><span>Live Demo</span></a></li>
+</ul></li
+>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=48&amp;Itemid=75" class="mainlevel" ><span>Support</span></a>
+<ul>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=93&amp;Itemid=276" class="sublevel" ><span>Documentation</span></a></li>
+<li><a href="http://forums.untangle.com" class="sublevel" ><span>Forums</span></a></li>
+<li><a href="http://
+www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=83&amp;Itemid=187" class="sublevel" ><span>Contact</span></a></li>
+</ul></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=49&amp;Itemid=76" class="mainlevel" ><span>Download</span></a></li>
+<li><a href="http://www.untangle.com/index.php?option=com_content&amp;task=view&amp;id=50&amp;Itemid=77" class="mainlevel" ><span>How To Buy</span></a></li>
+</ul>....</div>
+...</div>
+...<div id="hilitebar">
+....<img src="/images/stories/homepage/untangle_header.jpg" alt="" width="799" height="201" id="rotatingPhoto" />...</div>
+...<div id="breadcrumbs">
+....<div class="left">..<div class="moduletable">
+...<a href="/index.php?option=com_content&amp;task=view&amp;id=49&amp;Itemid=76"><img src="/images/stories/homepage/homepage-freedownload-btn.gif" alt="" /></a>..</div>
+..</div><div class="right">..<div class="moduletable">
+...<a href="/demo" onclick="window.open(this.href);return false;"><img src="/images/stories/ho
+mepage/homepage-howitworks-btn.gif" alt="" /></a>..</div>
+..</div>...</div>
+...
+...<div id="copyarea-home">
+<div id="home-flash" class="left">
+<table class="blog" cellpadding="0" cellspacing="0"></table>..<div class="moduletable">
+...<script type="text/javascript" language="javascript">
+
+function hilite(theLink,theParent) {
+.var As = document.getElementById(theParent).getElementsByTagName("A");
+.for(var i=0;i<As.leng

@@ -11,8 +11,10 @@
 
 package com.untangle.tran.ids;
 
+import java.io.*;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.*;
 
 import com.untangle.mvvm.api.SessionEndpoints;
@@ -27,18 +29,32 @@ public class IDSTest {
     private class TestDataEvent implements IPDataEvent {
         ByteBuffer buffer;
         public TestDataEvent() {
-            buffer = ByteBuffer.allocate(512);
-        }
-
-        public TestDataEvent(String str) {
-            setData(str.getBytes());
         }
 
         public void setData(byte[] data) {
-            buffer.clear();
+            buffer = ByteBuffer.allocate(data.length + 1);
             buffer.put(data);
             buffer.flip();
         }
+
+        public void setData(File fileData) {
+            try {
+                long len = fileData.length();
+                if (len <= 0)
+                    throw new IOException("File " + fileData.getPath() + " does not exist");
+                FileInputStream fis = new FileInputStream(fileData);
+                FileChannel chan = fis.getChannel();
+                buffer = ByteBuffer.allocate((int)len + 1);
+                while (chan.read(buffer) > 0);
+                buffer.flip();
+                chan.close();
+                fis.close();
+            } catch (IOException x) {
+                System.out.println("Lose: " + x);
+                x.printStackTrace();
+            }
+        }
+
         public ByteBuffer data() {
             return buffer;
         }
@@ -60,6 +76,16 @@ public class IDSTest {
         //runTimeTest(1);
         return true;
     }
+
+    public static void main(String[] args) {
+        IDSTest test = new IDSTest();
+        if (test.runTest()) {
+            System.out.println("All tests pass");
+        } else {
+            System.out.println("Test fails");
+        }
+    }
+
 /*Order is no longer preserved - same headers get compressed :/*/
     private boolean generateRuleTest() {
         String testValidStrings[]   = {
@@ -94,7 +120,13 @@ public class IDSTest {
             "alert tcp any any -> any any (msg:\"Rule 13\";  content:\"Hi\"; content:\"Bob\"; distance: 2; )",
             "alert tcp any any -> any any (msg:\"Rule 14\";  content:\"Hi\"; content:\"Bob\"; within: 5; )",
             "alert tcp any any -> any any (msg:\"Rule 15\";  content:\"Hi\"; content:\"|02|\"; within:1; distance:1;)",
-            "alert tcp any any -> any any (msg:\"Rule 16\";  content:\"Hi\"; distance:1; within:3; content:\"|02|\"; within:2; distance:2;)"};
+            "alert tcp any any -> any any (msg:\"Rule 16\";  content:\"Hi\"; distance:1; within:3; content:\"|02|\"; within:2; distance:2;)",
+
+            /** 3550 **/
+            "alert tcp $EXTERNAL_NET $HTTP_PORTS -> $HOME_NET any (msg:\"(Rule 17) WEB-CLIENT HTML http scheme hostname overflow attempt\"; flow:to_client,established; content:\"http|3A|//\"; nocase; pcre:\"/=\\x22http\\x3a\\x2f\\x2f[^\\x3a\\x2f@\\s\\x22\\x3F\\x26]{255}|=\\x27http\\x3a\\x2f\\x2f[^\\x3a\\x2f@\\s\\x27\\x3F\\x26]{255}|=http\\x3a\\x2f\\x2f[^\\x3a\\x2f@\\s\\x3F\\x26]{255}/i\"; reference:cve,2005-0553; classtype:attempted-user; sid:3550; rev:5;)",
+};
+
+        
 
         for(int i=0; i < testValidStrings.length; i++) {
             try {
@@ -195,6 +227,13 @@ public class IDSTest {
         test.setData(withinDebug1);
         //////////////////////checkSessionData(info, test, true, 16, true);
 
+        File test3550 = new File("testneg3550.cap");
+        test.setData(test3550);
+        checkSessionData(info, test, true, 17, false);
+
+        test3550 = new File("testpos3550.cap");
+        test.setData(test3550);
+        checkSessionData(info, test, true, 17, true);
     }
 
     private void checkSessionData(IDSSessionInfo info, IPDataEvent event, boolean isServer,int ruleNum,  boolean answer) {
