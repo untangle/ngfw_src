@@ -238,7 +238,7 @@ h4 {
     <table width="100%" style="padding: 15px 0px 10px 0px">
         <%
 
-        GregorianCalendar cal = new GregorianCalendar();
+        Calendar cal = new GregorianCalendar();
         String[] strCals = new String[3];
 
         StringTokenizer sTokenizer;
@@ -258,7 +258,7 @@ h4 {
                 idx++;
             }
             yearVal = Integer.parseInt(strCals[0]);
-            monVal = Integer.parseInt(strCals[1]);
+            monVal = Integer.parseInt(strCals[1]) - 1; // 0 offset
             dayVal = Integer.parseInt(strCals[2]);
             cal.set(yearVal, monVal, dayVal);
             switch( cal.get(Calendar.DAY_OF_WEEK) ) {
