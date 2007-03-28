@@ -76,8 +76,10 @@ public class IDSRuleSignature {
             if(optionName.equalsIgnoreCase(ignoreSafeOptions[i]))
                 return;
         }
-
-        IDSOption option = IDSOption.buildOption(ids.getEngine(),this,optionName,params, initializeSettingsTime);
+        IDSDetectionEngine engine = null;
+        if (ids != null)
+            engine = ids.getEngine();
+        IDSOption option = IDSOption.buildOption(engine,this,optionName,params, initializeSettingsTime);
         if(option != null && option.runnable())
             options.add(option);
         else if(option == null) {
@@ -152,7 +154,10 @@ public class IDSRuleSignature {
         if (IDSDetectionEngine.DO_PROFILING)
             startTime = System.nanoTime();
         for(IDSOption option : options) {
-            if(false == option.run(info)) {
+            boolean opres = option.run(info);
+            // if (log.isDebugEnabled())
+            // log.debug("res: " + opres + ", rule " + rule.getSid() + " option " + option.getClass().getName());
+            if(!opres) {
                 // do not match
                 result = false;
                 break;
