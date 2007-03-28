@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -26,6 +28,10 @@ class FileLoader {
     public static final String[] IGNORED_RULE_FILES = {
         "deleted.rules", "experimental.rules",
         "icmp-info.rules", "local.rules", "porn.rules", "shellcode.rules" };
+
+    public static final Pattern[] IGNORED_RULE_PATTERNS = {
+        Pattern.compile("clsid", Pattern.CASE_INSENSITIVE) };
+    
 
     // This should be elsewhere.  XXX
     public static final int[] VERY_SLOW_RULES = {
@@ -127,6 +133,12 @@ class FileLoader {
                 str = str.trim();
                 if (str.length() == 0 || str.charAt(0) == '#')
                     continue;
+                for (Pattern pat : IGNORED_RULE_PATTERNS) {
+                    if (pat.matcher(str).find()) {
+                        logger.info("Skipping Active-X rule " + str);
+                        continue lineloop;
+                    }
+                }
                 IDSRule rule = manager.createRule(str.trim(), category);
                 if (rule != null) {
                     int sid = rule.getSid();
