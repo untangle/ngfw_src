@@ -85,6 +85,9 @@ public class DhcpAbsoluteEvent extends LogEvent implements Serializable
 
     public void appendSyslog(SyslogBuilder sb)
     {
+        /* Don't log anything if this is null, this can be null at startup */
+        if ( this.absoluteLeaseList == null ) return;
+
         sb.startSection("info");
         sb.addField("num-leases", absoluteLeaseList.size());
 

@@ -133,12 +133,12 @@ public class RBLChecker {
                 // to test the emails that this server will try to send
                 // -> functionality requested by dmorris
                 logger.info(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist but ignoring this time");
-                spamImpl.logRBL(new SpamSMTPRBLEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), true));
+                tsr.attach(new SpamSMTPRBLEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), true));
                 rblCnt = 0;
                 isBlacklisted = false;
             } else {
                 logger.info(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist");
-                spamImpl.logRBL(new SpamSMTPRBLEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), false));
+                tsr.attach(new SpamSMTPRBLEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), false));
                 rblCnt++;
             }
         }
@@ -209,7 +209,7 @@ public class RBLChecker {
         RBLClientContext[] cContexts = new RBLClientContext[contexts.length];
         int idx = 0;
         for (Object context : contexts) {
-            cContexts[idx] = (RBLClientContext) context;
+            cContexts[idx] = (RBLClientContext)context;
             idx++;
         }
 

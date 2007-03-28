@@ -35,7 +35,6 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
 
     private static final String DEF_BACKUP_URL = "https://poptrack.untangle.com/boxbackup/backup.php";
 
-    private final EventHandler handler = new EventHandler(this);
     private final PipeSpec[] pipeSpecs = new PipeSpec[] { };
     private EventLogger<BoxBackupEvent> eventLogger;
     private CronJob cronJob;
@@ -249,8 +248,6 @@ public class BoxBackupImpl extends AbstractTransform implements BoxBackup
         if (settings == null) {
             throw new TransformException("Failed to get BoxBackup settings: " + settings);
         }
-
-        handler.setSettings(settings);
     }
 
     public Object getSettings()

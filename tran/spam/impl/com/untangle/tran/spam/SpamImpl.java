@@ -79,10 +79,15 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
     private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
     private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;
 
+    private final RBLEventHandler rblHandler = new RBLEventHandler(this);
+
     // We want to make sure that spam is before virus in the pipeline (towards the client for smtp,
     // server for pop/imap).
+    // Would want the RBL to get evaluated before the casing, this way if it blocks a session
+    // the casing doesn't have to be initialized.
     private final PipeSpec[] pipeSpecs = new PipeSpec[] {
         new SoloPipeSpec("spam-smtp", this, new TokenAdaptor(this, new SpamSmtpFactory(this)), Fitting.SMTP_TOKENS, Affinity.CLIENT, 10),
+        new SoloPipeSpec("spam-smtp-rbl", this, this.rblHandler, Fitting.SMTP_STREAM, Affinity.CLIENT, 11),
         new SoloPipeSpec("spam-pop", this, new TokenAdaptor(this, new SpamPopFactory(this)), Fitting.POP_TOKENS, Affinity.SERVER, 10),
         new SoloPipeSpec("spam-imap", this, new TokenAdaptor(this, new SpamImapFactory(this)), Fitting.IMAP_TOKENS, Affinity.SERVER, 10)
     };

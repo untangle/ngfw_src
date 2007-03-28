@@ -80,15 +80,6 @@ public class SpamSmtpFactory
             return;
         }
 
-        if (spamConfig.getThrottle()) {
-            //m_logger.debug("Check RBL(s) for connection from: " + tsr.clientAddr());
-            RBLChecker rblChecker = new RBLChecker(m_spamImpl, spamSettings.getSpamRBLList());
-            if (true == rblChecker.check(tsr)) {
-                m_logger.warn("RBL hit confirmed, rejecting connection from: " + tsr.clientAddr());
-                tsr.rejectReturnRst();
-            }
-        }
-
         int activeCount = m_spamImpl.getScanner().getActiveScanCount();
         if (ScanLoadChecker.reject(activeCount, m_logger)) {
             m_logger.warn("Load too high, rejecting connection from: " + tsr.clientAddr());
