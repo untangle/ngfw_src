@@ -16,6 +16,7 @@ import java.util.regex.*;
 
 import com.untangle.tran.ids.IDSRuleSignature;
 import com.untangle.tran.ids.IDSSessionInfo;
+import com.untangle.tran.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
 public class PcreOption extends IDSOption {
@@ -76,11 +77,20 @@ public class PcreOption extends IDSOption {
 
     public boolean run(IDSSessionInfo sessionInfo) {
         ByteBuffer eventData = sessionInfo.getEvent().data();
-        String data = new String(eventData.array());
+
     //  if(pcrePattern == null) {
     //      System.out.println("pcrePattern is null\n\n"+getSignature());
     //      return false;
     //  }
-        return negationFlag ^ pcrePattern.matcher(data).find();
+
+        AsciiCharBuffer acb = AsciiCharBuffer.wrap(eventData);
+        boolean patMatch = pcrePattern.matcher(acb).find();
+
+        // if (logger.isDebugEnabled()) {
+        // logger.debug("Match: " + patMatch + " for data of len " + eventData.remaining() + " on " +
+        // signature.rule().getText());
+        // }
+
+        return negationFlag ^ patMatch;
     }
 }
