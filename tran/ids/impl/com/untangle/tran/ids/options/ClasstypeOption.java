@@ -29,7 +29,10 @@ public class ClasstypeOption extends IDSOption {
     public ClasstypeOption(IDSDetectionEngine engine, IDSRuleSignature signature, String params, boolean initializeSettingsTime) {
         super(signature, params);
 
-        RuleClassification rc = engine.getClassification(params);
+        RuleClassification rc = null;
+        if (engine != null)
+            // Allow null for testing.
+            rc = engine.getClassification(params);
         if (rc == null) {
             logger.warn("Unable to find rule classification: " + params);
             // use default classification text for signature
