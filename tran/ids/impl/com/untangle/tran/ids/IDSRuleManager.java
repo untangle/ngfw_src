@@ -174,7 +174,7 @@ public class IDSRuleManager {
     // This is how a rule gets created
     public IDSRule createRule(String text, String category) {
         if(text == null || text.length() <= 0 || text.charAt(0) == '#') {
-            logger.debug("Ignoring empty rule: " + text);
+            logger.warn("Ignoring empty rule: " + text);
             return null;
         }
 
@@ -193,13 +193,13 @@ public class IDSRuleManager {
             String ruleParts[]   = IDSStringParser.parseRuleSplit(text);
             IDSRuleHeader header = IDSStringParser.parseHeader(ruleParts[0], rule.getAction());
             if (header == null) {
-                logger.debug("Ignoring rule with bad header: " + text);
+                logger.warn("Ignoring rule with bad header: " + text);
                 return null;
             }
             IDSRuleSignature signature  = IDSStringParser.parseSignature(ids, ruleParts[1], rule.getAction(), rule, true);
 
             if(signature.remove()) {
-                logger.debug("Ignoring rule with bad sig: " + text);
+                logger.warn("Ignoring rule with bad sig: " + text);
                 return null;
             }
             String msg = signature.getMessage();
@@ -268,9 +268,11 @@ public class IDSRuleManager {
 
         Matcher match = variablePattern.matcher(string);
         if(match.find()) {
-            IDSDetectionEngine engine = ids.getEngine();
+            IDSDetectionEngine engine = null;
+            if (ids != null)
+                engine = ids.getEngine();
             List<IDSVariable> varList, imVarList;
-            if(engine.getSettings() == null) { // XXX when is this?
+            if(engine == null || engine.getSettings() == null) { // XXX only true for testing.
                 logger.warn("engine.getSettings() is null");
                 imVarList = getImmutableVariables();
                 varList = getDefaultVariables();
