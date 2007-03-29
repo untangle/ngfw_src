@@ -36,6 +36,7 @@ public class DirectoryADConnectivityTestJDialog extends javax.swing.JDialog impl
         initComponents();
         setTitle("Active Directory Test");
         this.addWindowListener(this);
+		pack();
         this.setBounds( Util.generateCenteredBounds(window.getBounds(), this.getWidth(), this.getHeight()) );
     }
    
@@ -47,24 +48,62 @@ public class DirectoryADConnectivityTestJDialog extends javax.swing.JDialog impl
         if(v)
             new ConnectivityCheckThread();
         super.setVisible(v);
+		if(!v)
+				dispose();
     }
     
         private void initComponents() {//GEN-BEGIN:initComponents
+                java.awt.GridBagConstraints gridBagConstraints;
+
+                iconJLabel = new javax.swing.JLabel();
+                dividerJPanel = new javax.swing.JPanel();
+                jPanel1 = new javax.swing.JPanel();
                 labelJLabel = new javax.swing.JLabel();
                 jProgressBar = new javax.swing.JProgressBar();
                 closeJButton = new javax.swing.JButton();
                 backgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
 
-                getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+                getContentPane().setLayout(new java.awt.GridBagLayout());
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
                 setTitle("Email Test");
                 setModal(true);
                 setResizable(false);
+                iconJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconDialogWizard_96x96.png")));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 20);
+                getContentPane().add(iconJLabel, gridBagConstraints);
+
+                dividerJPanel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(154, 154, 154)));
+                dividerJPanel.setMaximumSize(new java.awt.Dimension(1, 1600));
+                dividerJPanel.setMinimumSize(new java.awt.Dimension(1, 10));
+                dividerJPanel.setOpaque(false);
+                dividerJPanel.setPreferredSize(new java.awt.Dimension(1, 10));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 1;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(20, 0, 20, 0);
+                getContentPane().add(dividerJPanel, gridBagConstraints);
+
+                jPanel1.setLayout(new java.awt.GridBagLayout());
+
+                jPanel1.setOpaque(false);
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 labelJLabel.setText("Active Directory Test:");
-                getContentPane().add(labelJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 369, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
+                jPanel1.add(labelJLabel, gridBagConstraints);
 
                 jProgressBar.setFont(new java.awt.Font("Dialog", 0, 12));
                 jProgressBar.setMaximumSize(new java.awt.Dimension(32767, 20));
@@ -72,7 +111,13 @@ public class DirectoryADConnectivityTestJDialog extends javax.swing.JDialog impl
                 jProgressBar.setPreferredSize(new java.awt.Dimension(148, 20));
                 jProgressBar.setString("");
                 jProgressBar.setStringPainted(true);
-                getContentPane().add(jProgressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 90, 309, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 1;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
+                jPanel1.add(jProgressBar, gridBagConstraints);
 
                 closeJButton.setFont(new java.awt.Font("Default", 0, 12));
                 closeJButton.setText("<html><b>Close</b></html>");
@@ -88,7 +133,20 @@ public class DirectoryADConnectivityTestJDialog extends javax.swing.JDialog impl
                         }
                 });
 
-                getContentPane().add(closeJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 162, -1, -1));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
+                jPanel1.add(closeJButton, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 2;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 20);
+                getContentPane().add(jPanel1, gridBagConstraints);
 
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -96,10 +154,15 @@ public class DirectoryADConnectivityTestJDialog extends javax.swing.JDialog impl
                 backgroundJLabel.setFocusable(false);
                 backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setOpaque(true);
-                getContentPane().add(backgroundJLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 369, 200));
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridwidth = 3;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
+                getContentPane().add(backgroundJLabel, gridBagConstraints);
 
-                java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-                setBounds((screenSize.width-369)/2, (screenSize.height-222)/2, 369, 222);
         }//GEN-END:initComponents
 
 		private void closeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeJButtonActionPerformed
@@ -123,6 +186,9 @@ public class DirectoryADConnectivityTestJDialog extends javax.swing.JDialog impl
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JLabel backgroundJLabel;
         private javax.swing.JButton closeJButton;
+        private javax.swing.JPanel dividerJPanel;
+        private javax.swing.JLabel iconJLabel;
+        private javax.swing.JPanel jPanel1;
         private javax.swing.JProgressBar jProgressBar;
         private javax.swing.JLabel labelJLabel;
         // End of variables declaration//GEN-END:variables

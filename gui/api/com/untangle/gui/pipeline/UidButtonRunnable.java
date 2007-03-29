@@ -18,60 +18,105 @@ import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.util.*;
 import java.awt.Window;
 import java.awt.event.*;
-import java.util.List;
+import java.util.*;
 import javax.swing.CellEditor;
 import javax.swing.SwingUtilities;
 
 public class UidButtonRunnable implements ButtonRunnable, Comparable<UidButtonRunnable> {
 
-    private String uid;
+    private List<String> uidList = new Vector<String>();
     private Window topLevelWindow;
     private MConfigJDialog mConfigJDialog;
     private CellEditor cellEditor;
     private boolean valueChanged;
 
     public UidButtonRunnable(String isEnabled){
+			uidList.add(UidSelectJDialog.ANY_USER);
     }
 
-    public String getButtonText(){ return (uid==null?"any":uid); }
+    public String getButtonText(){
+			StringBuilder sb = new StringBuilder();
+			boolean first = true;
+			for(String s : uidList){
+					if(!first)
+							sb.append(", " + s);
+					else
+							sb.append(s);
+					first = false;
+			}
+			return sb.toString();
+	}
     public boolean isEnabled(){ return true; }
     public void setEnabled(boolean isEnabled){ }
     public boolean valueChanged(){ return valueChanged; }
-    public void setUid(String uid){ this.uid = uid; }
-    public String getUid(){ return (uid==null?"any":uid); }
+	public void setUid(String s){
+			StringTokenizer st = new StringTokenizer(s);
+			uidList.clear();
+			while(st.hasMoreTokens())
+					uidList.add(st.nextToken());
+			if((uidList.size()==1)&&(uidList.get(0).equals("any"))){
+					uidList.remove(0);
+					uidList.add(UidSelectJDialog.ANY_USER);
+			}
+	}
+    public void setUidList(List<String> uidList){ this.uidList = uidList; }
+    public List<String> getUidList(){ return uidList; }
+	public String getUids(){
+			StringBuilder sb = new StringBuilder();
+			boolean first = true;
+			for(String s : uidList){
+					if(!first)
+							sb.append(", " + s);
+					else
+							sb.append(s);
+					first = false;
+			}
+			String outputString = sb.toString();
+			if(outputString.equals("any"))
+					return null;
+			else
+					return outputString;
+	}
 
     public void setTopLevelWindow(Window topLevelWindow){ this.topLevelWindow = topLevelWindow; }
     public void setCellEditor(CellEditor cellEditor){ this.cellEditor = cellEditor; }
 
     public void actionPerformed(ActionEvent evt){ run(); }
+	
+	
     public int compareTo(UidButtonRunnable uidButtonRunnable){
-	if( (uid==null) && (uidButtonRunnable.uid==null))
-	    return 0;
-	else if( (uid!=null) && (uidButtonRunnable.uid==null))
-	    return 1;
-	else if( (uid==null) && (uidButtonRunnable.uid!=null))
-	    return -1;
-	else		
-	    return uid.compareTo(uidButtonRunnable.uid);
+			List<String> thisList = uidList;
+			List<String> thatList = uidButtonRunnable.uidList;
+			int thisLen = thisList.size();
+			int thatLen = thatList.size();
+			int minSize = Math.min(thisLen, thatLen);
+			for(int i=0; i<minSize; i++){
+				if(thisList.get(i).compareTo(thatList.get(i)) != 0)
+						return thisList.get(i).compareTo(thatList.get(i));
+			}
+			if(thisLen==thatLen)
+					return 0;
+			else if(thisLen > thatLen)
+					return 1;
+			else
+					return -1;
     }
+	 
+	
     public void run(){
 	UidSelectJDialog uidSelectJDialog = UidSelectJDialog.factory(topLevelWindow);
+	uidSelectJDialog.setUidList(uidList);
 	uidSelectJDialog.setVisible(true);
-	String newUid = uidSelectJDialog.getUid();
-	if( (uid == null) && (newUid == null) ){
-	    valueChanged = false;
-	}
-	else if( (uid != null) && (newUid == null) ){
-	    valueChanged = false;
-	}
-	else if( (uid == null) && (newUid != null) ){
-	    valueChanged = true;
-	}
-	else{
-	    valueChanged = !uid.equals(newUid);
-	}
+	List<String> newUidList = uidSelectJDialog.getUidList();
+	
+	if(Arrays.equals(uidList.toArray(), newUidList.toArray()))
+		valueChanged = false;
+	else
+		valueChanged = true;
+	
 	if(valueChanged)
-	    uid = newUid;
+	    uidList = newUidList;
+	
 	SwingUtilities.invokeLater( new Runnable(){ public void run(){
 	    cellEditor.stopCellEditing();
 	}});

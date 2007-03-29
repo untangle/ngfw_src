@@ -19,22 +19,28 @@ import com.untangle.mvvm.addrbook.RepositoryType;
 import com.untangle.gui.configuration.DirectoryCompoundSettings;
 import com.untangle.gui.configuration.DirectoryJDialog;
 
-import java.util.TreeMap;
+
+import java.util.*;
 import java.util.List;
 import java.util.Vector;
 import java.awt.Container;
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Dialog;
 import java.awt.Window;
-import javax.swing.SwingUtilities;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.*;
+
 
 public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
     private static InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
 
-    private static final String ANY_USER = "[any user]";
+    public static final String ANY_USER = "[any]";
+	public static final String MULTIPLE_USERS = "[multiple selections]";
 
-    private String uid;
+    private List<String> uidList;
     private boolean isProceeding;
 	private Window window;
 	
@@ -60,35 +66,113 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
     
     private void init(Window window) {
         initComponents();
+		userJScrolPane.getVerticalScrollBar().setFocusable(false);
+		uidJList.setCellRenderer(new UidCellRenderer());
+		
+		uidJList.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent me) {
+						int selectedIndex = uidJList.locationToIndex(me.getPoint());
+						if (selectedIndex < 0)
+								return;
+						UserEntryWrapper item = (UserEntryWrapper)uidJList.getModel().getElementAt(selectedIndex);
+						if(item.getUID().equals(ANY_USER)){
+								boolean enabled;
+								if(item.isSelected()){
+										enabled = true;
+								}
+								else{
+										enabled = false;
+								}
+								for(int i=1; i < uidJList.getModel().getSize(); i++){
+										UserEntryWrapper target = (UserEntryWrapper)uidJList.getModel().getElementAt(i);				
+										target.setEnabled(enabled);
+								}
+						}
+						if(item.isEnabled())
+								item.setSelected(!item.isSelected());
+						
+						uidJList.repaint();
+				}
+		});
+		
         this.addWindowListener(this);
 		this.window = window;
-	    setGlassPane(infiniteProgressJComponent);
-	    new PerformRefreshThread();
+	    setGlassPane(infiniteProgressJComponent);	    
     }
 
-    public String getUid(){ return uid; }
-
+    public List<String> getUidList(){ return uidList; }
+	public void setUidList(List<String> uidList){
+			this.uidList = uidList;
+	}
+	
     public void updateUidModel(List<UserEntry> userEntries){
-	uidJComboBox.removeAllItems();
-	uidJComboBox.addItem(ANY_USER);
-	uidJComboBox.setSelectedItem(ANY_USER);
-	TreeMap<UserEntryWrapper,Object> treeMap = new TreeMap<UserEntryWrapper,Object>();
-	for( UserEntry userEntry : userEntries )
-	    treeMap.put(new UserEntryWrapper(userEntry), null);
-	for( UserEntryWrapper userEntryWrapper : treeMap.keySet() )		
-	    uidJComboBox.addItem( userEntryWrapper );
+	   Vector<UserEntryWrapper> uidVector = new Vector<UserEntryWrapper>();
+	   
+	   UserEntryWrapper t = new UserEntryWrapper(null);	   
+	   uidVector.add(t);
+	for( UserEntry userEntry : userEntries ){
+		t = new UserEntryWrapper(userEntry);
+	    uidVector.add( t );
+	}
+	
+	boolean any=false;
+	for(String s : uidList){
+		if(s.equals(ANY_USER))
+			any=true;
+	}
+	if(any){
+			boolean first = true;
+			for(UserEntryWrapper u : uidVector){
+					
+					if(!first){
+							u.setEnabled(false);
+							u.setSelected(false);
+					}
+					else{
+							u.setSelected(true);
+					}
+					first = false;
+			}
+	}
+	else{
+		for(String s : uidList){
+				for(UserEntryWrapper u : uidVector){
+						if(s.equals(u.getUID())){
+								u.setSelected(true);
+						}
+						
+				}
+		}
+	}
+		uidJList.setListData(uidVector);
     }
    
 	 public void setVisible(boolean isVisible){
         if(isVisible){
 			pack();
 			this.setBounds( Util.generateCenteredBounds(window, this.getWidth(), this.getHeight()) );
+			new PerformRefreshThread();
         }
 		super.setVisible(isVisible);
         if(!isVisible){
             dispose();
         }
     }
+	 
+	protected class UidCellRenderer implements ListCellRenderer {
+			private JCheckBox target = new JCheckBox();
+			public Component getListCellRendererComponent( JList list, Object value, int index,
+															boolean isSelected, boolean cellHasFocus){
+					JCheckBox cb = (JCheckBox) value;
+					target.setEnabled(cb.isEnabled());
+					target.setSelected(cb.isSelected());
+					target.setText(cb.getText());
+					target.setBorderPainted(cellHasFocus);
+					target.setFocusPainted(true);
+					return target;
+			}
+	
+	}
         private void initComponents() {//GEN-BEGIN:initComponents
                 java.awt.GridBagConstraints gridBagConstraints;
 
@@ -99,7 +183,8 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
                 labelJLabel = new javax.swing.JLabel();
                 messageJLabel = new javax.swing.JLabel();
                 jLabel1 = new javax.swing.JLabel();
-                uidJComboBox = new javax.swing.JComboBox();
+                userJScrolPane = new javax.swing.JScrollPane();
+                uidJList = new javax.swing.JList();
                 jLabel2 = new javax.swing.JLabel();
                 jButton1 = new javax.swing.JButton();
                 jPanel2 = new javax.swing.JPanel();
@@ -155,7 +240,7 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                messageJLabel.setText("<html>\n<center>\nYou may choose a user ID/Login that exists in the User Directory<br>\n(either local LDAP or remote Active Directory), or you can add a new <br>\nuser to the User Directory, and then choose that user.\n</center></html>");
+                messageJLabel.setText("<html>\n<center>\nYou may choose user IDs/Logins that exist in the User Directory<br>\n(either local or remote Active Directory), or you can add a new <br>\nuser to the User Directory, and then choose that user.\n</center></html>");
                 messageJLabel.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -168,7 +253,7 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 
                 jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                jLabel1.setText("Select an existing user:");
+                jLabel1.setText("Select an existing user or users:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 2;
@@ -177,17 +262,22 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
                 jPanel1.add(jLabel1, gridBagConstraints);
 
-                uidJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-                uidJComboBox.setMaximumSize(new java.awt.Dimension(250, 24));
-                uidJComboBox.setMinimumSize(new java.awt.Dimension(250, 24));
-                uidJComboBox.setPreferredSize(new java.awt.Dimension(250, 24));
+                userJScrolPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                userJScrolPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                userJScrolPane.setMaximumSize(new java.awt.Dimension(300, 200));
+                userJScrolPane.setMinimumSize(new java.awt.Dimension(300, 200));
+                userJScrolPane.setPreferredSize(new java.awt.Dimension(300, 200));
+                uidJList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+                uidJList.setMaximumSize(null);
+                uidJList.setMinimumSize(null);
+                uidJList.setPreferredSize(null);
+                userJScrolPane.setViewportView(uidJList);
+
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 3;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
-                jPanel1.add(uidJComboBox, gridBagConstraints);
+                jPanel1.add(userJScrolPane, gridBagConstraints);
 
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
                 jLabel2.setText("Add a new user:");
@@ -307,25 +397,27 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
     }//GEN-LAST:event_jButton1ActionPerformed
     
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
-	Object selectedObject = uidJComboBox.getSelectedItem();
-	if( selectedObject.equals(ANY_USER) )
-        uid = "any";
-    else
-        uid = ((UserEntryWrapper) selectedObject).getUserEntry().getUID();
+	ListModel uidModel = uidJList.getModel();
+	List<String> outputUidList = new Vector<String>();
+	for(int i=0; i<uidModel.getSize(); i++){
+			UserEntryWrapper target = ((UserEntryWrapper)uidModel.getElementAt(i));
+			if(target.isSelected() && target.isEnabled()){
+					outputUidList.add(target.getUID());
+			}
+	}
+			
+	uidList = outputUidList;
 	isProceeding = true;
     windowClosing(null);
     }//GEN-LAST:event_proceedJButtonActionPerformed
     
     private void cancelJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelJButtonActionPerformed
 	isProceeding = false;
-	uid = "any";
         windowClosing(null);
     }//GEN-LAST:event_cancelJButtonActionPerformed
     
     
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-	if( !isProceeding )
-	    uid = "any";
         this.setVisible(false);
     }    
 
@@ -373,34 +465,54 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 	}
     }
 
-    class UserEntryWrapper implements Comparable<UserEntryWrapper>{
+    class UserEntryWrapper extends JCheckBox implements Comparable<UserEntryWrapper>{
 	private UserEntry userEntry;
 	public UserEntryWrapper(UserEntry userEntry){
 	    this.userEntry = userEntry;
+		setText(toString());
+		setSelected(false);
+		setOpaque(false);
 	}
+	
 	public String toString(){
-	    String repository = "UNKNOWN";
+		if(userEntry==null)
+				return ANY_USER;
+	    String repository;
 	    switch(userEntry.getStoredIn()){
 	    case MS_ACTIVE_DIRECTORY : repository = "Active Directory";
 		break;
 	    case LOCAL_DIRECTORY : repository = "Local";
 		break;
+		default:
 	    case NONE : repository = "UNKNOWN";
-	    default :;
 		break;
 	    }
 	    return userEntry.getUID() + " (" + repository + ")";
 	}
+	public String getUID(){
+			if(userEntry!=null)
+					return userEntry.getUID();
+			else
+					return ANY_USER;
+	}
 	public UserEntry getUserEntry(){
 	    return userEntry;
 	}
+	
 	public boolean equals(Object obj){
 	    if( ! (obj instanceof UserEntryWrapper) )
+		return false;
+		else if(userEntry==null)
 		return false;
 	    UserEntry other = ((UserEntryWrapper) obj).getUserEntry();
 	    return getUserEntry().equals(other);
 	}
+	
 	public int compareTo(UserEntryWrapper userEntryWrapper){
+			if(userEntry==null)
+					return -1;
+			else if(userEntryWrapper.userEntry==null)
+					return 1;
 	    switch(userEntry.getStoredIn().compareTo(userEntryWrapper.userEntry.getStoredIn())){
 	    case -1 :
 		return -1;
@@ -436,7 +548,8 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
         private javax.swing.JLabel labelJLabel;
         protected javax.swing.JLabel messageJLabel;
         protected javax.swing.JButton proceedJButton;
-        private javax.swing.JComboBox uidJComboBox;
+        private javax.swing.JList uidJList;
+        private javax.swing.JScrollPane userJScrolPane;
         // End of variables declaration//GEN-END:variables
     
 }

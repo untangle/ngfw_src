@@ -36,6 +36,7 @@ public class DirectoryJDialog extends MConfigJDialog {
     public DirectoryJDialog( Dialog parentDialog ) {
 	super(parentDialog);
 	setTitle(NAME_DIRECTORY_CONFIG);
+	setHelpSource("user_directory_config");
 	compoundSettings = new DirectoryCompoundSettings();
     }
 

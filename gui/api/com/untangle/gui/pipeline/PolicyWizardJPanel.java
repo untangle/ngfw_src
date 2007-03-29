@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.awt.*;
 import javax.swing.*;
 import java.util.Vector;
+import java.util.List;
 import java.util.Date;
 
 public class PolicyWizardJPanel extends javax.swing.JPanel
@@ -47,7 +48,7 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
         doRefresh(newRow);
     }
 
-    String newUser;
+    List<String> newUserList;
 
     public void doSave(CompoundVector compoundVector, boolean validateOnly) throws Exception {
         Vector newRow = compoundVector.getVector();
@@ -69,7 +70,7 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
         newRow.setElementAt( portServerJTextField.getText(), 11);
 
 
-        ((UidButtonRunnable) newRow.elementAt(12)).setUid(newUser);
+        ((UidButtonRunnable) newRow.elementAt(12)).setUidList(newUserList);
 
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         Date startDate = null;
@@ -156,8 +157,8 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
         String serverPort = (String) newRow.elementAt(11);
         portServerJTextField.setText(serverPort);
 
-        newUser = ((UidButtonRunnable) newRow.elementAt(12)).getUid();
-        userSettingsJLabel.setText("User: " + newUser);
+        newUserList = ((UidButtonRunnable) newRow.elementAt(12)).getUidList();
+        userSettingsJLabel.setText("User: " + ((UidButtonRunnable) newRow.elementAt(12)).getButtonText());
 
         String startTime = (String) newRow.elementAt(14);
         timeStartJTextField.setText(startTime);
@@ -822,9 +823,16 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
 
 		private void userSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userSettingsJButtonActionPerformed
             UidSelectJDialog uidSelectJDialog = UidSelectJDialog.factory((Window) getTopLevelAncestor());
+			uidSelectJDialog.setUidList(newUserList);
             uidSelectJDialog.setVisible(true);
-            newUser = uidSelectJDialog.getUid();
-            userSettingsJLabel.setText("User: " + newUser);
+            newUserList = uidSelectJDialog.getUidList();
+			String newUserString;
+			if(newUserList.size()>1)
+					newUserString = UidSelectJDialog.MULTIPLE_USERS;
+			else
+					newUserString = newUserList.get(0);
+			
+            userSettingsJLabel.setText("User: " + newUserString);
 		}//GEN-LAST:event_userSettingsJButtonActionPerformed
                 
                 

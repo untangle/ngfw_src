@@ -93,7 +93,7 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     private static final int C9_MW = 100; /* server address */
     private static final int C10_MW = 100; /* client port */
     private static final int C11_MW = 100; /* server port */
-    private static final int C12_MW = 150; /* user */
+    private static final int C12_MW = 165; /* user */
     private static final int C13_MW = 165; /* time range */
     private static final int C14_MW = 100; /* start time */
     private static final int C15_MW = 100; /* end time */
@@ -213,7 +213,7 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
 	    catch(Exception e){ throw new Exception("Invalid \"client port\" in row: " + rowIndex); }
 	    try{ newElem.setServerPort( pmf.parse((String) rowVector.elementAt(11)) ); }
 	    catch(Exception e){ throw new Exception("Invalid \"server port\" in row: " + rowIndex); }
-        try{ newElem.setUser( umf.parse(((UidButtonRunnable) rowVector.elementAt(12)).getUid()) ); }
+        try{ newElem.setUser( umf.parse(((UidButtonRunnable) rowVector.elementAt(12)).getUids()) ); }
         catch(Exception e){ throw new Exception("Invalid \"user name\" in row: " + rowIndex); }
         boolean invertTime = ((String)((ComboBoxModel)rowVector.elementAt(13)).getSelectedItem()).equals(TIME_EXCLUDE);
         newElem.setInvertEntireDuration(invertTime);
