@@ -399,7 +399,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 restrictIPJPanel.setLayout(new java.awt.GridBagLayout());
 
                 hostJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                hostJLabel.setText("Host:");
+                hostJLabel.setText("AD Server IP Address:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
