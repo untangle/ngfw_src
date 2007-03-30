@@ -71,9 +71,9 @@ public class KeyButtonRunnable implements ButtonRunnable {
 		vpnTransform.distributeClientConfig( vpnClient );
 		String successString;
 		if( vpnClient.getDistributeUsb() )
-		    successString = "<html>OpenVpn successfully saved your digital key to your USB key.</html>";
+		    successString = "<html>OpenVPN successfully saved your digital key to your USB key.</html>";
 		else
-		    successString = "<html>OpenVpn successfully sent your digital key via email.</html>";
+		    successString = "<html>OpenVPN successfully sent your digital key via email.</html>";
 
 		MOneButtonJDialog.factory(topLevelWindow, "OpenVPN", successString, "OpenVPN Confirmation", "Confirmation" );
 	    }
@@ -81,9 +81,9 @@ public class KeyButtonRunnable implements ButtonRunnable {
 		Util.handleExceptionNoRestart("Error saving/sending key:", e);
 		String warningString;
 		if( vpnClient.getDistributeUsb() )
-		    warningString = "<html>OpenVpn was not able to save your digital key to your USB key.  Please try again.</html>";
+		    warningString = "<html>OpenVPN was not able to save your digital key to your USB key.  Please try again.</html>";
 		else
-		    warningString = "<html>OpenVpn was not able to send your digital key via email.  Please try again.</html>";
+		    warningString = "<html>OpenVPN was not able to send your digital key via email.  Please try again.</html>";
 		MOneButtonJDialog.factory(topLevelWindow, "OpenVPN", warningString, "OpenVPN Warning", "Warning" );
 	    }
 	}

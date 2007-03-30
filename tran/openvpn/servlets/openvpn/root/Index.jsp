@@ -86,7 +86,7 @@ response.setStatus( HttpServletResponse.SC_FORBIDDEN );
       <!-- CENTER CELL -->
       <td id="table_main_center" style="padding: 8px 0px 0px;">
         <hr size="1" width="100%"/>
-        <table style="padding: 1px; text-align: left; margin-left: auto; margin-right: auto; width: 400px; border: 1px;" border="1"><tbody><tr><td>
+        <table style="padding: 1px; text-align: left; margin-left: auto; margin-right: auto; width: 400px; border: 1px;" border="0"><tbody><tr><td>
           <table style="padding: 10px 40px 10px 40px;">
             <tbody>
               <% if ( isValid ) { %>

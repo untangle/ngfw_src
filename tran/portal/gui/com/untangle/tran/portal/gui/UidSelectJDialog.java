@@ -127,7 +127,6 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 
-                jPanel1.setMaximumSize(null);
                 jPanel1.setOpaque(false);
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -142,7 +141,7 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                messageJLabel.setText("<html><center>\nYou may choose a user ID/Login that exists in the User Directory<br>\n(either local LDAP or remote Active Directory), or you can add a new<br>\nuser to the User Directory, and then choose that user.\n</center></html>");
+                messageJLabel.setText("<html><center>\nYou may choose a user ID/Login that exists in the User Directory<br>\n(either local or remote Active Directory), or you can add a new<br>\nuser to the User Directory, and then choose that user.\n</center></html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
@@ -203,10 +202,7 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 
                 jPanel2.setLayout(new java.awt.GridBagLayout());
 
-                jPanel2.setMaximumSize(null);
-                jPanel2.setMinimumSize(null);
                 jPanel2.setOpaque(false);
-                jPanel2.setPreferredSize(null);
                 cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
                 cancelJButton.setText("<html><b>Cancel</b></html>");
                 cancelJButton.setFocusable(false);
