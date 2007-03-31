@@ -30,7 +30,7 @@ public class PolicyUpdateProgressJDialog extends MProgressJDialog {
     private List<Policy> policies;
 
     public PolicyUpdateProgressJDialog( Frame parentFrame ) {
-        super("Updating Policies", "Please wait while policies are updated.", parentFrame);
+        super("Updating Racks", "Please wait while your racks are updated.", parentFrame);
     }
 
     public List<Policy> getPolicies(){ return policies; }

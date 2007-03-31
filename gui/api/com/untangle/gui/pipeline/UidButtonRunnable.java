@@ -12,8 +12,10 @@
 
 package com.untangle.gui.pipeline;
 
-import com.untangle.gui.transform.MTransformControlsJPanel;
 import com.untangle.mvvm.portal.*;
+import com.untangle.mvvm.tran.firewall.user.UserMatcherConstants;
+
+import com.untangle.gui.transform.MTransformControlsJPanel;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.util.*;
 import java.awt.Window;
@@ -50,10 +52,12 @@ public class UidButtonRunnable implements ButtonRunnable, Comparable<UidButtonRu
     public void setEnabled(boolean isEnabled){ }
     public boolean valueChanged(){ return valueChanged; }
 	public void setUid(String s){
-			StringTokenizer st = new StringTokenizer(s);
+        StringTokenizer st = new StringTokenizer(s,UserMatcherConstants.MARKER_SEPERATOR);
 			uidList.clear();
-			while(st.hasMoreTokens())
-					uidList.add(st.nextToken());
+			while(st.hasMoreTokens()){
+                String ss = st.nextToken();
+					uidList.add(ss);
+            }
 			if((uidList.size()==1)&&(uidList.get(0).equals("any"))){
 					uidList.remove(0);
 					uidList.add(UidSelectJDialog.ANY_USER);
@@ -66,7 +70,7 @@ public class UidButtonRunnable implements ButtonRunnable, Comparable<UidButtonRu
 			boolean first = true;
 			for(String s : uidList){
 					if(!first)
-							sb.append(", " + s);
+							sb.append(UserMatcherConstants.MARKER_SEPERATOR + s);
 					else
 							sb.append(s);
 					first = false;
