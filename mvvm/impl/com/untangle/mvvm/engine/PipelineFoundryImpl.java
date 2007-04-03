@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.mvvm.argon.ArgonAgent;
 import com.untangle.mvvm.api.IPSessionDesc;
+import com.untangle.mvvm.argon.ArgonAgent;
 import com.untangle.mvvm.argon.PipelineDesc;
 import com.untangle.mvvm.argon.SessionEndpoints;
 import com.untangle.mvvm.logging.EventLogger;
@@ -314,31 +314,35 @@ public class PipelineFoundryImpl implements PipelineFoundry
     {
         boolean welded = false;
 
-        TRY_AGAIN:
-        for (Iterator<Fitting> i = availMPipes.keySet().iterator(); i.hasNext(); ) {
-            Fitting f = i.next();
-            if (start.instanceOf(f)) {
-                List l = availMPipes.get(f);
-                i.remove();
-                for (Iterator<MPipe> j = l.iterator(); j.hasNext(); ) {
-                    MPipe mPipe = j.next();
-                    if (null == mPipe) {
-                        boolean w = weldCasings(mPipeFittings, start, p,
-                                                availMPipes, availCasings);
-                        if (w) {
-                            welded = true;
-                        }
-                    } else if (mPipe.getPipeSpec().matchesPolicy(p)) {
-                        MPipeFitting mpf = new MPipeFitting(mPipe, start);
-                        boolean w = mPipeFittings.add(mpf);
-                        if (w) {
-                            welded = true;
+        boolean tryAgain;
+        do {
+            tryAgain = false;
+            for (Iterator<Fitting> i = availMPipes.keySet().iterator(); i.hasNext(); ) {
+                Fitting f = i.next();
+                if (start.instanceOf(f)) {
+                    List l = availMPipes.get(f);
+                    i.remove();
+                    for (Iterator<MPipe> j = l.iterator(); j.hasNext(); ) {
+                        MPipe mPipe = j.next();
+                        if (null == mPipe) {
+                            boolean w = weldCasings(mPipeFittings, start, p,
+                                                    availMPipes, availCasings);
+                            if (w) {
+                                welded = true;
+                            }
+                        } else if (mPipe.getPipeSpec().matchesPolicy(p)) {
+                            MPipeFitting mpf = new MPipeFitting(mPipe, start);
+                            boolean w = mPipeFittings.add(mpf);
+                            if (w) {
+                                welded = true;
+                            }
                         }
                     }
+                    tryAgain = true;
+                    break;
                 }
-                break TRY_AGAIN;
             }
-        }
+        } while (tryAgain);
 
         return welded;
     }
@@ -350,39 +354,43 @@ public class PipelineFoundryImpl implements PipelineFoundry
     {
         boolean welded = false;
 
-        TRY_AGAIN:
-        for (Iterator<MPipe> i = availCasings.keySet().iterator(); i.hasNext(); ) {
-            MPipe insideMPipe = i.next();
-            CasingPipeSpec ps = (CasingPipeSpec)insideMPipe.getPipeSpec();
-            Fitting f = ps.getInput();
+        boolean tryAgain;
+        do {
+            tryAgain = false;
+            for (Iterator<MPipe> i = availCasings.keySet().iterator(); i.hasNext(); ) {
+                MPipe insideMPipe = i.next();
+                CasingPipeSpec ps = (CasingPipeSpec)insideMPipe.getPipeSpec();
+                Fitting f = ps.getInput();
 
-            if (!ps.matchesPolicy(p)) {
-                i.remove();
-            } else if (start.instanceOf(f)) {
-                MPipe outsideMPipe = availCasings.get(insideMPipe);
-                i.remove();
-                int s = mPipeFittings.size();
-                mPipeFittings.add(new MPipeFitting(insideMPipe, start,
-                                                   outsideMPipe));
-                CasingPipeSpec cps = (CasingPipeSpec)insideMPipe
-                    .getPipeSpec();
-                Fitting insideFitting = cps.getOutput();
+                if (!ps.matchesPolicy(p)) {
+                    i.remove();
+                } else if (start.instanceOf(f)) {
+                    MPipe outsideMPipe = availCasings.get(insideMPipe);
+                    i.remove();
+                    int s = mPipeFittings.size();
+                    mPipeFittings.add(new MPipeFitting(insideMPipe, start,
+                                                       outsideMPipe));
+                    CasingPipeSpec cps = (CasingPipeSpec)insideMPipe
+                        .getPipeSpec();
+                    Fitting insideFitting = cps.getOutput();
 
-                boolean w = weldMPipes(mPipeFittings, insideFitting, p,
-                                       availMPipes, availCasings);
+                    boolean w = weldMPipes(mPipeFittings, insideFitting, p,
+                                           availMPipes, availCasings);
 
-                if (w) {
-                    welded = true;
-                    mPipeFittings.add(new MPipeFitting(outsideMPipe, insideFitting));
-                } else {
-                    while (mPipeFittings.size() > s) {
-                        mPipeFittings.remove(mPipeFittings.size() - 1);
+                    if (w) {
+                        welded = true;
+                        mPipeFittings.add(new MPipeFitting(outsideMPipe, insideFitting));
+                    } else {
+                        while (mPipeFittings.size() > s) {
+                            mPipeFittings.remove(mPipeFittings.size() - 1);
+                        }
                     }
-                }
 
-                break TRY_AGAIN;
+                    tryAgain = true;
+                    break;
+                }
             }
-        }
+        } while (tryAgain);
 
         return welded;
     }
