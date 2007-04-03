@@ -140,11 +140,11 @@ class ToolboxManagerImpl implements ToolboxManager
     public MackageDesc[] installedVisible()
     {
         MackageDesc[] installed = installed();
-    Vector<MackageDesc> visibleVector = new Vector<MackageDesc>();
-    for( MackageDesc mackageDesc : installed ){
-        if( mackageDesc.getViewPosition() >= 0 )
-        visibleVector.add(mackageDesc);
-    }
+        Vector<MackageDesc> visibleVector = new Vector<MackageDesc>();
+        for( MackageDesc mackageDesc : installed ){
+            if( mackageDesc.getViewPosition() >= 0 )
+                visibleVector.add(mackageDesc);
+        }
         return visibleVector.toArray(new MackageDesc[0]);
     }
 
@@ -260,22 +260,25 @@ class ToolboxManagerImpl implements ToolboxManager
 
         MvvmContextFactory.context().newThread(f).start();
 
-        TRY_AGAIN:
-        try {
-            f.get(millis, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException exn) {
-            break TRY_AGAIN;
-        } catch (ExecutionException exn) {
-            Throwable t = exn.getCause();
-            if (t instanceof MackageException) {
-                throw (MackageException)t;
-            } else {
-                throw new RuntimeException(t);
+        boolean tryAgain;
+        do {
+            tryAgain = false;
+            try {
+                f.get(millis, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException exn) {
+                tryAgain = true;
+            } catch (ExecutionException exn) {
+                Throwable t = exn.getCause();
+                if (t instanceof MackageException) {
+                    throw (MackageException)t;
+                } else {
+                    throw new RuntimeException(t);
+                }
+            } catch (TimeoutException exn) {
+                f.cancel(true);
+                throw new MackageException("mkg timed out");
             }
-        } catch (TimeoutException exn) {
-            f.cancel(true);
-            throw new MackageException("mkg timed out");
-        }
+        } while (tryAgain);
     }
 
     public long upgrade() throws MackageException
@@ -382,15 +385,15 @@ class ToolboxManagerImpl implements ToolboxManager
         LoginSession s = HttpInvoker.invoker().getActiveLogin();
 
         MessageQueueImpl mq;
-         synchronized (messageQueues) {
-             mq = messageQueues.get(s);
-             if (null == mq) {
-                 mq = new MessageQueueImpl<ToolboxMessage>();
-                 messageQueues.put(s, mq);
-             }
-         }
+        synchronized (messageQueues) {
+            mq = messageQueues.get(s);
+            if (null == mq) {
+                mq = new MessageQueueImpl<ToolboxMessage>();
+                messageQueues.put(s, mq);
+            }
+        }
 
-         return mq;
+        return mq;
     }
 
     // ToolboxManagerPriv implementation --------------------------------------
@@ -731,12 +734,15 @@ class ToolboxManagerImpl implements ToolboxManager
                 System.out.write(outBuf, 0, i);
             }
             is.close();
-            TRY_AGAIN:
-            try {
-                proc.waitFor();
-            } catch (InterruptedException e) {
-                break TRY_AGAIN;
-            }
+            boolean tryAgain;
+            do {
+                tryAgain = false;
+                try {
+                    proc.waitFor();
+                } catch (InterruptedException e) {
+                    tryAgain = true;
+                }
+            } while (tryAgain);
             logger.debug("apt done.");
             int e = proc.exitValue();
             if (0 != e) {

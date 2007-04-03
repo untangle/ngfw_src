@@ -58,15 +58,18 @@ public class SchemaUtil
             // XXX we log in the script, maybe move up to here
             for (byte[] b = new byte[1024]; 0 <= is.read(b); );
 
-            TRY_AGAIN:
-            try {
-                p.waitFor();
-            } catch (InterruptedException exn) {
-                // can happen from the EventLogger
-                Logger logger = Logger.getLogger(SchemaUtil.class);
-                logger.debug("waiting for update-schema");
-                break TRY_AGAIN;
-            }
+            boolean tryAgain;
+            do {
+                tryAgain = false;
+                try {
+                    p.waitFor();
+                } catch (InterruptedException exn) {
+                    // can happen from the EventLogger
+                    Logger logger = Logger.getLogger(SchemaUtil.class);
+                    logger.debug("waiting for update-schema");
+                    tryAgain = true;
+                }
+            } while (tryAgain);
 
         } catch (IOException exn) {
             Logger logger = Logger.getLogger(SchemaUtil.class);
