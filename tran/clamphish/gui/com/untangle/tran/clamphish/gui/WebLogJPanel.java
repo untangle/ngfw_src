@@ -83,7 +83,7 @@ public class WebLogJPanel extends MLogTableJPanel {
                 PipelineEndpoints pe = null == rl ? null : rl.getPipelineEndpoints();
 
                 event = new Vector(6);
-                event.add( requestLog.getTimeStamp() );
+                event.add( requestLog.getEventTimeStamp() );
                 Action a = requestLog.getAction();
                 event.add( null == a ? "none" : a.toString() );
                 event.add( null == pe ? new IPPortString() : new IPPortString(pe.getCClientAddr(), pe.getCClientPort()) );

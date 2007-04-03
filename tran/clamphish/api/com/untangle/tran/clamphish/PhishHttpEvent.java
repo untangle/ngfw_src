@@ -11,6 +11,7 @@
 
 package com.untangle.tran.clamphish;
 
+import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -127,10 +128,22 @@ public class PhishHttpEvent extends LogEvent
     // PhishHttpEvent methods -------------------------------------------------
 
     @Transient
+    public Date getEventTimeStamp()
+    {
+        if (true == nonEvent && null != requestLine) {
+            // to present consistent times for the same fake events
+            // in different event filters,
+            // amread suggested using timestamps of request line events
+            return requestLine.getHttpRequestEvent().getTimeStamp();
+        } else {
+            return getTimeStamp();
+        }
+    }
+
+    @Transient
     private int getActionType()
     {
-        if (null == action ||
-            Action.PASS_KEY == action.getKey()) {
+        if (null == action || Action.PASS_KEY == action.getKey()) {
             return PASSED;
         } else {
             return BLOCKED;
@@ -182,7 +195,6 @@ public class PhishHttpEvent extends LogEvent
 
     public String toString()
     {
-        return "PhishHttpEvent id: " + getId() + " RequestLine: "
-            + requestLine;
+        return "PhishHttpEvent id: " + getId() + " RequestLine: " + requestLine;
     }
 }
