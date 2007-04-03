@@ -30,6 +30,7 @@ if [ ${FORCE_RESTART} == "false" ] && [ -f ${DNSMASQ_HASH} ]; then
     ## If they are the same do nothing
     diff ${NEW_HASH} ${DNSMASQ_HASH} > /dev/null 2>&1 && { 
         echo "[DEBUG:`date`] Skipping dnsmasq restart" 
+        rm -f ${NEW_HASH}
         exit 0 
     }
 
