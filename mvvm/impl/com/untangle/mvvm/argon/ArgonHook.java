@@ -206,10 +206,10 @@ abstract class ArgonHook implements Runnable
                     iter.remove();
                     /* Append to the released session list */
                     releasedSessionList.add( session );
-                    // Deliver the super secret sauce (if we completed)
-                    if (endpoints != null)
-                        ((SessionImpl)session).complete();
                 }
+
+                // Deliver the super secret sauce (if we completed) (everyone needs the secret sauce)
+                if (endpoints != null) ((SessionImpl)session).complete();
             }
 
             /* Only start vectoring if the session is alive */
