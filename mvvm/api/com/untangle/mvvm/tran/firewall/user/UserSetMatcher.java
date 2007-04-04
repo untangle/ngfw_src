@@ -14,7 +14,7 @@ package com.untangle.mvvm.tran.firewall.user;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Set;
 
 import com.untangle.mvvm.tran.ParseException;
@@ -36,7 +36,7 @@ public final class UserSetMatcher extends UserDBMatcher
 
     public boolean isMatch( String user )
     {
-        return ( this.userSet.contains( user.trim().toLowerCase()));
+        return ( this.userSet.contains( user.toLowerCase()));
     }
 
     public List<String> toDatabaseList()
@@ -51,7 +51,7 @@ public final class UserSetMatcher extends UserDBMatcher
 
     public static UserDBMatcher makeInstance( String ... userArray )
     {
-        Set<String> userSet = new HashSet<String>();
+        Set<String> userSet = new TreeSet<String>();
 
         for ( String user : userArray ) userSet.add( user );
 
@@ -62,19 +62,21 @@ public final class UserSetMatcher extends UserDBMatcher
     {
         if ( userSet == null ) return UserSimpleMatcher.getNilMatcher();
                 
-        String value = "";
-
+        StringBuilder value = new StringBuilder();
+        int i = 0;
         for ( String user  : userSet ) {
-            if ( value.length() != 0 ) value += " " + UserMatcherConstants.MARKER_SEPERATOR + " ";
-            value += value;
+            if ( i > 0 )
+                value.append(" ").append(UserMatcherConstants.MARKER_SEPERATOR).append(" ");
+            value.append(user);
+            i++;
         }
 
         userSet = Collections.unmodifiableSet( userSet );
     
-        return new UserSetMatcher( userSet, value );
+        return new UserSetMatcher( userSet, value.toString() );
     }
 
-    /* This is just for matching a list of interfaces */
+    /* This is just for matching a list of users */
     static final Parser<UserDBMatcher> PARSER = new Parser<UserDBMatcher>() 
     {
         public int priority()
@@ -94,7 +96,7 @@ public final class UserSetMatcher extends UserDBMatcher
             }
             
             String userArray[] = value.split( UserMatcherConstants.MARKER_SEPERATOR );
-            Set<String> userSet = new HashSet<String>();
+            Set<String> userSet = new TreeSet<String>();
             
             /* ??? using lower case because assuming the usernames are case insentive */
             for ( String userString : userArray ) userSet.add ( userString.trim().toLowerCase());

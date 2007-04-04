@@ -60,7 +60,7 @@ public final class UserSingleMatcher extends UserDBMatcher
         
         public boolean isParseable( String value )
         {
-            return !value.contains( ParsingConstants.MARKER_SEPERATOR );
+            return !value.contains( UserMatcherConstants.MARKER_SEPERATOR );
         }
         
         public UserDBMatcher parse( String value ) throws ParseException
