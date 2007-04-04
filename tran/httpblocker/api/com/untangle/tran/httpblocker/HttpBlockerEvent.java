@@ -12,6 +12,7 @@
 package com.untangle.tran.httpblocker;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -22,7 +23,6 @@ import com.untangle.mvvm.logging.LogEvent;
 import com.untangle.mvvm.logging.SyslogBuilder;
 import com.untangle.mvvm.logging.SyslogPriority;
 import com.untangle.tran.http.RequestLine;
-import javax.persistence.Entity;
 import org.hibernate.annotations.Type;
 
 /**
@@ -62,6 +62,10 @@ public class HttpBlockerEvent extends LogEvent
         this.category = category;
 
         this.nonEvent = nonEvent;
+
+        if (nonEvent && null != requestLine) {
+            setTimeStamp(requestLine.getHttpRequestEvent().getTimeStamp());
+        }
     }
 
     public HttpBlockerEvent(RequestLine requestLine, Action action,
