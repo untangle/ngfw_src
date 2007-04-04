@@ -9,3 +9,8 @@ CREATE TABLE events.tr_httpblk_evt_blk (
     category varchar(255),
     time_stamp timestamp,
     PRIMARY KEY (event_id));
+
+
+-- indices for reporting
+
+CREATE INDEX tr_httpblk_evt_blk_ts_idx ON events.tr_httpblk_evt_blk (time_stamp);

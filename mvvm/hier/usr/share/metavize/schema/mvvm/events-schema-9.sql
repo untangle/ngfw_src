@@ -136,11 +136,18 @@ CREATE TABLE events.event_data_days (
 -- constraints |
 ----------------
 
--- indeces for reporting
+-- indices for reporting and event log viewing
 
 CREATE INDEX pl_endp_sid_idx ON events.pl_endp (session_id);
 CREATE INDEX pl_endp_ts_idx ON events.pl_endp (time_stamp);
 CREATE INDEX pl_stats_plepid_idx ON events.pl_stats (pl_endp_id);
+
+CREATE INDEX mvvm_login_evt_ts_idx ON mvvm_login_evt (time_stamp);
+CREATE INDEX mvvm_lookup_evt_ts_idx ON mvvm_lookup_evt (time_stamp);
+CREATE INDEX shield_rejection_evt_ts_idx ON shield_rejection_evt (time_stamp);
+
+CREATE INDEX portal_login_evt_ts_idx ON portal_login_evt (time_stamp);
+CREATE INDEX portal_logout_evt_ts_idx ON portal_logout_evt (time_stamp);
 
 
 --------------------------------------------------------------------------------

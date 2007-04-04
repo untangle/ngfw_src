@@ -67,3 +67,4 @@ CREATE TABLE events.tr_nat_statistic_evt (
 -- indeces for reporting
 
 CREATE INDEX tr_nat_redirect_evt_plepid_idx ON events.tr_nat_redirect_evt (pl_endp_id);
+CREATE INDEX tr_nat_redirect_evt_ts_idx ON events.tr_nat_redirect_evt (time_stamp);

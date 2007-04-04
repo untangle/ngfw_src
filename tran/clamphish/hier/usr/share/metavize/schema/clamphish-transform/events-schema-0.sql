@@ -8,3 +8,5 @@ CREATE TABLE events.tr_phishhttp_evt (
     category varchar(255),
     time_stamp timestamp,
     PRIMARY KEY (event_id));
+
+CREATE INDEX tr_phishhttp_evt_ts_idx ON events.tr_phishhttp_evt (time_stamp);

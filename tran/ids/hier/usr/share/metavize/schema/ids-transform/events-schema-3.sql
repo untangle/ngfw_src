@@ -23,3 +23,4 @@ create table events.TR_IDS_STATISTIC_EVT (
 
 -- indices for reporting
 CREATE INDEX tr_ids_evt_plepid_idx ON events.tr_ids_evt (pl_endp_id);
+CREATE INDEX tr_ids_evt_ts_idx ON events.tr_ids_evt (time_stamp);
