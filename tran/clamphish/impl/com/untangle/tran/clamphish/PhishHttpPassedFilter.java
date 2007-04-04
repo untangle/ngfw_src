@@ -24,7 +24,7 @@ import org.hibernate.Session;
 
 public class PhishHttpPassedFilter implements ListEventFilter<PhishHttpEvent>
 {
-    private static final String RL_QUERY = "FROM RequestLine rl ORDER BY rl.httpRequestEvent.timeStamp ASC";
+    private static final String RL_QUERY = "FROM RequestLine rl ORDER BY rl.httpRequestEvent.timeStamp DESC";
     private static final String EVT_QUERY = "FROM PhishHttpEvent evt WHERE evt.requestLine = :requestLine";
 
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("Passed Phish HTTP Traffic");
@@ -53,7 +53,7 @@ public class PhishHttpPassedFilter implements ListEventFilter<PhishHttpEvent>
         q.setMaxResults(limit);
 
         int c = 0;
-        for (Iterator i = q.iterate(); i.hasNext() && c++ < limit; ) {
+        for (Iterator i = q.iterate(); i.hasNext() && c < limit; ) {
             RequestLine rl = (RequestLine)i.next();
             Query evtQ = s.createQuery(EVT_QUERY);
             evtQ.setEntity("requestLine", rl);
@@ -63,10 +63,12 @@ public class PhishHttpPassedFilter implements ListEventFilter<PhishHttpEvent>
                 Hibernate.initialize(evt);
                 Hibernate.initialize(evt.getRequestLine());
                 l.add(evt);
+                c++;
             } else if (Action.PASS == evt.getAction()) {
                 Hibernate.initialize(evt);
                 Hibernate.initialize(evt.getRequestLine());
                 l.add(evt);
+                c++;
             }
         }
     }

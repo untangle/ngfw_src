@@ -59,6 +59,13 @@ public class PhishHttpEvent extends LogEvent
         this.category = category;
 
         this.nonEvent = nonEvent;
+
+        if (true == nonEvent && null != requestLine) {
+            // to present consistent times for the same fake events
+            // in different event filters,
+            // amread suggested using timestamps of request line events
+            setTimeStamp(requestLine.getHttpRequestEvent().getTimeStamp());
+        }
     }
 
     public PhishHttpEvent(RequestLine requestLine, Action action,
@@ -126,19 +133,6 @@ public class PhishHttpEvent extends LogEvent
     }
 
     // PhishHttpEvent methods -------------------------------------------------
-
-    @Transient
-    public Date getEventTimeStamp()
-    {
-        if (true == nonEvent && null != requestLine) {
-            // to present consistent times for the same fake events
-            // in different event filters,
-            // amread suggested using timestamps of request line events
-            return requestLine.getHttpRequestEvent().getTimeStamp();
-        } else {
-            return getTimeStamp();
-        }
-    }
 
     @Transient
     private int getActionType()
