@@ -26,18 +26,16 @@ import org.apache.log4j.Logger;
 public class RBLChecker {
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static final int TIMEOUT_MS = 500; // timeout in 0.5 sec
+    private static final int MSECS_PER_SEC = 1000;
     private static final int SKIPRBLNOW_CNT = 20;
 
     private static Object rblCntMonitor = new Object();
     private static int rblCnt = 0;
 
     private Map<RBLClient, RBLClientContext> clientMap;
-    private SpamImpl spamImpl;
     private List<SpamRBL> spamRBLList;
 
-    public RBLChecker(SpamImpl spamImpl, List<SpamRBL> spamRBLList) {
-        this.spamImpl = spamImpl;
+    public RBLChecker(List<SpamRBL> spamRBLList) {
         this.spamRBLList = spamRBLList;
     }
 
@@ -72,7 +70,7 @@ public class RBLChecker {
     127.0.0.9 Open proxy servers
     */
 
-    public boolean check(TCPNewSessionRequest tsr) {
+    public boolean check(TCPNewSessionRequest tsr, long timeoutSec) {
         String ipAddr = tsr.clientAddr().getHostAddress();
         String invertedIPAddr = invertIPAddress(ipAddr);
 
@@ -83,14 +81,15 @@ public class RBLChecker {
         }
 
         // wait for results or stop checking if too much time has passed
-        long remainingTime = TIMEOUT_MS;
+        long timeout = timeoutSec * MSECS_PER_SEC; // in millisecs
+        long remainingTime = timeout;
         long startTime = System.currentTimeMillis();
         for (RBLClient clientWait : clients) {
             if (0 < remainingTime) {
                 // time remains; let other clients continue
                 logger.debug("RBL: " + clientWait + ", wait: " + remainingTime);
                 clientWait.checkProgress(remainingTime);
-                remainingTime = TIMEOUT_MS - (System.currentTimeMillis() - startTime);
+                remainingTime = timeout - (System.currentTimeMillis() - startTime);
             } else {
                 // no time remains; stop other clients
                 logger.warn("RBL: " + clientWait + ", stop (timed out)");
@@ -132,12 +131,12 @@ public class RBLChecker {
                 // from a blacklisted SMTP server
                 // to test the emails that this server will try to send
                 // -> functionality requested by dmorris
-                logger.info(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist but ignoring this time");
+                logger.debug(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist but ignoring this time");
                 tsr.attach(new SpamSMTPRBLEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), true));
                 rblCnt = 0;
                 isBlacklisted = false;
             } else {
-                logger.info(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist");
+                logger.debug(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist");
                 tsr.attach(new SpamSMTPRBLEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), false));
                 rblCnt++;
             }

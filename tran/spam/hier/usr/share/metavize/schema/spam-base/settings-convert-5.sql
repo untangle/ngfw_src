@@ -6,6 +6,8 @@
 
 -- enable throttle (RBL checking) when scan is enabled
 UPDATE settings.tr_spam_smtp_config SET throttle = true WHERE throttle = false AND scan = true;
+-- set # of secs to wait for a RBL check response
+UPDATE settings.tr_spam_smtp_config SET throttle_sec = 2;
 
 -- com.untangle.tran.spam.SpamSettings.spamRBLList (list construct)
 CREATE TABLE settings.tr_spam_rbl_list (

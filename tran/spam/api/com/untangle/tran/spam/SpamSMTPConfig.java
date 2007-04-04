@@ -42,7 +42,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
 
     /* settings */
     private boolean throttle = true;
-    private int throttleSec = 15;
+    private int throttleSec = 2; // 2 secs
     private SMTPSpamMessageAction zMsgAction = SMTPSpamMessageAction.QUARANTINE;
     private SpamSMTPNotifyAction zNotifyAction = SpamSMTPNotifyAction.NEITHER;
     private transient SmtpNotifyMessageGenerator m_notifyMsgGenerator;
@@ -226,10 +226,10 @@ public class SpamSMTPConfig extends SpamProtoConfig
 
     /**
      *
-     * throttleSec: a integer specifying how long to delay a
-     * connection from a suspect spammer if throttling XXX NO LONGER USED
+     * throttleSec: a integer specifying the # of secs to wait for
+     * a response from a RBL site
      *
-     * @return how long to delay the connection if throttling
+     * @return the # of secs to wait for a response from a RBL site
      */
     @Column(name="throttle_sec", nullable=false)
     public int getThrottleSec()
