@@ -75,7 +75,7 @@ public class LogJPanel extends MLogTableJPanel {
 		event.add( requestLog.getTimeStamp() );
 		event.add( "backup" );
 		event.add( requestLog.isSuccess() ? "success" : "failed" );
-		event.add( requestLog.isSuccess() ? "no details" : requestLog.getDetail() );
+		event.add( requestLog.isSuccess() ? "" : requestLog.getDetail() );
 		allEvents.add( event );
 	    }
 	    return allEvents;
