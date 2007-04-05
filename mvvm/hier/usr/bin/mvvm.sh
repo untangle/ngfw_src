@@ -10,18 +10,14 @@ MVVM_GC_LOG=${MVVM_GC_LOG:-"@PREFIX@/var/log/mvvm/gc.log"}
 MVVM_WRAPPER_LOG=${MVVM_WRAPPER_LOG:-"@PREFIX@/var/log/mvvm/wrapper.log"}
 MVVM_LAUNCH=${MVVM_LAUNCH:-"@PREFIX@/usr/bin/bunnicula"}
 
-# fucking hideous.  XXX
-PGMV82="`dpkg --get-selections postgresql-mv-8.2 | egrep 'install$' | awk '{print $1}'`"
-PGMV81="`dpkg --get-selections postgresql-mv-8.1 | egrep 'install$' | awk '{print $1}'`"
-if [ ! -z "$PGMV82" ] ; then
-    PGDATA=${POSTGRES_DATA:-/var/lib/postgresql/8.2/main}
-    PGSERVICE="postgresql-8.2"
-elif [ ! -z "$PGMV81" ] ; then
-    PGDATA=${POSTGRES_DATA:-/var/lib/postgresql/8.1/main}
-    PGSERVICE="postgresql-8.1"
-else
+# somewhat less fucking hideous :)
+PG_VERSION=`dpkg --get-selections postgresql-mv* | awk '/install$/ { gsub(/postgresql-mv-?/, "", $1) ; print $1 }'`
+if [[ -z "$PG_VERSION" ]] ; then
     PGDATA=${POSTGRES_DATA:-/var/lib/postgres/data}
     PGSERVICE="postgresql"
+else
+    PGDATA=${POSTGRES_DATA:-/var/lib/postgresql/${PG_VERSION}/main}
+    PGSERVICE="postgresql-${PG_VERSION}"
 fi
 
 # Short enough to restart mvvm promptly
