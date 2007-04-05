@@ -29,7 +29,7 @@ public class IDSRuleManager {
     private static final Pattern variablePattern = Pattern.compile("\\$[^ \n\r\t]+");
 
     private final List<IDSRuleHeader> knownHeaders = new ArrayList<IDSRuleHeader>();
-    private final Map<Long,IDSRule> knownRules = new HashMap<Long,IDSRule>();
+    private final Map<Integer,IDSRule> knownRules = new HashMap<Integer,IDSRule>();
 
     private final IDSTransformImpl ids;
 
@@ -87,8 +87,8 @@ public class IDSRuleManager {
     }
 
     public void updateRule(IDSRule rule) throws ParseException {
-        long id = rule.getKeyValue();
-        IDSRule inMap = knownRules.get(id);
+        int sid = rule.getSid();
+        IDSRule inMap = knownRules.get(sid);
         if(inMap != null) {
             rule.remove(false);
             if(rule.getModified()) {
@@ -98,7 +98,7 @@ public class IDSRuleManager {
 
                 if(header.signatureListIsEmpty()) {
                     logger.info("removing header");
-                    knownRules.remove(id);
+                    knownRules.remove(sid);
                     knownHeaders.remove(header);
                 }
 
@@ -144,7 +144,7 @@ public class IDSRuleManager {
                     rule.setClassification(signature.getClassification());
                     rule.setURL(signature.getURL());
                     //logger.debug("add rule (known header), rc: " + rule.getClassification() + ", rurl: " + rule.getURL());
-                    knownRules.put(rule.getKeyValue(),rule);
+                    knownRules.put(rule.getSid(),rule);
                     return true;
                 }
             }
@@ -157,7 +157,7 @@ public class IDSRuleManager {
             rule.setClassification(signature.getClassification());
             rule.setURL(signature.getURL());
             //logger.debug("add rule (new header), rc: " + rule.getClassification() + ", rurl: " + rule.getURL());
-            knownRules.put(rule.getKeyValue(),rule);
+            knownRules.put(rule.getSid(),rule);
             return true;
         }
 
@@ -272,8 +272,11 @@ public class IDSRuleManager {
             if (ids != null)
                 engine = ids.getEngine();
             List<IDSVariable> varList, imVarList;
-            if(engine == null || engine.getSettings() == null) { // XXX only true for testing.
-                logger.warn("engine.getSettings() is null");
+            /* This is null when initializing settings, but the
+             * settings are initialized with these values so using the
+             * defaults is harmless */
+            if(engine == null || engine.getSettings() == null) {
+                logger.debug("engine.getSettings() is null");
                 imVarList = getImmutableVariables();
                 varList = getDefaultVariables();
             } else {
