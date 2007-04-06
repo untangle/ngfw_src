@@ -125,7 +125,12 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         ef = new SpamLogFilter(vendor);
         eventLogger.addSimpleEventFilter(ef);
 
-        // no filters for RBL events
+        // filters for RBL events
+        ef = new RBLAllFilter();
+        rblEventLogger.addSimpleEventFilter(ef);
+
+        ef = new RBLSkippedFilter();
+        rblEventLogger.addSimpleEventFilter(ef);
     }
 
     // Spam methods -----------------------------------------------------------
