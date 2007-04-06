@@ -83,7 +83,7 @@ class BlockedURLTableModel extends MSortedTableModel<Object>{
             newElem.setCategory( (String) rowVector.elementAt(2) );
             String newURL = (String) rowVector.elementAt(3);
             if( newURL.startsWith("https") )
-                throw new Exception("https \"URL\" specified at row: " + rowIndex + "cannot be blocked.");
+                throw new Exception("\"URL\" specified at row: " + rowIndex + " cannot be blocked because it uses secure http (https)");
             if( newURL.startsWith("http://") )
                 newURL = newURL.substring(7,newURL.length());
             if( newURL.startsWith("www.") )                

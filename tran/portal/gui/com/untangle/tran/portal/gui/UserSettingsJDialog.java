@@ -75,7 +75,6 @@ public class UserSettingsJDialog extends MConfigJDialog implements SettingsChang
 
     protected void saveAll() throws Exception {
         super.saveAll();
-        setVisible(false);
         mTransformControlsJPanel.saveGui(); // XXX a little dangerous because refresh could come before the save... but refresh wouldnt do anything bad.
 
         /*

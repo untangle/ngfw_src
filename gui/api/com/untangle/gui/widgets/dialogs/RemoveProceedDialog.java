@@ -39,8 +39,6 @@ final public class RemoveProceedDialog extends MTwoButtonJDialog {
 
     private void init(String applianceName){
         setTitle(applianceName + " Warning");
-        cancelJButton.setIcon(Util.getButtonCancelRemove());
-        proceedJButton.setIcon(Util.getButtonContinueRemoving());
         messageJLabel.setText("<html><center>" + applianceName + " is about to be removed from the rack.<br>Its settings will be lost and it will stop processing network traffic.<br><br>Would you like to continue removing?</center></html>");
         setVisible(true);
     }

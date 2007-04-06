@@ -73,8 +73,8 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
     public void settingsChanged(Object source){
         if(!shownOnce){
             MOneButtonJDialog.factory( (Window)this.getTopLevelAncestor(), "Intrusion Prevention",
-                                       "You should only change these rules if you are certain you "
-                                       + "know what you are doing, or are instructed to do so.",
+                                       "You should only modify these rules if you are an experienced user"
+                                       + " or you are instructed to do so.",
                                        "Intrusion Prevention Warning", "Warning");
             shownOnce = true;
         }

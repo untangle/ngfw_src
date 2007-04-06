@@ -63,6 +63,7 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
     private void init(PortalGroup portalGroup, MTransformControlsJPanel mTransformControlsJPanel){
         this.portalGroup = portalGroup;
         this.mTransformControlsJPanel = mTransformControlsJPanel;
+        setHelpSource("remote_access_portal");
         //saveJButton.setText("<html><b>Change</b> Settings</html>");
         applications = new Vector<Application>();
     }
@@ -73,7 +74,6 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
 
     protected void saveAll() throws Exception {
         super.saveAll();
-        setVisible(false);
         mTransformControlsJPanel.saveGui();  // XXX a little dangerous because refresh could come before the save... but refresh wouldnt do anything bad.
         //if( settingsChanged )
         //    mTransformControlsJPanel.setSaveSettingsHintVisible(true);	    

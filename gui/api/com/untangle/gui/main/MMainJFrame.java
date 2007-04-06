@@ -650,11 +650,13 @@ public class MMainJFrame extends javax.swing.JFrame {
     private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
         try{
             String focus = mTabbedPane.getTitleAt(mTabbedPane.getSelectedIndex()).toLowerCase().replace(" ", "_");
-            URL newURL = new URL( "http://www.untangle.com/docs?" 
+            focus = focus.substring(9,focus.length()-11);
+            URL newURL = new URL( "http://www.untangle.com/docs/get.php?" 
                                   + "version=" + Version.getVersion()
                                   + "&source=rack"
                                   + "&focus=" + focus);
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
+			System.out.println(newURL.toString());
         }
         catch(Exception f){
             Util.handleExceptionNoRestart("Error showing help for rack.", f);

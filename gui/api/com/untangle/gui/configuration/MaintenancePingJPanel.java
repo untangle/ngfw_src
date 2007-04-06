@@ -62,7 +62,7 @@ public class MaintenancePingJPanel extends javax.swing.JPanel {
                 externalRemoteJPanel.setMinimumSize(new java.awt.Dimension(88, 323));
                 externalRemoteJPanel.setPreferredSize(new java.awt.Dimension(730, 323));
                 jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel1.setText("<html>The Ping Test can be used to test that a particular host or client can be contacted from Untangle.</html>");
+                jLabel1.setText("<html>The <b>Ping Test</b> can be used to test that a particular host or client can be contacted from Untangle.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -92,7 +92,12 @@ public class MaintenancePingJPanel extends javax.swing.JPanel {
                 restrictIPJPanel.add(pingJTextField, gridBagConstraints);
 
                 pingJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                pingJButton.setText("<html><b>Run</b> Ping Test</html>");
+                pingJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconTest_16x16.png")));
+                pingJButton.setText("Ping Test");
+                pingJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                pingJButton.setMaximumSize(null);
+                pingJButton.setMinimumSize(null);
+                pingJButton.setPreferredSize(null);
                 pingJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 pingJButtonActionPerformed(evt);

@@ -71,10 +71,7 @@ final public class LoginStolenJDialog extends javax.swing.JDialog implements jav
 
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 
-                jPanel1.setMaximumSize(null);
-                jPanel1.setMinimumSize(null);
                 jPanel1.setOpaque(false);
-                jPanel1.setPreferredSize(null);
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 labelJLabel.setText("Logout Warning:");
@@ -103,8 +100,13 @@ final public class LoginStolenJDialog extends javax.swing.JDialog implements jav
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
                 jPanel1.add(messageJLabel, gridBagConstraints);
 
-                proceedJButton.setFont(new java.awt.Font("Default", 1, 12));
+                proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
+                proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
                 proceedJButton.setText("Exit");
+                proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                proceedJButton.setMaximumSize(null);
+                proceedJButton.setMinimumSize(null);
+                proceedJButton.setPreferredSize(null);
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 proceedJButtonActionPerformed(evt);

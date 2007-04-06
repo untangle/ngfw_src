@@ -313,8 +313,13 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 inputJPanel.add(protocolJLabel, gridBagConstraints);
 
                 acceptJButton.setFont(new java.awt.Font("Default", 0, 12));
+                acceptJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconLogin_16x16.png")));
                 acceptJButton.setText("Login");
+                acceptJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                acceptJButton.setMaximumSize(null);
+                acceptJButton.setMinimumSize(null);
                 acceptJButton.setOpaque(false);
+                acceptJButton.setPreferredSize(null);
                 acceptJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 acceptJButtonActionPerformed(evt);
@@ -330,7 +335,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 4;
                 gridBagConstraints.gridwidth = 2;
-                gridBagConstraints.insets = new java.awt.Insets(20, 0, 0, 0);
+                gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
                 inputJPanel.add(acceptJButton, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();

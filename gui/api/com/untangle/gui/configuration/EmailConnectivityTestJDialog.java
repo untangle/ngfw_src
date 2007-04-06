@@ -91,7 +91,6 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
 
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 
-                jPanel1.setMaximumSize(null);
                 jPanel1.setOpaque(false);
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -155,18 +154,15 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
 
                 jPanel2.setLayout(new java.awt.GridBagLayout());
 
-                jPanel2.setMaximumSize(null);
-                jPanel2.setMinimumSize(null);
                 jPanel2.setOpaque(false);
-                jPanel2.setPreferredSize(null);
                 closeJButton.setFont(new java.awt.Font("Default", 0, 12));
-                closeJButton.setText("<html><b>Close</b></html>");
-                closeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                closeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                closeJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-                closeJButton.setMinimumSize(new java.awt.Dimension(125, 25));
+                closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconCancel_16x16.png")));
+                closeJButton.setText("Close");
+                closeJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                closeJButton.setMaximumSize(null);
+                closeJButton.setMinimumSize(null);
                 closeJButton.setOpaque(false);
-                closeJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+                closeJButton.setPreferredSize(null);
                 closeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 closeJButtonActionPerformed(evt);
@@ -182,13 +178,13 @@ public class EmailConnectivityTestJDialog extends javax.swing.JDialog implements
                 jPanel2.add(closeJButton, gridBagConstraints);
 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
-                proceedJButton.setText("<html><b>Proceed</b></html>");
-                proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                proceedJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-                proceedJButton.setMinimumSize(new java.awt.Dimension(125, 25));
+                proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
+                proceedJButton.setText("Proceed");
+                proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                proceedJButton.setMaximumSize(null);
+                proceedJButton.setMinimumSize(null);
                 proceedJButton.setOpaque(false);
-                proceedJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+                proceedJButton.setPreferredSize(null);
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 proceedJButtonActionPerformed(evt);

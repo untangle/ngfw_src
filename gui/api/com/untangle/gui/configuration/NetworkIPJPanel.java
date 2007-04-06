@@ -210,9 +210,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
         }
 	dnsSecondaryJTextField.setBackground( Color.WHITE );
 	Util.addSettingChangeListener(settingsChangedListener, this, dnsSecondaryJTextField);
-
-	// ENABLE BUTTONS
-	connectivityTestJButton.setEnabled(true); // dhcp lease is take care of above	
+	
     }
     
     
@@ -460,7 +458,7 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 dhcpJPanel.add(jSeparator3, gridBagConstraints);
 
                 jLabel10.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel10.setText("<html><b>Connectivity Test</b> tells you if the Untangle Server can contact DNS and the internet, using your currently saved settings.  If you have made changes to the above settings, you must save them before this button will be enabled.</html>");
+                jLabel10.setText("<html>The <b>Connectivity Test</b> tells you if the Untangle Server can contact DNS and the internet.</html>");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -469,7 +467,12 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 dhcpJPanel.add(jLabel10, gridBagConstraints);
 
                 connectivityTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                connectivityTestJButton.setText("Run Connectivity Test");
+                connectivityTestJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconTest_16x16.png")));
+                connectivityTestJButton.setText("Connectivity Test");
+                connectivityTestJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                connectivityTestJButton.setMaximumSize(null);
+                connectivityTestJButton.setMinimumSize(null);
+                connectivityTestJButton.setPreferredSize(null);
                 connectivityTestJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 connectivityTestJButtonActionPerformed(evt);
@@ -493,41 +496,55 @@ public class NetworkIPJPanel extends javax.swing.JPanel
         }//GEN-END:initComponents
     
     private void dnsSecondaryJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_dnsSecondaryJTextFieldCaretUpdate
-	if( !dnsSecondaryJTextField.getText().trim().equals(dnsSecondaryCurrent) )
-	    connectivityTestJButton.setEnabled(false);
+	if( !dnsSecondaryJTextField.getText().trim().equals(dnsSecondaryCurrent) );
     }//GEN-LAST:event_dnsSecondaryJTextFieldCaretUpdate
     
     private void dnsPrimaryJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_dnsPrimaryJTextFieldCaretUpdate
-	if( !dnsPrimaryJTextField.getText().trim().equals(dnsPrimaryCurrent) )
-	    connectivityTestJButton.setEnabled(false);
+	if( !dnsPrimaryJTextField.getText().trim().equals(dnsPrimaryCurrent) );
     }//GEN-LAST:event_dnsPrimaryJTextFieldCaretUpdate
     
     private void dhcpRouteJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_dhcpRouteJTextFieldCaretUpdate
-	if( !dhcpRouteJTextField.getText().trim().equals(dhcpRouteCurrent) )
-	    connectivityTestJButton.setEnabled(false);
+	if( !dhcpRouteJTextField.getText().trim().equals(dhcpRouteCurrent) );
     }//GEN-LAST:event_dhcpRouteJTextFieldCaretUpdate
     
     private void dhcpNetmaskJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_dhcpNetmaskJTextFieldCaretUpdate
-	if( !dhcpNetmaskJTextField.getText().trim().equals(dhcpNetmaskCurrent) )
-	    connectivityTestJButton.setEnabled(false);
+	if( !dhcpNetmaskJTextField.getText().trim().equals(dhcpNetmaskCurrent) );
     }//GEN-LAST:event_dhcpNetmaskJTextFieldCaretUpdate
     
     private void dhcpIPaddrJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_dhcpIPaddrJTextFieldCaretUpdate
-	if( !dhcpIPaddrJTextField.getText().trim().equals(dhcpIPaddrCurrent) )
-	    connectivityTestJButton.setEnabled(false);
+	if( !dhcpIPaddrJTextField.getText().trim().equals(dhcpIPaddrCurrent) );
     }//GEN-LAST:event_dhcpIPaddrJTextFieldCaretUpdate
     
+	private class TestThread extends Thread {
+				public TestThread(){
+						setName("MVCLIENT-TestThread");
+						setDaemon(true);
+						start();
+				}
+				public void run(){
+						if( ((MConfigJDialog)NetworkIPJPanel.this.getTopLevelAncestor()).getSettingsChanged() ){
+							TestSaveSettingsJDialog dialog = new TestSaveSettingsJDialog((JDialog)NetworkIPJPanel.this.getTopLevelAncestor());
+							if(!dialog.isProceeding())
+								return;
+
+							((MConfigJDialog)NetworkIPJPanel.this.getTopLevelAncestor()).saveSettings();
+						}						
+					try{
+						NetworkConnectivityTestJDialog connectivityJDialog = new NetworkConnectivityTestJDialog((JDialog)NetworkIPJPanel.this.getTopLevelAncestor());
+						connectivityJDialog.setVisible(true);
+					}
+					catch(Exception e){
+						try{ Util.handleExceptionWithRestart("Error showing connectivity tester", e); }
+						catch(Exception f){ Util.handleExceptionNoRestart("Error showing connectivity tester", f); }
+					}	
+				}
+		}
+	
     private void connectivityTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectivityTestJButtonActionPerformed
 	if( Util.getIsDemo() )
 	    return;
-        try{
-	    NetworkConnectivityTestJDialog connectivityJDialog = new NetworkConnectivityTestJDialog((JDialog)this.getTopLevelAncestor());
-	    connectivityJDialog.setVisible(true);
-	}
-	catch(Exception e){
-	    try{ Util.handleExceptionWithRestart("Error showing connectivity tester", e); }
-	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing connectivity tester", f); }
-	}
+	
+	new TestThread();
     }//GEN-LAST:event_connectivityTestJButtonActionPerformed
 
     private void renewDhcpLeaseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renewDhcpLeaseJButtonActionPerformed
@@ -553,12 +570,10 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 
     private void dhcpDisabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dhcpDisabledRadioButtonActionPerformed
         setDhcpEnabledDependency( false );
-	connectivityTestJButton.setEnabled(false);
     }//GEN-LAST:event_dhcpDisabledRadioButtonActionPerformed
     
     private void dhcpEnabledRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dhcpEnabledRadioButtonActionPerformed
         setDhcpEnabledDependency( true );
-	connectivityTestJButton.setEnabled(false);
     }//GEN-LAST:event_dhcpEnabledRadioButtonActionPerformed
     
     private void setDhcpEnabledDependency(boolean enabled){

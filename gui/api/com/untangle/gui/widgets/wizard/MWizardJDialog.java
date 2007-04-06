@@ -266,19 +266,17 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
                 buttonJPanel.setLayout(new java.awt.GridBagLayout());
 
                 buttonJPanel.setFocusable(false);
-                buttonJPanel.setMaximumSize(null);
                 buttonJPanel.setOpaque(false);
                 buttonJPanel.setRequestFocusEnabled(false);
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 
-                jPanel1.setMaximumSize(null);
                 jPanel1.setOpaque(false);
                 nextJButton.setFont(new java.awt.Font("Arial", 0, 12));
                 nextJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/widgets/wizard/IconNext_16x16.png")));
                 nextJButton.setText("Next");
                 nextJButton.setDoubleBuffered(true);
                 nextJButton.setIconTextGap(6);
-                nextJButton.setMargin(new java.awt.Insets(4, 6, 4, 6));
+                nextJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 nextJButton.setOpaque(false);
                 nextJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -297,7 +295,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
                 previousJButton.setText("Previous");
                 previousJButton.setDoubleBuffered(true);
                 previousJButton.setIconTextGap(6);
-                previousJButton.setMargin(new java.awt.Insets(4, 6, 4, 6));
+                previousJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 previousJButton.setOpaque(false);
                 previousJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -315,7 +313,7 @@ public class MWizardJDialog extends javax.swing.JDialog implements java.awt.even
                 closeJButton.setText("Close");
                 closeJButton.setDoubleBuffered(true);
                 closeJButton.setIconTextGap(6);
-                closeJButton.setMargin(new java.awt.Insets(4, 6, 4, 6));
+                closeJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 closeJButton.setOpaque(false);
                 closeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

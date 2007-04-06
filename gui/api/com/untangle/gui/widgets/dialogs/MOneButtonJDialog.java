@@ -154,14 +154,11 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
                 jPanel1.add(messageJLabel, gridBagConstraints);
 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
-                proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Close_Dialog_106x17.png")));
+                proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
+                proceedJButton.setText("Close");
                 proceedJButton.setFocusable(false);
-                proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                proceedJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-                proceedJButton.setMinimumSize(new java.awt.Dimension(125, 25));
+                proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 proceedJButton.setOpaque(false);
-                proceedJButton.setPreferredSize(new java.awt.Dimension(125, 25));
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 proceedJButtonActionPerformed(evt);

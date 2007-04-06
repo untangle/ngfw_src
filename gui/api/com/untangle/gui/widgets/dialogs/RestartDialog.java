@@ -100,8 +100,6 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
 
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 
-                jPanel1.setMaximumSize(null);
-                jPanel1.setMinimumSize(null);
                 jPanel1.setOpaque(false);
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -132,8 +130,10 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
                 jPanel1.add(messageJLabel, gridBagConstraints);
 
-                proceedJButton.setFont(new java.awt.Font("Default", 1, 12));
+                proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
+                proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
                 proceedJButton.setText("Exit");
+                proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 proceedJButtonActionPerformed(evt);
@@ -147,6 +147,11 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
                 jPanel1.add(proceedJButton, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 2;
+                gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+                gridBagConstraints.weightx = 1.0;
+                gridBagConstraints.weighty = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 20);
                 getContentPane().add(jPanel1, gridBagConstraints);
 

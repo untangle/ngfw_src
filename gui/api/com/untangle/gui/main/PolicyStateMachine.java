@@ -164,7 +164,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         storeWizardJButton = new JButton();
         storeWizardJButton.setFont(new java.awt.Font("Dialog", 0, 12));
         storeWizardJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconWizard_32x32.png")));
-        storeWizardJButton.setText("What should I put in my rack?");
+        storeWizardJButton.setText("Which applications should I use?");
         storeWizardJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
         storeWizardJButton.setOpaque(false);
         storeWizardJButton.addActionListener(new java.awt.event.ActionListener() {
@@ -659,7 +659,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private Object storeLock = new Object();
 
     private class StoreMessageVisitor implements ToolboxMessageVisitor {
-        public void visitMackageInstallRequest(MackageInstallRequest req) {
+        public void visitMackageInstallRequest(final MackageInstallRequest req) {
+            System.out.println("Name: " + req.getMackageName());
             synchronized(storeLock){
                 String purchasedMackageName = req.getMackageName();
                 // FIND THE BUTTON THAT WOULD HAVE BEEN CLICKED
@@ -682,9 +683,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     if(mTransformJButton == null){
                         MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
                                                   "A problem occurred while purchasing:<br>"
-                                                  + mTransformJButton.getDisplayName()
+                                                  + req.getMackageName()
                                                   + "<br>Please try again.",
-                                                  mTransformJButton.getDisplayName() + " Warning", "");
+                                                  req.getMackageName() + " Warning", "");
                         return;
                     }
                     Policy purchasePolicy;
@@ -768,9 +769,13 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 if( installed )
                     return;
                 //// GET THE CORRECT BUTTON TO MESS WIT CAUSE STORE REFRESH MAY HAVE SHANKED US
-                for( MTransformJButton storeButton : storeMap.values() ){
+                for( final MTransformJButton storeButton : storeMap.values() ){
                     if( storeButton.getName().equals(mTransformJButton.getName()) ){
                         mTransformJButton = storeButton;
+                            SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+                                storeButton.setEnabled(false);
+                                storeButton.setProgress("Preparing", 101);
+                            }});
                         break;
                     }
                 }

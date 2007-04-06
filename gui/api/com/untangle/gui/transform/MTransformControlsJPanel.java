@@ -362,7 +362,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 gridBagConstraints.gridwidth = 4;
                 gridBagConstraints.gridheight = 2;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 55);
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 24, 55);
                 contentJPanel.add(nbSaveSettingsHintJLabel, gridBagConstraints);
 
                 removeJButton.setFont(new java.awt.Font("Arial", 0, 12));
@@ -370,7 +370,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 removeJButton.setText("Remove");
                 removeJButton.setDoubleBuffered(true);
                 removeJButton.setIconTextGap(6);
-                removeJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
+                removeJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 removeJButton.setOpaque(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -382,7 +382,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconHelp_18x16.png")));
                 helpJButton.setText("Help");
                 helpJButton.setIconTextGap(6);
-                helpJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
+                helpJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 helpJButton.setOpaque(false);
                 helpJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -401,7 +401,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 expandJButton.setText("Enlarge");
                 expandJButton.setDoubleBuffered(true);
                 expandJButton.setIconTextGap(6);
-                expandJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
+                expandJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 expandJButton.setOpaque(false);
                 expandJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -420,7 +420,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 reloadJButton.setText("Cancel");
                 reloadJButton.setDoubleBuffered(true);
                 reloadJButton.setIconTextGap(6);
-                reloadJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
+                reloadJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 reloadJButton.setOpaque(false);
                 reloadJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -440,7 +440,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
                 saveJButton.setText("Save");
                 saveJButton.setDoubleBuffered(true);
                 saveJButton.setIconTextGap(6);
-                saveJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
+                saveJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 saveJButton.setOpaque(false);
                 saveJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -501,7 +501,7 @@ public abstract class MTransformControlsJPanel extends javax.swing.JPanel implem
             try{
                 String focus = Util.getSelectedTabTitle(mTabbedPane).toLowerCase().replace(" ", "_");
                 String source = mTransformJPanel.getTransformDesc().getDisplayName().toLowerCase().replace(" ", "_");
-                URL newURL = new URL( "http://www.untangle.com/docs?"
+                URL newURL = new URL( "http://www.untangle.com/docs/get.php?"
                                       + "version=" + Version.getVersion()
                                       + "&source=" + source
                                       + "&focus=" + focus);

@@ -310,14 +310,12 @@ public class MEditTableJPanel extends javax.swing.JPanel
                 tableJPanel.add(removeJButton, gridBagConstraints);
 
                 refreshJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                refreshJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconRefresh_16x16.png")));
                 refreshJButton.setText("Refresh");
                 refreshJButton.setToolTipText("");
                 refreshJButton.setDoubleBuffered(true);
-                refreshJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                refreshJButton.setIconTextGap(0);
-                refreshJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
+                refreshJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 refreshJButton.setOpaque(false);
-                refreshJButton.setPreferredSize(null);
                 refreshJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 refreshJButtonActionPerformed(evt);

@@ -96,10 +96,7 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
 
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 
-                jPanel1.setMaximumSize(null);
-                jPanel1.setMinimumSize(null);
                 jPanel1.setOpaque(false);
-                jPanel1.setPreferredSize(null);
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 labelJLabel.setText("Checking Connectivity:");
@@ -147,13 +144,13 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
                 jPanel1.add(jProgressBar, gridBagConstraints);
 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
-                proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Close_Dialog_106x17.png")));
-                proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                proceedJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-                proceedJButton.setMinimumSize(new java.awt.Dimension(125, 25));
+                proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconCancel_16x16.png")));
+                proceedJButton.setText("Close");
+                proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                proceedJButton.setMaximumSize(null);
+                proceedJButton.setMinimumSize(null);
                 proceedJButton.setOpaque(false);
-                proceedJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+                proceedJButton.setPreferredSize(null);
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 proceedJButtonActionPerformed(evt);

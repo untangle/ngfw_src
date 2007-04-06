@@ -39,7 +39,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
     // SAVING/REFRESHING ///////////
     protected boolean settingsSaved;
     public boolean getSettingsSaved(){ return settingsSaved; }
-    protected boolean settingsChanged;
+    protected boolean settingsChanged = false;
     public boolean getSettingsChanged(){ return settingsChanged; }
     private Map<String, Refreshable> refreshableMap = new LinkedHashMap(5);
     protected void addRefreshable(String name, Refreshable refreshable){ refreshableMap.put(name, refreshable); }
@@ -119,7 +119,9 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         helpJButton.setVisible(true);
     }
 
+	
 	public void settingsChanged(Object source){
+		settingsChanged = true;
         saveJButton.setEnabled(true);
         setSaveSettingsHintVisible(true);
     }
@@ -205,6 +207,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         saveJButton.setEnabled(false);
     }});
 	setSaveSettingsHintVisible(false);
+	settingsChanged = false;
     }
 
 
@@ -232,6 +235,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         saveJButton.setEnabled(false);
     }});
 	setSaveSettingsHintVisible(false);
+	settingsChanged = false;
     }
     ////////////////////////////////////////////
 
@@ -296,18 +300,15 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 gridBagConstraints.gridwidth = 3;
                 gridBagConstraints.gridheight = 2;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTHEAST;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 34, 60);
+                gridBagConstraints.insets = new java.awt.Insets(0, 0, 38, 60);
                 getContentPane().add(nbSaveSettingsHintJLabel, gridBagConstraints);
 
                 helpJButton.setFont(new java.awt.Font("Dialog", 0, 12));
                 helpJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconHelp_18x16.png")));
                 helpJButton.setText("Help");
                 helpJButton.setIconTextGap(6);
-                helpJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
-                helpJButton.setMaximumSize(null);
-                helpJButton.setMinimumSize(null);
+                helpJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 helpJButton.setOpaque(false);
-                helpJButton.setPreferredSize(null);
                 helpJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 helpJButtonActionPerformed(evt);
@@ -326,7 +327,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconClose_16x16.png")));
                 closeJButton.setText("Cancel");
                 closeJButton.setIconTextGap(6);
-                closeJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
+                closeJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 closeJButton.setOpaque(false);
                 closeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -345,7 +346,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
                 saveJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
                 saveJButton.setText("Save");
                 saveJButton.setIconTextGap(6);
-                saveJButton.setMargin(new java.awt.Insets(2, 6, 2, 6));
+                saveJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 saveJButton.setOpaque(false);
                 saveJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -394,15 +395,20 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	    return;
 	if( !shouldSave() )
 	    return;
-        new SaveAllThread();
+        new SaveAllThread(true);
     }//GEN-LAST:event_saveJButtonActionPerformed
-
+	public void saveSettings(){
+		SaveAllThread thread = new SaveAllThread(false);
+		while(thread.isAlive()){
+				try{Thread.sleep(500l);} catch(Exception e){ e.printStackTrace(); }
+		}
+	}
     private void closeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeJButtonActionPerformed
-        windowClosing(null);
+        setVisible(false);
     }//GEN-LAST:event_closeJButtonActionPerformed
 
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-        this.setVisible(false);
+        setVisible(false);
     }
 
     public void windowClosed(java.awt.event.WindowEvent windowEvent) {}
@@ -425,29 +431,39 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         // End of variables declaration//GEN-END:variables
 
     private class SaveAllThread extends Thread{
-        public SaveAllThread(){
-	    super("MVCLIENT-ConfigSaveAllThread");
-	    setDaemon(true);
-	    infiniteProgressJComponent.start("Saving...");
+        private boolean doClose;
+        public SaveAllThread(boolean doClose){            
+            super("MVCLIENT-ConfigSaveAllThread");
+            setDaemon(true);
+            this.doClose = doClose;
+			if(doClose)
+				infiniteProgressJComponent.start("Saving...");
+			else
+				infiniteProgressJComponent.startLater("Saving...");
             start();
         }        
         public void run(){
-	    long startTime = System.currentTimeMillis();
-	    try{
-		MConfigJDialog.this.saveAll();
-		MConfigJDialog.this.refreshAll();
-		MConfigJDialog.this.populateAll();
-	    }
-	    catch(Exception e){
-		try{ Util.handleExceptionWithRestart("Error sending saved settings", e); }
-		catch(ValidationException f){ /* this was handled at a lower layer*/ }
-		catch(Exception g){
-		    Util.handleExceptionNoRestart("Error sending saved settings", g);
-		    SaveFailureDialog.factory( (Window) MConfigJDialog.this,
-					       MConfigJDialog.this.getTitle() );
-		}
-	    }
-	    infiniteProgressJComponent.stopLater(MIN_PROGRESS_MILLIS);
+            long startTime = System.currentTimeMillis();
+            try{
+                MConfigJDialog.this.saveAll();
+                if(!doClose){
+                    MConfigJDialog.this.refreshAll();
+                    MConfigJDialog.this.populateAll();
+                }
+            }
+            catch(Exception e){
+                try{ Util.handleExceptionWithRestart("Error sending saved settings", e); }
+                catch(ValidationException f){ /* this was handled at a lower layer*/ }
+                catch(Exception g){
+                    Util.handleExceptionNoRestart("Error sending saved settings", g);
+                    SaveFailureDialog.factory( (Window) MConfigJDialog.this,
+                                               MConfigJDialog.this.getTitle() );
+                }
+            }
+            infiniteProgressJComponent.stopLater(MIN_PROGRESS_MILLIS);
+            if(doClose){
+                setVisible(false);
+            }
         }
     }
         

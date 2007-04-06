@@ -15,11 +15,11 @@ import com.untangle.gui.util.Util;
 
 import java.awt.Dialog;
 
-final public class BackupSaveFileJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
+final public class TestSaveSettingsJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
 
     private boolean isProceeding = false;
 
-    public BackupSaveFileJDialog(Dialog parentDialog) {
+    public TestSaveSettingsJDialog(Dialog parentDialog) {
         super(parentDialog, true);
         initComponents();
         this.addWindowListener(this);
@@ -36,6 +36,7 @@ final public class BackupSaveFileJDialog extends javax.swing.JDialog implements 
                 jPanel1 = new javax.swing.JPanel();
                 labelJLabel = new javax.swing.JLabel();
                 messageJLabel = new javax.swing.JLabel();
+                jPanel2 = new javax.swing.JPanel();
                 cancelJButton = new javax.swing.JButton();
                 proceedJButton = new javax.swing.JButton();
                 backgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
@@ -43,10 +44,10 @@ final public class BackupSaveFileJDialog extends javax.swing.JDialog implements 
                 getContentPane().setLayout(new java.awt.GridBagLayout());
 
                 setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-                setTitle("Save File Warning");
+                setTitle("Save Settings Warning");
                 setModal(true);
                 setResizable(false);
-                iconJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconDialogWizard_96x96.png")));
+                iconJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconDialogAttention_96x96.png")));
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
@@ -74,11 +75,10 @@ final public class BackupSaveFileJDialog extends javax.swing.JDialog implements 
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 labelJLabel.setText("Warning:");
-                labelJLabel.setDoubleBuffered(true);
+                labelJLabel.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
-                gridBagConstraints.gridwidth = 2;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
@@ -86,22 +86,23 @@ final public class BackupSaveFileJDialog extends javax.swing.JDialog implements 
 
                 messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
                 messageJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                messageJLabel.setText("<html><center>\nYou are about to overwrite a file that already exists.<br>\nThat file will be erased, and then replaced with a new file.<br>\n<br>\nWould you like to overwrite the old file with your new backup data?\n</center></html>");
-                messageJLabel.setDoubleBuffered(true);
+                messageJLabel.setText("<html><center>\nYour current settings have not been saved yet.<br>\nPress Continue to save your settings and then run this test.\n</center></html>");
+                messageJLabel.setFocusable(false);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 1;
-                gridBagConstraints.gridwidth = 2;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
                 jPanel1.add(messageJLabel, gridBagConstraints);
 
+                jPanel2.setLayout(new java.awt.GridBagLayout());
+
+                jPanel2.setOpaque(false);
                 cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
                 cancelJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconCancel_16x16.png")));
                 cancelJButton.setText("Cancel");
-                cancelJButton.setDoubleBuffered(true);
                 cancelJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 cancelJButton.setMaximumSize(null);
                 cancelJButton.setMinimumSize(null);
@@ -114,21 +115,16 @@ final public class BackupSaveFileJDialog extends javax.swing.JDialog implements 
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 2;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.gridy = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
                 gridBagConstraints.weightx = 0.5;
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
-                jPanel1.add(cancelJButton, gridBagConstraints);
+                jPanel2.add(cancelJButton, gridBagConstraints);
 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
-                proceedJButton.setText("Overwrite");
-                proceedJButton.setDoubleBuffered(true);
+                proceedJButton.setText("Continue");
                 proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
-                proceedJButton.setMaximumSize(null);
-                proceedJButton.setMinimumSize(null);
-                proceedJButton.setPreferredSize(null);
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 proceedJButtonActionPerformed(evt);
@@ -137,12 +133,18 @@ final public class BackupSaveFileJDialog extends javax.swing.JDialog implements 
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 2;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.gridy = 0;
                 gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.weightx = 0.5;
                 gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
-                jPanel1.add(proceedJButton, gridBagConstraints);
+                jPanel2.add(proceedJButton, gridBagConstraints);
+
+                gridBagConstraints = new java.awt.GridBagConstraints();
+                gridBagConstraints.gridx = 0;
+                gridBagConstraints.gridy = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.weightx = 1.0;
+                jPanel1.add(jPanel2, gridBagConstraints);
 
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 2;
@@ -156,13 +158,13 @@ final public class BackupSaveFileJDialog extends javax.swing.JDialog implements 
                 backgroundJLabel.setFont(new java.awt.Font("Default", 0, 12));
                 backgroundJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
-                backgroundJLabel.setDoubleBuffered(true);
                 backgroundJLabel.setFocusable(false);
                 backgroundJLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
                 backgroundJLabel.setOpaque(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
+                gridBagConstraints.gridwidth = 3;
                 gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
                 gridBagConstraints.weightx = 1.0;
                 gridBagConstraints.weighty = 1.0;
@@ -203,6 +205,7 @@ final public class BackupSaveFileJDialog extends javax.swing.JDialog implements 
         private javax.swing.JPanel dividerJPanel;
         private javax.swing.JLabel iconJLabel;
         private javax.swing.JPanel jPanel1;
+        private javax.swing.JPanel jPanel2;
         private javax.swing.JLabel labelJLabel;
         private javax.swing.JLabel messageJLabel;
         private javax.swing.JButton proceedJButton;

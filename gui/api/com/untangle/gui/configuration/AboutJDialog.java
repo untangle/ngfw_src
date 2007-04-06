@@ -106,9 +106,10 @@
 				containingJScrollPane = jScrollPane;
 			}
 			public void doRefresh(AboutCompoundSettings aboutCompoundSettings){
-				String versionString = "<html><b>Build: </b> " + aboutCompoundSettings.getInstalledVersion()
-					+ "<br><b>Activation Key: </b>" + aboutCompoundSettings.getActivationKey()
-					+ "</html>";
+				String versionString = "<html><b>Build: </b> " + aboutCompoundSettings.getInstalledVersion();
+                if(!Util.getIsDemo())
+					versionString += "<br><b>Activation Key: </b>" + aboutCompoundSettings.getActivationKey();
+                versionString += "</html>";
 
 				try{
 					setText(versionString);

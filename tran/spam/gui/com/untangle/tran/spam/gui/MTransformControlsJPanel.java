@@ -25,6 +25,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
     private static final String NAME_SPAM_POP = "POP";
     private static final String NAME_SPAM_IMAP = "IMAP";
     private static final String NAME_LOG = "Event Log";
+    private static final String NAME_RBL_LOG = "SMTP RBL Event Log";
     
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel)  {
         super(mTransformJPanel);
@@ -56,6 +57,11 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
 	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
 	addTab(NAME_LOG, null, logJPanel);
 	addShutdownable(NAME_LOG, logJPanel);
+
+	// RBL EVENT LOG /////
+	LogRblJPanel logRblJPanel = new LogRblJPanel(mTransformJPanel.getTransform(), this);
+	addTab(NAME_RBL_LOG, null, logRblJPanel);
+	addShutdownable(NAME_RBL_LOG, logRblJPanel);
     }
     
 }

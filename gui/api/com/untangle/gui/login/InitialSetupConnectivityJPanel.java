@@ -58,7 +58,12 @@ public class InitialSetupConnectivityJPanel extends MWizardPageJPanel {
                 contentJPanel.add(jLabel10, gridBagConstraints);
 
                 connectivityTestJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                connectivityTestJButton.setText("Run Connectivity Test");
+                connectivityTestJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconTest_16x16.png")));
+                connectivityTestJButton.setText("Connectivity Test");
+                connectivityTestJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                connectivityTestJButton.setMaximumSize(null);
+                connectivityTestJButton.setMinimumSize(null);
+                connectivityTestJButton.setPreferredSize(null);
                 connectivityTestJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 connectivityTestJButtonActionPerformed(evt);

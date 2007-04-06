@@ -60,9 +60,9 @@ public class PolicyWizardJDialog extends MConfigJDialog {
 	}
 	
     protected void saveAll() throws Exception{
+			isProceeding = true;
         super.saveAll();
         isProceeding = true;
-        setVisible(false);
     }
 
     private boolean isProceeding = false;

@@ -305,13 +305,13 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 
                 jPanel2.setOpaque(false);
                 cancelJButton.setFont(new java.awt.Font("Default", 0, 12));
-                cancelJButton.setText("<html><b>Cancel</b></html>");
+                cancelJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconCancel_16x16.png")));
+                cancelJButton.setText("Cancel");
                 cancelJButton.setDoubleBuffered(true);
-                cancelJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                cancelJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                cancelJButton.setMaximumSize(new java.awt.Dimension(130, 25));
-                cancelJButton.setMinimumSize(new java.awt.Dimension(130, 25));
-                cancelJButton.setPreferredSize(new java.awt.Dimension(130, 25));
+                cancelJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                cancelJButton.setMaximumSize(null);
+                cancelJButton.setMinimumSize(null);
+                cancelJButton.setPreferredSize(null);
                 cancelJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 cancelJButtonActionPerformed(evt);
@@ -327,13 +327,10 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
                 jPanel2.add(cancelJButton, gridBagConstraints);
 
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
-                proceedJButton.setText("<html><b>Proceed</b></html>");
+                proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
+                proceedJButton.setText("Proceed");
                 proceedJButton.setDoubleBuffered(true);
-                proceedJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                proceedJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                proceedJButton.setMaximumSize(new java.awt.Dimension(150, 25));
-                proceedJButton.setMinimumSize(new java.awt.Dimension(150, 25));
-                proceedJButton.setPreferredSize(new java.awt.Dimension(150, 25));
+                proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 proceedJButtonActionPerformed(evt);

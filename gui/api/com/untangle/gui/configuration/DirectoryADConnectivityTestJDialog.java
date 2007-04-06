@@ -120,13 +120,13 @@ public class DirectoryADConnectivityTestJDialog extends javax.swing.JDialog impl
                 jPanel1.add(jProgressBar, gridBagConstraints);
 
                 closeJButton.setFont(new java.awt.Font("Default", 0, 12));
-                closeJButton.setText("<html><b>Close</b></html>");
-                closeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                closeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                closeJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-                closeJButton.setMinimumSize(new java.awt.Dimension(125, 25));
+                closeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
+                closeJButton.setText("Close");
+                closeJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                closeJButton.setMaximumSize(null);
+                closeJButton.setMinimumSize(null);
                 closeJButton.setOpaque(false);
-                closeJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+                closeJButton.setPreferredSize(null);
                 closeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 closeJButtonActionPerformed(evt);

@@ -249,7 +249,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 if( transformName.equals("openvpn-transform") ){
                     MOneButtonJDialog.factory((Window)mTransformJPanel.getTopLevelAncestor(), displayName,
                                               "You must configure OpenVPN as either a VPN Routing Server" +
-                                              " or a VPN Client before you can turn it on.  You may do this" +
+                                              " or a VPN Client before you can turn it on.<br>You may do this" +
                                               " through its Setup Wizard (in its settings).", displayName + " Warning", "Warning");
                 }
                 setOffView(true);
@@ -333,11 +333,13 @@ public class MStateMachine implements java.awt.event.ActionListener {
             setDisabledView(doLater);
         else
             setProblemView(doLater);
-	String extraText = mTransformJPanel.getNewMackageDesc().getExtraName();
-	if( (extraText!=null) && (extraText.length()>0) )
-	    messageJLabel.setText(extraText);
-	else
-	    messageJLabel.setText("");
+        final String extraText = mTransformJPanel.getNewMackageDesc().getExtraName();
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            if( (extraText!=null) && (extraText.length()>0) )
+                messageJLabel.setText(extraText);
+            else
+                messageJLabel.setText("");
+        }});
     }
 
     class RefreshStateThread extends Thread{

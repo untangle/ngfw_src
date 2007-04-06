@@ -58,9 +58,6 @@
     </Container>
     <Container class="javax.swing.JPanel" name="jPanel1">
       <Properties>
-        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="null"/>
-        </Property>
         <Property name="opaque" type="boolean" value="false"/>
       </Properties>
       <Constraints>
@@ -128,20 +125,11 @@
                   <Font name="Default" size="12" style="0"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/com/untangle/gui/images/Button_Cancel_Upgrade_106x17.png"/>
+                  <Image iconType="3" name="/com/untangle/gui/images/IconCancel_16x16.png"/>
                 </Property>
-                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="Cancel"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-                  <Insets value="[0, 0, 0, 0]"/>
-                </Property>
-                <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[130, 25]"/>
-                </Property>
-                <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[130, 25]"/>
-                </Property>
-                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[130, 25]"/>
+                  <Insets value="[4, 8, 4, 8]"/>
                 </Property>
               </Properties>
               <Events>
@@ -162,20 +150,11 @@
                   <Font name="Default" size="12" style="0"/>
                 </Property>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/com/untangle/gui/images/Button_Continue_Upgrade_106x17.png"/>
+                  <Image iconType="3" name="/com/untangle/gui/images/IconSave_23x16.png"/>
                 </Property>
-                <Property name="horizontalTextPosition" type="int" value="0"/>
+                <Property name="text" type="java.lang.String" value="Continue"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-                  <Insets value="[0, 0, 0, 0]"/>
-                </Property>
-                <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[150, 25]"/>
-                </Property>
-                <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[150, 25]"/>
-                </Property>
-                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[150, 25]"/>
+                  <Insets value="[4, 8, 4, 8]"/>
                 </Property>
               </Properties>
               <Events>

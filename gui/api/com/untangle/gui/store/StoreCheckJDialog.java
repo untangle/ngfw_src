@@ -90,7 +90,6 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
 
                 jPanel1.setLayout(new java.awt.GridBagLayout());
 
-                jPanel1.setMaximumSize(null);
                 jPanel1.setOpaque(false);
                 labelJLabel.setFont(new java.awt.Font("Dialog", 1, 24));
                 labelJLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -134,10 +133,14 @@ public class StoreCheckJDialog extends javax.swing.JDialog implements java.awt.e
                 gridBagConstraints.insets = new java.awt.Insets(0, 0, 20, 0);
                 jPanel1.add(jProgressBar, gridBagConstraints);
 
-                proceedJButton.setFont(new java.awt.Font("Default", 1, 12));
+                proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
+                proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconCancel_16x16.png")));
                 proceedJButton.setText("Cancel");
                 proceedJButton.setDoubleBuffered(true);
-                proceedJButton.setMargin(new java.awt.Insets(2, 7, 2, 7));
+                proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                proceedJButton.setMaximumSize(null);
+                proceedJButton.setMinimumSize(null);
+                proceedJButton.setPreferredSize(null);
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 proceedJButtonActionPerformed(evt);

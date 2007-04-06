@@ -158,7 +158,12 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
         portServerJTextField.setText(serverPort);
 
         newUserList = ((UidButtonRunnable) newRow.elementAt(12)).getUidList();
-        userSettingsJLabel.setText("User: " + ((UidButtonRunnable) newRow.elementAt(12)).getButtonText());
+        String newUserString;
+        if(newUserList.size()>1)
+            newUserString = UidSelectJDialog.MULTIPLE_USERS;
+        else
+            newUserString = newUserList.get(0);
+        userSettingsJLabel.setText("User: " + newUserString);
 
         String startTime = (String) newRow.elementAt(14);
         timeStartJTextField.setText(startTime);

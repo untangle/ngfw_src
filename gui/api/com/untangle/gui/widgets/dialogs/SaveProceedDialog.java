@@ -19,8 +19,6 @@ final public class SaveProceedDialog extends MTwoButtonJDialog {
     public SaveProceedDialog(String applianceName) {
 	super(Util.getMMainJFrame());
         setTitle(applianceName + " Warning");
-        cancelJButton.setIcon(Util.getButtonCancelSave());
-        proceedJButton.setIcon(Util.getButtonContinueSaving());
         messageJLabel.setText("<html><center>" + applianceName + " is about to save its settings.<br>"
 										+ "These settings are critical to proper network operation<br>"
 										+ "and you should be sure these are the settings you want.<br>"

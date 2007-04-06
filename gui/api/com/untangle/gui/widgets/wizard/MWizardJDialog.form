@@ -58,9 +58,6 @@
     <Container class="javax.swing.JPanel" name="buttonJPanel">
       <Properties>
         <Property name="focusable" type="boolean" value="false"/>
-        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="null"/>
-        </Property>
         <Property name="opaque" type="boolean" value="false"/>
         <Property name="requestFocusEnabled" type="boolean" value="false"/>
       </Properties>
@@ -74,9 +71,6 @@
       <SubComponents>
         <Container class="javax.swing.JPanel" name="jPanel1">
           <Properties>
-            <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="null"/>
-            </Property>
             <Property name="opaque" type="boolean" value="false"/>
           </Properties>
           <Constraints>
@@ -99,7 +93,7 @@
                 <Property name="doubleBuffered" type="boolean" value="true"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-                  <Insets value="[4, 6, 4, 6]"/>
+                  <Insets value="[4, 8, 4, 8]"/>
                 </Property>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
@@ -127,7 +121,7 @@
                 <Property name="doubleBuffered" type="boolean" value="true"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-                  <Insets value="[4, 6, 4, 6]"/>
+                  <Insets value="[4, 8, 4, 8]"/>
                 </Property>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
@@ -155,7 +149,7 @@
                 <Property name="doubleBuffered" type="boolean" value="true"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-                  <Insets value="[4, 6, 4, 6]"/>
+                  <Insets value="[4, 8, 4, 8]"/>
                 </Property>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>

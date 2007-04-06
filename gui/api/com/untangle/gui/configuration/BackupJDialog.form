@@ -34,7 +34,7 @@
         <Property name="text" type="java.lang.String" value="Cancel"/>
         <Property name="iconTextGap" type="int" value="6"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-          <Insets value="[2, 6, 2, 6]"/>
+          <Insets value="[4, 8, 4, 8]"/>
         </Property>
         <Property name="opaque" type="boolean" value="false"/>
       </Properties>
@@ -58,7 +58,7 @@
         <Property name="text" type="java.lang.String" value="Help"/>
         <Property name="iconTextGap" type="int" value="6"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-          <Insets value="[2, 6, 2, 6]"/>
+          <Insets value="[4, 8, 4, 8]"/>
         </Property>
         <Property name="opaque" type="boolean" value="false"/>
       </Properties>

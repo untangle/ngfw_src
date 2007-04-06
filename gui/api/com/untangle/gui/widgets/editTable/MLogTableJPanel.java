@@ -119,13 +119,13 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
                 eventJPanel.add(queryJComboBox, gridBagConstraints);
 
                 refreshLogJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                refreshLogJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Refresh_Log_106x17.png")));
+                refreshLogJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconRefresh_16x16.png")));
+                refreshLogJButton.setText("Refresh");
                 refreshLogJButton.setDoubleBuffered(true);
-                refreshLogJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                refreshLogJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                refreshLogJButton.setMaximumSize(new java.awt.Dimension(100, 25));
-                refreshLogJButton.setMinimumSize(new java.awt.Dimension(100, 25));
-                refreshLogJButton.setPreferredSize(new java.awt.Dimension(100, 25));
+                refreshLogJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                refreshLogJButton.setMaximumSize(null);
+                refreshLogJButton.setMinimumSize(null);
+                refreshLogJButton.setPreferredSize(null);
                 refreshLogJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 refreshLogJButtonActionPerformed(evt);
@@ -139,12 +139,12 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
                 eventJPanel.add(refreshLogJButton, gridBagConstraints);
 
                 streamingJToggleButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                streamingJToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/Button_Start_Auto_Refresh_106x17.png")));
-                streamingJToggleButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                streamingJToggleButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                streamingJToggleButton.setMaximumSize(new java.awt.Dimension(125, 25));
-                streamingJToggleButton.setMinimumSize(new java.awt.Dimension(125, 25));
-                streamingJToggleButton.setPreferredSize(new java.awt.Dimension(125, 25));
+                streamingJToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconAuto_16x16.png")));
+                streamingJToggleButton.setText("Auto-Refresh");
+                streamingJToggleButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                streamingJToggleButton.setMaximumSize(null);
+                streamingJToggleButton.setMinimumSize(null);
+                streamingJToggleButton.setPreferredSize(null);
                 streamingJToggleButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 streamingJToggleButtonActionPerformed(evt);

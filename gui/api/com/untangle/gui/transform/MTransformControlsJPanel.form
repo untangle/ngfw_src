@@ -90,7 +90,7 @@
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
-                  <GridBagConstraints gridX="0" gridY="0" gridWidth="4" gridHeight="2" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="20" insetsRight="55" anchor="14" weightX="0.0" weightY="0.0"/>
+                  <GridBagConstraints gridX="0" gridY="0" gridWidth="4" gridHeight="2" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="24" insetsRight="55" anchor="14" weightX="0.0" weightY="0.0"/>
                 </Constraint>
               </Constraints>
             </Component>
@@ -106,7 +106,7 @@
                 <Property name="doubleBuffered" type="boolean" value="true"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-                  <Insets value="[2, 6, 2, 6]"/>
+                  <Insets value="[4, 8, 4, 8]"/>
                 </Property>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
@@ -130,7 +130,7 @@
                 <Property name="text" type="java.lang.String" value="Help"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-                  <Insets value="[2, 6, 2, 6]"/>
+                  <Insets value="[4, 8, 4, 8]"/>
                 </Property>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
@@ -155,7 +155,7 @@
                 <Property name="doubleBuffered" type="boolean" value="true"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-                  <Insets value="[2, 6, 2, 6]"/>
+                  <Insets value="[4, 8, 4, 8]"/>
                 </Property>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
@@ -183,7 +183,7 @@
                 <Property name="doubleBuffered" type="boolean" value="true"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-                  <Insets value="[2, 6, 2, 6]"/>
+                  <Insets value="[4, 8, 4, 8]"/>
                 </Property>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
@@ -211,7 +211,7 @@
                 <Property name="doubleBuffered" type="boolean" value="true"/>
                 <Property name="iconTextGap" type="int" value="6"/>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-                  <Insets value="[2, 6, 2, 6]"/>
+                  <Insets value="[4, 8, 4, 8]"/>
                 </Property>
                 <Property name="opaque" type="boolean" value="false"/>
               </Properties>
