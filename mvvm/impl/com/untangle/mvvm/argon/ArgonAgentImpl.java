@@ -17,6 +17,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.untangle.mvvm.localapi.SessionMatcher;
+
+import com.untangle.mvvm.policy.Policy;
 
 /**
  * The <code>ArgonAgent</code> interface represents an active Transform as seen by
@@ -113,16 +116,16 @@ public class ArgonAgentImpl implements ArgonAgent {
         /* Remove the listener */
         listener = NULL_NEW_SESSION_LISTENER;
 
-        /* Iterate through each of the sessions shutting all of them down */
-        for ( Iterator<Session> iter = activeSessions.iterator() ; iter.hasNext() ; ) {
-            try {
-                Session session = iter.next();
-
-                /* This kills everything */
-                session.killSession();
-            } catch ( Exception e ) {
-                logger.warn( "Exception while destroying a session", e );
-            }
+        /* Create a session matcher to shutdown all active sessions */
+        ActiveSessionMatcher matcher = new ActiveSessionMatcher( this.activeSessions );
+        
+        VectronTable.getInstance().shutdownMatches( matcher );
+        
+        int numActiveSessions = matcher.getNumberActiveSessions();
+        if ( numActiveSessions == 0 ) {
+            logger.info( "Shutdown all active sessions" );
+        } else {
+            logger.warn( "There were " + numActiveSessions + "that where not shutdown." );
         }
 
         /* Remove all of the active sessions */
@@ -157,5 +160,44 @@ public class ArgonAgentImpl implements ArgonAgent {
     public String toString()
     {
         return "ArgonAgent[" + name + "]";
+    }
+
+    /******************************** PRIVATE ********************************/
+    private class ActiveSessionMatcher implements SessionMatcher
+    {
+        private final Set<Integer> activeSessionIds;
+        private final Set<Integer> shtudownSessionIds;
+
+        private ActiveSessionMatcher( Set<Session> sessionSet )
+        {
+            this.activeSessionIds = new HashSet<Integer>( sessionSet.size());
+            this.shtudownSessionIds = new HashSet<Integer>( sessionSet.size());
+
+            for ( Session session : sessionSet ) this.activeSessionIds.add( session.id());
+        }
+        /**
+         * Tells if the session matches */
+        public boolean isMatch( Policy policy, com.untangle.mvvm.api.IPSessionDesc clientSide, 
+                                com.untangle.mvvm.api.IPSessionDesc serverSide )
+        {
+            Integer id = clientSide.id();
+
+            /* Get the id from the client side (should match the client side one) */
+            if ( this.activeSessionIds.remove( id )) {
+                this.shtudownSessionIds.add( id );
+                return true;
+            } else if ( this.shtudownSessionIds.contains( id )) {
+                logger.warn( "session id: [" + id + "] appears to have been shutdown twice." );
+                return true;
+            }
+
+            return false;
+        }
+
+        int getNumberActiveSessions()
+        {
+            return this.activeSessionIds.size();
+        }
+        
     }
 }
