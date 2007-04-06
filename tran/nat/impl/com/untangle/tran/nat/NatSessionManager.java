@@ -101,7 +101,9 @@ class NatSessionManager
         /* Add the redirect to the list monitored by this session */
         data.addRedirect( redirect );
 
-        // logger.debug( "Registering[" + key + "],[" + redirect + "]" );
+        if ( logger.isDebugEnabled()) {
+            logger.debug( "Registering[" + key + "],[" + redirect + "]" );
+        }
 
         /* Add the redict to the map of redirects */
         redirectMap.put( key, redirect );
@@ -136,16 +138,13 @@ class NatSessionManager
 class SessionRedirectKey
 {
     final Protocol    protocol;
-    final InetAddress clientAddr;
     final InetAddress serverAddr;
     final int         serverPort;
     final int         hashCode;
 
-    SessionRedirectKey( Protocol    protocol, InetAddress clientAddr,
-                        InetAddress serverAddr, int serverPort )
+    SessionRedirectKey( Protocol protocol, InetAddress serverAddr, int serverPort )
     {
         this.protocol   = protocol;
-        this.clientAddr = clientAddr;
         this.serverAddr = serverAddr;
         this.serverPort = serverPort;
         hashCode = calculateHashCode();
@@ -153,20 +152,17 @@ class SessionRedirectKey
 
     SessionRedirectKey( IPNewSessionRequest request, Protocol protocol )
     {
-        this( protocol, request.clientAddr(),
-              request.serverAddr(), request.serverPort());
+        this( protocol, request.serverAddr(), request.serverPort());
     }
 
     SessionRedirectKey( TCPSession session )
     {
-        this( Protocol.TCP, session.clientAddr(),
-              session.serverAddr(), session.serverPort());
+        this( Protocol.TCP, session.serverAddr(), session.serverPort());
     }
 
     SessionRedirectKey( IPSession session, Protocol protocol )
     {
-        this( protocol, session.clientAddr(),
-              session.serverAddr(), session.serverPort());
+        this( protocol, session.serverAddr(), session.serverPort());
     }
 
     public int hashCode()
@@ -179,9 +175,10 @@ class SessionRedirectKey
         if (!( o instanceof SessionRedirectKey )) return false;
 
         SessionRedirectKey key = (SessionRedirectKey)o;
-
-        if ( this.protocol != key.protocol || !this.clientAddr.equals( key.clientAddr ) ||
-             !this.serverAddr.equals( key.serverAddr ) || this.serverPort != key.serverPort ) {
+        
+        if ( this.protocol != key.protocol || 
+             !this.serverAddr.equals( key.serverAddr ) || 
+             this.serverPort != key.serverPort ) {
             return false;
         }
 
@@ -190,7 +187,7 @@ class SessionRedirectKey
 
     public String toString()
     {
-        return "SessionRedirectKey| [" + protocol +"] " + clientAddr + "/" + serverAddr + ":" + serverPort;
+        return "SessionRedirectKey| [" + protocol +"] " + "/" + serverAddr + ":" + serverPort;
     }
 
 
@@ -198,7 +195,6 @@ class SessionRedirectKey
     {
         int result = 17;
         result = ( 37 * result ) + protocol.hashCode();
-        result = ( 37 * result ) + clientAddr.hashCode();
         result = ( 37 * result ) + serverAddr.hashCode();
         result = ( 37 * result ) + serverPort;
 

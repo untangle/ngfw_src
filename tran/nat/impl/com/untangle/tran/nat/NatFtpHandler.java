@@ -204,7 +204,6 @@ class NatFtpHandler extends FtpStateMachine
             /* 1. Tell the event handler to redirect the session from the server. *
              * 2. Mangle the command.                                             */
             portCommandKey = new SessionRedirectKey( Protocol.TCP,
-                                                     sessionData.modifiedServerAddr(),
                                                      sessionData.modifiedClientAddr(), port );
 
 
