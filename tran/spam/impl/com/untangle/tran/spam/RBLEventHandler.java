@@ -48,7 +48,7 @@ class RBLEventHandler extends AbstractEventHandler
         
         if (spamConfig.getThrottle()) {
             //m_logger.debug("Check RBL(s) for connection from: " + tsr.clientAddr());
-            RBLChecker rblChecker = new RBLChecker(spamSettings.getSpamRBLList());
+            RBLChecker rblChecker = new RBLChecker(spamSettings.getSpamRBLList(),m_spamImpl);
             if (true == rblChecker.check(tsr, spamConfig.getThrottleSec())) {
                 m_logger.debug("RBL hit confirmed, rejecting connection from: " + tsr.clientAddr());
                 tsr.rejectReturnRst();
@@ -59,17 +59,5 @@ class RBLEventHandler extends AbstractEventHandler
 
         /* release, doesn't need finalization */
         if (releaseSession) tsr.release(false);
-    }
-
-    @Override
-    public void handleTCPComplete(TCPSessionEvent event)
-        throws MPipeException
-    {
-        /* Load the session and check if there is an event to log */
-        Object a = event.session().attachment();
-        if ((a != null) && (a instanceof SpamSMTPRBLEvent)) {
-            SpamSMTPRBLEvent fe = (SpamSMTPRBLEvent)a;
-            m_spamImpl.logRBL(fe);
-        }
     }
 }
