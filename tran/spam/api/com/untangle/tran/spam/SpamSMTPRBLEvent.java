@@ -124,7 +124,9 @@ public class SpamSMTPRBLEvent extends PipelineEvent
         
         PipelineEndpoints pe = getPipelineEndpoints();
         /* unable to log this event */
-        if ( pe == null ) return;
+        if (pe==null) return;
+
+        pe.appendSyslog(sb);
 
         sb.startSection("info");
         sb.addField("hostname", getHostname().toString());
