@@ -225,7 +225,7 @@ public class MTransformJButton extends JButton {
     public void setDeployedView(){ updateView(null, -1, "Installed into rack.", false, false); }
 
     public void setDeployingView(){ updateView("Installing", 101, "Installing.", false, true); }
-    public void setProcuringView(){ updateView("Purchasing", 101, "Purchasing.", false, true); }
+    public void setProcuringView(){ updateView("Downloading", 101, "Downloading.", false, true); }
     public void setRemovingFromToolboxView(){ updateView("Removing", 101, "Removing from the toolbox.", false, true); }
     public void setRemovingFromRackView(){ updateView("Removing", 101, "Removing from the rack.", false, false); }
 
