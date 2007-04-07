@@ -41,7 +41,6 @@ import org.hibernate.annotations.Type;
 @Table(name="tr_spam_smtp_rbl_evt", schema="events")
 public class SpamSMTPRBLEvent extends PipelineEvent
 {
-    private PipelineEndpoints plEndp;
     private HostName hostname;
     private IPaddr ipAddr;
     private boolean skipped;
@@ -119,9 +118,13 @@ public class SpamSMTPRBLEvent extends PipelineEvent
 
     // Syslog methods ---------------------------------------------------------
 
+    @Transient
     public void appendSyslog(SyslogBuilder sb)
     {
-        getPipelineEndpoints().appendSyslog(sb);
+        
+        PipelineEndpoints pe = getPipelineEndpoints();
+        /* unable to log this event */
+        if ( pe == null ) return;
 
         sb.startSection("info");
         sb.addField("hostname", getHostname().toString());

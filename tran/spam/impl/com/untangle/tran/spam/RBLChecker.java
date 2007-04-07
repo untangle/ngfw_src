@@ -138,6 +138,10 @@ public class RBLChecker {
             } else {
                 logger.debug(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist");
                 tsr.attach(new SpamSMTPRBLEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), false));
+
+                /* Indicate that there was a block event */
+                this.m_spamImpl.incrementBlockCounter();
+
                 rblCnt++;
             }
         }

@@ -56,8 +56,8 @@ public class LogRblJPanel extends MLogTableJPanel {
             //                                 #   min  rsz    edit   remv   desc   typ           def
             addTableColumn( tableColumnModel,  0,  150, true,  false, false, false, Date.class,   null, "timestamp" );
             addTableColumn( tableColumnModel,  1,   90, true,  false, false, false, String.class, null, "action" );
-            addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, IPPortString.class, null, "client" );
-            addTableColumn( tableColumnModel,  3,  165, true,  false, false, false, String.class, null, "hostname" );
+            addTableColumn( tableColumnModel,  2,  165, true,  false, false, false, IPaddrString.class, null, "sender" );
+            addTableColumn( tableColumnModel,  3,  165, true,  false, false, false, String.class, null, "dnsbl server" );
             return tableColumnModel;
         }
 
@@ -72,8 +72,9 @@ public class LogRblJPanel extends MLogTableJPanel {
             for( SpamSMTPRBLEvent requestLog : requestLogList ){
                 event = new Vector(4);
                 event.add( requestLog.getTimeStamp() );
-                event.add( (requestLog.getSkipped()?"skipped":"hit but skipping") );
-                event.add( requestLog.getIPAddr() );
+                event.add( (requestLog.getSkipped()?"skipped":"blocked") );
+                event.add( new IPaddrString( requestLog.getIPAddr()) );
+                event.add( requestLog.getHostname().toString() );
                 allEvents.add( event );
             }
 

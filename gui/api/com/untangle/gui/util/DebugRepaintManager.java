@@ -21,7 +21,8 @@ public class DebugRepaintManager extends RepaintManager {
 
     public DebugRepaintManager(){
 	super();
-	System.err.println("[!!Running Debug Repaint Manager!!]");
+        // No need for this to show up in the console for users.
+        // System.err.println("[!!Running Debug Repaint Manager!!]");
     }
 
     public synchronized void addInvalidComponent(JComponent component){

@@ -24,7 +24,7 @@ public class RBLAllFilter implements SimpleEventFilter<SpamSMTPRBLEvent>
 
     public RBLAllFilter()
     {
-        rblQuery = "FROM SpamSMTPRBLEvent evt WHERE evt.plEndp.policy = :policy ORDER BY evt.timeStamp DESC";
+        rblQuery = "FROM SpamSMTPRBLEvent evt WHERE evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
     }
 
     // SimpleEventFilter methods ----------------------------------------------

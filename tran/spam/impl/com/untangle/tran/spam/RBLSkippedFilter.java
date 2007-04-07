@@ -24,7 +24,7 @@ public class RBLSkippedFilter implements SimpleEventFilter<SpamSMTPRBLEvent>
 
     public RBLSkippedFilter()
     {
-        skippedQuery = "FROM SpamSMTPRBLEvent evt WHERE evt.skipped = true AND evt.plEndp.policy = :policy ORDER BY evt.timeStamp DESC";
+        skippedQuery = "FROM SpamSMTPRBLEvent evt WHERE evt.skipped = true AND evt.pipelineEndpoints.policy = :policy ORDER BY evt.timeStamp DESC";
     }
 
     // SimpleEventFilter methods ----------------------------------------------
