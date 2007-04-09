@@ -69,13 +69,13 @@ public final class RBLClient implements Runnable {
                 }
             }
         } catch (InterruptedException e) {
-            logger.warn(dbgName + ", RBL check interrupted", e);
+            logger.warn(dbgName + ", DNSBL check interrupted", e);
         } catch (Exception e) {
-            logger.warn(dbgName + ", RBL check failed", e);
+            logger.warn(dbgName + ", DNSBL check failed", e);
         }
 
         if (null == cContext.getResult()) {
-            logger.warn(dbgName + ", RBL check timer expired");
+            logger.warn(dbgName + ", DNSBL check timer expired");
             stopScan();
         }
 
@@ -120,13 +120,13 @@ public final class RBLClient implements Runnable {
             // we will not be able to differentiate between them
         } catch(IOException e) {
             // assume ipAddr is not on this blacklist
-            logger.warn(dbgName + ", RBL checker i/o exception: ", e);
+            logger.warn(dbgName + ", DNSBL checker i/o exception: ", e);
         } catch(SecurityException e) {
             // assume ipAddr is not on this blacklist
             logger.warn(dbgName + ", not allowed to query host: ", e);
         } catch(Exception e) {
             // assume ipAddr is not on this blacklist
-            logger.warn(dbgName + ", RBL checker failed: ", e);
+            logger.warn(dbgName + ", DNSBL checker failed: ", e);
         } finally {
             cContext.setResult(isBlacklisted);
 

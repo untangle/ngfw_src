@@ -47,10 +47,10 @@ class RBLEventHandler extends AbstractEventHandler
         boolean releaseSession = true;
         
         if (spamConfig.getThrottle()) {
-            //m_logger.debug("Check RBL(s) for connection from: " + tsr.clientAddr());
+            //m_logger.debug("Check DNSBL(s) for connection from: " + tsr.clientAddr());
             RBLChecker rblChecker = new RBLChecker(spamSettings.getSpamRBLList(),m_spamImpl);
             if (true == rblChecker.check(tsr, spamConfig.getThrottleSec())) {
-                m_logger.debug("RBL hit confirmed, rejecting connection from: " + tsr.clientAddr());
+                m_logger.debug("DNSBL hit confirmed, rejecting connection from: " + tsr.clientAddr());
                 tsr.rejectReturnRst();
                 /* don't reject and release */
                 releaseSession = false;

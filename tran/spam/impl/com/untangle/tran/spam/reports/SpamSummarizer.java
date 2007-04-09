@@ -157,7 +157,7 @@ public class SpamSummarizer extends BaseSummarizer {
 
         addEntry("&nbsp;","&nbsp;");
 
-        addEntry("Connection attempts rejected using RBLs (SMTP)", Util.trimNumber("",smtpRBLRejected));
+        addEntry("Connection attempts rejected using DNSBLs (SMTP)", Util.trimNumber("",smtpRBLRejected));
 
         addEntry("&nbsp;","&nbsp;");
 

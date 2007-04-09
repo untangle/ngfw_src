@@ -89,12 +89,12 @@ public class RBLChecker {
         for (RBLClient clientWait : clients) {
             if (0 < remainingTime) {
                 // time remains; let other clients continue
-                logger.debug("RBL: " + clientWait + ", wait: " + remainingTime);
+                logger.debug("DNSBL: " + clientWait + ", wait: " + remainingTime);
                 clientWait.checkProgress(remainingTime);
                 remainingTime = timeout - (System.currentTimeMillis() - startTime);
             } else {
                 // no time remains; stop other clients
-                logger.warn("RBL: " + clientWait + ", stop (timed out)");
+                logger.warn("DNSBL: " + clientWait + ", stop (timed out)");
                 clientWait.stopScan();
             }
         }
