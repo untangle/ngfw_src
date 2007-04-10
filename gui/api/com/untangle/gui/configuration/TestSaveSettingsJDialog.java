@@ -106,6 +106,7 @@ final public class TestSaveSettingsJDialog extends javax.swing.JDialog implement
                 cancelJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 cancelJButton.setMaximumSize(null);
                 cancelJButton.setMinimumSize(null);
+                cancelJButton.setOpaque(false);
                 cancelJButton.setPreferredSize(null);
                 cancelJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -125,6 +126,7 @@ final public class TestSaveSettingsJDialog extends javax.swing.JDialog implement
                 proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
                 proceedJButton.setText("Continue");
                 proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                proceedJButton.setOpaque(false);
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 proceedJButtonActionPerformed(evt);

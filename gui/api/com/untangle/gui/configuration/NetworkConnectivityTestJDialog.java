@@ -132,6 +132,7 @@ public class NetworkConnectivityTestJDialog extends javax.swing.JDialog implemen
                 jProgressBar.setFocusable(false);
                 jProgressBar.setMaximumSize(new java.awt.Dimension(32767, 20));
                 jProgressBar.setMinimumSize(new java.awt.Dimension(10, 20));
+                jProgressBar.setOpaque(false);
                 jProgressBar.setPreferredSize(new java.awt.Dimension(148, 20));
                 jProgressBar.setString("");
                 jProgressBar.setStringPainted(true);

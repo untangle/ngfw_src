@@ -74,10 +74,10 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 
 	    mxRecords = smtpDisabledJRadioButton.isSelected();
 	    host = hostJTextField.getText().trim();
-            port = (Integer) portJSpinner.getValue();
-            login = smtpLoginJTextField.getText().trim();
-            password = new String(smtpPasswordJPasswordField.getPassword()).trim();
-            address = addressJTextField.getText().trim();
+        port = (Integer) portJSpinner.getValue();
+        login = smtpLoginJTextField.getText().trim();
+        password = new String(smtpPasswordJPasswordField.getPassword()).trim();
+        address = addressJTextField.getText().trim();
 
 	    exception = null;
 
@@ -108,17 +108,17 @@ public class InitialSetupEmailJPanel extends MWizardPageJPanel {
 
 	// SAVE SETTINGS ////////////
 	if( !validateOnly ){
-	    try{		
+	    try{
 		InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Email Settings...");
 		MailSettings mailSettings = Util.getAdminManager().getMailSettings();
-		mailSettings.setUseMxRecords( mxRecords );		
+		mailSettings.setUseMxRecords( mxRecords );
+        if( address.length() > 0 )
+			mailSettings.setFromAddress( address );
 		if( !mxRecords ){
 		    mailSettings.setSmtpHost( host );
 		    mailSettings.setSmtpPort( port );
 		    mailSettings.setAuthUser( login );
 		    mailSettings.setAuthPass( password );
-		    if( address.length() > 0 )
-			mailSettings.setFromAddress( address );
 		}
 		Util.getAdminManager().setMailSettings( mailSettings );
 		InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);		

@@ -125,6 +125,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
                 refreshLogJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 refreshLogJButton.setMaximumSize(null);
                 refreshLogJButton.setMinimumSize(null);
+                refreshLogJButton.setOpaque(false);
                 refreshLogJButton.setPreferredSize(null);
                 refreshLogJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -144,6 +145,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
                 streamingJToggleButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 streamingJToggleButton.setMaximumSize(null);
                 streamingJToggleButton.setMinimumSize(null);
+                streamingJToggleButton.setOpaque(false);
                 streamingJToggleButton.setPreferredSize(null);
                 streamingJToggleButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

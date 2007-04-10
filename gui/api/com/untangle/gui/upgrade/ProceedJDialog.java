@@ -116,6 +116,7 @@ final public class ProceedJDialog extends javax.swing.JDialog implements java.aw
                 cancelJButton.setText("Cancel");
                 cancelJButton.setDoubleBuffered(true);
                 cancelJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                cancelJButton.setOpaque(false);
                 cancelJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 cancelJButtonActionPerformed(evt);
@@ -137,6 +138,7 @@ final public class ProceedJDialog extends javax.swing.JDialog implements java.aw
                 proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 proceedJButton.setMaximumSize(null);
                 proceedJButton.setMinimumSize(null);
+                proceedJButton.setOpaque(false);
                 proceedJButton.setPreferredSize(null);
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

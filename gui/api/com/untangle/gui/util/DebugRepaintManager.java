@@ -79,7 +79,7 @@ class EDTRuleViolation extends Exception{
 
     public void printStackTrace(){
 	System.err.println("");
-	System.err.println("[ TELL IAN ABOUT THIS ]");
+	System.err.println("[ EDT RULE VIOLATION ]");
 	super.printStackTrace();
 	System.err.println("[" + component.toString() + "]");
     }

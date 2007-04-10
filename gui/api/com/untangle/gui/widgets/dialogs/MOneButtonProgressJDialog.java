@@ -125,6 +125,7 @@ public class MOneButtonProgressJDialog extends javax.swing.JDialog implements ja
                 jProgressBar.setFocusable(false);
                 jProgressBar.setMaximumSize(new java.awt.Dimension(32767, 20));
                 jProgressBar.setMinimumSize(new java.awt.Dimension(10, 20));
+                jProgressBar.setOpaque(false);
                 jProgressBar.setStringPainted(true);
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
@@ -138,6 +139,7 @@ public class MOneButtonProgressJDialog extends javax.swing.JDialog implements ja
                 proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
                 proceedJButton.setText("Close");
                 proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                proceedJButton.setOpaque(false);
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 proceedJButtonActionPerformed(evt);

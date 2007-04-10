@@ -37,7 +37,7 @@ public class LogJPanel extends MLogTableJPanel {
         final PortalTransform portalTransform = (PortalTransform)transform;
 
         setTableModel(new LogTableModel());
-
+        queryJComboBox.setVisible(false); // since only one item right now
         EventManager<PortalEvent> eventManager = portalTransform.getEventManager();
         for (RepositoryDesc fd : eventManager.getRepositoryDescs()) {
             queryJComboBox.addItem(fd.getName());

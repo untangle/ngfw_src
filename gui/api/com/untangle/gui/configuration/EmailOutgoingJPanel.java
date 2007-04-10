@@ -456,27 +456,27 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
     }//GEN-LAST:event_smtpDisabledJRadioButtonActionPerformed
 
     private void portJSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_portJSpinnerStateChanged
-    connectivityTestJButton.setEnabled(false);
+
     }//GEN-LAST:event_portJSpinnerStateChanged
 
     private void hostJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_hostJTextFieldCaretUpdate
     if( !hostJTextField.getText().equals(hostCurrent) )
-        connectivityTestJButton.setEnabled(false);
+        ;
     }//GEN-LAST:event_hostJTextFieldCaretUpdate
 
     private void smtpLoginJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_smtpLoginJTextFieldCaretUpdate
     if( !smtpLoginJTextField.getText().equals(loginCurrent) )
-        connectivityTestJButton.setEnabled(false);
+        ;
     }//GEN-LAST:event_smtpLoginJTextFieldCaretUpdate
 
     private void smtpPasswordJPasswordFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_smtpPasswordJPasswordFieldCaretUpdate
     if( !(new String(smtpPasswordJPasswordField.getPassword()).equals(passwordCurrent)) )
-        connectivityTestJButton.setEnabled(false);
+        ;
     }//GEN-LAST:event_smtpPasswordJPasswordFieldCaretUpdate
 
     private void addressJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_addressJTextFieldCaretUpdate
     if( !addressJTextField.getText().equals(addressCurrent) )
-        connectivityTestJButton.setEnabled(false);
+        ;
     }//GEN-LAST:event_addressJTextFieldCaretUpdate
 
 	private class TestThread extends Thread {

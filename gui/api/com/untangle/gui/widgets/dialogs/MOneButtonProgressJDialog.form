@@ -133,6 +133,7 @@
             <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[10, 20]"/>
             </Property>
+            <Property name="opaque" type="boolean" value="false"/>
             <Property name="stringPainted" type="boolean" value="true"/>
           </Properties>
           <AuxValues>
@@ -156,6 +157,7 @@
             <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
               <Insets value="[4, 8, 4, 8]"/>
             </Property>
+            <Property name="opaque" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="proceedJButtonActionPerformed"/>

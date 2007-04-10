@@ -134,6 +134,7 @@ final public class RestartDialog extends javax.swing.JDialog implements java.awt
                 proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
                 proceedJButton.setText("Exit");
                 proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                proceedJButton.setOpaque(false);
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 proceedJButtonActionPerformed(evt);

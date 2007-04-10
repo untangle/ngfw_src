@@ -105,6 +105,7 @@ final public class BackupSaveFileJDialog extends javax.swing.JDialog implements 
                 cancelJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 cancelJButton.setMaximumSize(null);
                 cancelJButton.setMinimumSize(null);
+                cancelJButton.setOpaque(false);
                 cancelJButton.setPreferredSize(null);
                 cancelJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -128,6 +129,7 @@ final public class BackupSaveFileJDialog extends javax.swing.JDialog implements 
                 proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 proceedJButton.setMaximumSize(null);
                 proceedJButton.setMinimumSize(null);
+                proceedJButton.setOpaque(false);
                 proceedJButton.setPreferredSize(null);
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {

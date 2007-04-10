@@ -36,7 +36,7 @@ public class LogJPanel extends MLogTableJPanel {
 
 
         setTableModel(new LogTableModel());
-
+        queryJComboBox.setVisible(false); // since only one item right now
         EventManager<BoxBackupEvent> eventManager = boxBackup.getEventManager();
         for (RepositoryDesc fd : eventManager.getRepositoryDescs()) {
             queryJComboBox.addItem(fd.getName());

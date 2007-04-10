@@ -92,6 +92,7 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
 
     public void settingsChanged(Object source){
         settingsChanged = true;
+        super.settingsChanged(source);
     }
 
     protected void generateGui(){

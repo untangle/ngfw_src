@@ -109,6 +109,7 @@ final public class NetworkSaveSettingsProceedJDialog extends javax.swing.JDialog
                 cancelJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 cancelJButton.setMaximumSize(null);
                 cancelJButton.setMinimumSize(null);
+                cancelJButton.setOpaque(false);
                 cancelJButton.setPreferredSize(null);
                 cancelJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -128,6 +129,7 @@ final public class NetworkSaveSettingsProceedJDialog extends javax.swing.JDialog
                 proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
                 proceedJButton.setText("Continue");
                 proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                proceedJButton.setOpaque(false);
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 proceedJButtonActionPerformed(evt);

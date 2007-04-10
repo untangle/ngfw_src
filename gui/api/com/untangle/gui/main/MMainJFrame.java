@@ -656,7 +656,6 @@ public class MMainJFrame extends javax.swing.JFrame {
                                   + "&source=rack"
                                   + "&focus=" + focus);
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
-			System.out.println(newURL.toString());
         }
         catch(Exception f){
             Util.handleExceptionNoRestart("Error showing help for rack.", f);
