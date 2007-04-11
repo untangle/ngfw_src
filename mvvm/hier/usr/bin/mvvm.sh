@@ -179,6 +179,12 @@ restartServiceIfNeeded() {
       isServiceRunning freshclam && return
       dpkg -l clamav-freshclam | grep -q -E '^ii' && needToRun=yes
       ;;
+    rbot-mv)
+      pidFile="/var/run/rbot.pid"
+      # this is a bit janky, need something better...
+      isServiceRunning ruby && return
+      pidof sshd && needToRun=yes
+      ;;
   esac
 
   if [ $needToRun == "yes" ] ; then
@@ -290,6 +296,7 @@ while true; do
             restartServiceIfNeeded clamav-daemon
             restartServiceIfNeeded spamassassin
             restartServiceIfNeeded slapd
+            restartServiceIfNeeded rbot-mv
         fi
     done
 

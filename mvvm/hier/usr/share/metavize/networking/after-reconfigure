@@ -10,15 +10,10 @@ afterReconfigure() {
     # Gotta wait a little whlie for the bridge to reconfigure
     sleep 5
 
-    if [ -x /etc/init.d/ntpdate ]; then
-        /etc/init.d/ntpdate restart
-    fi
-    if [ -x /etc/init.d/ntp-server ]; then
-        /etc/init.d/ntp-server restart
-    fi
-    if [ -x /etc/init.d/spamassassin ]; then
-        /etc/init.d/spamassassin restart
-    fi
+    invoke-rc.d ntpdate restart
+    invoke-rc.d ntp-server restart
+    invoke-rc.d spamassassin restart
+    invoke-rc.d rbot-mv restart
 
     if [ -f "$REGINFO" ]; then
         if [ ! -f "$REGDONE" -o "$REGDONE" -ot "$REGINFO" ]; then
