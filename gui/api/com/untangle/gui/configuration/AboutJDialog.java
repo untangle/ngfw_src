@@ -107,6 +107,7 @@
 			}
 			public void doRefresh(AboutCompoundSettings aboutCompoundSettings){
 				String versionString = "<html><b>Build: </b> " + aboutCompoundSettings.getInstalledVersion();
+                versionString += "<br><b>Java: </b>" + System.getProperty("java.version");
                 if(!Util.getIsDemo())
 					versionString += "<br><b>Activation Key: </b>" + aboutCompoundSettings.getActivationKey();
                 versionString += "</html>";

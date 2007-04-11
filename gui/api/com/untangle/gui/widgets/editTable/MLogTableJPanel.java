@@ -197,14 +197,12 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
                 lastMLogTableJPanel.streamingJToggleButton.doClick();
             refreshLogJButton.setEnabled(false);
             refreshThread = new RefreshThread(true);
-            streamingJToggleButton.setIcon(Util.getButtonStopAutoRefresh());
             lastMLogTableJPanel = this;
         }
         else{
             refreshLogJButton.setEnabled(true);
             refreshThread.interrupt();
             refreshThread = null;
-            streamingJToggleButton.setIcon(Util.getButtonStartAutoRefresh());
         }
     }//GEN-LAST:event_streamingJToggleButtonActionPerformed
 
@@ -241,7 +239,6 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
             if(!isAutoRefresh){
                 MLogTableJPanel.this.streamingJToggleButton.setEnabled(false);
                 MLogTableJPanel.this.refreshLogJButton.setEnabled(false);
-                MLogTableJPanel.this.refreshLogJButton.setIcon(Util.getButtonRefreshing());
             }
             this.start();
         }
@@ -294,7 +291,6 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
                     SwingUtilities.invokeLater( new Runnable(){ public void run(){
                         MLogTableJPanel.this.streamingJToggleButton.setEnabled(true);
                         MLogTableJPanel.this.refreshLogJButton.setEnabled(true);
-                        MLogTableJPanel.this.refreshLogJButton.setIcon(Util.getButtonRefreshLog());
                     }});
                 }
                 else{

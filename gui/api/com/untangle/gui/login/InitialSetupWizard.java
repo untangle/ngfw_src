@@ -27,8 +27,8 @@ public class InitialSetupWizard extends MWizardJDialog {
     private boolean isRegistered = false;
     
     private static final String MESSAGE_DIALOG_TITLE   = "Setup Wizard Warning";
-    private static final String MESSAGE_NOT_REGISTERED = "You have not registered your Untangle Server.  Please run the Setup Wizard again.";
-    private static final String MESSAGE_NO_PASSWORD    = "You have not set the Admin account password.  <b>The default login/password is: admin/passwd</b>";
+    private static final String MESSAGE_NOT_REGISTERED = "You have not registered your Untangle Server.<br>Please run the Setup Wizard again.";
+    private static final String MESSAGE_NO_PASSWORD    = "You have not set the Admin account password.<br><b>The default login/password is: admin/passwd</b>";
 
     // SHARED DATA //
     private static Object sharedData;
@@ -48,7 +48,7 @@ public class InitialSetupWizard extends MWizardJDialog {
 
         if( Util.getIsCD() ){
             addWizardPageJPanel(new InitialSetupContactJPanel(),         "2. Contact Information", true, true);
-	    //            addWizardPageJPanel(new InitialSetupKeyJPanel(),             "3. Activation Key", false, true);
+            //            addWizardPageJPanel(new InitialSetupKeyJPanel(),             "3. Activation Key", false, true);
             addWizardPageJPanel(new InitialSetupPasswordJPanel(),        "3. Admin Account & Time", true, true);        
             initialSetupInterfaceJPanel = new InitialSetupInterfaceJPanel();
             addWizardPageJPanel(initialSetupInterfaceJPanel,       "4. Interface Test", false, false);
