@@ -28,10 +28,12 @@ if [ -n "$REG_KEY" ] ; then # the install wizard is calling us
     VERIFY_RES="$?"
     if [ "$VERIFY_RES" -eq 1 ]; then
 	echo "Key is invalid: $REG_KEY"
+	rm -f $ACTIVATION_KEY_FILE $ACTIVATION_KEY_FILE_TMP
 	exit 1
     fi
     if [ "$VERIFY_RES" -ne 0 ]; then
 	echo "Error validating registration.  Unable to continue."
+	rm -f $ACTIVATION_KEY_FILE $ACTIVATION_KEY_FILE_TMP
 	exit 2
     fi
 
