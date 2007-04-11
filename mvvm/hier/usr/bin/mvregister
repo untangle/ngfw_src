@@ -13,7 +13,7 @@ NEWPWFILE="/tmp/newpw$$"
 # during the setup wizard, yet it doesn't have the actual key at that
 # time, so this file always contains only 0s...
 ACTIVATION_KEY=`cat $ACTIVATION_KEY_FILE`
-perl -npe "s/$FAKE_KEY/$ACTIVATION_KEY/" $REGISTRATION_INFO_FILE
+perl -i -npe "s/$FAKE_KEY/$ACTIVATION_KEY/" $REGISTRATION_INFO_FILE
 
 /usr/bin/wget --timeout=30 --output-document="$NEWPWFILE" --tries=1 --post-file="$REGISTRATION_INFO_FILE" "$REGISTRATION_URL"
 if [ "$?" -eq "0" ]; then
