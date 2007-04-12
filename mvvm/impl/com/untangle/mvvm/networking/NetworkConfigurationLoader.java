@@ -100,6 +100,15 @@ class NetworkConfigurationLoader
     AccessSettings loadAccessSettings()
     {
         AccessSettings settings = new AccessSettings();
+
+        /* Load the defaults */
+        settings.setIsInsideInsecureEnabled( true );
+        settings.setIsOutsideAccessEnabled( true );
+        settings.setIsOutsideAdministrationEnabled( false );
+        settings.setIsOutsideQuarantineEnabled( true );
+        settings.setIsOutsideReportingEnabled( false );
+
+        /* try to retrieve the settings from the configuration files */
         loadAccessSettings( settings );
         return settings;
     }
@@ -116,6 +125,11 @@ class NetworkConfigurationLoader
     AddressSettings loadAddressSettings()
     {
         AddressSettings settings = new AddressSettings();
+        /* load reasonable defaults */
+        settings.setHttpsPort( NetworkUtil.DEF_HTTPS_PORT );
+        settings.setIsHostNamePublic( false );
+        settings.setIsPublicAddressEnabled( false );
+        /* try to retrieve the settings from the configuration files */
         loadAddressSettings( settings );
         return settings;
     }
@@ -131,6 +145,13 @@ class NetworkConfigurationLoader
     MiscSettings loadMiscSettings()
     {
         MiscSettings settings = new MiscSettings();
+
+        /* Load the defaults */
+        settings.setIsExceptionReportingEnabled( false );
+        settings.setIsTcpWindowScalingEnabled( false );
+        settings.setPostConfigurationScript( "" );
+        settings.setCustomRules( "" );
+        /* try to retrieve the settings from the configuration files */
         loadMiscSettings( settings );
         return settings;
     }

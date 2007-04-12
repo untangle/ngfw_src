@@ -166,7 +166,6 @@ import com.untangle.mvvm.tran.ValidateException;
         }
     }
 
-    /** @return the public url for the box, this is the address (may be hostname or ip address) */
     @Column(name="public_ip_addr")
     @Type(type="com.untangle.mvvm.type.IPaddrUserType")
     public IPaddr getPublicIPaddr()
@@ -180,7 +179,6 @@ import com.untangle.mvvm.tran.ValidateException;
         this.publicIPaddr = newValue;        
     }
 
-    /** @return the public url for the box, this is the address (may be hostname or ip address) */
     @Column(name="public_port")
     public int getPublicPort()
     {
