@@ -14,6 +14,9 @@ afterReconfigure() {
     invoke-rc.d ntp-server restart
     invoke-rc.d spamassassin restart
     invoke-rc.d rbot-mv restart
+    
+    # remote support is enabled if sshd us running
+    pidof sshd && /etc/init.d/rbot-mv restart
 
     if [ -f "$REGINFO" ]; then
         if [ ! -f "$REGDONE" -o "$REGDONE" -ot "$REGINFO" ]; then
