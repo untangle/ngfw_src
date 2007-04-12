@@ -16,7 +16,7 @@ public class ClamTransform extends VirusTransformImpl
 {
     protected int getStrength()
     {
-        return 5;
+        return 15;
     }
 
     public ClamTransform()

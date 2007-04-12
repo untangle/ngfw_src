@@ -21,6 +21,6 @@ public class KavTransform extends VirusTransformImpl
 
     protected int getStrength()
     {
-        return 8;
+        return 18;
     }
 }

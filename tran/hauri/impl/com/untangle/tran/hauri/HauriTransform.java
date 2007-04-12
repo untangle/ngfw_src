@@ -21,7 +21,7 @@ public class HauriTransform extends VirusTransformImpl
 
     protected int getStrength()
     {
-        return 7;
+        return 17;
     }
 
 }
