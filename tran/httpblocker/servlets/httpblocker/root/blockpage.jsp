@@ -70,7 +70,7 @@ url = '<%=null == bd ? "javascript:history.back()" : bd.getUrl()%>';
 <td><p><b>URL:</b> <%=url%></p></td>
 </tr>
 <tr>
-<td><p><b>Category:</b> <%=reason%></p></td>
+<td><p><b>Reason:</b> <%=reason%></p></td>
 </tr>
 <tr>
 <td>Please contact <%=contact%>.</td>

@@ -25,7 +25,7 @@ class HttpBlockerReplacementGenerator
         + "<p>This site blocked because of inappropriate content</p>"
         + "<p>Host: %s</p>"
         + "<p>URI: %s</p>"
-        + "<p>Category: %s</p>"
+        + "<p>Reason: %s</p>"
         + "<p>Please contact %s</p>"
         + "<HR>"
         + "<ADDRESS>Untangle</ADDRESS>"
