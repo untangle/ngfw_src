@@ -163,7 +163,7 @@ class Blacklist
             while (null != dom) {
                 StringRule sr = findCategory(passedUrls, dom + path,
                                              settings.getPassedUrls());
-                String category = null == sr ? null : sr.getCategory();
+                String category = null == sr ? null : sr.getDescription();
 
                 if (null != category) {
                     HttpBlockerEvent hbe = new HttpBlockerEvent
@@ -253,7 +253,7 @@ class Blacklist
     {
         for (IPMaddrRule rule : settings.getPassedClients()) {
             if (rule.getIpMaddr().contains(clientIp) && rule.isLive()) {
-                return rule.getCategory();
+                return rule.getDescription();
             }
         }
 
@@ -286,7 +286,7 @@ class Blacklist
 
             stringRule = findCategory(blockedUrls, url,
                                       settings.getBlockedUrls());
-            category = null == stringRule ? null : stringRule.getCategory();
+            category = null == stringRule ? null : stringRule.getDescription();
             if (null != category) {
                 reason = Reason.BLOCK_URL;
             } else {
