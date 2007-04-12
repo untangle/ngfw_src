@@ -156,7 +156,6 @@ public class MOneButtonJDialog extends javax.swing.JDialog implements java.awt.e
                 proceedJButton.setFont(new java.awt.Font("Default", 0, 12));
                 proceedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconSave_23x16.png")));
                 proceedJButton.setText("Close");
-                proceedJButton.setFocusable(false);
                 proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 proceedJButton.setOpaque(false);
                 proceedJButton.addActionListener(new java.awt.event.ActionListener() {

@@ -226,7 +226,7 @@ public class UpgradeProcessJPanel extends JPanel
                     // LET THE USER KNOW WERE FINISHED NORMALLY
                     ((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Download Complete!");
                     MOneButtonJDialog.factory(UpgradeProcessJPanel.this.getTopLevelAncestor(), "",
-					      "The updates have successfully downloaded.  The client will now exit while the upgrade is performed.",
+					      "The updates have successfully downloaded.<br>The client will now exit while the upgrade is performed.",
 					      "Upgrade Success", "");
                 }
                 else{
@@ -237,7 +237,7 @@ public class UpgradeProcessJPanel extends JPanel
                 Util.handleExceptionNoRestart("Termination of upgrade:", e);
                 ((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Upgrade Failure");
                 MOneButtonJDialog.factory(UpgradeProcessJPanel.this.getTopLevelAncestor(), "",
-					  "The upgrade procedure did not finish properly.  " +
+					  "The upgrade procedure did not finish properly.<br>" +
 					  "Please contact Untangle Support.",
 					  "Upgrade Failure Warning", "");
             }

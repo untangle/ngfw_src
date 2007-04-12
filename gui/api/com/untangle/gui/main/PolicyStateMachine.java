@@ -280,6 +280,13 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     ///////////////////////////////////////////////////////
     private void storeWizardJButtonActionPerformed(java.awt.event.ActionEvent evt) {
         try{
+            if( Util.getIsDemo() )
+                return;
+            if( Util.mustCheckUpgrades() ){
+                new StoreCheckJDialog( Util.getMMainJFrame() );
+            }
+            if( Util.getUpgradeCount() != 0 )
+                return;
             String authNonce = Util.getAdminManager().generateAuthNonce();
             URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/index.php?option=com_wizard&Itemid=92&" + authNonce);
             ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
@@ -660,7 +667,6 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 
     private class StoreMessageVisitor implements ToolboxMessageVisitor {
         public void visitMackageInstallRequest(final MackageInstallRequest req) {
-            System.out.println("Name: " + req.getMackageName());
             synchronized(storeLock){
                 String purchasedMackageName = req.getMackageName();
                 // FIND THE BUTTON THAT WOULD HAVE BEEN CLICKED
@@ -1865,24 +1871,24 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         public void actionPerformed(java.awt.event.ActionEvent evt){
             if( Util.getIsDemo() )
                 return;
-	    if( Util.mustCheckUpgrades() ){
-		new StoreCheckJDialog( Util.getMMainJFrame() );
-	    }
-	    if( Util.getUpgradeCount() != 0 )
-		return;
-	    try{
-            String authNonce = Util.getAdminManager().generateAuthNonce();
-            URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/storeitem.php?name="
-                                  + mTransformJButton.getName() + "&" + authNonce);
-            ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
-	    }
-	    catch(Exception f){
-            Util.handleExceptionNoRestart("error launching browser for Store", f);
-            MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
-                                      "A problem occurred while trying to access Store."
-                                      + "<br>Please contact Untangle Support.",
-                                      "Untangle Store Warning", "");
-        }
+            if( Util.mustCheckUpgrades() ){
+                new StoreCheckJDialog( Util.getMMainJFrame() );
+            }
+            if( Util.getUpgradeCount() != 0 )
+                return;
+            try{
+                String authNonce = Util.getAdminManager().generateAuthNonce();
+                URL newURL = new URL( Util.getServerCodeBase(), "../onlinestore/storeitem.php?name="
+                                      + mTransformJButton.getName() + "&" + authNonce);
+                ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
+            }
+            catch(Exception f){
+                Util.handleExceptionNoRestart("error launching browser for Store", f);
+                MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
+                                          "A problem occurred while trying to access Store."
+                                          + "<br>Please contact Untangle Support.",
+                                          "Untangle Store Warning", "");
+            }
         }
     }
 

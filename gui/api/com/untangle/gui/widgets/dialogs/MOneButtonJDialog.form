@@ -117,7 +117,6 @@
               <Image iconType="3" name="/com/untangle/gui/images/IconSave_23x16.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Close"/>
-            <Property name="focusable" type="boolean" value="false"/>
             <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
               <Insets value="[4, 8, 4, 8]"/>
             </Property>

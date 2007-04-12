@@ -200,6 +200,7 @@ public class MColoredTableCellRenderer extends DefaultTableCellRenderer {
 		     || (value instanceof Float)
 		     || (value instanceof Long)
 		     || (value instanceof Double)
+		     || (value instanceof LongString)
 		     || (value instanceof IPMaddrString)
 		     || (value instanceof IPaddrString)
 		     || (value instanceof IPPortString)){

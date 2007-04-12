@@ -347,7 +347,7 @@ class QuarantineAllTableModel extends MSortedTableModel<MailTransformCompoundSet
 	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, true, false, Integer.class,    null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2, 300, true,  false,  false, true,  String.class, null, sc.html("account address") );
         addTableColumn( tableColumnModel,  3,  85, true,  false,  false, false, Integer.class, null, sc.html("message<br>count") );
-        addTableColumn( tableColumnModel,  4,  85, true,  false,  false, false, Long.class,    null, sc.html("data size<br>(kB)") );
+        addTableColumn( tableColumnModel,  4,  85, true,  false,  false, false, LongString.class,    null, sc.html("data size<br>(kB)") );
         return tableColumnModel;
     }
 
@@ -369,7 +369,7 @@ class QuarantineAllTableModel extends MSortedTableModel<MailTransformCompoundSet
             tempRow.add( rowIndex );
             tempRow.add( inbox.getAddress() );
             tempRow.add( inbox.getNumMails() );
-            tempRow.add( inbox.getFormattedTotalSz() );
+            tempRow.add( new LongString(inbox.getTotalSz(), inbox.getFormattedTotalSz()) );
             allRows.add( tempRow );
         }
 
