@@ -444,6 +444,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
         }        
         public void run(){
             long startTime = System.currentTimeMillis();
+            boolean noException = true;
             try{
                 MConfigJDialog.this.saveAll();
                 if(!doClose){
@@ -453,15 +454,16 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
             }
             catch(Exception e){
                 try{ Util.handleExceptionWithRestart("Error sending saved settings", e); }
-                catch(ValidationException f){ /* this was handled at a lower layer*/ }
+                catch(ValidationException f){ noException = false; }
                 catch(Exception g){
+                    noException = false;
                     Util.handleExceptionNoRestart("Error sending saved settings", g);
                     SaveFailureDialog.factory( (Window) MConfigJDialog.this,
                                                MConfigJDialog.this.getTitle() );
                 }
             }
             infiniteProgressJComponent.stopLater(MIN_PROGRESS_MILLIS);
-            if(doClose){
+            if(doClose && noException){
                 setVisible(false);
             }
         }
