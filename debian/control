@@ -1039,7 +1039,7 @@ Description: Spam Blocker
 
 Package: clamphish-transform
 Architecture: any
-Depends: mvvm, spam-base, clamav-mv, mail-casing
+Depends: mvvm, spam-base, clamav-mv, mail-casing, http-casing
 XB-Display-Name: Identity Theft Blocker
 XB-View-Position: 17
 XB-Is-Security: true
