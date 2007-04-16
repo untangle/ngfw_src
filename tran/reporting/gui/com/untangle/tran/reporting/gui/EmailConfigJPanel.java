@@ -66,7 +66,7 @@ class EmailTableModel extends MSortedTableModel<Object>{
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS);
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
-        addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  "person@domain.com", "Email address");
+        addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  "reportrecipient@example.com", "Email address");
 	//addTableColumn( tableColumnModel,  3, C3_MW, true,   true, false,  true, String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         return tableColumnModel;
     }
@@ -113,6 +113,4 @@ class EmailTableModel extends MSortedTableModel<Object>{
 	}
         return allRows;
     }
-
-
 } 
