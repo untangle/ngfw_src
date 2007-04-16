@@ -68,8 +68,8 @@ class ForwardsModel extends MSortedTableModel<EmailCompoundSettings>{
         //                                 #   min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0,  C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS );
         addTableColumn( tableColumnModel,  1,  C1_MW, false, false, true, false, Integer.class, null, sc.TITLE_INDEX );
-        addTableColumn( tableColumnModel,  2,  C2_MW, true,   true,  false, false, String.class, "somedistributionlist@somewhere.com", sc.html("distribution<br>list address") );
-        addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  false, false, String.class, "someone@somewhere.com", sc.html("send to<br>address") );
+        addTableColumn( tableColumnModel,  2,  C2_MW, true,   true,  false, false, String.class, "distributionlistsender@example.com", sc.html("distribution<br>list address") );
+        addTableColumn( tableColumnModel,  3,  C3_MW, true,  true,  false, false, String.class, "quarantinelistowner@example.com", sc.html("send to<br>address") );
         addTableColumn( tableColumnModel,  4,  C4_MW, true,  true,  true, false, String.class, sc.EMPTY_CATEGORY, sc.TITLE_CATEGORY );
         addTableColumn( tableColumnModel,  5,  C5_MW, true,  true,  true, true,  String.class, sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION );
         addTableColumn( tableColumnModel,  6,  10,    false, false, true,  false, EmailAddressPairRule.class, null, "");
@@ -121,8 +121,5 @@ class ForwardsModel extends MSortedTableModel<EmailCompoundSettings>{
         }
         return allRows;
     }
-    
-    
 }
-
 }
