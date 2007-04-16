@@ -120,7 +120,7 @@ getLicenseKey() {
   # to the CGI variable
   [[ $KEY = $FAKE_KEY ]] && KEY="" 
 
-  if curl --insecure --fail -o $TMP_ARCHIVE `printf ${ACTIVATION_URL_TEMPLATE} $KEY $(/usr/bin/mvip)`; then
+  if curl --insecure --fail -o $TMP_ARCHIVE `printf ${ACTIVATION_URL_TEMPLATE} "$KEY" $(/usr/bin/mvip)`; then
     tar -C / -xf $TMP_ARCHIVE
     rm -f $ACTIVATION_KEY_FILE_TMP
     @PREFIX@/usr/bin/mvactivate
