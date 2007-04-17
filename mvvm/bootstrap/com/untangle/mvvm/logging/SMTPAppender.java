@@ -96,7 +96,7 @@ public class SMTPAppender extends AppenderSkeleton
 
     // Return null if there's nothing interesting or we can't make it
     // for some reason.
-    synchronized MimeBodyPart getPart() throws MessagingException
+    public synchronized MimeBodyPart getPart() throws MessagingException
     {
         // Note: this code already owns the monitor for this
         // appender. This frees us from needing to synchronize on
