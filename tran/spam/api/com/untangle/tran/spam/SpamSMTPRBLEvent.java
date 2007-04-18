@@ -121,12 +121,10 @@ public class SpamSMTPRBLEvent extends PipelineEvent
     @Transient
     public void appendSyslog(SyslogBuilder sb)
     {
-        
-        PipelineEndpoints pe = getPipelineEndpoints();
+        // No longer log pipeline endpoints, they are not necessary anyway.
+        // PipelineEndpoints pe = getPipelineEndpoints();
         /* unable to log this event */
-        if (pe==null) return;
-
-        pe.appendSyslog(sb);
+        // pe.appendSyslog(sb);
 
         sb.startSection("info");
         sb.addField("hostname", getHostname().toString());
