@@ -132,7 +132,7 @@ class AdminManagerImpl implements AdminManager
             {
                 public boolean doWork(Session s)
                 {
-                    s.merge(as);
+                    s.saveOrUpdate(as);
                     return true;
                 }
             };
