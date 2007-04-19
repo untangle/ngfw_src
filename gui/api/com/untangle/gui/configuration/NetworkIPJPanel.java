@@ -527,7 +527,8 @@ public class NetworkIPJPanel extends javax.swing.JPanel
 							if(!dialog.isProceeding())
 								return;
 
-							((MConfigJDialog)NetworkIPJPanel.this.getTopLevelAncestor()).saveSettings();
+                            if( !((MConfigJDialog)NetworkIPJPanel.this.getTopLevelAncestor()).saveSettings() )
+                                return;
 						}						
 					try{
 						NetworkConnectivityTestJDialog connectivityJDialog = new NetworkConnectivityTestJDialog((JDialog)NetworkIPJPanel.this.getTopLevelAncestor());

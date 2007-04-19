@@ -871,9 +871,9 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
 							if(!dialog.isProceeding())
 								return;
 							
-							((MConfigJDialog)DirectoryRemoteADJPanel.this.getTopLevelAncestor()).saveSettings();
-						}
-						
+							if( !((MConfigJDialog)DirectoryRemoteADJPanel.this.getTopLevelAncestor()).saveSettings() )
+                                return;
+						}						
 					try{
 						DirectoryADConnectivityTestJDialog testJDialog = new DirectoryADConnectivityTestJDialog((JDialog)DirectoryRemoteADJPanel.this.getTopLevelAncestor());
 						testJDialog.setVisible(true);

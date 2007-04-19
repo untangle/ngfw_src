@@ -397,11 +397,12 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 	    return;
         new SaveAllThread(true);
     }//GEN-LAST:event_saveJButtonActionPerformed
-	public void saveSettings(){
+	public boolean saveSettings(){
 		SaveAllThread thread = new SaveAllThread(false);
 		while(thread.isAlive()){
 				try{Thread.sleep(500l);} catch(Exception e){ e.printStackTrace(); }
 		}
+        return thread.getSuccessfulSave();
 	}
     private void closeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeJButtonActionPerformed
         setVisible(false);
@@ -432,6 +433,7 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 
     private class SaveAllThread extends Thread{
         private boolean doClose;
+        private volatile boolean successfulSave;
         public SaveAllThread(boolean doClose){            
             super("MVCLIENT-ConfigSaveAllThread");
             setDaemon(true);
@@ -441,12 +443,14 @@ public abstract class MConfigJDialog extends javax.swing.JDialog implements java
 			else
 				infiniteProgressJComponent.startLater("Saving...");
             start();
-        }        
+        }
+        public boolean getSuccessfulSave(){ return successfulSave; }
         public void run(){
             long startTime = System.currentTimeMillis();
             boolean noException = true;
             try{
                 MConfigJDialog.this.saveAll();
+                successfulSave = true;
                 if(!doClose){
                     MConfigJDialog.this.refreshAll();
                     MConfigJDialog.this.populateAll();

@@ -491,7 +491,8 @@ public class EmailOutgoingJPanel extends javax.swing.JPanel
 							if(!dialog.isProceeding())
 								return;
 
-							((MConfigJDialog)EmailOutgoingJPanel.this.getTopLevelAncestor()).saveSettings();
+							if( !((MConfigJDialog)EmailOutgoingJPanel.this.getTopLevelAncestor()).saveSettings() )
+                                return;
 						}						
 					try{
 						EmailConnectivityTestJDialog connectivityJDialog = new EmailConnectivityTestJDialog((JDialog)EmailOutgoingJPanel.this.getTopLevelAncestor());
