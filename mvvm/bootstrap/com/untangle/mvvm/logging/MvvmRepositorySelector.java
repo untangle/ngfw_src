@@ -91,14 +91,9 @@ public class MvvmRepositorySelector implements RepositorySelector
             hier = repositories.get(ctx);
             if (null == hier) {
                 MvvmLoggingContextFactory o = currentContextFactory.get();
-                try {
-                    currentContextFactory.set(MVVM_CONTEXT_FACTORY);
-                    hier = new MvvmHierarchy(ctx);
-                    hier.configure();
-                    repositories.put(ctx, hier);
-                } finally {
-                    currentContextFactory.set(o);
-                }
+                hier = new MvvmHierarchy(ctx);
+                hier.configure();
+                repositories.put(ctx, hier);
             }
         }
 
