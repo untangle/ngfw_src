@@ -57,7 +57,7 @@ public class AddressSettingsInternal
         
         if (( NetworkUtil.DEF_HTTPS_PORT != currentPublicPort ) && 
             ( currentPublicPort > 0 ) && ( currentPublicPort < 0xFFFF )) {
-            url = ":" + this.currentPublicPort;
+            url += ":" + this.currentPublicPort;
         }
         
         this.url = url;
