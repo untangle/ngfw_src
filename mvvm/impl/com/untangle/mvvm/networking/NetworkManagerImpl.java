@@ -353,6 +353,16 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
         /* Actually load the new settings */
         if ( this.saveSettings ) {
+
+            /* temporary fix for bug 2693. secret field doesn't run until second save. */
+            try {
+                ScriptWriter scriptWriter = new ScriptWriter();
+                this.miscManager.commit( scriptWriter );
+                scriptWriter.writeFile( FILE_RULE_CFG );
+            } catch ( Exception e ) {
+                /* XXXXXXX not totally sure what to do here, kind of boned */
+                logger.warn( "Error writing misc scripts" );
+            }
             try {
                 ScriptRunner.getInstance().exec( NET_CONFIGURE_SCRIPT );
             } catch ( Exception e ) {
