@@ -75,6 +75,6 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
 
   <login-config>
     <auth-method>BASIC</auth-method>
-    <realm-name>Edgeguard Administrator</realm-name>
+    <realm-name>Untangle Administration</realm-name>
   </login-config>
 </web-app>
