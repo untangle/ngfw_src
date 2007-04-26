@@ -47,10 +47,12 @@ public class RemoteRestartJPanel extends javax.swing.JPanel {
                 serverRoutingJPanel.setMaximumSize(new java.awt.Dimension(1061, 64));
                 serverRoutingJPanel.setMinimumSize(new java.awt.Dimension(1061, 64));
                 rebootJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                rebootJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconReboot_32x32.png")));
                 rebootJButton.setText("Reboot");
-                rebootJButton.setMaximumSize(new java.awt.Dimension(175, 50));
-                rebootJButton.setMinimumSize(new java.awt.Dimension(175, 50));
-                rebootJButton.setPreferredSize(new java.awt.Dimension(175, 50));
+                rebootJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                rebootJButton.setMaximumSize(null);
+                rebootJButton.setMinimumSize(null);
+                rebootJButton.setPreferredSize(null);
                 rebootJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 rebootJButtonActionPerformed(evt);

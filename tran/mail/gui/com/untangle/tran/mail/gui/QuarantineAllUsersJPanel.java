@@ -100,7 +100,6 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setOpaque(false);
                 contentJPanel.setLayout(new java.awt.GridBagLayout());
 
                 contentJPanel.setOpaque(false);
@@ -133,13 +132,13 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
                 eventJPanel.setFocusable(false);
                 eventJPanel.setOpaque(false);
                 purgeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                purgeJButton.setText("<html><b>Purge</b> selected</html>");
-                purgeJButton.setDoubleBuffered(true);
-                purgeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                purgeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                purgeJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-                purgeJButton.setMinimumSize(new java.awt.Dimension(125, 25));
-                purgeJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+                purgeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconPurge_16x16.png")));
+                purgeJButton.setText("Purge selected");
+                purgeJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                purgeJButton.setMaximumSize(null);
+                purgeJButton.setMinimumSize(null);
+                purgeJButton.setOpaque(false);
+                purgeJButton.setPreferredSize(null);
                 purgeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 purgeJButtonActionPerformed(evt);
@@ -153,13 +152,13 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
                 eventJPanel.add(purgeJButton, gridBagConstraints);
 
                 releaseJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                releaseJButton.setText("<html><b>Release</b> selected</html>");
-                releaseJButton.setDoubleBuffered(true);
-                releaseJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                releaseJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                releaseJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-                releaseJButton.setMinimumSize(new java.awt.Dimension(125, 25));
-                releaseJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+                releaseJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconRelease_16x16.png")));
+                releaseJButton.setText("Release selected");
+                releaseJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                releaseJButton.setMaximumSize(null);
+                releaseJButton.setMinimumSize(null);
+                releaseJButton.setOpaque(false);
+                releaseJButton.setPreferredSize(null);
                 releaseJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 releaseJButtonActionPerformed(evt);
@@ -173,13 +172,13 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
                 eventJPanel.add(releaseJButton, gridBagConstraints);
 
                 detailJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                detailJButton.setText("<html><b>Show</b> detail</html>");
-                detailJButton.setDoubleBuffered(true);
-                detailJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                detailJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                detailJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-                detailJButton.setMinimumSize(new java.awt.Dimension(125, 25));
-                detailJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+                detailJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconDetail_16x16.png")));
+                detailJButton.setText("Show detail");
+                detailJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                detailJButton.setMaximumSize(null);
+                detailJButton.setMinimumSize(null);
+                detailJButton.setOpaque(false);
+                detailJButton.setPreferredSize(null);
                 detailJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 detailJButtonActionPerformed(evt);
@@ -298,11 +297,25 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
 		}
 	    }
 	    // DO REFRESH
+            /*
 	    ((MConfigJDialog)QuarantineAllUsersJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Refreshing...");
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            try{
+                mailTransformCompoundSettings.refresh();
+            }
+            catch(Exception e){
+                Util.handleExceptionNoRestart("Error refreshing inbox", e);
+                MOneButtonJDialog.factory(QuarantineAllUsersJPanel.this.getTopLevelAncestor(), "",
+                                          "Error refreshing inbox",
+                                          "Quarantine Warning", "");
+	    }
+            SwingUtilities.invokeLater( new Runnable(){ public void run(){
 		quarantineAllTableModel.doRefresh(mailTransformCompoundSettings);
 	    }});
 	    ((MConfigJDialog)QuarantineAllUsersJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().stopLater(1500l);
+             */
+            SwingUtilities.invokeLater(new Runnable(){ public void run(){
+                EmailJDialog.instance().refreshGui();  // XXX hackorama
+            }});
         }
     }
     

@@ -150,13 +150,10 @@ public class UpgradeProcessJPanel extends JPanel
 
                 actionJPanel.setLayout(new java.awt.GridBagLayout());
 
+                upgradeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/IconConfigUpgrade36x36.png")));
                 upgradeJButton.setText("Upgrade");
-                upgradeJButton.setDoubleBuffered(true);
-                upgradeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                upgradeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                upgradeJButton.setMaximumSize(new java.awt.Dimension(100, 25));
-                upgradeJButton.setMinimumSize(new java.awt.Dimension(100, 25));
-                upgradeJButton.setPreferredSize(new java.awt.Dimension(100, 25));
+                upgradeJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
                 upgradeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 upgradeJButtonActionPerformed(evt);

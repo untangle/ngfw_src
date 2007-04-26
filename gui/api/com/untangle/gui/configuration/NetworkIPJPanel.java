@@ -439,7 +439,12 @@ public class NetworkIPJPanel extends javax.swing.JPanel
                 dhcpJPanel.add(jLabel9, gridBagConstraints);
 
                 renewDhcpLeaseJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+                renewDhcpLeaseJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconAction_32x32.png")));
                 renewDhcpLeaseJButton.setText("Renew DHCP Lease");
+                renewDhcpLeaseJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                renewDhcpLeaseJButton.setMaximumSize(null);
+                renewDhcpLeaseJButton.setMinimumSize(null);
+                renewDhcpLeaseJButton.setPreferredSize(null);
                 renewDhcpLeaseJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 renewDhcpLeaseJButtonActionPerformed(evt);

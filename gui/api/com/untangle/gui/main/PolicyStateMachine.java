@@ -214,7 +214,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                                                                  new Insets(0,4,0,4), 0, 0);
         storeSettingsGridBagConstraints = new GridBagConstraints(0, 1, 1, 1, .5d, 0d,
                                                                  GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                                                                 new Insets(15,4,0,4), 0, 0);
+                                                                 new Insets(15,0,0,0), 0, 0);
         storeSpacerGridBagConstraints = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 0d, 1d,
                                                                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                                                                new Insets(0,0,0,0), 0, 0);
@@ -1155,8 +1155,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         storeProgressBar.setString("No New Items");
                         JButton storeSettingsJButton = new JButton();
                         storeSettingsJButton.setFocusPainted(false);
-                        storeSettingsJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                        storeSettingsJButton.setText("Show My Account");
+                        storeSettingsJButton.setFont(new java.awt.Font("Arial", 0, 12));
+                        storeSettingsJButton.setText("<html>Show<br>My Account</html>");
+                        storeSettingsJButton.setMargin(new Insets(3,3,3,2));
+                        storeSettingsJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/IconBilling36x36.png")));
                         storeSettingsJButton.addActionListener(new StoreSettingsActionListener());
                         storeJPanel.add(storeSettingsJButton, storeSettingsGridBagConstraints);
                         storeJPanel.revalidate();

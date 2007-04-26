@@ -97,7 +97,6 @@ public class QuarantineSingleUserJPanel extends javax.swing.JPanel
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setOpaque(false);
                 contentJPanel.setLayout(new java.awt.GridBagLayout());
 
                 contentJPanel.setOpaque(false);
@@ -107,13 +106,13 @@ public class QuarantineSingleUserJPanel extends javax.swing.JPanel
                 eventJPanel.setFocusable(false);
                 eventJPanel.setOpaque(false);
                 purgeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                purgeJButton.setText("<html><b>Purge</b> selected</html>");
-                purgeJButton.setDoubleBuffered(true);
-                purgeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                purgeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                purgeJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-                purgeJButton.setMinimumSize(new java.awt.Dimension(125, 25));
-                purgeJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+                purgeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconPurge_16x16.png")));
+                purgeJButton.setText("Purge selected");
+                purgeJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                purgeJButton.setMaximumSize(null);
+                purgeJButton.setMinimumSize(null);
+                purgeJButton.setOpaque(false);
+                purgeJButton.setPreferredSize(null);
                 purgeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 purgeJButtonActionPerformed(evt);
@@ -127,13 +126,13 @@ public class QuarantineSingleUserJPanel extends javax.swing.JPanel
                 eventJPanel.add(purgeJButton, gridBagConstraints);
 
                 releaseJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                releaseJButton.setText("<html><b>Release</b> selected</html>");
-                releaseJButton.setDoubleBuffered(true);
-                releaseJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                releaseJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                releaseJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-                releaseJButton.setMinimumSize(new java.awt.Dimension(125, 25));
-                releaseJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+                releaseJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconRelease_16x16.png")));
+                releaseJButton.setText("Release selected");
+                releaseJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                releaseJButton.setMaximumSize(null);
+                releaseJButton.setMinimumSize(null);
+                releaseJButton.setOpaque(false);
+                releaseJButton.setPreferredSize(null);
                 releaseJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 releaseJButtonActionPerformed(evt);

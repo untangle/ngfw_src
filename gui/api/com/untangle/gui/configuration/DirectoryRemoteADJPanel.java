@@ -729,7 +729,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 loginJPanel.add(domainLoginJTextField, gridBagConstraints);
 
                 domainPasswordJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                domainPasswordJLabel.setText("Domain Administrarot Password:");
+                domainPasswordJLabel.setText("Domain Administrator Password:");
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 3;

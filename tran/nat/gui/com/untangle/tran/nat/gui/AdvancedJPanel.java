@@ -55,146 +55,150 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
     }
     
 
-        private void initComponents() {//GEN-BEGIN:initComponents
-                java.awt.GridBagConstraints gridBagConstraints;
+    private void initComponents() {//GEN-BEGIN:initComponents
+        java.awt.GridBagConstraints gridBagConstraints;
 
-                statusJPanel = new javax.swing.JPanel();
-                statusJLabel = new javax.swing.JLabel();
-                someJLabel = new javax.swing.JLabel();
-                clientJPanel = new javax.swing.JPanel();
-                advancedJButton = new javax.swing.JButton();
-                jLabel1 = new javax.swing.JLabel();
-                serverRoutingJPanel = new javax.swing.JPanel();
-                standardJButton = new javax.swing.JButton();
-                jLabel2 = new javax.swing.JLabel();
+        statusJPanel = new javax.swing.JPanel();
+        statusJLabel = new javax.swing.JLabel();
+        someJLabel = new javax.swing.JLabel();
+        clientJPanel = new javax.swing.JPanel();
+        advancedJButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        serverRoutingJPanel = new javax.swing.JPanel();
+        standardJButton = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
 
-                setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.GridBagLayout());
 
-                statusJPanel.setLayout(new java.awt.GridBagLayout());
+        statusJPanel.setLayout(new java.awt.GridBagLayout());
 
-                statusJPanel.setBorder(new javax.swing.border.EtchedBorder());
-                statusJPanel.setMaximumSize(new java.awt.Dimension(1061, 29));
-                statusJPanel.setMinimumSize(new java.awt.Dimension(1061, 29));
-                statusJPanel.setPreferredSize(new java.awt.Dimension(1061, 29));
-                statusJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                statusJLabel.setText("Unconfigured");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 5);
-                statusJPanel.add(statusJLabel, gridBagConstraints);
+        statusJPanel.setBorder(new javax.swing.border.EtchedBorder());
+        statusJPanel.setMaximumSize(new java.awt.Dimension(1061, 29));
+        statusJPanel.setMinimumSize(new java.awt.Dimension(1061, 29));
+        statusJPanel.setPreferredSize(new java.awt.Dimension(1061, 29));
+        statusJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        statusJLabel.setText("Unconfigured");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 5);
+        statusJPanel.add(statusJLabel, gridBagConstraints);
 
-                someJLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-                someJLabel.setText("<html><b>Current Mode:</b></html>");
-                someJLabel.setMaximumSize(new java.awt.Dimension(175, 15));
-                someJLabel.setMinimumSize(new java.awt.Dimension(175, 15));
-                someJLabel.setPreferredSize(new java.awt.Dimension(175, 15));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
-                statusJPanel.add(someJLabel, gridBagConstraints);
+        someJLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        someJLabel.setText("<html><b>Current Mode:</b></html>");
+        someJLabel.setMaximumSize(new java.awt.Dimension(175, 15));
+        someJLabel.setMinimumSize(new java.awt.Dimension(175, 15));
+        someJLabel.setPreferredSize(new java.awt.Dimension(175, 15));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
+        statusJPanel.add(someJLabel, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.ipadx = 175;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 50, 200, 50);
-                add(statusJPanel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 175;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 50, 200, 50);
+        add(statusJPanel, gridBagConstraints);
 
-                clientJPanel.setLayout(new java.awt.GridBagLayout());
+        clientJPanel.setLayout(new java.awt.GridBagLayout());
 
-                clientJPanel.setBorder(new javax.swing.border.EtchedBorder());
-                clientJPanel.setMaximumSize(new java.awt.Dimension(1061, 64));
-                clientJPanel.setMinimumSize(new java.awt.Dimension(1061, 64));
-                clientJPanel.setPreferredSize(new java.awt.Dimension(1061, 64));
-                advancedJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                advancedJButton.setText("<html><center>Configure in<br><b>Advanced Mode</b></center></html>");
-                advancedJButton.setMaximumSize(new java.awt.Dimension(175, 50));
-                advancedJButton.setMinimumSize(new java.awt.Dimension(175, 50));
-                advancedJButton.setPreferredSize(new java.awt.Dimension(175, 50));
-                advancedJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                advancedJButtonActionPerformed(evt);
-                        }
-                });
+        clientJPanel.setBorder(new javax.swing.border.EtchedBorder());
+        clientJPanel.setMaximumSize(new java.awt.Dimension(1061, 64));
+        clientJPanel.setMinimumSize(new java.awt.Dimension(1061, 64));
+        clientJPanel.setPreferredSize(new java.awt.Dimension(1061, 64));
+        advancedJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        advancedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconAction_32x32.png")));
+        advancedJButton.setText("<html>Configure in<br><b>Advanced Mode</b></html>");
+        advancedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+        advancedJButton.setMaximumSize(new java.awt.Dimension(175, 60));
+        advancedJButton.setMinimumSize(new java.awt.Dimension(175, 60));
+        advancedJButton.setPreferredSize(new java.awt.Dimension(175, 60));
+        advancedJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                advancedJButtonActionPerformed(evt);
+            }
+        });
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
-                clientJPanel.add(advancedJButton, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
+        clientJPanel.add(advancedJButton, gridBagConstraints);
 
-                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel1.setText("<html>This allows you to protect your internal network using multiple NAT spaces and a Routing table.  You can also setup DHCP, DNS, Redirect rules, and set MTU.</html>");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 5);
-                clientJPanel.add(jLabel1, gridBagConstraints);
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel1.setText("<html>This allows you to protect your internal network using multiple NAT spaces and a Routing table.  You can also setup DHCP, DNS, Redirect rules, and set MTU.</html>");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 5);
+        clientJPanel.add(jLabel1, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.ipadx = 218;
-                gridBagConstraints.ipady = 16;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(150, 50, 0, 50);
-                add(clientJPanel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 218;
+        gridBagConstraints.ipady = 16;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(150, 50, 0, 50);
+        add(clientJPanel, gridBagConstraints);
 
-                serverRoutingJPanel.setLayout(new java.awt.GridBagLayout());
+        serverRoutingJPanel.setLayout(new java.awt.GridBagLayout());
 
-                serverRoutingJPanel.setBorder(new javax.swing.border.EtchedBorder());
-                serverRoutingJPanel.setMaximumSize(new java.awt.Dimension(1061, 64));
-                serverRoutingJPanel.setMinimumSize(new java.awt.Dimension(1061, 64));
-                standardJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                standardJButton.setText("<html><center>Configure in<br><b>Standard Mode</b></center></html>");
-                standardJButton.setMaximumSize(new java.awt.Dimension(175, 50));
-                standardJButton.setMinimumSize(new java.awt.Dimension(175, 50));
-                standardJButton.setPreferredSize(new java.awt.Dimension(175, 50));
-                standardJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                standardJButtonActionPerformed(evt);
-                        }
-                });
+        serverRoutingJPanel.setBorder(new javax.swing.border.EtchedBorder());
+        serverRoutingJPanel.setMaximumSize(new java.awt.Dimension(1061, 64));
+        serverRoutingJPanel.setMinimumSize(new java.awt.Dimension(1061, 64));
+        standardJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        standardJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconAction_32x32.png")));
+        standardJButton.setText("<html>Configure in<br><b>Standard Mode</b></html>");
+        standardJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+        standardJButton.setMaximumSize(new java.awt.Dimension(175, 60));
+        standardJButton.setMinimumSize(new java.awt.Dimension(175, 60));
+        standardJButton.setPreferredSize(new java.awt.Dimension(175, 60));
+        standardJButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                standardJButtonActionPerformed(evt);
+            }
+        });
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
-                serverRoutingJPanel.add(standardJButton, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
+        serverRoutingJPanel.add(standardJButton, gridBagConstraints);
 
-                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>This allows you to protect your internal network using a single NAT and a single designated DMZ Host.  You can also setup DHCP, DNS, and Redirect rules.</html>");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 5);
-                serverRoutingJPanel.add(jLabel2, gridBagConstraints);
+        jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel2.setText("<html>This allows you to protect your internal network using a single NAT and a single designated DMZ Host.  You can also setup DHCP, DNS, and Redirect rules.</html>");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 5);
+        serverRoutingJPanel.add(jLabel2, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.ipadx = 218;
-                gridBagConstraints.ipady = 16;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 50, 20, 50);
-                add(serverRoutingJPanel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 218;
+        gridBagConstraints.ipady = 16;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 50, 20, 50);
+        add(serverRoutingJPanel, gridBagConstraints);
 
-        }//GEN-END:initComponents
+    }//GEN-END:initComponents
 
     private void standardJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_standardJButtonActionPerformed
 	if( Util.getIsDemo() )
@@ -276,16 +280,16 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
 	}
     }
     
-        // Variables declaration - do not modify//GEN-BEGIN:variables
-        private javax.swing.JButton advancedJButton;
-        private javax.swing.JPanel clientJPanel;
-        private javax.swing.JLabel jLabel1;
-        private javax.swing.JLabel jLabel2;
-        private javax.swing.JPanel serverRoutingJPanel;
-        private javax.swing.JLabel someJLabel;
-        private javax.swing.JButton standardJButton;
-        private javax.swing.JLabel statusJLabel;
-        private javax.swing.JPanel statusJPanel;
-        // End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton advancedJButton;
+    private javax.swing.JPanel clientJPanel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel serverRoutingJPanel;
+    private javax.swing.JLabel someJLabel;
+    private javax.swing.JButton standardJButton;
+    private javax.swing.JLabel statusJLabel;
+    private javax.swing.JPanel statusJPanel;
+    // End of variables declaration//GEN-END:variables
     
 }

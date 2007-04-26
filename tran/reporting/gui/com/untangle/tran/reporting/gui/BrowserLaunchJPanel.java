@@ -31,11 +31,16 @@ public class BrowserLaunchJPanel extends JPanel implements ActionListener {
         this.setLayout(new GridBagLayout());
 
         JButton launchJButton;
-        launchJButton = new JButton("Launch Web Browser");
-        launchJButton.setFont(new java.awt.Font("Arial", 0, 11));
-        launchJButton.setPreferredSize(new Dimension(225, 25));
-        launchJButton.setMaximumSize(new Dimension(225, 25));
-        launchJButton.setSize(new Dimension(225, 25));
+        launchJButton = new JButton("<html>Show Reports in<br>a Web Browser</html>");
+        launchJButton.setFont(new java.awt.Font("Arial", 0, 12));
+		launchJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconAction_32x32.png")));
+        launchJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+        //launchJButton.setPreferredSize(null);
+        //launchJButton.setMaximumSize(null);
+        //launchJButton.setSize(null);
+        //launchJButton.setPreferredSize(new Dimension(225, 25));
+        //launchJButton.setMaximumSize(new Dimension(225, 25));
+        //launchJButton.setSize(new Dimension(225, 25));
         launchJButton.addActionListener(this);
         this.add(launchJButton, launchJButtonConstraints);
 

@@ -109,7 +109,7 @@ public class ServerRoutingWizardClientsJPanel extends MWizardPageJPanel {
 
                 setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html><b>Optionally add VPN Clients.</b><br>VPN Clients can remotely login to the VPN, and access any exported hosts or networks, and visa versa.</html>");
+                jLabel2.setText("<html><b>Optionally add VPN Clients.</b><br>VPN Clients can remotely login to the VPN, and access any exported hosts or networks, and vice versa.</html>");
                 add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 400, -1));
 
                 add(configClientToSiteJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 90, 465, 210));

@@ -48,10 +48,13 @@ public class RemoteCertGenJPanel extends javax.swing.JPanel {
 
                 selfSignedJPanel.setBorder(new javax.swing.border.EtchedBorder());
                 selfSignedJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                selfSignedJButton.setText("<html><center>Generate a<br><b>Self-Signed Certificate</b></center></html>");
-                selfSignedJButton.setMaximumSize(new java.awt.Dimension(175, 50));
-                selfSignedJButton.setMinimumSize(new java.awt.Dimension(175, 50));
-                selfSignedJButton.setPreferredSize(new java.awt.Dimension(175, 50));
+                selfSignedJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconAction_32x32.png")));
+                selfSignedJButton.setText("<html>Generate a<br><b>Self-Signed Certificate</b></html>");
+                selfSignedJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                selfSignedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                selfSignedJButton.setMaximumSize(new java.awt.Dimension(200, 60));
+                selfSignedJButton.setMinimumSize(new java.awt.Dimension(200, 60));
+                selfSignedJButton.setPreferredSize(new java.awt.Dimension(200, 60));
                 selfSignedJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 selfSignedJButtonActionPerformed(evt);
@@ -61,6 +64,8 @@ public class RemoteCertGenJPanel extends javax.swing.JPanel {
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
                 selfSignedJPanel.add(selfSignedJButton, gridBagConstraints);
 
@@ -88,10 +93,13 @@ public class RemoteCertGenJPanel extends javax.swing.JPanel {
 
                 trustedJPanel.setBorder(new javax.swing.border.EtchedBorder());
                 generateCSRJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                generateCSRJButton.setText("<html><center>Generate a<br><b>Certificate Signature Request</b></center></html>");
-                generateCSRJButton.setMaximumSize(new java.awt.Dimension(175, 50));
-                generateCSRJButton.setMinimumSize(new java.awt.Dimension(175, 50));
-                generateCSRJButton.setPreferredSize(new java.awt.Dimension(175, 50));
+                generateCSRJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconAction_32x32.png")));
+                generateCSRJButton.setText("<html>Generate a<br><b>Certificate Signature<br>Request</b></html>");
+                generateCSRJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                generateCSRJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                generateCSRJButton.setMaximumSize(new java.awt.Dimension(200, 60));
+                generateCSRJButton.setMinimumSize(new java.awt.Dimension(200, 60));
+                generateCSRJButton.setPreferredSize(new java.awt.Dimension(200, 60));
                 generateCSRJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 generateCSRJButtonActionPerformed(evt);
@@ -101,6 +109,8 @@ public class RemoteCertGenJPanel extends javax.swing.JPanel {
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 0;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
                 trustedJPanel.add(generateCSRJButton, gridBagConstraints);
 
@@ -115,10 +125,13 @@ public class RemoteCertGenJPanel extends javax.swing.JPanel {
                 trustedJPanel.add(generateCSRJLabel, gridBagConstraints);
 
                 importCSRJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                importCSRJButton.setText("<html><center>Import a<br><b>Signed Certificate</b></center></html>");
-                importCSRJButton.setMaximumSize(new java.awt.Dimension(175, 50));
-                importCSRJButton.setMinimumSize(new java.awt.Dimension(175, 50));
-                importCSRJButton.setPreferredSize(new java.awt.Dimension(175, 50));
+                importCSRJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconAction_32x32.png")));
+                importCSRJButton.setText("<html>Import a<br><b>Signed Certificate</b></html>");
+                importCSRJButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+                importCSRJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                importCSRJButton.setMaximumSize(new java.awt.Dimension(200, 60));
+                importCSRJButton.setMinimumSize(new java.awt.Dimension(200, 60));
+                importCSRJButton.setPreferredSize(new java.awt.Dimension(200, 60));
                 importCSRJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 importCSRJButtonActionPerformed(evt);
@@ -128,6 +141,8 @@ public class RemoteCertGenJPanel extends javax.swing.JPanel {
                 gridBagConstraints = new java.awt.GridBagConstraints();
                 gridBagConstraints.gridx = 0;
                 gridBagConstraints.gridy = 2;
+                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
                 gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
                 trustedJPanel.add(importCSRJButton, gridBagConstraints);
 

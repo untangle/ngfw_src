@@ -39,6 +39,7 @@ public class QuarantineSingleUserJDialog extends MConfigJDialog {
         
     public QuarantineSingleUserJDialog(Dialog topLevelDialog, MailTransformCompoundSettings mailTransformCompoundSettings, String account) {
 	super(topLevelDialog);
+	setHelpSource("email_config");
 	compoundSettings = mailTransformCompoundSettings;
         this.account = account;
 	INSTANCE = this;

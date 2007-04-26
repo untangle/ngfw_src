@@ -97,7 +97,6 @@ public class WhitelistUserJPanel extends javax.swing.JPanel
 
                 setLayout(new java.awt.GridBagLayout());
 
-                setOpaque(false);
                 contentJPanel.setLayout(new java.awt.GridBagLayout());
 
                 contentJPanel.setOpaque(false);
@@ -107,13 +106,13 @@ public class WhitelistUserJPanel extends javax.swing.JPanel
                 eventJPanel.setFocusable(false);
                 eventJPanel.setOpaque(false);
                 removeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                removeJButton.setText("<html><b>Remove</b> selected</html>");
-                removeJButton.setDoubleBuffered(true);
-                removeJButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                removeJButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
-                removeJButton.setMaximumSize(new java.awt.Dimension(125, 25));
-                removeJButton.setMinimumSize(new java.awt.Dimension(125, 25));
-                removeJButton.setPreferredSize(new java.awt.Dimension(125, 25));
+                removeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconPurge_16x16.png")));
+                removeJButton.setText("Purge selected");
+                removeJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+                removeJButton.setMaximumSize(null);
+                removeJButton.setMinimumSize(null);
+                removeJButton.setOpaque(false);
+                removeJButton.setPreferredSize(null);
                 removeJButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 removeJButtonActionPerformed(evt);

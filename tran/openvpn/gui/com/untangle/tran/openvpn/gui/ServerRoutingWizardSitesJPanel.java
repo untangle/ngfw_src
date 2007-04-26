@@ -124,7 +124,7 @@ public class ServerRoutingWizardSitesJPanel extends MWizardPageJPanel {
 
                 setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html><b>Optionally add VPN Sites.</b><br>VPN Sites are remote networks that can access any exported hosts and networks on the VPN, and visa versa.</html>");
+                jLabel2.setText("<html><b>Optionally add VPN Sites.</b><br>VPN Sites are remote networks that can access any exported hosts and networks on the VPN, and vice versa.</html>");
                 add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 410, -1));
 
                 add(configSiteToSiteJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 90, 465, 210));

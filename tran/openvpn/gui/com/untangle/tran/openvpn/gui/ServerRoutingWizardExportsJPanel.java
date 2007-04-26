@@ -95,7 +95,7 @@ public class ServerRoutingWizardExportsJPanel extends MWizardPageJPanel {
 
                 setOpaque(false);
                 jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html><b>Optionally add exported hosts and networks.</b><br>These exports will be visible to clients and sites on the VPN, and visa versa.</html>");
+                jLabel2.setText("<html><b>Optionally add exported hosts and networks.</b><br>These exports will be visible to clients and sites on the VPN, and vice versa.</html>");
                 add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 30, 350, -1));
 
                 add(configExportsJPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 90, 465, 210));
