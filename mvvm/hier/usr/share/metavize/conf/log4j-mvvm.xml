@@ -79,6 +79,10 @@
     <priority value="WARN"/>
   </category>
 
+  <category name="com.untangle.tran.util">
+    <priority value="DEBUG"/>
+  </category>
+
   <category name="com.untangle.mvvm.reporting">
     <priority value="DEBUG"/>
   </category>

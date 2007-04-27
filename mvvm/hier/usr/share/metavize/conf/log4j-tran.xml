@@ -90,6 +90,10 @@
     <priority value="WARN"/>
   </category>
 
+  <category name="com.untangle.tran.util">
+    <priority value="DEBUG"/>
+  </category>
+
   <category name="com.untangle.tran.token">
     <priority value="WARN"/>
   </category>

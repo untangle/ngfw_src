@@ -14,6 +14,7 @@ package com.untangle.tran.clamphish;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -91,9 +92,19 @@ public class ClamPhishTransform extends SpamImpl
     private static final String IN_NOTIFY_SUB_TEMPLATE = OUT_NOTIFY_SUB_TEMPLATE;
     private static final String IN_NOTIFY_BODY_TEMPLATE = OUT_NOTIFY_BODY_TEMPLATE;
 
+    private static final URL URL_BASE;
+
     private static UrlDatabase urlDatabase = null;
     private static int urlDatabaseCount = 0;
     private static boolean webappDeployed = false;
+
+    static {
+        try {
+            URL_BASE = new URL("http://sb.google.com/safebrowsing");
+        } catch (MalformedURLException exn) {
+            throw new RuntimeException(exn);
+        }
+    }
 
     // We want to make sure that phish is before spam,
     // before virus in the pipeline (towards the client for smtp,
@@ -436,8 +447,7 @@ public class ClamPhishTransform extends SpamImpl
 
         File dbHome = new File(System.getProperty("bunnicula.db.dir"), "clamphish");
         try {
-            URL url = new URL("http://sb.google.com/safebrowsing/update?version=goog-black-url:1:1");
-            UrlList ul = new PrefixUrlList(dbHome, "goog-black-url", url);
+            UrlList ul = new PrefixUrlList(dbHome, URL_BASE, "goog-black-url");
             urlDatabase.addBlacklist("goog-black-url", ul);
         } catch (DatabaseException exn) {
             logger.warn("could not open database", exn);
@@ -446,8 +456,7 @@ public class ClamPhishTransform extends SpamImpl
         }
 
         try {
-            URL url = new URL("http://sb.google.com/safebrowsing/update?version=goog-black-enchash:1:1");
-            UrlList ul = new EncryptedUrlList(dbHome, "goog-black-enchash", url);
+            UrlList ul = new EncryptedUrlList(dbHome, URL_BASE, "goog-black-enchash");
             urlDatabase.addBlacklist("goog-black-enchash", ul);
         } catch (DatabaseException exn) {
             logger.warn("could not open database", exn);

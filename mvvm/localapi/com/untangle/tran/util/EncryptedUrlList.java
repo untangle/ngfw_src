@@ -14,8 +14,6 @@ package com.untangle.tran.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.net.URL;
 import java.security.GeneralSecurityException;
@@ -39,55 +37,40 @@ public class EncryptedUrlList extends UrlList
 {
     private static final byte[] DB_SALT = "oU3q.72p".getBytes();
 
-    private static final Pattern TUPLE_PATTERN = Pattern.compile("\\+([0-9A-F]+)\t([A-Za-z0-9+/=]+)");
-
-    private final URL databaseUrl;
+    private static final Pattern TUPLE_PATTERN = Pattern.compile("([+-])([0-9A-F]+)\t([A-Za-z0-9+/=]+)?");
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public EncryptedUrlList(File dbHome, String dbName, URL databaseUrl)
+    public EncryptedUrlList(File dbHome, URL databaseUrl, String dbName)
         throws DatabaseException, IOException
     {
-        super(dbHome, dbName);
-
-        this.databaseUrl = databaseUrl;
+        super(dbHome, databaseUrl, dbName);
     }
 
     // UrlList methods --------------------------------------------------------
 
-    protected String initDatabase(Database db)
+    protected void updateDatabase(Database db, BufferedReader br)
         throws IOException
     {
-        clearDatabase();
+        String line;
+        while (null != (line = br.readLine())) {
+            Matcher matcher = TUPLE_PATTERN.matcher(line);
+            if (matcher.find()) {
+                boolean add = matcher.group(1).equals("+");
+                byte[] host = new BigInteger(matcher.group(2), 16).toByteArray();
 
-        InputStream is = databaseUrl.openStream();
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
-        try {
-            String version = getVersion(br.readLine());
-            doIt(db, br);
-            return version;
-        } finally {
-            br.close();
-        }
-    }
-
-    protected String updateDatabase(Database db, String oldVersion)
-        throws IOException
-    {
-        InputStream is = databaseUrl.openStream();
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
-        try {
-            String version = getVersion(br.readLine());
-            if (null != version && !version.equals(oldVersion)) {
-                // XXX implement real update!
-                clearDatabase();
-                doIt(db, br);
+                try {
+                    if (add) {
+                        byte[] regexp = base64Decode(matcher.group(3));
+                        db.put(null, new DatabaseEntry(host),
+                               new DatabaseEntry(regexp));
+                    } else {
+                        db.delete(null, new DatabaseEntry(host));
+                    }
+                } catch (DatabaseException exn) {
+                    logger.warn("could not add database entry", exn);
+                }
             }
-            return version;
-        } finally {
-            br.close();
         }
     }
 
@@ -159,26 +142,6 @@ public class EncryptedUrlList extends UrlList
         } catch (IOException exn) {
             logger.warn("could not decode", exn);
             return new byte[0];
-        }
-    }
-
-    private void doIt(Database db, BufferedReader br) throws IOException
-    {
-        String line;
-        while (null != (line = br.readLine())) {
-            Matcher matcher = TUPLE_PATTERN.matcher(line);
-            if (matcher.find()) {
-                byte[] host = new BigInteger(matcher.group(1), 16).toByteArray();
-                byte[] b64Data = matcher.group(2).getBytes();
-                byte[] regexp = base64Decode(matcher.group(2));
-
-                try {
-                    db.put(null, new DatabaseEntry(host),
-                           new DatabaseEntry(regexp));
-                } catch (DatabaseException exn) {
-                    logger.warn("could not add database entry", exn);
-                }
-            }
         }
     }
 }

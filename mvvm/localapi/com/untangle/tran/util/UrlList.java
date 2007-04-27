@@ -11,8 +11,12 @@
 
 package com.untangle.tran.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,14 +36,24 @@ import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import org.apache.log4j.Logger;
 
+/**
+ * Holds a list of hostname, data keypairs backed by
+ * BerkeleyDB. Intended as a data store for lists provided by servers
+ * implementing the Phishing Protection Server Spec
+ * (http://wiki.mozilla.org/Phishing_Protection:_Server_Spec).
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public abstract class UrlList
 {
     private static final byte[] VERSION_KEY = "__version".getBytes();
-    private static final Pattern VERSION_PATTERN = Pattern.compile("\\[[^ ]+ ([0-9.]+)\\]");
-
+    private static final Pattern VERSION_PATTERN = Pattern.compile("\\[[^ ]+ ([0-9.]+)( update)?\\]");
 
     private static final Set<String> DB_LOCKS = new HashSet<String>();
 
+    private final URL baseUrl;
+    private final String dbName;
     private final Database db;
     private final String dbLock;
 
@@ -47,9 +61,12 @@ public abstract class UrlList
 
     // constructors -----------------------------------------------------------
 
-    public UrlList(File dbHome, String dbName)
+    public UrlList(File dbHome, URL baseUrl, String dbName)
         throws DatabaseException
     {
+        this.baseUrl = baseUrl;
+        this.dbName = dbName;
+
         dbLock = new File(dbHome, dbName).getAbsolutePath().intern();
 
         EnvironmentConfig envCfg = new EnvironmentConfig();
@@ -102,10 +119,7 @@ public abstract class UrlList
 
     // protected methods ------------------------------------------------------
 
-    protected abstract String initDatabase(Database db)
-        throws IOException;
-
-    protected abstract String updateDatabase(Database db, String currentVer)
+    protected abstract void updateDatabase(Database db, BufferedReader br)
         throws IOException;
 
     protected abstract byte[] getKey(byte[] host);
@@ -130,44 +144,34 @@ public abstract class UrlList
         return l;
     }
 
-    protected String getVersion(String line)
+    protected byte[] del(byte[] data, byte[] prefix)
     {
-        if (null == line) {
-            logger.warn("null version line" + line);
-            return null;
-        }
-
-        Matcher matcher = VERSION_PATTERN.matcher(line);
-        if (matcher.find()) {
-            return matcher.group(1);
+        String dStr = new String(data);
+        String pStr = new String(prefix);
+        int i = dStr.indexOf(pStr);
+        if (0 <= i) {
+            int j;
+            if (dStr.length() > i + pStr.length()
+                && '\t' == dStr.charAt(i + pStr.length())) {
+                j = i + pStr.length() + 1;
+            } else {
+                j = i + pStr.length();
+            }
+            StringBuilder sb = new StringBuilder(dStr.length());
+            sb.append(dStr.subSequence(0, i));
+            sb.append(dStr.subSequence(j, dStr.length()));
+            return sb.toString().getBytes();
         } else {
-            logger.warn("No version number: " + line);
-            return null;
+            return data;
         }
     }
 
-    protected void clearDatabase()
+    protected byte[] add(byte[] data, byte[] prefix)
     {
-        Cursor c = null;
-        try {
-            DatabaseEntry k = new DatabaseEntry();
-            DatabaseEntry v = new DatabaseEntry();
-
-            c = db.openCursor(null, null);
-            while (OperationStatus.SUCCESS == c.getNext(k, v, LockMode.DEFAULT)) {
-                c.delete();
-            }
-        } catch (DatabaseException exn) {
-            logger.warn("could not clear database");
-        } finally {
-            if (null != c) {
-                try {
-                    c.close();
-                } catch (DatabaseException exn) {
-                    logger.warn("could not close cursor", exn);
-                }
-            }
-        }
+        String dStr = new String(data);
+        String pStr = new String(prefix);
+        int i = dStr.indexOf(pStr);
+        return (0 > i) ? (dStr + "\t" + pStr).getBytes() : data;
     }
 
     // private methods --------------------------------------------------------
@@ -235,7 +239,6 @@ public abstract class UrlList
 
     private void update()
     {
-        logger.info("initializing or updating UrlList: " + dbLock);
         synchronized (DB_LOCKS) {
             if (DB_LOCKS.contains(dbLock)) {
                 return;
@@ -244,15 +247,45 @@ public abstract class UrlList
             }
         }
 
+        BufferedReader br = null;
         try {
-            String version = getVersion(db);
-            if (null != version) {
-                version = updateDatabase(db, version);
-            } else {
-                version = initDatabase(db);
+            String oldVersion = getVersion(db);
+
+            String v = null == oldVersion ? "1:1" : oldVersion.replace(".", ":");
+            URL url = new URL(baseUrl + "/update?version=" + dbName + ":" + v);
+            logger.info("updating from URL: " + url);
+
+            InputStream is = url.openStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            br = new BufferedReader(isr);
+
+            String line = br.readLine();
+            if (null == line) {
+                logger.info("no update");
+                return;
             }
 
-            setVersion(db, version);
+            String newVersion;
+            boolean update;
+            Matcher matcher = VERSION_PATTERN.matcher(line);
+            if (matcher.find()) {
+                newVersion = matcher.group(1);
+                update = null != matcher.group(2);
+            } else {
+                logger.info("no update");
+                return;
+            }
+
+            logger.info("updating: " + dbLock + " from: " + oldVersion
+                        + " to: " + newVersion);
+
+            if (!update) {
+                clearDatabase();
+            }
+
+            updateDatabase(db, br);
+
+            setVersion(db, newVersion);
 
             db.getEnvironment().sync();
         } catch (DatabaseException exn) {
@@ -264,7 +297,29 @@ public abstract class UrlList
                 DB_LOCKS.remove(dbLock);
             }
         }
+    }
 
-        logger.info("initialized or updated UrlList: " + dbLock);
+    private void clearDatabase()
+    {
+        Cursor c = null;
+        try {
+            DatabaseEntry k = new DatabaseEntry();
+            DatabaseEntry v = new DatabaseEntry();
+
+            c = db.openCursor(null, null);
+            while (OperationStatus.SUCCESS == c.getNext(k, v, LockMode.DEFAULT)) {
+                c.delete();
+            }
+        } catch (DatabaseException exn) {
+            logger.warn("could not clear database");
+        } finally {
+            if (null != c) {
+                try {
+                    c.close();
+                } catch (DatabaseException exn) {
+                    logger.warn("could not close cursor", exn);
+                }
+            }
+        }
     }
 }

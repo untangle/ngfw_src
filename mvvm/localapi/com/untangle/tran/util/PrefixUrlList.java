@@ -14,8 +14,6 @@ package com.untangle.tran.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -30,55 +28,62 @@ import org.apache.log4j.Logger;
 
 public class PrefixUrlList extends UrlList
 {
-    private static final Pattern TUPLE_PATTERN = Pattern.compile("\\+(https?://([^/\t]+)/[^\t]*)\tc");
-
-    private final URL databaseUrl;
+    private static final Pattern TUPLE_PATTERN = Pattern.compile("([+-])(https?://([^/\t]+)/[^\t]*)\tc");
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public PrefixUrlList(File dbHome, String dbName, URL databaseUrl)
+    public PrefixUrlList(File dbHome, URL databaseUrl, String dbName)
         throws DatabaseException, IOException
     {
-        super(dbHome, dbName);
-        this.databaseUrl = databaseUrl;
+        super(dbHome, databaseUrl, dbName);
     }
 
     // UrlList methods --------------------------------------------------------
 
-    protected String initDatabase(Database db)
+    protected void updateDatabase(Database db, BufferedReader br)
         throws IOException
     {
-        clearDatabase();
+        String line;
 
-        InputStream is = databaseUrl.openStream();
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
+        while (null != (line = br.readLine())) {
+            Matcher matcher = TUPLE_PATTERN.matcher(line);
+            if (matcher.find()) {
+                boolean add = matcher.group(1).equals("+");
 
-        try {
-            String version = getVersion(br.readLine());
-            doIt(db, br);
-            return version;
-        } finally {
-            br.close();
-        }
-    }
+                byte[] prefix = matcher.group(2).getBytes();
+                byte[] host = matcher.group(3).getBytes();
 
-    protected String updateDatabase(Database db, String oldVersion)
-        throws IOException
-    {
-        InputStream is = databaseUrl.openStream();
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
-        try {
-            String version = getVersion(br.readLine());
-            if (null != version && !version.equals(oldVersion)) {
-                // XXX implement real update!
-                clearDatabase();
-                doIt(db, br);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("add? " + add + " host: " + new String(host)
+                                 + " prefix: " + new String(prefix));
+                }
+
+                try {
+                    DatabaseEntry k = new DatabaseEntry(host);
+                    DatabaseEntry v = new DatabaseEntry();
+
+                    OperationStatus s = db.get(null, k, v,
+                                               LockMode.READ_UNCOMMITTED);
+                    if (OperationStatus.SUCCESS == s) {
+                        byte[] data = v.getData();
+                        byte[] newData = add ? add(data, prefix)
+                            : del(data, prefix);
+                        if (0 == newData.length) {
+                            db.delete(null, k);
+                        } else {
+                            v.setData(newData);
+                            db.put(null, k, v);
+                        }
+                    } else {
+                        if (add) {
+                            v.setData(prefix);
+                            db.put(null, k, v);
+                        }
+                    }
+                } catch (DatabaseException exn) {
+                    logger.warn("could not add database entry", exn);
+                }
             }
-            return version;
-        } finally {
-            br.close();
         }
     }
 
@@ -95,43 +100,5 @@ public class PrefixUrlList extends UrlList
     protected boolean matches(String str, String pat)
     {
         return str.startsWith(pat);
-    }
-
-    // private methods ----------------------------------------------------------
-
-    private void doIt(Database db, BufferedReader br) throws IOException
-    {
-        String line;
-
-        while (null != (line = br.readLine())) {
-            Matcher matcher = TUPLE_PATTERN.matcher(line);
-            if (matcher.find()) {
-                byte[] prefix = matcher.group(1).getBytes();
-                byte[] host = matcher.group(2).getBytes();
-
-                try {
-                    DatabaseEntry k = new DatabaseEntry(host);
-                    DatabaseEntry v = new DatabaseEntry();
-
-                    OperationStatus s = db.get(null, k, v, LockMode.READ_UNCOMMITTED);
-                    if (OperationStatus.SUCCESS == s) {
-                        byte[] data = v.getData();
-                        byte[] newData = new byte[data.length + 1 + prefix.length];
-                        System.arraycopy(data, 0, newData, 0, data.length);
-                        newData[data.length] = '\t';
-                        System.arraycopy(prefix, 0, newData, data.length + 1,
-                                         prefix.length);
-
-                        v.setData(newData);
-                    } else {
-                        v.setData(prefix);
-                    }
-
-                    db.put(null, k, v);
-                } catch (DatabaseException exn) {
-                    logger.warn("could not add database entry", exn);
-                }
-            }
-        }
     }
 }

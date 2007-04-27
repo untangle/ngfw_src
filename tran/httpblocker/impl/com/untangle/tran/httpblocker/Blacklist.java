@@ -14,6 +14,7 @@ package com.untangle.tran.httpblocker;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -43,7 +44,15 @@ import org.apache.log4j.Logger;
  */
 class Blacklist
 {
-    private static final String BLACKLIST_HOME = "file:///var/lib/urlblacklist.com/";
+    private static final URL BLACKLIST_HOME;
+    static {
+        try {
+            BLACKLIST_HOME = new URL("http://localhost/diffserver");
+        } catch (MalformedURLException exn) {
+            throw new RuntimeException(exn);
+        }
+    }
+
     private static final File DB_HOME = new File(System.getProperty("bunnicula.db.dir"), "httpblocker");
 
     private final Logger logger = Logger.getLogger(Blacklist.class);
@@ -81,8 +90,8 @@ class Blacklist
             if (cat.getBlockDomains()) {
                 String dbName = catName + "-domains";
                 try {
-                    URL url = new URL(BLACKLIST_HOME + catName + "/domains");
-                    UrlList ul = new PrefixUrlList(DB_HOME, dbName, url);
+                    UrlList ul = new PrefixUrlList(DB_HOME, BLACKLIST_HOME,
+                                                   dbName);
                     urlDatabase.addBlacklist(dbName, ul);
                 } catch (IOException exn) {
                     logger.warn("could not open: " + dbName, exn);
@@ -94,8 +103,8 @@ class Blacklist
             if (cat.getBlockUrls()) {
                 String dbName = catName + "-urls";
                 try {
-                    URL url = new URL(BLACKLIST_HOME + catName + "/urls");
-                    UrlList ul = new PrefixUrlList(DB_HOME, dbName, url);
+                    UrlList ul = new PrefixUrlList(DB_HOME, BLACKLIST_HOME,
+                                                   dbName);
                     urlDatabase.addBlacklist(dbName, ul);
                 } catch (IOException exn) {
                     logger.warn("could not open: " + dbName, exn);
