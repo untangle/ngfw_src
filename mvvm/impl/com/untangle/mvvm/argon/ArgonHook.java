@@ -241,8 +241,12 @@ abstract class ArgonHook implements Runnable
                 logger.info( "Session rejected, skipping vectoring: " + sessionGlobalState );
             }
         } catch ( Exception e ) {
+            /* Some exceptions have null messages, who knew */
+            String message = e.getMessage();
+            if ( message == null ) message = "";
+
             /* XXXX A janky way of checking if this is an interface conversion error */
-            if ( e.getMessage().startsWith( "Invalid netcap interface" )) {
+            if ( message.startsWith( "Invalid netcap interface" )) {
                 try {
                     logger.warn( "invalid interface: " + sessionGlobalState.netcapSession());
                 } catch( Exception exn ) {
