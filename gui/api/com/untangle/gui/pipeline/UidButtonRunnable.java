@@ -58,10 +58,6 @@ public class UidButtonRunnable implements ButtonRunnable, Comparable<UidButtonRu
                 String ss = st.nextToken();
 					uidList.add(ss);
             }
-			if((uidList.size()==1)&&(uidList.get(0).equals("any"))){
-					uidList.remove(0);
-					uidList.add(UidSelectJDialog.ANY_USER);
-			}
 	}
     public void setUidList(List<String> uidList){ this.uidList = uidList; }
     public List<String> getUidList(){ return uidList; }
@@ -76,10 +72,7 @@ public class UidButtonRunnable implements ButtonRunnable, Comparable<UidButtonRu
 					first = false;
 			}
 			String outputString = sb.toString();
-			if(outputString.equals("any"))
-					return null;
-			else
-					return outputString;
+			return outputString;
 	}
 
     public void setTopLevelWindow(Window topLevelWindow){ this.topLevelWindow = topLevelWindow; }

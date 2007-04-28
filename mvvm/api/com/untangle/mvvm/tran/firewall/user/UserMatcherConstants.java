@@ -16,8 +16,12 @@ public class UserMatcherConstants
     /* using a ; instead of comma since a comma is a valid username character */
     public static final String MARKER_SEPERATOR = ";";
 
-    public static final String MARKER_UNKNOWN = "unknown";
+    public static final String MARKER_ANY = "[any]";
 
-    public static final String MARKER_KNOWN = "known";
+    public static final String MARKER_NONE = "[none]";
+
+    public static final String MARKER_UNKNOWN = "[unknown]";
+
+    public static final String MARKER_KNOWN = "[known]";
 
 }

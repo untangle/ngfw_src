@@ -37,7 +37,7 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
 
     private static InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
 
-    public static final String ANY_USER = "[any]";
+    public static final String ANY_USER = UserMatcherConstants.MARKER_ANY;
 	public static final String MULTIPLE_USERS = "[multiple selections]";
 
     private List<String> uidList;

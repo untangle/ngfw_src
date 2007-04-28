@@ -1,5 +1,7 @@
 -- settings conversion for release 4.2
 
+UPDATE settings.user_policy_rule SET user_matcher = '[any]' WHERE user_matcher = 'any';
+
 -- com.untangle.mvvm.networking.AccessSettings -- 4.2
 CREATE TABLE settings.mvvm_access_settings (
     settings_id          INT8 NOT NULL,

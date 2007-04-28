@@ -34,7 +34,7 @@ public final class UserSimpleMatcher
             
             public String toString()
             {
-                return ParsingConstants.MARKER_ANY;
+                return UserMatcherConstants.MARKER_ANY;
             }
         };
 
@@ -52,7 +52,7 @@ public final class UserSimpleMatcher
             
             public String toString()
             {
-                return ParsingConstants.MARKER_NOTHING;
+                return UserMatcherConstants.MARKER_NONE;
             }
         };
 
@@ -114,10 +114,11 @@ public final class UserSimpleMatcher
         
         public boolean isParseable( String value )
         {
-            return ( value.equalsIgnoreCase( ParsingConstants.MARKER_ANY ) ||
+            return ( value.equalsIgnoreCase( UserMatcherConstants.MARKER_ANY ) ||
                      value.equalsIgnoreCase( ParsingConstants.MARKER_WILDCARD ) ||
-                     value.equalsIgnoreCase( ParsingConstants.MARKER_ALL ) ||
-                     value.equalsIgnoreCase( ParsingConstants.MARKER_NOTHING ));
+                     value.equalsIgnoreCase( UserMatcherConstants.MARKER_UNKNOWN ) ||
+                     value.equalsIgnoreCase( UserMatcherConstants.MARKER_KNOWN ) ||
+                     value.equalsIgnoreCase( UserMatcherConstants.MARKER_NONE ));
         }
         
         public UserDBMatcher parse( String value ) throws ParseException
@@ -126,13 +127,16 @@ public final class UserSimpleMatcher
                 throw new ParseException( "Invalid user simple matcher '" + value + "'" );
             }
             
-            if ( value.equalsIgnoreCase( ParsingConstants.MARKER_ANY ) || 
-                 value.equalsIgnoreCase( ParsingConstants.MARKER_WILDCARD ) ||
-                 value.equalsIgnoreCase( ParsingConstants.MARKER_ALL )) {
+            if ( value.equalsIgnoreCase( UserMatcherConstants.MARKER_ANY ) || 
+                 value.equalsIgnoreCase( ParsingConstants.MARKER_WILDCARD )) {
                      return ALL_MATCHER;
-                 } else if ( value.equalsIgnoreCase( ParsingConstants.MARKER_NOTHING )) {
+                 } else if ( value.equalsIgnoreCase( UserMatcherConstants.MARKER_NONE )) {
                      return NOTHING_MATCHER;
-                 }
+                 } else if ( value.equalsIgnoreCase( UserMatcherConstants.MARKER_UNKNOWN )) {
+                     return UNKNOWN_MATCHER;
+                 } else if ( value.equalsIgnoreCase( UserMatcherConstants.MARKER_KNOWN )) {
+                     return KNOWN_MATCHER;
+                 } 
             
             throw new ParseException( "Invalid user simple matcher '" + value + "'" );
         }

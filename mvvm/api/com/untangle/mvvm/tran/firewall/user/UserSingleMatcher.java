@@ -16,7 +16,6 @@ import java.util.List;
 
 import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.Parser;
-import com.untangle.mvvm.tran.firewall.ParsingConstants;
 
 public final class UserSingleMatcher extends UserDBMatcher
 {

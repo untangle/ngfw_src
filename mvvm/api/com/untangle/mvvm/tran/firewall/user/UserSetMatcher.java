@@ -19,7 +19,6 @@ import java.util.Set;
 
 import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.Parser;
-import com.untangle.mvvm.tran.firewall.ParsingConstants;
 
 public final class UserSetMatcher extends UserDBMatcher
 {
@@ -36,6 +35,8 @@ public final class UserSetMatcher extends UserDBMatcher
 
     public boolean isMatch( String user )
     {
+        if (user == null)
+            return false;
         return ( this.userSet.contains( user.toLowerCase()));
     }
 
