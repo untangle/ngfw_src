@@ -72,6 +72,28 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
         return timeout;
     }
 
+    public static String encodeMethod(Method m) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(m.getReturnType().getName());
+        sb.append(" ");
+        sb.append(m.getDeclaringClass().getName());
+        sb.append(".");
+        sb.append(m.getName());
+        sb.append("(");
+
+        Class[] params = m.getParameterTypes();
+        for (int i = 0; i < params.length; i++) {
+            if (0 != i) {
+                sb.append(",");
+            }
+            sb.append(params[i].getName());
+        }
+        sb.append(")");
+
+        return sb.toString();
+    }
+
     // public methods ---------------------------------------------------------
 
     public LoginSession getLoginSession()
@@ -107,7 +129,7 @@ public class HttpInvokerStub implements InvocationHandler, Serializable
         // XXX hack: null for login proxy
         HttpInvocation inv = (null == proxy)
             ? new HttpInvocation(loginSession, null, null, null, url, timeout)
-            : new HttpInvocation(loginSession, targetId, method.toString(),
+            : new HttpInvocation(loginSession, targetId, encodeMethod(method),
                                  method.getDeclaringClass().getName(),
                                  url, timeout);
 

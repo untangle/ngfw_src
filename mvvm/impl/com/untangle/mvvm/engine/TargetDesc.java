@@ -23,7 +23,6 @@ import java.util.Set;
 
 import com.untangle.mvvm.security.LoginSession;
 
-
 class TargetDesc
 {
     private final WeakReference targetRef;
@@ -44,11 +43,11 @@ class TargetDesc
         Map<String, Method> ms = new HashMap<String, Method>();
         for (Class iface : ifaces) {
             for (Method m : iface.getMethods()) {
-                ms.put(m.toString(), m);
+                ms.put(HttpInvokerStub.encodeMethod(m), m);
             }
         }
         for (Method m : Object.class.getMethods()) {
-            ms.put(m.toString(), m);
+            ms.put(HttpInvokerStub.encodeMethod(m), m);
         }
         this.methods = Collections.unmodifiableMap(ms);
 
@@ -70,6 +69,10 @@ class TargetDesc
 
     Method getMethod(String methodName)
     {
+        if (null == methods.get(methodName)) {
+            System.out.println("GETTING METHOD: " + methodName + " FROM : " + methods);
+        }
+
         return methods.get(methodName);
     }
 
