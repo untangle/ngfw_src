@@ -83,9 +83,6 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
         catch(Exception e){ throw new Exception("You must specify a valid end time."); }
         newRow.setElementAt( timeEndJTextField.getText(), 15);
 
-        if( startDate.compareTo(endDate) > 0 )
-            throw new Exception("Your start time must be earlier than your end time.");
-
         ComboBoxModel timeModel = (ComboBoxModel) newRow.elementAt(13);
         if( timeInvertJCheckBox.isSelected() )
             timeModel.setSelectedItem("Invert day/time");
