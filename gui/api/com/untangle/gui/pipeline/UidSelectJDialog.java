@@ -13,6 +13,7 @@ package com.untangle.gui.pipeline;
 
 import com.untangle.gui.util.*;
 import com.untangle.mvvm.toolbox.ToolboxManager;
+import com.untangle.mvvm.tran.firewall.user.UserMatcherConstants;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.mvvm.addrbook.UserEntry;
 import com.untangle.mvvm.addrbook.RepositoryType;
