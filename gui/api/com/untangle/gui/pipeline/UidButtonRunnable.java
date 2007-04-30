@@ -52,7 +52,7 @@ public class UidButtonRunnable implements ButtonRunnable, Comparable<UidButtonRu
     public void setEnabled(boolean isEnabled){ }
     public boolean valueChanged(){ return valueChanged; }
 	public void setUid(String s){
-        StringTokenizer st = new StringTokenizer(s,UserMatcherConstants.MARKER_SEPERATOR);
+        StringTokenizer st = new StringTokenizer(s," \t\n\r\f"+UserMatcherConstants.MARKER_SEPERATOR);
 			uidList.clear();
 			while(st.hasMoreTokens()){
                 String ss = st.nextToken();
