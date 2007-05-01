@@ -374,6 +374,7 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         synchronized (messageQueues) {
             MackageInstallRequest mir = new MackageInstallRequest(mackageName);
+            logger.info("requestInstall: " + mackageName);
             for (MessageQueueImpl<ToolboxMessage> mq : messageQueues.values()) {
                 mq.enqueue(mir);
             }
