@@ -777,6 +777,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 //// GET THE CORRECT BUTTON TO MESS WIT CAUSE STORE REFRESH MAY HAVE SHANKED US
                 for( final MTransformJButton storeButton : storeMap.values() ){
                     if( storeButton.getName().equals(mTransformJButton.getName()) ){
+                        storeButton.setIsTrial(mTransformJButton.getIsTrial());
                         mTransformJButton = storeButton;
                             SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
                                 storeButton.setEnabled(false);
