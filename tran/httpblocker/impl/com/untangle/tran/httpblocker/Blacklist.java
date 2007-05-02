@@ -47,7 +47,7 @@ class Blacklist
     private static final URL BLACKLIST_HOME;
     static {
         try {
-            BLACKLIST_HOME = new URL("http://localhost/diffserver");
+            BLACKLIST_HOME = new URL("http://tweek/diffserver");
         } catch (MalformedURLException exn) {
             throw new RuntimeException(exn);
         }
@@ -88,7 +88,7 @@ class Blacklist
         for (BlacklistCategory cat : settings.getBlacklistCategories()) {
             String catName = cat.getName();
             if (cat.getBlockDomains()) {
-                String dbName = catName + "-domains";
+                String dbName = "ubl-" + catName + "-dom";
                 try {
                     UrlList ul = new PrefixUrlList(DB_HOME, BLACKLIST_HOME,
                                                    dbName);
@@ -101,7 +101,7 @@ class Blacklist
             }
 
             if (cat.getBlockUrls()) {
-                String dbName = catName + "-urls";
+                String dbName = "ubl-" + catName + "-url";
                 try {
                     UrlList ul = new PrefixUrlList(DB_HOME, BLACKLIST_HOME,
                                                    dbName);

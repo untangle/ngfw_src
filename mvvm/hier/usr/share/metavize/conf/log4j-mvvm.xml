@@ -80,7 +80,7 @@
   </category>
 
   <category name="com.untangle.tran.util">
-    <priority value="DEBUG"/>
+    <priority value="INFO"/>
   </category>
 
   <category name="com.untangle.mvvm.reporting">
