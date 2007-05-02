@@ -1,5 +1,7 @@
 #!/bin/sh
 
+apt-get install --yes rbot-mv
+
 for PKG_NAME in rbot-mv ssh ; do
   INIT_SCRIPT="/etc/init.d/${PKG_NAME}"
 
