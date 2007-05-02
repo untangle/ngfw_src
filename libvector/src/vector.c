@@ -6,6 +6,7 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
+ * @author: Dirk Morris <dmorris@untangle.com>
  * $Id$
  */
 #include <stdlib.h>
@@ -64,35 +65,35 @@ typedef struct mvpoll_keystub {
 
 } mvpoll_keystub_t;
 
-static int  _vector_setup (vector_t* vec);
-static int  _vector_cleanup (vector_t* vec);
-static int  _vector_handle_message (vector_t* vec, int revents);
-static int  _vector_handle_src_event (vector_t* vec, relay_t* relay, int revents);
+static int  _vector_setup ( vector_t* vec );
+static int  _vector_cleanup ( vector_t* vec );
+static int  _vector_handle_message ( vector_t* vec, int revents );
+static int  _vector_handle_src_event ( vector_t* vec, relay_t* relay, int revents );
 static int  _vector_handle_src_error_event    ( vector_t* vec, relay_t* relay );
 static int  _vector_handle_src_shutdown_event ( vector_t* vec, relay_t* relay );
 static int  _vector_handle_src_input_event    ( vector_t* vec, relay_t* relay );
 
-static int  _vector_handle_snk_event (vector_t* vec, relay_t* relay, int revents);
+static int  _vector_handle_snk_event ( vector_t* vec, relay_t* relay, int revents );
 
-static int  _relay_add_queue (relay_t* relay, event_t* event);
-static int  _relay_remove_queue (relay_t* relay, list_node_t* node);
-static int  _relay_src_enable (relay_t* relay);
-static int  _relay_snk_enable (relay_t* relay);
-static int  _relay_src_disable (relay_t* relay);
-static int  _relay_snk_disable (relay_t* relay);
-static int  _relay_snk_close (relay_t* relay);
-static int  _relay_src_close (relay_t* relay);
+static int  _relay_add_queue ( relay_t* relay, event_t* event );
+static int  _relay_remove_queue ( relay_t* relay, list_node_t* node );
+static int  _relay_src_enable ( relay_t* relay );
+static int  _relay_snk_enable ( relay_t* relay );
+static int  _relay_src_disable ( relay_t* relay );
+static int  _relay_snk_disable ( relay_t* relay );
+static int  _relay_snk_close ( relay_t* relay );
+static int  _relay_src_close ( relay_t* relay );
 
-static int  _mvpoll_keystub_key_add  (vector_t* vec, mvpoll_key_t* key, relay_t* relay, int issink);
-static int  _mvpoll_keystub_key_sub  (vector_t* vec, mvpoll_key_t* key);
-static int  _mvpoll_keystub_add_events (vector_t* vec, mvpoll_key_t* key, int events);
-static int  _mvpoll_keystub_sub_events (vector_t* vec, mvpoll_key_t* key, int events);
+static int  _mvpoll_keystub_key_add  ( vector_t* vec, mvpoll_key_t* key, relay_t* relay, int issink );
+static int  _mvpoll_keystub_key_sub  ( vector_t* vec, mvpoll_key_t* key );
+static int  _mvpoll_keystub_add_events ( vector_t* vec, mvpoll_key_t* key, int events );
+static int  _mvpoll_keystub_sub_events ( vector_t* vec, mvpoll_key_t* key, int events );
 
-static int  _chain_debug_print_prefix (int debug_level, list_t* chain, char* prefix);
-static int  _chain_debug_print (int debug_level, list_t* chain);
+static int  _chain_debug_print_prefix ( int debug_level, list_t* chain, char* prefix );
+static int  _chain_debug_print ( int debug_level, list_t* chain );
 
 
-vector_t* vector_malloc (void)
+vector_t* vector_malloc ( void )
 {
     vector_t* vec = calloc(1, sizeof(vector_t));
 
@@ -103,7 +104,7 @@ vector_t* vector_malloc (void)
     return vec;
 }
 
-vector_t* vector_create (list_t* chain)
+vector_t* vector_create ( list_t* chain )
 {
     vector_t* vec;
 
@@ -119,7 +120,7 @@ vector_t* vector_create (list_t* chain)
     return vec;
 }
 
-int       vector_init (vector_t* vec, list_t* chain)
+int       vector_init ( vector_t* vec, list_t* chain )
 {
     if (!vec || !chain) {
         return errlogargs();
@@ -139,7 +140,7 @@ int       vector_init (vector_t* vec, list_t* chain)
     return 0;
 }
 
-int       vector_free (vector_t* vec)
+int       vector_free ( vector_t* vec )
 {
     if ( vec == NULL ) {
         return errlogargs();
@@ -150,7 +151,7 @@ int       vector_free (vector_t* vec)
     return 0;
 }
 
-int       vector_destroy (vector_t* vec)
+int       vector_destroy ( vector_t* vec )
 {
     if ( vec == NULL) {
         return errlogargs();
@@ -166,7 +167,7 @@ int       vector_destroy (vector_t* vec)
     return 0;
 }
 
-int       vector_raze (vector_t* vec)
+int       vector_raze ( vector_t* vec )
 {
     int err = 0;
 
@@ -187,7 +188,7 @@ int       vector_raze (vector_t* vec)
     return err;
 }
 
-int       vector (vector_t* vec)
+int       vector ( vector_t* vec )
 {
     int i,num_events;
     int timeout = -1;
@@ -342,7 +343,7 @@ int       vector (vector_t* vec)
     return 0;
 }
 
-int       vector_send_msg (vector_t* vec, vector_msg_t msg, void* arg)
+int       vector_send_msg ( vector_t* vec, vector_msg_t msg, void* arg )
 {
     char buf[sizeof(vector_msg_t)+sizeof(void*)];
     int nbyt;
@@ -368,7 +369,7 @@ int       vector_send_msg (vector_t* vec, vector_msg_t msg, void* arg)
     return nbyt;
 }
 
-void      vector_set_timeout (vector_t* vec, int timeout_msec)
+void      vector_set_timeout ( vector_t* vec, int timeout_msec )
 {
     if (!vec)
         errlogargs();
@@ -382,7 +383,7 @@ void      vector_set_timeout (vector_t* vec, int timeout_msec)
 }
 
 
-static int  _vector_handle_message (vector_t* vec, int revents)
+static int  _vector_handle_message ( vector_t* vec, int revents )
 {
     char buf[sizeof(vector_msg_t)+sizeof(void*)];
     vector_msg_t* msg = (vector_msg_t*)buf;
@@ -421,7 +422,7 @@ static int  _vector_handle_message (vector_t* vec, int revents)
     return VECTOR_MSG_NULL;
 }
 
-static int  _vector_handle_src_event (vector_t* vec, relay_t* relay, int revents)
+static int  _vector_handle_src_event ( vector_t* vec, relay_t* relay, int revents )
 {
     if (!vec)
         return errlogargs();
@@ -607,7 +608,7 @@ static int  _vector_handle_src_shutdown_event ( vector_t* vec, relay_t* relay )
 
 
 
-static int  _vector_handle_snk_event (vector_t* vec, relay_t* relay, int revents)
+static int  _vector_handle_snk_event ( vector_t* vec, relay_t* relay, int revents )
 {
     if (!vec || !relay)
         return errlogargs();
@@ -676,7 +677,7 @@ static int  _vector_handle_snk_event (vector_t* vec, relay_t* relay, int revents
     return 0;
 }
 
-static int  _vector_setup (vector_t* vec)
+static int  _vector_setup ( vector_t* vec )
 {
     list_t* chain;
     list_node_t* step;
@@ -766,7 +767,7 @@ static int  _vector_setup (vector_t* vec)
     return 0;
 }
 
-static int  _vector_cleanup (vector_t* vec)
+static int  _vector_cleanup ( vector_t* vec )
 {
     relay_t* relay;
     list_node_t* step;
@@ -863,7 +864,7 @@ static int  _vector_cleanup (vector_t* vec)
  * Enables writing of sink (if needed)
  * Disables further reading of source if queue is full
  */
-static int _relay_add_queue (relay_t* relay, event_t* event)
+static int _relay_add_queue ( relay_t* relay, event_t* event )
 {
     /**
      * Error events skip the relay and go directly to the sink.
@@ -917,7 +918,7 @@ static int _relay_add_queue (relay_t* relay, event_t* event)
  * Enables reading of source (if needed)
  * Disables futher writing of sink if queue is empty 
  */
-static int _relay_remove_queue (relay_t* relay, list_node_t* node)
+static int _relay_remove_queue ( relay_t* relay, list_node_t* node )
 {
     if (list_remove(&relay->event_q,node)<0)
         return errlog(ERR_CRITICAL,"Failed to dequeue event\n");
@@ -935,7 +936,7 @@ static int _relay_remove_queue (relay_t* relay, list_node_t* node)
  * Enables the source of a relay
  * Changes all flags and adjusts mvpoll events accordingly
  */
-static int _relay_src_enable (relay_t* relay)
+static int _relay_src_enable ( relay_t* relay )
 {
     mvpoll_key_t* key;
     if (relay->src_enabled) return 0;
@@ -960,7 +961,7 @@ static int _relay_src_enable (relay_t* relay)
  * Enables the sink of a relay
  * Changes all flags and adjusts mvpoll events accordingly
  */
-static int _relay_snk_enable (relay_t* relay)
+static int _relay_snk_enable ( relay_t* relay )
 {
     mvpoll_key_t* key;
     if (relay->snk_enabled) return 0;
@@ -985,7 +986,7 @@ static int _relay_snk_enable (relay_t* relay)
  * Disables the source of a relay
  * Changes all flags and adjusts mvpoll events accordingly
  */
-static int _relay_src_disable (relay_t* relay)
+static int _relay_src_disable ( relay_t* relay )
 {
     mvpoll_key_t* key;
     if (!relay->src_enabled) return 0;
@@ -1010,7 +1011,7 @@ static int _relay_src_disable (relay_t* relay)
  * Disables the sink of a relay
  * Changes all flags and adjusts mvpoll events accordingly
  */
-static int _relay_snk_disable (relay_t* relay)
+static int _relay_snk_disable ( relay_t* relay )
 {
     mvpoll_key_t* key;
     if (!relay->snk_enabled) return 0;
@@ -1133,7 +1134,7 @@ static int _relay_snk_close (relay_t* relay)
  * Add an fd to the mvpoll_keystub table of type 'type'.
  * You will still need to add events and set relay_src and relay_snk
  */
-static int  _mvpoll_keystub_key_add (vector_t* vec, mvpoll_key_t* key, relay_t* relay, int issink)
+static int  _mvpoll_keystub_key_add ( vector_t* vec, mvpoll_key_t* key, relay_t* relay, int issink )
 {
     mvpoll_keystub_t* stub;
 
@@ -1159,7 +1160,7 @@ static int  _mvpoll_keystub_key_add (vector_t* vec, mvpoll_key_t* key, relay_t* 
  * This will remove all FD state from the mvpoll_keystub table
  * All relay's this FD participates in should be dead
  */
-static int  _mvpoll_keystub_key_sub (vector_t* vec, mvpoll_key_t* key)
+static int  _mvpoll_keystub_key_sub ( vector_t* vec, mvpoll_key_t* key )
 {
     mvpoll_keystub_t* stub;
 
@@ -1186,7 +1187,7 @@ static int  _mvpoll_keystub_key_sub (vector_t* vec, mvpoll_key_t* key)
 /**
  * Add (mvpoll) events to a given key
  */
-static int  _mvpoll_keystub_add_events (vector_t* vec, mvpoll_key_t* key, int events)
+static int  _mvpoll_keystub_add_events ( vector_t* vec, mvpoll_key_t* key, int events )
 {
     mvpoll_keystub_t* stub;
     int orig_events;
@@ -1217,7 +1218,7 @@ static int  _mvpoll_keystub_add_events (vector_t* vec, mvpoll_key_t* key, int ev
 /**
  * Remove (mvpoll) events to a given key
  */
-static int  _mvpoll_keystub_sub_events (vector_t* vec, mvpoll_key_t* key, int events)
+static int  _mvpoll_keystub_sub_events ( vector_t* vec, mvpoll_key_t* key, int events )
 {
     mvpoll_keystub_t* stub = (mvpoll_keystub_t*)key->arg;
     int orig_events;
@@ -1245,7 +1246,7 @@ static int  _mvpoll_keystub_sub_events (vector_t* vec, mvpoll_key_t* key, int ev
 /**
  * Prints a chain
  */
-static int  _chain_debug_print_prefix (int debug_level, list_t* chain, char* prefix)
+static int  _chain_debug_print_prefix ( int debug_level, list_t* chain, char* prefix )
 {
     if (!chain || !prefix) 
         return errlogargs();
@@ -1260,7 +1261,7 @@ static int  _chain_debug_print_prefix (int debug_level, list_t* chain, char* pre
 /**
  * Prints a chain
  */
-static int  _chain_debug_print (int debug_level, list_t* chain)
+static int  _chain_debug_print ( int debug_level, list_t* chain )
 {
     int i,len;
     list_node_t* step;

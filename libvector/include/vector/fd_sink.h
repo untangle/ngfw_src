@@ -6,6 +6,7 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
+ * @author: Dirk Morris <dmorris@untangle.com>
  * $Id$
  */
 #ifndef __FD_SINK_H
@@ -25,10 +26,10 @@ typedef struct fd_sink {
     
 } fd_sink_t;
 
-sink_t* fd_sink_create (int fd);
-event_action_t fd_sink_send_event (struct sink* snk, event_t* event);
-mvpoll_key_t*  fd_sink_get_event_key (struct sink* snk);
-int  fd_sink_shutdown (struct sink* snk);
-void fd_sink_raze (struct sink* snk);
+sink_t* fd_sink_create ( int fd );
+event_action_t fd_sink_send_event ( struct sink* snk, event_t* event );
+mvpoll_key_t*  fd_sink_get_event_key ( struct sink* snk );
+int  fd_sink_shutdown ( struct sink* snk );
+void fd_sink_raze ( struct sink* snk );
 
 #endif

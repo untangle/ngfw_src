@@ -6,6 +6,7 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
+ * @author: Dirk Morris <dmorris@untangle.com>
  * $Id$
  */
 #include <stdlib.h>
@@ -34,7 +35,7 @@ relay_t* relay_create ()
     return relay;
 }
 
-void     relay_free (relay_t* relay)
+void     relay_free ( relay_t* relay )
 {
     if (!relay)
         return;
@@ -57,32 +58,32 @@ void     relay_free (relay_t* relay)
     free (relay);
 }
 
-void     relay_set_src (relay_t* relay, source_t* src)
+void     relay_set_src ( relay_t* relay, source_t* src )
 {
     if (!relay) {errlogargs();return;}
     relay->src = src;
 }
 
-void     relay_set_snk (relay_t* relay, sink_t* snk)
+void     relay_set_snk ( relay_t* relay, sink_t* snk )
 {
     if (!relay) {errlogargs();return;}
     relay->snk = snk;
 }
 
-int      relay_debug_print (int level, char* prefix, relay_t* relay)
+int      relay_debug_print ( int level, char* prefix, relay_t* relay )
 {
     errlogimpl();
     //debug(level,"%s: (0x%08x->0x%08x) eventq:%i\n",prefix,relay->src_key_cached,relay->snk_key_cached, list_length(&relay->event_q));
     return 0;
 }
 
-void     relay_set_event_hook (relay_t* relay, relay_event_hook_t hook)
+void     relay_set_event_hook ( relay_t* relay, relay_event_hook_t hook )
 {
     if (!relay) {errlogargs();return;}
     relay->event_hook = hook;
 }
 
-void     relay_set_event_hook_arg (relay_t* relay, void* arg)
+void     relay_set_event_hook_arg ( relay_t* relay, void* arg )
 {
     if (!relay) {errlogargs();return;}
     relay->event_hook_arg = arg;

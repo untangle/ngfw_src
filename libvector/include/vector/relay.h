@@ -6,6 +6,7 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
+ * @author: Dirk Morris <dmorris@untangle.com>
  * $Id$
  */
 #ifndef __RELAY_H
@@ -78,15 +79,15 @@ typedef void (*relay_event_hook_t)  (struct vector* vec, struct relay* relay, st
 
 typedef struct relay relay_t;
 
-relay_t* relay_create (void);
-void     relay_free (relay_t* relay);
+relay_t* relay_create ( void );
+void     relay_free ( relay_t* relay );
 
-void     relay_set_src (relay_t* relay, source_t* src);
-void     relay_set_snk (relay_t* relay, sink_t* snk);
+void     relay_set_src ( relay_t* relay, source_t* src );
+void     relay_set_snk ( relay_t* relay, sink_t* snk );
 
-void     relay_set_event_hook (relay_t* relay, relay_event_hook_t hook);
-void     relay_set_event_hook_arg  (relay_t* relay, void* arg);
+void     relay_set_event_hook ( relay_t* relay, relay_event_hook_t hook );
+void     relay_set_event_hook_arg  ( relay_t* relay, void* arg );
 
-int      relay_debug_print (int level, char* prefix, relay_t* relay);
+int      relay_debug_print ( int level, char* prefix, relay_t* relay );
 
 #endif

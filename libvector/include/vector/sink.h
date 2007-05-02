@@ -6,6 +6,7 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
+ * @author: Dirk Morris <dmorris@untangle.com>
  * $Id$
  */
 #ifndef __SINK_H
@@ -24,7 +25,6 @@ typedef enum {
     EVENT_ACTION_NOTHING  = _EVENT_ACTION_NOTHING,
     EVENT_ACTION_DEQUEUE  = _EVENT_ACTION_DEQUEUE, /* will dequeue and free event */
     EVENT_ACTION_SHUTDOWN = _EVENT_ACTION_SHUTDOWN /* will shutdown sink and free event */
-    /* EVENT_CLOSED XXX? */
 } event_action_t;
 
 #define ALWAYS_WRITABLE_FD -2

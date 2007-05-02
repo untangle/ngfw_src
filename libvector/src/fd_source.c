@@ -6,6 +6,7 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
+ * @author: Dirk Morris <dmorris@untangle.com>
  * $Id$
  */
 #include <stdlib.h>
@@ -19,7 +20,7 @@
 #define FD_SOURCE_DEBUG 1
 #define FD_SOURCE_DEBUG_LVL 9
 
-source_t* fd_source_create (int fd)
+source_t* fd_source_create ( int fd )
 {
     fd_source_t* src = malloc(sizeof(fd_source_t));
     if (!src)
@@ -35,7 +36,7 @@ source_t* fd_source_create (int fd)
     return (source_t*)src;
 }
 
-event_t*  fd_source_get_event (source_t* src)
+event_t*  fd_source_get_event ( source_t* src )
 {
     event_t* evt = event_create(0);
     int fd = ((fd_source_t*)src)->fd;
@@ -66,7 +67,7 @@ event_t*  fd_source_get_event (source_t* src)
     return (event_t*)evt;
 }
 
-mvpoll_key_t* fd_source_get_event_key (source_t* src)
+mvpoll_key_t* fd_source_get_event_key ( source_t* src )
 {
     fd_source_t* fd_src = (fd_source_t*)src;
 
@@ -76,7 +77,7 @@ mvpoll_key_t* fd_source_get_event_key (source_t* src)
     return fd_src->key;
 }
 
-int       fd_source_shutdown (source_t* src)
+int       fd_source_shutdown ( source_t* src )
 {
     fd_source_t* fd_src = (fd_source_t*)src;
 
@@ -110,7 +111,7 @@ int       fd_source_shutdown (source_t* src)
     return 0;
 }
 
-void      fd_source_raze (source_t* src)
+void      fd_source_raze ( source_t* src )
 {
     fd_source_t* fd_src = (fd_source_t*)src;
 

@@ -5,6 +5,7 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
+ * @author: Dirk Morris <dmorris@untangle.com>
  * $Id$
  */
 #ifndef __EVENT_H
@@ -58,7 +59,5 @@ static __inline__ int event_is_shutdown_error( event_type_t type )
     
     return 0;
 }
-
-
 
 #endif

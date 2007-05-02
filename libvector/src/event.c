@@ -6,6 +6,7 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
+ * @author: Dirk Morris <dmorris@untangle.com>
  * $Id$
  */
 #include <vector/event.h>
@@ -13,7 +14,7 @@
 #include <stdlib.h>
 #include <mvutil/errlog.h>
 
-event_t* event_create (event_type_t type)
+event_t* event_create ( event_type_t type )
 {
     event_t* ev = malloc(sizeof(event_t));
     if (!ev)
@@ -25,7 +26,7 @@ event_t* event_create (event_type_t type)
     return ev;
 }
 
-void     event_raze (event_t* ev)
+void     event_raze ( event_t* ev )
 {
     if (ev) free(ev);
 }

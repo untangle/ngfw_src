@@ -6,6 +6,7 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
+ * @author: Dirk Morris <dmorris@untangle.com>
  * $Id$
  */
 #include <libnetcap.h>
@@ -23,7 +24,7 @@
 #define FD_SINK_DEBUG 1
 #define FD_SINK_DEBUG_LVL 9
 
-sink_t* fd_sink_create (int fd)
+sink_t* fd_sink_create ( int fd )
 {
     fd_sink_t* snk = malloc(sizeof(fd_sink_t));
     if (!snk)
@@ -39,7 +40,7 @@ sink_t* fd_sink_create (int fd)
     return (sink_t*)snk;
 }
 
-event_action_t  fd_sink_send_event (sink_t* snk, event_t* event)
+event_action_t  fd_sink_send_event ( sink_t* snk, event_t* event )
 {
     fd_sink_t* fd_snk = (fd_sink_t*) snk;
 
@@ -82,7 +83,7 @@ event_action_t  fd_sink_send_event (sink_t* snk, event_t* event)
     }
 }
 
-mvpoll_key_t*   fd_sink_get_event_key (sink_t* snk)
+mvpoll_key_t*   fd_sink_get_event_key ( sink_t* snk )
 {
     fd_sink_t* fd_snk = (fd_sink_t*)snk;
     if (!fd_snk)  return errlogargs_null();
@@ -90,7 +91,7 @@ mvpoll_key_t*   fd_sink_get_event_key (sink_t* snk)
     return fd_snk->key;
 }
 
-int       fd_sink_shutdown (struct sink* snk)
+int       fd_sink_shutdown ( struct sink* snk )
 {
     fd_sink_t* fd_snk = (fd_sink_t*)snk;
     if (!fd_snk)
@@ -124,7 +125,7 @@ int       fd_sink_shutdown (struct sink* snk)
     return 0;
 }
 
-void      fd_sink_raze (struct sink* snk)
+void      fd_sink_raze ( struct sink* snk )
 {
     fd_sink_t* fd_snk = (fd_sink_t*)snk;
 
