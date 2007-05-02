@@ -143,17 +143,17 @@ class AdminManagerImpl implements AdminManager
 
     public LoginSession[] loggedInUsers()
     {
-        return HttpInvoker.invoker().getLoginSessions();
+        return HttpInvokerImpl.invoker().getLoginSessions();
     }
 
     public void logout()
     {
-        HttpInvoker.invoker().logoutActiveLogin();
+        HttpInvokerImpl.invoker().logoutActiveLogin();
     }
 
     public LoginSession whoAmI()
     {
-        return HttpInvoker.invoker().getActiveLogin();
+        return HttpInvokerImpl.invoker().getActiveLogin();
     }
 
     public TimeZone getTimeZone()
@@ -251,7 +251,7 @@ class AdminManagerImpl implements AdminManager
     }
 
     public String generateAuthNonce() {
-        HttpInvoker invoker = HttpInvoker.invoker();
+        HttpInvokerImpl invoker = HttpInvokerImpl.invoker();
         LoginSession ls = invoker.getActiveLogin();
         if (ls == null)
             throw new IllegalStateException("generateAuthNonce called from backend");

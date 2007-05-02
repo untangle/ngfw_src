@@ -38,12 +38,12 @@ import com.untangle.mvvm.client.MvvmRemoteContext;
 import com.untangle.mvvm.security.LoginSession;
 import org.apache.log4j.Logger;
 
-class HttpInvoker extends InvokerBase
+class HttpInvokerImpl implements HttpInvoker
 {
     private static final boolean ALLOW_MULTIPLE_LOGINS
         = Boolean.parseBoolean(System.getProperty("mvvm.login.multiuser"));
 
-    private static final HttpInvoker INVOKER = new HttpInvoker();
+    private static final HttpInvokerImpl INVOKER = new HttpInvokerImpl();
     private static final int LOGIN_TIMEOUT_MINUTES = 30;
     private static final int LOGIN_REAPER_PERIOD = 60000;
 
@@ -59,7 +59,7 @@ class HttpInvoker extends InvokerBase
 
     // constructors -----------------------------------------------------------
 
-    private HttpInvoker()
+    private HttpInvokerImpl()
     {
         logins = new ConcurrentHashMap<LoginSession, LoginDesc>();
         activeLogin = new ThreadLocal<LoginSession>();
@@ -70,15 +70,15 @@ class HttpInvoker extends InvokerBase
 
     // static factories -------------------------------------------------------
 
-    static HttpInvoker invoker()
+    static HttpInvokerImpl invoker()
     {
         return INVOKER;
     }
 
-    // protected methods ------------------------------------------------------
+    // public methods ---------------------------------------------------------
 
-    protected void handleStream(InputStream is, OutputStream os,
-                                boolean local, InetAddress remoteAddr)
+    public void handle(InputStream is, OutputStream os, boolean local,
+                      InetAddress remoteAddr)
     {
         newLogin.remove();
         loginDescs.remove();

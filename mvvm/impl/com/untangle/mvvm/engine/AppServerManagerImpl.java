@@ -16,8 +16,8 @@ import java.io.FileInputStream;
 import java.util.Properties;
 
 import com.untangle.mvvm.LocalAppServerManager;
-import com.untangle.mvvm.networking.NetworkUtil;
 import com.untangle.mvvm.networking.AddressSettingsListener;
+import com.untangle.mvvm.networking.NetworkUtil;
 import com.untangle.mvvm.networking.internal.AddressSettingsInternal;
 import com.untangle.mvvm.security.CertInfo;
 import com.untangle.mvvm.security.RFC2253Name;
@@ -99,7 +99,7 @@ class AppServerManagerImpl implements LocalAppServerManager
         this.externalHttpsPort = p;
     }
 
-    public void postInit(InvokerBase invokerBase)
+    public void postInit(HttpInvoker httpInvoker)
     {
         String eHost = getFQDN();
 
@@ -142,7 +142,7 @@ class AppServerManagerImpl implements LocalAppServerManager
         try {
             String disableTomcat = System.getProperty("bunnicula.devel.notomcat");
             if (null == disableTomcat || !Boolean.valueOf(disableTomcat)) {
-                tomcatManager.startTomcat(invokerBase, DEFAULT_HTTP_PORT,
+                tomcatManager.startTomcat(httpInvoker, DEFAULT_HTTP_PORT,
                                           DEFAULT_HTTPS_PORT,
                                           externalHttpsPort,
                                           NetworkUtil.INTERNAL_OPEN_HTTPS_PORT);

@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.mvvm.engine.InvokerBase;
+import com.untangle.mvvm.engine.HttpInvoker;
 
 public class HttpInvokerServlet extends HttpServlet
 {
@@ -31,7 +31,7 @@ public class HttpInvokerServlet extends HttpServlet
     {
         InputStream is = req.getInputStream();
         OutputStream os = resp.getOutputStream();
-        InvokerBase ib = (InvokerBase)getServletContext()
+        HttpInvoker hi = (HttpInvoker)getServletContext()
             .getAttribute("invoker");
 
         InetAddress clientAddr;
@@ -41,9 +41,9 @@ public class HttpInvokerServlet extends HttpServlet
             // Can't happen
             throw new Error(x);
         }
-        if (InvokerBase.GZIP_RESPONSE)
+        if (HttpInvoker.GZIP_RESPONSE)
             resp.setHeader("Content-Encoding", "gzip");
-        ib.handle(is, os, req.getLocalAddr().equals("127.0.0.1"), clientAddr);
+        hi.handle(is, os, req.getLocalAddr().equals("127.0.0.1"), clientAddr);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class HttpInvokerServlet extends HttpServlet
 
         Object o = getServletContext().getAttribute("invoker");
 
-        pr.println("InvokerBase: " + o);
+        pr.println("HttpInvoker: " + o);
         pr.close();
     }
 }

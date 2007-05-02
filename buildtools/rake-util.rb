@@ -534,8 +534,7 @@ class ServletBuilder < Target
   } + ["#{$BuildEnv.javahome}/lib/tools.jar"];
 
   def initialize(package, pkgname, path, libdeps = [], trandeps = [], ms = [],
-                 common = [$BuildEnv.servletcommon], requiresBootstrap = false,
-                 jsp_list = nil)
+                 common = [$BuildEnv.servletcommon], jsp_list = nil)
     @pkgname = pkgname
     @path = path
     @trandeps = trandeps
@@ -577,9 +576,6 @@ class ServletBuilder < Target
 
     jardeps = libdeps + @trandeps + Jars::Base + FileList["#{@destRoot}/WEB-INF/lib/*.jar"]
     jardeps << mvvm["api"] << mvvm["localapi"]
-    if requiresBootstrap
-      jardeps << mvvm["bootstrap"]
-    end
 
     # XXX make name nil?
     @srcJar = JarTarget.buildTarget(package, jardeps, name, "#{path}/src",

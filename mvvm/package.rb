@@ -30,7 +30,7 @@ jts << JarTarget.buildTarget(mvvm, deps, 'impl', 'mvvm/impl')
 # servlets
 ServletBuilder.new(mvvm, 'com.untangle.mvvm.invoker.jsp',
                    'mvvm/servlets/http-invoker', [], [], [],
-                   [$BuildEnv.servletcommon], true)
+                   [$BuildEnv.servletcommon])
 
 deps = %w( commons-httpclient-3.0/commons-httpclient-3.0.jar
            commons-codec-1.3/commons-codec-1.3.jar

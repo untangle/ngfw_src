@@ -383,7 +383,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
     public MessageQueue<ToolboxMessage> subscribe()
     {
-        LoginSession s = HttpInvoker.invoker().getActiveLogin();
+        LoginSession s = HttpInvokerImpl.invoker().getActiveLogin();
 
         MessageQueueImpl mq;
         synchronized (messageQueues) {

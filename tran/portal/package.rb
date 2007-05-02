@@ -31,7 +31,7 @@ ServletBuilder.new(portal, 'com.untangle.tran.portal.proxy.jsp',
 ServletBuilder.new(portal, 'com.untangle.tran.portal.rdp.jsp',
                    'tran/portal/servlets/rdp', [], [portal['gui']], [],
                    [$BuildEnv.servletcommon, 'tran/portal/common'],
-                   false, %w(rdp.jnlp rdp.jsp))
+                   %w(rdp.jnlp rdp.jsp))
 
 $InstallTarget.installJars(%w(dist/properJavaRDP-1.1.jar java-getopt-1.0.12.jar).map!{|a| ThirdpartyJar.get("../pkgs/properJavaRDP/#{a}")} + Jars::Log4j, "#{portal.distDirectory}/usr/share/metavize/web/rdp", nil, true)
 
@@ -43,6 +43,5 @@ $InstallTarget.installJars(Jars.downloadTarget('tightvnc-1.2.9/classes/VncViewer
 
 ServletBuilder.new(portal, 'com.untangle.tran.portal.vnc.jsp',
                    'tran/portal/servlets/vnc', [], [portal['gui']], [],
-
                    [$BuildEnv.servletcommon, 'tran/portal/common'],
-                   false, %w(vnc.jnlp vnc.jsp))
+                   %w(vnc.jnlp vnc.jsp))

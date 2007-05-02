@@ -71,7 +71,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private RemoteIntfManagerImpl remoteIntfManager;
     private LocalShieldManager localShieldManager;
     private RemoteShieldManager remoteShieldManager;
-    private HttpInvoker httpInvoker;
+    private HttpInvokerImpl httpInvoker;
     private LoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
     private EventLogger eventLogger;
@@ -605,7 +605,7 @@ public class MvvmContextImpl extends MvvmContextBase
         /* initalize everything and start it up */
         localPhoneBookImpl.init();
 
-        httpInvoker = HttpInvoker.invoker();
+        httpInvoker = HttpInvokerImpl.invoker();
 
         remoteContext = new MvvmRemoteContextImpl(this);
         state = MvvmState.INITIALIZED;
@@ -632,8 +632,7 @@ public class MvvmContextImpl extends MvvmContextBase
 
         //Inform the AppServer manager that everything
         //else is started.
-        appServerManager.postInit(getInvoker());
-
+        appServerManager.postInit(httpInvoker);
     }
 
     @Override
@@ -747,12 +746,6 @@ public class MvvmContextImpl extends MvvmContextBase
         } catch (Exception exn) {
             logger.warn("unable to stop the heap monitor",exn);
         }
-    }
-
-    @Override
-    protected InvokerBase getInvoker()
-    {
-        return httpInvoker;
     }
 
     // package protected methods ----------------------------------------------

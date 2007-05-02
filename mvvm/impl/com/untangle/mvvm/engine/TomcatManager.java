@@ -226,7 +226,7 @@ class TomcatManager
     }
 
     // XXX exception handling
-    synchronized void startTomcat(InvokerBase invokerBase,
+    synchronized void startTomcat(HttpInvoker httpInvoker,
                                   int internalHTTPPort,
                                   int internalHTTPSPort,
                                   int externalHTTPSPort,
@@ -306,7 +306,7 @@ class TomcatManager
 
             /* Moved after adding the valve */
             baseHost.addChild(ctx);
-            ctx.getServletContext().setAttribute("invoker", invokerBase);
+            ctx.getServletContext().setAttribute("invoker", httpInvoker);
 
             // Load the webapps which were requested before the
             // system started-up.

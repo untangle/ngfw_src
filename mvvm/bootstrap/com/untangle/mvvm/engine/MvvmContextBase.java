@@ -26,7 +26,6 @@ public abstract class MvvmContextBase
     protected abstract void init();
     protected abstract void destroy();
     protected abstract void postInit();
-    protected abstract InvokerBase getInvoker();
 
     void doInit(Main main)
     {

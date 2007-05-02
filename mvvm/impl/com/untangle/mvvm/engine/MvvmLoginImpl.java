@@ -26,10 +26,7 @@ import com.untangle.mvvm.security.MvvmLogin;
 import com.untangle.mvvm.security.MvvmPrincipal;
 import com.untangle.mvvm.security.PasswordUtil;
 import com.untangle.mvvm.security.User;
-import com.untangle.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
 
 class MvvmLoginImpl implements MvvmLogin
 {
@@ -76,7 +73,7 @@ class MvvmLoginImpl implements MvvmLogin
         if (!success)
             throw new FailedLoginException("Activation key invalid");
 
-        HttpInvoker invoker = HttpInvoker.invoker();
+        HttpInvokerImpl invoker = HttpInvokerImpl.invoker();
         InetAddress clientAddr = invoker.getClientAddr();
         return login(ACTIVATION_USER, true, clientAddr,
                      LoginSession.LoginType.INTERACTIVE, true);
@@ -94,7 +91,7 @@ class MvvmLoginImpl implements MvvmLogin
             throw new FailedLoginException("Product has not been activated");
         }
 
-        HttpInvoker invoker = HttpInvoker.invoker();
+        HttpInvokerImpl invoker = HttpInvokerImpl.invoker();
         InetAddress clientAddr = invoker.getClientAddr();
 
         Set users = MvvmContextFactory.context().adminManager()
@@ -139,7 +136,7 @@ class MvvmLoginImpl implements MvvmLogin
     public MvvmRemoteContext systemLogin(String username, String password)
         throws FailedLoginException
     {
-        HttpInvoker invoker = HttpInvoker.invoker();
+        HttpInvokerImpl invoker = HttpInvokerImpl.invoker();
         InetAddress clientAddr = invoker.getClientAddr();
 
         // Do something better here. XXX
@@ -177,7 +174,7 @@ class MvvmLoginImpl implements MvvmLogin
                                     LoginSession.LoginType loginType,
                                     boolean force)
     {
-        HttpInvoker invoker = HttpInvoker.invoker();
+        HttpInvokerImpl invoker = HttpInvokerImpl.invoker();
 
         MvvmPrincipal mp = new MvvmPrincipal(username, readOnly);
 
