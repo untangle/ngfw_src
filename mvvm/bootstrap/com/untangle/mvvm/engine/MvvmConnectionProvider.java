@@ -17,6 +17,12 @@ import java.util.Properties;
 
 import org.hibernate.connection.ConnectionProvider;
 
+/**
+ * Provides database connections to Hibernate.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class MvvmConnectionProvider implements ConnectionProvider
 {
     private final DataSourceFactory dsf = DataSourceFactory.factory();
@@ -36,6 +42,11 @@ public class MvvmConnectionProvider implements ConnectionProvider
         return false;
     }
 
+    /**
+     * Does nothing, hibernate does not decide when to close the pool,
+     * we do.
+     */
     public void close() { }
+
     public void configure(Properties p) { }
 }
