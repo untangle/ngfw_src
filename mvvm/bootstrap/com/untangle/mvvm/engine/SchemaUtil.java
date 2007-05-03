@@ -21,12 +21,17 @@ import org.apache.log4j.Logger;
 /**
  * Internal utilities for dealing with the database schema.
  *
+ * Currently, we run the update-schema script which runs SQL scripts
+ * to initialize or update database schemas. In the future we may use
+ * Ruby scripts to drive the schema upgrade process, but it will
+ * retains backwards compatibility with the SQL scripts.
+ *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 public class SchemaUtil
 {
-    private static final Set<String> CONVERTS = new HashSet<String>();
+    private final Set<String> converts = new HashSet<String>();
 
     // constructors -----------------------------------------------------------
 
@@ -41,25 +46,27 @@ public class SchemaUtil
      * Initialize component schema.
      *
      * XXX we need timeout and barf behavior
-     * XXX make non-static?
      *
-     * @param component to initialize.
+     * @param type the schema to initialize, either "events" or
+     * "schema".
+     * @param component name of the component to initialize.
      */
     public void initSchema(String type, String component)
     {
         String key = type + "," + component;
-        synchronized (CONVERTS) {
-            while (CONVERTS.contains(key)) {
+        synchronized (converts) {
+            while (converts.contains(key)) {
                 try {
-                    CONVERTS.wait();
+                    converts.wait();
                 } catch (InterruptedException exn) {
-                    // XXX doesn't happen, need a destroy method
+                    // doesn't happen, XXX need a destroy method?
                 }
             }
         }
 
         try {
-            ProcessBuilder pb = new ProcessBuilder("mvnice", "update-schema", type, component);
+            ProcessBuilder pb = new ProcessBuilder("mvnice", "update-schema",
+                                                   type, component);
             Process p = pb.start();
             InputStream is = p.getInputStream();
             // XXX we log in the script, maybe move up to here
@@ -82,9 +89,9 @@ public class SchemaUtil
             Logger logger = Logger.getLogger(SchemaUtil.class);
             logger.warn("error in update-schema", exn);
         } finally {
-            synchronized (CONVERTS) {
-                CONVERTS.remove(key);
-                CONVERTS.notifyAll();
+            synchronized (converts) {
+                converts.remove(key);
+                converts.notifyAll();
             }
         }
     }
