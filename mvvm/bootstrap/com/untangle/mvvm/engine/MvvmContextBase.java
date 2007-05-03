@@ -11,7 +11,6 @@
 
 package com.untangle.mvvm.engine;
 
-
 /**
  * This class is for Main to manipulate MvvmContext without resorting
  * to reflection and allowing package protection of sensitive methods.

@@ -59,6 +59,9 @@ public class Main
 
     // public methods ---------------------------------------------------------
 
+    /**
+     * @see MvvmClassLoader.refreshToolbox()
+     */
     public boolean refreshToolbox()
     {
         return mcl.refreshToolbox();
