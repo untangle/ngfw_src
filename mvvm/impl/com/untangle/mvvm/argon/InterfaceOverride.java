@@ -29,6 +29,14 @@ import com.untangle.mvvm.tapi.Protocol;
 
 import com.untangle.mvvm.tran.firewall.InterfaceRedirect;
 
+/**
+ * An InterfaceOverride modifies the destination interface of a session based on
+ * the client side session properites.  This uses a list of InterfaceRedirects, to
+ * to determine when and if the interface should be modified.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 final class InterfaceOverride
 {
     private static final List<InterfaceRedirect> EMPTY_OVERRIDE_LIST = Collections.emptyList();
@@ -42,6 +50,7 @@ final class InterfaceOverride
     {
     }
 
+    /** Update the destination interface for the following netcap session */
     void updateDestinationInterface( NetcapSession netcapSession )
     {
         byte currentInterface  = netcapSession.serverSide().interfaceId();

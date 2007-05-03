@@ -76,62 +76,62 @@ class NatChecker implements NetworkSettingsListener
         /* Set this list once at the end to avoid locks */
         this.natMatcherList = Collections.unmodifiableList( matchers );
     }
-}
 
-class NatMatcher
-{
-    /* Don't have to check the port or protocol, because all ports and
-     * protocols match.  Don't have to check the server interface,
-     * because, it is the same as the client interface. */
-    private final IPMatcher   ipMatcher;
-    private final IntfMatcher intfMatcher;
-    private final Logger logger = Logger.getLogger(getClass());
-
-
-    NatMatcher( IPMatcher ipMatcher, IntfMatcher intfMatcher )
+    static class NatMatcher
     {
-        this.ipMatcher = ipMatcher;
-        this.intfMatcher = intfMatcher;
-    }
-
-    boolean isMatch( NetcapSession netcapSession )
-    {
-        LocalIntfManager lim = Argon.getInstance().getIntfManager();
-
-        byte clientIntf = lim.toArgon( netcapSession.clientSide().interfaceId());
-        InetAddress clientAddr = netcapSession.clientSide().client().host();
-
-        return this.intfMatcher.isMatch( clientIntf ) && this.ipMatcher.isMatch( clientAddr );
-    }
-
-    public String toString()
-    {
-        return "<NatMatcher: " + ipMatcher + "/" + intfMatcher + ">";
-    }
-
-
-    static NatMatcher makeMatcher( NetworkSpaceInternal space, IPNetwork network )
-    {
-        IPMatcher ip = IPMatcherFactory.getInstance().
-            makeSubnetMatcher( network.getNetwork(), network.getNetmask());
-
-        List<InterfaceInternal> intfList = space.getInterfaceList();
-
-        byte intfArray[] = new byte[intfList.size()];
-
-        int c = 0 ;
-        for ( InterfaceInternal intf : intfList ) intfArray[c++] = intf.getArgonIntf().getArgon();
-
-        IntfMatcher intfMatcher;
-        try {
-            intfMatcher = IntfMatcherFactory.getInstance().makeSetMatcher( intfArray );
-        } catch ( ParseException e ) {
-            Logger logger = Logger.getLogger(NatChecker.class);
-            logger.error( "Error making set matcher, using the nil matcher.", e );
-            intfMatcher = IntfMatcherFactory.getInstance().getNilMatcher();
+        /* Don't have to check the port or protocol, because all ports and
+         * protocols match.  Don't have to check the server interface,
+         * because, it is the same as the client interface. */
+        private final IPMatcher   ipMatcher;
+        private final IntfMatcher intfMatcher;
+        private final Logger logger = Logger.getLogger(getClass());
+        
+        
+        NatMatcher( IPMatcher ipMatcher, IntfMatcher intfMatcher )
+        {
+            this.ipMatcher = ipMatcher;
+            this.intfMatcher = intfMatcher;
         }
-
-        return new NatMatcher( ip, intfMatcher );
+        
+        boolean isMatch( NetcapSession netcapSession )
+        {
+            LocalIntfManager lim = Argon.getInstance().getIntfManager();
+            
+            byte clientIntf = lim.toArgon( netcapSession.clientSide().interfaceId());
+            InetAddress clientAddr = netcapSession.clientSide().client().host();
+            
+            return this.intfMatcher.isMatch( clientIntf ) && this.ipMatcher.isMatch( clientAddr );
+        }
+        
+        public String toString()
+        {
+            return "<NatMatcher: " + ipMatcher + "/" + intfMatcher + ">";
+        }
+        
+        
+        static NatMatcher makeMatcher( NetworkSpaceInternal space, IPNetwork network )
+        {
+            IPMatcher ip = IPMatcherFactory.getInstance().
+                makeSubnetMatcher( network.getNetwork(), network.getNetmask());
+            
+            List<InterfaceInternal> intfList = space.getInterfaceList();
+            
+            byte intfArray[] = new byte[intfList.size()];
+            
+            int c = 0 ;
+            for ( InterfaceInternal intf : intfList ) intfArray[c++] = intf.getArgonIntf().getArgon();
+            
+            IntfMatcher intfMatcher;
+            try {
+                intfMatcher = IntfMatcherFactory.getInstance().makeSetMatcher( intfArray );
+            } catch ( ParseException e ) {
+                Logger logger = Logger.getLogger(NatChecker.class);
+                logger.error( "Error making set matcher, using the nil matcher.", e );
+                intfMatcher = IntfMatcherFactory.getInstance().getNilMatcher();
+            }
+            
+            return new NatMatcher( ip, intfMatcher );
+        }
     }
 }
 

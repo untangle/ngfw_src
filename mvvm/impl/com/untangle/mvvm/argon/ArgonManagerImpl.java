@@ -37,6 +37,13 @@ import com.untangle.mvvm.localapi.LocalIntfManager;
 
 import com.untangle.mvvm.tran.firewall.InterfaceRedirect;
 
+
+/**
+ * Argon manager.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public class ArgonManagerImpl implements ArgonManager
 {
     private static final ArgonManagerImpl INSTANCE = new ArgonManagerImpl();

@@ -26,6 +26,13 @@ import com.untangle.mvvm.IntfConstants;
 
 import com.untangle.mvvm.localapi.ArgonInterface;
 
+
+/**
+ * Network interface translation from netcap interfaces to argon interfaces.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 final class ArgonInterfaceConverter
 {
     private static Logger logger = Logger.getLogger( ArgonInterfaceConverter.class );
