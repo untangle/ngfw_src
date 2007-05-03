@@ -296,7 +296,6 @@ class TomcatManager
 
             // create application Context
             StandardContext ctx = (StandardContext)emb.createContext("/http-invoker", "http-invoker");
-            ctx.setPrivileged(true);
             mgr = new StandardManager();
             mgr.setPathname(null); /* disable session persistence */
             ctx.setManager(mgr);
