@@ -28,7 +28,14 @@ public class SchemaUtil
 {
     private static final Set<String> CONVERTS = new HashSet<String>();
 
-    // static methods ---------------------------------------------------------
+    // constructors -----------------------------------------------------------
+
+    /**
+     * Package protected.
+     */
+    SchemaUtil() { }
+
+    // public methods ---------------------------------------------------------
 
     /**
      * Initialize component schema.
@@ -38,7 +45,7 @@ public class SchemaUtil
      *
      * @param component to initialize.
      */
-    public static void initSchema(String type, String component)
+    public void initSchema(String type, String component)
     {
         String key = type + "," + component;
         synchronized (CONVERTS) {

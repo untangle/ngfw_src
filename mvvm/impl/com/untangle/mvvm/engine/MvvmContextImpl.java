@@ -756,6 +756,11 @@ public class MvvmContextImpl extends MvvmContextBase
         return main.refreshToolbox();
     }
 
+    SchemaUtil schemaUtil()
+    {
+        return main.schemaUtil();
+    }
+
     void fatalError(String throwingLocation, Throwable x)
     {
         main.fatalError(throwingLocation, x);

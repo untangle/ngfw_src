@@ -31,6 +31,8 @@ public class Main
     private static String MVVM_LOCAL_CONTEXT_CLASSNAME
         = "com.untangle.mvvm.engine.MvvmContextImpl";
 
+    private final SchemaUtil schemaUtil = new SchemaUtil();
+
     private final Logger logger = Logger.getLogger(getClass());
 
     private MvvmClassLoader mcl;
@@ -41,6 +43,7 @@ public class Main
 
     private Main()
     {
+        schemaUtil.initSchema("settings", "mvvm");
         LogManager.setRepositorySelector(MvvmRepositorySelector.selector(),
                                          new Object());
     }
@@ -52,8 +55,6 @@ public class Main
      */
     public static final void main(String[] args) throws Exception
     {
-        SchemaUtil.initSchema("settings", "mvvm");
-
         new Main().init();
     }
 
@@ -90,6 +91,14 @@ public class Main
         } finally {
             System.exit(-1);
         }
+    }
+
+    /**
+     * Provides MvvmContext access to {@link SchemaUtil}.
+     */
+    public SchemaUtil schemaUtil()
+    {
+        return schemaUtil;
     }
 
     // private methods --------------------------------------------------------

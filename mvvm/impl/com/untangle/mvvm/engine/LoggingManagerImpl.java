@@ -103,9 +103,9 @@ class LoggingManagerImpl implements LoggingManager
     public void logError(String errorText)
     {
         if (null == errorText) {
-           logger.error("This is the default error text.");
+            logger.error("This is the default error text.");
         } else {
-           logger.error(errorText);
+            logger.error(errorText);
         }
 
         return;
@@ -141,18 +141,19 @@ class LoggingManagerImpl implements LoggingManager
             {
                 public void run()
                 {
-                        MvvmContextFactory.context().waitForStartup();
+                    MvvmContextImpl mctx = MvvmContextImpl.getInstance();
+                    mctx.waitForStartup();
 
-                        synchronized (initQueue) {
-                            for (Iterator<String> i = initQueue.iterator(); i.hasNext(); ) {
-                                String n = i.next();
-                                i.remove();
-                                SchemaUtil.initSchema("events", n);
-                            }
-
-                            conversionComplete = true;
-                            initQueue.notifyAll();
+                    synchronized (initQueue) {
+                        for (Iterator<String> i = initQueue.iterator(); i.hasNext(); ) {
+                            String n = i.next();
+                            i.remove();
+                            mctx.schemaUtil().initSchema("events", n);
                         }
+
+                        conversionComplete = true;
+                        initQueue.notifyAll();
+                    }
                 }
             }).start();
     }
