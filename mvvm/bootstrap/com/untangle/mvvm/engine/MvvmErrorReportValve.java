@@ -19,6 +19,16 @@ import org.apache.catalina.connector.Response;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.valves.ErrorReportValve;
 
+/**
+ * Sends a friendly error page when a problem occurs.
+ *
+ * The error message is supplied by either setting the system property
+ * {@link #MVVM_WEB_MESSAGE_ATTR} or by using the {@link
+ * HttpServletResponse.sendError(int, String))} method.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class MvvmErrorReportValve extends ErrorReportValve
 {
     public static final String MVVM_WEB_MESSAGE_ATTR = "com.untangle.mvvm.web.message";
@@ -53,9 +63,7 @@ public class MvvmErrorReportValve extends ErrorReportValve
         response.setContentType("text/html");
         response.setCharacterEncoding("utf-8");
         PrintWriter writer = response.getReporter();
-        if (writer != null) {
-            // If writer is null, it's an indication that the response has
-            // been hard committed already, which should never happen
+        if (null != writer) {
             writeReport(writer, errorMessage);
         }
     }
