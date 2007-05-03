@@ -176,8 +176,8 @@ public class Main
         URL mvvmReportingJar = new URL("file://" + bunniculaLib + "/mvvm-reporting.jar");
         URL jVectorJar = new URL("file://" + bunniculaLib + "/jvector-impl.jar");
         URL jNetcapJar = new URL("file://" + bunniculaLib + "/jnetcap-impl.jar");
-        URL[] urls = new URL[] { mvvmImplJar, mvvmApiJar, mvvmLocalApiJar, mvvmReportingJar,
-                                 jVectorJar, jNetcapJar };
+        URL[] urls = new URL[] { mvvmImplJar, mvvmApiJar, mvvmLocalApiJar,
+                                 mvvmReportingJar, jVectorJar, jNetcapJar };
         String bunniculaToolbox = System.getProperty("bunnicula.toolbox.dir");
         mcl = new MvvmClassLoader(urls, getClass().getClassLoader(),
                                   new File(bunniculaToolbox));
