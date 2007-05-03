@@ -258,7 +258,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             // error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
-            Main.fatalError("SessionHandler", x);
+            MvvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
             transformManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
@@ -299,7 +299,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             String message = "" + x.getClass().getName() + " in raze";
             error(message, x);
         } catch (OutOfMemoryError x) {
-            Main.fatalError("SessionHandler", x);
+            MvvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
             transformManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
@@ -413,7 +413,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             // error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
-            Main.fatalError("SessionHandler", x);
+            MvvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
             transformManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
@@ -451,7 +451,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             // error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
-            Main.fatalError("SessionHandler", x);
+            MvvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
             transformManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
@@ -614,7 +614,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
-            Main.fatalError("SessionHandler", x);
+            MvvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
           MDC.remove(SESSION_ID_MDC_KEY);
         }
@@ -689,7 +689,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
-            Main.fatalError("SessionHandler", x);
+            MvvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
           MDC.remove(SESSION_ID_MDC_KEY);
         }

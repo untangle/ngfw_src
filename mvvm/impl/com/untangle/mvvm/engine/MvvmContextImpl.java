@@ -325,7 +325,7 @@ public class MvvmContextImpl extends MvvmContextBase
                     try {
                         runnable.run();
                     } catch (OutOfMemoryError exn) {
-                        Main.fatalError("MvvmContextImpl", exn);
+                        MvvmContextImpl.getInstance().fatalError("MvvmContextImpl", exn);
                     } catch (Exception exn) {
                         logger.error("Exception running: " + runnable, exn);
                     } finally {
@@ -372,8 +372,9 @@ public class MvvmContextImpl extends MvvmContextBase
             String msg = x.getMessage();
             if (msg.contains("Cannot allocate memory")) {
                 logger.error("Virtual memory exhausted in Process.exec()");
-                Main.fatalError("MvvmContextImpl.exec", x);
-                // There's no return from fatalError, but we have to keep the compiler happy.
+                MvvmContextImpl.getInstance().fatalError("MvvmContextImpl.exec", x);
+                // There's no return from fatalError, but we have to
+                // keep the compiler happy.
                 return null;
             } else {
                 throw x;
@@ -753,6 +754,11 @@ public class MvvmContextImpl extends MvvmContextBase
     boolean refreshToolbox()
     {
         return main.refreshToolbox();
+    }
+
+    void fatalError(String throwingLocation, Throwable x)
+    {
+        main.fatalError(throwingLocation, x);
     }
 
     void refreshSessionFactory()

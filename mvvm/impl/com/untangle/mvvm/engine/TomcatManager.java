@@ -358,13 +358,13 @@ class TomcatManager
                                     } catch (LifecycleException x) {
                                         boolean isAddressInUse = isAIUExn(x);
                                         if (!isAddressInUse) {
-                                            Main.fatalError("Starting Tomcat", x);
+                                            MvvmContextImpl.getInstance().fatalError("Starting Tomcat", x);
                                             return;
                                         }
                                     }
                                 }
                                 if (i == NUM_TOMCAT_RETRIES)
-                                    Main.fatalError("Unable to start Tomcat after " +
+                                    MvvmContextImpl.getInstance().fatalError("Unable to start Tomcat after " +
                                                     NUM_TOMCAT_RETRIES
                                                     + " tries, giving up",
                                                     null);

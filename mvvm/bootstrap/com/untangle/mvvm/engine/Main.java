@@ -20,6 +20,12 @@ import com.untangle.mvvm.logging.MvvmRepositorySelector;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+/**
+ * Bootstraps the MVVM. Access to the Main object should be protected.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class Main
 {
     private static String MVVM_LOCAL_CONTEXT_CLASSNAME
@@ -41,7 +47,9 @@ public class Main
 
     // public static methods --------------------------------------------------
 
-    // XXX get rid of all these throws
+    /**
+     * The fun starts here.
+     */
     public static final void main(String[] args) throws Exception
     {
         SchemaUtil.initSchema("settings", "mvvm");
@@ -49,17 +57,23 @@ public class Main
         new Main().init();
     }
 
+    // public methods ---------------------------------------------------------
+
+    public boolean refreshToolbox()
+    {
+        return mcl.refreshToolbox();
+    }
+
     /**
-     * <code>fatalError</code> can be called by any part of the mvvm
-     * (even by transforms for now, change later XXX) to indicate that
-     * a fatal error has occured and that the MVVM *must* restart (or
+     * <code>fatalError</code> can be called to indicate that a fatal
+     * error has occured and that the MVVM *must* restart (or
      * otherwise recover) itself.  One example is an OutOfMemory
      * error.
      *
      * @param x a <code>Throwable</code> giving the related/causing
      * exception, if any, otherwise null.
      */
-    public static void fatalError(String throwingLocation, Throwable x)
+    public void fatalError(String throwingLocation, Throwable x)
     {
         try {
             System.err.println("Fatal Error in MVVM in " + throwingLocation);
@@ -68,23 +82,15 @@ public class Main
                 x.printStackTrace(System.err);
             }
         } catch (Throwable y) {
-            // We want to always call System.exit(), so we do
-            // absolutely nothing here.
+            System.out.println("Throwable: " + x.getMessage());
+            x.printStackTrace();
         } finally {
             System.exit(-1);
         }
     }
 
-    // package private methods ------------------------------------------------
-
-    public boolean refreshToolbox()
-    {
-        return mcl.refreshToolbox();
-    }
-
     // private methods --------------------------------------------------------
 
-    // XXX get rid of all these throws
     private void init() throws Exception
     {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
