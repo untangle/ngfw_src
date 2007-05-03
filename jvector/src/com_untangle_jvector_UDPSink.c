@@ -28,11 +28,10 @@
 #include <vector/event.h>
 #include <vector/source.h>
 
-#include "jni_header.h"
 #include "jvector.h"
 
 
-#include JH_UDPSink
+#include "com_untangle_jvector_UDPSink.h"
 
 
 /**
@@ -45,7 +44,7 @@ static eventmask_t   _poll ( mvpoll_key_t* key );
  * Method:    create
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL JF_UDPSink( create )
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_create
 ( JNIEnv *env, jobject _this, jint pointer )
 {
     jvector_sink_t* snk;
@@ -70,7 +69,7 @@ JNIEXPORT jint JNICALL JF_UDPSink( create )
     return (jint)snk;    
 }
 
-JNIEXPORT jint JNICALL JF_UDPSink( write )
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_write
     ( JNIEnv *env, jobject _this, jint pointer, jbyteArray _data, jint offset, jint size,
       jint ttl, jint tos, jbyteArray options, jboolean is_udp, jlong src_address )
 {
@@ -100,8 +99,8 @@ JNIEXPORT jint JNICALL JF_UDPSink( write )
     }
 
     /* Once these values have changed make sure not to return before fixing them */
-    if ( ttl != JN_UDPSink( DISABLED )) pkt->ttl = ttl;
-    if ( tos != JN_UDPSink( DISABLED )) pkt->tos = tos;
+    if ( ttl != com_untangle_jvector_UDPSink_DISABLED) pkt->ttl = ttl;
+    if ( tos != com_untangle_jvector_UDPSink_DISABLED) pkt->tos = tos;
     
     /* XXX options */
     if  ( is_udp == JNI_TRUE ) {
@@ -139,7 +138,7 @@ JNIEXPORT jint JNICALL JF_UDPSink( write )
  * Method:    shutdown
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL JF_UDPSink( shutdown )
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSink_shutdown
   (JNIEnv *env, jclass _this, jint pointer)
 {
     /* Not much to do here */

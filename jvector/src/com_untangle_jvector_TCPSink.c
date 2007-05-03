@@ -27,11 +27,10 @@
 #include <vector/source.h>
 #include <vector/fd_sink.h>
 
-#include "jni_header.h"
 #include "jvector.h"
 
 
-#include JH_TCPSink
+#include "com_untangle_jvector_TCPSink.h"
 
 static int _sink_get_fd( jint pointer );
 
@@ -40,7 +39,7 @@ static int _sink_get_fd( jint pointer );
  * Method:    create
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL JF_TCPSink( create )
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_create
 ( JNIEnv *env, jobject _this, jint _fd ) 
 {
     jvector_sink_t* snk;
@@ -67,7 +66,7 @@ JNIEXPORT jint JNICALL JF_TCPSink( create )
     return (jint)snk;    
 }
 
-JNIEXPORT jint JNICALL JF_TCPSink( write )
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_write
 ( JNIEnv *env, jobject _this, jint pointer, jbyteArray _data, jint offset, jint size )
 {
     jbyte* data;
@@ -99,7 +98,7 @@ JNIEXPORT jint JNICALL JF_TCPSink( write )
             case ECONNRESET:
                 /* Received a reset, let the caller know */
                 debug( 5, "TCPSink: fd %d reset\n", fd );
-                number_bytes = JN_TCPSink( WRITE_RETURN_IGNORE );
+                number_bytes = com_untangle_jvector_TCPSink_WRITE_RETURN_IGNORE;
                 break;
                 
             case EPIPE:
@@ -110,7 +109,7 @@ JNIEXPORT jint JNICALL JF_TCPSink( write )
                  * vectoring that services POLLHUP | POLLIN as a POLLIN.
                  */
                 debug( 5, "TCPSink: Broken pipe fd %d, resetting\n", fd );
-                number_bytes = JN_TCPSink( WRITE_RETURN_IGNORE );
+                number_bytes = com_untangle_jvector_TCPSink_WRITE_RETURN_IGNORE;
                 break;
 
             case EAGAIN:
@@ -138,7 +137,7 @@ JNIEXPORT jint JNICALL JF_TCPSink( write )
  * Method:    close
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL JF_TCPSink( close )
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_close
   (JNIEnv *env, jclass _this, jint pointer)
 {
     int fd;
@@ -154,7 +153,7 @@ JNIEXPORT jint JNICALL JF_TCPSink( close )
  * Method:    reset
  * Signature: (I)I
  */
-JNIEXPORT void JNICALL JF_TCPSink( reset )
+JNIEXPORT void JNICALL Java_com_untangle_jvector_TCPSink_reset
   (JNIEnv *env, jclass _class, jint pointer )
 {
     int fd;
@@ -176,7 +175,7 @@ JNIEXPORT void JNICALL JF_TCPSink( reset )
  * Method:    shutdown
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL JF_TCPSink( shutdown )
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSink_shutdown
   (JNIEnv *env, jclass _this, jint pointer)
 {
     jvector_sink_t* jv_snk = (jvector_sink_t*)pointer;

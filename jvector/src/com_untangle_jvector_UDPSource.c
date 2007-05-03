@@ -26,17 +26,16 @@
 #include <vector/event.h>
 #include <vector/source.h>
 
-#include "jni_header.h"
 #include "jvector.h"
 
-#include JH_UDPSource
+#include "com_untangle_jvector_UDPSource.h"
 
 /*
  * Class:     UDPSource
  * Method:    create
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL JF_UDPSource( create )
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSource_create
   (JNIEnv *env, jobject _this, jint pointer )
 {
     jvector_source_t* src;
@@ -56,7 +55,7 @@ JNIEXPORT jint JNICALL JF_UDPSource( create )
     return (jint)src;    
 }
 
-JNIEXPORT jint JNICALL JF_UDPSource( shutdown )
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_UDPSource_shutdown
 (JNIEnv *env, jclass _this, jint pointer, jint mailbox_pointer )
 {
     jvector_source_t* jv_src = (jvector_source_t*)pointer;

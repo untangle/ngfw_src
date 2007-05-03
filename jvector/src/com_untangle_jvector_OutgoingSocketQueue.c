@@ -26,16 +26,15 @@
 
 #include "jvector.h"
 
-#include "jni_header.h"
 
-#include JH_OutgoingSocketQueue
+#include "com_untangle_jvector_OutgoingSocketQueue.h"
 
 /*
  * Class:     OutgoingSocketQueue
  * Method:    create
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL JF_OutgoingSocketQueue( create )
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_OutgoingSocketQueue_create
   (JNIEnv* env, jobject _this )
 {
     jvector_source_t* src;
@@ -57,7 +56,7 @@ JNIEXPORT jint JNICALL JF_OutgoingSocketQueue( create )
  * Method:    mvpollNotifyObservers
  * Signature: (II)V
  */
-JNIEXPORT void JNICALL JF_OutgoingSocketQueue( mvpollNotifyObservers )
+JNIEXPORT void JNICALL Java_com_untangle_jvector_OutgoingSocketQueue_mvpollNotifyObservers
   (JNIEnv* env, jobject _this, jint pointer, jint eventmask )
 {
     jvector_source_t* jv_src = (jvector_source_t*)pointer;

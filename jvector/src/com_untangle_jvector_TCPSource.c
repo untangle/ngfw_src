@@ -28,10 +28,9 @@
 #include <vector/source.h>
 #include <vector/fd_source.h>
 
-#include "jni_header.h"
 #include "jvector.h"
 
-#include JH_TCPSource
+#include "com_untangle_jvector_TCPSource.h"
 
 static int _source_get_fd( jint pointer );
 
@@ -40,7 +39,7 @@ static int _source_get_fd( jint pointer );
  * Method:    create
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL JF_TCPSource( create )
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_create
   (JNIEnv *env, jobject _this, jint fd )
 {
     jvector_source_t* src;
@@ -67,7 +66,7 @@ JNIEXPORT jint JNICALL JF_TCPSource( create )
  * Method:    read
  * Signature: (I[B)I
  */
-JNIEXPORT jint JNICALL JF_TCPSource( read )
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_read
 (JNIEnv *env, jclass _this, jint pointer, jbyteArray _data )
 {
     jbyte* data;
@@ -92,7 +91,7 @@ JNIEXPORT jint JNICALL JF_TCPSource( read )
 #if 0
     if ( events & MVPOLLERR ) {
         debug( 9, "JVECTOR(%08x): ERR from vectoring\n", src->key );
-        return JN_TCPSource( READ_RESET );
+        return com_untangle_jvector_TCPSource_READ_RESET;
     } else if ( events & MVPOLLHUP ) {
         debug( 9, "JVECTOR(%08x): HUP from vectoring\n", src->key );
         return 0;
@@ -115,7 +114,7 @@ JNIEXPORT jint JNICALL JF_TCPSource( read )
             case ECONNRESET:
                 /* Received a reset, let the caller know */
                 debug( 5, "JVECTOR: TCPSource: fd %d reset\n", fd );
-                ret = JN_TCPSource( READ_RESET );
+                ret = com_untangle_jvector_TCPSource_READ_RESET;
                 break;
 
             case EAGAIN:
@@ -126,17 +125,17 @@ JNIEXPORT jint JNICALL JF_TCPSource( read )
 
             case ETIMEDOUT:
                 debug( 5, "JVECTOR: TCPSource: fd %d connection time out (keep alive unaswered)\n", fd );
-                ret = JN_TCPSource( READ_RESET );
+                ret = com_untangle_jvector_TCPSource_READ_RESET;
                 break;
 
             case EHOSTUNREACH:
                 debug( 5, "JVECTOR: TCPSource: fd %d host unreachable\n", fd );
-                ret = JN_TCPSource( READ_RESET );
+                ret = com_untangle_jvector_TCPSource_READ_RESET;
                 break;
 
             case ENETUNREACH:
                 debug( 5, "JVECTOR: TCPSource: fd %d net unreachable\n", fd );
-                ret = JN_TCPSource( READ_RESET );
+                ret = com_untangle_jvector_TCPSource_READ_RESET;
                 break;
 
             default:
@@ -152,7 +151,7 @@ JNIEXPORT jint JNICALL JF_TCPSource( read )
 }
 
 /* XX May need to throw an error */
-JNIEXPORT jint JNICALL JF_TCPSource( shutdown )
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_TCPSource_shutdown
 (JNIEnv *env, jclass _this, jint pointer)
 {
     jvector_source_t* jv_src = (jvector_source_t*)pointer;

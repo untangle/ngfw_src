@@ -25,16 +25,15 @@
 #include <jmvutil.h>
 
 #include "jvector.h"
-#include "jni_header.h"
 
-#include JH_IncomingSocketQueue
+#include "com_untangle_jvector_IncomingSocketQueue.h"
 
 /*
  * Class:     IncomingSocketQueue
  * Method:    create
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL JF_IncomingSocketQueue( create )
+JNIEXPORT jint JNICALL Java_com_untangle_jvector_IncomingSocketQueue_create
   (JNIEnv* env, jobject _this )
 {
     jvector_sink_t* snk;
@@ -56,7 +55,7 @@ JNIEXPORT jint JNICALL JF_IncomingSocketQueue( create )
  * Method:    mvpollNotifyObservers
  * Signature: (II)V
  */
-JNIEXPORT void JNICALL JF_IncomingSocketQueue( mvpollNotifyObservers )
+JNIEXPORT void JNICALL Java_com_untangle_jvector_IncomingSocketQueue_mvpollNotifyObservers
   (JNIEnv* env, jclass _this, jint pointer, jint eventmask )
 {
     jvector_sink_t* jv_snk = (jvector_sink_t*)pointer;

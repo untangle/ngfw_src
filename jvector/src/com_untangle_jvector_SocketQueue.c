@@ -24,7 +24,6 @@
 #include <vector/source.h>
 #include <vector/sink.h>
 
-#include "jni_header.h"
 #include "jvector.h"
 
 typedef struct sq_mvpoll_key {

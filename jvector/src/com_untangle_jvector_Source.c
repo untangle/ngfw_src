@@ -23,31 +23,30 @@
 #include <vector/event.h>
 #include <vector/source.h>
 
-#include "jni_header.h"
 #include "jvector.h"
 
-#include JH_Sink
+#include "com_untangle_jvector_Source.h"
 
-JNIEXPORT void JNICALL JF_Sink( raze )
+JNIEXPORT void JNICALL Java_com_untangle_jvector_Source_raze
     ( JNIEnv *env, jobject _this, jint pointer )
 {
-    jvector_sink_t* jv_snk = (jvector_sink_t*)pointer;
+    jvector_source_t* jv_src = (jvector_source_t*)pointer;
     
-    if ( jv_snk == NULL ) {
+    if ( jv_src == NULL ) {
         errlogargs();
         return;
     }
 
-    if ( jv_snk->key != NULL ) 
-        mvpoll_key_raze( jv_snk->key );
+    if ( jv_src->key != NULL ) 
+        mvpoll_key_raze( jv_src->key );
 
-    jv_snk->key = NULL;
+    jv_src->key = NULL;
 
-    if ( jv_snk->this != NULL )
-        (*env)->DeleteGlobalRef( env, jv_snk->this );
+    if ( jv_src->this != NULL )
+        (*env)->DeleteGlobalRef( env, jv_src->this );
 
-    jv_snk->this = NULL;
+    jv_src->this = NULL;
 
-    free( jv_snk );
+    free( jv_src );
 }
 

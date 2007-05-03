@@ -23,11 +23,10 @@
 #include <vector/source.h>
 #include <vector/sink.h>
 
-#include "jni_header.h"
 #include "jvector.h"
 
-#include JH_Vector
-#include JH_Crumb
+#include "com_untangle_jvector_Vector.h"
+#include "com_untangle_jvector_Crumb.h"
 
 static struct
 {
@@ -63,23 +62,23 @@ static struct
     .reset_crumb = NULL
 };
 
-#define J_SRC                  JP_Source
+#define J_SRC                  "com/untangle/jvector/Source"
 #define J_SRC_GET_EVENT        "get_event"
-#define J_SRC_GET_EVENT_SIG    "()L" JP_Crumb ";"
+#define J_SRC_GET_EVENT_SIG    "()Lcom/untangle/jvector/Crumb;"
 #define J_SRC_SHUTDOWN         "shutdown"
 #define J_SRC_SHUTDOWN_SIG     "()I"
 #define J_SRC_RAZE             "sourceRaze"
 #define J_SRC_RAZE_SIG         "()V"
 
-#define J_SNK                  JP_Sink
+#define J_SNK                  "com/untangle/jvector/Sink"
 #define J_SNK_SEND_EVENT       "send_event"
-#define J_SNK_SEND_EVENT_SIG   "(L" JP_Crumb ";)I"
+#define J_SNK_SEND_EVENT_SIG   "(Lcom/untangle/jvector/Crumb;)I"
 #define J_SNK_SHUTDOWN         "shutdown"
 #define J_SNK_SHUTDOWN_SIG     "()I"
 #define J_SNK_RAZE             "sinkRaze"
 #define J_SNK_RAZE_SIG         "()V"
 
-#define J_EVENT                JP_Crumb
+#define J_EVENT                "com/untangle/jvector/Crumb"
 #define J_EVENT_RAZE           "raze"
 #define J_EVENT_RAZE_SIG       "()V"
 #define J_EVENT_TYPE           "type"
@@ -608,12 +607,12 @@ static event_t*          _source_get_event    ( source_t* src )
     event_type = 0;
 
     switch ( type ) {
-    case JN_Crumb( TYPE_RESET ):    event_type |= EVENT_SHUTDOWN_ERROR_MASK; /*fallthrough*/
-    case JN_Crumb( TYPE_SHUTDOWN ): event_type |= EVENT_SHUTDOWN_MASK;       /*fallthrough*/
+    case com_untangle_jvector_Crumb_TYPE_RESET:    event_type |= EVENT_SHUTDOWN_ERROR_MASK; /*fallthrough*/
+    case com_untangle_jvector_Crumb_TYPE_SHUTDOWN: event_type |= EVENT_SHUTDOWN_MASK;       /*fallthrough*/
 
-    case JN_Crumb( TYPE_UDP_PACKET ): /*fallthrough*/
-    case JN_Crumb( TYPE_ICMP_PACKET ): /*fallthrough*/        
-    case JN_Crumb( TYPE_DATA ):
+    case com_untangle_jvector_Crumb_TYPE_UDP_PACKET: /*fallthrough*/
+    case com_untangle_jvector_Crumb_TYPE_ICMP_PACKET: /*fallthrough*/        
+    case com_untangle_jvector_Crumb_TYPE_DATA:
         if (( jv_event = jvector_event_create()) == NULL )
             return errlog_null( ERR_CRITICAL, "jvector_event_create\n" );
 
