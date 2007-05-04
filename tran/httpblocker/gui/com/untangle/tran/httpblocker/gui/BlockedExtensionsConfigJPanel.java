@@ -24,7 +24,6 @@ import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.tran.*;
 import com.untangle.tran.httpblocker.*;
-import java.util.Iterator;
 
 public class BlockedExtensionsConfigJPanel extends MEditTableJPanel {
 
@@ -72,9 +71,9 @@ class ExtensionTableModel extends MSortedTableModel<Object>{
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         List elemList = new ArrayList(tableVector.size());
-	StringRule newElem = null;
+        StringRule newElem = null;
 
-	for( Vector rowVector : tableVector ){
+        for( Vector rowVector : tableVector ){
             newElem = (StringRule) rowVector.elementAt(6);
             newElem.setString( (String) rowVector.elementAt(2) );
             newElem.setLive( (Boolean) rowVector.elementAt(3) );
@@ -83,21 +82,21 @@ class ExtensionTableModel extends MSortedTableModel<Object>{
             elemList.add(newElem);
         }
 
-	if( !validateOnly ){
-	    HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-	    httpBlockerSettings.setBlockedExtensions( elemList );
-	}
+        if( !validateOnly ){
+            HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
+            httpBlockerSettings.setBlockedExtensions( elemList );
+        }
     }
 
     public Vector<Vector> generateRows(Object settings){
-	HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-	List<StringRule> blockedExtensions = (List<StringRule>) httpBlockerSettings.getBlockedExtensions();
+        HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
+        List<StringRule> blockedExtensions = (List<StringRule>) httpBlockerSettings.getBlockedExtensions();
         Vector<Vector> allRows = new Vector<Vector>(blockedExtensions.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
+        Vector tempRow = null;
+        int rowIndex = 0;
 
-	for( StringRule newElem : blockedExtensions ){
-	    rowIndex++;
+        for( StringRule newElem : blockedExtensions ){
+            rowIndex++;
             tempRow = new Vector(7);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );

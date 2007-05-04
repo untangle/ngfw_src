@@ -11,12 +11,13 @@
 
 
 package com.untangle.tran.openvpn.gui;
-import com.untangle.tran.openvpn.*;
-import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.gui.util.*;
 import java.awt.Window;
 import java.awt.event.*;
 import javax.swing.CellEditor;
+
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.tran.openvpn.*;
 
 public class KeyButtonRunnable implements ButtonRunnable {
     private boolean isEnabled;
@@ -24,12 +25,12 @@ public class KeyButtonRunnable implements ButtonRunnable {
     private static VpnTransform vpnTransform;
     private Window topLevelWindow;
     public KeyButtonRunnable(String isEnabled){
-	if( "true".equals(isEnabled) ) {
-	    this.isEnabled = true;
-	}
-	else if( "false".equals(isEnabled) ){
-	    this.isEnabled = false;
-	}
+        if( "true".equals(isEnabled) ) {
+            this.isEnabled = true;
+        }
+        else if( "false".equals(isEnabled) ){
+            this.isEnabled = false;
+        }
     }
     public String getButtonText(){ return "Distribute Client"; }
     public boolean isEnabled(){ return isEnabled; }
@@ -41,51 +42,51 @@ public class KeyButtonRunnable implements ButtonRunnable {
     public void setTopLevelWindow(Window topLevelWindow){ this.topLevelWindow = topLevelWindow; }
     public void actionPerformed(ActionEvent evt){ run(); }
     public void run(){
-	if(!Util.getIsDemo())
-	    new DistributeKeyThread(vpnClient, vpnTransform);
+        if(!Util.getIsDemo())
+            new DistributeKeyThread(vpnClient, vpnTransform);
     }
 
     class DistributeKeyThread extends Thread {
-	private KeyJDialog keyJDialog;
-	private VpnClientBase vpnClient;
-	private VpnTransform vpnTransform;
-	public DistributeKeyThread(VpnClientBase vpnClient, VpnTransform vpnTransform){
-	    setDaemon(true);
-	    setName("MV-CLIENT: DistributeKeyThread");
-	    this.vpnClient = vpnClient;
-	    this.vpnTransform = vpnTransform;
-	    keyJDialog = KeyJDialog.factory(topLevelWindow, vpnClient);
-	    keyJDialog.setVisible(true);
-	    if( keyJDialog.isProceeding() )
-		start();
-	}
-	public void run(){
-	    if( keyJDialog.isUsbSelected() ){
-		vpnClient.setDistributeUsb(true);
-	    }
-	    else if( keyJDialog.isEmailSelected() ){
-		vpnClient.setDistributeUsb(false);
+        private KeyJDialog keyJDialog;
+        private VpnClientBase vpnClient;
+        private VpnTransform vpnTransform;
+        public DistributeKeyThread(VpnClientBase vpnClient, VpnTransform vpnTransform){
+            setDaemon(true);
+            setName("MV-CLIENT: DistributeKeyThread");
+            this.vpnClient = vpnClient;
+            this.vpnTransform = vpnTransform;
+            keyJDialog = KeyJDialog.factory(topLevelWindow, vpnClient);
+            keyJDialog.setVisible(true);
+            if( keyJDialog.isProceeding() )
+                start();
+        }
+        public void run(){
+            if( keyJDialog.isUsbSelected() ){
+                vpnClient.setDistributeUsb(true);
+            }
+            else if( keyJDialog.isEmailSelected() ){
+                vpnClient.setDistributeUsb(false);
                 vpnClient.setDistributionEmail( keyJDialog.getEmailAddress() );
-	    }
-	    try{
-		vpnTransform.distributeClientConfig( vpnClient );
-		String successString;
-		if( vpnClient.getDistributeUsb() )
-		    successString = "<html>OpenVPN successfully saved your digital key to your USB key.</html>";
-		else
-		    successString = "<html>OpenVPN successfully sent your digital key via email.</html>";
+            }
+            try{
+                vpnTransform.distributeClientConfig( vpnClient );
+                String successString;
+                if( vpnClient.getDistributeUsb() )
+                    successString = "<html>OpenVPN successfully saved your digital key to your USB key.</html>";
+                else
+                    successString = "<html>OpenVPN successfully sent your digital key via email.</html>";
 
-		MOneButtonJDialog.factory(topLevelWindow, "OpenVPN", successString, "OpenVPN Confirmation", "Confirmation" );
-	    }
-	    catch(Exception e){
-		Util.handleExceptionNoRestart("Error saving/sending key:", e);
-		String warningString;
-		if( vpnClient.getDistributeUsb() )
-		    warningString = "<html>OpenVPN was not able to save your digital key to your USB key.  Please try again.</html>";
-		else
-		    warningString = "<html>OpenVPN was not able to send your digital key via email.  Please try again.</html>";
-		MOneButtonJDialog.factory(topLevelWindow, "OpenVPN", warningString, "OpenVPN Warning", "Warning" );
-	    }
-	}
+                MOneButtonJDialog.factory(topLevelWindow, "OpenVPN", successString, "OpenVPN Confirmation", "Confirmation" );
+            }
+            catch(Exception e){
+                Util.handleExceptionNoRestart("Error saving/sending key:", e);
+                String warningString;
+                if( vpnClient.getDistributeUsb() )
+                    warningString = "<html>OpenVPN was not able to save your digital key to your USB key.  Please try again.</html>";
+                else
+                    warningString = "<html>OpenVPN was not able to send your digital key via email.  Please try again.</html>";
+                MOneButtonJDialog.factory(topLevelWindow, "OpenVPN", warningString, "OpenVPN Warning", "Warning" );
+            }
+        }
     }
 }

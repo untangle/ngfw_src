@@ -24,11 +24,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.untangle.tran.mail.papi.quarantine.QuarantineSettings;
 import com.untangle.tran.mail.papi.safelist.SafelistSettings;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
@@ -230,11 +228,11 @@ public class MailTransformSettings implements Serializable
     @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinColumn(name="quarantine_settings", nullable=false)
     public QuarantineSettings getQuarantineSettings() {
-      return quarantineSettings;
+        return quarantineSettings;
     }
 
     public void setQuarantineSettings(QuarantineSettings s) {
-       this.quarantineSettings = s;
+        this.quarantineSettings = s;
     }
 
     /**

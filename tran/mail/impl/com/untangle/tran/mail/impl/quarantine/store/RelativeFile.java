@@ -10,7 +10,6 @@
  */
 
 package com.untangle.tran.mail.impl.quarantine.store;
-import org.apache.log4j.Logger;
 
 import java.io.*;
 
@@ -20,28 +19,28 @@ import java.io.*;
  * its "relative" name.
  */
 final class RelativeFile
-  extends RelativeFileName {
+    extends RelativeFileName {
 
-  /**
-   * The real file represented by this object
-   */
-  final File file;
+    /**
+     * The real file represented by this object
+     */
+    final File file;
 
-  RelativeFile(String path,
-    File file) {
-    super(path);
-    this.file = file;
-  }
+    RelativeFile(String path,
+                 File file) {
+        super(path);
+        this.file = file;
+    }
 
-  @Override
-  public boolean equals(Object obj) {
-    //Don't bother with superclass
-    return file.equals(obj);
-  }
+    @Override
+    public boolean equals(Object obj) {
+        //Don't bother with superclass
+        return file.equals(obj);
+    }
 
-  @Override
-  public int hashCode() {
-    //Don't bother with superclass
-    return file.hashCode();
-  }
+    @Override
+    public int hashCode() {
+        //Don't bother with superclass
+        return file.hashCode();
+    }
 }

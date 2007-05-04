@@ -28,35 +28,35 @@ public class UpgradeCompoundSettings implements CompoundSettings {
     public MackageDesc[] getUpgradableMackageDescs(){ return upgradableMackageDescs; }
 
     public void save() throws Exception {
-	Util.getToolboxManager().setUpgradeSettings(upgradeSettings);
+        Util.getToolboxManager().setUpgradeSettings(upgradeSettings);
     }
 
     public void refresh() throws Exception {
-	upgradeSettings = Util.getToolboxManager().getUpgradeSettings();
+        upgradeSettings = Util.getToolboxManager().getUpgradeSettings();
 
-	// HANDLE THE CASE WHERE THE STORE IS UNREACHABLE
-	try{
-	    Util.getToolboxManager().update();
-	    upgradableMackageDescs = Util.getToolboxManager().upgradable();
-	}
-	catch(Exception e){
-	    Util.getMMainJFrame().updateJButton(Util.UPGRADE_UNAVAILABLE);
-	    Util.setUpgradeCount(Util.UPGRADE_UNAVAILABLE);
+        // HANDLE THE CASE WHERE THE STORE IS UNREACHABLE
+        try{
+            Util.getToolboxManager().update();
+            upgradableMackageDescs = Util.getToolboxManager().upgradable();
+        }
+        catch(Exception e){
+            Util.getMMainJFrame().updateJButton(Util.UPGRADE_UNAVAILABLE);
+            Util.setUpgradeCount(Util.UPGRADE_UNAVAILABLE);
 
-	    MOneButtonJDialog.factory(UpgradeJDialog.getInstance(), "",
-				      "The upgrade server could not be contacted.",
-				      "Upgrade Failure Warning", "");
-	    return;
-	}
+            MOneButtonJDialog.factory(UpgradeJDialog.getInstance(), "",
+                                      "The upgrade server could not be contacted.",
+                                      "Upgrade Failure Warning", "");
+            return;
+        }
 
-	if( Util.isArrayEmpty(upgradableMackageDescs) ){
-	    Util.getMMainJFrame().updateJButton(0);
-	    Util.setUpgradeCount(0);
-	}
-	else{
-	    Util.getMMainJFrame().updateJButton(upgradableMackageDescs.length);
-	    Util.setUpgradeCount(upgradableMackageDescs.length);
-	}
+        if( Util.isArrayEmpty(upgradableMackageDescs) ){
+            Util.getMMainJFrame().updateJButton(0);
+            Util.setUpgradeCount(0);
+        }
+        else{
+            Util.getMMainJFrame().updateJButton(upgradableMackageDescs.length);
+            Util.setUpgradeCount(upgradableMackageDescs.length);
+        }
     }
 
     public void validate() throws Exception {

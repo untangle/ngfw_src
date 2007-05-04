@@ -11,15 +11,14 @@
 
 package com.untangle.mvvm.tapi;
 
-import java.nio.ByteBuffer;
 import com.untangle.mvvm.tapi.event.TCPStreamer;
 
 /**
-* A TCPSession is 
-*
-* @author <a href="mailto:jdi@untangle.com"></a>
-* @version 1.0
-*/
+ * A TCPSession is
+ *
+ * @author <a href="mailto:jdi@untangle.com"></a>
+ * @version 1.0
+ */
 public interface TCPSession extends TCPSessionDesc, IPSession {
 
     static final int TCP_MAX_CHUNK_SIZE = 65536;
@@ -59,7 +58,7 @@ public interface TCPSession extends TCPSessionDesc, IPSession {
      * @return an <code>int</code> giving the capacity in bytes
      */
     int serverReadBufferSize();
-    
+
     /**
      * Sets the <code>serverReadBufferSize</code> to the given number of bytes, which must be
      * >1, >=server_read_limit, <= MAX_BUFFER_SIZE

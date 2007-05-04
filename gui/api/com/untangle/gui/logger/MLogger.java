@@ -11,12 +11,11 @@
 
 package com.untangle.gui.logger;
 
-import java.io.*;
-import javax.swing.*;
 import java.awt.*;
+import java.io.*;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Arrays;
+import javax.swing.*;
 
 public class MLogger extends javax.swing.JFrame implements FilenameFilter {
 
@@ -33,7 +32,7 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
     ////////////////////////
 
     private static final long THREAD_SLEEP_MILLIS = 3000l;
-    
+
     private JTextArea[] logJTextAreas;
     private JScrollPane[] logJScrollPanes;
     private String[] logs;
@@ -44,14 +43,14 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
 
     private int lastBufferSize = -1; // in lines
     private int currentBufferSize = 0;
-    
+
     private StringBuffer outputStringBuffer;
     private JTextArea outputJTextArea;
     private JScrollPane outputJScrollPane;
     private int outputLastCount = 0;
 
     private volatile boolean deleteLogs = false;
-    
+
     public MLogger(String[] args) {
 
         // COMMAND LINE ARGS
@@ -60,259 +59,259 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
             return;
         }
 
-	// GENERAL INIT
+        // GENERAL INIT
         logDirectory = new File(args[0]);
-	outputStringBuffer = new StringBuffer();
+        outputStringBuffer = new StringBuffer();
 
         // GUI INIT
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    initComponents();
-	    // FILTER CHECKBOXES
-	    showApplianceLogsJCheckBox.setSelected(SHOW_APPLIANCE_LOGS);
-	    showSystemLogsJCheckBox.setSelected(SHOW_SYSTEM_LOGS);
-	    showCurrentLogsJCheckBox.setSelected(SHOW_CURRENT_LOGS);
-	    showBackupLogsJCheckBox.setSelected(SHOW_BACKUP_LOGS);
-	    // ACTIONS
-	    pauseJCheckBox.setSelected(DO_PAUSE);
-	    autoscrollJCheckBox.setSelected(DO_AUTOSCROLL);
-	    // OUTPUT PANEL
-	    outputJTextArea = new JTextArea();
-	    outputJScrollPane = new JScrollPane(outputJTextArea);
-	    outputJTabbedPane.addTab("output (0)", outputJScrollPane);
-	    // OUTPUT THE LOG DIRECTORY
-	    try{
-		outputStringBuffer.append("log directory: " + logDirectory.getCanonicalPath() + "\n");
-		System.err.println("log directory: " + logDirectory.getCanonicalPath() );
-	    }
-	    catch(Exception e){ outputStringBuffer.append(e.toString()); }
-	    outputJTextArea.append(outputStringBuffer.toString());
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            initComponents();
+            // FILTER CHECKBOXES
+            showApplianceLogsJCheckBox.setSelected(SHOW_APPLIANCE_LOGS);
+            showSystemLogsJCheckBox.setSelected(SHOW_SYSTEM_LOGS);
+            showCurrentLogsJCheckBox.setSelected(SHOW_CURRENT_LOGS);
+            showBackupLogsJCheckBox.setSelected(SHOW_BACKUP_LOGS);
+            // ACTIONS
+            pauseJCheckBox.setSelected(DO_PAUSE);
+            autoscrollJCheckBox.setSelected(DO_AUTOSCROLL);
+            // OUTPUT PANEL
+            outputJTextArea = new JTextArea();
+            outputJScrollPane = new JScrollPane(outputJTextArea);
+            outputJTabbedPane.addTab("output (0)", outputJScrollPane);
+            // OUTPUT THE LOG DIRECTORY
+            try{
+                outputStringBuffer.append("log directory: " + logDirectory.getCanonicalPath() + "\n");
+                System.err.println("log directory: " + logDirectory.getCanonicalPath() );
+            }
+            catch(Exception e){ outputStringBuffer.append(e.toString()); }
+            outputJTextArea.append(outputStringBuffer.toString());
             setVisible(true);
         }});
 
         scanLogDirectory();
-        
+
     }
-    
+
     // says which files to accept as valid log files
     public boolean accept(java.io.File file, String str) {
-	if( str == null )
-	    return false;
-	boolean isValidType = false;
-	boolean isValidTime = false;
-	if( SHOW_APPLIANCE_LOGS ){
-	    int firstPeriod = str.indexOf('.');
-	    try{
-		String name = str.substring(0,firstPeriod);
-		Integer.parseInt(name);
-		isValidType |= true;
-	    }
-	    catch(Exception e){}
-	}
-	if( SHOW_SYSTEM_LOGS ){
-	    int firstPeriod = str.indexOf('.');
-	    try{
-		if(firstPeriod >= 0){
-		    String name = str.substring(0,firstPeriod);
-		    Integer.parseInt(name);
-		}
-	    }
-	    catch(Exception e){ isValidType |= true; }
-	}
-	if( SHOW_CURRENT_LOGS ){
-	    if( str.endsWith(".log") )
-		isValidTime |= true;
-	}
-	if( SHOW_BACKUP_LOGS ){
-	    if( str.contains(".log.") )
-		isValidTime |= true;
-	}
-	return isValidType && isValidTime;
-    }    
-        
-        
+        if( str == null )
+            return false;
+        boolean isValidType = false;
+        boolean isValidTime = false;
+        if( SHOW_APPLIANCE_LOGS ){
+            int firstPeriod = str.indexOf('.');
+            try{
+                String name = str.substring(0,firstPeriod);
+                Integer.parseInt(name);
+                isValidType |= true;
+            }
+            catch(Exception e){}
+        }
+        if( SHOW_SYSTEM_LOGS ){
+            int firstPeriod = str.indexOf('.');
+            try{
+                if(firstPeriod >= 0){
+                    String name = str.substring(0,firstPeriod);
+                    Integer.parseInt(name);
+                }
+            }
+            catch(Exception e){ isValidType |= true; }
+        }
+        if( SHOW_CURRENT_LOGS ){
+            if( str.endsWith(".log") )
+                isValidTime |= true;
+        }
+        if( SHOW_BACKUP_LOGS ){
+            if( str.contains(".log.") )
+                isValidTime |= true;
+        }
+        return isValidType && isValidTime;
+    }
+
+
     public void scanLogDirectory() {
-        
+
         File[] newFiles;
-            
-	while(true){		
-	    try{
+
+        while(true){
+            try{
                 // PAUSE IF NECESSARY
                 if(DO_PAUSE)
-		    continue;
-                
-		// GET THE LIST OF FILES IN THE DIRECTORY
-		newFiles = logDirectory.listFiles(this);
-		
-		// CLEAR OUTPUT BUFFER
-		outputStringBuffer = new StringBuffer();
+                    continue;
 
-		// DETERMINE BUFFER SIZE
-		SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		    currentBufferSize = bufferJSlider.getValue();
-		}});
-		
-		// CASE: NO FILES TO VIEW
-		if( (newFiles == null) || (newFiles.length <= 0) ){
-		    outputStringBuffer.append( (new Date(System.currentTimeMillis())).toString()
-					       + " Error: no log files" + "\n");
-		    initializeTabs();
-		    logFiles = null;
-		}		
-		// CASE: FILE SET HAS CHANGED, OR BUFFER SIZE HAS CHANGED, DO NEW VISUALIZATIONS
-		else if( !isSameFileSet(logFiles, newFiles) || (currentBufferSize != lastBufferSize) ){
-		    lastBufferSize = currentBufferSize;
-		    outputStringBuffer.append( (new Date(System.currentTimeMillis())).toString()
-					       + " log files set updated...  rereading log files." + "\n");		    
-		    for( File newFile : newFiles )
-			outputStringBuffer.append( (new Date(System.currentTimeMillis())).toString()
-						   + " Found new file: " 
-						   + newFile.getCanonicalPath() + "\n");
-		    // CLOSE OLD STREAMS
-		    if( logStreams != null )
-			for( BufferedInputStream logStream : logStreams ){
-			    try{ logStream.close(); }
-			    catch(Exception e){ outputStringBuffer.append( (new Date(System.currentTimeMillis())).toString()
-									   + " Couldnt close old file: "
-									   + logStream.toString()
-									   + "\n");
-			    }
-			}
-		    
-		    // CREATE AND INITIALIZE THE PROPER AMOUNT OF GENERAL RESOURCES
-		    logFiles = newFiles;
-		    logStreams = new BufferedInputStream[logFiles.length];
-		    updateNeeded = new boolean[logFiles.length];
-		    logs = new String[logFiles.length];
-		    for(int i = 0; i < logFiles.length; i++){
-			logStreams[i] = new BufferedInputStream( new FileInputStream(logFiles[i]) );
-			updateNeeded[i] = true;
-		    }
-		    // CREATE AND INITIALIZE THE PROPER AMOUNT OF GUI RESOURECES
-		    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-			logJTextAreas = new JTextArea[logFiles.length];
-			logJScrollPanes = new JScrollPane[logFiles.length];
-			outputJTabbedPane.removeAll();
-			outputJTabbedPane.addTab("output", outputJScrollPane);
-			for(int i = 0; i < logFiles.length; i++){
-			    logJTextAreas[i] = new JTextArea();
-			    logJTextAreas[i].setEditable(false);
-			    Insets margin = logJTextAreas[i].getMargin();
-			    margin.left = 10;
-			    margin.right = 10;
-			    logJTextAreas[i].setMargin(margin);
-			    logJScrollPanes[i] = new JScrollPane(logJTextAreas[i]);
-			    outputJTabbedPane.addTab(logFiles[i].getName(), logJScrollPanes[i]);
-			}
-		    }});
-		    // SHOW UPDATES
-		    updateLogs();
-		}
-		// CASE: SAME FILE SET, SIMPLY UPDATE
-		else{
-		    updateLogs();
-		}
-		
-		// UPDATE OUTPUT BUFFER
-		SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		    outputJTextArea.append(outputStringBuffer.toString());
-		    outputLastCount = outputStringBuffer.length();		
-		    outputJTabbedPane.setTitleAt(0, "output");				
-		}});
-	    } 
-	    catch(Exception e){ e.printStackTrace(); }
-	    
+                // GET THE LIST OF FILES IN THE DIRECTORY
+                newFiles = logDirectory.listFiles(this);
+
+                // CLEAR OUTPUT BUFFER
+                outputStringBuffer = new StringBuffer();
+
+                // DETERMINE BUFFER SIZE
+                SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+                    currentBufferSize = bufferJSlider.getValue();
+                }});
+
+                // CASE: NO FILES TO VIEW
+                if( (newFiles == null) || (newFiles.length <= 0) ){
+                    outputStringBuffer.append( (new Date(System.currentTimeMillis())).toString()
+                                               + " Error: no log files" + "\n");
+                    initializeTabs();
+                    logFiles = null;
+                }
+                // CASE: FILE SET HAS CHANGED, OR BUFFER SIZE HAS CHANGED, DO NEW VISUALIZATIONS
+                else if( !isSameFileSet(logFiles, newFiles) || (currentBufferSize != lastBufferSize) ){
+                    lastBufferSize = currentBufferSize;
+                    outputStringBuffer.append( (new Date(System.currentTimeMillis())).toString()
+                                               + " log files set updated...  rereading log files." + "\n");
+                    for( File newFile : newFiles )
+                        outputStringBuffer.append( (new Date(System.currentTimeMillis())).toString()
+                                                   + " Found new file: "
+                                                   + newFile.getCanonicalPath() + "\n");
+                    // CLOSE OLD STREAMS
+                    if( logStreams != null )
+                        for( BufferedInputStream logStream : logStreams ){
+                            try{ logStream.close(); }
+                            catch(Exception e){ outputStringBuffer.append( (new Date(System.currentTimeMillis())).toString()
+                                                                           + " Couldnt close old file: "
+                                                                           + logStream.toString()
+                                                                           + "\n");
+                            }
+                        }
+
+                    // CREATE AND INITIALIZE THE PROPER AMOUNT OF GENERAL RESOURCES
+                    logFiles = newFiles;
+                    logStreams = new BufferedInputStream[logFiles.length];
+                    updateNeeded = new boolean[logFiles.length];
+                    logs = new String[logFiles.length];
+                    for(int i = 0; i < logFiles.length; i++){
+                        logStreams[i] = new BufferedInputStream( new FileInputStream(logFiles[i]) );
+                        updateNeeded[i] = true;
+                    }
+                    // CREATE AND INITIALIZE THE PROPER AMOUNT OF GUI RESOURECES
+                    SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                        logJTextAreas = new JTextArea[logFiles.length];
+                        logJScrollPanes = new JScrollPane[logFiles.length];
+                        outputJTabbedPane.removeAll();
+                        outputJTabbedPane.addTab("output", outputJScrollPane);
+                        for(int i = 0; i < logFiles.length; i++){
+                            logJTextAreas[i] = new JTextArea();
+                            logJTextAreas[i].setEditable(false);
+                            Insets margin = logJTextAreas[i].getMargin();
+                            margin.left = 10;
+                            margin.right = 10;
+                            logJTextAreas[i].setMargin(margin);
+                            logJScrollPanes[i] = new JScrollPane(logJTextAreas[i]);
+                            outputJTabbedPane.addTab(logFiles[i].getName(), logJScrollPanes[i]);
+                        }
+                    }});
+                    // SHOW UPDATES
+                    updateLogs();
+                }
+                // CASE: SAME FILE SET, SIMPLY UPDATE
+                else{
+                    updateLogs();
+                }
+
+                // UPDATE OUTPUT BUFFER
+                SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                    outputJTextArea.append(outputStringBuffer.toString());
+                    outputLastCount = outputStringBuffer.length();
+                    outputJTabbedPane.setTitleAt(0, "output");
+                }});
+            }
+            catch(Exception e){ e.printStackTrace(); }
+
             // SLEEP
             try{ Thread.sleep(THREAD_SLEEP_MILLIS); }
             catch(Exception e){ e.printStackTrace(); }
-	    
-	}
+
+        }
     }
-    
-    
-    
-    
+
+
+
+
     private void initializeTabs(){
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    int tabCount = outputJTabbedPane.getTabCount();
-	    if( tabCount > 1){
-		while(outputJTabbedPane.getTabCount() > 1){
-		    outputJTabbedPane.remove(outputJTabbedPane.getTabCount()-1);
-		}
-		outputJTabbedPane.setTitleAt(0, "output");
-	    }
-	    else if(tabCount == 1){
-		outputJTabbedPane.setTitleAt(0, "output");
-	    }
-	    else{
-		outputJTabbedPane.addTab("output", outputJScrollPane);
-	    }
-	    outputJTextArea.setCaretPosition(outputJTextArea.getText().length());
-	}});
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            int tabCount = outputJTabbedPane.getTabCount();
+            if( tabCount > 1){
+                while(outputJTabbedPane.getTabCount() > 1){
+                    outputJTabbedPane.remove(outputJTabbedPane.getTabCount()-1);
+                }
+                outputJTabbedPane.setTitleAt(0, "output");
+            }
+            else if(tabCount == 1){
+                outputJTabbedPane.setTitleAt(0, "output");
+            }
+            else{
+                outputJTabbedPane.addTab("output", outputJScrollPane);
+            }
+            outputJTextArea.setCaretPosition(outputJTextArea.getText().length());
+        }});
     }
-    
-    
+
+
     private void updateLogs(){
-	// READ FROM ALL STREAMS
-	for(int i = 0; i < logStreams.length; i++){
-	    try{
+        // READ FROM ALL STREAMS
+        for(int i = 0; i < logStreams.length; i++){
+            try{
                 if( logStreams[i].available() <= 0 ){
-		    updateNeeded[i] = false;
+                    updateNeeded[i] = false;
                     continue;
-		}
-		else
-		    updateNeeded[i] = true;
-		// APPEND TO OUTPUT BUFFER
+                }
+                else
+                    updateNeeded[i] = true;
+                // APPEND TO OUTPUT BUFFER
                 outputStringBuffer.append( new Date()
-					   + " Updating: "
-					   + logFiles[i].getCanonicalPath() + "\n");
-		// READ A STREAM
+                                           + " Updating: "
+                                           + logFiles[i].getCanonicalPath() + "\n");
+                // READ A STREAM
                 byte[] buffer = new byte[logStreams[i].available()];
                 logStreams[i].read(buffer);
                 logs[i] = new String( buffer );
-	    }
-	    catch(Exception e){ e.printStackTrace(); }
-	}
-	// UPDATE ONLY CHANGED STREAMS AND OUTPUT BUFFER
-	try{
-	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-		int maxLineCount = bufferJSlider.getValue();
-		int currentLineCount;
-		// DO EACH OF THE LOGS
-		for(int i = 0; i < logStreams.length; i++){
-		    if( updateNeeded[i] ){
-			logJTextAreas[i].append( logs[i] );
-			outputJTabbedPane.setTitleAt(1 + i, "<html><font color=\"#FF0000\">"
-						     + logFiles[i].getName() + "</font></html>");
-			currentLineCount = logJTextAreas[i].getLineCount();
-			if( currentLineCount > maxLineCount ){
-			    try{
-				int lineEndOffset = logJTextAreas[i].getLineEndOffset(currentLineCount-maxLineCount);
-				logJTextAreas[i].getDocument().remove(0,lineEndOffset);
-			    } catch(Exception e){ e.printStackTrace(); }
-			}
-			if(DO_AUTOSCROLL){
-			    JScrollBar scrollBar = logJScrollPanes[i].getVerticalScrollBar();
-			    scrollBar.setValue(scrollBar.getMaximum());
-			}
-		    }
-		}
-		// DO OUTPUT PANEL
-		currentLineCount = outputJTextArea.getLineCount();
-		if( currentLineCount > maxLineCount ){
-		    try{
-			int lineEndOffset = outputJTextArea.getLineEndOffset(currentLineCount-maxLineCount);
-			outputJTextArea.getDocument().remove(0,lineEndOffset);
-		    } catch(Exception e){ e.printStackTrace(); }
-		}		
-		if(DO_AUTOSCROLL){
-		    JScrollBar scrollBar = outputJScrollPane.getVerticalScrollBar();
-		    scrollBar.setValue(scrollBar.getMaximum());
-		}
-	    }});
-	}
-	catch(Exception e){ e.printStackTrace(); }
+            }
+            catch(Exception e){ e.printStackTrace(); }
+        }
+        // UPDATE ONLY CHANGED STREAMS AND OUTPUT BUFFER
+        try{
+            SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+                int maxLineCount = bufferJSlider.getValue();
+                int currentLineCount;
+                // DO EACH OF THE LOGS
+                for(int i = 0; i < logStreams.length; i++){
+                    if( updateNeeded[i] ){
+                        logJTextAreas[i].append( logs[i] );
+                        outputJTabbedPane.setTitleAt(1 + i, "<html><font color=\"#FF0000\">"
+                                                     + logFiles[i].getName() + "</font></html>");
+                        currentLineCount = logJTextAreas[i].getLineCount();
+                        if( currentLineCount > maxLineCount ){
+                            try{
+                                int lineEndOffset = logJTextAreas[i].getLineEndOffset(currentLineCount-maxLineCount);
+                                logJTextAreas[i].getDocument().remove(0,lineEndOffset);
+                            } catch(Exception e){ e.printStackTrace(); }
+                        }
+                        if(DO_AUTOSCROLL){
+                            JScrollBar scrollBar = logJScrollPanes[i].getVerticalScrollBar();
+                            scrollBar.setValue(scrollBar.getMaximum());
+                        }
+                    }
+                }
+                // DO OUTPUT PANEL
+                currentLineCount = outputJTextArea.getLineCount();
+                if( currentLineCount > maxLineCount ){
+                    try{
+                        int lineEndOffset = outputJTextArea.getLineEndOffset(currentLineCount-maxLineCount);
+                        outputJTextArea.getDocument().remove(0,lineEndOffset);
+                    } catch(Exception e){ e.printStackTrace(); }
+                }
+                if(DO_AUTOSCROLL){
+                    JScrollBar scrollBar = outputJScrollPane.getVerticalScrollBar();
+                    scrollBar.setValue(scrollBar.getMaximum());
+                }
+            }});
+        }
+        catch(Exception e){ e.printStackTrace(); }
     }
-    
+
     private boolean isSameFileSet(File[] fileSetA, File[] fileSetB){
         if( fileSetA == fileSetB )
             return true;
@@ -324,16 +323,16 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
             return true;
         else if( (fileSetA != null) && (fileSetB == null) && (fileSetA.length == 0) )
             return true;
-        
+
         if(fileSetA.length != fileSetB.length)
             return false;
 
-	Hashtable<File,Object> fileHashtable = new Hashtable<File,Object>();
+        Hashtable<File,Object> fileHashtable = new Hashtable<File,Object>();
         for( File file : fileSetA )
-	    fileHashtable.put( file, file );
-	for( File file : fileSetB )
-	    if( !fileHashtable.containsKey(file) )
-		return false;
+            fileHashtable.put( file, file );
+        for( File file : fileSetB )
+            if( !fileHashtable.containsKey(file) )
+                return false;
 
         return true;
     }
@@ -359,16 +358,16 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
 
         setTitle("Untangle Logger by Ian");
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
-                exitForm(evt);
-            }
-        });
+                public void windowClosing(java.awt.event.WindowEvent evt) {
+                    exitForm(evt);
+                }
+            });
 
         outputJTabbedPane.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                outputJTabbedPaneStateChanged(evt);
-            }
-        });
+                public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                    outputJTabbedPaneStateChanged(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -386,20 +385,20 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
         pauseJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
         pauseJCheckBox.setText("pause");
         pauseJCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                pauseJCheckBoxActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    pauseJCheckBoxActionPerformed(evt);
+                }
+            });
 
         jPanel1.add(pauseJCheckBox);
 
         autoscrollJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
         autoscrollJCheckBox.setText("autoscroll");
         autoscrollJCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                autoscrollJCheckBoxActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    autoscrollJCheckBoxActionPerformed(evt);
+                }
+            });
 
         jPanel1.add(autoscrollJCheckBox);
 
@@ -416,20 +415,20 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
         showApplianceLogsJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
         showApplianceLogsJCheckBox.setText("appliances");
         showApplianceLogsJCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showApplianceLogsJCheckBoxActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    showApplianceLogsJCheckBoxActionPerformed(evt);
+                }
+            });
 
         jPanel2.add(showApplianceLogsJCheckBox);
 
         showSystemLogsJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
         showSystemLogsJCheckBox.setText("system");
         showSystemLogsJCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showSystemLogsJCheckBoxActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    showSystemLogsJCheckBoxActionPerformed(evt);
+                }
+            });
 
         jPanel2.add(showSystemLogsJCheckBox);
 
@@ -446,20 +445,20 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
         showCurrentLogsJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
         showCurrentLogsJCheckBox.setText("current");
         showCurrentLogsJCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showCurrentLogsJCheckBoxActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    showCurrentLogsJCheckBoxActionPerformed(evt);
+                }
+            });
 
         jPanel3.add(showCurrentLogsJCheckBox);
 
         showBackupLogsJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
         showBackupLogsJCheckBox.setText("backup");
         showBackupLogsJCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showBackupLogsJCheckBoxActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    showBackupLogsJCheckBoxActionPerformed(evt);
+                }
+            });
 
         jPanel3.add(showBackupLogsJCheckBox);
 
@@ -526,43 +525,43 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
 
     private void outputJTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_outputJTabbedPaneStateChanged
         int index = outputJTabbedPane.getSelectedIndex();
-        
+
         if(index == 0)
             outputJTabbedPane.setTitleAt(0, "output");
         else if(index > 0){
             outputJTabbedPane.setTitleAt(index, logFiles[index-1].getName() );
         }
     }//GEN-LAST:event_outputJTabbedPaneStateChanged
-    
+
     /** Exit the Application */
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
         System.exit(0);
     }//GEN-LAST:event_exitForm
-    
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        
+
         try {
-	    /*
-          com.incors.plaf.kunststoff.KunststoffLookAndFeel kunststoffLnF = new com.incors.plaf.kunststoff.KunststoffLookAndFeel();
-          kunststoffLnF.setCurrentTheme(new com.incors.plaf.kunststoff.KunststoffTheme());
-          UIManager.setLookAndFeel(kunststoffLnF);
-          System.out.println(UIManager.getLookAndFeel().getDescription());
-	    */
+            /*
+              com.incors.plaf.kunststoff.KunststoffLookAndFeel kunststoffLnF = new com.incors.plaf.kunststoff.KunststoffLookAndFeel();
+              kunststoffLnF.setCurrentTheme(new com.incors.plaf.kunststoff.KunststoffTheme());
+              UIManager.setLookAndFeel(kunststoffLnF);
+              System.out.println(UIManager.getLookAndFeel().getDescription());
+            */
         }
         catch (Exception e) {
-           // handle exception or not, whatever you prefer
+            // handle exception or not, whatever you prefer
             e.printStackTrace();
         }
-                
+
         new MLogger(args);
     }
-    
 
 
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox autoscrollJCheckBox;
     private javax.swing.JSlider bufferJSlider;
@@ -577,5 +576,5 @@ public class MLogger extends javax.swing.JFrame implements FilenameFilter {
     private javax.swing.JCheckBox showCurrentLogsJCheckBox;
     private javax.swing.JCheckBox showSystemLogsJCheckBox;
     // End of variables declaration//GEN-END:variables
-    
+
 }

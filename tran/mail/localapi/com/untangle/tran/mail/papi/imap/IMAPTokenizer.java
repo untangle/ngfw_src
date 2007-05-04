@@ -11,8 +11,9 @@
 package com.untangle.tran.mail.papi.imap;
 import static com.untangle.tran.util.Ascii.*;
 import static com.untangle.tran.util.ASCIIUtil.*;
-import com.untangle.tran.util.BBTokenizer;
 import java.nio.ByteBuffer;
+
+import com.untangle.tran.util.BBTokenizer;
 
 /**
  * Class to tokenize a chain of ByteBuffers.  Does
@@ -68,693 +69,693 @@ import java.nio.ByteBuffer;
  * (see RFC 3501 section 4.3).  The QString token is stripped of its
  * leading/trailing quotes (&#34;), and any internally escaped quotes
  * (&#92;&#34;) are replaced with quotes.  Reading RFC3501 (page 88) it seems
- * that escapes for quotes within QStrings are illegal, but I'm assuming 
+ * that escapes for quotes within QStrings are illegal, but I'm assuming
  * <i>someone</i> out there assumed it was legal and likely does it.
  * </li>
  * </ul>
  */
 public class IMAPTokenizer {
 
-  private static final int DEF_LONGEST_WORD = 1024*8;
+    private static final int DEF_LONGEST_WORD = 1024*8;
 
-  private static final byte[] BLANK_BYTES = new byte[0];
+    private static final byte[] BLANK_BYTES = new byte[0];
 
-  private static final byte[] DELIMS = new byte[] {
-    HT_B,
-    SP_B,
-    CR_B,
-    LF_B,
-    OPEN_BRACKET_B,//[
-    CLOSE_BRACKET_B,//]
-    OPEN_BRACE_B,//{
-    CLOSE_BRACE_B,//}
-    OPEN_PAREN_B,//(
-    CLOSE_PAREN_B,//)    
-    QUOTE_B,
-    BACK_SLASH_B,
-    PLUS_B,
-    PERIOD_B,
-    LT_B,
-    GT_B,
-    STAR_B
-  };
+    private static final byte[] DELIMS = new byte[] {
+        HT_B,
+        SP_B,
+        CR_B,
+        LF_B,
+        OPEN_BRACKET_B,//[
+        CLOSE_BRACKET_B,//]
+        OPEN_BRACE_B,//{
+        CLOSE_BRACE_B,//}
+        OPEN_PAREN_B,//(
+        CLOSE_PAREN_B,//)
+        QUOTE_B,
+        BACK_SLASH_B,
+        PLUS_B,
+        PERIOD_B,
+        LT_B,
+        GT_B,
+        STAR_B
+    };
 
-  private static final byte[] EXCLUDE_DELIMS = new byte[] {
-    HT_B,
-    SP_B,
-  };
-  
-  private static final byte[] QUOTE_DELIMS = new byte[] {
-    QUOTE_B,
-    BACK_SLASH_B
-  };   
+    private static final byte[] EXCLUDE_DELIMS = new byte[] {
+        HT_B,
+        SP_B,
+    };
 
-  /**
-   * Enumeration of the various TokenTypes
-   */
-  public enum IMAPTT {
+    private static final byte[] QUOTE_DELIMS = new byte[] {
+        QUOTE_B,
+        BACK_SLASH_B
+    };
+
     /**
-     * A simple Word, defined as a sequence of
-     * characters bounded by delimiters and not taking
-     * the form of a QSTRING or LITERAL definition
+     * Enumeration of the various TokenTypes
      */
-    WORD,
+    public enum IMAPTT {
+        /**
+         * A simple Word, defined as a sequence of
+         * characters bounded by delimiters and not taking
+         * the form of a QSTRING or LITERAL definition
+         */
+        WORD,
+        /**
+         * A quoted String (see RFC 3501 Section 4.3)
+         */
+        QSTRING,
+        /**
+         * A literal declaration (see RFC 3501 Section 4.3)
+         */
+        LITERAL,
+        /**
+         * A control delimiter, which also has significance.  These
+         * are as follows:
+         * <ul>
+         * <li>[</li>
+         * <li>]</li>
+         * <li>{</li>
+         * <li>}</li>
+         * <li>(</li>
+         * <li>)</li>
+         * <li>&#34;</li>
+         * <li>&#92;</li>
+         * <li>*</li>
+         * <li>+</li>
+         * <li>.</li>
+         * <li>&#60;</li>
+         * <li>></li>
+         * </ul>
+         * Other delimiters such as spaces are not significant.  EOL charaters
+         * are significant, but returned via their own token (NEW_LINE).
+         */
+        CONTROL_CHAR,
+        /**
+         * A new line (CR, LF, CRLF)
+         */
+        NEW_LINE,
+        /**
+         * Placeholder for when there is no token type
+         */
+        NONE
+    };
+
     /**
-     * A quoted String (see RFC 3501 Section 4.3)
+     * Enum of the results from
+     * a call to next
      */
-    QSTRING,
-    /**
-     * A literal declaration (see RFC 3501 Section 4.3)
-     */    
-    LITERAL,
-    /**
-     * A control delimiter, which also has significance.  These
-     * are as follows:
-     * <ul>
-     * <li>[</li>
-     * <li>]</li>
-     * <li>{</li>
-     * <li>}</li>
-     * <li>(</li>
-     * <li>)</li>
-     * <li>&#34;</li>
-     * <li>&#92;</li>
-     * <li>*</li>
-     * <li>+</li>
-     * <li>.</li>
-     * <li>&#60;</li>
-     * <li>></li>
-     * </ul>
-     * Other delimiters such as spaces are not significant.  EOL charaters
-     * are significant, but returned via their own token (NEW_LINE).
-     */
-    CONTROL_CHAR,
-    /**
-     * A new line (CR, LF, CRLF)
-     */
-    NEW_LINE,
-    /**
-     * Placeholder for when there is no token type
-     */
-    NONE
-  };
-
-  /**
-   * Enum of the results from
-   * a call to next
-   */
-  public enum IMAPNextResult {
-    HAVE_TOKEN,
-    EXCEEDED_LONGEST_WORD,
-    NEED_MORE_DATA
-  };
+    public enum IMAPNextResult {
+        HAVE_TOKEN,
+        EXCEEDED_LONGEST_WORD,
+        NEED_MORE_DATA
+    };
 
 
-  private BBTokenizer m_tokenizer;
-  private IMAPTT m_tt = IMAPTT.NONE;
-  private int m_start = -1;
-  private int m_len = -1;
-  
-  private int m_literalOctetCount = 0;
+    private BBTokenizer m_tokenizer;
+    private IMAPTT m_tt = IMAPTT.NONE;
+    private int m_start = -1;
+    private int m_len = -1;
 
-  public IMAPTokenizer() {
-    m_tokenizer = new BBTokenizer();
-    m_tokenizer.setLongestWord(DEF_LONGEST_WORD);
-    m_tokenizer.setDelims(DELIMS, EXCLUDE_DELIMS);
-  }
+    private int m_literalOctetCount = 0;
 
-
-//==================================
-// Properties  
-//==================================
-
-  /**
-   * Set the longest word.  If, while tokenizing,
-   * a word is being scanned and is found to be longer
-   * than this value, the return of
-   * {@link #IMAPNextResult EXCEEDED_LONGEST_WORD}
-   * will be returned.
-   *
-   * @param longestWord the longest word (in bytes)
-   */
-  public void setLongestWord(int longestWord) {
-    m_tokenizer.setLongestWord(longestWord);
-  }
-  public int getLongestWord() {
-    return m_tokenizer.getLongestWord();
-  }
-
-//=====================================
-// Stateful Method about current token  
-//=====================================
-
-  /**
-   * Helper method, shortcut for
-   * <code>m_tokenizer.getTokenType() == IMAPTokenizer.IMAPTT.WORD</code>
-   *
-   * @return true if current token is a word
-   */
-  public boolean isTokenWord() {
-    return getTokenType() == IMAPTokenizer.IMAPTT.WORD;
-  }
-  
-  /**
-   * Helper method, shortcut for
-   * <code>m_tokenizer.getTokenType() == IMAPTokenizer.IMAPTT.LITERAL</code>
-   *
-   * @return true if current token is a LITERAL
-   */
-  public boolean isTokenLiteral() {
-    return getTokenType() == IMAPTokenizer.IMAPTT.LITERAL;
-  }
-
-  /**
-   * Helper method, shortcut for
-   * <code>m_tokenizer.getTokenType() == IMAPTokenizer.IMAPTT.CONTROL_CHAR</code>
-   *
-   * @return true if current token is a CONTROL_CHAR
-   */
-  public boolean isTokenCtl() {
-    return getTokenType() == IMAPTokenizer.IMAPTT.CONTROL_CHAR;
-  }
-
-  /**
-   * Helper method, shortcut for
-   * <code>m_tokenizer.getTokenType() == IMAPTokenizer.IMAPTT.NEW_LINE</code>
-   *
-   * @return true if current token is a NEW_LINE
-   */
-  public boolean isTokenEOL() {
-    return getTokenType() == IMAPTokenizer.IMAPTT.NEW_LINE;
-  }
-  /**
-   * Helper method, shortcut for
-   * <code>m_tokenizer.getTokenType() == IMAPTokenizer.IMAPTT.QSTRING</code>
-   *
-   * @return true if current token is a QSTRING
-   */
-  public boolean isTokenQSTRING() {
-    return getTokenType() == IMAPTokenizer.IMAPTT.QSTRING;
-  }  
-
-
-  /**
-   * Compare the current CONTROL_CHAR token against
-   * the given byte.  Returns true if the
-   * current token is a CONTROL_CHAR, and the byte matches.
-   */
-  public boolean compareCtlAgainstByte(ByteBuffer buf,
-    byte compare) {
-    return isTokenCtl()?
-      (buf.get(getTokenStart()) == compare):false;
-  }
-
-  public boolean compareWordAgainst(ByteBuffer buf,
-    byte[] bytes,
-    boolean ignoreCase) {
-    return compareWordAgainst(buf, bytes, 0, bytes.length, ignoreCase); 
-  }  
-
-  /**
-   * Convienence method to test the current WORD for equivilance
-   * against a reference pattern.
-   * <br><br>
-   * This will always return false if the {@link #getTokenType current token}
-   * is not a WORD
-   */
-  public boolean compareWordAgainst(ByteBuffer buf,
-    byte[] bytes,
-    int start,
-    int len,
-    boolean ignoreCase) {
-
-    if(!isTokenWord() || getTokenLength() != len) {
-      return false;
+    public IMAPTokenizer() {
+        m_tokenizer = new BBTokenizer();
+        m_tokenizer.setLongestWord(DEF_LONGEST_WORD);
+        m_tokenizer.setDelims(DELIMS, EXCLUDE_DELIMS);
     }
-    for(int i = 0; i<len; i++) {
-      if(ignoreCase) {
-        if(!equalsIgnoreCase(bytes[i], buf.get(getTokenStart() + i))) {
-          return false;
+
+
+    //==================================
+    // Properties
+    //==================================
+
+    /**
+     * Set the longest word.  If, while tokenizing,
+     * a word is being scanned and is found to be longer
+     * than this value, the return of
+     * {@link #IMAPNextResult EXCEEDED_LONGEST_WORD}
+     * will be returned.
+     *
+     * @param longestWord the longest word (in bytes)
+     */
+    public void setLongestWord(int longestWord) {
+        m_tokenizer.setLongestWord(longestWord);
+    }
+    public int getLongestWord() {
+        return m_tokenizer.getLongestWord();
+    }
+
+    //=====================================
+    // Stateful Method about current token
+    //=====================================
+
+    /**
+     * Helper method, shortcut for
+     * <code>m_tokenizer.getTokenType() == IMAPTokenizer.IMAPTT.WORD</code>
+     *
+     * @return true if current token is a word
+     */
+    public boolean isTokenWord() {
+        return getTokenType() == IMAPTokenizer.IMAPTT.WORD;
+    }
+
+    /**
+     * Helper method, shortcut for
+     * <code>m_tokenizer.getTokenType() == IMAPTokenizer.IMAPTT.LITERAL</code>
+     *
+     * @return true if current token is a LITERAL
+     */
+    public boolean isTokenLiteral() {
+        return getTokenType() == IMAPTokenizer.IMAPTT.LITERAL;
+    }
+
+    /**
+     * Helper method, shortcut for
+     * <code>m_tokenizer.getTokenType() == IMAPTokenizer.IMAPTT.CONTROL_CHAR</code>
+     *
+     * @return true if current token is a CONTROL_CHAR
+     */
+    public boolean isTokenCtl() {
+        return getTokenType() == IMAPTokenizer.IMAPTT.CONTROL_CHAR;
+    }
+
+    /**
+     * Helper method, shortcut for
+     * <code>m_tokenizer.getTokenType() == IMAPTokenizer.IMAPTT.NEW_LINE</code>
+     *
+     * @return true if current token is a NEW_LINE
+     */
+    public boolean isTokenEOL() {
+        return getTokenType() == IMAPTokenizer.IMAPTT.NEW_LINE;
+    }
+    /**
+     * Helper method, shortcut for
+     * <code>m_tokenizer.getTokenType() == IMAPTokenizer.IMAPTT.QSTRING</code>
+     *
+     * @return true if current token is a QSTRING
+     */
+    public boolean isTokenQSTRING() {
+        return getTokenType() == IMAPTokenizer.IMAPTT.QSTRING;
+    }
+
+
+    /**
+     * Compare the current CONTROL_CHAR token against
+     * the given byte.  Returns true if the
+     * current token is a CONTROL_CHAR, and the byte matches.
+     */
+    public boolean compareCtlAgainstByte(ByteBuffer buf,
+                                         byte compare) {
+        return isTokenCtl()?
+            (buf.get(getTokenStart()) == compare):false;
+    }
+
+    public boolean compareWordAgainst(ByteBuffer buf,
+                                      byte[] bytes,
+                                      boolean ignoreCase) {
+        return compareWordAgainst(buf, bytes, 0, bytes.length, ignoreCase);
+    }
+
+    /**
+     * Convienence method to test the current WORD for equivilance
+     * against a reference pattern.
+     * <br><br>
+     * This will always return false if the {@link #getTokenType current token}
+     * is not a WORD
+     */
+    public boolean compareWordAgainst(ByteBuffer buf,
+                                      byte[] bytes,
+                                      int start,
+                                      int len,
+                                      boolean ignoreCase) {
+
+        if(!isTokenWord() || getTokenLength() != len) {
+            return false;
         }
-      }
-      else {
-        if(bytes[i] != buf.get(getTokenStart() + i)) {
-          return false;
+        for(int i = 0; i<len; i++) {
+            if(ignoreCase) {
+                if(!equalsIgnoreCase(bytes[i], buf.get(getTokenStart() + i))) {
+                    return false;
+                }
+            }
+            else {
+                if(bytes[i] != buf.get(getTokenStart() + i)) {
+                    return false;
+                }
+            }
         }
-      }
+        return true;
     }
-    return true;
-  }
 
 
-  /**
-   * If the type is QSTRING, the begin/end quotes
-   * <b>are</b> included in the count (i.e.
-   * {@link #getTokenStart the token start index is a quote}
-   * as is the {@link #getTokenLength token length}).
-   * <br><br>
-   * Also, the tokenizer did skip-over slash-escaped quotes,
-   * but did <b>not</b> modify the buffer (i.e. if the QString is
-   * to be used, it must have its leading/trailing quotes stripped
-   * as well as any embedded escaped quotes).  To get the "proper"
-   * QString token, use {@link #getQStringToken getQStringToken}.
-   * <br><br>
-   * Technically, there should not be any forward slashes, CR of LF
-   * in a QStrig but we interpret the fwd-slash-quote sequence as
-   * an escaped quote, and include CRLFs.
-   */
-  public IMAPTT getTokenType() {
-    return m_tt;
-  }
-
-  /**
-   * Get the offset within the {@link #next ByteBuffer just scanned}
-   * of the current token.  This is inclusive (i.e. if this
-   * value is 5 and the {@link #getTokenLength length} is 2, then
-   * the token occupies indecies 5 and 6 of the ByteBuffer).
-   *
-   * @return the token start, or undefined if there is
-   *         no current token.
-   */
-  public int getTokenStart() {
-    return m_start;
-  }
-
-  /**
-   * Get the length of the current token.  This is
-   * 1 when the {@link #getTokenType type}
-   * is CONTROL_CHAR, zero for a LITERAL token,
-   * and the length of the String for a WORD.  If the type
-   * is QSTRING, this is <b>inclusive</b> of the open/close
-   * quote ({@link #getQStringToken see getQStringToken}).
-   * <br><br>
-   * If there is no current token, this value is undefined.
-   *
-   * @return the length of the current token
-   */
-  public int getTokenLength() {
-    return m_len;
-  }
-
-  /**
-   * Debugging method which returns a reasonable String
-   * representation for the current token.
-   */
-  public String tokenToStringDebug(ByteBuffer buf) {
-    switch(m_tt) {
-      case WORD:
-        return getWordAsString(buf);
-      case QSTRING:
-        return new String(getQStringToken(buf));
-      case LITERAL:
-        return new String("<literal> " + getLiteralOctetCount());
-      case CONTROL_CHAR:
-        return asciiByteToString(buf.get(getTokenStart()));
-      case NEW_LINE:
-        return "<EOL>";
-      case NONE:
-        return "<NONE>";
+    /**
+     * If the type is QSTRING, the begin/end quotes
+     * <b>are</b> included in the count (i.e.
+     * {@link #getTokenStart the token start index is a quote}
+     * as is the {@link #getTokenLength token length}).
+     * <br><br>
+     * Also, the tokenizer did skip-over slash-escaped quotes,
+     * but did <b>not</b> modify the buffer (i.e. if the QString is
+     * to be used, it must have its leading/trailing quotes stripped
+     * as well as any embedded escaped quotes).  To get the "proper"
+     * QString token, use {@link #getQStringToken getQStringToken}.
+     * <br><br>
+     * Technically, there should not be any forward slashes, CR of LF
+     * in a QStrig but we interpret the fwd-slash-quote sequence as
+     * an escaped quote, and include CRLFs.
+     */
+    public IMAPTT getTokenType() {
+        return m_tt;
     }
-    throw new RuntimeException("Unknown Token type: " + m_tt);
-  }
 
-  /**
-   * Converts the current WORD to a String.  If the current
-   * token type is not WORD, then this returns null.
-   *
-   * @param buf the buffer which was just passed to {@link #next next}
-   */
-  public String getWordAsString(ByteBuffer buf) {
-    if(m_tt != IMAPTT.WORD) {
-      return null;
+    /**
+     * Get the offset within the {@link #next ByteBuffer just scanned}
+     * of the current token.  This is inclusive (i.e. if this
+     * value is 5 and the {@link #getTokenLength length} is 2, then
+     * the token occupies indecies 5 and 6 of the ByteBuffer).
+     *
+     * @return the token start, or undefined if there is
+     *         no current token.
+     */
+    public int getTokenStart() {
+        return m_start;
     }
-    ByteBuffer dup = buf.duplicate();
-    dup.position(getTokenStart());
-    dup.limit(dup.position() + getTokenLength());
-    return bbToString(dup);
-  }
-  
-  /**
-   * Only if {@link getTokenType the token type} is LITERAL, this defines
-   * the number of octets (bytes) of that literal.  Note also that the
-   * position of the buffer has been moved beyond the CRLF which defined
-   * the literal in the form <code>{NNN}CRLF</code>
-   *
-   * @return the literal octet count, provided the current
-   *         {@link #getTokenType token type} is {@link #IMAPTT LITERAL}.
-   *         
-   */
-  public int getLiteralOctetCount() {
-    return m_literalOctetCount;
-  }
 
-  /**
-   * If the current token is of type QSTRING, this is the String without
-   * the leading/trailing quotes as well as any internal
-   * escaped quoted fixed.
-   *
-   * @param bb the Buffer just passed to {@link #next next}
-   *
-   * @return QString token without quotes.
-   */
-  public byte[] getQStringToken(ByteBuffer bb) {
-    int next = 0;
-    byte[] ret = new byte[getTokenLength()-2];
-    for(int i = 1; i<getTokenLength()-1; i++) {
-      if(bb.get(getTokenStart() + i) == BACK_SLASH_B &&
-        bb.limit() < bb.get(getTokenStart() + i + 1) &&
-        bb.get(getTokenStart() + i + 1) == QUOTE_B) {
-        i++;
-      }
-      ret[next++] = bb.get(getTokenStart() + i);
+    /**
+     * Get the length of the current token.  This is
+     * 1 when the {@link #getTokenType type}
+     * is CONTROL_CHAR, zero for a LITERAL token,
+     * and the length of the String for a WORD.  If the type
+     * is QSTRING, this is <b>inclusive</b> of the open/close
+     * quote ({@link #getQStringToken see getQStringToken}).
+     * <br><br>
+     * If there is no current token, this value is undefined.
+     *
+     * @return the length of the current token
+     */
+    public int getTokenLength() {
+        return m_len;
     }
-    if(next < ret.length) {
-      byte[] newRet = new byte[next];
-      System.arraycopy(ret, 0, newRet, 0, next);
-      ret = newRet;
+
+    /**
+     * Debugging method which returns a reasonable String
+     * representation for the current token.
+     */
+    public String tokenToStringDebug(ByteBuffer buf) {
+        switch(m_tt) {
+        case WORD:
+            return getWordAsString(buf);
+        case QSTRING:
+            return new String(getQStringToken(buf));
+        case LITERAL:
+            return new String("<literal> " + getLiteralOctetCount());
+        case CONTROL_CHAR:
+            return asciiByteToString(buf.get(getTokenStart()));
+        case NEW_LINE:
+            return "<EOL>";
+        case NONE:
+            return "<NONE>";
+        }
+        throw new RuntimeException("Unknown Token type: " + m_tt);
     }
-    return ret;
-  }
 
-  /**
-   * If {@link getTokenType the token type} is LITERAL, this method
-   * instructs the Tokenizer to skip-past the number of octets
-   * defined by the literal.  Subsequent calls to {@link #next next}
-   * may return NEED_MORE_DATA for several buffers until the literal
-   * is consumed.
-   * <br><br>
-   * If the current token is not a literal, this has no effect.         
-   */
-  public void skipCurrentLiteral() {
-    if(isTokenLiteral()) {
-      m_tokenizer.skip(getLiteralOctetCount());
+    /**
+     * Converts the current WORD to a String.  If the current
+     * token type is not WORD, then this returns null.
+     *
+     * @param buf the buffer which was just passed to {@link #next next}
+     */
+    public String getWordAsString(ByteBuffer buf) {
+        if(m_tt != IMAPTT.WORD) {
+            return null;
+        }
+        ByteBuffer dup = buf.duplicate();
+        dup.position(getTokenStart());
+        dup.limit(dup.position() + getTokenLength());
+        return bbToString(dup);
     }
-  }
 
-  
+    /**
+     * Only if {@link getTokenType the token type} is LITERAL, this defines
+     * the number of octets (bytes) of that literal.  Note also that the
+     * position of the buffer has been moved beyond the CRLF which defined
+     * the literal in the form <code>{NNN}CRLF</code>
+     *
+     * @return the literal octet count, provided the current
+     *         {@link #getTokenType token type} is {@link #IMAPTT LITERAL}.
+     *
+     */
+    public int getLiteralOctetCount() {
+        return m_literalOctetCount;
+    }
 
-//=======================================
-// Token Consumption methods  
-//=======================================
+    /**
+     * If the current token is of type QSTRING, this is the String without
+     * the leading/trailing quotes as well as any internal
+     * escaped quoted fixed.
+     *
+     * @param bb the Buffer just passed to {@link #next next}
+     *
+     * @return QString token without quotes.
+     */
+    public byte[] getQStringToken(ByteBuffer bb) {
+        int next = 0;
+        byte[] ret = new byte[getTokenLength()-2];
+        for(int i = 1; i<getTokenLength()-1; i++) {
+            if(bb.get(getTokenStart() + i) == BACK_SLASH_B &&
+               bb.limit() < bb.get(getTokenStart() + i + 1) &&
+               bb.get(getTokenStart() + i + 1) == QUOTE_B) {
+                i++;
+            }
+            ret[next++] = bb.get(getTokenStart() + i);
+        }
+        if(next < ret.length) {
+            byte[] newRet = new byte[next];
+            System.arraycopy(ret, 0, newRet, 0, next);
+            ret = newRet;
+        }
+        return ret;
+    }
+
+    /**
+     * If {@link getTokenType the token type} is LITERAL, this method
+     * instructs the Tokenizer to skip-past the number of octets
+     * defined by the literal.  Subsequent calls to {@link #next next}
+     * may return NEED_MORE_DATA for several buffers until the literal
+     * is consumed.
+     * <br><br>
+     * If the current token is not a literal, this has no effect.
+     */
+    public void skipCurrentLiteral() {
+        if(isTokenLiteral()) {
+            m_tokenizer.skip(getLiteralOctetCount());
+        }
+    }
 
 
 
-  /**
-   * Advance this ByteBuffer to the next token.  If
-   * {@link #IMAPNextResult HAVE_TOKEN} is returned,
-   * then the {@link #getTokenType getTokenType},
-   * {@link #getTokenStart getTokenStart}, and
-   * {@link #getTokenLength getTokenLength} methods will return
-   * information about the just-encountered token.  The ByteBuffer
-   * is advanced just-past the token.
-   * <br><br>
-   * If the return is {@link #IMAPNextResult NEED_MORE_DATA}, then 
-   * up to {@link getLongestWord the longest word}-1 number of bytes may
-   * be left in the buffer.  Any incomplete tokens are left in the buffer,
-   * and duplicate scanning repeats in the subsequent call to
-   * {@link #next next}.
-   * <br><br>
-   * If the return is {@link #IMAPNextResult EXCEEDED_LONGEST_WORD}, the
-   * caller must either {@link #setLongestWord increase the longest word},
-   * or abandon tokenizing as this will always be returned.
-   * <br><br>
-   * Values for the token start, type, and length are undefined 
-   * for the NEED_MORE_DATA and EXCEEDED_LONGEST_WORD returns.
-   *
-   * @param bb the ByteBuffer to be tokenized
-   *
-   * @return the result
-   */
-  public IMAPNextResult next(ByteBuffer bb) {
-    //Reset token type
-    reset();
+    //=======================================
+    // Token Consumption methods
+    //=======================================
 
-    //Get next token
-    BBTokenizer.NextResult nextResult = m_tokenizer.next(bb);
 
-    switch(nextResult) {
-      case NEED_MORE_DATA:
+
+    /**
+     * Advance this ByteBuffer to the next token.  If
+     * {@link #IMAPNextResult HAVE_TOKEN} is returned,
+     * then the {@link #getTokenType getTokenType},
+     * {@link #getTokenStart getTokenStart}, and
+     * {@link #getTokenLength getTokenLength} methods will return
+     * information about the just-encountered token.  The ByteBuffer
+     * is advanced just-past the token.
+     * <br><br>
+     * If the return is {@link #IMAPNextResult NEED_MORE_DATA}, then
+     * up to {@link getLongestWord the longest word}-1 number of bytes may
+     * be left in the buffer.  Any incomplete tokens are left in the buffer,
+     * and duplicate scanning repeats in the subsequent call to
+     * {@link #next next}.
+     * <br><br>
+     * If the return is {@link #IMAPNextResult EXCEEDED_LONGEST_WORD}, the
+     * caller must either {@link #setLongestWord increase the longest word},
+     * or abandon tokenizing as this will always be returned.
+     * <br><br>
+     * Values for the token start, type, and length are undefined
+     * for the NEED_MORE_DATA and EXCEEDED_LONGEST_WORD returns.
+     *
+     * @param bb the ByteBuffer to be tokenized
+     *
+     * @return the result
+     */
+    public IMAPNextResult next(ByteBuffer bb) {
+        //Reset token type
+        reset();
+
+        //Get next token
+        BBTokenizer.NextResult nextResult = m_tokenizer.next(bb);
+
+        switch(nextResult) {
+        case NEED_MORE_DATA:
+            m_tt = IMAPTT.NONE;
+            return IMAPNextResult.NEED_MORE_DATA;
+        case EXCEEDED_LONGEST_WORD:
+            m_tt = IMAPTT.NONE;
+            return IMAPNextResult.EXCEEDED_LONGEST_WORD;
+        case HAVE_DELIM:
+            //The delim can mean a few things
+            return processDelim(bb);
+        case HAVE_WORD:
+            m_tt = IMAPTT.WORD;
+            m_start = m_tokenizer.tokenStart();
+            m_len = m_tokenizer.tokenLength();
+            return IMAPNextResult.HAVE_TOKEN;
+        }
+        throw new RuntimeException(
+                                   "Fell from a switch which should have been inclusive");
+    }
+
+    /**
+     * Resets the Token properties to invalid values
+     */
+    private void reset() {
         m_tt = IMAPTT.NONE;
-        return IMAPNextResult.NEED_MORE_DATA;
-      case EXCEEDED_LONGEST_WORD:
-        m_tt = IMAPTT.NONE;
-        return IMAPNextResult.EXCEEDED_LONGEST_WORD;
-      case HAVE_DELIM:
-        //The delim can mean a few things
-        return processDelim(bb);
-      case HAVE_WORD:
-        m_tt = IMAPTT.WORD;
-        m_start = m_tokenizer.tokenStart();
-        m_len = m_tokenizer.tokenLength();
-        return IMAPNextResult.HAVE_TOKEN;
+        m_start = -1;
+        m_len = -1;
     }
-    throw new RuntimeException(
-      "Fell from a switch which should have been inclusive");
-  }
 
-  /**
-   * Resets the Token properties to invalid values
-   */
-  private void reset() {
-    m_tt = IMAPTT.NONE;
-    m_start = -1;
-    m_len = -1;    
-  }
-
-  /**
-   * Helper method to process a delimiter.
-   */
-  private IMAPNextResult processDelim(ByteBuffer bb) {
-    switch(bb.get(m_tokenizer.tokenStart())) {
-      //The simple delim-as-tokens.  Note that SP and HT are never returned
-      case OPEN_BRACKET_B:
-      case CLOSE_BRACKET_B:
-      case OPEN_PAREN_B:
-      case CLOSE_PAREN_B:            
-      case PLUS_B:
-      case STAR_B:
-      case PERIOD_B:
-      case LT_B:
-      case GT_B:
-      case BACK_SLASH_B:
-        //I'm very unclear from the lame IMAP spec if
-        //  \" encountered bare should indicate an
-        //escape of a QString.  I'll assume "no"
-        //
-        //UPDATE - Found on page 88 of RFC 3501
-      case CLOSE_BRACE_B:        
-        m_tt = IMAPTT.CONTROL_CHAR;
-        m_start = m_tokenizer.tokenStart();
-        m_len = m_tokenizer.tokenLength();
-        return IMAPNextResult.HAVE_TOKEN;
-      case OPEN_BRACE_B:
-        return processOpenBrace(bb);
-      case CR_B:
-        if(!bb.hasRemaining()) {
-          bb.position(bb.position()-1);
-          m_tt = IMAPTT.NONE;
-          return IMAPNextResult.NEED_MORE_DATA;          
-        }
-        if(bb.get() == LF_B) {
-          m_tt = IMAPTT.NEW_LINE;
-          m_start = bb.position()-2;
-          m_len = 2;
-          return IMAPNextResult.HAVE_TOKEN;           
-        }
-        else {
-          //Rewind the get
-          bb.position(bb.position()-1);
-          m_tt = IMAPTT.NEW_LINE;
-          m_start = bb.position()-1;
-          m_len = 1;
-          return IMAPNextResult.HAVE_TOKEN;            
-        }
-      case LF_B:
-        m_tt = IMAPTT.NEW_LINE;
-        m_start = m_tokenizer.tokenStart();
-        m_len = 1;
-        return IMAPNextResult.HAVE_TOKEN;        
-      case QUOTE_B:
-        int quoteStart = m_tokenizer.tokenStart();
-        bb.position(quoteStart+1);
-        //Search for the quote end, or the end of the buffer.
-        //TODO Should new line determine the implicit end of a broken quote?
-        while(bb.hasRemaining()) {
-          byte b = bb.get();
-          //Check for too long
-          if((bb.position() - quoteStart) > m_tokenizer.getLongestWord()) {
+    /**
+     * Helper method to process a delimiter.
+     */
+    private IMAPNextResult processDelim(ByteBuffer bb) {
+        switch(bb.get(m_tokenizer.tokenStart())) {
+            //The simple delim-as-tokens.  Note that SP and HT are never returned
+        case OPEN_BRACKET_B:
+        case CLOSE_BRACKET_B:
+        case OPEN_PAREN_B:
+        case CLOSE_PAREN_B:
+        case PLUS_B:
+        case STAR_B:
+        case PERIOD_B:
+        case LT_B:
+        case GT_B:
+        case BACK_SLASH_B:
+            //I'm very unclear from the lame IMAP spec if
+            //  \" encountered bare should indicate an
+            //escape of a QString.  I'll assume "no"
+            //
+            //UPDATE - Found on page 88 of RFC 3501
+        case CLOSE_BRACE_B:
+            m_tt = IMAPTT.CONTROL_CHAR;
+            m_start = m_tokenizer.tokenStart();
+            m_len = m_tokenizer.tokenLength();
+            return IMAPNextResult.HAVE_TOKEN;
+        case OPEN_BRACE_B:
+            return processOpenBrace(bb);
+        case CR_B:
+            if(!bb.hasRemaining()) {
+                bb.position(bb.position()-1);
+                m_tt = IMAPTT.NONE;
+                return IMAPNextResult.NEED_MORE_DATA;
+            }
+            if(bb.get() == LF_B) {
+                m_tt = IMAPTT.NEW_LINE;
+                m_start = bb.position()-2;
+                m_len = 2;
+                return IMAPNextResult.HAVE_TOKEN;
+            }
+            else {
+                //Rewind the get
+                bb.position(bb.position()-1);
+                m_tt = IMAPTT.NEW_LINE;
+                m_start = bb.position()-1;
+                m_len = 1;
+                return IMAPNextResult.HAVE_TOKEN;
+            }
+        case LF_B:
+            m_tt = IMAPTT.NEW_LINE;
+            m_start = m_tokenizer.tokenStart();
+            m_len = 1;
+            return IMAPNextResult.HAVE_TOKEN;
+        case QUOTE_B:
+            int quoteStart = m_tokenizer.tokenStart();
+            bb.position(quoteStart+1);
+            //Search for the quote end, or the end of the buffer.
+            //TODO Should new line determine the implicit end of a broken quote?
+            while(bb.hasRemaining()) {
+                byte b = bb.get();
+                //Check for too long
+                if((bb.position() - quoteStart) > m_tokenizer.getLongestWord()) {
+                    bb.position(quoteStart);
+                    m_tt = IMAPTT.NONE;
+                    return IMAPNextResult.EXCEEDED_LONGEST_WORD;
+                }
+                if(b == BACK_SLASH_B) {
+                    //Either grab the escaped character, or let
+                    //us fall through to request more bytes
+                    if(bb.hasRemaining()) {
+                        bb.get();
+                    }
+                    continue;
+                }
+                if(b == QUOTE_B) {
+                    //we're done
+                    m_tt = IMAPTT.QSTRING;
+                    m_start = quoteStart;
+                    m_len = bb.position()-m_start;
+                    return IMAPNextResult.HAVE_TOKEN;
+                }
+            }
+            //Fell through.  Reset and request more bytes
             bb.position(quoteStart);
             m_tt = IMAPTT.NONE;
-            return IMAPNextResult.EXCEEDED_LONGEST_WORD;            
-          }
-          if(b == BACK_SLASH_B) {
-            //Either grab the escaped character, or let
-            //us fall through to request more bytes
-            if(bb.hasRemaining()) {
-              bb.get();
-            }
-            continue;
-          }
-          if(b == QUOTE_B) {
-            //we're done
-            m_tt = IMAPTT.QSTRING;
-            m_start = quoteStart;
-            m_len = bb.position()-m_start;
+            return IMAPNextResult.NEED_MORE_DATA;
+        }
+        throw new RuntimeException(
+                                   "Fell from a swithc which should have been inclusive");
+    }
+
+    /**
+     * Helper method to process an open brace delimiter ("{"),
+     * which may begin a LITERAL declaration.
+     */
+    private IMAPNextResult processOpenBrace(ByteBuffer bb) {
+
+        //Test:
+        //{{
+        //{EOF
+        //{nEOF
+        //{n EOF
+        //{ nEOF
+        //{nn}EOF
+        //{nn}CREOF
+        //{nn}LFEOF
+        //{nn}CRLFEOF
+        //{nn}CRLFxx
+        //{xEOF
+
+        //Note the start.  We may have to re-wind to this
+        //punt if we cannot complete this literal
+        int braceStart = m_tokenizer.tokenStart();
+
+        BBTokenizer.NextResult nextResult = m_tokenizer.next(bb);
+        switch(nextResult) {
+
+        case NEED_MORE_DATA:
+            //Re-wind the buffer so next time we re-encounter the brace
+            //Test {EOF
+            bb.position(braceStart);
+            m_tt = IMAPTT.NONE;
+            return IMAPNextResult.NEED_MORE_DATA;
+
+        case EXCEEDED_LONGEST_WORD:
+            //Leave { consumed and rewind this "too long" word
+            //so we encounter the "longest-word" thing next
+            bb.position(braceStart);
+            m_tt = IMAPTT.CONTROL_CHAR;
             return IMAPNextResult.HAVE_TOKEN;
-          }
+
+        case HAVE_DELIM:
+            //Re-wind to we re-encounter the token
+            //we just consumed next time.  Test "{{"
+            bb.position(m_tokenizer.tokenStart());
+            m_start = braceStart;
+            m_len = 1;
+            m_tt = IMAPTT.CONTROL_CHAR;
+            return IMAPNextResult.HAVE_TOKEN;
         }
-        //Fell through.  Reset and request more bytes
-        bb.position(quoteStart);
-        m_tt = IMAPTT.NONE;
-        return IMAPNextResult.NEED_MORE_DATA;
-    }
-    throw new RuntimeException(
-      "Fell from a swithc which should have been inclusive");
-  }
 
-  /**
-   * Helper method to process an open brace delimiter ("{"),
-   * which may begin a LITERAL declaration.
-   */
-  private IMAPNextResult processOpenBrace(ByteBuffer bb) {
-
-    //Test:
-    //{{
-    //{EOF
-    //{nEOF
-    //{n EOF
-    //{ nEOF
-    //{nn}EOF
-    //{nn}CREOF
-    //{nn}LFEOF
-    //{nn}CRLFEOF
-    //{nn}CRLFxx
-    //{xEOF
-    
-    //Note the start.  We may have to re-wind to this
-    //punt if we cannot complete this literal
-    int braceStart = m_tokenizer.tokenStart();
-
-    BBTokenizer.NextResult nextResult = m_tokenizer.next(bb);
-    switch(nextResult) {
-    
-      case NEED_MORE_DATA:
-        //Re-wind the buffer so next time we re-encounter the brace
-        //Test {EOF
-        bb.position(braceStart);
-        m_tt = IMAPTT.NONE;
-        return IMAPNextResult.NEED_MORE_DATA;
-        
-      case EXCEEDED_LONGEST_WORD:
-        //Leave { consumed and rewind this "too long" word
-        //so we encounter the "longest-word" thing next
-        bb.position(braceStart);
-        m_tt = IMAPTT.CONTROL_CHAR;
-        return IMAPNextResult.HAVE_TOKEN;
-        
-      case HAVE_DELIM:
-        //Re-wind to we re-encounter the token
-        //we just consumed next time.  Test "{{"
-        bb.position(m_tokenizer.tokenStart());
-        m_start = braceStart;
-        m_len = 1;
-        m_tt = IMAPTT.CONTROL_CHAR;
-        return IMAPNextResult.HAVE_TOKEN;
-    }
-
-    //If we're here, then we have a word.  Check
-    //if the word is all numbers (permit LWS)
-    for(int i = 0; i<m_tokenizer.tokenLength(); i++) {
-      if(!(isNumber(bb.get(m_tokenizer.tokenStart() + i)) ||
-        isLWS(bb.get(m_tokenizer.tokenStart() + i)))) {
-        //Not a number.  Rewind it and return later
-        //as a simple WORD
-        bb.position(m_tokenizer.tokenStart());
-        m_start = braceStart;
-        m_len = 1;        
-        m_tt = IMAPTT.CONTROL_CHAR;
-        return IMAPNextResult.HAVE_TOKEN;        
-      }
-    }
-    
-    //Parse the number
-    int octetCount = 0;
-    try {
-      ByteBuffer dup = bb.duplicate();
-      dup.position(m_tokenizer.tokenStart());
-      dup.limit(dup.position() + m_tokenizer.tokenLength());
-      String octetString = bbToString(dup);
-      octetString.trim();
-      octetCount = Integer.parseInt(octetString);
-    }
-    catch(Exception ex) {
-      ex.printStackTrace(System.out);//TODO bscott removeme
-      //TODO bscott log this
-      bb.position(m_tokenizer.tokenStart());
-      m_start = braceStart;
-      m_len = 1;
-      m_tt = IMAPTT.CONTROL_CHAR;
-      return IMAPNextResult.HAVE_TOKEN;
-    }
-
-    //Consume any whitespace
-    eatWhitespace(bb, false);
-    
-    //We have a {NNN   Check for
-    //a } then CRLF
-    if(bb.remaining() < 2) {
-      //Rewind such that we re-encounter the "{NNN" next time
-      bb.position(braceStart);
-      m_tt = IMAPTT.NONE;
-      return IMAPNextResult.NEED_MORE_DATA;
-    }
-    if(bb.get() == CLOSE_BRACE) {
-      //Check for the CRLF
-      if(bb.get(bb.position()) == CR_B) {
-        bb.get();
-        if(bb.remaining() < 1) {
-          //Need more bytes to check for new line
-          bb.position(braceStart);
-          m_tt = IMAPTT.NONE;
-          return IMAPNextResult.NEED_MORE_DATA;          
+        //If we're here, then we have a word.  Check
+        //if the word is all numbers (permit LWS)
+        for(int i = 0; i<m_tokenizer.tokenLength(); i++) {
+            if(!(isNumber(bb.get(m_tokenizer.tokenStart() + i)) ||
+                 isLWS(bb.get(m_tokenizer.tokenStart() + i)))) {
+                //Not a number.  Rewind it and return later
+                //as a simple WORD
+                bb.position(m_tokenizer.tokenStart());
+                m_start = braceStart;
+                m_len = 1;
+                m_tt = IMAPTT.CONTROL_CHAR;
+                return IMAPNextResult.HAVE_TOKEN;
+            }
         }
-        if(bb.get() != LF_B) {
-          bb.position(bb.position()-1);                    
+
+        //Parse the number
+        int octetCount = 0;
+        try {
+            ByteBuffer dup = bb.duplicate();
+            dup.position(m_tokenizer.tokenStart());
+            dup.limit(dup.position() + m_tokenizer.tokenLength());
+            String octetString = bbToString(dup);
+            octetString.trim();
+            octetCount = Integer.parseInt(octetString);
         }
-        m_start = bb.position();
-        m_len = 0;
-        m_literalOctetCount = octetCount;
-        m_tt = IMAPTT.LITERAL;
-        return IMAPNextResult.HAVE_TOKEN;          
-      }
-      else if(bb.get(bb.position()) == LF_B) {
-        //Bare LF.  Naughty, naughty, naughty
-        bb.position(bb.position()+1);
-        m_start = bb.position();
-        m_len = 0;
-        m_literalOctetCount = octetCount;
-        m_tt = IMAPTT.LITERAL;
-        return IMAPNextResult.HAVE_TOKEN;        
-      }
-      else {
-        //Odd.  Did not comply
-        bb.position(braceStart+1);
-        m_start = braceStart;
-        m_len = 1;          
-        m_tt = IMAPTT.CONTROL_CHAR;
-        return IMAPNextResult.HAVE_TOKEN;         
-      }
+        catch(Exception ex) {
+            ex.printStackTrace(System.out);//TODO bscott removeme
+            //TODO bscott log this
+            bb.position(m_tokenizer.tokenStart());
+            m_start = braceStart;
+            m_len = 1;
+            m_tt = IMAPTT.CONTROL_CHAR;
+            return IMAPNextResult.HAVE_TOKEN;
+        }
+
+        //Consume any whitespace
+        eatWhitespace(bb, false);
+
+        //We have a {NNN   Check for
+        //a } then CRLF
+        if(bb.remaining() < 2) {
+            //Rewind such that we re-encounter the "{NNN" next time
+            bb.position(braceStart);
+            m_tt = IMAPTT.NONE;
+            return IMAPNextResult.NEED_MORE_DATA;
+        }
+        if(bb.get() == CLOSE_BRACE) {
+            //Check for the CRLF
+            if(bb.get(bb.position()) == CR_B) {
+                bb.get();
+                if(bb.remaining() < 1) {
+                    //Need more bytes to check for new line
+                    bb.position(braceStart);
+                    m_tt = IMAPTT.NONE;
+                    return IMAPNextResult.NEED_MORE_DATA;
+                }
+                if(bb.get() != LF_B) {
+                    bb.position(bb.position()-1);
+                }
+                m_start = bb.position();
+                m_len = 0;
+                m_literalOctetCount = octetCount;
+                m_tt = IMAPTT.LITERAL;
+                return IMAPNextResult.HAVE_TOKEN;
+            }
+            else if(bb.get(bb.position()) == LF_B) {
+                //Bare LF.  Naughty, naughty, naughty
+                bb.position(bb.position()+1);
+                m_start = bb.position();
+                m_len = 0;
+                m_literalOctetCount = octetCount;
+                m_tt = IMAPTT.LITERAL;
+                return IMAPNextResult.HAVE_TOKEN;
+            }
+            else {
+                //Odd.  Did not comply
+                bb.position(braceStart+1);
+                m_start = braceStart;
+                m_len = 1;
+                m_tt = IMAPTT.CONTROL_CHAR;
+                return IMAPNextResult.HAVE_TOKEN;
+            }
+        }
+        else {
+            //Not a candidate
+            bb.position(braceStart+1);
+            m_start = braceStart;
+            m_len = 1;
+            m_tt = IMAPTT.CONTROL_CHAR;
+            return IMAPNextResult.HAVE_TOKEN;
+        }
     }
-    else {
-      //Not a candidate
-      bb.position(braceStart+1);
-      m_start = braceStart;
-      m_len = 1;      
-      m_tt = IMAPTT.CONTROL_CHAR;
-      return IMAPNextResult.HAVE_TOKEN;      
-    }
-  }
 
 
-  
+
 }

@@ -141,9 +141,9 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
         private final EventRepository eventRepository;
 
         EventRepositoryCache(EventRepository eventRepository)
-            {
-                this.eventRepository = eventRepository;
-            }
+        {
+            this.eventRepository = eventRepository;
+        }
 
 
         // EventRepository methods --------------------------------------------

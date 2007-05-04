@@ -10,69 +10,67 @@
  */
 package com.untangle.tran.mail.web.euv.tags;
 
-import com.untangle.tran.mail.papi.quarantine.InboxRecordCursor;
-import com.untangle.tran.mail.web.euv.Constants;
-import com.untangle.tran.mail.web.euv.Util;
-import java.net.URLEncoder;
-
 import javax.servlet.ServletRequest;
+
+import com.untangle.tran.mail.papi.quarantine.InboxRecordCursor;
+import com.untangle.tran.mail.web.euv.Util;
 
 public final class PagnationPropertiesTag extends SingleValueTag {
 
-  private static final String KEY = "untangle.pagnationproperties.rowsperpage";
-  private String m_propName;
+    private static final String KEY = "untangle.pagnationproperties.rowsperpage";
+    private String m_propName;
 
-  public String getPropName() {
-    return m_propName;
-  }
-  public void setPropName(String n) {
-    m_propName = n;
-  }
-
-  public static final void setCurrentRowsPerPAge(ServletRequest request,
-    String rows) {
-    request.setAttribute(KEY, rows);
-  }
-  public static final void clearCurretRowsPerPAge(ServletRequest request) {
-    request.removeAttribute(KEY);
-  }
-
-  /**
-   * Returns null if there is no current number of rows
-   */
-  public static String getCurrentRowsPerPAge(ServletRequest request) {
-    return (String) request.getAttribute(KEY);
-  }
-  static boolean hasCurrentRowsPerPAge(ServletRequest request) {
-    return getCurrentRowsPerPAge(request) != null;
-  }   
-
-  @Override
-  protected String getValue() {
-    InboxRecordCursor cursor = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
-    if(cursor == null) {
-      return "";
+    public String getPropName() {
+        return m_propName;
+    }
+    public void setPropName(String n) {
+        m_propName = n;
     }
 
-    if(getPropName().equalsIgnoreCase("sorting")) {
-      return Util.sortByToString(cursor.getSortedBy());
+    public static final void setCurrentRowsPerPAge(ServletRequest request,
+                                                   String rows) {
+        request.setAttribute(KEY, rows);
     }
-    else if(getPropName().equalsIgnoreCase("ascending")) {
-      return "" + cursor.isAscending();
+    public static final void clearCurretRowsPerPAge(ServletRequest request) {
+        request.removeAttribute(KEY);
     }
-    else if(getPropName().equalsIgnoreCase("prevId")) {
-      return "" + cursor.getPrevStartingAt();
-    }
-    else if(getPropName().equalsIgnoreCase("nextId")) {
-      return "" + cursor.getNextStartingAt();
-    }
-    else if(getPropName().equalsIgnoreCase("thisId")) {
-      return "" + cursor.getCurrentStartingAt();
-    }
-    else if(getPropName().equalsIgnoreCase("rPPOption")) {
-      return getCurrentRowsPerPAge(pageContext.getRequest());
-    }         
 
-    return "";
-  }
+    /**
+     * Returns null if there is no current number of rows
+     */
+    public static String getCurrentRowsPerPAge(ServletRequest request) {
+        return (String) request.getAttribute(KEY);
+    }
+    static boolean hasCurrentRowsPerPAge(ServletRequest request) {
+        return getCurrentRowsPerPAge(request) != null;
+    }
+
+    @Override
+    protected String getValue() {
+        InboxRecordCursor cursor = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
+        if(cursor == null) {
+            return "";
+        }
+
+        if(getPropName().equalsIgnoreCase("sorting")) {
+            return Util.sortByToString(cursor.getSortedBy());
+        }
+        else if(getPropName().equalsIgnoreCase("ascending")) {
+            return "" + cursor.isAscending();
+        }
+        else if(getPropName().equalsIgnoreCase("prevId")) {
+            return "" + cursor.getPrevStartingAt();
+        }
+        else if(getPropName().equalsIgnoreCase("nextId")) {
+            return "" + cursor.getNextStartingAt();
+        }
+        else if(getPropName().equalsIgnoreCase("thisId")) {
+            return "" + cursor.getCurrentStartingAt();
+        }
+        else if(getPropName().equalsIgnoreCase("rPPOption")) {
+            return getCurrentRowsPerPAge(pageContext.getRequest());
+        }
+
+        return "";
+    }
 }

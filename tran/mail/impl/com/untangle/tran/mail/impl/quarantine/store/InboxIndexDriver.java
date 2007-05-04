@@ -34,409 +34,409 @@ import org.apache.log4j.Logger;
  * on disk
  */
 class InboxIndexDriver
-  extends AbstractDriver {
+    extends AbstractDriver {
 
-  private static final Logger s_logger = Logger.getLogger(InboxIndexDriver.class);
+    private static final Logger s_logger = Logger.getLogger(InboxIndexDriver.class);
 
-  //Blurb added to top of file
-  private static final String[] BLURB = new String[] {
-    "################################################",
-    "#             Inbox Index File                 #",
-    "#                                              #",
-    "#               DO NOT MODIFY                  #",
-    "#                                              #",
-    "# Although this is a text file, it is intended #",
-    "# only for machine reading and writing.        #",
-    "################################################"
-  };
-  private static final String INDEX_FILE_NAME = "index.mqi";
-  private static final String RECORD_SEP = "--SEP--";
-  private static final String INBOX_OWNER_TAG = "Address:";
-  private static final int VERSION = 3;
+    //Blurb added to top of file
+    private static final String[] BLURB = new String[] {
+        "################################################",
+        "#             Inbox Index File                 #",
+        "#                                              #",
+        "#               DO NOT MODIFY                  #",
+        "#                                              #",
+        "# Although this is a text file, it is intended #",
+        "# only for machine reading and writing.        #",
+        "################################################"
+    };
+    private static final String INDEX_FILE_NAME = "index.mqi";
+    private static final String RECORD_SEP = "--SEP--";
+    private static final String INBOX_OWNER_TAG = "Address:";
+    private static final int VERSION = 3;
 
 
-  /**
-   * Read the index contained in the given inbox directory
-   *
-   * @param inboxDir the inbox <b>directory</b> (i.e. not the
-   *        inbox data file itself).
-   *
-   * @return the "result".  The "InboxIndexImpl" will be null
-   *         unless the result was "OK".
-   */
-  static Pair<FileReadOutcome, InboxIndexImpl> readIndex(File inboxDir) {
+    /**
+     * Read the index contained in the given inbox directory
+     *
+     * @param inboxDir the inbox <b>directory</b> (i.e. not the
+     *        inbox data file itself).
+     *
+     * @return the "result".  The "InboxIndexImpl" will be null
+     *         unless the result was "OK".
+     */
+    static Pair<FileReadOutcome, InboxIndexImpl> readIndex(File inboxDir) {
 
-    FileInputStream fIn = null;
+        FileInputStream fIn = null;
 
-    try {
-      File f = new File(inboxDir, INDEX_FILE_NAME);
-      if(!f.exists()) {
-        return new Pair<FileReadOutcome, InboxIndexImpl>(FileReadOutcome.NO_SUCH_FILE);
-      }
-      fIn = new FileInputStream(f);
-      BufferedInputStream bIn = new BufferedInputStream(fIn);
-      BufferedReader reader = new BufferedReader(new InputStreamReader(bIn));
+        try {
+            File f = new File(inboxDir, INDEX_FILE_NAME);
+            if(!f.exists()) {
+                return new Pair<FileReadOutcome, InboxIndexImpl>(FileReadOutcome.NO_SUCH_FILE);
+            }
+            fIn = new FileInputStream(f);
+            BufferedInputStream bIn = new BufferedInputStream(fIn);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(bIn));
 
-      //Read version
-      int version = readVersion(reader);
-      //Someday, we'll care about version...
+            //Read version
+            int version = readVersion(reader);
+            //Someday, we'll care about version...
 
-      InboxIndexImpl ret = new InboxIndexImpl();
+            InboxIndexImpl ret = new InboxIndexImpl();
 
-      //Read inbox owner
-      ret.setOwnerAddress(readTaggedEntry(reader, INBOX_OWNER_TAG));
-      ret.setLastAccessTimestamp(f.lastModified());
+            //Read inbox owner
+            ret.setOwnerAddress(readTaggedEntry(reader, INBOX_OWNER_TAG));
+            ret.setLastAccessTimestamp(f.lastModified());
 
-      //Read entries
-      InboxRecordImpl record = readRecord(reader, ret.getOwnerAddress());
-      while(record != null) {
-        ret.put(record.getMailID(), record);
-        record = readRecord(reader, ret.getOwnerAddress());
-      }
-      IOUtil.close(fIn);
-      return new Pair<FileReadOutcome, InboxIndexImpl>(FileReadOutcome.OK, ret);
-    }
-    catch(BadFileEntry ex) {
-      s_logger.warn("", ex);
-      IOUtil.close(fIn);
-      return new Pair<FileReadOutcome, InboxIndexImpl>(FileReadOutcome.FILE_CORRUPT);
-    }
-    catch(EOFException ex) {
-      s_logger.warn("", ex);
-      IOUtil.close(fIn);
-      return new Pair<FileReadOutcome, InboxIndexImpl>(FileReadOutcome.FILE_CORRUPT);
-    }
-    catch(IOException ex) {
-      s_logger.warn("", ex);
-      IOUtil.close(fIn);
-      return new Pair<FileReadOutcome, InboxIndexImpl>(FileReadOutcome.EXCEPTION);
-    }
-  }
-
-  /**
-   * Create a new blank (empty) index for the given
-   * address in the given Inbox directory.
-   *
-   * @param address the user email address
-   * @param dir the Inbox folder
-   *
-   * @return true if successful, false otherwise.
-   */
-  static boolean createBlankIndex(String address,
-    File dir) {
-
-    InboxIndexImpl impl = new InboxIndexImpl();
-    impl.setOwnerAddress(address);
-    return replaceIndex(impl, dir);
-  }
-
-  /**
-   * Append a new record to the given
-   * user's index.  If there is no
-   * Inbox data for the given user, the
-   * inbox data file is implicitly created.
-   *
-   * @param address the user address
-   * @param inboxDir the inbox directory
-   *
-   * @return false if the append failed.  The state
-   * of the file after the failure is undefined.
-   */
-  static boolean appendIndex(String address,
-    File inboxDir,
-    InboxRecord newRecord) {
-
-    File f = new File(inboxDir, INDEX_FILE_NAME);
-
-    //Make sure index exists
-    if(!f.exists()) {
-      InboxIndexImpl impl = new InboxIndexImpl();
-      impl.setOwnerAddress(address);
-      impl.put(newRecord.getMailID(), newRecord);
-      return replaceIndex(impl, inboxDir);
+            //Read entries
+            InboxRecordImpl record = readRecord(reader, ret.getOwnerAddress());
+            while(record != null) {
+                ret.put(record.getMailID(), record);
+                record = readRecord(reader, ret.getOwnerAddress());
+            }
+            IOUtil.close(fIn);
+            return new Pair<FileReadOutcome, InboxIndexImpl>(FileReadOutcome.OK, ret);
+        }
+        catch(BadFileEntry ex) {
+            s_logger.warn("", ex);
+            IOUtil.close(fIn);
+            return new Pair<FileReadOutcome, InboxIndexImpl>(FileReadOutcome.FILE_CORRUPT);
+        }
+        catch(EOFException ex) {
+            s_logger.warn("", ex);
+            IOUtil.close(fIn);
+            return new Pair<FileReadOutcome, InboxIndexImpl>(FileReadOutcome.FILE_CORRUPT);
+        }
+        catch(IOException ex) {
+            s_logger.warn("", ex);
+            IOUtil.close(fIn);
+            return new Pair<FileReadOutcome, InboxIndexImpl>(FileReadOutcome.EXCEPTION);
+        }
     }
 
-    FileOutputStream fOut = null;
-    try {
+    /**
+     * Create a new blank (empty) index for the given
+     * address in the given Inbox directory.
+     *
+     * @param address the user email address
+     * @param dir the Inbox folder
+     *
+     * @return true if successful, false otherwise.
+     */
+    static boolean createBlankIndex(String address,
+                                    File dir) {
 
-      fOut = new FileOutputStream(f, true);
-      PrintWriter pw = new PrintWriter(fOut);
-
-      writeRecord(newRecord, pw);
-
-      pw.flush();
-      fOut.flush();
-      fOut.close();
-      return true;
+        InboxIndexImpl impl = new InboxIndexImpl();
+        impl.setOwnerAddress(address);
+        return replaceIndex(impl, dir);
     }
-    catch(Exception ex) {
-      s_logger.error("Exception appending to index file", ex);
-      IOUtil.close(fOut);
-      return false;
-    }
-  }
 
-  /**
-   * Replace the index file for a given user
-   *
-   * @param index the new index
-   * @param inboxDir the inbox directory
-   *
-   * @return false if the append failed.  If the append
-   *         failed, the existing (if there was one)
-   *         inbox data file remains.
-   */
-  static boolean replaceIndex(InboxIndex index,
-    File inboxDir) {
+    /**
+     * Append a new record to the given
+     * user's index.  If there is no
+     * Inbox data for the given user, the
+     * inbox data file is implicitly created.
+     *
+     * @param address the user address
+     * @param inboxDir the inbox directory
+     *
+     * @return false if the append failed.  The state
+     * of the file after the failure is undefined.
+     */
+    static boolean appendIndex(String address,
+                               File inboxDir,
+                               InboxRecord newRecord) {
 
-    if (false == inboxDir.exists()) {
-        if (false == inboxDir.mkdirs()) {
-            // mkdirs can fail when multiple threads simultaneously attempt
-            // to create different directories on a shared directory tree and
-            // the tree has branches that need to be created
-            // - getInboxDir/AddressLock prevents this problem
-            //   (while thread X is creating a directory,
-            //    other threads wait for thread X to finish)
-            //   (i.e., this condition should never occur)
-            s_logger.error("Unable to create: " + inboxDir + ", and to update index");
+        File f = new File(inboxDir, INDEX_FILE_NAME);
+
+        //Make sure index exists
+        if(!f.exists()) {
+            InboxIndexImpl impl = new InboxIndexImpl();
+            impl.setOwnerAddress(address);
+            impl.put(newRecord.getMailID(), newRecord);
+            return replaceIndex(impl, inboxDir);
+        }
+
+        FileOutputStream fOut = null;
+        try {
+
+            fOut = new FileOutputStream(f, true);
+            PrintWriter pw = new PrintWriter(fOut);
+
+            writeRecord(newRecord, pw);
+
+            pw.flush();
+            fOut.flush();
+            fOut.close();
+            return true;
+        }
+        catch(Exception ex) {
+            s_logger.error("Exception appending to index file", ex);
+            IOUtil.close(fOut);
             return false;
         }
     }
 
-    File f = null;
-    FileOutputStream fOut = null;
+    /**
+     * Replace the index file for a given user
+     *
+     * @param index the new index
+     * @param inboxDir the inbox directory
+     *
+     * @return false if the append failed.  If the append
+     *         failed, the existing (if there was one)
+     *         inbox data file remains.
+     */
+    static boolean replaceIndex(InboxIndex index,
+                                File inboxDir) {
 
-    try {
-      f = File.createTempFile("idx", ".tmp", inboxDir);
-      fOut = new FileOutputStream(f, false);
-      BufferedOutputStream bOut = new BufferedOutputStream(fOut);
-      PrintWriter pw = new PrintWriter(fOut);
+        if (false == inboxDir.exists()) {
+            if (false == inboxDir.mkdirs()) {
+                // mkdirs can fail when multiple threads simultaneously attempt
+                // to create different directories on a shared directory tree and
+                // the tree has branches that need to be created
+                // - getInboxDir/AddressLock prevents this problem
+                //   (while thread X is creating a directory,
+                //    other threads wait for thread X to finish)
+                //   (i.e., this condition should never occur)
+                s_logger.error("Unable to create: " + inboxDir + ", and to update index");
+                return false;
+            }
+        }
 
-      //Write blurb
-      for(String s : BLURB) {
-        pw.println(s);
-      }
-      pw.println();
+        File f = null;
+        FileOutputStream fOut = null;
 
-      //Write version
-      writeVersion(pw, VERSION);
+        try {
+            f = File.createTempFile("idx", ".tmp", inboxDir);
+            fOut = new FileOutputStream(f, false);
+            BufferedOutputStream bOut = new BufferedOutputStream(fOut);
+            PrintWriter pw = new PrintWriter(fOut);
 
-      //Write "owner"
-      writeTaggedEntry(pw, INBOX_OWNER_TAG, index.getOwnerAddress());
+            //Write blurb
+            for(String s : BLURB) {
+                pw.println(s);
+            }
+            pw.println();
 
-      //Write records
-      for(InboxRecord record : index) {
-        writeRecord(record, pw);
-      }
+            //Write version
+            writeVersion(pw, VERSION);
 
-      pw.flush();
-      bOut.flush();
-      fOut.flush();
-      fOut.close();
+            //Write "owner"
+            writeTaggedEntry(pw, INBOX_OWNER_TAG, index.getOwnerAddress());
 
-      if(!f.renameTo(new File(inboxDir, INDEX_FILE_NAME))) {
-        f.delete();
-        return false;
-      }
-      return true;
-    } catch(Exception ex) {
-      s_logger.error("Unable to update index", ex);
-      IOUtil.close(fOut);
-      IOUtil.delete(f);
-      return false;
-    }
-  }
+            //Write records
+            for(InboxRecord record : index) {
+                writeRecord(record, pw);
+            }
 
+            pw.flush();
+            bOut.flush();
+            fOut.flush();
+            fOut.close();
 
-
-  private static void writeRecord(InboxRecord record,
-    PrintWriter pw) throws IOException {
-
-    MailSummary summary = record.getMailSummary();
-
-    pw.println(RECORD_SEP);
-    writeVersion(pw, VERSION);
-    pw.println(nullToQQ(record.getMailID()));
-    pw.println(Long.toString(record.getInternDate()));
-    pw.println(Long.toString(record.getSize()));
-
-    String[] recipients = record.getRecipients();
-    if(recipients == null) {recipients = new String[0];}
-
-    pw.println(Long.toString(recipients.length));
-    for(String s : recipients) {
-      writeMultilineEntry(pw, s);
-    }
-
-    writeMultilineEntry(pw, summary.getSender());
-    writeMultilineEntry(pw, summary.getSubject()); // write non-truncated value
-    writeMultilineEntry(pw, summary.getQuarantineCategory());
-    writeMultilineEntry(pw, summary.getQuarantineDetail());
-    pw.println(Long.toString(summary.getAttachmentCount()));
-    pw.println();
-  }
-
-
-  /**
-   * Method returns null of EOF is encountered
-   */
-  private static InboxRecordImpl readRecord(BufferedReader reader,
-    String inboxOwnerAddress)
-    throws BadFileEntry, IOException {
-
-    try {
-      //Read up-to the next record separator
-      if(!readUntil(reader, RECORD_SEP)) {
-        return null;
-      }
-
-      //Read version
-      int version = readVersion(reader);
-
-      if(version == 1) {
-        return readV1Record(reader, inboxOwnerAddress);
-      }
-      if(version == 2) {
-        return readV2Record(reader, inboxOwnerAddress);
-      }
-      return readV3Record(reader);
-    }
-    catch(EOFException ex) {
-      return null;
+            if(!f.renameTo(new File(inboxDir, INDEX_FILE_NAME))) {
+                f.delete();
+                return false;
+            }
+            return true;
+        } catch(Exception ex) {
+            s_logger.error("Unable to update index", ex);
+            IOUtil.close(fOut);
+            IOUtil.delete(f);
+            return false;
+        }
     }
 
-  }
 
-  private static InboxRecordImpl readV3Record(BufferedReader reader)
-    throws BadFileEntry, IOException {
 
-    try {
-      InboxRecordImpl ret = new InboxRecordImpl();
-      MailSummary summary = new MailSummary();
-      ret.setMailSummary(summary);
+    private static void writeRecord(InboxRecord record,
+                                    PrintWriter pw) throws IOException {
 
-      ret.setMailID(readLine(reader));
-      ret.setInternDate(readLong(reader));
-      ret.setSize(readLong(reader));
+        MailSummary summary = record.getMailSummary();
 
-      String[] recipients = new String[(int) readLong(reader)];
-      for(int i = 0; i<recipients.length; i++) {
-        recipients[i] = readMultilineEntry(reader);
-      }
-      ret.setRecipients(recipients);
+        pw.println(RECORD_SEP);
+        writeVersion(pw, VERSION);
+        pw.println(nullToQQ(record.getMailID()));
+        pw.println(Long.toString(record.getInternDate()));
+        pw.println(Long.toString(record.getSize()));
 
-      summary.setSender(readMultilineEntry(reader));
-      summary.setSubject(readMultilineEntry(reader));
-      summary.setQuarantineCategory(readMultilineEntry(reader));
-      summary.setQuarantineDetail(readMultilineEntry(reader));
-      summary.setAttachmentCount((int) readLong(reader));
-      return ret;
+        String[] recipients = record.getRecipients();
+        if(recipients == null) {recipients = new String[0];}
+
+        pw.println(Long.toString(recipients.length));
+        for(String s : recipients) {
+            writeMultilineEntry(pw, s);
+        }
+
+        writeMultilineEntry(pw, summary.getSender());
+        writeMultilineEntry(pw, summary.getSubject()); // write non-truncated value
+        writeMultilineEntry(pw, summary.getQuarantineCategory());
+        writeMultilineEntry(pw, summary.getQuarantineDetail());
+        pw.println(Long.toString(summary.getAttachmentCount()));
+        pw.println();
     }
-    catch(EOFException ex) {
-      return null;
+
+
+    /**
+     * Method returns null of EOF is encountered
+     */
+    private static InboxRecordImpl readRecord(BufferedReader reader,
+                                              String inboxOwnerAddress)
+        throws BadFileEntry, IOException {
+
+        try {
+            //Read up-to the next record separator
+            if(!readUntil(reader, RECORD_SEP)) {
+                return null;
+            }
+
+            //Read version
+            int version = readVersion(reader);
+
+            if(version == 1) {
+                return readV1Record(reader, inboxOwnerAddress);
+            }
+            if(version == 2) {
+                return readV2Record(reader, inboxOwnerAddress);
+            }
+            return readV3Record(reader);
+        }
+        catch(EOFException ex) {
+            return null;
+        }
+
     }
-  }
 
+    private static InboxRecordImpl readV3Record(BufferedReader reader)
+        throws BadFileEntry, IOException {
 
-  private static InboxRecordImpl readV2Record(BufferedReader reader,
-    String inboxOwnerAddress)
-    throws BadFileEntry, IOException {
+        try {
+            InboxRecordImpl ret = new InboxRecordImpl();
+            MailSummary summary = new MailSummary();
+            ret.setMailSummary(summary);
 
-    try {
-      InboxRecordImpl ret = new InboxRecordImpl();
-      MailSummary summary = new MailSummary();
-      ret.setMailSummary(summary);
+            ret.setMailID(readLine(reader));
+            ret.setInternDate(readLong(reader));
+            ret.setSize(readLong(reader));
 
-      ret.setMailID(readLine(reader));
-      ret.setInternDate(readLong(reader));
-      ret.setSize(readLong(reader));
-      //Fake the recipients (just assume same as inbox)
-      ret.setRecipients(new String[] {inboxOwnerAddress});
+            String[] recipients = new String[(int) readLong(reader)];
+            for(int i = 0; i<recipients.length; i++) {
+                recipients[i] = readMultilineEntry(reader);
+            }
+            ret.setRecipients(recipients);
 
-      summary.setSender(readMultilineEntry(reader));
-      summary.setSubject(readMultilineEntry(reader));
-      summary.setQuarantineCategory(readMultilineEntry(reader));
-      summary.setQuarantineDetail(readMultilineEntry(reader));
-      summary.setAttachmentCount((int) readLong(reader));
-      return ret;
+            summary.setSender(readMultilineEntry(reader));
+            summary.setSubject(readMultilineEntry(reader));
+            summary.setQuarantineCategory(readMultilineEntry(reader));
+            summary.setQuarantineDetail(readMultilineEntry(reader));
+            summary.setAttachmentCount((int) readLong(reader));
+            return ret;
+        }
+        catch(EOFException ex) {
+            return null;
+        }
     }
-    catch(EOFException ex) {
-      return null;
+
+
+    private static InboxRecordImpl readV2Record(BufferedReader reader,
+                                                String inboxOwnerAddress)
+        throws BadFileEntry, IOException {
+
+        try {
+            InboxRecordImpl ret = new InboxRecordImpl();
+            MailSummary summary = new MailSummary();
+            ret.setMailSummary(summary);
+
+            ret.setMailID(readLine(reader));
+            ret.setInternDate(readLong(reader));
+            ret.setSize(readLong(reader));
+            //Fake the recipients (just assume same as inbox)
+            ret.setRecipients(new String[] {inboxOwnerAddress});
+
+            summary.setSender(readMultilineEntry(reader));
+            summary.setSubject(readMultilineEntry(reader));
+            summary.setQuarantineCategory(readMultilineEntry(reader));
+            summary.setQuarantineDetail(readMultilineEntry(reader));
+            summary.setAttachmentCount((int) readLong(reader));
+            return ret;
+        }
+        catch(EOFException ex) {
+            return null;
+        }
     }
-  }
 
 
-  private static InboxRecordImpl readV1Record(BufferedReader reader,
-    String inboxOwnerAddress)
-    throws BadFileEntry, IOException {
+    private static InboxRecordImpl readV1Record(BufferedReader reader,
+                                                String inboxOwnerAddress)
+        throws BadFileEntry, IOException {
 
-    try {
-      InboxRecordImpl ret = new InboxRecordImpl();
-      MailSummary summary = new MailSummary();
-      ret.setMailSummary(summary);
+        try {
+            InboxRecordImpl ret = new InboxRecordImpl();
+            MailSummary summary = new MailSummary();
+            ret.setMailSummary(summary);
 
-      ret.setMailID(readLine(reader));
-      ret.setInternDate(readLong(reader));
-      ret.setSize(readLong(reader));
-      //Fake the recipients (just assume same as inbox)
-      ret.setRecipients(new String[] {inboxOwnerAddress});
+            ret.setMailID(readLine(reader));
+            ret.setInternDate(readLong(reader));
+            ret.setSize(readLong(reader));
+            //Fake the recipients (just assume same as inbox)
+            ret.setRecipients(new String[] {inboxOwnerAddress});
 
-      summary.setSender(readMultilineEntry(reader));
-      summary.setSubject(readMultilineEntry(reader));
-      summary.setQuarantineCategory(readMultilineEntry(reader));
-      summary.setQuarantineDetail(readMultilineEntry(reader));
-      //Just fake that there are no attachments
-      summary.setAttachmentCount(0);
-      return ret;
+            summary.setSender(readMultilineEntry(reader));
+            summary.setSubject(readMultilineEntry(reader));
+            summary.setQuarantineCategory(readMultilineEntry(reader));
+            summary.setQuarantineDetail(readMultilineEntry(reader));
+            //Just fake that there are no attachments
+            summary.setAttachmentCount(0);
+            return ret;
+        }
+        catch(EOFException ex) {
+            return null;
+        }
     }
-    catch(EOFException ex) {
-      return null;
-    }
-  }
 
 
-/*
-  public static void main(String[] args) throws Exception {
-    File root = new File(System.getProperty("user.dir"));
+    /*
+      public static void main(String[] args) throws Exception {
+      File root = new File(System.getProperty("user.dir"));
 
-    System.out.println("\n\n\n--------- 1 -----------");
-    File dir = new File(root, "test1");
-    createBlankIndex("1@foo.com", dir);
+      System.out.println("\n\n\n--------- 1 -----------");
+      File dir = new File(root, "test1");
+      createBlankIndex("1@foo.com", dir);
 
-    System.out.println("\n\n\n--------- 2 -----------");
-    dir = new File(root, "test2");
-    InboxIndexImpl index = new InboxIndexImpl();
-    index.setOwnerAddress("2@foo.com");
-    System.out.println("\n(2) PRE");
-    index.debugPrint();
-    replaceIndex(index, dir);
-    System.out.println("\n(2) POST");
-    readIndex(dir).b.debugPrint();
+      System.out.println("\n\n\n--------- 2 -----------");
+      dir = new File(root, "test2");
+      InboxIndexImpl index = new InboxIndexImpl();
+      index.setOwnerAddress("2@foo.com");
+      System.out.println("\n(2) PRE");
+      index.debugPrint();
+      replaceIndex(index, dir);
+      System.out.println("\n(2) POST");
+      readIndex(dir).b.debugPrint();
 
-    System.out.println("\n\n\n--------- 3 -----------");
-    dir = new File(root, "test3");
-    createBlankIndex("3@foo.com", dir);
-    appendIndex("3@foo.com", dir, new InboxRecordImpl(
+      System.out.println("\n\n\n--------- 3 -----------");
+      dir = new File(root, "test3");
+      createBlankIndex("3@foo.com", dir);
+      appendIndex("3@foo.com", dir, new InboxRecordImpl(
       "3a",
       System.currentTimeMillis(),
       300,
       new MailSummary("sender3a@foo.com", "subject 3a", "5.0", "this\nhas\nlines")));
-    appendIndex("3@foo.com", dir, new InboxRecordImpl(
+      appendIndex("3@foo.com", dir, new InboxRecordImpl(
       "3b",
       System.currentTimeMillis(),
       300,
       new MailSummary("sender3b@foo.com", "subject 3b", "5.0", "this has no lines")));
-    System.out.println("\n(3) Read (a)");
-    readIndex(dir).b.debugPrint();
-    Thread.currentThread().sleep(2000);
-    appendIndex("3@foo.com", dir, new InboxRecordImpl(
+      System.out.println("\n(3) Read (a)");
+      readIndex(dir).b.debugPrint();
+      Thread.currentThread().sleep(2000);
+      appendIndex("3@foo.com", dir, new InboxRecordImpl(
       "3c",
       System.currentTimeMillis(),
       300,
       new MailSummary("sender3c@foo.com", "subject 3c", "5.0", "this has no lines")));
-    System.out.println("\n(3) Read (b)");
-    readIndex(dir).b.debugPrint();
-  }
-*/
+      System.out.println("\n(3) Read (b)");
+      readIndex(dir).b.debugPrint();
+      }
+    */
 
 }

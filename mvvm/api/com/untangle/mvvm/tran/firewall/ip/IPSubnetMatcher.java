@@ -16,9 +16,7 @@ import java.net.UnknownHostException;
 
 import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.ParseException;
-
 import com.untangle.mvvm.tran.firewall.Parser;
-import com.untangle.mvvm.tran.firewall.ParsingConstants;
 
 public final class IPSubnetMatcher extends IPDBMatcher
 {
@@ -45,7 +43,7 @@ public final class IPSubnetMatcher extends IPDBMatcher
     {
         return toString();
     }
-    
+
     public String toString()
     {
         return this.string;
@@ -56,17 +54,17 @@ public final class IPSubnetMatcher extends IPDBMatcher
         return makeInstance( network.getAddr(), netmask.getAddr());
     }
 
-    public static IPDBMatcher makeInstance( InetAddress network, InetAddress netmask ) 
+    public static IPDBMatcher makeInstance( InetAddress network, InetAddress netmask )
     {
         if ( network == null || netmask == null ) throw new NullPointerException( "Null address" );
 
         IPMatcherUtil imu = IPMatcherUtil.getInstance();
-        
+
         String user = network.getHostAddress() + " " + MARKER_SUBNET +  " " + netmask.getHostAddress();
 
         long netmaskLong = imu.toLong( netmask );
         long networkLong = imu.toLong( network ) & netmaskLong;
-    
+
         return new IPSubnetMatcher( networkLong, netmaskLong, user );
     }
 
@@ -74,31 +72,31 @@ public final class IPSubnetMatcher extends IPDBMatcher
         throws ParseException
     {
         IPMatcherUtil imu = IPMatcherUtil.getInstance();
-        
+
         String user = network.getHostAddress() + " " + MARKER_SUBNET + " " + cidr;
 
         return new IPSubnetMatcher( imu.toLong( network ), imu.cidrToLong( cidr ), user );
     }
 
     /* This is just for matching a list of interfaces */
-    static final Parser<IPDBMatcher> PARSER = new Parser<IPDBMatcher>() 
+    static final Parser<IPDBMatcher> PARSER = new Parser<IPDBMatcher>()
     {
         public int priority()
         {
             return 10;
         }
-        
+
         public boolean isParseable( String value )
         {
             return ( value.contains( MARKER_SUBNET ));
         }
-        
+
         public IPDBMatcher parse( String value ) throws ParseException
         {
             if ( !isParseable( value )) {
                 throw new ParseException( "Invalid ip subnet matcher '" + value + "'" );
             }
-            
+
             String ipArray[] = value.split( MARKER_SUBNET );
             if ( ipArray.length != 2 ) {
                 throw new ParseException( "Subnet matcher contains two components: " + value );
@@ -108,15 +106,15 @@ public final class IPSubnetMatcher extends IPDBMatcher
                 String cidr = ipArray[1].trim();
                 if ( cidr.length() < 3 ) {
                     try {
-                        return makeInstance( IPaddr.parse( ipArray[0] ).getAddr(), 
-                                                   Integer.parseInt( cidr ));
+                        return makeInstance( IPaddr.parse( ipArray[0] ).getAddr(),
+                                             Integer.parseInt( cidr ));
                     } catch ( NumberFormatException e ) {
-                        throw new ParseException( "Invalid CIDR notion: '" + cidr + 
+                        throw new ParseException( "Invalid CIDR notion: '" + cidr +
                                                   "' should be a number between 0 and 32" );
                     }
                 } else {
-                    return makeInstance( IPaddr.parse( ipArray[0] ).getAddr(), 
-                                               IPaddr.parse( ipArray[1] ).getAddr());
+                    return makeInstance( IPaddr.parse( ipArray[0] ).getAddr(),
+                                         IPaddr.parse( ipArray[1] ).getAddr());
                 }
             } catch ( UnknownHostException e ) {
                 throw new ParseException( e );

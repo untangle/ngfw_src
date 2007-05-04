@@ -19,17 +19,15 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
+import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
-import java.awt.event.FocusListener;
 import java.awt.event.FocusEvent;
-import java.awt.event.WindowListener;
-import java.awt.event.WindowEvent;
+import java.awt.event.FocusListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -45,11 +43,11 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 import javax.jnlp.*;
 import javax.swing.*;
-import javax.swing.text.JTextComponent;
-import javax.swing.event.CaretListener;
 import javax.swing.event.CaretEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.event.CaretListener;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.text.JTextComponent;
 
 import com.untangle.gui.login.*;
 import com.untangle.gui.main.MMainJFrame;
@@ -62,16 +60,15 @@ import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.*;
 import com.untangle.mvvm.addrbook.*;
 import com.untangle.mvvm.api.RemoteIntfManager;
-import com.untangle.mvvm.networking.ping.PingManager;
 import com.untangle.mvvm.client.*;
 import com.untangle.mvvm.logging.*;
+import com.untangle.mvvm.networking.ping.PingManager;
 import com.untangle.mvvm.policy.*;
 import com.untangle.mvvm.portal.RemotePortalManager;
 import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.toolbox.ToolboxManager;
 import com.untangle.mvvm.tran.*;
 import com.untangle.mvvm.user.RemotePhoneBook;
-import com.untangle.mvvm.user.WMISettings;
 
 public class Util {
 
@@ -102,7 +99,7 @@ public class Util {
 
     public static void initialize(){
         shutdownableMap = new HashMap<String,Shutdownable>();
-    statsCache = new StatsCache();
+        statsCache = new StatsCache();
         logDateFormat = new SimpleDateFormat("EEE, MMM d HH:mm:ss");
         log = new Vector();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -136,8 +133,8 @@ public class Util {
         buttonBackupToHardDisk = new ImageIcon( classLoader.getResource("com/untangle/gui/images/Button_Backup_To_Hard_Disk_130x17.png") );
         buttonBackupToUsbKey = new ImageIcon( classLoader.getResource("com/untangle/gui/images/Button_Backup_To_Usb_Key_130x17.png") );
 
-    INVALID_BACKGROUND_COLOR = Color.PINK;
-    VALID_BACKGROUND_COLOR = new Color(224, 224, 224);
+        INVALID_BACKGROUND_COLOR = Color.PINK;
+        VALID_BACKGROUND_COLOR = new Color(224, 224, 224);
     }
 
     // LOGOUT /////////////////////
@@ -425,9 +422,9 @@ public class Util {
         shutdownableMap.put(name, shutdownable);
     }
     private static void doShutdown(){
-    Util.printMessage("Shutdown initiated by: " + Thread.currentThread().getName() );
+        Util.printMessage("Shutdown initiated by: " + Thread.currentThread().getName() );
         for( Map.Entry<String,Shutdownable> shutdownableEntry : shutdownableMap.entrySet() ){
-        System.err.println("Shutting down: " + shutdownableEntry.getKey());
+            System.err.println("Shutting down: " + shutdownableEntry.getKey());
             shutdownableEntry.getValue().doShutdown();
         }
         shutdownableMap.clear();
@@ -574,7 +571,7 @@ public class Util {
         private Object source;
         private SettingsChangedListener s;
         private Object setting;
-        public SettingChangeListener(SettingsChangedListener s, Object source, Object setting){            
+        public SettingChangeListener(SettingsChangedListener s, Object source, Object setting){
             this.s = s;
             this.source = source;
             this.setting = setting;
@@ -635,12 +632,12 @@ public class Util {
             ((JEditorPane)c).setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null);
         }
     }
-     
+
     private static class FocusHighlightListener extends FocusAdapter {
         public void focusGained(FocusEvent e){
             if(e.getSource() instanceof JTextComponent){
                 final JTextComponent c = (JTextComponent) e.getSource();
-                SwingUtilities.invokeLater( new Runnable(){ public void run(){                    
+                SwingUtilities.invokeLater( new Runnable(){ public void run(){
                     c.selectAll();
                 }});
             }
@@ -648,7 +645,7 @@ public class Util {
         public void focusLost(FocusEvent e){
             if(e.getSource() instanceof JTextComponent){
                 final JTextComponent c = (JTextComponent) e.getSource();
-                SwingUtilities.invokeLater( new Runnable(){ public void run(){                    
+                SwingUtilities.invokeLater( new Runnable(){ public void run(){
                     c.select(0,0);
                 }});
             }
@@ -696,66 +693,66 @@ public class Util {
 
         while( throwableRef != null){
             if( throwableRef instanceof InvocationConnectionException ){
-        System.err.println(output);
-        e.printStackTrace();
-        if( !Util.getShutdownInitiated() ){
-            Util.setShutdownInitiated(true);
-            doShutdown();
-            mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
-            mLoginJFrame.reshowLogin();
-            MvvmRemoteContextFactory.factory().logout();
-        }
+                System.err.println(output);
+                e.printStackTrace();
+                if( !Util.getShutdownInitiated() ){
+                    Util.setShutdownInitiated(true);
+                    doShutdown();
+                    mLoginJFrame.resetLogin("Server communication failure.  Re-login.");
+                    mLoginJFrame.reshowLogin();
+                    MvvmRemoteContextFactory.factory().logout();
+                }
                 return;
             }
             else if( throwableRef instanceof InvocationTargetExpiredException ){
-        System.err.println(output);
-        e.printStackTrace();
-        if( !Util.getShutdownInitiated() ){
-            Util.setShutdownInitiated(true);
-            doShutdown();
-            mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
-            mLoginJFrame.reshowLogin();
-            MvvmRemoteContextFactory.factory().logout();
-        }
+                System.err.println(output);
+                e.printStackTrace();
+                if( !Util.getShutdownInitiated() ){
+                    Util.setShutdownInitiated(true);
+                    doShutdown();
+                    mLoginJFrame.resetLogin("Server synchronization failure.  Re-login.");
+                    mLoginJFrame.reshowLogin();
+                    MvvmRemoteContextFactory.factory().logout();
+                }
                 return;
             }
             else if( throwableRef instanceof com.untangle.mvvm.client.LoginExpiredException ){
-        System.err.println(output);
-        e.printStackTrace();
-        if( !Util.getShutdownInitiated() ){
-            Util.setShutdownInitiated(true);
-            doShutdown();
-            mLoginJFrame.resetLogin("Login expired.  Re-login.");
-            mLoginJFrame.reshowLogin();
-            MvvmRemoteContextFactory.factory().logout();
-        }
+                System.err.println(output);
+                e.printStackTrace();
+                if( !Util.getShutdownInitiated() ){
+                    Util.setShutdownInitiated(true);
+                    doShutdown();
+                    mLoginJFrame.resetLogin("Login expired.  Re-login.");
+                    mLoginJFrame.reshowLogin();
+                    MvvmRemoteContextFactory.factory().logout();
+                }
                 return;
             }
             else if(    (throwableRef instanceof ConnectException)
                         || (throwableRef instanceof SocketException)
                         || (throwableRef instanceof SocketTimeoutException) ){
-        System.err.println(output);
-        e.printStackTrace();
-        if( !Util.getShutdownInitiated() ){
-            Util.setShutdownInitiated(true);
-            doShutdown();
-            mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
-            mLoginJFrame.reshowLogin();
-            MvvmRemoteContextFactory.factory().logout();
-        }
+                System.err.println(output);
+                e.printStackTrace();
+                if( !Util.getShutdownInitiated() ){
+                    Util.setShutdownInitiated(true);
+                    doShutdown();
+                    mLoginJFrame.resetLogin("Server connection failure.  Re-login.");
+                    mLoginJFrame.reshowLogin();
+                    MvvmRemoteContextFactory.factory().logout();
+                }
                 return;
             }
             else if( throwableRef instanceof LoginStolenException ){
-        if( !Util.getShutdownInitiated() ){
-            String loginName = ((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName();
-            String loginAddress = ((LoginStolenException)throwableRef).getThief().getClientAddr().getHostAddress();
-            new LoginStolenJDialog(loginName, loginAddress);
-            Util.setShutdownInitiated(true);
-            doShutdown();
-            mLoginJFrame.resetLogin("Login ended by: " + loginName + " at " + loginAddress);
-            mLoginJFrame.reshowLogin();
-            MvvmRemoteContextFactory.factory().logout();
-        }
+                if( !Util.getShutdownInitiated() ){
+                    String loginName = ((LoginStolenException)throwableRef).getThief().getMvvmPrincipal().getName();
+                    String loginAddress = ((LoginStolenException)throwableRef).getThief().getClientAddr().getHostAddress();
+                    new LoginStolenJDialog(loginName, loginAddress);
+                    Util.setShutdownInitiated(true);
+                    doShutdown();
+                    mLoginJFrame.resetLogin("Login ended by: " + loginName + " at " + loginAddress);
+                    mLoginJFrame.reshowLogin();
+                    MvvmRemoteContextFactory.factory().logout();
+                }
                 return;
             }
             throwableRef = throwableRef.getCause();
@@ -774,20 +771,20 @@ public class Util {
 
     // GENERAL UTIL ////////////////////////////////
     public static void setPortView(JSpinner jSpinner, int defaultValue){
-    jSpinner.setModel(new SpinnerNumberModel(defaultValue,0,65535,1));
-    ((JSpinner.NumberEditor)jSpinner.getEditor()).getFormat().setGroupingUsed(false);
+        jSpinner.setModel(new SpinnerNumberModel(defaultValue,0,65535,1));
+        ((JSpinner.NumberEditor)jSpinner.getEditor()).getFormat().setGroupingUsed(false);
     }
     public static void setAAClientProperty(Component parentComponent, boolean isAAEnabled){
-    if( parentComponent instanceof JComponent ){
-        try{ ((JComponent)parentComponent).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(isAAEnabled)); }
-        catch(Throwable t){}
-    }
-
-    if( parentComponent instanceof Container ){
-        for( Component component : ((Container)parentComponent).getComponents() ){
-        setAAClientProperty(component, isAAEnabled);
+        if( parentComponent instanceof JComponent ){
+            try{ ((JComponent)parentComponent).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(isAAEnabled)); }
+            catch(Throwable t){}
         }
-    }
+
+        if( parentComponent instanceof Container ){
+            for( Component component : ((Container)parentComponent).getComponents() ){
+                setAAClientProperty(component, isAAEnabled);
+            }
+        }
     }
     public static int chooseMax(int iValue, int iMinValue){
         if(iValue >= iMinValue){ return iValue; }
@@ -808,14 +805,14 @@ public class Util {
     }
 
     public static boolean isEqual(Object a, Object b){
-    if( (a==null) && (b==null) )
-        return true;
-    else if( (a!=null) && (b==null) )
-        return false;
-    else if( (a==null) && (b!=null) )
-        return false;
-    else
-        return a.equals(b) && b.equals(a);
+        if( (a==null) && (b==null) )
+            return true;
+        else if( (a!=null) && (b==null) )
+            return false;
+        else if( (a==null) && (b!=null) )
+            return false;
+        else
+            return a.equals(b) && b.equals(a);
     }
 
     public static String getVersion()
@@ -869,33 +866,33 @@ public class Util {
 
     // TRANSFORM LOADING //////////////////////
     public static Transform getTransform(String transformName) throws Exception {
-    Transform transform = null;
-    List<Tid> transformInstances = Util.getTransformManager().transformInstances(transformName);
-    if(transformInstances.size()>0){
-        TransformContext transformContext = Util.getTransformManager().transformContext(transformInstances.get(0));
-        transform = transformContext.transform();
-    }
-    return transform;
+        Transform transform = null;
+        List<Tid> transformInstances = Util.getTransformManager().transformInstances(transformName);
+        if(transformInstances.size()>0){
+            TransformContext transformContext = Util.getTransformManager().transformContext(transformInstances.get(0));
+            transform = transformContext.transform();
+        }
+        return transform;
     }
 
     public static Object getRemoteObject(String className, String transformName) throws Exception {
-    Transform transform = getTransform(transformName);
-    if( transform != null){
-        TransformDesc transformDesc = transform.getTransformDesc();
-        Class transformClass = Util.getClassLoader().loadClass(className, transformDesc);
-        Constructor transformConstructor = transformClass.getConstructor(new Class[]{});
-        return transformConstructor.newInstance();
-    }
-    else
-        return null;
+        Transform transform = getTransform(transformName);
+        if( transform != null){
+            TransformDesc transformDesc = transform.getTransformDesc();
+            Class transformClass = Util.getClassLoader().loadClass(className, transformDesc);
+            Constructor transformConstructor = transformClass.getConstructor(new Class[]{});
+            return transformConstructor.newInstance();
+        }
+        else
+            return null;
     }
 
     public static CompoundSettings getCompoundSettings(String className, String transformName) throws Exception {
-    return (CompoundSettings) getRemoteObject(className, transformName);
+        return (CompoundSettings) getRemoteObject(className, transformName);
     }
 
     public static Component getSettingsComponent(String className, String transformName) throws Exception {
-    return (Component) getRemoteObject(className, transformName);
+        return (Component) getRemoteObject(className, transformName);
     }
     //////////////////////////////////////////
 }

@@ -10,9 +10,9 @@
  */
 package com.untangle.tran.mail.web.euv.tags;
 
-import javax.servlet.ServletRequest;
-import java.util.Iterator;
 import java.util.Arrays;
+import java.util.Iterator;
+import javax.servlet.ServletRequest;
 
 
 /**
@@ -21,49 +21,49 @@ import java.util.Arrays;
  * It then sets-up an OddEvenTag and a MessageTag for each iteration.
  */
 public final class SafelistListTag
-  extends IteratingTag<String> {
+    extends IteratingTag<String> {
 
-  private static final String SL_KEY = "untangle.safelist.contents.";
-  
-  @Override
-  protected Iterator<String> createIterator() {
-    String[] list = getCurrentList(pageContext.getRequest());
+    private static final String SL_KEY = "untangle.safelist.contents.";
 
-//    System.out.println("***DEBUG*** Creating iterator, array: " +
-//      (list==null?"null":Integer.toString(list.length)) + "");
-    
-    if(list == null || list.length == 0) {
-      return null;
+    @Override
+    protected Iterator<String> createIterator() {
+        String[] list = getCurrentList(pageContext.getRequest());
+
+        //    System.out.println("***DEBUG*** Creating iterator, array: " +
+        //      (list==null?"null":Integer.toString(list.length)) + "");
+
+        if(list == null || list.length == 0) {
+            return null;
+        }
+        return Arrays.asList(list).iterator();
     }
-    return Arrays.asList(list).iterator();
-  }
-  @Override
-  protected void setCurrent(String s) {
-    SafelistEntryTag.setCurrent(pageContext, s);
-  }
+    @Override
+    protected void setCurrent(String s) {
+        SafelistEntryTag.setCurrent(pageContext, s);
+    }
 
-  public static final void setCurrentList(ServletRequest request,
-    String[] list) {
-    request.setAttribute(SL_KEY, list);
-  }
-  public static final void clearCurrentList(ServletRequest request) {
-    request.removeAttribute(SL_KEY);
-  }
+    public static final void setCurrentList(ServletRequest request,
+                                            String[] list) {
+        request.setAttribute(SL_KEY, list);
+    }
+    public static final void clearCurrentList(ServletRequest request) {
+        request.removeAttribute(SL_KEY);
+    }
 
-  /**
-   * Returns null if there are no safelist entries
-   * - sort string entries, within list, according to natural, ascending order
-   */
-  static String[] getCurrentList(ServletRequest request) {
-      Object allSLEntries = request.getAttribute(SL_KEY);
-      if (null != allSLEntries) {
-          Arrays.sort((String[]) allSLEntries);
-      }
-      return (String[]) allSLEntries;
-  }
+    /**
+     * Returns null if there are no safelist entries
+     * - sort string entries, within list, according to natural, ascending order
+     */
+    static String[] getCurrentList(ServletRequest request) {
+        Object allSLEntries = request.getAttribute(SL_KEY);
+        if (null != allSLEntries) {
+            Arrays.sort((String[]) allSLEntries);
+        }
+        return (String[]) allSLEntries;
+    }
 
-  static boolean hasCurrentList(ServletRequest request) {
-    String[] list = getCurrentList(request);
-    return list != null && list.length > 0;
-  }
+    static boolean hasCurrentList(ServletRequest request) {
+        String[] list = getCurrentList(request);
+        return list != null && list.length > 0;
+    }
 }

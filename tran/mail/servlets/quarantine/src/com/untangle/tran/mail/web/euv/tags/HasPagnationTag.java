@@ -17,29 +17,29 @@ import com.untangle.tran.mail.papi.quarantine.InboxRecordCursor;
  * is a "prev" or "next" page to be shown
  */
 public final class HasPagnationTag
-  extends IfElseTag {
+    extends IfElseTag {
 
-  private String m_linkType;
+    private String m_linkType;
 
-  public String getLinkType() {
-    return m_linkType;
-  }
-  public void setLinkType(String t) {
-    m_linkType = t;
-  }  
-
-  @Override
-  protected boolean isConditionTrue() {
-    InboxRecordCursor cursor = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
-    if(cursor == null) {
-      return false;
+    public String getLinkType() {
+        return m_linkType;
+    }
+    public void setLinkType(String t) {
+        m_linkType = t;
     }
 
-    if(getLinkType().equals("prev")) {
-      return cursor.hasPrev();
+    @Override
+    protected boolean isConditionTrue() {
+        InboxRecordCursor cursor = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
+        if(cursor == null) {
+            return false;
+        }
+
+        if(getLinkType().equals("prev")) {
+            return cursor.hasPrev();
+        }
+        else {
+            return cursor.hasNext();
+        }
     }
-    else {
-      return cursor.hasNext();
-    }
-  }
 }

@@ -11,14 +11,13 @@
 
 package com.untangle.tran.spamassassin;
 
-import java.io.BufferedReader;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.SocketException;
 
 public final class SpamAssassinClientSocket {
     public final static String SPAMD_DEFHOST = "127.0.0.1"; // default host
@@ -72,8 +71,8 @@ public final class SpamAssassinClientSocket {
     }
 
     public void shutdownOutput() throws IOException {
-	if (socket != null)
-	    socket.shutdownOutput();
+        if (socket != null)
+            socket.shutdownOutput();
     }
 
     public void close(String host, int port) throws Exception {

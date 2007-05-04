@@ -63,12 +63,12 @@ public class SMTPNotifyAction implements Serializable
     {
         SMTPNotifyAction a;
         for (Iterator i = INSTANCES.keySet().iterator(); true == i.hasNext(); )
-        {
-            a = (SMTPNotifyAction)INSTANCES.get(i.next());
-            if (name.equals(a.getName())) {
-                return a;
+            {
+                a = (SMTPNotifyAction)INSTANCES.get(i.next());
+                if (name.equals(a.getName())) {
+                    return a;
+                }
             }
-        }
         return null;
     }
 

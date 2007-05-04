@@ -21,7 +21,6 @@ import java.awt.Rectangle;
 import java.awt.event.*;
 import java.lang.reflect.*;
 import java.net.URL;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -112,7 +111,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private GridBagConstraints coreSeparatorGridBagConstraints;
     private GridBagConstraints storeWizardGridBagConstraints;
     private Separator utilSeparator;
-    private Separator policySeparator;    
+    private Separator policySeparator;
     private Separator coreSeparator;
     private static final String POLICY_MANAGER_SEPARATOR = "____________";
     private static final String POLICY_MANAGER_OPTION = "Show Policy Manager";
@@ -130,7 +129,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private static final int DEPLOY_FINAL_PAUSE_MILLIS = 1000;
 
     public PolicyStateMachine(JTabbedPane actionJTabbedPane, JPanel rackViewJPanel, JScrollPane toolboxJScrollPane,
-			      JPanel utilToolboxSocketJPanel, JPanel policyToolboxSocketJPanel, JPanel coreToolboxSocketJPanel,
+                              JPanel utilToolboxSocketJPanel, JPanel policyToolboxSocketJPanel, JPanel coreToolboxSocketJPanel,
                               JPanel storeJPanel, JScrollPane rackJScrollPane) {
         // MVVM DATA MODELS
         utilTidList = new Vector<Tid>();
@@ -173,8 +172,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 }
             });
         storeWizardGridBagConstraints = new GridBagConstraints(0, 10, 1, 1, 0d, 0d,
-                                                           GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                                                           new Insets(0,0,100,0), 0, 0);
+                                                               GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                                                               new Insets(0,0,100,0), 0, 0);
 
         coreRackJPanel = new JPanel();
         //rackViewJPanel.add(storeWizardJButton, storeWizardGridBagConstraints);
@@ -187,22 +186,22 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         utilRackJPanel.setLayout(new GridBagLayout());
         coreToolboxJPanel.setLayout(new GridBagLayout());
         coreRackJPanel.setLayout(new GridBagLayout());
-	// SEPARATORS
-	utilSeparator = new Separator(false);
+        // SEPARATORS
+        utilSeparator = new Separator(false);
         utilSeparator.setForegroundText("Services & Utilities");
         policySeparator = new Separator(true);
-	policySeparator.setForegroundText(" ");
-	coreSeparator = new Separator(false);
+        policySeparator.setForegroundText(" ");
+        coreSeparator = new Separator(false);
         coreSeparator.setForegroundText("Services");
         // MISC REFERENCES
         this.actionJTabbedPane = actionJTabbedPane;
         this.viewSelector = policySeparator.getJComboBox();
-	viewSelector.addActionListener(this);
+        viewSelector.addActionListener(this);
         lastRackScrollPosition = new HashMap<Policy,Integer>();
         // THREAD QUEUES & THREADS /////////
         purchaseBlockingQueue = new ArrayBlockingQueue<PurchaseWrapper>(100);
         moveFromStoreToToolboxThread = new MoveFromStoreToToolboxThread();
-	actionJTabbedPane.setSelectedIndex(0);
+        actionJTabbedPane.setSelectedIndex(0);
         storeModelThread = new StoreModelThread();
         messageClientThread = new MessageClientThread(Util.getMvvmContext(),new StoreMessageVisitor());
         // CONSTANTS
@@ -230,17 +229,17 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                                                         GridBagConstraints.SOUTH, GridBagConstraints.NONE,
                                                         new Insets(51,0,0,12), 0, 0);
         policySeparatorGridBagConstraints = new GridBagConstraints(0, 3, 1, 1, 0d, 0d,
+                                                                   GridBagConstraints.NORTH, GridBagConstraints.NONE,
+                                                                   new Insets(1,0,101,12), 0, 0);
+        policyGridBagConstraints = new GridBagConstraints(0, 3, 1, 1, 0d, 0d,
+                                                          GridBagConstraints.SOUTH, GridBagConstraints.NONE,
+                                                          new Insets(51,0,0,12), 0, 0);
+        coreSeparatorGridBagConstraints = new GridBagConstraints(0, 4, 1, 1, 0d, 0d,
                                                                  GridBagConstraints.NORTH, GridBagConstraints.NONE,
                                                                  new Insets(1,0,101,12), 0, 0);
-        policyGridBagConstraints = new GridBagConstraints(0, 3, 1, 1, 0d, 0d,
+        coreGridBagConstraints = new GridBagConstraints(0, 4, 1, 1, 0d, 0d,
                                                         GridBagConstraints.SOUTH, GridBagConstraints.NONE,
                                                         new Insets(51,0,0,12), 0, 0);
-        coreSeparatorGridBagConstraints = new GridBagConstraints(0, 4, 1, 1, 0d, 0d,
-                                                                    GridBagConstraints.NORTH, GridBagConstraints.NONE,
-                                                                    new Insets(1,0,101,12), 0, 0);
-        coreGridBagConstraints = new GridBagConstraints(0, 4, 1, 1, 0d, 0d,
-                                                           GridBagConstraints.SOUTH, GridBagConstraints.NONE,
-                                                           new Insets(51,0,0,12), 0, 0);
 
 
         loadSemaphore = new Semaphore(CONCURRENT_LOAD_MAX);
@@ -260,20 +259,20 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         }
 
         Util.setPolicyStateMachine(this);
-	Util.addShutdownable("MessageClientThread", messageClientThread);
-	Util.addShutdownable("StoreModelThread", storeModelThread);
-	Util.addShutdownable("MoveFromStoreToToolboxThread", moveFromStoreToToolboxThread);
+        Util.addShutdownable("MessageClientThread", messageClientThread);
+        Util.addShutdownable("StoreModelThread", storeModelThread);
+        Util.addShutdownable("MoveFromStoreToToolboxThread", moveFromStoreToToolboxThread);
     }
 
-    public void doShutdown(){	
-	for(MTransformJPanel mTransformJPanel : coreRackMap.values() )
-	    mTransformJPanel.doShutdown();
-	for(MTransformJPanel mTransformJPanel : utilRackMap.values() )
-	    mTransformJPanel.doShutdown();
-	for(Policy policy : policyRackMap.keySet() )
-	    for(MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values() )
-		mTransformJPanel.doShutdown();
-	Util.printMessage("PolicyStateMachine Stopped");
+    public void doShutdown(){
+        for(MTransformJPanel mTransformJPanel : coreRackMap.values() )
+            mTransformJPanel.doShutdown();
+        for(MTransformJPanel mTransformJPanel : utilRackMap.values() )
+            mTransformJPanel.doShutdown();
+        for(Policy policy : policyRackMap.keySet() )
+            for(MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values() )
+                mTransformJPanel.doShutdown();
+        Util.printMessage("PolicyStateMachine Stopped");
     }
 
     // HANDLERS ///////////////////////////////////////////
@@ -345,40 +344,40 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         // RACK VIEW AND SCROLL POSITION
         lastRackScrollPosition.put(selectedPolicy, rackJScrollPane.getVerticalScrollBar().getValue());
         JPanel newPolicyRackJPanel = policyRackJPanelMap.get(newPolicy);
-	// DETERMINE IF THERE ARE ANY SECURITY APPLIANCES
-	boolean allEmpty = true;
-	for( Policy policy : policyRackMap.keySet() ){
-	    if(policyRackMap.get(policy).size()>0){
-		allEmpty = false;
-		break;
-	    }
-	}
+        // DETERMINE IF THERE ARE ANY SECURITY APPLIANCES
+        boolean allEmpty = true;
+        for( Policy policy : policyRackMap.keySet() ){
+            if(policyRackMap.get(policy).size()>0){
+                allEmpty = false;
+                break;
+            }
+        }
         if( selectedPolicyRackJPanel != null ){ // not the first rack viewed
             rackViewJPanel.remove( selectedPolicyRackJPanel );
-	    if( !allEmpty )
-		rackViewJPanel.add( newPolicyRackJPanel, policyGridBagConstraints );
+            if( !allEmpty )
+                rackViewJPanel.add( newPolicyRackJPanel, policyGridBagConstraints );
         }
         else{ // the first rack viewed
             // ADD CORE AND SEPARATOR
             if( !utilRackMap.isEmpty() ){
-		rackViewJPanel.add( utilRackJPanel, utilGridBagConstraints );
+                rackViewJPanel.add( utilRackJPanel, utilGridBagConstraints );
                 rackViewJPanel.add( utilSeparator, utilSeparatorGridBagConstraints );
             }
-	    // ADD SECURITY AND SEPARATOR
-	    if( !allEmpty ){
-		rackViewJPanel.add( policySeparator, policySeparatorGridBagConstraints );
-		rackViewJPanel.add( newPolicyRackJPanel, policyGridBagConstraints );
-	    }
+            // ADD SECURITY AND SEPARATOR
+            if( !allEmpty ){
+                rackViewJPanel.add( policySeparator, policySeparatorGridBagConstraints );
+                rackViewJPanel.add( newPolicyRackJPanel, policyGridBagConstraints );
+            }
             // ADD CORE AND SEPARATOR
             if( !coreRackMap.isEmpty() ){
-		rackViewJPanel.add( coreRackJPanel, coreGridBagConstraints );
+                rackViewJPanel.add( coreRackJPanel, coreGridBagConstraints );
                 rackViewJPanel.add( coreSeparator, coreSeparatorGridBagConstraints );
             }
             coreRackJPanel.revalidate();
         }
         //rackSeparator.setForegroundText( newPolicy.getName() );
         newPolicyRackJPanel.revalidate();
-	rackViewJPanel.revalidate();
+        rackViewJPanel.revalidate();
         rackViewJPanel.repaint();
         rackJScrollPane.getVerticalScrollBar().setValue( lastRackScrollPosition.get(newPolicy) );
         selectedPolicyRackJPanel = newPolicyRackJPanel;
@@ -503,7 +502,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 // AUTO ON
                 if( transformDesc.getName().startsWith("nat") || transformDesc.getName().startsWith("openvpn") ){
                     mTransformJPanel.setPowerOnHintVisible(true);
-                    MOneButtonJDialog.factory( Util.getMMainJFrame(), "", transformDesc.getDisplayName() 
+                    MOneButtonJDialog.factory( Util.getMMainJFrame(), "", transformDesc.getDisplayName()
                                                + " can not be automatically turned on."
                                                + "<br>Please configure its settings first.",
                                                transformDesc.getDisplayName() + " Warning", "");
@@ -522,11 +521,11 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error moving from toolbox to rack", f);
                     mTransformJButton.setFailedDeployView();
-                    MOneButtonJDialog.factory( Util.getMMainJFrame(), "",					       
-					       "A problem occurred while installing to the rack:<br>"
-					       + mTransformJButton.getDisplayName()
-					       + "<br>Please contact Untangle Support.",
-					       mTransformJButton.getDisplayName() + " Warning", "");
+                    MOneButtonJDialog.factory( Util.getMMainJFrame(), "",
+                                               "A problem occurred while installing to the rack:<br>"
+                                               + mTransformJButton.getDisplayName()
+                                               + "<br>Please contact Untangle Support.",
+                                               mTransformJButton.getDisplayName() + " Warning", "");
                     return;
                 }
             }
@@ -548,14 +547,14 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             this.policy = policy;
             this.mTransformJPanel = mTransformJPanel;
             this.buttonKey = new ButtonKey(mTransformJPanel);
-	    if(mTransformJPanel.getMackageDesc().isService() || mTransformJPanel.getMackageDesc().isUtil())
-		this.mTransformJButton = utilToolboxMap.get(buttonKey);
+            if(mTransformJPanel.getMackageDesc().isService() || mTransformJPanel.getMackageDesc().isUtil())
+                this.mTransformJButton = utilToolboxMap.get(buttonKey);
             else if(mTransformJPanel.getMackageDesc().isSecurity())
                 this.mTransformJButton = policyToolboxMap.get(policy).get(buttonKey);
-	    else if(mTransformJPanel.getMackageDesc().isCore() )
+            else if(mTransformJPanel.getMackageDesc().isCore() )
                 this.mTransformJButton = coreToolboxMap.get(buttonKey);
-	    else
-		this.mTransformJButton = null;
+            else
+                this.mTransformJButton = null;
             setContextClassLoader( Util.getClassLoader() );
             setName("MVCLIENT-MoveFromRackToToolboxThread: " + mTransformJPanel.getMackageDesc().getDisplayName() );
             mTransformJPanel.setRemovingView(false);
@@ -576,10 +575,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     mTransformJPanel.setProblemView(true);
                     mTransformJButton.setFailedRemoveFromRackView();
                     MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
-					      "A problem occurred while removing from the rack:<br>"
-					      + mTransformJPanel.getMackageDesc().getDisplayName()
-					      + "<br>Please contact Untangle Support.",
-					      mTransformJPanel.getMackageDesc().getDisplayName() + " Warning", "");
+                                              "A problem occurred while removing from the rack:<br>"
+                                              + mTransformJPanel.getMackageDesc().getDisplayName()
+                                              + "<br>Please contact Untangle Support.",
+                                              mTransformJPanel.getMackageDesc().getDisplayName() + " Warning", "");
                     return;
                 }
             }
@@ -589,77 +588,77 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 targetMTransformJButton = utilToolboxMap.get(buttonKey);
             else if( mTransformJPanel.getMackageDesc().isSecurity() )
                 targetMTransformJButton = policyToolboxMap.get(policy).get(buttonKey);
-	    else if( mTransformJButton.getMackageDesc().isCore() )
-		targetMTransformJButton = coreToolboxMap.get(buttonKey);
-	    else
-		targetMTransformJButton = null;
+            else if( mTransformJButton.getMackageDesc().isCore() )
+                targetMTransformJButton = coreToolboxMap.get(buttonKey);
+            else
+                targetMTransformJButton = null;
             targetMTransformJButton.setDeployableView();
             focusInToolbox(targetMTransformJButton, true);
         }
     }
-    
+
     private class MoveFromToolboxToStoreThread extends Thread{
-	private MTransformJButton mTransformJButton;
-	private Vector<MTransformJButton> buttonVector;
-	public MoveFromToolboxToStoreThread(final MTransformJButton mTransformJButton){
-	    setDaemon(true);
-	    this.mTransformJButton = mTransformJButton;
-	    ButtonKey buttonKey = new ButtonKey(mTransformJButton);
-	    buttonVector = new Vector<MTransformJButton>();
-	    setContextClassLoader( Util.getClassLoader() );
-	    setName("MVCLIENT-MoveFromToolboxToStoreThread: " + mTransformJButton.getDisplayName() );
-	    // DECIDE IF WE CAN REMOVE
-	    if( mTransformJButton.getMackageDesc().isUtil() || mTransformJButton.getMackageDesc().isService() ){
-		buttonVector.add(mTransformJButton);
-	    }
-	    else if(mTransformJButton.getMackageDesc().isSecurity()){
-		for( Map.Entry<Policy,Map<ButtonKey,MTransformJButton>> policyToolboxMapEntry : policyToolboxMap.entrySet() ){
-		    Map<ButtonKey,MTransformJButton> toolboxMap = policyToolboxMapEntry.getValue();
-		    if( toolboxMap.containsKey(buttonKey) && toolboxMap.get(buttonKey).isEnabled() ){
-			buttonVector.add( toolboxMap.get(buttonKey) );
-		    }
-		    else{
-			MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
-						  mTransformJButton.getDisplayName()
-						  + " cannot be removed from the toolbox because it is being"
-						  + " used by the following policy rack:<br><b>"
-						  + policyToolboxMapEntry.getKey().getName()
-						  + "</b><br><br>You must remove the product from all policy racks first.",
-						  mTransformJButton.getDisplayName() + " Warning", "");
-			return;
-		    }
-		}
-	    }
-	    else if(mTransformJButton.getMackageDesc().isCore()){
-		buttonVector.add(mTransformJButton);
-	    }		
-	    for( MTransformJButton button : buttonVector )
-		button.setRemovingFromToolboxView();
-	    start();
-	}
-	public void run(){
-	    try{
-		// UNINSTALL IN MVVM
-		Util.getToolboxManager().uninstall(mTransformJButton.getName());
-		// REMOVE FROM TOOLBOX
-		removeFromToolbox(mTransformJButton.getMackageDesc());
-		// UPDATE STORE MODEL
-		updateStoreModel();
-	    }
-	    catch(Exception e){
-		try{ Util.handleExceptionWithRestart("Error moving from toolbox to store", e); }
-		catch(Exception f){
-		    Util.handleExceptionNoRestart("Error moving from toolbox to store", f);
-		    mTransformJButton.setFailedRemoveFromToolboxView();
-		    MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
-					      "A problem occurred while removing from the toolbox:<br>"
-					      + mTransformJButton.getDisplayName()
-					      + "<br>Please contact Untangle Support.",
-					      mTransformJButton.getDisplayName() + " Warning", "");
-		    return;
-		}
-	    }
-	}
+        private MTransformJButton mTransformJButton;
+        private Vector<MTransformJButton> buttonVector;
+        public MoveFromToolboxToStoreThread(final MTransformJButton mTransformJButton){
+            setDaemon(true);
+            this.mTransformJButton = mTransformJButton;
+            ButtonKey buttonKey = new ButtonKey(mTransformJButton);
+            buttonVector = new Vector<MTransformJButton>();
+            setContextClassLoader( Util.getClassLoader() );
+            setName("MVCLIENT-MoveFromToolboxToStoreThread: " + mTransformJButton.getDisplayName() );
+            // DECIDE IF WE CAN REMOVE
+            if( mTransformJButton.getMackageDesc().isUtil() || mTransformJButton.getMackageDesc().isService() ){
+                buttonVector.add(mTransformJButton);
+            }
+            else if(mTransformJButton.getMackageDesc().isSecurity()){
+                for( Map.Entry<Policy,Map<ButtonKey,MTransformJButton>> policyToolboxMapEntry : policyToolboxMap.entrySet() ){
+                    Map<ButtonKey,MTransformJButton> toolboxMap = policyToolboxMapEntry.getValue();
+                    if( toolboxMap.containsKey(buttonKey) && toolboxMap.get(buttonKey).isEnabled() ){
+                        buttonVector.add( toolboxMap.get(buttonKey) );
+                    }
+                    else{
+                        MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
+                                                  mTransformJButton.getDisplayName()
+                                                  + " cannot be removed from the toolbox because it is being"
+                                                  + " used by the following policy rack:<br><b>"
+                                                  + policyToolboxMapEntry.getKey().getName()
+                                                  + "</b><br><br>You must remove the product from all policy racks first.",
+                                                  mTransformJButton.getDisplayName() + " Warning", "");
+                        return;
+                    }
+                }
+            }
+            else if(mTransformJButton.getMackageDesc().isCore()){
+                buttonVector.add(mTransformJButton);
+            }
+            for( MTransformJButton button : buttonVector )
+                button.setRemovingFromToolboxView();
+            start();
+        }
+        public void run(){
+            try{
+                // UNINSTALL IN MVVM
+                Util.getToolboxManager().uninstall(mTransformJButton.getName());
+                // REMOVE FROM TOOLBOX
+                removeFromToolbox(mTransformJButton.getMackageDesc());
+                // UPDATE STORE MODEL
+                updateStoreModel();
+            }
+            catch(Exception e){
+                try{ Util.handleExceptionWithRestart("Error moving from toolbox to store", e); }
+                catch(Exception f){
+                    Util.handleExceptionNoRestart("Error moving from toolbox to store", f);
+                    mTransformJButton.setFailedRemoveFromToolboxView();
+                    MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
+                                              "A problem occurred while removing from the toolbox:<br>"
+                                              + mTransformJButton.getDisplayName()
+                                              + "<br>Please contact Untangle Support.",
+                                              mTransformJButton.getDisplayName() + " Warning", "");
+                    return;
+                }
+            }
+        }
     }
 
 
@@ -713,7 +712,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             }
         }
     }
-    
+
     private class PurchaseWrapper {
         private MTransformJButton mTransformJButton;
         private Policy selectedPolicy;
@@ -725,31 +724,31 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         public Policy getPolicy(){ return selectedPolicy; }
     }
     /*
-    public void moveFromStoreToToolbox(final MTransformJButton mTransformJButton){
-        mTransformJButton.setProcuringView();
-        try{
-            purchaseBlockingQueue.put(mTransformJButton);
-        }
-        catch(Exception e){
-            Util.handleExceptionNoRestart("Interrupted while waiting to purchase", e);
-            mTransformJButton.setFailedProcureView();
-        }
-    }
+      public void moveFromStoreToToolbox(final MTransformJButton mTransformJButton){
+      mTransformJButton.setProcuringView();
+      try{
+      purchaseBlockingQueue.put(mTransformJButton);
+      }
+      catch(Exception e){
+      Util.handleExceptionNoRestart("Interrupted while waiting to purchase", e);
+      mTransformJButton.setFailedProcureView();
+      }
+      }
     */
     private class MoveFromStoreToToolboxThread extends Thread implements Shutdownable {
-	private volatile boolean stop = false;
+        private volatile boolean stop = false;
         public MoveFromStoreToToolboxThread(){
             setDaemon(true);
             setContextClassLoader( Util.getClassLoader() );
             setName("MVCLIENT-MoveFromStoreToToolboxThread");
             start();
         }
-	public void doShutdown(){
-	    if(!stop){
-		stop = true;
-		interrupt();
-	    }
-	}
+        public void doShutdown(){
+            if(!stop){
+                stop = true;
+                interrupt();
+            }
+        }
         public void run(){
             while(!stop){
                 MTransformJButton purchasedMTransformJButton;
@@ -779,10 +778,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     if( storeButton.getName().equals(mTransformJButton.getName()) ){
                         storeButton.setIsTrial(mTransformJButton.getIsTrial());
                         mTransformJButton = storeButton;
-                            SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-                                storeButton.setEnabled(false);
-                                storeButton.setProgress("Preparing", 101);
-                            }});
+                        SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+                            storeButton.setEnabled(false);
+                            storeButton.setProgress("Preparing", 101);
+                        }});
                         break;
                     }
                 }
@@ -921,7 +920,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         catch(Exception f){
                             Util.handleExceptionNoRestart("Error during auto install/on procedure", f);
                             mTransformJButton.setFailedDeployView();
-                            MOneButtonJDialog.factory( Util.getMMainJFrame(), "",					       
+                            MOneButtonJDialog.factory( Util.getMMainJFrame(), "",
                                                        "A problem occurred while installing to the rack:<br>"
                                                        + mTransformJButton.getDisplayName()
                                                        + "<br>Please contact Untangle Support.",
@@ -961,7 +960,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         mTransformJButton.setFailedProcureView();
                         final MTransformJButton finalJButton3 = mTransformJButton;
                         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                            MOneButtonJDialog.factory(Util.getMMainJFrame(), "",						  
+                            MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
                                                       "A problem occurred while purchasing:<br>"
                                                       + finalJButton3.getDisplayName()
                                                       + "<br>Please try again or contact Untangle Support for assistance.",
@@ -987,14 +986,14 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                                                        mackageDesc.getName()+mackageDesc.getExtraName());
             for( MackageDesc mackageDesc : currentInstalledMackages )
                 if( !originalInstalledMackagesHashtable.containsKey(mackageDesc.getName()+mackageDesc.getExtraName()) )
-                newlyInstalledMackages.add(mackageDesc);
+                    newlyInstalledMackages.add(mackageDesc);
         }
         else{
             for( MackageDesc mackageDesc : originalInstalledMackages )
                 originalInstalledMackagesHashtable.put(mackageDesc.getName(), mackageDesc.getName());
             for( MackageDesc mackageDesc : currentInstalledMackages )
                 if( !originalInstalledMackagesHashtable.containsKey(mackageDesc.getName()) )
-                newlyInstalledMackages.add(mackageDesc);
+                    newlyInstalledMackages.add(mackageDesc);
         }
         return newlyInstalledMackages;
     }
@@ -1005,10 +1004,10 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     // INIT API ////////////////////////////////////////////
     ////////////////////////////////////////////////////////
     private void initMvvmModel() throws Exception {
-	// SECURITY
+        // SECURITY
         for( Policy policy : Util.getPolicyManager().getPolicies() )
             policyTidMap.put( policy, Util.getTransformManager().transformInstancesVisible(policy) );
-	// NON-SECURITY (CORE & UTIL & SERVICES)
+        // NON-SECURITY (CORE & UTIL & SERVICES)
         nonPolicyTidList = Util.getTransformManager().transformInstancesVisible((Policy)null);
         // NAME MAPS FOR QUICK LOOKUP
         for( Policy policy : policyTidMap.keySet() ){
@@ -1035,8 +1034,8 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private class StoreModelThread extends Thread implements Shutdownable {
         private JProgressBar storeProgressBar;
         private volatile boolean doUpdate = false;
-	private volatile boolean firstRun = true;
-	private volatile boolean stop = false;
+        private volatile boolean firstRun = true;
+        private volatile boolean stop = false;
         public StoreModelThread(){
             setDaemon(true);
             setName("MVCLIENT-StoreModelThread");
@@ -1089,18 +1088,18 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             }
         }
         private void initStoreModel(){
-	    // REFRESH STATE OF ALL EXISTING APPLIANCES
-	    for(Policy policy : policyRackMap.keySet()){
-		for(MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values()){
-		    mTransformJPanel.doRefreshState();
-		}
-	    }
-	    for(MTransformJPanel mTransformJPanel : utilRackMap.values()){
-		mTransformJPanel.doRefreshState();
-	    }
-	    for(MTransformJPanel mTransformJPanel : coreRackMap.values()){
-		mTransformJPanel.doRefreshState();
-	    }
+            // REFRESH STATE OF ALL EXISTING APPLIANCES
+            for(Policy policy : policyRackMap.keySet()){
+                for(MTransformJPanel mTransformJPanel : policyRackMap.get(policy).values()){
+                    mTransformJPanel.doRefreshState();
+                }
+            }
+            for(MTransformJPanel mTransformJPanel : utilRackMap.values()){
+                mTransformJPanel.doRefreshState();
+            }
+            for(MTransformJPanel mTransformJPanel : coreRackMap.values()){
+                mTransformJPanel.doRefreshState();
+            }
 
 
             // SHOW THE USER WHATS GOING ON
@@ -1117,25 +1116,25 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             }});
 
 
-        // CHECK FOR STORE CONNECTIVITY AND AVAILABLE ITEMS
-        boolean connectedToStore = false;
-        MackageDesc[] storeItemsAvailable = null;
-        try{
-            Util.getToolboxManager().update();
-            storeItemsAvailable = Util.getToolboxManager().uninstalled();
-            /*
-              if( storeItemsAvailable == null )
-              System.out.println("items: null");
-              else
-              System.out.println("items: " + storeItemsAvailable.length);
-            */
-            connectedToStore = true;
-        }
-        catch(Exception e){
-            Util.handleExceptionNoRestart("Error: unable to connect to store",e);
-        }
-        // SHOW RESULTS
-        if( !connectedToStore ){
+            // CHECK FOR STORE CONNECTIVITY AND AVAILABLE ITEMS
+            boolean connectedToStore = false;
+            MackageDesc[] storeItemsAvailable = null;
+            try{
+                Util.getToolboxManager().update();
+                storeItemsAvailable = Util.getToolboxManager().uninstalled();
+                /*
+                  if( storeItemsAvailable == null )
+                  System.out.println("items: null");
+                  else
+                  System.out.println("items: " + storeItemsAvailable.length);
+                */
+                connectedToStore = true;
+            }
+            catch(Exception e){
+                Util.handleExceptionNoRestart("Error: unable to connect to store",e);
+            }
+            // SHOW RESULTS
+            if( !connectedToStore ){
                 // NO CONNECTION
                 SwingUtilities.invokeLater( new Runnable(){ public void run(){
                     storeProgressBar.setValue(1);
@@ -1165,7 +1164,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                         storeJPanel.revalidate();
                         storeJPanel.repaint();
                         if(firstRun){
-                            actionJTabbedPane.setSelectedIndex(1);			
+                            actionJTabbedPane.setSelectedIndex(1);
                             firstRun = false;
                         }
                     }});
@@ -1187,86 +1186,86 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
 
 
 
-		    // REMOVE TRIAL IF THE ACTUAL THING WAS PURCHASED (IS NO LONGER IN THE STORE)
-		    /*
-		    Map<String,String> storeItemMap = new HashMap<String,String>();
-		    for( MackageDesc mackageDesc : storeItemsAvailable ){
-			String name = mackageDesc.getName();
-			if( name.endsWith(STOREITEM_EXTENSION) && !name.endsWith(TRIAL_EXTENSION) ){
-			    name = name.substring(0, name.indexOf('-'));
-			    storeItemMap.put(name, name);
-			}
-		    }			    
-                    for( MackageDesc mackageDesc : storeItemsAvailable ){
-			String name = mackageDesc.getName();
-			if( name.endsWith(TRIAL_EXTENSION) ){
-			    name = name.substring(0, name.indexOf('-'));
-			    if( storeItemMap.containsKey(name) ){
-				addToStore(mackageDesc,false);
-			    }
-			    else
-				continue;
-			}
-			else
-			    addToStore(mackageDesc,false);
-		        }
-		    */
-
-                    
+                    // REMOVE TRIAL IF THE ACTUAL THING WAS PURCHASED (IS NO LONGER IN THE STORE)
                     /*
-            // COMPUTE REMOVED BUTTONS
-            Vector<MTransformJButton> removedVector = new Vector<MTransformJButton>();
-            for( MTransformJButton storeButton : storeMap.values() ){
-                String storeButtonName = storeButton.getName().substring(0, storeButtonName.indexOf('-'));
-                boolean found = false;
-                for( MackageDesc mackageDesc : storeItemsAvailable ){
-                    String mackageDescName = mackageDesc.getName();
-                    if( mackageDescName.endsWith(STOREITEM_EXTENSION) && !mackageDescName.endsWith(TRIAL_EXTENSION) ){
-                        mackageDescName = mackageDescName.substring(0, mackageDescName.indexOf('-'));
-                        if( storeButtonName.equals(mackageDescName) ){
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-                if(!found)
-                    removedVector.add(storeButton);
-            }
-
-            // COMPUTE ADDABLE MACKAGES
-            Vector<MackageDesc> addableVector = new Vector<MackageDesc>();
-            for( MackageDesc mackageDesc : storeItemsAvailable ){
-                String mackageDescName = mackageDesc.getName();
-                boolean found = false;
-                if( mackageDescName.endsWith(STOREITEM_EXTENSION) && !mackageDescName.endsWith(TRIAL_EXTENSION) ){
-                    mackageDescName = mackageDescName.substring(0, mackageDescName.indexOf('-'));
-                    for( MTransformJButton storeButton : storeMap.values() ){
-                        String storeButtonName = storeButton.getName().substring(0, storeButtonName.indexOf('-'));
-                        if( storeButtonName.equals(mackageDescName) ){
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-                if(!found)
-                    addableVector.add(mackageDesc);
-            }
+                      Map<String,String> storeItemMap = new HashMap<String,String>();
+                      for( MackageDesc mackageDesc : storeItemsAvailable ){
+                      String name = mackageDesc.getName();
+                      if( name.endsWith(STOREITEM_EXTENSION) && !name.endsWith(TRIAL_EXTENSION) ){
+                      name = name.substring(0, name.indexOf('-'));
+                      storeItemMap.put(name, name);
+                      }
+                      }
+                      for( MackageDesc mackageDesc : storeItemsAvailable ){
+                      String name = mackageDesc.getName();
+                      if( name.endsWith(TRIAL_EXTENSION) ){
+                      name = name.substring(0, name.indexOf('-'));
+                      if( storeItemMap.containsKey(name) ){
+                      addToStore(mackageDesc,false);
+                      }
+                      else
+                      continue;
+                      }
+                      else
+                      addToStore(mackageDesc,false);
+                      }
                     */
 
-            
-		    // ADD TO STORE IF NOT A TRIAL
-		    for( MackageDesc mackageDesc : storeItemsAvailable ){
-			String name = mackageDesc.getName();
-            //System.out.println("testing: " + name);
-			if( name.endsWith(STOREITEM_EXTENSION) && !name.endsWith(TRIAL_EXTENSION) ){
-			    addToStore(mackageDesc,false);
-                //System.out.println("added");
-			}
-            else{
-                //System.out.println("failed");
-            }
-		    }			    
-            
+
+                    /*
+                    // COMPUTE REMOVED BUTTONS
+                    Vector<MTransformJButton> removedVector = new Vector<MTransformJButton>();
+                    for( MTransformJButton storeButton : storeMap.values() ){
+                    String storeButtonName = storeButton.getName().substring(0, storeButtonName.indexOf('-'));
+                    boolean found = false;
+                    for( MackageDesc mackageDesc : storeItemsAvailable ){
+                    String mackageDescName = mackageDesc.getName();
+                    if( mackageDescName.endsWith(STOREITEM_EXTENSION) && !mackageDescName.endsWith(TRIAL_EXTENSION) ){
+                    mackageDescName = mackageDescName.substring(0, mackageDescName.indexOf('-'));
+                    if( storeButtonName.equals(mackageDescName) ){
+                    found = true;
+                    break;
+                    }
+                    }
+                    }
+                    if(!found)
+                    removedVector.add(storeButton);
+                    }
+
+                    // COMPUTE ADDABLE MACKAGES
+                    Vector<MackageDesc> addableVector = new Vector<MackageDesc>();
+                    for( MackageDesc mackageDesc : storeItemsAvailable ){
+                    String mackageDescName = mackageDesc.getName();
+                    boolean found = false;
+                    if( mackageDescName.endsWith(STOREITEM_EXTENSION) && !mackageDescName.endsWith(TRIAL_EXTENSION) ){
+                    mackageDescName = mackageDescName.substring(0, mackageDescName.indexOf('-'));
+                    for( MTransformJButton storeButton : storeMap.values() ){
+                    String storeButtonName = storeButton.getName().substring(0, storeButtonName.indexOf('-'));
+                    if( storeButtonName.equals(mackageDescName) ){
+                    found = true;
+                    break;
+                    }
+                    }
+                    }
+                    if(!found)
+                    addableVector.add(mackageDesc);
+                    }
+                    */
+
+
+                    // ADD TO STORE IF NOT A TRIAL
+                    for( MackageDesc mackageDesc : storeItemsAvailable ){
+                        String name = mackageDesc.getName();
+                        //System.out.println("testing: " + name);
+                        if( name.endsWith(STOREITEM_EXTENSION) && !name.endsWith(TRIAL_EXTENSION) ){
+                            addToStore(mackageDesc,false);
+                            //System.out.println("added");
+                        }
+                        else{
+                            //System.out.println("failed");
+                        }
+                    }
+
                     revalidateStore();
                 }
             }
@@ -1295,7 +1294,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         Map<String,MackageDesc> installedMackageMap = new HashMap<String,MackageDesc>();
         for( MackageDesc mackageDesc : Util.getToolboxManager().installedVisible() ){
             installedMackageMap.put(mackageDesc.getName(),mackageDesc);
-	}
+        }
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             progressBar.setValue(64);
             progressBar.setString("Populating My Apps...");
@@ -1428,23 +1427,23 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             start();
         }
         public void run(){
-	    try{
-		loadSemaphore.acquire();
-		// GET THE TRANSFORM CONTEXT AND MACKAGE DESC
-		TransformContext transformContext = Util.getTransformManager().transformContext(tid);
-		TransformDesc transformDesc = transformContext.getTransformDesc();
-		// CONSTRUCT AND ADD THE APPLIANCE
-		MTransformJPanel mTransformJPanel = MTransformJPanel.instantiate(transformContext,transformDesc,policy);
-		addToRack(policy,mTransformJPanel,false);
-	    }
-	    catch(Exception e){
-		try{ Util.handleExceptionWithRestart("Error instantiating product: " + tid, e); }
-		catch(Exception f){ Util.handleExceptionNoRestart("Error instantiating product: " + tid, f); }
-	    }
-	    finally{
-		loadSemaphore.release();
-	    }
-            
+            try{
+                loadSemaphore.acquire();
+                // GET THE TRANSFORM CONTEXT AND MACKAGE DESC
+                TransformContext transformContext = Util.getTransformManager().transformContext(tid);
+                TransformDesc transformDesc = transformContext.getTransformDesc();
+                // CONSTRUCT AND ADD THE APPLIANCE
+                MTransformJPanel mTransformJPanel = MTransformJPanel.instantiate(transformContext,transformDesc,policy);
+                addToRack(policy,mTransformJPanel,false);
+            }
+            catch(Exception e){
+                try{ Util.handleExceptionWithRestart("Error instantiating product: " + tid, e); }
+                catch(Exception f){ Util.handleExceptionNoRestart("Error instantiating product: " + tid, f); }
+            }
+            finally{
+                loadSemaphore.release();
+            }
+
             final float overallFinal = (float) overallProgress;
             SwingUtilities.invokeLater( new Runnable(){ public void run(){
                 PolicyStateMachine.this.applianceLoadProgress++;
@@ -1483,7 +1482,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     }
     private void removeFromToolbox(final MackageDesc mackageDesc){
         final ButtonKey buttonKey = new ButtonKey(mackageDesc);
-        SwingUtilities.invokeLater( new Runnable() { public void run() {	    
+        SwingUtilities.invokeLater( new Runnable() { public void run() {
             if( mackageDesc.isUtil() || mackageDesc.isService() ){
                 int position = ((TreeMap)utilToolboxMap).headMap(buttonKey).size();
                 MTransformJButton mTransformJButton = utilToolboxMap.get(buttonKey);
@@ -1538,25 +1537,25 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 JPanel rackJPanel = policyRackJPanelMap.get(policy);
                 // REMOVE FROM RACK MODEL
                 policyRackMap.get(policy).remove(buttonKey);
-		// SEE IF ALL POLICIES ARE EMPTY
-		boolean allPolicyEmpty = true;
-		for( Policy policy : policyRackMap.keySet() ){
-		    if(policyRackMap.get(policy).size()>0){
-			allPolicyEmpty = false;
-			break;
-		    }
-		}
+                // SEE IF ALL POLICIES ARE EMPTY
+                boolean allPolicyEmpty = true;
+                for( Policy policy : policyRackMap.keySet() ){
+                    if(policyRackMap.get(policy).size()>0){
+                        allPolicyEmpty = false;
+                        break;
+                    }
+                }
                 // REMOVE FROM RACK VIEW
                 rackJPanel.remove(mTransformJPanel);
                 rackJPanel.revalidate();
-		// REMOVE SEPARATOR IF ALL EMPTY (AND SET TO THE INITIAL VALUE)
-		if( allPolicyEmpty ){
-		    viewSelector.setSelectedIndex(0);
-		    rackViewJPanel.remove( policySeparator );
-		    rackViewJPanel.remove( policyRackJPanelMap.get(policy) );
-		    rackViewJPanel.revalidate();
-		    rackViewJPanel.repaint();		    
-		}		    
+                // REMOVE SEPARATOR IF ALL EMPTY (AND SET TO THE INITIAL VALUE)
+                if( allPolicyEmpty ){
+                    viewSelector.setSelectedIndex(0);
+                    rackViewJPanel.remove( policySeparator );
+                    rackViewJPanel.remove( policyRackJPanelMap.get(policy) );
+                    rackViewJPanel.revalidate();
+                    rackViewJPanel.repaint();
+                }
             }
             else if( mTransformJPanel.getMackageDesc().isCore() ){
                 // REMOVE FROM RACK MODEL
@@ -1568,7 +1567,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 if( coreRackMap.isEmpty() ){
                     rackViewJPanel.remove( coreSeparator );
                     rackViewJPanel.remove( coreRackJPanel );
-		    rackViewJPanel.revalidate();
+                    rackViewJPanel.revalidate();
                     rackViewJPanel.repaint();
                 }
             }
@@ -1631,7 +1630,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
         }});
     }
     private MTransformJButton addToToolbox(final Policy policy, final MackageDesc mackageDesc,
-                                          final boolean isDeployed, final boolean doRevalidate){
+                                           final boolean isDeployed, final boolean doRevalidate){
         // ONLY UPDATE GUI MODELS IF THIS IS VISIBLE
         if( !isMackageVisible(mackageDesc) )
             return null;
@@ -1699,7 +1698,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     private void addToRack(final Policy policy, final MTransformJPanel mTransformJPanel, final boolean doRevalidate){
         final ButtonKey buttonKey = new ButtonKey(mTransformJPanel);
         SwingUtilities.invokeLater( new Runnable() { public void run() {
-            
+
             if( mTransformJPanel.getMackageDesc().isUtil() || mTransformJPanel.getMackageDesc().isService()){
                 // DEAL WITH SPACER
                 if( utilRackMap.isEmpty() ){
@@ -1736,7 +1735,7 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                     //rackViewJPanel.add( policyRackJPanelMap.get(currentPolicy), rackGridBagConstraints );
                 }
                 rackViewJPanel.revalidate();
-                rackViewJPanel.repaint();		
+                rackViewJPanel.repaint();
                 // ADD TO RACK MODEL
                 policyRackMap.get(policy).put(buttonKey,mTransformJPanel);
                 // UPDATE GUI VIEW MODEL
@@ -1789,46 +1788,46 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     // Private CLASSES & UTILS /////////////////////
     ////////////////////////////////////////////////
     public synchronized MCasingJPanel[] loadAllCasings(boolean generateGuis){
-	if( generateGuis )
-	    return doIt(true);
-	else{
-	    (new Thread(new DoItRunnable())).start();
-	    return null;
-	}
+        if( generateGuis )
+            return doIt(true);
+        else{
+            (new Thread(new DoItRunnable())).start();
+            return null;
+        }
     }
     private class DoItRunnable implements Runnable {
-	public void run(){ doIt(false); }
+        public void run(){ doIt(false); }
     }
     private MCasingJPanel[] doIt(boolean generateGuis){
-	final String casingNames[] = {"http-casing", "mail-casing", "ftp-casing"};
-	Vector<MCasingJPanel> mCasingJPanels = new Vector<MCasingJPanel>();
-	List<Tid> casingInstances = null;
-	TransformContext transformContext = null;
-	TransformDesc transformDesc = null;
-	String casingGuiClassName = null;
-	Class casingGuiClass = null;
-	Constructor casingGuiConstructor = null;
-	MCasingJPanel mCasingJPanel = null;
-	for(String casingName : casingNames){
-	    try{
-		casingInstances = Util.getTransformManager().transformInstances(casingName);
-		if( casingInstances.size() == 0 )
-		    continue;
-		transformContext = Util.getTransformManager().transformContext(casingInstances.get(0));
-		transformDesc = transformContext.getTransformDesc();
-		casingGuiClassName = transformDesc.getGuiClassName();
-		casingGuiClass = Util.getClassLoader().loadClass( casingGuiClassName, transformDesc );
-		if(generateGuis){
-		    casingGuiConstructor = casingGuiClass.getConstructor(new Class[]{});
-		    mCasingJPanel = (MCasingJPanel) casingGuiConstructor.newInstance(new Object[]{});
-		    mCasingJPanels.add(mCasingJPanel);
-		}
-	    }
-	    catch(Exception e){
-		Util.handleExceptionNoRestart("Error loading all casings: " + casingName, e);
-	    }
-	}
-	return mCasingJPanels.toArray( new MCasingJPanel[0] );
+        final String casingNames[] = {"http-casing", "mail-casing", "ftp-casing"};
+        Vector<MCasingJPanel> mCasingJPanels = new Vector<MCasingJPanel>();
+        List<Tid> casingInstances = null;
+        TransformContext transformContext = null;
+        TransformDesc transformDesc = null;
+        String casingGuiClassName = null;
+        Class casingGuiClass = null;
+        Constructor casingGuiConstructor = null;
+        MCasingJPanel mCasingJPanel = null;
+        for(String casingName : casingNames){
+            try{
+                casingInstances = Util.getTransformManager().transformInstances(casingName);
+                if( casingInstances.size() == 0 )
+                    continue;
+                transformContext = Util.getTransformManager().transformContext(casingInstances.get(0));
+                transformDesc = transformContext.getTransformDesc();
+                casingGuiClassName = transformDesc.getGuiClassName();
+                casingGuiClass = Util.getClassLoader().loadClass( casingGuiClassName, transformDesc );
+                if(generateGuis){
+                    casingGuiConstructor = casingGuiClass.getConstructor(new Class[]{});
+                    mCasingJPanel = (MCasingJPanel) casingGuiConstructor.newInstance(new Object[]{});
+                    mCasingJPanels.add(mCasingJPanel);
+                }
+            }
+            catch(Exception e){
+                Util.handleExceptionNoRestart("Error loading all casings: " + casingName, e);
+            }
+        }
+        return mCasingJPanels.toArray( new MCasingJPanel[0] );
     }
 
     private boolean isMackageVisible(MackageDesc mackageDesc){
@@ -1857,13 +1856,13 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             this.listCellRenderer = listCellRenderer;
         }
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean hasFocus){
-	    String text = (value instanceof Policy?((Policy)value).getName():value.toString());
-	    Component renderComponent = listCellRenderer.getListCellRendererComponent(list, text, index, isSelected, hasFocus);
-	    renderComponent.setForeground(Color.BLACK);
+            String text = (value instanceof Policy?((Policy)value).getName():value.toString());
+            Component renderComponent = listCellRenderer.getListCellRendererComponent(list, text, index, isSelected, hasFocus);
+            renderComponent.setForeground(Color.BLACK);
 
-	    //((JLabel)renderComponent).setBorder(new javax.swing.border.LineBorder(new Color(130,130,130), 1));
+            //((JLabel)renderComponent).setBorder(new javax.swing.border.LineBorder(new Color(130,130,130), 1));
 
-	    return renderComponent;
+            return renderComponent;
         }
     }
     private class StoreActionListener implements java.awt.event.ActionListener {
@@ -1918,13 +1917,13 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
     //////////////////////////////////////
     // PRIVATE CLASSES AND UTILS /////////
     public void stopAllGraphs(){
-	for( ButtonKey key : utilRackMap.keySet() )
-	    utilRackMap.get(key).mTransformDisplayJPanel().setDoVizUpdates(false);
-	for( Policy policy : policyRackMap.keySet() )
-	    for( MTransformJPanel appliance : policyRackMap.get(policy).values() )
-		appliance.mTransformDisplayJPanel().setDoVizUpdates(false);
-	for( ButtonKey key : coreRackMap.keySet() )
-	    coreRackMap.get(key).mTransformDisplayJPanel().setDoVizUpdates(false);
+        for( ButtonKey key : utilRackMap.keySet() )
+            utilRackMap.get(key).mTransformDisplayJPanel().setDoVizUpdates(false);
+        for( Policy policy : policyRackMap.keySet() )
+            for( MTransformJPanel appliance : policyRackMap.get(policy).values() )
+                appliance.mTransformDisplayJPanel().setDoVizUpdates(false);
+        for( ButtonKey key : coreRackMap.keySet() )
+            coreRackMap.get(key).mTransformDisplayJPanel().setDoVizUpdates(false);
     }
     private void focusInRack(final MTransformJPanel mTransformJPanel){
         SwingUtilities.invokeLater( new Runnable() { public void run() {
@@ -1957,9 +1956,9 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
             else{
                 focusMTransformJButton = null;
             }
-	    if( focusMTransformJButton != null )
+            if( focusMTransformJButton != null )
 
-            actionJTabbedPane.setSelectedIndex(1);
+                actionJTabbedPane.setSelectedIndex(1);
             toolboxJScrollPane.getViewport().validate();
             Rectangle scrollRect = SwingUtilities.convertRectangle(focusMTransformJButton.getParent(),
                                                                    focusMTransformJButton.getBounds(),

@@ -12,30 +12,30 @@
 
 package com.untangle.gui.pipeline;
 
+import java.awt.Dialog;
 import java.awt.Insets;
 import java.awt.Window;
-import java.awt.Dialog;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 import com.untangle.gui.transform.*;
 import com.untangle.gui.util.*;
-import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
 import com.untangle.mvvm.policy.*;
+import com.untangle.mvvm.tran.*;
 import com.untangle.mvvm.tran.firewall.*;
 import com.untangle.mvvm.tran.firewall.intf.*;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
-import com.untangle.mvvm.tran.firewall.user.UserMatcherFactory;
 import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 import com.untangle.mvvm.tran.firewall.time.*;
+import com.untangle.mvvm.tran.firewall.user.UserMatcherFactory;
 
 public class PolicyCustomJPanel extends MEditTableJPanel {
 
@@ -70,7 +70,7 @@ public class PolicyCustomJPanel extends MEditTableJPanel {
 
 
 class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
-    
+
     private MConfigJDialog mConfigJDialog;
 
     public static String TIME_EXCLUDE = "Invert day/time"; // depended on is policy wizard page
@@ -107,7 +107,7 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     private static final String OUTBOUND_STRING = " (outbound)";
 
 
-    private ComboBoxModel protocolModel = 
+    private ComboBoxModel protocolModel =
         super.generateComboBoxModel( ProtocolMatcherFactory.getProtocolEnumeration(),
                                      ProtocolMatcherFactory.getProtocolDefault());
     private DefaultComboBoxModel policyModel = new DefaultComboBoxModel();
@@ -115,18 +115,18 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     DefaultComboBoxModel timeModel = new DefaultComboBoxModel();
     private Map<String,Policy> policyNames = new LinkedHashMap();
     private void updatePolicyNames(List<Policy> policyList){
-	policyNames.clear();
-	for( Policy policy : policyList ){
-	    policyNames.put( policy.getName()+INBOUND_STRING, policy );
-	    policyNames.put( policy.getName()+OUTBOUND_STRING, policy );
-	}
-	policyNames.put( NULL_STRING, null);
+        policyNames.clear();
+        for( Policy policy : policyList ){
+            policyNames.put( policy.getName()+INBOUND_STRING, policy );
+            policyNames.put( policy.getName()+OUTBOUND_STRING, policy );
+        }
+        policyNames.put( NULL_STRING, null);
     }
     private void updatePolicyModel(){
-	policyModel.removeAllElements();
-	for( String name : policyNames.keySet() ){
-	    policyModel.addElement(name);
-	}
+        policyModel.removeAllElements();
+        for( String name : policyNames.keySet() ){
+            policyModel.addElement(name);
+        }
     }
 
     public TableColumnModel getTableColumnModel(){
@@ -186,107 +186,107 @@ class CustomPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
         DayOfWeekMatcherFactory dmf = DayOfWeekMatcherFactory.getInstance();
         DateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
-	for( Vector rowVector : tableVector ){
-	    rowIndex++;
-        newElem = (UserPolicyRule) rowVector.elementAt(18);
+        for( Vector rowVector : tableVector ){
+            rowIndex++;
+            newElem = (UserPolicyRule) rowVector.elementAt(18);
 
-        boolean isLive = (Boolean) rowVector.elementAt(3);
-        newElem.setLive( isLive );
-	    Policy policy = policyNames.get((String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem());
-        newElem.setPolicy( policy );
-	    boolean isInbound = ((String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem()).contains(INBOUND_STRING);
-        newElem.setInbound( isInbound );
-        
-        newElem.setClientIntf( (IntfMatcher)((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem() );
-        newElem.setServerIntf( (IntfMatcher)((ComboBoxModel)rowVector.elementAt(6)).getSelectedItem() );
-            
-        if( newElem.getClientIntf() == newElem.getServerIntf() )
-            throw new Exception("In row: " + rowIndex + ". The \"client interface\" cannot match the \"server interface\"");
-            
-	    try{ newElem.setProtocol( ProtocolMatcherFactory.parse(((ComboBoxModel) rowVector.elementAt(7)).getSelectedItem().toString()) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"protocol\" in row: " + rowIndex); }	   
-	    try{ newElem.setClientAddr( ipmf.parse((String) rowVector.elementAt(8)) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"client address\" in row: " + rowIndex); }
-	    try{ newElem.setServerAddr( ipmf.parse((String) rowVector.elementAt(9)) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"server address\" in row: " + rowIndex); }
-	    try{ newElem.setClientPort( pmf.parse((String) rowVector.elementAt(10)) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"client port\" in row: " + rowIndex); }
-	    try{ newElem.setServerPort( pmf.parse((String) rowVector.elementAt(11)) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"server port\" in row: " + rowIndex); }
-        try{ newElem.setUser( umf.parse(((UidButtonRunnable) rowVector.elementAt(12)).getUids()) ); }
-        catch(Exception e){ throw new Exception("Invalid \"user name\" in row: " + rowIndex); }
-        boolean invertTime = ((String)((ComboBoxModel)rowVector.elementAt(13)).getSelectedItem()).equals(TIME_EXCLUDE);
-        newElem.setInvertEntireDuration(invertTime);
-        try{ newElem.setStartTime( dateFormat.parse((String)rowVector.elementAt(14)) ); }
-        catch(Exception e){ throw new Exception("Invalid \"start time\" in row: " + rowIndex); }
-        try{ newElem.setEndTime( dateFormat.parse((String)rowVector.elementAt(15)) ); }
-        catch(Exception e){ throw new Exception("Invalid \"end time\" in row: " + rowIndex); }
-        if( newElem.getStartTime().compareTo(newElem.getEndTime()) > 0 )
-            throw new Exception("The start time cannot be later than the end time in row: " + rowIndex);
-        try{ newElem.setDayOfWeek( dmf.parse((String)rowVector.elementAt(16)) ); }
-        catch(Exception e){ throw new Exception("Invalid \"days\" in row: " + rowIndex); }
+            boolean isLive = (Boolean) rowVector.elementAt(3);
+            newElem.setLive( isLive );
+            Policy policy = policyNames.get((String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem());
+            newElem.setPolicy( policy );
+            boolean isInbound = ((String) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem()).contains(INBOUND_STRING);
+            newElem.setInbound( isInbound );
+
+            newElem.setClientIntf( (IntfMatcher)((ComboBoxModel)rowVector.elementAt(5)).getSelectedItem() );
+            newElem.setServerIntf( (IntfMatcher)((ComboBoxModel)rowVector.elementAt(6)).getSelectedItem() );
+
+            if( newElem.getClientIntf() == newElem.getServerIntf() )
+                throw new Exception("In row: " + rowIndex + ". The \"client interface\" cannot match the \"server interface\"");
+
+            try{ newElem.setProtocol( ProtocolMatcherFactory.parse(((ComboBoxModel) rowVector.elementAt(7)).getSelectedItem().toString()) ); }
+            catch(Exception e){ throw new Exception("Invalid \"protocol\" in row: " + rowIndex); }
+            try{ newElem.setClientAddr( ipmf.parse((String) rowVector.elementAt(8)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"client address\" in row: " + rowIndex); }
+            try{ newElem.setServerAddr( ipmf.parse((String) rowVector.elementAt(9)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"server address\" in row: " + rowIndex); }
+            try{ newElem.setClientPort( pmf.parse((String) rowVector.elementAt(10)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"client port\" in row: " + rowIndex); }
+            try{ newElem.setServerPort( pmf.parse((String) rowVector.elementAt(11)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"server port\" in row: " + rowIndex); }
+            try{ newElem.setUser( umf.parse(((UidButtonRunnable) rowVector.elementAt(12)).getUids()) ); }
+            catch(Exception e){ throw new Exception("Invalid \"user name\" in row: " + rowIndex); }
+            boolean invertTime = ((String)((ComboBoxModel)rowVector.elementAt(13)).getSelectedItem()).equals(TIME_EXCLUDE);
+            newElem.setInvertEntireDuration(invertTime);
+            try{ newElem.setStartTime( dateFormat.parse((String)rowVector.elementAt(14)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"start time\" in row: " + rowIndex); }
+            try{ newElem.setEndTime( dateFormat.parse((String)rowVector.elementAt(15)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"end time\" in row: " + rowIndex); }
+            if( newElem.getStartTime().compareTo(newElem.getEndTime()) > 0 )
+                throw new Exception("The start time cannot be later than the end time in row: " + rowIndex);
+            try{ newElem.setDayOfWeek( dmf.parse((String)rowVector.elementAt(16)) ); }
+            catch(Exception e){ throw new Exception("Invalid \"days\" in row: " + rowIndex); }
             newElem.setDescription( (String) rowVector.elementAt(17) );
             elemList.add(newElem);
-    }
-    
-    
-    
+        }
 
-	// SAVE SETTINGS /////////
-	if( !validateOnly ){
-        PolicyConfiguration policyConfiguration = policyCompoundSettings.getPolicyConfiguration();
-        policyConfiguration.setUserPolicyRules( elemList );
-	}
+
+
+
+        // SAVE SETTINGS /////////
+        if( !validateOnly ){
+            PolicyConfiguration policyConfiguration = policyCompoundSettings.getPolicyConfiguration();
+            policyConfiguration.setUserPolicyRules( elemList );
+        }
     }
 
     public Vector<Vector> generateRows(PolicyCompoundSettings policyCompoundSettings){
 
-	PolicyConfiguration policyConfiguration = policyCompoundSettings.getPolicyConfiguration();
-	List<UserPolicyRule> userPolicyRules = (List<UserPolicyRule>) policyConfiguration.getUserPolicyRules();
-    Vector<Vector> allRows = new Vector<Vector>(userPolicyRules.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
+        PolicyConfiguration policyConfiguration = policyCompoundSettings.getPolicyConfiguration();
+        List<UserPolicyRule> userPolicyRules = (List<UserPolicyRule>) policyConfiguration.getUserPolicyRules();
+        Vector<Vector> allRows = new Vector<Vector>(userPolicyRules.size());
+        Vector tempRow = null;
+        int rowIndex = 0;
 
-    IntfDBMatcher intfEnumeration[] = IntfMatcherFactory.getInstance().getEnumeration();
-    
-    DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+        IntfDBMatcher intfEnumeration[] = IntfMatcherFactory.getInstance().getEnumeration();
 
-	updatePolicyNames( policyConfiguration.getPolicies() );
-	updatePolicyModel();
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm");
 
-	for( UserPolicyRule newElem : userPolicyRules ){
-	    rowIndex++;
-	    tempRow = new Vector(19);
-	    tempRow.add( super.ROW_SAVED );
-	    tempRow.add( rowIndex );
-        EditButtonRunnable editButtonRunnable = new EditButtonRunnable("true");
-        editButtonRunnable.setRow( tempRow );
-        tempRow.add( editButtonRunnable );
-        tempRow.add( newElem.isLive() );
-	    String policyName;
-	    if( newElem.getPolicy() != null )
-            policyName = newElem.getPolicy().getName() + (newElem.isInbound()?INBOUND_STRING:OUTBOUND_STRING);
-	    else
-            policyName = NULL_STRING;
-	    tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(), policyName) );
-        tempRow.add( super.generateComboBoxModel(intfEnumeration, newElem.getClientIntf()) );
-        tempRow.add( super.generateComboBoxModel(intfEnumeration, newElem.getServerIntf()) );
-	    tempRow.add( super.generateComboBoxModel(ProtocolMatcherFactory.getProtocolEnumeration(), newElem.getProtocol()) );
-	    tempRow.add( newElem.getClientAddr().toString() );
-	    tempRow.add( newElem.getServerAddr().toString() );
-	    tempRow.add( newElem.getClientPort().toString() );
-	    tempRow.add( newElem.getServerPort().toString() );
-        UidButtonRunnable uidButtonRunnable = new UidButtonRunnable("true");
-        uidButtonRunnable.setUid( newElem.getUser().toString() );
-        tempRow.add( uidButtonRunnable );
-        tempRow.add( super.copyComboBoxModel(timeModel) );
-        tempRow.add( dateFormat.format(newElem.getStartTime()) );
-        tempRow.add( dateFormat.format(newElem.getEndTime()) );
-        tempRow.add( newElem.getDayOfWeek().toString() );
-	    tempRow.add( newElem.getDescription() );
-	    tempRow.add( newElem );
-	    allRows.add( tempRow );
-	}
+        updatePolicyNames( policyConfiguration.getPolicies() );
+        updatePolicyModel();
+
+        for( UserPolicyRule newElem : userPolicyRules ){
+            rowIndex++;
+            tempRow = new Vector(19);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            EditButtonRunnable editButtonRunnable = new EditButtonRunnable("true");
+            editButtonRunnable.setRow( tempRow );
+            tempRow.add( editButtonRunnable );
+            tempRow.add( newElem.isLive() );
+            String policyName;
+            if( newElem.getPolicy() != null )
+                policyName = newElem.getPolicy().getName() + (newElem.isInbound()?INBOUND_STRING:OUTBOUND_STRING);
+            else
+                policyName = NULL_STRING;
+            tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(), policyName) );
+            tempRow.add( super.generateComboBoxModel(intfEnumeration, newElem.getClientIntf()) );
+            tempRow.add( super.generateComboBoxModel(intfEnumeration, newElem.getServerIntf()) );
+            tempRow.add( super.generateComboBoxModel(ProtocolMatcherFactory.getProtocolEnumeration(), newElem.getProtocol()) );
+            tempRow.add( newElem.getClientAddr().toString() );
+            tempRow.add( newElem.getServerAddr().toString() );
+            tempRow.add( newElem.getClientPort().toString() );
+            tempRow.add( newElem.getServerPort().toString() );
+            UidButtonRunnable uidButtonRunnable = new UidButtonRunnable("true");
+            uidButtonRunnable.setUid( newElem.getUser().toString() );
+            tempRow.add( uidButtonRunnable );
+            tempRow.add( super.copyComboBoxModel(timeModel) );
+            tempRow.add( dateFormat.format(newElem.getStartTime()) );
+            tempRow.add( dateFormat.format(newElem.getEndTime()) );
+            tempRow.add( newElem.getDayOfWeek().toString() );
+            tempRow.add( newElem.getDescription() );
+            tempRow.add( newElem );
+            allRows.add( tempRow );
+        }
 
         return allRows;
     }

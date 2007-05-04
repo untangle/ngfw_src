@@ -75,22 +75,22 @@ public class PatternFactory {
          * -----
          */
         /* 1) When you use an escape sequence in a String literal,
-            you have to double escape it, that's why \\. is written.
-            But if you happened to read from a file, you must use normal
-            escaping (\.), this double escaping only stands for literals.
+           you have to double escape it, that's why \\. is written.
+           But if you happened to read from a file, you must use normal
+           escaping (\.), this double escaping only stands for literals.
            2) yString.matches("regex") returns true or false depending whether
-             the string can be matched entirely by the regular expression.
-             It is important to remember that String.matches() only returns true
-            if the entire string can be matched.
-         In other words: "regex" is applied as if you had written "^regex$" with
-         start and end of string anchors. This is different from most other
-         regex libraries, where the "quick match test" method returns true if
-         the regex can be matched anywhere in the string. If myString is abc
-         then myString.matches("bc") returns false. bc matches abc,
-         but ^bc$ (which is really being used here) does not.
+           the string can be matched entirely by the regular expression.
+           It is important to remember that String.matches() only returns true
+           if the entire string can be matched.
+           In other words: "regex" is applied as if you had written "^regex$" with
+           start and end of string anchors. This is different from most other
+           regex libraries, where the "quick match test" method returns true if
+           the regex can be matched anywhere in the string. If myString is abc
+           then myString.matches("bc") returns false. bc matches abc,
+           but ^bc$ (which is really being used here) does not.
         */
         /* logger.info("Input String is "+ regex); */
-       return fixFFPattern( regex );
+        return fixFFPattern( regex );
     }
 
     private static String fixFFPattern( String regex )

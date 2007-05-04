@@ -11,22 +11,21 @@
 
 package com.untangle.gui.configuration;
 
-import com.untangle.mvvm.addrbook.*;
-
-import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.gui.transform.*;
-import com.untangle.gui.util.*;
-import com.untangle.mvvm.snmp.*;
-import com.untangle.mvvm.security.*;
-import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.mvvm.user.WMISettings;
-
 import java.awt.*;
-import javax.swing.*;
 import java.net.URL;
 import javax.jnlp.BasicService;
 import javax.jnlp.ServiceManager;
+import javax.swing.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.mvvm.*;
+import com.untangle.mvvm.addrbook.*;
+import com.untangle.mvvm.security.*;
+import com.untangle.mvvm.snmp.*;
+import com.untangle.mvvm.tran.*;
+import com.untangle.mvvm.user.WMISettings;
 
 public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     implements Savable<DirectoryCompoundSettings>, Refreshable<DirectoryCompoundSettings> {
@@ -36,9 +35,9 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private static final String EXCEPTION_HOSTNAME_MISSING = "A \"Hostname\" must be specified if \"Login\" or \"Password\" are specified.";
     private static final String EXCEPTION_DOMAIN_MISSING   = "A \"Search Base\" must be specified.";
     private static final String EXCEPTION_SERVER_ADDRESS   = "You must specify a valid IP address for your Lookup Server.";
-	private static final String EXCEPTION_DOMAIN_PASSWORD  = "A \"Domain Password\" must be specified if a \"Domain Login\" is specified.";
+    private static final String EXCEPTION_DOMAIN_PASSWORD  = "A \"Domain Password\" must be specified if a \"Domain Login\" is specified.";
     private static final String EXCEPTION_DOMAIN_LOGIN     = "A \"Domain Login\" must be specified if a \"Domain Password\" is specified.";
-	
+
     public DirectoryRemoteADJPanel() {
         initComponents();
         Util.setPortView(portJSpinner, 25);
@@ -50,78 +49,78 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         Util.addFocusHighlight(baseJTextField);
         Util.addFocusHighlight(orgJTextField);
         Util.addFocusHighlight(serverIPJTextField);
-		Util.addFocusHighlight(domainLoginJTextField);
-		Util.addFocusHighlight(domainPasswordJPasswordField);
+        Util.addFocusHighlight(domainLoginJTextField);
+        Util.addFocusHighlight(domainPasswordJPasswordField);
         Util.addFocusHighlight(urlJTextArea);
     }
 
     // SETTINGS CHANGE NOTIFICATION /////////
     private SettingsChangedListener settingsChangedListener;
     public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
-	this.settingsChangedListener = settingsChangedListener;
+        this.settingsChangedListener = settingsChangedListener;
     }
     ///////////////////////////////////////////
-	
+
     public void doSave(DirectoryCompoundSettings directoryCompoundSettings, boolean validateOnly) throws Exception {
 
-	// ENABLED //
-	boolean enabled = adEnabledJRadioButton.isSelected();
+        // ENABLED //
+        boolean enabled = adEnabledJRadioButton.isSelected();
 
-	// HOSTNAME ///////
-	String host = hostJTextField.getText();
+        // HOSTNAME ///////
+        String host = hostJTextField.getText();
 
-	// PORT //////
-	int port = 0;
-	if( enabled ){
-	    ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
-	    try{ portJSpinner.commitEdit(); }
-	    catch(Exception e){ 
-		((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
-		throw new Exception(Util.EXCEPTION_PORT_RANGE);
-	    }
-	    port = (Integer) portJSpinner.getValue();
-	}
+        // PORT //////
+        int port = 0;
+        if( enabled ){
+            ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+            try{ portJSpinner.commitEdit(); }
+            catch(Exception e){
+                ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+                throw new Exception(Util.EXCEPTION_PORT_RANGE);
+            }
+            port = (Integer) portJSpinner.getValue();
+        }
 
-	// LOGIN /////
-	String login = loginJTextField.getText();
+        // LOGIN /////
+        String login = loginJTextField.getText();
 
-	// PASSWORD /////
-	String password = new String(passwordJPasswordField.getPassword());
+        // PASSWORD /////
+        String password = new String(passwordJPasswordField.getPassword());
 
-    // DOMAIN /////
-    String domain = baseJTextField.getText();
+        // DOMAIN /////
+        String domain = baseJTextField.getText();
 
-	// ORG //
-	String org = orgJTextField.getText();
+        // ORG //
+        String org = orgJTextField.getText();
 
-	if( enabled ){
-	    // CHECK THAT BOTH PASSWORD AND LOGIN ARE FILLED OR UNFILLED /////
-	    passwordJPasswordField.setBackground( Color.WHITE );
-	    loginJTextField.setBackground( Color.WHITE );
-	    if( (login.length() > 0) && (password.length() == 0) ){
-		passwordJPasswordField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-		throw new Exception(EXCEPTION_PASSWORD_MISSING);
-	    }
-	    else if( (login.length() == 0) && (password.length() > 0) ){
-		loginJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-		throw new Exception(EXCEPTION_LOGIN_MISSING);
-	    }
-	    
-	    // CHECK THAT IF EITHER LOGIN OR PASSWORD ARE FILLED, A HOSTNAME IS GIVEN
-	    hostJTextField.setBackground( Color.WHITE );
-	    if( (login.length() > 0) && (password.length() > 0) && (host.length() == 0) ){
-		hostJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-		throw new Exception(EXCEPTION_HOSTNAME_MISSING);
-	    }
-	    
-	    // CHECK THAT A DOMAIN IS SUPPLIED
-	    baseJTextField.setBackground( Color.WHITE );
-	    if( domain.length() == 0 ){
-		baseJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-		throw new Exception(EXCEPTION_DOMAIN_MISSING);
-	    }
-    }
-        
+        if( enabled ){
+            // CHECK THAT BOTH PASSWORD AND LOGIN ARE FILLED OR UNFILLED /////
+            passwordJPasswordField.setBackground( Color.WHITE );
+            loginJTextField.setBackground( Color.WHITE );
+            if( (login.length() > 0) && (password.length() == 0) ){
+                passwordJPasswordField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                throw new Exception(EXCEPTION_PASSWORD_MISSING);
+            }
+            else if( (login.length() == 0) && (password.length() > 0) ){
+                loginJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                throw new Exception(EXCEPTION_LOGIN_MISSING);
+            }
+
+            // CHECK THAT IF EITHER LOGIN OR PASSWORD ARE FILLED, A HOSTNAME IS GIVEN
+            hostJTextField.setBackground( Color.WHITE );
+            if( (login.length() > 0) && (password.length() > 0) && (host.length() == 0) ){
+                hostJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                throw new Exception(EXCEPTION_HOSTNAME_MISSING);
+            }
+
+            // CHECK THAT A DOMAIN IS SUPPLIED
+            baseJTextField.setBackground( Color.WHITE );
+            if( domain.length() == 0 ){
+                baseJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                throw new Exception(EXCEPTION_DOMAIN_MISSING);
+            }
+        }
+
         // SERVER ENABLED
         boolean serverEnabled = serverEnabledJRadioButton.isSelected();
 
@@ -135,57 +134,57 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
                 throw new Exception(EXCEPTION_SERVER_ADDRESS);
         }
 
-		// DOMAIN LOGIN & PASSWORD
-		boolean domainEnabled = domainJCheckBox.isSelected();
-		String domainLogin = null;
-		String domainPassword = null;
-		domainLoginJTextField.setBackground( Color.WHITE );
-		domainPasswordJPasswordField.setBackground( Color.WHITE );
-		if( enabled && serverEnabled && domainEnabled ){
-			domainLogin = domainLoginJTextField.getText().trim();
-				if(domainLogin.length() == 0){
-					domainLoginJTextField.setBackground(Util.INVALID_BACKGROUND_COLOR);
-					throw new Exception(EXCEPTION_DOMAIN_LOGIN);
-				}
-			domainPassword = new String(domainPasswordJPasswordField.getPassword()).trim();
-				if(domainPassword.length() == 0){
-					domainPasswordJPasswordField.setBackground(Util.INVALID_BACKGROUND_COLOR);
-					throw new Exception(EXCEPTION_DOMAIN_PASSWORD);
-				}
-		}
-		
-		
-	// SAVE SETTINGS ////////////
-	if( !validateOnly ){	    
-	    if( enabled ){
-		directoryCompoundSettings.setAddressBookConfiguration( AddressBookConfiguration.AD_AND_LOCAL );
-		RepositorySettings repositorySettings = directoryCompoundSettings.getAddressBookSettings().getADRepositorySettings();		
-		repositorySettings.setSuperuser( login );
-		repositorySettings.setSuperuserPass( password );
-		repositorySettings.setLDAPHost( host );
-		repositorySettings.setLDAPPort( port );
-		repositorySettings.setDomain( domain );
-		repositorySettings.setOUFilter( org );
-        
+        // DOMAIN LOGIN & PASSWORD
+        boolean domainEnabled = domainJCheckBox.isSelected();
+        String domainLogin = null;
+        String domainPassword = null;
+        domainLoginJTextField.setBackground( Color.WHITE );
+        domainPasswordJPasswordField.setBackground( Color.WHITE );
+        if( enabled && serverEnabled && domainEnabled ){
+            domainLogin = domainLoginJTextField.getText().trim();
+            if(domainLogin.length() == 0){
+                domainLoginJTextField.setBackground(Util.INVALID_BACKGROUND_COLOR);
+                throw new Exception(EXCEPTION_DOMAIN_LOGIN);
+            }
+            domainPassword = new String(domainPasswordJPasswordField.getPassword()).trim();
+            if(domainPassword.length() == 0){
+                domainPasswordJPasswordField.setBackground(Util.INVALID_BACKGROUND_COLOR);
+                throw new Exception(EXCEPTION_DOMAIN_PASSWORD);
+            }
+        }
+
+
+        // SAVE SETTINGS ////////////
+        if( !validateOnly ){
+            if( enabled ){
+                directoryCompoundSettings.setAddressBookConfiguration( AddressBookConfiguration.AD_AND_LOCAL );
+                RepositorySettings repositorySettings = directoryCompoundSettings.getAddressBookSettings().getADRepositorySettings();
+                repositorySettings.setSuperuser( login );
+                repositorySettings.setSuperuserPass( password );
+                repositorySettings.setLDAPHost( host );
+                repositorySettings.setLDAPPort( port );
+                repositorySettings.setDomain( domain );
+                repositorySettings.setOUFilter( org );
+
                 WMISettings wmiSettings = directoryCompoundSettings.getWMISettings();
                 wmiSettings.setIsEnabled( serverEnabled );
                 if( serverEnabled ){
                     wmiSettings.setAddress( serverIPaddr );
                     // rbs unecessary: wmiSettings.setPort( wmiPort );
                     // rbs unecessary: wmiSettings.setScheme( "https" );
-					if(domainEnabled){
-							wmiSettings.setUsername( domainLogin );
-							wmiSettings.setPassword( domainPassword );
-					}
-					else{
-							wmiSettings.setUsername( login );
-							wmiSettings.setPassword( password );
-					}
+                    if(domainEnabled){
+                        wmiSettings.setUsername( domainLogin );
+                        wmiSettings.setPassword( domainPassword );
+                    }
+                    else{
+                        wmiSettings.setUsername( login );
+                        wmiSettings.setPassword( password );
+                    }
                 }
-	    }
-	    else{
-		directoryCompoundSettings.setAddressBookConfiguration( AddressBookConfiguration.LOCAL_ONLY );
-	    }
+            }
+            else{
+                directoryCompoundSettings.setAddressBookConfiguration( AddressBookConfiguration.LOCAL_ONLY );
+            }
         }
 
     }
@@ -200,100 +199,100 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private boolean serverEnabledCurrent;
     private String serverAddressCurrent;
     private String serverURLCurrent;
-	private boolean domainEnabledCurrent;
-	private String domainLoginCurrent;
-	private String domainPasswordCurrent;
+    private boolean domainEnabledCurrent;
+    private String domainLoginCurrent;
+    private String domainPasswordCurrent;
 
     public void doRefresh(DirectoryCompoundSettings directoryCompoundSettings){
-	RepositorySettings repositorySettings = directoryCompoundSettings.getAddressBookSettings().getADRepositorySettings();
-	AddressBookConfiguration addressBookConfiguration = directoryCompoundSettings.getAddressBookConfiguration();
+        RepositorySettings repositorySettings = directoryCompoundSettings.getAddressBookSettings().getADRepositorySettings();
+        AddressBookConfiguration addressBookConfiguration = directoryCompoundSettings.getAddressBookConfiguration();
 
-	// AD ENABLED //
-	enabledCurrent = addressBookConfiguration.equals( AddressBookConfiguration.AD_AND_LOCAL );
-	if( enabledCurrent )
-	    adEnabledJRadioButton.setSelected( true );
-	else
-	    adDisabledJRadioButton.setSelected( true );
-	adEnabledDependency( enabledCurrent );
-	Util.addSettingChangeListener(settingsChangedListener, this, adEnabledJRadioButton);
-	Util.addSettingChangeListener(settingsChangedListener, this, adDisabledJRadioButton);
+        // AD ENABLED //
+        enabledCurrent = addressBookConfiguration.equals( AddressBookConfiguration.AD_AND_LOCAL );
+        if( enabledCurrent )
+            adEnabledJRadioButton.setSelected( true );
+        else
+            adDisabledJRadioButton.setSelected( true );
+        adEnabledDependency( enabledCurrent );
+        Util.addSettingChangeListener(settingsChangedListener, this, adEnabledJRadioButton);
+        Util.addSettingChangeListener(settingsChangedListener, this, adDisabledJRadioButton);
 
-	// HOST /////
-	hostCurrent = repositorySettings.getLDAPHost();
-	hostJTextField.setText( hostCurrent );
-	hostJTextField.setBackground( Color.WHITE );
-	Util.addSettingChangeListener(settingsChangedListener, this, hostJTextField);
+        // HOST /////
+        hostCurrent = repositorySettings.getLDAPHost();
+        hostJTextField.setText( hostCurrent );
+        hostJTextField.setBackground( Color.WHITE );
+        Util.addSettingChangeListener(settingsChangedListener, this, hostJTextField);
 
-	// PORT /////
-	portCurrent = repositorySettings.getLDAPPort();
-	portJSpinner.setValue( portCurrent );
-	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(portCurrent));
-	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
-	Util.addSettingChangeListener(settingsChangedListener, this, portJSpinner);
+        // PORT /////
+        portCurrent = repositorySettings.getLDAPPort();
+        portJSpinner.setValue( portCurrent );
+        ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(portCurrent));
+        ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+        Util.addSettingChangeListener(settingsChangedListener, this, portJSpinner);
 
-	// LOGIN //////
-	loginCurrent = repositorySettings.getSuperuser();
-	loginJTextField.setText( loginCurrent );
-	loginJTextField.setBackground( Color.WHITE );
-	Util.addSettingChangeListener(settingsChangedListener, this, loginJTextField);
+        // LOGIN //////
+        loginCurrent = repositorySettings.getSuperuser();
+        loginJTextField.setText( loginCurrent );
+        loginJTextField.setBackground( Color.WHITE );
+        Util.addSettingChangeListener(settingsChangedListener, this, loginJTextField);
 
-	// PASSWORD /////
-	passwordCurrent = repositorySettings.getSuperuserPass();
-	passwordJPasswordField.setText( passwordCurrent );
-	passwordJPasswordField.setBackground( Color.WHITE );
-	Util.addSettingChangeListener(settingsChangedListener, this, passwordJPasswordField);
+        // PASSWORD /////
+        passwordCurrent = repositorySettings.getSuperuserPass();
+        passwordJPasswordField.setText( passwordCurrent );
+        passwordJPasswordField.setBackground( Color.WHITE );
+        Util.addSettingChangeListener(settingsChangedListener, this, passwordJPasswordField);
 
-	// DOMAIN //////
-	domainCurrent = repositorySettings.getDomain();
-	baseJTextField.setText( domainCurrent );	
-	baseJTextField.setBackground( Color.WHITE );
-	Util.addSettingChangeListener(settingsChangedListener, this, baseJTextField);
+        // DOMAIN //////
+        domainCurrent = repositorySettings.getDomain();
+        baseJTextField.setText( domainCurrent );
+        baseJTextField.setBackground( Color.WHITE );
+        Util.addSettingChangeListener(settingsChangedListener, this, baseJTextField);
 
-	// ORG //
-	orgCurrent = repositorySettings.getOUFilter();
-	orgJTextField.setText( orgCurrent );
-	orgJTextField.setBackground( Color.WHITE );
-	Util.addSettingChangeListener(settingsChangedListener, this, orgJTextField);
+        // ORG //
+        orgCurrent = repositorySettings.getOUFilter();
+        orgJTextField.setText( orgCurrent );
+        orgJTextField.setBackground( Color.WHITE );
+        Util.addSettingChangeListener(settingsChangedListener, this, orgJTextField);
 
-    // SERVER ENABLED
-	serverEnabledCurrent = directoryCompoundSettings.getWMISettings().getIsEnabled();
-	if( serverEnabledCurrent )
-	    serverEnabledJRadioButton.setSelected( true );
-	else
-	    serverDisabledJRadioButton.setSelected( true );
-	serverEnabledDependency( enabledCurrent && serverEnabledCurrent );
-	Util.addSettingChangeListener(settingsChangedListener, this, serverEnabledJRadioButton);
-	Util.addSettingChangeListener(settingsChangedListener, this, serverDisabledJRadioButton);
-    
-    // SERVER ADDRESS
-    serverAddressCurrent = directoryCompoundSettings.getWMISettings().getAddress().toString();
-    serverIPJTextField.setText( serverAddressCurrent );
-    serverIPJTextField.setBackground( Color.WHITE );
-	Util.addSettingChangeListener(settingsChangedListener, this, serverIPJTextField);
+        // SERVER ENABLED
+        serverEnabledCurrent = directoryCompoundSettings.getWMISettings().getIsEnabled();
+        if( serverEnabledCurrent )
+            serverEnabledJRadioButton.setSelected( true );
+        else
+            serverDisabledJRadioButton.setSelected( true );
+        serverEnabledDependency( enabledCurrent && serverEnabledCurrent );
+        Util.addSettingChangeListener(settingsChangedListener, this, serverEnabledJRadioButton);
+        Util.addSettingChangeListener(settingsChangedListener, this, serverDisabledJRadioButton);
 
-	// DOMAIN LOGIN & PASSWORD
-	domainLoginCurrent = directoryCompoundSettings.getWMISettings().getUsername();
-	domainPasswordCurrent = directoryCompoundSettings.getWMISettings().getPassword();
-	if( (domainLoginCurrent.equals(loginCurrent))&&(domainPasswordCurrent.equals(passwordCurrent)) )
-		domainEnabledCurrent = false;
-	else
-		domainEnabledCurrent = true;
-	domainJCheckBox.setSelected(domainEnabledCurrent);
-	Util.addSettingChangeListener(settingsChangedListener, this, domainJCheckBox);
-    domainEnabledDependency( enabledCurrent && serverEnabledCurrent && domainEnabledCurrent);
-	domainLoginJTextField.setText(domainLoginCurrent);
-	domainLoginJTextField.setBackground(Color.WHITE);
-	Util.addSettingChangeListener(settingsChangedListener, this, domainLoginJTextField);
-	domainPasswordJPasswordField.setText(domainPasswordCurrent);
-	domainPasswordJPasswordField.setBackground(Color.WHITE);
-	Util.addSettingChangeListener(settingsChangedListener, this, domainPasswordJPasswordField);
-	
-    // SERVER URL
-    serverURLCurrent = directoryCompoundSettings.getWMISettings().getUrl();
-    urlJTextArea.setText( serverURLCurrent );
+        // SERVER ADDRESS
+        serverAddressCurrent = directoryCompoundSettings.getWMISettings().getAddress().toString();
+        serverIPJTextField.setText( serverAddressCurrent );
+        serverIPJTextField.setBackground( Color.WHITE );
+        Util.addSettingChangeListener(settingsChangedListener, this, serverIPJTextField);
+
+        // DOMAIN LOGIN & PASSWORD
+        domainLoginCurrent = directoryCompoundSettings.getWMISettings().getUsername();
+        domainPasswordCurrent = directoryCompoundSettings.getWMISettings().getPassword();
+        if( (domainLoginCurrent.equals(loginCurrent))&&(domainPasswordCurrent.equals(passwordCurrent)) )
+            domainEnabledCurrent = false;
+        else
+            domainEnabledCurrent = true;
+        domainJCheckBox.setSelected(domainEnabledCurrent);
+        Util.addSettingChangeListener(settingsChangedListener, this, domainJCheckBox);
+        domainEnabledDependency( enabledCurrent && serverEnabledCurrent && domainEnabledCurrent);
+        domainLoginJTextField.setText(domainLoginCurrent);
+        domainLoginJTextField.setBackground(Color.WHITE);
+        Util.addSettingChangeListener(settingsChangedListener, this, domainLoginJTextField);
+        domainPasswordJPasswordField.setText(domainPasswordCurrent);
+        domainPasswordJPasswordField.setBackground(Color.WHITE);
+        Util.addSettingChangeListener(settingsChangedListener, this, domainPasswordJPasswordField);
+
+        // SERVER URL
+        serverURLCurrent = directoryCompoundSettings.getWMISettings().getUrl();
+        urlJTextArea.setText( serverURLCurrent );
     }
-    
-    
+
+
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
@@ -369,10 +368,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         adDisabledJRadioButton.setText("<html><b>Disabled</b></html>");
         adDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
         adDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                adDisabledJRadioButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    adDisabledJRadioButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -385,10 +384,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         adEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         adEnabledJRadioButton.setText("<html><b>Enabled</b></html>");
         adEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                adEnabledJRadioButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    adEnabledJRadioButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -404,10 +403,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         helpJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
         helpJButton.setOpaque(false);
         helpJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    helpJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -430,10 +429,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         hostJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
         hostJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
         hostJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                hostJTextFieldCaretUpdate(evt);
-            }
-        });
+                public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                    hostJTextFieldCaretUpdate(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -455,10 +454,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         portJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
         portJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));
         portJSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                portJSpinnerStateChanged(evt);
-            }
-        });
+                public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                    portJSpinnerStateChanged(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -479,10 +478,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         loginJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
         loginJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
         loginJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                loginJTextFieldCaretUpdate(evt);
-            }
-        });
+                public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                    loginJTextFieldCaretUpdate(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -503,10 +502,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         passwordJPasswordField.setMinimumSize(new java.awt.Dimension(150, 19));
         passwordJPasswordField.setPreferredSize(new java.awt.Dimension(150, 19));
         passwordJPasswordField.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                passwordJPasswordFieldCaretUpdate(evt);
-            }
-        });
+                public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                    passwordJPasswordFieldCaretUpdate(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -543,10 +542,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         baseJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
         baseJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
         baseJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                baseJTextFieldCaretUpdate(evt);
-            }
-        });
+                public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                    baseJTextFieldCaretUpdate(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -567,10 +566,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         orgJTextField.setMinimumSize(new java.awt.Dimension(200, 19));
         orgJTextField.setPreferredSize(new java.awt.Dimension(200, 19));
         orgJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-            public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                orgJTextFieldCaretUpdate(evt);
-            }
-        });
+                public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                    orgJTextFieldCaretUpdate(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -618,10 +617,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         adTestJButton.setMinimumSize(null);
         adTestJButton.setPreferredSize(null);
         adTestJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                adTestJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    adTestJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -648,10 +647,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         serverDisabledJRadioButton.setText("<html><b>Disabled</b></html>");
         serverDisabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
         serverDisabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                serverDisabledJRadioButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    serverDisabledJRadioButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -664,10 +663,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         serverEnabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
         serverEnabledJRadioButton.setText("<html><b>Enabled</b></html>");
         serverEnabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                serverEnabledJRadioButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    serverEnabledJRadioButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -715,10 +714,10 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         domainJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
         domainJCheckBox.setText("<html>Use alternative Login and Password below, instead of the Login and Password for your AD server.</html>");
         domainJCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                domainJCheckBoxActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    domainJCheckBoxActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = 2;
@@ -738,12 +737,12 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         domainLoginJTextField.setMinimumSize(new java.awt.Dimension(150, 19));
         domainLoginJTextField.setPreferredSize(new java.awt.Dimension(150, 19));
         domainLoginJTextField.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-                domainLoginJTextFieldCaretPositionChanged(evt);
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-            }
-        });
+                public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+                    domainLoginJTextFieldCaretPositionChanged(evt);
+                }
+                public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -764,12 +763,12 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         domainPasswordJPasswordField.setMinimumSize(new java.awt.Dimension(150, 19));
         domainPasswordJPasswordField.setPreferredSize(new java.awt.Dimension(150, 19));
         domainPasswordJPasswordField.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-                domainPasswordJPasswordFieldCaretPositionChanged(evt);
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-            }
-        });
+                public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+                    domainPasswordJPasswordFieldCaretPositionChanged(evt);
+                }
+                public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -858,154 +857,154 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     }//GEN-END:initComponents
 
     private void helpJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpJButtonActionPerformed
-            try{
-                URL newURL = new URL( "http://www.untangle.com/docs/get.php?"
-                                      + "version=" + Version.getVersion()
-                                      + "&source=active_directory_config");
-                ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
-            }
-            catch(Exception f){
-                Util.handleExceptionNoRestart("Error showing help", f);
-            }
+        try{
+            URL newURL = new URL( "http://www.untangle.com/docs/get.php?"
+                                  + "version=" + Version.getVersion()
+                                  + "&source=active_directory_config");
+            ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
+        }
+        catch(Exception f){
+            Util.handleExceptionNoRestart("Error showing help", f);
+        }
     }//GEN-LAST:event_helpJButtonActionPerformed
 
-		private void domainPasswordJPasswordFieldCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_domainPasswordJPasswordFieldCaretPositionChanged
-				// TODO add your handling code here:
-		}//GEN-LAST:event_domainPasswordJPasswordFieldCaretPositionChanged
+    private void domainPasswordJPasswordFieldCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_domainPasswordJPasswordFieldCaretPositionChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_domainPasswordJPasswordFieldCaretPositionChanged
 
-		private void domainLoginJTextFieldCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_domainLoginJTextFieldCaretPositionChanged
-				// TODO add your handling code here:
-		}//GEN-LAST:event_domainLoginJTextFieldCaretPositionChanged
+    private void domainLoginJTextFieldCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_domainLoginJTextFieldCaretPositionChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_domainLoginJTextFieldCaretPositionChanged
 
-		private void domainJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_domainJCheckBoxActionPerformed
-				domainEnabledDependency(domainJCheckBox.isSelected());
-		}//GEN-LAST:event_domainJCheckBoxActionPerformed
+    private void domainJCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_domainJCheckBoxActionPerformed
+        domainEnabledDependency(domainJCheckBox.isSelected());
+    }//GEN-LAST:event_domainJCheckBoxActionPerformed
 
 
-		private void serverEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverEnabledJRadioButtonActionPerformed
-            serverEnabledDependency(true);        
-		}//GEN-LAST:event_serverEnabledJRadioButtonActionPerformed
+    private void serverEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverEnabledJRadioButtonActionPerformed
+        serverEnabledDependency(true);
+    }//GEN-LAST:event_serverEnabledJRadioButtonActionPerformed
 
-		private void serverDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverDisabledJRadioButtonActionPerformed
-            serverEnabledDependency(false);        
-		}//GEN-LAST:event_serverDisabledJRadioButtonActionPerformed
+    private void serverDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverDisabledJRadioButtonActionPerformed
+        serverEnabledDependency(false);
+    }//GEN-LAST:event_serverDisabledJRadioButtonActionPerformed
 
-		private void orgJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_orgJTextFieldCaretUpdate
-            if( !orgJTextField.getText().trim().equals( orgCurrent ) )
-                ;
-		}//GEN-LAST:event_orgJTextFieldCaretUpdate
+    private void orgJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_orgJTextFieldCaretUpdate
+        if( !orgJTextField.getText().trim().equals( orgCurrent ) )
+            ;
+    }//GEN-LAST:event_orgJTextFieldCaretUpdate
 
-		private class TestThread extends Thread {
-				public TestThread(){
-						setName("MVCLIENT-TestThread");
-						setDaemon(true);
-						start();
-				}
-				public void run(){
-						if( ((MConfigJDialog)DirectoryRemoteADJPanel.this.getTopLevelAncestor()).getSettingsChanged() ){
-							TestSaveSettingsJDialog dialog = new TestSaveSettingsJDialog((JDialog)DirectoryRemoteADJPanel.this.getTopLevelAncestor());
-							if(!dialog.isProceeding())
-								return;
-							
-							if( !((MConfigJDialog)DirectoryRemoteADJPanel.this.getTopLevelAncestor()).saveSettings() )
-                                return;
-						}						
-					try{
-						DirectoryADConnectivityTestJDialog testJDialog = new DirectoryADConnectivityTestJDialog((JDialog)DirectoryRemoteADJPanel.this.getTopLevelAncestor());
-						testJDialog.setVisible(true);
-					}
-					catch(Exception e){
-						try{ Util.handleExceptionWithRestart("Error running AD Test.", e); }
-						catch(Exception f){ Util.handleExceptionNoRestart("Error running AD Test.", f); }
-					}	
-				}
-		}
-		
-		private void adTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adTestJButtonActionPerformed
-            if( Util.getIsDemo() )
-                return;
-			new TestThread();
-		}//GEN-LAST:event_adTestJButtonActionPerformed
+    private class TestThread extends Thread {
+        public TestThread(){
+            setName("MVCLIENT-TestThread");
+            setDaemon(true);
+            start();
+        }
+        public void run(){
+            if( ((MConfigJDialog)DirectoryRemoteADJPanel.this.getTopLevelAncestor()).getSettingsChanged() ){
+                TestSaveSettingsJDialog dialog = new TestSaveSettingsJDialog((JDialog)DirectoryRemoteADJPanel.this.getTopLevelAncestor());
+                if(!dialog.isProceeding())
+                    return;
+
+                if( !((MConfigJDialog)DirectoryRemoteADJPanel.this.getTopLevelAncestor()).saveSettings() )
+                    return;
+            }
+            try{
+                DirectoryADConnectivityTestJDialog testJDialog = new DirectoryADConnectivityTestJDialog((JDialog)DirectoryRemoteADJPanel.this.getTopLevelAncestor());
+                testJDialog.setVisible(true);
+            }
+            catch(Exception e){
+                try{ Util.handleExceptionWithRestart("Error running AD Test.", e); }
+                catch(Exception f){ Util.handleExceptionNoRestart("Error running AD Test.", f); }
+            }
+        }
+    }
+
+    private void adTestJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adTestJButtonActionPerformed
+        if( Util.getIsDemo() )
+            return;
+        new TestThread();
+    }//GEN-LAST:event_adTestJButtonActionPerformed
 
     private void adEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adEnabledJRadioButtonActionPerformed
         adEnabledDependency( true );
     }//GEN-LAST:event_adEnabledJRadioButtonActionPerformed
-    
+
     private void adDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adDisabledJRadioButtonActionPerformed
         adEnabledDependency( false );
     }//GEN-LAST:event_adDisabledJRadioButtonActionPerformed
-    
+
     private void portJSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_portJSpinnerStateChanged
-;
+        ;
     }//GEN-LAST:event_portJSpinnerStateChanged
-    
+
     private void hostJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_hostJTextFieldCaretUpdate
         if( !hostJTextField.getText().trim().equals( hostCurrent ) )
-;
+            ;
     }//GEN-LAST:event_hostJTextFieldCaretUpdate
-    
+
     private void loginJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_loginJTextFieldCaretUpdate
         if( !loginJTextField.getText().trim().equals( loginCurrent ) )
-;
+            ;
     }//GEN-LAST:event_loginJTextFieldCaretUpdate
-    
+
     private void passwordJPasswordFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_passwordJPasswordFieldCaretUpdate
         String password = new String(passwordJPasswordField.getPassword());
         if( !password.trim().equals(passwordCurrent) )
             ;
     }//GEN-LAST:event_passwordJPasswordFieldCaretUpdate
-    
+
     private void baseJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_baseJTextFieldCaretUpdate
         if( !baseJTextField.getText().trim().equals( domainCurrent ) )
             ;
     }//GEN-LAST:event_baseJTextFieldCaretUpdate
-    
+
     private void adEnabledDependency(boolean enabled){
-	hostJTextField.setEnabled( enabled );
-	hostJLabel.setEnabled( enabled );
-	portJSpinner.setEnabled( enabled );
-	portJLabel.setEnabled( enabled );
-	loginJTextField.setEnabled( enabled );
-	loginJLabel.setEnabled( enabled );
-	passwordJPasswordField.setEnabled( enabled );
-	passwordJLabel.setEnabled( enabled );
-	baseJTextField.setEnabled( enabled );
-	baseJLabel.setEnabled( enabled );
-	orgJTextField.setEnabled( enabled );
-	orgJLabel.setEnabled( enabled );
-    orgOptionalJLabel.setEnabled( enabled );
-	adTestJButton.setEnabled( enabled );
-    
-    serverEnabledJRadioButton.setEnabled( enabled );
-    serverDisabledJRadioButton.setEnabled( enabled );
-    if( !enabled )
-        serverEnabledDependency( false );
-    else if( serverEnabledJRadioButton.isSelected() )
-        serverEnabledDependency( true );
+        hostJTextField.setEnabled( enabled );
+        hostJLabel.setEnabled( enabled );
+        portJSpinner.setEnabled( enabled );
+        portJLabel.setEnabled( enabled );
+        loginJTextField.setEnabled( enabled );
+        loginJLabel.setEnabled( enabled );
+        passwordJPasswordField.setEnabled( enabled );
+        passwordJLabel.setEnabled( enabled );
+        baseJTextField.setEnabled( enabled );
+        baseJLabel.setEnabled( enabled );
+        orgJTextField.setEnabled( enabled );
+        orgJLabel.setEnabled( enabled );
+        orgOptionalJLabel.setEnabled( enabled );
+        adTestJButton.setEnabled( enabled );
+
+        serverEnabledJRadioButton.setEnabled( enabled );
+        serverDisabledJRadioButton.setEnabled( enabled );
+        if( !enabled )
+            serverEnabledDependency( false );
+        else if( serverEnabledJRadioButton.isSelected() )
+            serverEnabledDependency( true );
     }
 
-    private void serverEnabledDependency(boolean enabled){        
+    private void serverEnabledDependency(boolean enabled){
         serverJLabel.setEnabled( enabled );
-		messageJLabel.setEnabled( enabled );
+        messageJLabel.setEnabled( enabled );
         serverIPJLabel.setEnabled( enabled );
         serverIPJTextField.setEnabled( enabled );
         urlJLabel.setEnabled( enabled );
         urlJTextArea.setEnabled( enabled );
-		
-		domainJCheckBox.setEnabled(enabled);
-		if( !enabled )
-			domainEnabledDependency(false);
-		else
-			domainEnabledDependency(domainJCheckBox.isSelected());
+
+        domainJCheckBox.setEnabled(enabled);
+        if( !enabled )
+            domainEnabledDependency(false);
+        else
+            domainEnabledDependency(domainJCheckBox.isSelected());
     }
-	
-	private void domainEnabledDependency(boolean enabled){
-		domainLoginJLabel.setEnabled(enabled);
-		domainLoginJTextField.setEnabled(enabled);
-		domainPasswordJLabel.setEnabled(enabled);
-		domainPasswordJPasswordField.setEnabled(enabled);
-	}
-    
+
+    private void domainEnabledDependency(boolean enabled){
+        domainLoginJLabel.setEnabled(enabled);
+        domainLoginJTextField.setEnabled(enabled);
+        domainPasswordJLabel.setEnabled(enabled);
+        domainPasswordJPasswordField.setEnabled(enabled);
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup adButtonGroup;
     public javax.swing.JRadioButton adDisabledJRadioButton;
@@ -1055,6 +1054,6 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
     private javax.swing.JLabel urlJLabel;
     private javax.swing.JTextArea urlJTextArea;
     // End of variables declaration//GEN-END:variables
-    
+
 
 }

@@ -11,12 +11,12 @@
 
 package com.untangle.tran.ftp.gui;
 
-import com.untangle.gui.util.Util;
+import java.awt.Component;
+
 import com.untangle.gui.transform.CompoundSettings;
+import com.untangle.gui.util.Util;
 import com.untangle.tran.ftp.FtpSettings;
 import com.untangle.tran.ftp.FtpTransform;
-
-import java.awt.Component;
 
 public class FtpTransformCompoundSettings implements CompoundSettings {
 
@@ -30,16 +30,16 @@ public class FtpTransformCompoundSettings implements CompoundSettings {
     public Component getGeneralSettingsComponent(){ return generalSettingsComponent; }
 
     public void save() throws Exception {
-	ftpTransform.setFtpSettings(ftpTransformSettings);
+        ftpTransform.setFtpSettings(ftpTransformSettings);
     }
 
     public void refresh() throws Exception {
-	if(ftpTransform == null)
-	    ftpTransform = (FtpTransform) Util.getTransform("ftp-casing");
-	ftpTransformSettings = (FtpSettings) ftpTransform.getFtpSettings();
+        if(ftpTransform == null)
+            ftpTransform = (FtpTransform) Util.getTransform("ftp-casing");
+        ftpTransformSettings = (FtpSettings) ftpTransform.getFtpSettings();
 
-	if(generalSettingsComponent == null)
-	    generalSettingsComponent = Util.getSettingsComponent("com.untangle.tran.ftp.gui.MCasingJPanel", "ftp-casing");
+        if(generalSettingsComponent == null)
+            generalSettingsComponent = Util.getSettingsComponent("com.untangle.tran.ftp.gui.MCasingJPanel", "ftp-casing");
     }
 
     public void validate() throws Exception {

@@ -89,13 +89,13 @@ class MPipeImpl implements MPipe {
     }
 
     /*
-    public void finalize()
-    {
-        if (comwbuf != null) {
-            bufPool.release(comwbuf);
-            comwbuf = null;
-        }
-    }
+      public void finalize()
+      {
+      if (comwbuf != null) {
+      bufPool.release(comwbuf);
+      comwbuf = null;
+      }
+      }
     */
 
     public PipeSpec getPipeSpec()
@@ -182,11 +182,11 @@ class MPipeImpl implements MPipe {
     }
 
     /*
-    public SessionFactory sessionFactory()
-    {
+      public SessionFactory sessionFactory()
+      {
 
-    return sessFact;
-    }
+      return sessFact;
+      }
     */
 
     /**
@@ -256,18 +256,18 @@ class MPipeImpl implements MPipe {
     }
 
     /*
-    public void scheduleTimer(IPSessionImpl session, long delay)
-    {
-        if (disp == null)
-            throw new IllegalStateException("MPipe has not been started");
-        disp.scheduleTimer(session, delay);
-    }
+      public void scheduleTimer(IPSessionImpl session, long delay)
+      {
+      if (disp == null)
+      throw new IllegalStateException("MPipe has not been started");
+      disp.scheduleTimer(session, delay);
+      }
 
-    public void cancelTimer(IPSessionImpl session)
-    {
-        if (disp != null)
-            disp.cancelTimer(session);
-    }
+      public void cancelTimer(IPSessionImpl session)
+      {
+      if (disp != null)
+      disp.cancelTimer(session);
+      }
     */
 
     // Object methods ---------------------------------------------------------

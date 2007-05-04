@@ -13,9 +13,8 @@ package com.untangle.tran.util;
 
 import static com.untangle.tran.util.Ascii.*;
 
-import java.nio.ByteBuffer;
-
 import java.io.*;
+import java.nio.ByteBuffer;
 
 public class BufferUtil
 {
@@ -68,7 +67,7 @@ public class BufferUtil
 
         return true;
     }
-    
+
     /**
      * Test if this ByteBuffer ends with the given String
      *
@@ -78,32 +77,32 @@ public class BufferUtil
      * @return true if the buffer ends with the String
      */
     public static boolean endsWith(ByteBuffer buf, String s) {
-      if(buf.remaining() < s.length()) {
-        return false;
-      }
-      final int len = s.length();      
-      final int bufOffset = buf.limit() - len;
-
-      for(int i = 0; i<len; i++) {
-        if(((char) buf.get(i+bufOffset)) != s.charAt(i)) {
-          return false;
+        if(buf.remaining() < s.length()) {
+            return false;
         }
-      }
-      return true;
+        final int len = s.length();
+        final int bufOffset = buf.limit() - len;
+
+        for(int i = 0; i<len; i++) {
+            if(((char) buf.get(i+bufOffset)) != s.charAt(i)) {
+                return false;
+            }
+        }
+        return true;
     }
-    
+
     /**
      * Find the start of the given pattern within the buffer.
      * Returns the index of the start of the pattern (i.e.
      * the index of pattern[offset] within buf).
      */
-    public static int findPattern(final ByteBuffer buf, 
-      final byte[] pattern,
-      final int offset,
-      final int len) {
-        
-      //TODO bscott implement this correctly
-      return findString(buf, new String(pattern, offset, len));
+    public static int findPattern(final ByteBuffer buf,
+                                  final byte[] pattern,
+                                  final int offset,
+                                  final int len) {
+
+        //TODO bscott implement this correctly
+        return findString(buf, new String(pattern, offset, len));
     }
 
 
@@ -142,7 +141,7 @@ public class BufferUtil
 
         return -1;
     }
-    
+
     /**
      * Transfers the contents of the buffer to the given
      * OutputStream
@@ -151,14 +150,14 @@ public class BufferUtil
      * @param out the output stream
      */
     public static void writeBufferToStream(final ByteBuffer buf, final OutputStream out)
-      throws IOException {
-      if(buf.hasArray()) {
-        out.write(buf.array(), buf.arrayOffset() + buf.position(), buf.remaining());
-      }
-      else {
-        while(buf.hasRemaining()) {
-          out.write(buf.get());
+        throws IOException {
+        if(buf.hasArray()) {
+            out.write(buf.array(), buf.arrayOffset() + buf.position(), buf.remaining());
         }
-      }
+        else {
+            while(buf.hasRemaining()) {
+                out.write(buf.get());
+            }
+        }
     }
 }

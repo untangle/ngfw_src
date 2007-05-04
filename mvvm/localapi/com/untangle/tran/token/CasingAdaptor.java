@@ -388,7 +388,7 @@ public class CasingAdaptor extends AbstractEventHandler
             if (ur.isStreamer()) {
                 TCPStreamer ts = new ReleaseTcpStreamer
                     (ur.getTcpStreamer(), release);
-                    return new UnparseResult(ts);
+                return new UnparseResult(ts);
             } else {
                 ByteBuffer[] orig = ur.result();
                 ByteBuffer[] r = new ByteBuffer[orig.length + 1];

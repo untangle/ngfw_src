@@ -11,29 +11,27 @@
 
 package com.untangle.tran.httpblocker.gui;
 
+import java.util.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
+
 import com.untangle.gui.transform.*;
-import com.untangle.gui.pipeline.MPipelineJPanel;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.tran.*;
 import com.untangle.tran.httpblocker.*;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.util.*;
-
-import javax.swing.*;
-import javax.swing.table.*;
-import java.util.*;
-import java.util.List;
-import javax.swing.event.*;
 
 public class PassedClientsConfigJPanel extends MEditTableJPanel {
-    
-    
+
+
     public PassedClientsConfigJPanel() {
         super(true, true);
         super.setInsets(new java.awt.Insets(4, 4, 2, 2));
         super.setTableTitle("Passed Clients");
         super.setDetailsTitle("rule notes");
         super.setAddRemoveEnabled(true);
-        
+
         // create actual table model
         PassedClientsTableModel passedClientsTableModel = new PassedClientsTableModel();
         super.setTableModel( passedClientsTableModel );
@@ -42,7 +40,7 @@ public class PassedClientsConfigJPanel extends MEditTableJPanel {
 
 
 
-class PassedClientsTableModel extends MSortedTableModel<Object>{ 
+class PassedClientsTableModel extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -52,9 +50,9 @@ class PassedClientsTableModel extends MSortedTableModel<Object>{
     private static final int C4_MW = 55; /* pass */
     private static final int C5_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW), 120); /* description */
 
-    
+
     public TableColumnModel getTableColumnModel(){
-        
+
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS);
@@ -67,42 +65,42 @@ class PassedClientsTableModel extends MSortedTableModel<Object>{
         return tableColumnModel;
     }
 
-    
+
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         List elemList = new ArrayList(tableVector.size());
-	IPMaddrRule newElem = null;
-	int rowIndex = 0;
+        IPMaddrRule newElem = null;
+        int rowIndex = 0;
 
-	for( Vector rowVector : tableVector ){
-	    rowIndex++;
+        for( Vector rowVector : tableVector ){
+            rowIndex++;
             newElem = (IPMaddrRule) rowVector.elementAt(6);
             newElem.setCategory( (String) rowVector.elementAt(2) );
             try{
-		IPMaddr newIPMaddr = IPMaddr.parse( ((IPMaddrString) rowVector.elementAt(3)).getString() );
-		newElem.setIpMaddr( newIPMaddr );
-	    }
+                IPMaddr newIPMaddr = IPMaddr.parse( ((IPMaddrString) rowVector.elementAt(3)).getString() );
+                newElem.setIpMaddr( newIPMaddr );
+            }
             catch(Exception e){ throw new Exception("Invalid \"client IP address\" specified in row: " + rowIndex); }
             newElem.setLive( (Boolean) rowVector.elementAt(4) );
             newElem.setDescription( (String) rowVector.elementAt(5) );
-            elemList.add(newElem);  
+            elemList.add(newElem);
         }
-        
+
         // SAVE SETTINGS //////////
-	if( !validateOnly ){
-	    HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-	    httpBlockerSettings.setPassedClients( elemList );
-	}
+        if( !validateOnly ){
+            HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
+            httpBlockerSettings.setPassedClients( elemList );
+        }
 
     }
-    
-    public Vector<Vector> generateRows(Object settings){
-	HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-	List<IPMaddrRule> passedClients = (List<IPMaddrRule>) httpBlockerSettings.getPassedClients();
-        Vector<Vector> allRows = new Vector<Vector>(passedClients.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
 
-	for( IPMaddrRule newElem : passedClients ){
+    public Vector<Vector> generateRows(Object settings){
+        HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
+        List<IPMaddrRule> passedClients = (List<IPMaddrRule>) httpBlockerSettings.getPassedClients();
+        Vector<Vector> allRows = new Vector<Vector>(passedClients.size());
+        Vector tempRow = null;
+        int rowIndex = 0;
+
+        for( IPMaddrRule newElem : passedClients ){
             rowIndex++;
             tempRow = new Vector(7);
             tempRow.add( super.ROW_SAVED );
@@ -111,11 +109,11 @@ class PassedClientsTableModel extends MSortedTableModel<Object>{
             tempRow.add( new IPMaddrString(newElem.getIpMaddr()) );
             tempRow.add( newElem.isLive() );
             tempRow.add( newElem.getDescription() );
-	    tempRow.add( newElem );
+            tempRow.add( newElem );
             allRows.add( tempRow );
         }
         return allRows;
     }
-    
-    
+
+
 }

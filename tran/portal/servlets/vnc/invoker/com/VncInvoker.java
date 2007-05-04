@@ -51,8 +51,8 @@ public class VncInvoker implements SocketFactory {
     }
 
     public Socket createSocket(String host, int port, java.applet.Applet applet)
-      throws IOException {
-      throw new IOException("Not yet supported");
+        throws IOException {
+        throw new IOException("Not yet supported");
     }
 
     public Socket createSocket(String host, int port, String[] args)

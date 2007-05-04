@@ -97,4 +97,4 @@ public interface LocalPortalManager
 
     // Need this for webapps to bling
     void incrementStatCounter(int num);
- }
+}

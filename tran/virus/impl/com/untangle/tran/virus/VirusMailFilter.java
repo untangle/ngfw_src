@@ -25,9 +25,9 @@ public class VirusMailFilter implements SimpleEventFilter<VirusEvent>
     VirusMailFilter(String vendorName)
     {
         warmQuery = "FROM VirusMailEvent evt "
-        + "WHERE evt.vendorName = '" + vendorName + "' "
-        + "AND evt.messageInfo.pipelineEndpoints.policy = :policy "
-        + "ORDER BY evt.timeStamp DESC";
+            + "WHERE evt.vendorName = '" + vendorName + "' "
+            + "AND evt.messageInfo.pipelineEndpoints.policy = :policy "
+            + "ORDER BY evt.timeStamp DESC";
     }
 
     // SimpleEventFilter methods ----------------------------------------------

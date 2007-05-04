@@ -18,12 +18,12 @@ import com.untangle.tran.mail.papi.quarantine.InboxRecordCursor;
  *
  */
 public final class InboxNumRecordsTag extends SingleValueTag {
-  @Override
-  protected String getValue() {
-    InboxRecordCursor iCursor = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
-    try {
-        return Long.toString(iCursor == null ? 0 : iCursor.inboxCount()) + " mails";
+    @Override
+    protected String getValue() {
+        InboxRecordCursor iCursor = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
+        try {
+            return Long.toString(iCursor == null ? 0 : iCursor.inboxCount()) + " mails";
+        }
+        catch(Exception ex) { return "<unknown> mails"; }
     }
-    catch(Exception ex) { return "<unknown> mails"; }
-  }
 }

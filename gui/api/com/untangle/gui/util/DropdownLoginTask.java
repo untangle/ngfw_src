@@ -12,19 +12,19 @@
 
 package com.untangle.gui.util;
 
-import com.untangle.gui.login.MLoginJFrame;
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import com.untangle.gui.login.MLoginJFrame;
+
 public class DropdownLoginTask implements ActionListener {
-    
+
     // CONSTANTS ////////////////////
     private static final int STEPS = 10;
     private static final int STEP_DELAY = 100;
     /////////////////////////////////
-    
+
     private MLoginJFrame mLoginJFrame;
     private Timer dropdownTask;
     private Window parentWindow;
@@ -35,60 +35,60 @@ public class DropdownLoginTask implements ActionListener {
     private int currentY;
 
     public DropdownLoginTask(MLoginJFrame mLoginJFrame, JComponent childComponent){
-	this.mLoginJFrame = mLoginJFrame;
-	this.childComponent = childComponent;
-	this.minDimension = childComponent.getMinimumSize();
-	this.maxDimension = childComponent.getMaximumSize();
-	dropdownTask = new Timer(STEP_DELAY, this);
+        this.mLoginJFrame = mLoginJFrame;
+        this.childComponent = childComponent;
+        this.minDimension = childComponent.getMinimumSize();
+        this.maxDimension = childComponent.getMaximumSize();
+        dropdownTask = new Timer(STEP_DELAY, this);
     }
 
     public void start(boolean goingDown){
-	this.goingDown = goingDown;
+        this.goingDown = goingDown;
         if(goingDown){
-	    currentStep = 0;
+            currentStep = 0;
         }
         else{
-	    currentStep = STEPS -1;
+            currentStep = STEPS -1;
         }
-	dropdownTask.start();
+        dropdownTask.start();
     }
 
     public void actionPerformed(ActionEvent evt){
 
-	if( goingDown ){
-	    if( currentStep == 0 ){
-	    }
-	    else if( (currentStep>0) && (currentStep<STEPS-1) ){
-		updatePanelPosition();
-	    }
-	    else{ //( currentStep == STEPS-1 )
-		updatePanelPosition();
-		mLoginJFrame.setInputsEnabled(true);
-		dropdownTask.stop();
-		return;
-	    }
-	    currentStep++;
-	}
-	else{
-	    currentStep--;
-	    if( currentStep == STEPS-1 ){
-		updatePanelPosition();
-	    }
-	    else if( (currentStep<STEPS-1) && (currentStep>-1) ){
-		updatePanelPosition();
-	    }
-	    else{ // (currentStep==-1)
-		dropdownTask.stop();
-		return;
-	    }
-	}
+        if( goingDown ){
+            if( currentStep == 0 ){
+            }
+            else if( (currentStep>0) && (currentStep<STEPS-1) ){
+                updatePanelPosition();
+            }
+            else{ //( currentStep == STEPS-1 )
+                updatePanelPosition();
+                mLoginJFrame.setInputsEnabled(true);
+                dropdownTask.stop();
+                return;
+            }
+            currentStep++;
+        }
+        else{
+            currentStep--;
+            if( currentStep == STEPS-1 ){
+                updatePanelPosition();
+            }
+            else if( (currentStep<STEPS-1) && (currentStep>-1) ){
+                updatePanelPosition();
+            }
+            else{ // (currentStep==-1)
+                dropdownTask.stop();
+                return;
+            }
+        }
     }
-    
+
     private void updatePanelPosition(){
-	currentY = (int) (minDimension.height + (((float)(maxDimension.height - minDimension.height))/((float)STEPS-1))*(float)currentStep);
-	childComponent.setPreferredSize(new Dimension(childComponent.getWidth(), currentY));
-	mLoginJFrame.pack();
-	mLoginJFrame.repaint();
+        currentY = (int) (minDimension.height + (((float)(maxDimension.height - minDimension.height))/((float)STEPS-1))*(float)currentStep);
+        childComponent.setPreferredSize(new Dimension(childComponent.getWidth(), currentY));
+        mLoginJFrame.pack();
+        mLoginJFrame.repaint();
     }
 
 }

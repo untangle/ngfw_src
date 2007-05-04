@@ -11,21 +11,20 @@
 
 package com.untangle.tran.portal.gui;
 
-import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.util.*;
-import com.untangle.gui.transform.MTransformControlsJPanel;
-import com.untangle.gui.transform.SettingsChangedListener;
-import com.untangle.mvvm.portal.*;
-
-
-import java.awt.Dimension;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Window;
 import java.util.*;
-import javax.swing.table.*;
 import javax.swing.*;
+import javax.swing.table.*;
+
+import com.untangle.gui.transform.MTransformControlsJPanel;
+import com.untangle.gui.transform.SettingsChangedListener;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.gui.widgets.editTable.*;
+import com.untangle.mvvm.portal.*;
 
 
 
@@ -40,24 +39,24 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
     private List<Application> applications;
     private PortalGroup portalGroup;
     private MTransformControlsJPanel mTransformControlsJPanel;
-        
+
     public static GroupSettingsJDialog factory(Window topLevelWindow, PortalGroup portalGroup, MTransformControlsJPanel mTransformControlsJPanel){
-	if( topLevelWindow instanceof Frame )
-	    return new GroupSettingsJDialog((Frame)topLevelWindow, portalGroup, mTransformControlsJPanel);
-	else if( topLevelWindow instanceof Dialog )
-	    return new GroupSettingsJDialog((Dialog)topLevelWindow, portalGroup, mTransformControlsJPanel);
-	else
-	    return null;
+        if( topLevelWindow instanceof Frame )
+            return new GroupSettingsJDialog((Frame)topLevelWindow, portalGroup, mTransformControlsJPanel);
+        else if( topLevelWindow instanceof Dialog )
+            return new GroupSettingsJDialog((Dialog)topLevelWindow, portalGroup, mTransformControlsJPanel);
+        else
+            return null;
     }
 
     public GroupSettingsJDialog(Dialog topLevelDialog, PortalGroup portalGroup, MTransformControlsJPanel mTransformControlsJPanel){
-	super(topLevelDialog);
-	init(portalGroup, mTransformControlsJPanel);
+        super(topLevelDialog);
+        init(portalGroup, mTransformControlsJPanel);
     }
 
     public GroupSettingsJDialog(Frame topLevelFrame, PortalGroup portalGroup, MTransformControlsJPanel mTransformControlsJPanel){
-	super(topLevelFrame);
-	init(portalGroup, mTransformControlsJPanel);
+        super(topLevelFrame);
+        init(portalGroup, mTransformControlsJPanel);
     }
 
     private void init(PortalGroup portalGroup, MTransformControlsJPanel mTransformControlsJPanel){
@@ -67,7 +66,7 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
         //saveJButton.setText("<html><b>Change</b> Settings</html>");
         applications = new Vector<Application>();
     }
-    
+
     protected Dimension getMinSize(){
         return new Dimension(640, 610);
     }
@@ -76,7 +75,7 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
         super.saveAll();
         mTransformControlsJPanel.saveGui();  // XXX a little dangerous because refresh could come before the save... but refresh wouldnt do anything bad.
         //if( settingsChanged )
-        //    mTransformControlsJPanel.setSaveSettingsHintVisible(true);	    
+        //    mTransformControlsJPanel.setSaveSettingsHintVisible(true);
     }
 
     private boolean firstRefresh = true;
@@ -98,29 +97,29 @@ public class GroupSettingsJDialog extends MConfigJDialog implements SettingsChan
     protected void generateGui(){
         this.setTitle(NAME_TITLE + " for " + portalGroup.getName() );
 
-	// GLOBAL BOOKMARKS //
-	JTabbedPane bookmarksJTabbedPane = addTabbedPane(NAME_BOOKMARKS, null);
+        // GLOBAL BOOKMARKS //
+        JTabbedPane bookmarksJTabbedPane = addTabbedPane(NAME_BOOKMARKS, null);
 
-	// OTHER BOOKMARKS //
-	BookmarksJPanel otherBookmarksJPanel = new BookmarksJPanel(portalGroup, applications, "OTHER");
-	bookmarksJTabbedPane.addTab(NAME_OTHER_BOOKMARKS, null, otherBookmarksJPanel);
-	addSavable(NAME_OTHER_BOOKMARKS, otherBookmarksJPanel);
-	addRefreshable(NAME_OTHER_BOOKMARKS, otherBookmarksJPanel);
-	otherBookmarksJPanel.setSettingsChangedListener(this);
+        // OTHER BOOKMARKS //
+        BookmarksJPanel otherBookmarksJPanel = new BookmarksJPanel(portalGroup, applications, "OTHER");
+        bookmarksJTabbedPane.addTab(NAME_OTHER_BOOKMARKS, null, otherBookmarksJPanel);
+        addSavable(NAME_OTHER_BOOKMARKS, otherBookmarksJPanel);
+        addRefreshable(NAME_OTHER_BOOKMARKS, otherBookmarksJPanel);
+        otherBookmarksJPanel.setSettingsChangedListener(this);
 
-	// RDP BOOKMARKS //
-	BookmarksJPanel rdpBookmarksJPanel = new BookmarksJPanel(portalGroup, applications, "RDP");
-	bookmarksJTabbedPane.addTab(NAME_RDP_BOOKMARKS, null, rdpBookmarksJPanel);
-	addSavable(NAME_RDP_BOOKMARKS, rdpBookmarksJPanel);
-	addRefreshable(NAME_RDP_BOOKMARKS, rdpBookmarksJPanel);
-	rdpBookmarksJPanel.setSettingsChangedListener(this);
+        // RDP BOOKMARKS //
+        BookmarksJPanel rdpBookmarksJPanel = new BookmarksJPanel(portalGroup, applications, "RDP");
+        bookmarksJTabbedPane.addTab(NAME_RDP_BOOKMARKS, null, rdpBookmarksJPanel);
+        addSavable(NAME_RDP_BOOKMARKS, rdpBookmarksJPanel);
+        addRefreshable(NAME_RDP_BOOKMARKS, rdpBookmarksJPanel);
+        rdpBookmarksJPanel.setSettingsChangedListener(this);
 
-	// HOME //
-	GroupHomeSettingsJPanel groupHomeSettingsJPanel = new GroupHomeSettingsJPanel(portalGroup);
-	addRefreshable(NAME_HOME, groupHomeSettingsJPanel);
-	addSavable(NAME_HOME, groupHomeSettingsJPanel);
-	addScrollableTab( getMTabbedPane(), NAME_HOME, null, groupHomeSettingsJPanel, false, true);
-	groupHomeSettingsJPanel.setSettingsChangedListener(this);
+        // HOME //
+        GroupHomeSettingsJPanel groupHomeSettingsJPanel = new GroupHomeSettingsJPanel(portalGroup);
+        addRefreshable(NAME_HOME, groupHomeSettingsJPanel);
+        addSavable(NAME_HOME, groupHomeSettingsJPanel);
+        addScrollableTab( getMTabbedPane(), NAME_HOME, null, groupHomeSettingsJPanel, false, true);
+        groupHomeSettingsJPanel.setSettingsChangedListener(this);
     }
 
 }

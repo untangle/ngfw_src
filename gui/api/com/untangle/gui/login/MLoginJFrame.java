@@ -35,7 +35,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
             initComponents();
             Util.addFocusHighlight(loginJTextField);
-            Util.addFocusHighlight(passJPasswordField);           
+            Util.addFocusHighlight(passJPasswordField);
             Util.setMLoginJFrame(MLoginJFrame.this);
             Util.setStatusJProgressBar(statusJProgressBar);
             MLoginJFrame.this.setBounds( Util.generateCenteredBounds((Dialog)null, MLoginJFrame.this.getWidth(), MLoginJFrame.this.getHeight()) );
@@ -52,7 +52,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 loginJTextField.setText("untangledemo");
                 passJPasswordField.setText("untangledemo");
             }
-	    dropdownLoginTask = new DropdownLoginTask(MLoginJFrame.this, contentJPanel);
+            dropdownLoginTask = new DropdownLoginTask(MLoginJFrame.this, contentJPanel);
         }});
     }
 
@@ -85,35 +85,35 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
 
     public void reshowLogin(){
-	if(isVisible())
-	    return;
-	Util.initialize();
+        if(isVisible())
+            return;
+        Util.initialize();
         SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    if(mMainJFrame != null){
-		mMainJFrame.setVisible(false);
-		mMainJFrame.dispose();
-		mMainJFrame = null;
-	    }
-	    MLoginJFrame.this.contentJPanel.setPreferredSize(new Dimension(330,400));
-	    MLoginJFrame.this.pack();
-	    MLoginJFrame.this.setVisible(true);
+            if(mMainJFrame != null){
+                mMainJFrame.setVisible(false);
+                mMainJFrame.dispose();
+                mMainJFrame = null;
+            }
+            MLoginJFrame.this.contentJPanel.setPreferredSize(new Dimension(330,400));
+            MLoginJFrame.this.pack();
+            MLoginJFrame.this.setVisible(true);
         }});
-	setInputsEnabled(true);
+        setInputsEnabled(true);
     }
 
 
     public void setInputsEnabled(final boolean isEnabled){
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    loginJTextField.setEnabled(isEnabled);
-	    passJPasswordField.setEnabled(isEnabled);
-	    serverJTextField.setEnabled(isEnabled);
-	    protocolJTextField.setEnabled(isEnabled);
-	    acceptJButton.setEnabled(isEnabled);
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            loginJTextField.setEnabled(isEnabled);
+            passJPasswordField.setEnabled(isEnabled);
+            serverJTextField.setEnabled(isEnabled);
+            protocolJTextField.setEnabled(isEnabled);
+            acceptJButton.setEnabled(isEnabled);
             if(loginJTextField.getText().length() == 0)
                 loginJTextField.requestFocus();
             else
                 passJPasswordField.requestFocus();
-	}});
+        }});
     }
 
 
@@ -122,268 +122,268 @@ public class MLoginJFrame extends javax.swing.JFrame {
     }
 
 
-        private void initComponents() {//GEN-BEGIN:initComponents
-                java.awt.GridBagConstraints gridBagConstraints;
+    private void initComponents() {//GEN-BEGIN:initComponents
+        java.awt.GridBagConstraints gridBagConstraints;
 
-                contentJPanel = new javax.swing.JPanel();
-                logoLabel = new javax.swing.JLabel();
-                upperBackgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
-                inputJPanel = new javax.swing.JPanel();
-                loginJTextField = new javax.swing.JTextField();
-                passJPasswordField = new javax.swing.JPasswordField();
-                serverJTextField = new javax.swing.JTextField();
-                protocolJTextField = new javax.swing.JTextField();
-                loginJLabel = new javax.swing.JLabel();
-                passJLabel = new javax.swing.JLabel();
-                serverJLabel = new javax.swing.JLabel();
-                protocolJLabel = new javax.swing.JLabel();
-                acceptJButton = new javax.swing.JButton();
-                statusJProgressBar = new javax.swing.JProgressBar();
-                lowerBackgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
+        contentJPanel = new javax.swing.JPanel();
+        logoLabel = new javax.swing.JLabel();
+        upperBackgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
+        inputJPanel = new javax.swing.JPanel();
+        loginJTextField = new javax.swing.JTextField();
+        passJPasswordField = new javax.swing.JPasswordField();
+        serverJTextField = new javax.swing.JTextField();
+        protocolJTextField = new javax.swing.JTextField();
+        loginJLabel = new javax.swing.JLabel();
+        passJLabel = new javax.swing.JLabel();
+        serverJLabel = new javax.swing.JLabel();
+        protocolJLabel = new javax.swing.JLabel();
+        acceptJButton = new javax.swing.JButton();
+        statusJProgressBar = new javax.swing.JProgressBar();
+        lowerBackgroundJLabel = new com.untangle.gui.widgets.MTiledIconLabel();
 
-                getContentPane().setLayout(new java.awt.GridBagLayout());
+        getContentPane().setLayout(new java.awt.GridBagLayout());
 
-                setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-                setTitle("Untangle " + Version.getVersion());
-                setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/untangle/gui/main/Logo16x16.png"))).getImage());
-                setName("loginJFrame");
-                setResizable(false);
-                addWindowListener(new java.awt.event.WindowAdapter() {
-                        public void windowClosing(java.awt.event.WindowEvent evt) {
-                                exitForm(evt);
-                        }
-                });
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Untangle " + Version.getVersion());
+        setIconImage((new javax.swing.ImageIcon( this.getClass().getResource("/com/untangle/gui/main/Logo16x16.png"))).getImage());
+        setName("loginJFrame");
+        setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+                public void windowClosing(java.awt.event.WindowEvent evt) {
+                    exitForm(evt);
+                }
+            });
 
-                contentJPanel.setLayout(new java.awt.GridBagLayout());
+        contentJPanel.setLayout(new java.awt.GridBagLayout());
 
-                contentJPanel.setMaximumSize(new java.awt.Dimension(330, 400));
-                contentJPanel.setMinimumSize(new java.awt.Dimension(330, 238));
-                contentJPanel.setPreferredSize(new java.awt.Dimension(330, 400));
-                logoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                logoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/Logo150x96.png")));
-                logoLabel.setFocusable(false);
-                logoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-                logoLabel.setIconTextGap(0);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(48, 0, 0, 0);
-                contentJPanel.add(logoLabel, gridBagConstraints);
+        contentJPanel.setMaximumSize(new java.awt.Dimension(330, 400));
+        contentJPanel.setMinimumSize(new java.awt.Dimension(330, 238));
+        contentJPanel.setPreferredSize(new java.awt.Dimension(330, 400));
+        logoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        logoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/Logo150x96.png")));
+        logoLabel.setFocusable(false);
+        logoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        logoLabel.setIconTextGap(0);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(48, 0, 0, 0);
+        contentJPanel.add(logoLabel, gridBagConstraints);
 
-                upperBackgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
-                upperBackgroundJLabel.setFocusable(false);
-                upperBackgroundJLabel.setMaximumSize(null);
-                upperBackgroundJLabel.setMinimumSize(null);
-                upperBackgroundJLabel.setOpaque(true);
-                upperBackgroundJLabel.setPreferredSize(null);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.ipady = 75;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-                gridBagConstraints.weightx = 1.0;
-                contentJPanel.add(upperBackgroundJLabel, gridBagConstraints);
+        upperBackgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
+        upperBackgroundJLabel.setFocusable(false);
+        upperBackgroundJLabel.setMaximumSize(null);
+        upperBackgroundJLabel.setMinimumSize(null);
+        upperBackgroundJLabel.setOpaque(true);
+        upperBackgroundJLabel.setPreferredSize(null);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipady = 75;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        gridBagConstraints.weightx = 1.0;
+        contentJPanel.add(upperBackgroundJLabel, gridBagConstraints);
 
-                inputJPanel.setLayout(new java.awt.GridBagLayout());
+        inputJPanel.setLayout(new java.awt.GridBagLayout());
 
-                inputJPanel.setFocusable(false);
-                inputJPanel.setMaximumSize(new java.awt.Dimension(270, 140));
-                inputJPanel.setMinimumSize(new java.awt.Dimension(270, 140));
-                inputJPanel.setOpaque(false);
-                inputJPanel.setPreferredSize(new java.awt.Dimension(270, 140));
-                loginJTextField.setFont(new java.awt.Font("Arial", 0, 12));
-                loginJTextField.setHorizontalAlignment(javax.swing.JTextField.LEFT);
-                loginJTextField.setText("admin");
-                loginJTextField.setMinimumSize(new java.awt.Dimension(150, 20));
-                loginJTextField.setPreferredSize(new java.awt.Dimension(150, 20));
-                loginJTextField.setVerifyInputWhenFocusTarget(false);
-                loginJTextField.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                loginJTextFieldActionPerformed(evt);
-                        }
-                });
+        inputJPanel.setFocusable(false);
+        inputJPanel.setMaximumSize(new java.awt.Dimension(270, 140));
+        inputJPanel.setMinimumSize(new java.awt.Dimension(270, 140));
+        inputJPanel.setOpaque(false);
+        inputJPanel.setPreferredSize(new java.awt.Dimension(270, 140));
+        loginJTextField.setFont(new java.awt.Font("Arial", 0, 12));
+        loginJTextField.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        loginJTextField.setText("admin");
+        loginJTextField.setMinimumSize(new java.awt.Dimension(150, 20));
+        loginJTextField.setPreferredSize(new java.awt.Dimension(150, 20));
+        loginJTextField.setVerifyInputWhenFocusTarget(false);
+        loginJTextField.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    loginJTextFieldActionPerformed(evt);
+                }
+            });
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-                inputJPanel.add(loginJTextField, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        inputJPanel.add(loginJTextField, gridBagConstraints);
 
-                passJPasswordField.setFont(new java.awt.Font("Arial", 0, 12));
-                passJPasswordField.setMinimumSize(new java.awt.Dimension(4, 20));
-                passJPasswordField.setPreferredSize(new java.awt.Dimension(150, 20));
-                passJPasswordField.setVerifyInputWhenFocusTarget(false);
-                passJPasswordField.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                passJPasswordFieldActionPerformed(evt);
-                        }
-                });
+        passJPasswordField.setFont(new java.awt.Font("Arial", 0, 12));
+        passJPasswordField.setMinimumSize(new java.awt.Dimension(4, 20));
+        passJPasswordField.setPreferredSize(new java.awt.Dimension(150, 20));
+        passJPasswordField.setVerifyInputWhenFocusTarget(false);
+        passJPasswordField.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    passJPasswordFieldActionPerformed(evt);
+                }
+            });
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-                inputJPanel.add(passJPasswordField, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        inputJPanel.add(passJPasswordField, gridBagConstraints);
 
-                serverJTextField.setEditable(false);
-                serverJTextField.setFont(new java.awt.Font("Arial", 0, 12));
-                serverJTextField.setFocusable(false);
-                serverJTextField.setMaximumSize(new java.awt.Dimension(133, 20));
-                serverJTextField.setMinimumSize(new java.awt.Dimension(133, 20));
-                serverJTextField.setPreferredSize(new java.awt.Dimension(150, 20));
-                serverJTextField.setRequestFocusEnabled(false);
-                serverJTextField.setVerifyInputWhenFocusTarget(false);
-                serverJTextField.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                serverJTextFieldActionPerformed(evt);
-                        }
-                });
+        serverJTextField.setEditable(false);
+        serverJTextField.setFont(new java.awt.Font("Arial", 0, 12));
+        serverJTextField.setFocusable(false);
+        serverJTextField.setMaximumSize(new java.awt.Dimension(133, 20));
+        serverJTextField.setMinimumSize(new java.awt.Dimension(133, 20));
+        serverJTextField.setPreferredSize(new java.awt.Dimension(150, 20));
+        serverJTextField.setRequestFocusEnabled(false);
+        serverJTextField.setVerifyInputWhenFocusTarget(false);
+        serverJTextField.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    serverJTextFieldActionPerformed(evt);
+                }
+            });
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 2;
-                gridBagConstraints.gridwidth = 2;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-                inputJPanel.add(serverJTextField, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        inputJPanel.add(serverJTextField, gridBagConstraints);
 
-                protocolJTextField.setEditable(false);
-                protocolJTextField.setFont(new java.awt.Font("Arial", 0, 12));
-                protocolJTextField.setFocusable(false);
-                protocolJTextField.setMaximumSize(new java.awt.Dimension(133, 20));
-                protocolJTextField.setMinimumSize(new java.awt.Dimension(133, 20));
-                protocolJTextField.setPreferredSize(new java.awt.Dimension(150, 20));
-                protocolJTextField.setRequestFocusEnabled(false);
-                protocolJTextField.setVerifyInputWhenFocusTarget(false);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 3;
-                gridBagConstraints.gridwidth = 2;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                inputJPanel.add(protocolJTextField, gridBagConstraints);
+        protocolJTextField.setEditable(false);
+        protocolJTextField.setFont(new java.awt.Font("Arial", 0, 12));
+        protocolJTextField.setFocusable(false);
+        protocolJTextField.setMaximumSize(new java.awt.Dimension(133, 20));
+        protocolJTextField.setMinimumSize(new java.awt.Dimension(133, 20));
+        protocolJTextField.setPreferredSize(new java.awt.Dimension(150, 20));
+        protocolJTextField.setRequestFocusEnabled(false);
+        protocolJTextField.setVerifyInputWhenFocusTarget(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        inputJPanel.add(protocolJTextField, gridBagConstraints);
 
-                loginJLabel.setFont(new java.awt.Font("Arial", 0, 12));
-                loginJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                loginJLabel.setText("Login: ");
-                loginJLabel.setFocusable(false);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-                inputJPanel.add(loginJLabel, gridBagConstraints);
+        loginJLabel.setFont(new java.awt.Font("Arial", 0, 12));
+        loginJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        loginJLabel.setText("Login: ");
+        loginJLabel.setFocusable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        inputJPanel.add(loginJLabel, gridBagConstraints);
 
-                passJLabel.setFont(new java.awt.Font("Arial", 0, 12));
-                passJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                passJLabel.setText("Password: ");
-                passJLabel.setFocusable(false);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-                inputJPanel.add(passJLabel, gridBagConstraints);
+        passJLabel.setFont(new java.awt.Font("Arial", 0, 12));
+        passJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        passJLabel.setText("Password: ");
+        passJLabel.setFocusable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        inputJPanel.add(passJLabel, gridBagConstraints);
 
-                serverJLabel.setFont(new java.awt.Font("Arial", 0, 12));
-                serverJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                serverJLabel.setText("Server: ");
-                serverJLabel.setFocusable(false);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 2;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-                inputJPanel.add(serverJLabel, gridBagConstraints);
+        serverJLabel.setFont(new java.awt.Font("Arial", 0, 12));
+        serverJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        serverJLabel.setText("Server: ");
+        serverJLabel.setFocusable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        inputJPanel.add(serverJLabel, gridBagConstraints);
 
-                protocolJLabel.setFont(new java.awt.Font("Arial", 0, 12));
-                protocolJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                protocolJLabel.setText("Connection: ");
-                protocolJLabel.setFocusable(false);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 3;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                inputJPanel.add(protocolJLabel, gridBagConstraints);
+        protocolJLabel.setFont(new java.awt.Font("Arial", 0, 12));
+        protocolJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        protocolJLabel.setText("Connection: ");
+        protocolJLabel.setFocusable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        inputJPanel.add(protocolJLabel, gridBagConstraints);
 
-                acceptJButton.setFont(new java.awt.Font("Default", 0, 12));
-                acceptJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconLogin_16x16.png")));
-                acceptJButton.setText("Login");
-                acceptJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
-                acceptJButton.setMaximumSize(null);
-                acceptJButton.setMinimumSize(null);
-                acceptJButton.setOpaque(false);
-                acceptJButton.setPreferredSize(null);
-                acceptJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                acceptJButtonActionPerformed(evt);
-                        }
-                });
-                acceptJButton.addKeyListener(new java.awt.event.KeyAdapter() {
-                        public void keyPressed(java.awt.event.KeyEvent evt) {
-                                acceptJButtonKeyPressed(evt);
-                        }
-                });
+        acceptJButton.setFont(new java.awt.Font("Default", 0, 12));
+        acceptJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconLogin_16x16.png")));
+        acceptJButton.setText("Login");
+        acceptJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+        acceptJButton.setMaximumSize(null);
+        acceptJButton.setMinimumSize(null);
+        acceptJButton.setOpaque(false);
+        acceptJButton.setPreferredSize(null);
+        acceptJButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    acceptJButtonActionPerformed(evt);
+                }
+            });
+        acceptJButton.addKeyListener(new java.awt.event.KeyAdapter() {
+                public void keyPressed(java.awt.event.KeyEvent evt) {
+                    acceptJButtonKeyPressed(evt);
+                }
+            });
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 4;
-                gridBagConstraints.gridwidth = 2;
-                gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
-                inputJPanel.add(acceptJButton, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 0);
+        inputJPanel.add(acceptJButton, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 66, 0);
-                contentJPanel.add(inputJPanel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 66, 0);
+        contentJPanel.add(inputJPanel, gridBagConstraints);
 
-                statusJProgressBar.setFont(new java.awt.Font("Default", 0, 12));
-                statusJProgressBar.setFocusable(false);
-                statusJProgressBar.setMaximumSize(new java.awt.Dimension(270, 20));
-                statusJProgressBar.setMinimumSize(new java.awt.Dimension(270, 20));
-                statusJProgressBar.setPreferredSize(new java.awt.Dimension(270, 20));
-                statusJProgressBar.setString("");
-                statusJProgressBar.setStringPainted(true);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 30, 0);
-                contentJPanel.add(statusJProgressBar, gridBagConstraints);
+        statusJProgressBar.setFont(new java.awt.Font("Default", 0, 12));
+        statusJProgressBar.setFocusable(false);
+        statusJProgressBar.setMaximumSize(new java.awt.Dimension(270, 20));
+        statusJProgressBar.setMinimumSize(new java.awt.Dimension(270, 20));
+        statusJProgressBar.setPreferredSize(new java.awt.Dimension(270, 20));
+        statusJProgressBar.setString("");
+        statusJProgressBar.setStringPainted(true);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 30, 0);
+        contentJPanel.add(statusJProgressBar, gridBagConstraints);
 
-                lowerBackgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
-                lowerBackgroundJLabel.setFocusable(false);
-                lowerBackgroundJLabel.setMaximumSize(null);
-                lowerBackgroundJLabel.setMinimumSize(null);
-                lowerBackgroundJLabel.setOpaque(true);
-                lowerBackgroundJLabel.setPreferredSize(null);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                contentJPanel.add(lowerBackgroundJLabel, gridBagConstraints);
+        lowerBackgroundJLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/LightGreyBackground1600x100.png")));
+        lowerBackgroundJLabel.setFocusable(false);
+        lowerBackgroundJLabel.setMaximumSize(null);
+        lowerBackgroundJLabel.setMinimumSize(null);
+        lowerBackgroundJLabel.setOpaque(true);
+        lowerBackgroundJLabel.setPreferredSize(null);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        contentJPanel.add(lowerBackgroundJLabel, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                getContentPane().add(contentJPanel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        getContentPane().add(contentJPanel, gridBagConstraints);
 
-                pack();
-        }//GEN-END:initComponents
+        pack();
+    }//GEN-END:initComponents
 
     private void acceptJButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_acceptJButtonKeyPressed
         if( evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER )
@@ -418,23 +418,23 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
 
 
-        // Variables declaration - do not modify//GEN-BEGIN:variables
-        private javax.swing.JButton acceptJButton;
-        private javax.swing.JPanel contentJPanel;
-        private javax.swing.JPanel inputJPanel;
-        private javax.swing.JLabel loginJLabel;
-        private javax.swing.JTextField loginJTextField;
-        private javax.swing.JLabel logoLabel;
-        private javax.swing.JLabel lowerBackgroundJLabel;
-        private javax.swing.JLabel passJLabel;
-        private javax.swing.JPasswordField passJPasswordField;
-        private javax.swing.JLabel protocolJLabel;
-        private javax.swing.JTextField protocolJTextField;
-        private javax.swing.JLabel serverJLabel;
-        private javax.swing.JTextField serverJTextField;
-        private javax.swing.JProgressBar statusJProgressBar;
-        private javax.swing.JLabel upperBackgroundJLabel;
-        // End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton acceptJButton;
+    private javax.swing.JPanel contentJPanel;
+    private javax.swing.JPanel inputJPanel;
+    private javax.swing.JLabel loginJLabel;
+    private javax.swing.JTextField loginJTextField;
+    private javax.swing.JLabel logoLabel;
+    private javax.swing.JLabel lowerBackgroundJLabel;
+    private javax.swing.JLabel passJLabel;
+    private javax.swing.JPasswordField passJPasswordField;
+    private javax.swing.JLabel protocolJLabel;
+    private javax.swing.JTextField protocolJTextField;
+    private javax.swing.JLabel serverJLabel;
+    private javax.swing.JTextField serverJTextField;
+    private javax.swing.JProgressBar statusJProgressBar;
+    private javax.swing.JLabel upperBackgroundJLabel;
+    // End of variables declaration//GEN-END:variables
 
     private class ConnectThread extends Thread {
 
@@ -445,18 +445,18 @@ public class MLoginJFrame extends javax.swing.JFrame {
             this.setDaemon(true);
             this.setContextClassLoader( Util.getClassLoader() );
             acceptJButton.setEnabled(false);
-	    loginJTextField.setBackground( Color.WHITE );
-	    passJPasswordField.setBackground( Color.WHITE );
+            loginJTextField.setBackground( Color.WHITE );
+            passJPasswordField.setBackground( Color.WHITE );
             this.start();
         }
 
         public void run() {
-	    setInputsEnabled(false);
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		statusJProgressBar.setValue(1);
-		statusJProgressBar.setIndeterminate(true);
-		statusJProgressBar.setString("Authenticating...");
-	    }});
+            setInputsEnabled(false);
+            SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                statusJProgressBar.setValue(1);
+                statusJProgressBar.setIndeterminate(true);
+                statusJProgressBar.setString("Authenticating...");
+            }});
 
             // ATTEMPT TO LOG IN
             int retryLogin = 0;
@@ -465,7 +465,7 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 try{
 
                     // LOGIN ///////////
-		    Util.setShutdownInitiated(false);
+                    Util.setShutdownInitiated(false);
                     URL url = Util.getServerCodeBase();
                     MvvmRemoteContext mvvmContext = MvvmRemoteContextFactory.factory().interactiveLogin( url.getHost(), url.getPort(),
                                                                                                          loginJTextField.getText(),
@@ -483,20 +483,20 @@ public class MLoginJFrame extends javax.swing.JFrame {
                             return;
                         }
                     }
-                    
-                    Util.getStatsCache().start();    
+
+                    Util.getStatsCache().start();
                     KeepAliveThread keepAliveThread = new KeepAliveThread(mvvmContext);
                     Util.addShutdownable("KeepAliveThread", keepAliveThread);
 
                     // EGDEMO ////////////////
                     if( loginJTextField.getText().equals("untangledemo") )
                         Util.setIsDemo(true);
-                    else			
+                    else
                         Util.setIsDemo(false);
 
-		    // READ-ONLY //
-		    if( Util.getAdminManager().whoAmI().getMvvmPrincipal().isReadOnly() )
-			Util.setIsDemo(true);
+                    // READ-ONLY //
+                    if( Util.getAdminManager().whoAmI().getMvvmPrincipal().isReadOnly() )
+                        Util.setIsDemo(true);
 
                     // READOUT SUCCESS /////////////////
                     SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
@@ -508,10 +508,10 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     Thread.sleep(500);
                     retryLogin = -1;
                     SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-			MLoginJFrame.this.contentJPanel.setPreferredSize(new Dimension(330,238));
-			MLoginJFrame.this.pack();
-		    }});
-			//dropdownLoginTask.start(false);
+                        MLoginJFrame.this.contentJPanel.setPreferredSize(new Dimension(330,238));
+                        MLoginJFrame.this.pack();
+                    }});
+                    //dropdownLoginTask.start(false);
                     break;
                 }
                 catch(MultipleLoginsException e){
@@ -523,8 +523,8 @@ public class MLoginJFrame extends javax.swing.JFrame {
                         retryLogin = 0;
                     }
                     else{
-			if( loginAddress.equals("127.0.0.1") )
-			    loginAddress = "console";
+                        if( loginAddress.equals("127.0.0.1") )
+                            loginAddress = "console";
                         resetLogin("Already logged in: " + loginName + " at " + loginAddress);
                         retryLogin = -1;
                         return;
@@ -533,9 +533,9 @@ public class MLoginJFrame extends javax.swing.JFrame {
                 catch(FailedLoginException e){
                     resetLogin("Error: Invalid login/password.");
                     SwingUtilities.invokeLater( new Runnable(){ public void run(){
-			loginJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-			passJPasswordField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-		    }});
+                        loginJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                        passJPasswordField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                    }});
                     retryLogin = -1;
                     return;
                 }
@@ -598,11 +598,11 @@ public class MLoginJFrame extends javax.swing.JFrame {
                                               loginJTextField.getText() + "  |  Server: " +
                                               Util.getServerCodeBase().getHost() + securedString );
                         if(Util.getIsDemo()){
-			    if( loginJTextField.getText().equals("untangledemo") )
-				mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [DEMO MODE]" );
-			    else
-				mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [READ-ONLY MODE]" );
-			}
+                            if( loginJTextField.getText().equals("untangledemo") )
+                                mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [DEMO MODE]" );
+                            else
+                                mMainJFrame.setTitle( mMainJFrame.getTitle() + "  [READ-ONLY MODE]" );
+                        }
                         mMainJFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
                         MLoginJFrame.this.setVisible(false);
                         MLoginJFrame.this.dispose();

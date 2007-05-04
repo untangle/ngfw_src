@@ -10,7 +10,6 @@
  */
 package com.untangle.tran.spam;
 
-import java.io.IOException;
 import java.io.File;
 
 public interface SpamScanner
@@ -28,8 +27,8 @@ public interface SpamScanner
      * requires that a report always be generated, for any problems or exceptions an
      * empty report is generated (and the error/warning should be logged).
      *
-      * @param file the <code>File</code> containing the complete message to scan for spam
-     * @param threshold a <code>float</code> giving the spam cutoff value 
+     * @param file the <code>File</code> containing the complete message to scan for spam
+     * @param threshold a <code>float</code> giving the spam cutoff value
      * @return a <code>SpamReport</code> value
      */
     SpamReport scanFile(File file, float threshold);

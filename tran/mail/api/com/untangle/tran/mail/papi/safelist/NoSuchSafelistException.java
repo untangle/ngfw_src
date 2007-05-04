@@ -16,18 +16,18 @@ import java.io.Serializable;
  * ...name says it all...
  */
 public class NoSuchSafelistException
-  extends Exception
-  implements Serializable {
+    extends Exception
+    implements Serializable {
 
-  private final String m_emailAddress;
+    private final String m_emailAddress;
 
-  public NoSuchSafelistException(String address) {
-    super("No safelist for address \"" + address + "\"");
-    m_emailAddress = address;
-  }
+    public NoSuchSafelistException(String address) {
+        super("No safelist for address \"" + address + "\"");
+        m_emailAddress = address;
+    }
 
-  public String getAddress() {
-    return m_emailAddress;
-  }
-  
+    public String getAddress() {
+        return m_emailAddress;
+    }
+
 }

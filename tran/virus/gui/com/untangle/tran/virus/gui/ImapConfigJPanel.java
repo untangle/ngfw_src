@@ -13,19 +13,16 @@
 
 package com.untangle.tran.virus.gui;
 
-import com.untangle.gui.transform.*;
-import com.untangle.gui.util.*;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.tran.virus.*;
-//import com.untangle.tran.mail.*;
-import com.untangle.mvvm.tran.TransformContext;
-
-
 import java.awt.*;
 import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.editTable.*;
+import com.untangle.tran.virus.*;
 
 
 public class ImapConfigJPanel extends MEditTableJPanel {
@@ -75,62 +72,62 @@ class ImapTableModel extends MSortedTableModel<Object>{
     private static final String SOURCE_OUTBOUND = "outgoing message";
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-	VirusIMAPConfig virusIMAPConfigInbound = null;
-	VirusIMAPConfig virusIMAPConfigOutbound = null;
+        VirusIMAPConfig virusIMAPConfigInbound = null;
+        VirusIMAPConfig virusIMAPConfigOutbound = null;
 
-	for( Vector rowVector : tableVector ){
+        for( Vector rowVector : tableVector ){
             VirusIMAPConfig virusIMAPConfig = (VirusIMAPConfig) rowVector.elementAt(6);
             virusIMAPConfig.setScan( (Boolean) rowVector.elementAt(3) );
             virusIMAPConfig.setMsgAction( (VirusMessageAction) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
             virusIMAPConfig.setNotes( (String) rowVector.elementAt(5) );
-	    
-	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
-		virusIMAPConfigInbound = virusIMAPConfig;
-	    }
-	    else if( ((String)rowVector.elementAt(2)).equals(SOURCE_OUTBOUND) ){
-		virusIMAPConfigOutbound = virusIMAPConfig;
-	    }  
+
+            if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
+                virusIMAPConfigInbound = virusIMAPConfig;
+            }
+            else if( ((String)rowVector.elementAt(2)).equals(SOURCE_OUTBOUND) ){
+                virusIMAPConfigOutbound = virusIMAPConfig;
+            }
         }
-	
-	// SAVE SETTINGS ////////
-	if( !validateOnly ){
-	    VirusSettings virusSettings = (VirusSettings) settings;
-	    virusSettings.setIMAPInbound( virusIMAPConfigInbound );
-	    virusSettings.setIMAPOutbound( virusIMAPConfigOutbound );
-	}
+
+        // SAVE SETTINGS ////////
+        if( !validateOnly ){
+            VirusSettings virusSettings = (VirusSettings) settings;
+            virusSettings.setIMAPInbound( virusIMAPConfigInbound );
+            virusSettings.setIMAPOutbound( virusIMAPConfigOutbound );
+        }
 
     }
 
     public Vector<Vector> generateRows(Object settings) {
         VirusSettings virusSettings = (VirusSettings) settings;
         Vector<Vector> allRows = new Vector<Vector>(2);
-	int rowIndex = 0;
+        int rowIndex = 0;
 
-	// INBOUND
-	rowIndex++;
-	Vector inboundRow = new Vector(7);
+        // INBOUND
+        rowIndex++;
+        Vector inboundRow = new Vector(7);
         VirusIMAPConfig virusIMAPConfigInbound = virusSettings.getIMAPInbound();
         inboundRow.add( super.ROW_SAVED );
         inboundRow.add( rowIndex );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( virusIMAPConfigInbound.getScan() );
-	inboundRow.add( super.generateComboBoxModel(VirusMessageAction.getValues(), virusIMAPConfigInbound.getMsgAction()) );
+        inboundRow.add( super.generateComboBoxModel(VirusMessageAction.getValues(), virusIMAPConfigInbound.getMsgAction()) );
         inboundRow.add( virusIMAPConfigInbound.getNotes() );
-	inboundRow.add( virusIMAPConfigInbound );
-	allRows.add(inboundRow);
+        inboundRow.add( virusIMAPConfigInbound );
+        allRows.add(inboundRow);
 
-	// OUTBOUND
-	rowIndex++;
-	Vector outboundRow = new Vector(7);
+        // OUTBOUND
+        rowIndex++;
+        Vector outboundRow = new Vector(7);
         VirusIMAPConfig virusIMAPConfigOutbound = virusSettings.getIMAPOutbound();
         outboundRow.add( super.ROW_SAVED );
         outboundRow.add( rowIndex );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( virusIMAPConfigOutbound.getScan() );
-	outboundRow.add( super.generateComboBoxModel(VirusMessageAction.getValues(), virusIMAPConfigOutbound.getMsgAction()) );
+        outboundRow.add( super.generateComboBoxModel(VirusMessageAction.getValues(), virusIMAPConfigOutbound.getMsgAction()) );
         outboundRow.add( virusIMAPConfigOutbound.getNotes() );
-	outboundRow.add( virusIMAPConfigOutbound );
-	allRows.add(outboundRow);
+        outboundRow.add( virusIMAPConfigOutbound );
+        allRows.add(outboundRow);
 
         return allRows;
     }

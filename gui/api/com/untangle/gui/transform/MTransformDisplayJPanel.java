@@ -93,7 +93,7 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel implements Shutd
 
 
     public MTransformDisplayJPanel(MTransformJPanel mTransformJPanel) {
-	setDoubleBuffered(true);
+        setDoubleBuffered(true);
         this.mTransformJPanel = mTransformJPanel;
 
         throughputDynamicTimeSeriesCollection = new TimeSeriesCollection();
@@ -128,11 +128,11 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel implements Shutd
             this.remove(throughputJLabel);
         }
         updateGraphThread = new UpdateGraphThread();
-	mTransformJPanel.addShutdownable("UpdateGraphThread", updateGraphThread);
+        mTransformJPanel.addShutdownable("UpdateGraphThread", updateGraphThread);
     }
 
     public void doShutdown(){
-	mTransformJPanel.mTransformControlsJPanel().doShutdown();
+        mTransformJPanel.mTransformControlsJPanel().doShutdown();
     }
 
     public void setDoVizUpdates(boolean doVizUpdates){
@@ -430,17 +430,17 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel implements Shutd
         // GRAPH CONTROL //////
         private volatile boolean stop;
         public synchronized void doShutdown(){
-                stop = true;
-                notify();
-                interrupt();
+            stop = true;
+            notify();
+            interrupt();
         }
         private boolean doVizUpdates;
         public synchronized void setDoVizUpdates(final boolean doVizUpdatesX){
-                if( (doVizUpdates==false) && (doVizUpdatesX==true) )
-                    firstRun = true;
-                doVizUpdates = doVizUpdatesX;
-                if( doVizUpdatesX )
-                    notify();
+            if( (doVizUpdates==false) && (doVizUpdatesX==true) )
+                firstRun = true;
+            doVizUpdates = doVizUpdatesX;
+            if( doVizUpdatesX )
+                notify();
         }
         //////////////////////
 
@@ -454,11 +454,11 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel implements Shutd
                         else
                             updateVizRunnable.setDoReset(false);
                     }
-                    SwingUtilities.invokeAndWait( updateVizRunnable );                
+                    SwingUtilities.invokeAndWait( updateVizRunnable );
                     synchronized(this){
                         firstRun = false;
                         if( !doVizUpdates )
-                            wait();                        
+                            wait();
                     }
                     Transform fakeTransform = Util.getStatsCache().getFakeTransform(mTransformJPanel.getTid());
                     if( fakeTransform != null ) // only dereference stats if they exist, otherwise sleep/wait
@@ -474,108 +474,108 @@ public class MTransformDisplayJPanel extends javax.swing.JPanel implements Shutd
             }
         }
 
-	private void computeViz(){
-	    if(currentStats == null)
-            return;
-	    // UPDATE COUNTS
-	    sessionCountCurrent = currentStats.tcpSessionCount() + currentStats.udpSessionCount();
-	    sessionCountTotal = currentStats.tcpSessionTotal() + currentStats.udpSessionTotal();
-	    sessionRequestTotal = currentStats.tcpSessionRequestTotal() + currentStats.udpSessionRequestTotal();
-	    byteCountCurrent = currentStats.c2tBytes() + currentStats.s2tBytes();
-	    // (RESET COUNTS IF NECESSARY)
-	    if( (byteCountLast == 0) || (byteCountLast > byteCountCurrent) )
-		byteCountLast = byteCountCurrent;
-	    if( (sessionRequestLast == 0) || (sessionRequestLast > sessionRequestTotal) )
-		sessionRequestLast = sessionRequestTotal;
-	    // ADD TO BARS
-	    activity0Count.add( (double) currentStats.getCount(Transform.GENERIC_0_COUNTER) );
-	    activity1Count.add( (double) currentStats.getCount(Transform.GENERIC_1_COUNTER) );
-	    activity2Count.add( (double) currentStats.getCount(Transform.GENERIC_2_COUNTER) );
-	    activity3Count.add( (double) currentStats.getCount(Transform.GENERIC_3_COUNTER) );
-	}
-
-	
-	private class UpdateVizRunnable implements Runnable {
-        private boolean doReset;
-        public void setDoReset(boolean doReset){ this.doReset = doReset; }
-	    public void run(){
-            if(doReset){
-                // RESET BARS
-                activity0Count.reset();
-                activity1Count.reset();
-                activity2Count.reset();
-                activity3Count.reset();
-                // RESET GRAPHS
-                long now = System.currentTimeMillis();
-                if( MTransformDisplayJPanel.this.getUpdateSessions() ){
-                    for(int i=60; i>0; i--){
-                        Second second = new Second(new Date(now - i * 1000));
-                        sessionDynamicTimeSeriesCollection.getSeries(0).addOrUpdate(second, 0f);
-                        sessionDynamicTimeSeriesCollection.getSeries(1).addOrUpdate(second, 0f);
-                    }
-                }
-                if( MTransformDisplayJPanel.this.getUpdateThroughput() ){
-                    for(int i=60; i>0; i--){
-                        Second second = new Second(new Date(now - i * 1000));
-                        throughputDynamicTimeSeriesCollection.getSeries(0).addOrUpdate(second, 0f);
-                    }
-                }
-                // RESET COUNTS
-                sessionCountCurrent = sessionCountTotal = 0;
-                sessionRequestLast = sessionRequestTotal = 0;
-                byteCountLast = byteCountCurrent = 0;		    
-            }
-            Second second = new Second();
-            // UPDATE SESSION GRAPH & COUNTERS
-            if( MTransformDisplayJPanel.this.getUpdateSessions() ){
-                sessionDynamicTimeSeriesCollection.getSeries(0).addOrUpdate(second, (float) sessionCountCurrent);
-                sessionDynamicTimeSeriesCollection.getSeries(1).addOrUpdate(second, (float) sessionRequestTotal - sessionRequestLast);
-                sessionRequestLast = sessionRequestTotal;
-                generateCountLabel(sessionCountTotal, " ACC", sessionTotalJLabel);
-                generateCountLabel(sessionRequestTotal, " REQ", sessionRequestTotalJLabel);
-            }
-            // UPDATE THROUGHPUT GRAPH & COUNTER
-            if( MTransformDisplayJPanel.this.getUpdateThroughput() ){
-                throughputDynamicTimeSeriesCollection.getSeries(0).addOrUpdate(second, ((float)(byteCountCurrent - byteCountLast))/1000f);
+        private void computeViz(){
+            if(currentStats == null)
+                return;
+            // UPDATE COUNTS
+            sessionCountCurrent = currentStats.tcpSessionCount() + currentStats.udpSessionCount();
+            sessionCountTotal = currentStats.tcpSessionTotal() + currentStats.udpSessionTotal();
+            sessionRequestTotal = currentStats.tcpSessionRequestTotal() + currentStats.udpSessionRequestTotal();
+            byteCountCurrent = currentStats.c2tBytes() + currentStats.s2tBytes();
+            // (RESET COUNTS IF NECESSARY)
+            if( (byteCountLast == 0) || (byteCountLast > byteCountCurrent) )
                 byteCountLast = byteCountCurrent;
-                generateCountLabel(byteCountCurrent, "B", throughputTotalJLabel);
-            }
-            // UPDATE BARS
-            if( MTransformDisplayJPanel.this.getUpdateActivity() ){
-                dataset.setValue( activity0Count.decayValue(), activitySeriesString, activityString0);
-                dataset.setValue( activity1Count.decayValue(), activitySeriesString, activityString1);
-                dataset.setValue( activity2Count.decayValue(), activitySeriesString, activityString2);
-                dataset.setValue( activity3Count.decayValue(), activitySeriesString, activityString3);
-            }
-	    }
-	}
-    
+            if( (sessionRequestLast == 0) || (sessionRequestLast > sessionRequestTotal) )
+                sessionRequestLast = sessionRequestTotal;
+            // ADD TO BARS
+            activity0Count.add( (double) currentStats.getCount(Transform.GENERIC_0_COUNTER) );
+            activity1Count.add( (double) currentStats.getCount(Transform.GENERIC_1_COUNTER) );
+            activity2Count.add( (double) currentStats.getCount(Transform.GENERIC_2_COUNTER) );
+            activity3Count.add( (double) currentStats.getCount(Transform.GENERIC_3_COUNTER) );
+        }
 
-	private void generateCountLabel(long count, String suffix, JLabel label){
-	    if(count < 0 )
-		label.setText("");
-	    else if(count == 0){
-		if(doVizUpdates)
-		    label.setText( Long.toString( count ) + " " + suffix);
-		else
-		    label.setText("");
-	    }
-	    else if(count < 1000l)
-		label.setText( Long.toString( count ) + " " + suffix);
-	    else if(count < 1000000l)
-		label.setText( Long.toString( count/1000l ) + "." + Util.padZero( count%1000l ) + " K" + suffix);
-	    else if(count < 1000000000l)
-		label.setText( Long.toString( count/1000000l ) + "." + Util.padZero( (count%1000000l)/1000l ) + " M" + suffix);
-	    else if(count < 1000000000000l)
-		label.setText( Long.toString( count/1000000000l ) + "." + Util.padZero( (count%1000000000l)/1000000l ) + " G" + suffix);
-	    else if(count < 1000000000000000l)
-		label.setText( Long.toString( count/1000000000000l ) + "." + Util.padZero( (count%1000000000000l)/1000000000l ) + " T" + suffix);
-	    else if(count < 1000000000000000000l)
-		label.setText( Long.toString( count/1000000000000000l ) + "." + Util.padZero( (count%1000000000000000l)/1000000000000l ) + " P" + suffix);
-	    else
-		label.setText( Long.toString( count/1000000000000000000l ) + "." + Util.padZero( (count%1000000000000000000l)/1000000000000000l ) + " E" + suffix);
-	}
-    
+
+        private class UpdateVizRunnable implements Runnable {
+            private boolean doReset;
+            public void setDoReset(boolean doReset){ this.doReset = doReset; }
+            public void run(){
+                if(doReset){
+                    // RESET BARS
+                    activity0Count.reset();
+                    activity1Count.reset();
+                    activity2Count.reset();
+                    activity3Count.reset();
+                    // RESET GRAPHS
+                    long now = System.currentTimeMillis();
+                    if( MTransformDisplayJPanel.this.getUpdateSessions() ){
+                        for(int i=60; i>0; i--){
+                            Second second = new Second(new Date(now - i * 1000));
+                            sessionDynamicTimeSeriesCollection.getSeries(0).addOrUpdate(second, 0f);
+                            sessionDynamicTimeSeriesCollection.getSeries(1).addOrUpdate(second, 0f);
+                        }
+                    }
+                    if( MTransformDisplayJPanel.this.getUpdateThroughput() ){
+                        for(int i=60; i>0; i--){
+                            Second second = new Second(new Date(now - i * 1000));
+                            throughputDynamicTimeSeriesCollection.getSeries(0).addOrUpdate(second, 0f);
+                        }
+                    }
+                    // RESET COUNTS
+                    sessionCountCurrent = sessionCountTotal = 0;
+                    sessionRequestLast = sessionRequestTotal = 0;
+                    byteCountLast = byteCountCurrent = 0;
+                }
+                Second second = new Second();
+                // UPDATE SESSION GRAPH & COUNTERS
+                if( MTransformDisplayJPanel.this.getUpdateSessions() ){
+                    sessionDynamicTimeSeriesCollection.getSeries(0).addOrUpdate(second, (float) sessionCountCurrent);
+                    sessionDynamicTimeSeriesCollection.getSeries(1).addOrUpdate(second, (float) sessionRequestTotal - sessionRequestLast);
+                    sessionRequestLast = sessionRequestTotal;
+                    generateCountLabel(sessionCountTotal, " ACC", sessionTotalJLabel);
+                    generateCountLabel(sessionRequestTotal, " REQ", sessionRequestTotalJLabel);
+                }
+                // UPDATE THROUGHPUT GRAPH & COUNTER
+                if( MTransformDisplayJPanel.this.getUpdateThroughput() ){
+                    throughputDynamicTimeSeriesCollection.getSeries(0).addOrUpdate(second, ((float)(byteCountCurrent - byteCountLast))/1000f);
+                    byteCountLast = byteCountCurrent;
+                    generateCountLabel(byteCountCurrent, "B", throughputTotalJLabel);
+                }
+                // UPDATE BARS
+                if( MTransformDisplayJPanel.this.getUpdateActivity() ){
+                    dataset.setValue( activity0Count.decayValue(), activitySeriesString, activityString0);
+                    dataset.setValue( activity1Count.decayValue(), activitySeriesString, activityString1);
+                    dataset.setValue( activity2Count.decayValue(), activitySeriesString, activityString2);
+                    dataset.setValue( activity3Count.decayValue(), activitySeriesString, activityString3);
+                }
+            }
+        }
+
+
+        private void generateCountLabel(long count, String suffix, JLabel label){
+            if(count < 0 )
+                label.setText("");
+            else if(count == 0){
+                if(doVizUpdates)
+                    label.setText( Long.toString( count ) + " " + suffix);
+                else
+                    label.setText("");
+            }
+            else if(count < 1000l)
+                label.setText( Long.toString( count ) + " " + suffix);
+            else if(count < 1000000l)
+                label.setText( Long.toString( count/1000l ) + "." + Util.padZero( count%1000l ) + " K" + suffix);
+            else if(count < 1000000000l)
+                label.setText( Long.toString( count/1000000l ) + "." + Util.padZero( (count%1000000l)/1000l ) + " M" + suffix);
+            else if(count < 1000000000000l)
+                label.setText( Long.toString( count/1000000000l ) + "." + Util.padZero( (count%1000000000l)/1000000l ) + " G" + suffix);
+            else if(count < 1000000000000000l)
+                label.setText( Long.toString( count/1000000000000l ) + "." + Util.padZero( (count%1000000000000l)/1000000000l ) + " T" + suffix);
+            else if(count < 1000000000000000000l)
+                label.setText( Long.toString( count/1000000000000000l ) + "." + Util.padZero( (count%1000000000000000l)/1000000000000l ) + " P" + suffix);
+            else
+                label.setText( Long.toString( count/1000000000000000000l ) + "." + Util.padZero( (count%1000000000000000000l)/1000000000000000l ) + " E" + suffix);
+        }
+
     }
 
 

@@ -67,7 +67,7 @@ public class KavScannerLauncher extends VirusScannerLauncher
 
                 while ((s = in.readLine()) != null) {
                     wholeOutput.append(s);
-                     /*
+                    /*
                      * This returns the 2nd word
                      */
                     if (s.startsWith("Infected:")) {

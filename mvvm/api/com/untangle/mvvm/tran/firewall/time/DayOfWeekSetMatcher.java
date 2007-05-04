@@ -14,8 +14,8 @@ package com.untangle.mvvm.tran.firewall.time;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.untangle.mvvm.tran.ParseException;
@@ -48,7 +48,7 @@ public final class DayOfWeekSetMatcher extends DayOfWeekDBMatcher
     {
         return Collections.unmodifiableList( new ArrayList<String>( dayOfWeekSet ));
     }
-    
+
     public String toString()
     {
         return this.string;
@@ -63,25 +63,25 @@ public final class DayOfWeekSetMatcher extends DayOfWeekDBMatcher
         return makeInstance( dayOfWeekSet );
     }
 
-    public static DayOfWeekDBMatcher makeInstance( Set<String> dayOfWeekSet ) 
+    public static DayOfWeekDBMatcher makeInstance( Set<String> dayOfWeekSet )
     {
         if ( dayOfWeekSet == null ) return DayOfWeekSimpleMatcher.getNilMatcher();
-                
-	// Unsorted, so we must sort here.
-	StringBuilder sb = new StringBuilder();
-	boolean doneOne = false;
+
+        // Unsorted, so we must sort here.
+        StringBuilder sb = new StringBuilder();
+        boolean doneOne = false;
         boolean hasEmAll = true;
-	// Locale prob. XXX
-	String[] sortedDays = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+        // Locale prob. XXX
+        String[] sortedDays = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
         for ( String dayOfWeek  : sortedDays ) {
-	    if (dayOfWeekSet.contains(dayOfWeek)) {
+            if (dayOfWeekSet.contains(dayOfWeek)) {
                 if (doneOne)
                     sb.append(" ").append(DayOfWeekMatcherConstants.MARKER_SEPERATOR).append(" ");
                 else
                     doneOne = true;
                 sb.append(dayOfWeek);
-	    } else {
+            } else {
                 hasEmAll = false;
             }
         }
@@ -96,27 +96,27 @@ public final class DayOfWeekSetMatcher extends DayOfWeekDBMatcher
     }
 
     /* This is just for matching a list of interfaces */
-    static final Parser<DayOfWeekDBMatcher> PARSER = new Parser<DayOfWeekDBMatcher>() 
+    static final Parser<DayOfWeekDBMatcher> PARSER = new Parser<DayOfWeekDBMatcher>()
     {
         public int priority()
         {
             return 8;
         }
-        
+
         public boolean isParseable( String value )
         {
             return ( value.contains( DayOfWeekMatcherConstants.MARKER_SEPERATOR ));
         }
-        
+
         public DayOfWeekDBMatcher parse( String value ) throws ParseException
         {
             if ( !isParseable( value )) {
                 throw new ParseException( "Invalid dayOfWeek set matcher '" + value + "'" );
             }
-            
+
             String dayOfWeekArray[] = value.split( DayOfWeekMatcherConstants.MARKER_SEPERATOR );
             Set<String> dayOfWeekSet = new HashSet<String>();
-            
+
             for ( String dayOfWeekString : dayOfWeekArray ) {
                 String val = DayOfWeekDBMatcher.canonicalizeDayName(dayOfWeekString.trim());
                 dayOfWeekSet.add ( val );

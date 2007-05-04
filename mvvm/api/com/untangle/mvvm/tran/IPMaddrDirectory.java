@@ -76,7 +76,7 @@ public class IPMaddrDirectory implements Serializable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinTable(name="ipmaddr_dir_entries",
                joinColumns=@JoinColumn(name="ipmaddr_dir_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))

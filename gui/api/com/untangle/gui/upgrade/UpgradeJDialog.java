@@ -26,9 +26,6 @@ import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.*;
 import com.untangle.mvvm.policy.*;
-import com.untangle.mvvm.toolbox.InstallProgress;
-import com.untangle.mvvm.toolbox.MackageDesc;
-import com.untangle.mvvm.toolbox.UpgradeSettings;
 
 public class UpgradeJDialog extends MConfigJDialog {
 
@@ -39,38 +36,38 @@ public class UpgradeJDialog extends MConfigJDialog {
     private static UpgradeJDialog instance;
 
     public UpgradeJDialog(Frame parentFrame) {
-	super(parentFrame);
-	instance = this;
-	setTitle(NAME_TITLE);
-    setHelpSource("upgrade_config");
-	setResizable(false);
-	compoundSettings = new UpgradeCompoundSettings();
+        super(parentFrame);
+        instance = this;
+        setTitle(NAME_TITLE);
+        setHelpSource("upgrade_config");
+        setResizable(false);
+        compoundSettings = new UpgradeCompoundSettings();
     }
 
     public static UpgradeJDialog getInstance(){
-	return instance;
+        return instance;
     }
 
     protected Dimension getMinSize(){
-	return new Dimension(660,480);
+        return new Dimension(660,480);
     }
 
     protected Dimension getMaxSize(){
-	return new Dimension(660,480);
+        return new Dimension(660,480);
     }
 
     public void generateGui(){
         // PROCEDURE //
-	UpgradeProcessJPanel upgradeProcessJPanel = new UpgradeProcessJPanel();
-	addTab(NAME_UPGRADE, null, upgradeProcessJPanel);
-	addRefreshable(NAME_UPGRADE, upgradeProcessJPanel);
+        UpgradeProcessJPanel upgradeProcessJPanel = new UpgradeProcessJPanel();
+        addTab(NAME_UPGRADE, null, upgradeProcessJPanel);
+        addRefreshable(NAME_UPGRADE, upgradeProcessJPanel);
 
         // SETTINGS //
-	UpgradeSettingsJPanel upgradeSettingsJPanel = new UpgradeSettingsJPanel();
-	addTab(NAME_SETTINGS, null, upgradeSettingsJPanel);
+        UpgradeSettingsJPanel upgradeSettingsJPanel = new UpgradeSettingsJPanel();
+        addTab(NAME_SETTINGS, null, upgradeSettingsJPanel);
         addSavable(NAME_SETTINGS, upgradeSettingsJPanel);
         addRefreshable(NAME_SETTINGS, upgradeSettingsJPanel);
-		upgradeSettingsJPanel.setSettingsChangedListener(this);
+        upgradeSettingsJPanel.setSettingsChangedListener(this);
     }
 
 }

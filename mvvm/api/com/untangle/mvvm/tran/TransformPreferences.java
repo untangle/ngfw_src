@@ -13,7 +13,6 @@ package com.untangle.mvvm.tran;
 
 import java.awt.Color;
 import java.io.Serializable;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -91,11 +90,11 @@ public class TransformPreferences implements Serializable
      * @return background color.
      */
     @Columns(columns={
-            @Column(name="red"),
-            @Column(name="green"),
-            @Column(name="blue"),
-            @Column(name="alpha")
-        })
+        @Column(name="red"),
+        @Column(name="green"),
+        @Column(name="blue"),
+        @Column(name="alpha")
+    })
     @Type(type="com.untangle.mvvm.type.ColorUserType")
     public Color getGuiBackgroundColor()
     {

@@ -1,4 +1,4 @@
- /*
+/*
  * Copyright (c) 2003-2007 Untangle, Inc.
  * All rights reserved.
  *
@@ -275,12 +275,12 @@ public abstract class TransformBase implements Transform
     {
         if (TransformState.LOADED == runState
             || TransformState.DESTROYED == runState) {
-                throw new IllegalStateException("enabling in: " + runState);
+            throw new IllegalStateException("enabling in: " + runState);
         } else if (TransformState.RUNNING == runState
-           || TransformState.INITIALIZED == runState) {
-        // We're already fine.
-    } else {
-        // DISABLED
+                   || TransformState.INITIALIZED == runState) {
+            // We're already fine.
+        } else {
+            // DISABLED
             changeState(TransformState.INITIALIZED, true);
         }
     }

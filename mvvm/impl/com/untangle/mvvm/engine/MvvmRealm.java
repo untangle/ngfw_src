@@ -13,7 +13,6 @@
 package com.untangle.mvvm.engine;
 
 import java.io.IOException;
-
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -25,15 +24,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
+import com.untangle.mvvm.security.MvvmPrincipal;
 import org.apache.catalina.Context;
-import org.apache.catalina.realm.RealmBase;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.deploy.SecurityConstraint;
+import org.apache.catalina.realm.RealmBase;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Encoder;
-
-import com.untangle.mvvm.security.MvvmPrincipal;
 
 class MvvmRealm extends RealmBase
 {
@@ -65,7 +63,7 @@ class MvvmRealm extends RealmBase
 
         return MvvmAuthenticator.AUTH_NONCE_FIELD_NAME + "="
             + URLEncoder.encode(nonce);
-   }
+    }
 
     // Used by servlets (reports, store)
     public Principal authenticateWithNonce(String nonce)

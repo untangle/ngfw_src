@@ -11,21 +11,16 @@
 
 package com.untangle.tran.protofilter.gui;
 
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.gui.transform.*;
-import com.untangle.gui.pipeline.MPipelineJPanel;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.util.*;
-
-import com.untangle.tran.protofilter.*;
-
-import java.awt.*;
+import java.awt.Insets;
 import java.util.*;
-import java.util.List;
 import javax.swing.*;
-import javax.swing.table.*;
 import javax.swing.event.*;
+import javax.swing.table.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.editTable.*;
+import com.untangle.tran.protofilter.*;
 
 public class ProtoConfigJPanel extends MEditTableJPanel{
 
@@ -36,16 +31,16 @@ public class ProtoConfigJPanel extends MEditTableJPanel{
         super.setTableTitle("protocols");
         super.setDetailsTitle("protocol details");
         super.setAddRemoveEnabled(true);
-        
+
         // create actual table model
         ProtoTableModel protoTableModel = new ProtoTableModel();
         this.setTableModel( protoTableModel );
-	protoTableModel.setSortingStatus(2, ProtoTableModel.ASCENDING);
+        protoTableModel.setSortingStatus(2, ProtoTableModel.ASCENDING);
     }
 }
 
 
-class ProtoTableModel extends MSortedTableModel<Object>{ 
+class ProtoTableModel extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -57,10 +52,10 @@ class ProtoTableModel extends MSortedTableModel<Object>{
     private static final int C6_MW = 100; /* description */
     private static final int C7_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW), 120); /* signature */
 
-    
+
     public TableColumnModel getTableColumnModel(){
-        
-	ProtoFilterPattern tempPattern = new ProtoFilterPattern();
+
+        ProtoFilterPattern tempPattern = new ProtoFilterPattern();
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
@@ -77,41 +72,41 @@ class ProtoTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  10, 10,    false, false, true,  false, ProtoFilterPattern.class, null, "");
         return tableColumnModel;
     }
-    
+
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
         List elemList = new ArrayList(tableVector.size());
-	ProtoFilterPattern newElem = null;
+        ProtoFilterPattern newElem = null;
 
-	for( Vector rowVector : tableVector ){
-	    newElem = (ProtoFilterPattern) rowVector.elementAt(10);
+        for( Vector rowVector : tableVector ){
+            newElem = (ProtoFilterPattern) rowVector.elementAt(10);
             newElem.setCategory( (String) rowVector.elementAt(2) );
             newElem.setProtocol( (String) rowVector.elementAt(3) );
             newElem.setBlocked( (Boolean) rowVector.elementAt(4) );
             newElem.setLog( (Boolean) rowVector.elementAt(5) );
             newElem.setDescription( (String) rowVector.elementAt(6) );
             newElem.setDefinition( (String) rowVector.elementAt(7) );
-	    newElem.setQuality( (String) rowVector.elementAt(8) );
-	    newElem.setMetavizeId( (Integer) rowVector.elementAt(9) );
+            newElem.setQuality( (String) rowVector.elementAt(8) );
+            newElem.setMetavizeId( (Integer) rowVector.elementAt(9) );
             elemList.add(newElem);
         }
 
-	// SAVE SETTINGS ////////
-	if( !validateOnly ){
-	    ProtoFilterSettings transformSettings = (ProtoFilterSettings) settings;
-	    transformSettings.setPatterns( elemList );
-	}
+        // SAVE SETTINGS ////////
+        if( !validateOnly ){
+            ProtoFilterSettings transformSettings = (ProtoFilterSettings) settings;
+            transformSettings.setPatterns( elemList );
+        }
 
     }
-    
-    public Vector<Vector> generateRows(Object settings){
-	ProtoFilterSettings protoFilterSettings = (ProtoFilterSettings) settings;
-	List<ProtoFilterPattern> patterns = (List<ProtoFilterPattern>) protoFilterSettings.getPatterns();
-        Vector<Vector> allRows = new Vector<Vector>(patterns.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
 
-	for( ProtoFilterPattern newElem : patterns ){
-	    rowIndex++;
+    public Vector<Vector> generateRows(Object settings){
+        ProtoFilterSettings protoFilterSettings = (ProtoFilterSettings) settings;
+        List<ProtoFilterPattern> patterns = (List<ProtoFilterPattern>) protoFilterSettings.getPatterns();
+        Vector<Vector> allRows = new Vector<Vector>(patterns.size());
+        Vector tempRow = null;
+        int rowIndex = 0;
+
+        for( ProtoFilterPattern newElem : patterns ){
+            rowIndex++;
             tempRow = new Vector(11);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
@@ -121,9 +116,9 @@ class ProtoTableModel extends MSortedTableModel<Object>{
             tempRow.add( newElem.getLog() );
             tempRow.add( newElem.getDescription() );
             tempRow.add( newElem.getDefinition() );
-	    tempRow.add( newElem.getQuality() );
-	    tempRow.add( newElem.getMetavizeId() );
-	    tempRow.add( newElem );
+            tempRow.add( newElem.getQuality() );
+            tempRow.add( newElem.getMetavizeId() );
+            tempRow.add( newElem );
             allRows.add( tempRow );
         }
         return allRows;

@@ -25,8 +25,8 @@ import com.untangle.jvector.UDPPacketCrumb;
 import com.untangle.mvvm.tapi.*;
 import com.untangle.mvvm.tapi.client.UDPSessionDescImpl;
 import com.untangle.mvvm.tapi.event.*;
-import com.untangle.mvvm.tran.PipelineEndpoints;
 import com.untangle.mvvm.tran.MutateTStats;
+import com.untangle.mvvm.tran.PipelineEndpoints;
 import com.untangle.mvvm.util.MetaEnv;
 
 class UDPSessionImpl extends IPSessionImpl implements UDPSession
@@ -166,7 +166,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     {
         byte[] array;
         int offset = packet.position();
-    int limit = packet.remaining();
+        int limit = packet.remaining();
         if (packet.hasArray()) {
             array = packet.array();
             offset += packet.arrayOffset();
@@ -198,7 +198,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
     {
         byte[] array;
         int offset = icmpData.position();
-    int limit = icmpData.remaining();
+        int limit = icmpData.remaining();
         if (icmpData.hasArray()) {
             array = icmpData.array();
             offset += icmpData.arrayOffset();
@@ -227,7 +227,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
                 debug("tryWrite to full outgoing queue");
         } else {
             // Note: This can be an ICMP or UDP packet.
-        Crumb nc = getNextCrumb2Send(side);
+            Crumb nc = getNextCrumb2Send(side);
             PacketCrumb packet2send = (PacketCrumb) nc;
             assert packet2send != null;
             int numWritten = sendCrumb(packet2send, out);
@@ -248,24 +248,24 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         throws MPipeException
     {
 
-    /* Not Yet supported
-        UDPStreamer streamer = (UDPStreamer)ipStreamer;
+        /* Not Yet supported
+           UDPStreamer streamer = (UDPStreamer)ipStreamer;
 
-        String sideName = (side == CLIENT ? "client" : "server");
+           String sideName = (side == CLIENT ? "client" : "server");
 
-        ByteBuffer packet2send = streamer.nextPacket();
-        if (packet2send == null) {
-            debug("end of stream");
-            streamer = null;
-            return;
-        }
+           ByteBuffer packet2send = streamer.nextPacket();
+           if (packet2send == null) {
+           debug("end of stream");
+           streamer = null;
+           return;
+           }
 
-        // Ug. XXX
-        addBuf(side, packet2send);
+           // Ug. XXX
+           addBuf(side, packet2send);
 
-        if (logger.isDebugEnabled())
-            debug("streamed " + packet2send.remaining() + " to " + sideName);
-      */
+           if (logger.isDebugEnabled())
+           debug("streamed " + packet2send.remaining() + " to " + sideName);
+        */
     }
 
     protected void sendWritableEvent(int side)
@@ -386,7 +386,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
                 dispatcher.dispatchUDPClientPacket(event);
             else
                 dispatcher.dispatchUDPServerPacket(event);
-    }
+        }
         // Nothing more to do, any packets to be sent were queued by called to sendClientPacket(), etc,
         // from transform's packet handler.
     }

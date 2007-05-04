@@ -68,7 +68,7 @@ public class TokenResult
      * for the server (c2s)
      */
     public boolean hasDataForServer() {
-      return c2sStreamer != null || (c2s!=null && c2s.length>0);
+        return c2sStreamer != null || (c2s!=null && c2s.length>0);
     }
 
     /**
@@ -77,7 +77,7 @@ public class TokenResult
      */
 
     public boolean hasDataForClient() {
-      return s2cStreamer != null || (s2c!=null && s2c.length>0);
+        return s2cStreamer != null || (s2c!=null && s2c.length>0);
     }
 
     // accessors --------------------------------------------------------------

@@ -15,12 +15,12 @@ import java.nio.ByteBuffer;
 import java.text.CharacterIterator;
 import java.util.regex.*;
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
 import com.untangle.mvvm.tapi.event.*;
 import com.untangle.tran.ids.IDSRuleSignature;
 import com.untangle.tran.ids.IDSSessionInfo;
 import com.untangle.tran.util.AsciiCharBuffer;
 import com.untangle.tran.util.AsciiCharBufferCharacterIterator;
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.BMPattern;
 import org.apache.log4j.Logger;
 
 /**
@@ -70,7 +70,7 @@ public class ContentOption extends IDSOption {
     }
 
     //public int getIndexOfLastMatch() {
-      //  return indexOfMatch;
+    //  return indexOfMatch;
     //}
 
     public void setNoCase() {
@@ -141,14 +141,14 @@ public class ContentOption extends IDSOption {
 
         if(distanceFlag)
             sessionInfo.start = sessionInfo.indexOfLastMatch + distance;
-            //start = previousContentOption.getIndexOfLastMatch()+distance;
+        //start = previousContentOption.getIndexOfLastMatch()+distance;
 
         if(withinFlag) {
             if(distanceFlag)
                 setStartAndEndPoints(sessionInfo.start,within,sessionInfo);
             else
                 setStartAndEndPoints(sessionInfo.indexOfLastMatch, within, sessionInfo);
-                // setStartAndEndPoints(previousContentOption.getIndexOfLastMatch(),within,sessionInfo);
+            // setStartAndEndPoints(previousContentOption.getIndexOfLastMatch(),within,sessionInfo);
         }
 
         if(sessionInfo.start > data.length() || sessionInfo.start < 0)

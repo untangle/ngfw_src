@@ -22,11 +22,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.untangle.mvvm.security.Tid;
 import com.untangle.mvvm.tran.ParseException;
@@ -153,7 +151,7 @@ public class FirewallSettings implements Serializable, Validatable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
     public List<FirewallRule> getFirewallRuleList()

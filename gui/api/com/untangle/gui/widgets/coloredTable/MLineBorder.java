@@ -11,20 +11,20 @@
 
 package com.untangle.gui.widgets.coloredTable;
 
-import javax.swing.border.LineBorder;
 import java.awt.Color;
+import javax.swing.border.LineBorder;
 
 
 public class MLineBorder extends LineBorder{
-        MLineBorder(Color inColor){
-            super(inColor);
-        }
-        MLineBorder(Color inColor, int thickness){
-            super(inColor, thickness);
-        }
-        public void setLineColor(Color inColor){
-            super.lineColor = inColor;
-        }
+    MLineBorder(Color inColor){
+        super(inColor);
     }
-    
+    MLineBorder(Color inColor, int thickness){
+        super(inColor, thickness);
+    }
+    public void setLineColor(Color inColor){
+        super.lineColor = inColor;
+    }
+}
+
 

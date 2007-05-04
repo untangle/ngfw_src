@@ -19,12 +19,12 @@ import com.untangle.tran.mail.papi.quarantine.InboxRecordCursor;
  */
 public final class InboxSizeRecordsTag extends SingleValueTag {
 
-  @Override
-  protected String getValue() {
-    InboxRecordCursor iCursor = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
-    try {
-        return "(" + String.format("%01.1f", new Float(iCursor.inboxSize() / 1024.0)) + " KB)";
+    @Override
+    protected String getValue() {
+        InboxRecordCursor iCursor = InboxIndexTag.getCurrentIndex(pageContext.getRequest());
+        try {
+            return "(" + String.format("%01.1f", new Float(iCursor.inboxSize() / 1024.0)) + " KB)";
+        }
+        catch(Exception ex) { return "<unknown> KB"; }
     }
-    catch(Exception ex) { return "<unknown> KB"; }
-  }
 }

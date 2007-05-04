@@ -11,20 +11,18 @@
 
 package com.untangle.gui.configuration;
 
+import java.awt.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.table.*;
+
+import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.MPasswordField;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.util.*;
-
-import java.awt.*;
-import java.util.*;
-import javax.swing.table.*;
-import javax.swing.*;
-
-import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.*;
+import com.untangle.mvvm.security.*;
 
-import com.untangle.gui.util.StringConstants;
 
 
 public class RemoteAdminJPanel extends MEditTableJPanel{
@@ -35,24 +33,24 @@ public class RemoteAdminJPanel extends MEditTableJPanel{
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("");
         super.setDetailsTitle("");
-        super.setAddRemoveEnabled(true);       
+        super.setAddRemoveEnabled(true);
 
         // create actual table model
         RemoteAdminTableModel remoteAdminTableModel = new RemoteAdminTableModel();
         this.setTableModel( remoteAdminTableModel );
     }
-    
+
 }
 
 
 
-    
+
 class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
 
     private static final int MIN_PASSWD_LENGTH = 3;
 
     private static final StringConstants sc = StringConstants.getInstance();
-    
+
 
     public TableColumnModel getTableColumnModel(){
 
@@ -100,7 +98,7 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
             else{
                 loginHashtable.put(loginName, loginName);
             }
-            
+
             // verify that the new password is of the proper length
             if( (newPasswd.length > 0) && (newPasswd.length < MIN_PASSWD_LENGTH) ){
                 throw new Exception("The \"new\" and/or \"new confirm\" passwords for: \"" + loginName + "\" in row: " + rowIndex + " are shorter than the minimum " + MIN_PASSWD_LENGTH + " characters.");
@@ -111,9 +109,9 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
                 throw new Exception("The \"new\" and \"new confirm\" passwords are not the same for: \"" + loginName + "\" in row: " + rowIndex + ".");
             }
 
-	    
+
             if( ROW_REMOVE.equals(state) ){
-                
+
             }
             else{
                 // record if the row was not removed, that way we know we had at least one valid account
@@ -131,28 +129,28 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
 
         // verify that there is at least one valid entry after all operations
         if(!oneValidAccount){
-	    throw new Exception("There must always be at least one valid account.");
+            throw new Exception("There must always be at least one valid account.");
         }
 
-	// verify that there was at least one non-read-only account
-	if(!oneWritableAccount){
-	    throw new Exception("There must always be at least one non-read-only (writable) account.");
-	}
+        // verify that there was at least one non-read-only account
+        if(!oneWritableAccount){
+            throw new Exception("There must always be at least one non-read-only (writable) account.");
+        }
     }
-    
+
     public void generateSettings(RemoteCompoundSettings remoteCompoundSettings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-	Set allRows = new LinkedHashSet(tableVector.size());
-	User newElem = null;
-	int rowIndex = 0;
+        Set allRows = new LinkedHashSet(tableVector.size());
+        User newElem = null;
+        int rowIndex = 0;
         for( Vector rowVector : tableVector ){
-	    rowIndex++;
+            rowIndex++;
             newElem = (User) rowVector.elementAt(9);
             byte[] origPasswd = ((MPasswordField)rowVector.elementAt(6)).getByteArray();
-            char[] newPasswd = ((MPasswordField)rowVector.elementAt(7)).getPassword();            
+            char[] newPasswd = ((MPasswordField)rowVector.elementAt(7)).getPassword();
 
             if( ((String)rowVector.elementAt(0)).equals(super.ROW_REMOVE) ){
                 // THIS IS HERE FOR SAFETY
-                continue; // those removed and of a strange state are never even added            
+                continue; // those removed and of a strange state are never even added
             }
             else{
                 newElem.setName( (String) rowVector.elementAt(2) );
@@ -167,18 +165,18 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
             newElem.setEmail(email);
             allRows.add(newElem);
         }
-        
-	// SAVE SETTINGS /////////////
-	if( !validateOnly ){
-	    AdminSettings adminSettings = remoteCompoundSettings.getAdminSettings();
-	    adminSettings.setUsers(allRows);
-	}
+
+        // SAVE SETTINGS /////////////
+        if( !validateOnly ){
+            AdminSettings adminSettings = remoteCompoundSettings.getAdminSettings();
+            adminSettings.setUsers(allRows);
+        }
 
     }
 
     public Vector<Vector> generateRows(RemoteCompoundSettings remoteCompoundSettings) {
         AdminSettings adminSettings = remoteCompoundSettings.getAdminSettings();
-        Set<User> users = (Set<User>) adminSettings.getUsers(); 
+        Set<User> users = (Set<User>) adminSettings.getUsers();
         Vector<Vector> allRows = new Vector<Vector>(users.size());
         Vector tempRow = null;
         int rowIndex = 0;
@@ -201,7 +199,7 @@ class RemoteAdminTableModel extends MSortedTableModel<RemoteCompoundSettings> {
             tempRow.add( user );
             allRows.add( tempRow );
         }
-        
+
         return allRows;
     }
 

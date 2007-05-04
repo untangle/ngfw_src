@@ -89,8 +89,8 @@ public abstract class UrlList
                         update();
                     }
                 }, "update-" + dbLock);
-                t.setDaemon(true);
-                t.start();
+            t.setDaemon(true);
+            t.start();
         } else {
             update();
         }
@@ -228,9 +228,9 @@ public abstract class UrlList
     {
         if (null != version) {
             try {
-            DatabaseEntry k = new DatabaseEntry(VERSION_KEY);
-            DatabaseEntry v = new DatabaseEntry(version.getBytes());
-            db.put(null, k, v);
+                DatabaseEntry k = new DatabaseEntry(VERSION_KEY);
+                DatabaseEntry v = new DatabaseEntry(version.getBytes());
+                db.put(null, k, v);
             } catch (DatabaseException exn) {
                 logger.warn("could not set version", exn);
             }

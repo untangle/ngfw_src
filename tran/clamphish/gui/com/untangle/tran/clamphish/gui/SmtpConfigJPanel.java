@@ -12,18 +12,16 @@
 
 package com.untangle.tran.clamphish.gui;
 
-import com.untangle.gui.transform.*;
-import com.untangle.gui.util.*;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.tran.spam.*;
-import com.untangle.mvvm.tran.TransformContext;
-
-
 import java.awt.*;
 import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.editTable.*;
+import com.untangle.tran.spam.*;
 
 
 public class SmtpConfigJPanel extends MEditTableJPanel {
@@ -74,62 +72,62 @@ class SmtpTableModel extends MSortedTableModel<Object>{
     private static final String SOURCE_OUTBOUND = "outbound SMTP";
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-	SpamSMTPConfig spamSMTPConfigInbound = null;
-	SpamSMTPConfig spamSMTPConfigOutbound = null;
+        SpamSMTPConfig spamSMTPConfigInbound = null;
+        SpamSMTPConfig spamSMTPConfigOutbound = null;
 
-	for( Vector rowVector : tableVector ){
+        for( Vector rowVector : tableVector ){
             SpamSMTPConfig spamSMTPConfig = (SpamSMTPConfig) rowVector.elementAt(6);
             spamSMTPConfig.setScan( (Boolean) rowVector.elementAt(3) );
             spamSMTPConfig.setMsgAction( (SMTPSpamMessageAction) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
             spamSMTPConfig.setNotes( (String) rowVector.elementAt(5) );
-	    
-	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
-		spamSMTPConfigInbound = spamSMTPConfig;
-	    }
-	    else if( ((String)rowVector.elementAt(2)).equals(SOURCE_OUTBOUND) ){
-		spamSMTPConfigOutbound = spamSMTPConfig;
-	    }  
+
+            if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
+                spamSMTPConfigInbound = spamSMTPConfig;
+            }
+            else if( ((String)rowVector.elementAt(2)).equals(SOURCE_OUTBOUND) ){
+                spamSMTPConfigOutbound = spamSMTPConfig;
+            }
         }
-	
-	// SAVE SETTINGS ////////
-	if( !validateOnly ){
-	    SpamSettings spamSettings = (SpamSettings) settings;
-	    spamSettings.setSMTPInbound( spamSMTPConfigInbound );
-	    spamSettings.setSMTPOutbound( spamSMTPConfigOutbound );
-	}
+
+        // SAVE SETTINGS ////////
+        if( !validateOnly ){
+            SpamSettings spamSettings = (SpamSettings) settings;
+            spamSettings.setSMTPInbound( spamSMTPConfigInbound );
+            spamSettings.setSMTPOutbound( spamSMTPConfigOutbound );
+        }
 
     }
 
     public Vector<Vector> generateRows(Object settings) {
         SpamSettings spamSettings = (SpamSettings) settings;
         Vector<Vector> allRows = new Vector<Vector>(2);
-	int rowIndex = 0;
+        int rowIndex = 0;
 
-	// INBOUND
-	rowIndex++;
-	Vector inboundRow = new Vector(7);
+        // INBOUND
+        rowIndex++;
+        Vector inboundRow = new Vector(7);
         SpamSMTPConfig spamSMTPConfigInbound = spamSettings.getSMTPInbound();
         inboundRow.add( super.ROW_SAVED );
         inboundRow.add( rowIndex );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( spamSMTPConfigInbound.getScan() );
-	inboundRow.add( super.generateComboBoxModel(SMTPSpamMessageAction.getValues(), spamSMTPConfigInbound.getMsgAction()) );
+        inboundRow.add( super.generateComboBoxModel(SMTPSpamMessageAction.getValues(), spamSMTPConfigInbound.getMsgAction()) );
         inboundRow.add( spamSMTPConfigInbound.getNotes() );
-	inboundRow.add( spamSMTPConfigInbound );
-	allRows.add(inboundRow);
+        inboundRow.add( spamSMTPConfigInbound );
+        allRows.add(inboundRow);
 
-	// OUTBOUND
-	rowIndex++;
-	Vector outboundRow = new Vector(7);
+        // OUTBOUND
+        rowIndex++;
+        Vector outboundRow = new Vector(7);
         SpamSMTPConfig spamSMTPConfigOutbound = spamSettings.getSMTPOutbound();
         outboundRow.add( super.ROW_SAVED );
         outboundRow.add( rowIndex );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( spamSMTPConfigOutbound.getScan() );
-	outboundRow.add( super.generateComboBoxModel(SMTPSpamMessageAction.getValues(), spamSMTPConfigOutbound.getMsgAction()) );
+        outboundRow.add( super.generateComboBoxModel(SMTPSpamMessageAction.getValues(), spamSMTPConfigOutbound.getMsgAction()) );
         outboundRow.add( spamSMTPConfigOutbound.getNotes() );
-	outboundRow.add( spamSMTPConfigOutbound );
-	allRows.add(outboundRow);
+        outboundRow.add( spamSMTPConfigOutbound );
+        allRows.add(outboundRow);
 
         return allRows;
     }

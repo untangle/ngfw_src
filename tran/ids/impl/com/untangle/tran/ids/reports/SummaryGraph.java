@@ -11,13 +11,12 @@
 
 package com.untangle.tran.ids.reports;
 
-import com.untangle.mvvm.reporting.*;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.sql.*;
 import java.util.*;
-import net.sf.jasperreports.engine.JRDefaultScriptlet;
+
+import com.untangle.mvvm.reporting.*;
 import net.sf.jasperreports.engine.JRScriptletException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -114,13 +113,13 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         ResultSet rs;
 
         sql = "SELECT DATE_TRUNC('minute', time_stamp) AS trunc_ts,"
-             + "      SUM(blocked),"
-             + "      SUM(logged),"
-             + "      SUM(dnc)"
-             + " FROM tr_ids_statistic_evt"
-             + " WHERE time_stamp >= ? AND time_stamp < ?"
-             + " GROUP BY trunc_ts"
-             + " ORDER BY trunc_ts";
+            + "      SUM(blocked),"
+            + "      SUM(logged),"
+            + "      SUM(dnc)"
+            + " FROM tr_ids_statistic_evt"
+            + " WHERE time_stamp >= ? AND time_stamp < ?"
+            + " GROUP BY trunc_ts"
+            + " ORDER BY trunc_ts";
 
         bindIdx = 1;
         stmt = con.prepareStatement(sql);
@@ -200,12 +199,12 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
         totalProcessTime = System.currentTimeMillis() - totalProcessTime;
         System.out.println("====== RESULTS ======");
-        System.out.println("TOTAL query time:   " 
-               + totalQueryTime/1000 + "s" 
-               + " (" + ((float)totalQueryTime/(float)(totalQueryTime+totalProcessTime))  + ")");
-        System.out.println("TOTAL process time: " 
-               + totalProcessTime/1000 + "s" 
-               + " (" + ((float)totalProcessTime/(float)(totalQueryTime+totalProcessTime))  + ")");
+        System.out.println("TOTAL query time:   "
+                           + totalQueryTime/1000 + "s"
+                           + " (" + ((float)totalQueryTime/(float)(totalQueryTime+totalProcessTime))  + ")");
+        System.out.println("TOTAL process time: "
+                           + totalProcessTime/1000 + "s"
+                           + " (" + ((float)totalProcessTime/(float)(totalQueryTime+totalProcessTime))  + ")");
         System.out.println("=====================");
 
         TimeSeriesCollection tsc = new TimeSeriesCollection();

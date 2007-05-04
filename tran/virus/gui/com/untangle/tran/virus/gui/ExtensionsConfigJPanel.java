@@ -15,7 +15,6 @@ package com.untangle.tran.virus.gui;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.*;
@@ -74,39 +73,39 @@ class ExtensionTableModel extends MSortedTableModel<Object>{
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly){
         List elemList = new ArrayList(tableVector.size());
-	StringRule newElem = null;
+        StringRule newElem = null;
 
-	for( Vector rowVector : tableVector ){
+        for( Vector rowVector : tableVector ){
             newElem = (StringRule) rowVector.elementAt(5);
             newElem.setString( (String) rowVector.elementAt(2) );
             newElem.setLive( (Boolean) rowVector.elementAt(3) );
             newElem.setName( (String) rowVector.elementAt(4) );
-            elemList.add(newElem);	    
+            elemList.add(newElem);
         }
 
-	// SAVE SETTINGS
-	if( !validateOnly ){
-	    VirusSettings virusSettings = (VirusSettings) settings;
-	    virusSettings.setExtensions( elemList );
-	}
+        // SAVE SETTINGS
+        if( !validateOnly ){
+            VirusSettings virusSettings = (VirusSettings) settings;
+            virusSettings.setExtensions( elemList );
+        }
     }
-    
+
     public Vector<Vector> generateRows(Object settings){
         VirusSettings virusSettings = (VirusSettings) settings;
-	List<StringRule> extensions = (List<StringRule>) virusSettings.getExtensions();
+        List<StringRule> extensions = (List<StringRule>) virusSettings.getExtensions();
         Vector<Vector> allRows = new Vector<Vector>(extensions.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
+        Vector tempRow = null;
+        int rowIndex = 0;
 
-	for( StringRule newElem : extensions ){
-	    rowIndex++;
+        for( StringRule newElem : extensions ){
+            rowIndex++;
             tempRow = new Vector(6);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( newElem.getString() );
             tempRow.add( newElem.isLive() );
             tempRow.add( newElem.getName() );
-	    tempRow.add( newElem );
+            tempRow.add( newElem );
             allRows.add( tempRow );
         }
         return allRows;

@@ -13,6 +13,7 @@ package com.untangle.tran.openvpn;
 
 import java.util.Date;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -21,7 +22,6 @@ import javax.persistence.Transient;
 import com.untangle.mvvm.logging.StatisticEvent;
 import com.untangle.mvvm.logging.SyslogBuilder;
 import com.untangle.mvvm.logging.SyslogPriority;
-import javax.persistence.Entity;
 
 /**
  * Log event for a Nat statistics.
@@ -31,120 +31,120 @@ import javax.persistence.Entity;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-@Table(name="tr_openvpn_statistic_evt", schema="events")
-public class VpnStatisticEvent extends StatisticEvent
-{
-    private Date start;
-    private Date end;
-
-    private long bytesTx = 0;
-    private long bytesRx = 0;
-
-    public VpnStatisticEvent() { }
-
-    /**
-     * Time the session started.
-     *
-     * @return time logged.
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="start_time")
-    public Date getStart()
+    @Table(name="tr_openvpn_statistic_evt", schema="events")
+    public class VpnStatisticEvent extends StatisticEvent
     {
-        return this.start;
-    }
+        private Date start;
+        private Date end;
 
-    void setStart( Date start )
-    {
-        this.start = start;
-    }
+        private long bytesTx = 0;
+        private long bytesRx = 0;
 
-    /**
-     * Time the session ended.
-     *
-     * @return time logged.
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="end_time")
-    public Date getEnd()
-    {
-        return this.end;
-    }
+        public VpnStatisticEvent() { }
 
-    void setEnd( Date end )
-    {
-        this.end = end;
-    }
+        /**
+         * Time the session started.
+         *
+         * @return time logged.
+         */
+        @Temporal(TemporalType.TIMESTAMP)
+        @Column(name="start_time")
+        public Date getStart()
+        {
+            return this.start;
+        }
 
-    /**
-     * Total bytes received during this session.
-     *
-     * @return time logged.
-     */
-    @Column(name="rx_bytes", nullable=false)
-    public long getBytesRx()
-    {
-        return this.bytesRx;
-    }
+        void setStart( Date start )
+        {
+            this.start = start;
+        }
 
-    void setBytesRx( long bytesRx )
-    {
-        this.bytesRx = bytesRx;
-    }
+        /**
+         * Time the session ended.
+         *
+         * @return time logged.
+         */
+        @Temporal(TemporalType.TIMESTAMP)
+        @Column(name="end_time")
+        public Date getEnd()
+        {
+            return this.end;
+        }
 
-    void incrBytesRx( long bytesRx )
-    {
-        this.bytesRx += bytesRx;
-    }
+        void setEnd( Date end )
+        {
+            this.end = end;
+        }
 
-    /**
-     * Total transmitted received during this session.
-     *
-     * @return time logged.
-     */
-    @Column(name="tx_bytes", nullable=false)
-    public long getBytesTx()
-    {
-        return this.bytesTx;
-    }
+        /**
+         * Total bytes received during this session.
+         *
+         * @return time logged.
+         */
+        @Column(name="rx_bytes", nullable=false)
+        public long getBytesRx()
+        {
+            return this.bytesRx;
+        }
 
-    void setBytesTx( long bytesTx )
-    {
-        this.bytesTx = bytesTx;
-    }
+        void setBytesRx( long bytesRx )
+        {
+            this.bytesRx = bytesRx;
+        }
 
-    void incrBytesTx( long bytesTx )
-    {
-        this.bytesTx += bytesTx;
-    }
+        void incrBytesRx( long bytesRx )
+        {
+            this.bytesRx += bytesRx;
+        }
 
-    public boolean hasStatistics()
-    {
-        return ( this.bytesTx > 0 || this.bytesRx > 0 );
-    }
+        /**
+         * Total transmitted received during this session.
+         *
+         * @return time logged.
+         */
+        @Column(name="tx_bytes", nullable=false)
+        public long getBytesTx()
+        {
+            return this.bytesTx;
+        }
 
-    // Syslog methods ---------------------------------------------------------
+        void setBytesTx( long bytesTx )
+        {
+            this.bytesTx = bytesTx;
+        }
 
-    // although events are created with no data (see constructor),
-    // all data will be set when events are actually and finally logged
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        sb.startSection("info");
-        sb.addField("start", getStart());
-        sb.addField("end", getEnd());
-        sb.addField("bytes-received", getBytesRx());
-        sb.addField("bytes-transmitted", getBytesTx());
-    }
+        void incrBytesTx( long bytesTx )
+        {
+            this.bytesTx += bytesTx;
+        }
 
-    @Transient
-    public String getSyslogId()
-    {
-        return "Statistic";
-    }
+        public boolean hasStatistics()
+        {
+            return ( this.bytesTx > 0 || this.bytesRx > 0 );
+        }
 
-    @Transient
-    public SyslogPriority getSyslogPriority()
-    {
-        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
+        // Syslog methods ---------------------------------------------------------
+
+        // although events are created with no data (see constructor),
+        // all data will be set when events are actually and finally logged
+        public void appendSyslog(SyslogBuilder sb)
+        {
+            sb.startSection("info");
+            sb.addField("start", getStart());
+            sb.addField("end", getEnd());
+            sb.addField("bytes-received", getBytesRx());
+            sb.addField("bytes-transmitted", getBytesTx());
+        }
+
+        @Transient
+        public String getSyslogId()
+        {
+            return "Statistic";
+        }
+
+        @Transient
+        public SyslogPriority getSyslogPriority()
+        {
+            return SyslogPriority.INFORMATIONAL; // statistics or normal operation
+        }
     }
-}

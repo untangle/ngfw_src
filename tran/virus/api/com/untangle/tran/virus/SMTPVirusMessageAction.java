@@ -56,12 +56,12 @@ public class SMTPVirusMessageAction implements Serializable
     {
         SMTPVirusMessageAction zMsgAction;
         for (Iterator i = INSTANCES.keySet().iterator(); true == i.hasNext(); )
-        {
-            zMsgAction = (SMTPVirusMessageAction)INSTANCES.get(i.next());
-            if (name.equals(zMsgAction.getName())) {
-                return zMsgAction;
+            {
+                zMsgAction = (SMTPVirusMessageAction)INSTANCES.get(i.next());
+                if (name.equals(zMsgAction.getName())) {
+                    return zMsgAction;
+                }
             }
-        }
         return null;
     }
 

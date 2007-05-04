@@ -18,19 +18,19 @@ import java.io.Serializable;
  * is simply hosed.
  */
 public class QuarantineUserActionFailedException
-  extends Exception
-  implements Serializable {
+    extends Exception
+    implements Serializable {
 
-  public QuarantineUserActionFailedException() {
-  }
-  public QuarantineUserActionFailedException(String msg) {
-    super(msg);
-  }
-  public QuarantineUserActionFailedException(Throwable cause) {
-    super(cause);
-  }  
-  public QuarantineUserActionFailedException(String msg, Throwable cause) {
-    super(msg, cause);
-  }
+    public QuarantineUserActionFailedException() {
+    }
+    public QuarantineUserActionFailedException(String msg) {
+        super(msg);
+    }
+    public QuarantineUserActionFailedException(Throwable cause) {
+        super(cause);
+    }
+    public QuarantineUserActionFailedException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 
 }

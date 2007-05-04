@@ -13,25 +13,16 @@
 
 package com.untangle.tran.portal.gui;
 
-import com.untangle.mvvm.portal.*;
-
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.IPMaddr;
-
-import com.untangle.mvvm.addrbook.UserEntry;
+import java.awt.*;
+import java.util.List;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
 
 import com.untangle.gui.transform.*;
-import com.untangle.gui.pipeline.MPipelineJPanel;
-import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.util.*;
-
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import java.util.Vector;
-import java.util.List;
-import javax.swing.event.*;
-import javax.swing.border.EmptyBorder;
+import com.untangle.gui.widgets.editTable.*;
+import com.untangle.mvvm.portal.*;
 
 public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
 
@@ -47,62 +38,62 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
 
     private List<Application> applications;
     private List<PortalLogin> loginList;
-    
+
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
     }
 
     public void generateGui(){
 
-	// USERS ///////////
-	UserConfigJPanel userConfigJPanel = new UserConfigJPanel(this);
-    addTab(NAME_USERS, null, userConfigJPanel);
-    addSavable(NAME_USERS, userConfigJPanel);
-	addRefreshable(NAME_USERS, userConfigJPanel);
-	userConfigJPanel.setSettingsChangedListener(this);
+        // USERS ///////////
+        UserConfigJPanel userConfigJPanel = new UserConfigJPanel(this);
+        addTab(NAME_USERS, null, userConfigJPanel);
+        addSavable(NAME_USERS, userConfigJPanel);
+        addRefreshable(NAME_USERS, userConfigJPanel);
+        userConfigJPanel.setSettingsChangedListener(this);
 
-	// GROUPS ///////////  THIS MUST BE AFTER USERS FOR PREVALIDATION REASONS
-	GroupConfigJPanel groupConfigJPanel = new GroupConfigJPanel(this);
-    addTab(NAME_GROUPS, null, groupConfigJPanel);
-	addSavable(NAME_GROUPS, groupConfigJPanel);
-	addRefreshable(NAME_GROUPS, groupConfigJPanel);
-	groupConfigJPanel.setSettingsChangedListener(this);
+        // GROUPS ///////////  THIS MUST BE AFTER USERS FOR PREVALIDATION REASONS
+        GroupConfigJPanel groupConfigJPanel = new GroupConfigJPanel(this);
+        addTab(NAME_GROUPS, null, groupConfigJPanel);
+        addSavable(NAME_GROUPS, groupConfigJPanel);
+        addRefreshable(NAME_GROUPS, groupConfigJPanel);
+        groupConfigJPanel.setSettingsChangedListener(this);
 
-	// GLOBAL SETTINGS //
-	JTabbedPane settingsJTabbedPane = addTabbedPane(NAME_SETTINGS, null);
+        // GLOBAL SETTINGS //
+        JTabbedPane settingsJTabbedPane = addTabbedPane(NAME_SETTINGS, null);
 
-	// OTHER BOOKMARKS //
-	BookmarksJPanel otherBookmarksJPanel = new BookmarksJPanel(null, applications, "OTHER");
-	settingsJTabbedPane.addTab(NAME_SETTINGS_OTHER, null, otherBookmarksJPanel);
-	addSavable(NAME_SETTINGS_OTHER, otherBookmarksJPanel);
-	addRefreshable(NAME_SETTINGS_OTHER, otherBookmarksJPanel);
-	otherBookmarksJPanel.setSettingsChangedListener(this);
+        // OTHER BOOKMARKS //
+        BookmarksJPanel otherBookmarksJPanel = new BookmarksJPanel(null, applications, "OTHER");
+        settingsJTabbedPane.addTab(NAME_SETTINGS_OTHER, null, otherBookmarksJPanel);
+        addSavable(NAME_SETTINGS_OTHER, otherBookmarksJPanel);
+        addRefreshable(NAME_SETTINGS_OTHER, otherBookmarksJPanel);
+        otherBookmarksJPanel.setSettingsChangedListener(this);
 
-	// RDP BOOKMARKS //
-	BookmarksJPanel rdpBookmarksJPanel = new BookmarksJPanel(null, applications, "RDP");
-	settingsJTabbedPane.addTab(NAME_SETTINGS_RDP, null, rdpBookmarksJPanel);
-	addSavable(NAME_SETTINGS_RDP, rdpBookmarksJPanel);
-	addRefreshable(NAME_SETTINGS_RDP, rdpBookmarksJPanel);
-	rdpBookmarksJPanel.setSettingsChangedListener(this);
+        // RDP BOOKMARKS //
+        BookmarksJPanel rdpBookmarksJPanel = new BookmarksJPanel(null, applications, "RDP");
+        settingsJTabbedPane.addTab(NAME_SETTINGS_RDP, null, rdpBookmarksJPanel);
+        addSavable(NAME_SETTINGS_RDP, rdpBookmarksJPanel);
+        addRefreshable(NAME_SETTINGS_RDP, rdpBookmarksJPanel);
+        rdpBookmarksJPanel.setSettingsChangedListener(this);
 
-	// GLOBAL PAGE SETTINGS //
-	GlobalHomeSettingsJPanel globalHomeSettingsJPanel = new GlobalHomeSettingsJPanel();
-	addScrollableTab(settingsJTabbedPane, NAME_SETTINGS_HOME, null, globalHomeSettingsJPanel, false, true);
-	addSavable(NAME_SETTINGS_HOME, globalHomeSettingsJPanel);
-	addRefreshable(NAME_SETTINGS_HOME, globalHomeSettingsJPanel);
-	globalHomeSettingsJPanel.setSettingsChangedListener(this);
+        // GLOBAL PAGE SETTINGS //
+        GlobalHomeSettingsJPanel globalHomeSettingsJPanel = new GlobalHomeSettingsJPanel();
+        addScrollableTab(settingsJTabbedPane, NAME_SETTINGS_HOME, null, globalHomeSettingsJPanel, false, true);
+        addSavable(NAME_SETTINGS_HOME, globalHomeSettingsJPanel);
+        addRefreshable(NAME_SETTINGS_HOME, globalHomeSettingsJPanel);
+        globalHomeSettingsJPanel.setSettingsChangedListener(this);
 
-    // STATUS ////////
-	KickUserJPanel kickUserJPanel = new KickUserJPanel(this);
-    kickUserJPanel.setMTransformJPanel(mTransformJPanel);
-    addTab(NAME_STATUS, null, kickUserJPanel);
-	addSavable(NAME_STATUS, kickUserJPanel);
-	addRefreshable(NAME_STATUS, kickUserJPanel);
+        // STATUS ////////
+        KickUserJPanel kickUserJPanel = new KickUserJPanel(this);
+        kickUserJPanel.setMTransformJPanel(mTransformJPanel);
+        addTab(NAME_STATUS, null, kickUserJPanel);
+        addSavable(NAME_STATUS, kickUserJPanel);
+        addRefreshable(NAME_STATUS, kickUserJPanel);
 
- 	// EVENT LOG ///////
-	LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
-    addTab(NAME_LOG, null, logJPanel);
-    addShutdownable(NAME_LOG, logJPanel);
+        // EVENT LOG ///////
+        LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
+        addTab(NAME_LOG, null, logJPanel);
+        addShutdownable(NAME_LOG, logJPanel);
     }
 
     List<PortalLogin> getLoginList(){

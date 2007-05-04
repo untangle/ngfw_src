@@ -10,9 +10,9 @@
  */
 package com.untangle.tran.mail.web.euv.tags;
 
-import javax.servlet.ServletRequest;
-import java.util.Iterator;
 import java.util.Arrays;
+import java.util.Iterator;
+import javax.servlet.ServletRequest;
 
 
 /**
@@ -21,41 +21,41 @@ import java.util.Arrays;
  * current address
  */
 public final class ReceivingRemapsListTag
-  extends IteratingTag<String> {
+    extends IteratingTag<String> {
 
-  private static final String KEY = "untangle.remapps.ReceivingRemapsListTag";
-  
-  @Override
-  protected Iterator<String> createIterator() {
-    String[] list = getCurrentList(pageContext.getRequest());
+    private static final String KEY = "untangle.remapps.ReceivingRemapsListTag";
 
-    if(list == null || list.length == 0) {
-      return null;
+    @Override
+    protected Iterator<String> createIterator() {
+        String[] list = getCurrentList(pageContext.getRequest());
+
+        if(list == null || list.length == 0) {
+            return null;
+        }
+        return Arrays.asList(list).iterator();
     }
-    return Arrays.asList(list).iterator();
-  }
-  @Override
-  protected void setCurrent(String s) {
-    ReceivingRemapsEntryTag.setCurrent(pageContext, s);
-  }
+    @Override
+    protected void setCurrent(String s) {
+        ReceivingRemapsEntryTag.setCurrent(pageContext, s);
+    }
 
-  public static final void setCurrentList(ServletRequest request,
-    String[] list) {
-    request.setAttribute(KEY, list);
-  }
-  public static final void clearCurrentList(ServletRequest request) {
-    request.removeAttribute(KEY);
-  }
+    public static final void setCurrentList(ServletRequest request,
+                                            String[] list) {
+        request.setAttribute(KEY, list);
+    }
+    public static final void clearCurrentList(ServletRequest request) {
+        request.removeAttribute(KEY);
+    }
 
-  /**
-   * Returns null if there are no such messages
-   */
-  static String[] getCurrentList(ServletRequest request) {
-    return (String[]) request.getAttribute(KEY);
-  }
+    /**
+     * Returns null if there are no such messages
+     */
+    static String[] getCurrentList(ServletRequest request) {
+        return (String[]) request.getAttribute(KEY);
+    }
 
-  static boolean hasCurrentList(ServletRequest request) {
-    String[] list = getCurrentList(request);
-    return list != null && list.length > 0;
-  }
+    static boolean hasCurrentList(ServletRequest request) {
+        String[] list = getCurrentList(request);
+        return list != null && list.length > 0;
+    }
 }

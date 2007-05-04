@@ -11,26 +11,23 @@
 
 package com.untangle.tran.mail.gui;
 
-import com.untangle.gui.transform.*;
-import com.untangle.gui.pipeline.MPipelineJPanel;
-import com.untangle.gui.configuration.EmailCompoundSettings;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.widgets.MPasswordField;
-import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.gui.util.*;
+import java.awt.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
 
+import com.untangle.gui.configuration.EmailCompoundSettings;
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
 import com.untangle.mvvm.security.*;
+import com.untangle.mvvm.tran.*;
 import com.untangle.tran.mail.*;
 import com.untangle.tran.mail.papi.*;
 import com.untangle.tran.mail.papi.quarantine.*;
-
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import java.util.*;
-import javax.swing.event.*;
 
 public class QuarantineGeneralSettingsJPanel extends MEditTableJPanel {
 
@@ -41,7 +38,7 @@ public class QuarantineGeneralSettingsJPanel extends MEditTableJPanel {
         super.setDetailsTitle("rule notes");
         super.setAddRemoveEnabled(false);
         super.setFillJButtonEnabled(false);
-        
+
         // create actual table model
         QuarantineGeneralSettingsTableModel tableModel = new QuarantineGeneralSettingsTableModel();
         this.setTableModel( tableModel );
@@ -49,7 +46,7 @@ public class QuarantineGeneralSettingsJPanel extends MEditTableJPanel {
 }
 
 
-class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoundSettings>{ 
+class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoundSettings>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -60,9 +57,9 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoun
 
     public QuarantineGeneralSettingsTableModel(){
     }
-    
+
     public TableColumnModel getTableColumnModel(){
-        
+
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS );
@@ -74,13 +71,13 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoun
     }
 
     public void generateSettings(EmailCompoundSettings emailCompoundSettings,
-				 Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+                                 Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         Vector tempRowVector;
-	
+
         // MAX HOLDING TIME
         tempRowVector = tableVector.elementAt(0);
         int maxHoldingDays = (Integer) ((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue();
-        
+
         // SENDING TIME
         tempRowVector = tableVector.elementAt(1);
         Date sendingTime = (Date) ((SpinnerDateModel)tempRowVector.elementAt(3)).getValue();
@@ -97,14 +94,14 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoun
         // SAVE SETTINGS //////////
         if( !validateOnly ){
             QuarantineSettings quarantineSettings = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings()).getQuarantineSettings();
-            
+
             quarantineSettings.setMaxMailIntern( ((long)maxHoldingDays) * 1440l * 60 * 1000l );
             quarantineSettings.setDigestHourOfDay( sendingHour );
             quarantineSettings.setDigestMinuteOfDay( sendingMinute );
             //quarantineSettings.setMaxQuarantineTotalSz( ((long) totalSize)*1024l*1024l*1024l );
         }
     }
-    
+
     public Vector<Vector> generateRows(EmailCompoundSettings emailCompoundSettings){
         MailTransformCompoundSettings mailTransformCompoundSettings = ((MailTransformCompoundSettings)emailCompoundSettings.getMailTransformCompoundSettings());
         QuarantineSettings quarantineSettings = mailTransformCompoundSettings.getQuarantineSettings();
@@ -135,19 +132,19 @@ class QuarantineGeneralSettingsTableModel extends MSortedTableModel<EmailCompoun
         tempRow.add( dateModel );
         tempRow.add( "The time, each day, that a digest email will be sent to inform people that some of their email has been quarantined." );
         allRows.add( tempRow );
-	
+
         // MAX SPACE
         /*
-        rowIndex++;
-        tempRow = new Vector(5);
-        tempRow.add( super.ROW_SAVED );
-        tempRow.add( rowIndex );
-        tempRow.add( "Maximum Quarantine Space (MB)" );
-        int min = (int) mailTransformCompoundSettings.getMinStorageGigs();
-        int max = (int) mailTransformCompoundSettings.getMaxStorageGigs();
-        tempRow.add( new SpinnerNumberModel( (int)(quarantineSettings.getMaxQuarantineTotalSz()/1024l/1024l/1024l), min, max, 1) );
-        tempRow.add( "This is the maximum amount of disk space (in MB) that will be used to quarantine emails." );
-        allRows.add( tempRow );
+          rowIndex++;
+          tempRow = new Vector(5);
+          tempRow.add( super.ROW_SAVED );
+          tempRow.add( rowIndex );
+          tempRow.add( "Maximum Quarantine Space (MB)" );
+          int min = (int) mailTransformCompoundSettings.getMinStorageGigs();
+          int max = (int) mailTransformCompoundSettings.getMaxStorageGigs();
+          tempRow.add( new SpinnerNumberModel( (int)(quarantineSettings.getMaxQuarantineTotalSz()/1024l/1024l/1024l), min, max, 1) );
+          tempRow.add( "This is the maximum amount of disk space (in MB) that will be used to quarantine emails." );
+          allRows.add( tempRow );
         */
 
         return allRows;

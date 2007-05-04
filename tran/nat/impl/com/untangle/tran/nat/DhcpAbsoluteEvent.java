@@ -12,7 +12,6 @@
 package com.untangle.tran.nat;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -38,73 +37,73 @@ import org.hibernate.annotations.IndexColumn;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-@Table(name="tr_nat_evt_dhcp_abs", schema="events")
-public class DhcpAbsoluteEvent extends LogEvent implements Serializable
-{
-    private List<DhcpAbsoluteLease> absoluteLeaseList = null;
-
-    public DhcpAbsoluteEvent() {}
-
-    public DhcpAbsoluteEvent( List s )
+    @Table(name="tr_nat_evt_dhcp_abs", schema="events")
+    public class DhcpAbsoluteEvent extends LogEvent implements Serializable
     {
-        absoluteLeaseList = s;
-    }
+        private List<DhcpAbsoluteLease> absoluteLeaseList = null;
 
-    /**
-     * List of the absolute leases associated with the event.
-     *
-     * @return the list of the redirect rules.
-     */
-    @OneToMany(fetch=FetchType.EAGER)
-    @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="tr_nat_evt_dhcp_abs_leases",
-               joinColumns=@JoinColumn(name="event_id"),
-               inverseJoinColumns=@JoinColumn(name="lease_id"))
-    @IndexColumn(name="position")
-    public List<DhcpAbsoluteLease> getAbsoluteLeaseList()
-    {
-        return absoluteLeaseList;
-    }
+        public DhcpAbsoluteEvent() {}
 
-    public void setAbsoluteLeaseList( List<DhcpAbsoluteLease> s )
-    {
-        absoluteLeaseList = s;
-    }
-
-    void addAbsoluteLease( DhcpAbsoluteLease lease )
-    {
-        if ( absoluteLeaseList == null ) {
-            absoluteLeaseList = new LinkedList();
+        public DhcpAbsoluteEvent( List s )
+        {
+            absoluteLeaseList = s;
         }
 
-        absoluteLeaseList.add( lease );
+        /**
+         * List of the absolute leases associated with the event.
+         *
+         * @return the list of the redirect rules.
+         */
+        @OneToMany(fetch=FetchType.EAGER)
+        @Cascade({ org.hibernate.annotations.CascadeType.ALL,
+                       org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+        @JoinTable(name="tr_nat_evt_dhcp_abs_leases",
+                   joinColumns=@JoinColumn(name="event_id"),
+                   inverseJoinColumns=@JoinColumn(name="lease_id"))
+        @IndexColumn(name="position")
+        public List<DhcpAbsoluteLease> getAbsoluteLeaseList()
+        {
+            return absoluteLeaseList;
+        }
+
+        public void setAbsoluteLeaseList( List<DhcpAbsoluteLease> s )
+        {
+            absoluteLeaseList = s;
+        }
+
+        void addAbsoluteLease( DhcpAbsoluteLease lease )
+        {
+            if ( absoluteLeaseList == null ) {
+                absoluteLeaseList = new LinkedList();
+            }
+
+            absoluteLeaseList.add( lease );
+        }
+
+        // Syslog methods ---------------------------------------------------------
+
+        public void appendSyslog(SyslogBuilder sb)
+        {
+            /* Don't log anything if this is null, this can be null at startup */
+            if ( this.absoluteLeaseList == null ) return;
+
+            sb.startSection("info");
+            sb.addField("num-leases", absoluteLeaseList.size());
+
+            // there is no reason to log each absolute lease to sys log
+            // - an absolute lease can be used for auditing and reporting later
+            //   but is not useful to add to sys log (see rbscott for more info)
+        }
+
+        @Transient
+        public String getSyslogId()
+        {
+            return "DHCP_AbsoluteLeases";
+        }
+
+        @Transient
+        public SyslogPriority getSyslogPriority()
+        {
+            return SyslogPriority.INFORMATIONAL; // statistics or normal operation
+        }
     }
-
-    // Syslog methods ---------------------------------------------------------
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        /* Don't log anything if this is null, this can be null at startup */
-        if ( this.absoluteLeaseList == null ) return;
-
-        sb.startSection("info");
-        sb.addField("num-leases", absoluteLeaseList.size());
-
-        // there is no reason to log each absolute lease to sys log
-        // - an absolute lease can be used for auditing and reporting later
-        //   but is not useful to add to sys log (see rbscott for more info)
-    }
-
-    @Transient
-    public String getSyslogId()
-    {
-        return "DHCP_AbsoluteLeases";
-    }
-
-    @Transient
-    public SyslogPriority getSyslogPriority()
-    {
-        return SyslogPriority.INFORMATIONAL; // statistics or normal operation
-    }
-}

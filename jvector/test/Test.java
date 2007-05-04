@@ -9,9 +9,9 @@
  * $Id$
  */
 
-import com.untangle.jvector.*;
 import java.util.LinkedList;
 
+import com.untangle.jvector.*;
 import org.apache.log4j.BasicConfigurator;
 
 public class Test
@@ -29,7 +29,7 @@ public class Test
 
         /* Setup log4j */
         BasicConfigurator.configure();
-        
+
         for (i=0;i<NUMTRAN;i++) {
             incoming[i] = new IncomingSocketQueue();
             outgoing[i] = new OutgoingSocketQueue();
@@ -44,7 +44,7 @@ public class Test
         Vector vec = new Vector(relays);
         Crumb  obj = new DataCrumb( new byte[] { 1 } );
         // Object obj = new Integer(1);
-        
+
         System.out.println("Sending Object: " + obj);
 
         incoming[0].sq().add(obj);
@@ -55,10 +55,10 @@ public class Test
         return;
     }
 
-//     public void event ( SocketQueue obj)
-//     {
-//         System.out.println("Got     Object: " + obj);
-//     }
+    //     public void event ( SocketQueue obj)
+    //     {
+    //         System.out.println("Got     Object: " + obj);
+    //     }
 
     static {
         System.loadLibrary("alpine");

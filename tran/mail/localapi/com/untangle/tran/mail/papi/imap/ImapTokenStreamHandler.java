@@ -39,51 +39,51 @@ import com.untangle.tran.token.TokenResult;
  */
 public abstract class ImapTokenStreamHandler {
 
-  private ImapTokenStream m_its;
+    private ImapTokenStream m_its;
 
-  public final void setStream(ImapTokenStream stream) {
-    m_its = stream;
-  }
+    public final void setStream(ImapTokenStream stream) {
+        m_its = stream;
+    }
 
-  /**
-   * Get the ImapTokenStream currently using this handler.  Note that
-   * this may return null if the handler is not currently
-   * registered with a Stream.
-   */
-  protected final ImapTokenStream getStream() {
-    return m_its;
-  }
+    /**
+     * Get the ImapTokenStream currently using this handler.  Note that
+     * this may return null if the handler is not currently
+     * registered with a Stream.
+     */
+    protected final ImapTokenStream getStream() {
+        return m_its;
+    }
 
-  /**
-   * Handle a FIN <b>from</b> the client.
-   * <br><br>
-   * Returning true means "go ahead and close the server".
-   *
-   * @return true if this should be propigated to the next
-   *         transform/unparser
-   */
-  public abstract boolean handleClientFin();
-  
-  /**
-   * Handle a FIN <b>from</b> the server.
-   * <br><br>
-   * Returning true means "go ahead and close the client".
-   *
-   * @return true if this should be propigated to the next
-   *         transform/unparser
-   */  
-  public abstract boolean handleServerFin();
+    /**
+     * Handle a FIN <b>from</b> the client.
+     * <br><br>
+     * Returning true means "go ahead and close the server".
+     *
+     * @return true if this should be propigated to the next
+     *         transform/unparser
+     */
+    public abstract boolean handleClientFin();
 
-  /**
-   * Handle a chunk of Imap protocol bytes from the server to the
-   * client.  Note that this is stuff <b>other than</b>
-   * MIME data.
-   */
-  public abstract TokenResult handleChunkFromServer(ImapChunk token);
-  public abstract TokenResult handleBeginMIMEFromServer(BeginImapMIMEToken token);
-  public abstract TokenResult handleContinuedMIMEFromServer(ContinuedMIMEToken token);
-  public abstract TokenResult handleCompleteMIMEFromServer(CompleteImapMIMEToken token);
-  public abstract void handleFinalized();
-  
+    /**
+     * Handle a FIN <b>from</b> the server.
+     * <br><br>
+     * Returning true means "go ahead and close the client".
+     *
+     * @return true if this should be propigated to the next
+     *         transform/unparser
+     */
+    public abstract boolean handleServerFin();
+
+    /**
+     * Handle a chunk of Imap protocol bytes from the server to the
+     * client.  Note that this is stuff <b>other than</b>
+     * MIME data.
+     */
+    public abstract TokenResult handleChunkFromServer(ImapChunk token);
+    public abstract TokenResult handleBeginMIMEFromServer(BeginImapMIMEToken token);
+    public abstract TokenResult handleContinuedMIMEFromServer(ContinuedMIMEToken token);
+    public abstract TokenResult handleCompleteMIMEFromServer(CompleteImapMIMEToken token);
+    public abstract void handleFinalized();
+
 }
 

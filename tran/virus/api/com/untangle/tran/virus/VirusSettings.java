@@ -24,7 +24,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.untangle.mvvm.security.Tid;
 import com.untangle.mvvm.tran.MimeTypeRule;
@@ -378,7 +377,7 @@ public class VirusSettings implements Serializable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinTable(name="tr_virus_vs_mt",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
@@ -400,7 +399,7 @@ public class VirusSettings implements Serializable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinTable(name="tr_virus_vs_ext",
                joinColumns=@JoinColumn(name="settings_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))

@@ -26,12 +26,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
-import org.hibernate.annotations.Type;
-
 import com.untangle.mvvm.tran.Validatable;
 import com.untangle.mvvm.tran.ValidateException;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.IndexColumn;
 
 /**
  * Settings used for all of the PPPoE connections.
@@ -81,7 +79,7 @@ public class PPPoESettings implements Serializable, Validatable
 
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
     public List<PPPoEConnectionRule> getConnectionList()
@@ -107,13 +105,13 @@ public class PPPoESettings implements Serializable, Validatable
 
         for ( PPPoEConnectionRule connection : getConnectionList()) {
             connection.validate();
- 
+
             if ( connection.isLive() && !argonIntfSet.add( connection.getArgonIntf())) {
-                throw new ValidateException( "The interface: " + connection.getArgonIntf() + 
+                throw new ValidateException( "The interface: " + connection.getArgonIntf() +
                                              " is in two connections" );
             }
         }
-   }
+    }
 
     public String toString()
     {

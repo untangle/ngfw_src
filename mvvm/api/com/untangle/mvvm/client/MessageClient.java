@@ -72,7 +72,7 @@ public class MessageClient
                     } catch (InvocationException exn1) {
                         System.err.println("invocation exn: " + exn1);
                         exn1.printStackTrace();
-			toolQ = mvvmContext.toolboxManager().subscribe();
+                        toolQ = mvvmContext.toolboxManager().subscribe();
                         continue;
                     }
                 }

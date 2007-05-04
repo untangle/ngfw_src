@@ -92,9 +92,9 @@ public class CBufferWrapper implements CharSequence
     {
         if (0 > index ||
             zByteBuffer.limit() < index)
-        {
-            throw new IndexOutOfBoundsException();
-        }
+            {
+                throw new IndexOutOfBoundsException();
+            }
 
         return (char) zByteBuffer.get(index);
     }
@@ -112,9 +112,9 @@ public class CBufferWrapper implements CharSequence
             0 > end ||
             zByteBuffer.limit() < end ||
             end < start)
-        {
-            throw new IndexOutOfBoundsException();
-        }
+            {
+                throw new IndexOutOfBoundsException();
+            }
 
         /* create snapshot of ByteBuffer state */
         int iPosition = zByteBuffer.position();
@@ -156,7 +156,7 @@ public class CBufferWrapper implements CharSequence
         /* creates new String from byte array
          * by decoding byte array with platform's default charset
          * - in other words, toString creates char array and
-         *   decodes (= copies) bytes into chars 
+         *   decodes (= copies) bytes into chars
          * - another alternative is to create our own char array and
          *   copy bytes directly into chars (to avoid byte-char decode)
          */

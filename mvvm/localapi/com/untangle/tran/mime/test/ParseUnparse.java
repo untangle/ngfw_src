@@ -22,35 +22,35 @@ import com.untangle.tran.util.FileFactory;
  */
 public class ParseUnparse {
 
-  public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
 
-    File mimeFile = new File(args[0]);
+        File mimeFile = new File(args[0]);
 
-    FileMIMESource source = new FileMIMESource(mimeFile, false);
+        FileMIMESource source = new FileMIMESource(mimeFile, false);
 
-    MIMEMessage mp = new MIMEMessage(source.getInputStream(),
-      source,
-      new MIMEPolicy(),
-      null);
+        MIMEMessage mp = new MIMEMessage(source.getInputStream(),
+                                         source,
+                                         new MIMEPolicy(),
+                                         null);
 
-    final String outFileName = args[0] + ".out";
+        final String outFileName = args[0] + ".out";
 
-    System.out.println("================================");
-    System.out.println(mp.describe());
-    System.out.println("================================");
-    mp.changed();
-    File newFile = mp.toFile(new FileFactory() {
-      public File createFile(String name)
-        throws IOException {
-        return createFile();
-      }
-      public File createFile()
-        throws IOException {
-        return new File(outFileName);
-      }
-    });
-    System.out.println("Wrote back out to " + outFileName);
+        System.out.println("================================");
+        System.out.println(mp.describe());
+        System.out.println("================================");
+        mp.changed();
+        File newFile = mp.toFile(new FileFactory() {
+                public File createFile(String name)
+                    throws IOException {
+                    return createFile();
+                }
+                public File createFile()
+                    throws IOException {
+                    return new File(outFileName);
+                }
+            });
+        System.out.println("Wrote back out to " + outFileName);
 
-  }
+    }
 
 }

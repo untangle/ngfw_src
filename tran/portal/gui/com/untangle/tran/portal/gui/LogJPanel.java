@@ -12,8 +12,6 @@
 package com.untangle.tran.portal.gui;
 
 import java.util.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.table.*;
 
 import com.untangle.gui.transform.*;
@@ -23,10 +21,9 @@ import com.untangle.mvvm.logging.EventManager;
 import com.untangle.mvvm.logging.EventRepository;
 import com.untangle.mvvm.logging.LogEvent;
 import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.mvvm.tran.PipelineEndpoints;
+import com.untangle.mvvm.portal.*;
 import com.untangle.mvvm.tran.Transform;
 import com.untangle.tran.portal.*;
-import com.untangle.mvvm.portal.*;
 
 public class LogJPanel extends MLogTableJPanel {
 
@@ -77,31 +74,31 @@ public class LogJPanel extends MLogTableJPanel {
 
                 event.add( requestLog.getTimeStamp() );
 
-		if( requestLog instanceof PortalLogoutEvent ){
-		    PortalLogoutEvent newEvent = (PortalLogoutEvent) requestLog;
-		    event.add( "Logout" );
-		    event.add( newEvent.getUid() );
-		    event.add( new IPaddrString(newEvent.getClientAddr()) );
-		    event.add( "Success" );
+                if( requestLog instanceof PortalLogoutEvent ){
+                    PortalLogoutEvent newEvent = (PortalLogoutEvent) requestLog;
+                    event.add( "Logout" );
+                    event.add( newEvent.getUid() );
+                    event.add( new IPaddrString(newEvent.getClientAddr()) );
+                    event.add( "Success" );
                     String reason = "";
                     if (newEvent.getReason() != null)
                         reason = newEvent.getReason().toString();
-		    event.add( reason );
-		    allEvents.add( event );
-		}
-		else if( requestLog instanceof PortalLoginEvent ){
-		    PortalLoginEvent newEvent = (PortalLoginEvent) requestLog;
-		    event.add( "Login" );
-		    event.add( newEvent.getUid() );
-		    event.add( new IPaddrString(newEvent.getClientAddr()) );
-		    event.add( newEvent.isSucceeded()==true?"Success":"Failure" );
+                    event.add( reason );
+                    allEvents.add( event );
+                }
+                else if( requestLog instanceof PortalLoginEvent ){
+                    PortalLoginEvent newEvent = (PortalLoginEvent) requestLog;
+                    event.add( "Login" );
+                    event.add( newEvent.getUid() );
+                    event.add( new IPaddrString(newEvent.getClientAddr()) );
+                    event.add( newEvent.isSucceeded()==true?"Success":"Failure" );
                     String reason = "";
                     if (!newEvent.isSucceeded())
                         if (newEvent.getReason() != null)
                             reason = newEvent.getReason().toString();
-		    event.add( reason );
-		    allEvents.add( event );
-		}
+                    event.add( reason );
+                    allEvents.add( event );
+                }
             }
 
             return allEvents;

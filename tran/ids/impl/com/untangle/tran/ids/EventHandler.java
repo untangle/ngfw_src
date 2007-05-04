@@ -59,12 +59,12 @@ public class EventHandler extends AbstractEventHandler {
         idsEngine.processFinalized(session, protocol);
     }
 
-/*  public void handleTCPNewSession(TCPSessionEvent event) {
+    /*  public void handleTCPNewSession(TCPSessionEvent event) {
 
     }
 
     public void handleUDPNewSession(UDPSessionEvent event) {
-        //UDPSession sess = event.session();
+    //UDPSession sess = event.session();
     }*/
 
     public IPDataResult handleTCPClientChunk(TCPChunkEvent event) {
@@ -86,7 +86,7 @@ public class EventHandler extends AbstractEventHandler {
         idsEngine.handleChunk(event, event.session(),true);
         super.handleUDPServerPacket(event);
     }
-/*
-    public void handleTCPFinalized(TCPChunkEvent event) {}
+    /*
+      public void handleTCPFinalized(TCPChunkEvent event) {}
     */
 }

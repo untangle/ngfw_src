@@ -12,9 +12,9 @@
 package com.untangle.tran.spam;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.IOException;
 import java.lang.InterruptedException;
 
 import com.untangle.mvvm.MvvmContextFactory;
@@ -102,19 +102,19 @@ public class SpamAssassinDaemon
 
             int exitVal = cmdProcess.waitFor();
             switch(exitVal) {
-                case 0:
-                    if (true == exitOK) {
-                        logger.debug(cmdStr + " operation successfully finished");
-                        return true; // return after finally
-                    } else {
-                        logger.error(cmdStr + " operation finished with error(s); SpamAssassin installation may be corrupt");
-                        return false; // return after finally
-                    }
-
-                default:
-                case 1:
-                    logger.error(cmdStr + " operation finished with error(s): " + exitVal);
+            case 0:
+                if (true == exitOK) {
+                    logger.debug(cmdStr + " operation successfully finished");
+                    return true; // return after finally
+                } else {
+                    logger.error(cmdStr + " operation finished with error(s); SpamAssassin installation may be corrupt");
                     return false; // return after finally
+                }
+
+            default:
+            case 1:
+                logger.error(cmdStr + " operation finished with error(s): " + exitVal);
+                return false; // return after finally
             }
         } catch (InterruptedException e) {
             logger.error(cmdStr + " operation interrupted before it could finish: ", e);

@@ -20,41 +20,41 @@ import sun.misc.BASE64Encoder;
  *
  */
 public final class ReceivingRemapsEntryTag
-  extends SingleValueTag {
+    extends SingleValueTag {
 
-  private static final String KEY = "untangle.remapping.ReceivingRemapsEntryTag";
+    private static final String KEY = "untangle.remapping.ReceivingRemapsEntryTag";
 
-  private boolean m_encoded = false;
+    private boolean m_encoded = false;
 
-  public boolean isEncoded() {
-    return m_encoded;
-  }
-  public void setEncoded(boolean encoded) {
-    m_encoded = encoded;
-  }
-
-  @Override
-  protected String getValue() {
-    String ret = (String) pageContext.getAttribute(KEY, PageContext.PAGE_SCOPE);
-    if(isEncoded()) {
-      ret = base64Encode(ret);
+    public boolean isEncoded() {
+        return m_encoded;
     }
-    return ret;
-  }
+    public void setEncoded(boolean encoded) {
+        m_encoded = encoded;
+    }
 
-  public static void setCurrent(PageContext pageContext, String entry) {
-    pageContext.setAttribute(KEY, entry, PageContext.PAGE_SCOPE);
-  }
+    @Override
+    protected String getValue() {
+        String ret = (String) pageContext.getAttribute(KEY, PageContext.PAGE_SCOPE);
+        if(isEncoded()) {
+            ret = base64Encode(ret);
+        }
+        return ret;
+    }
 
-  private String base64Encode(String s) {
-    if(s == null) {
-      return null;
+    public static void setCurrent(PageContext pageContext, String entry) {
+        pageContext.setAttribute(KEY, entry, PageContext.PAGE_SCOPE);
     }
-    try {
-      return new BASE64Encoder().encode(s.getBytes());
+
+    private String base64Encode(String s) {
+        if(s == null) {
+            return null;
+        }
+        try {
+            return new BASE64Encoder().encode(s.getBytes());
+        }
+        catch(Exception ex) {
+            return null;
+        }
     }
-    catch(Exception ex) {
-      return null;
-    }
-  }
 }

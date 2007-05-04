@@ -192,13 +192,13 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
         // Find out if we're the inside or outside if a Casing transform.  This
         // is super ugly. XXX
         /*
-        if (tt instanceof CasingTransform) {
-            CasingTransform ct = (CasingTransform)tt;
-            if (ct.getMPipe(true) == mPipe)
-                threadNameBase += "i";
-            else
-                threadNameBase += "o";
-        }
+          if (tt instanceof CasingTransform) {
+          CasingTransform ct = (CasingTransform)tt;
+          if (ct.getMPipe(true) == mPipe)
+          threadNameBase += "i";
+          else
+          threadNameBase += "o";
+          }
         */
         threadNameBase += tidn + ") ";
 
@@ -212,13 +212,13 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
     }
 
     /*
-    public void finalize()
-    {
-        if (comrbuf != null) {
-            BufferPool.pool().release(comrbuf);
-            comrbuf = null;
-        }
-    }
+      public void finalize()
+      {
+      if (comrbuf != null) {
+      BufferPool.pool().release(comrbuf);
+      comrbuf = null;
+      }
+      }
     */
 
 
@@ -588,48 +588,48 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
     }
 
     /*
-    void cancelTimer(IPSessionImpl session) {
-        assert session != null;
-        synchronized(timers) {
-            timers.remove(session);
-            if (session == soonestTimeredSession) {
-                setSoonestTimer();
-            }
-        }
-    }
+      void cancelTimer(IPSessionImpl session) {
+      assert session != null;
+      synchronized(timers) {
+      timers.remove(session);
+      if (session == soonestTimeredSession) {
+      setSoonestTimer();
+      }
+      }
+      }
 
-    void scheduleTimer(IPSessionImpl session, long delay)
-    {
-        assert session != null;
-        synchronized(timers) {
-            long timerTime = MetaEnv.currentTimeMillis() + delay;
-            timers.put(session, new Date(timerTime));
-            if (soonestTimeredSession == null || timerTime < soonestTimerTime) {
-                soonestTimeredSession = session;
-                soonestTimerTime = timerTime;
-            } else if (session == soonestTimeredSession) {
-                // We may have set the timer so that we're not soonest anymore.
-                setSoonestTimer();
-            }
-        }
-    }
+      void scheduleTimer(IPSessionImpl session, long delay)
+      {
+      assert session != null;
+      synchronized(timers) {
+      long timerTime = MetaEnv.currentTimeMillis() + delay;
+      timers.put(session, new Date(timerTime));
+      if (soonestTimeredSession == null || timerTime < soonestTimerTime) {
+      soonestTimeredSession = session;
+      soonestTimerTime = timerTime;
+      } else if (session == soonestTimeredSession) {
+      // We may have set the timer so that we're not soonest anymore.
+      setSoonestTimer();
+      }
+      }
+      }
 
-    // Must always be called with timers lock held.
-    private void setSoonestTimer() {
-        IPSessionImpl minSession = null;
-        long minTime = Long.MAX_VALUE;
-        for (Iterator iter = timers.keySet().iterator(); iter.hasNext();) {
-            IPSessionImpl sess = (IPSessionImpl) iter.next();
-            Date sesstd = (Date) timers.get(sess);
-            long sesstt = sesstd.getTime();
-            if (sesstt < minTime) {
-                minSession = sess;
-                minTime = sesstt;
-            }
-        }
-        soonestTimeredSession = minSession;
-        soonestTimerTime = minTime;
-    }
+      // Must always be called with timers lock held.
+      private void setSoonestTimer() {
+      IPSessionImpl minSession = null;
+      long minTime = Long.MAX_VALUE;
+      for (Iterator iter = timers.keySet().iterator(); iter.hasNext();) {
+      IPSessionImpl sess = (IPSessionImpl) iter.next();
+      Date sesstd = (Date) timers.get(sess);
+      long sesstt = sesstd.getTime();
+      if (sesstt < minTime) {
+      minSession = sess;
+      minTime = sesstt;
+      }
+      }
+      soonestTimeredSession = minSession;
+      soonestTimerTime = minTime;
+      }
     */
 
 
@@ -744,34 +744,34 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
             System.out.print(stats.t2cBytes());
             System.out.print("\t");
             /*
-            if (ss instanceof IPSessionState) {
-                IPSessionState iss = (IPSessionState)ss;
-                System.out.print(iss.c2sWriting() ? "write" : "read");
-                System.out.print("\t");
-                System.out.print(iss.s2cWriting() ? "write" : "read");
-                System.out.print("\t");
-                System.out.print(iss.clientKey == null ? "unreg" : Integer.toString(iss.clientKey.interestOps()));
-                System.out.print("\t");
-                System.out.print(iss.serverKey == null ? "unreg" : Integer.toString(iss.serverKey.interestOps()));
-                System.out.print("\t");
-                System.out.print(iss.clientKey == null ? "unreg" : Integer.toString(iss.clientKey.readyOps()));
-                System.out.print("\t");
-                System.out.print(iss.serverKey == null ? "unreg" : Integer.toString(iss.serverKey.readyOps()));
-                System.out.print("\t");
-                String creq = " ";
-                if (iss.clientCloseRequested)
-                    creq = "close";
-                else if (iss.s2cShutdownRequested)
-                    creq = "shut";
-                System.out.print(creq);
-                System.out.print("\t");
-                String sreq = " ";
-                if (iss.serverCloseRequested)
-                    sreq = "close";
-                else if (iss.c2sShutdownRequested)
-                    sreq = "shut";
-                System.out.println(sreq);
-            }
+              if (ss instanceof IPSessionState) {
+              IPSessionState iss = (IPSessionState)ss;
+              System.out.print(iss.c2sWriting() ? "write" : "read");
+              System.out.print("\t");
+              System.out.print(iss.s2cWriting() ? "write" : "read");
+              System.out.print("\t");
+              System.out.print(iss.clientKey == null ? "unreg" : Integer.toString(iss.clientKey.interestOps()));
+              System.out.print("\t");
+              System.out.print(iss.serverKey == null ? "unreg" : Integer.toString(iss.serverKey.interestOps()));
+              System.out.print("\t");
+              System.out.print(iss.clientKey == null ? "unreg" : Integer.toString(iss.clientKey.readyOps()));
+              System.out.print("\t");
+              System.out.print(iss.serverKey == null ? "unreg" : Integer.toString(iss.serverKey.readyOps()));
+              System.out.print("\t");
+              String creq = " ";
+              if (iss.clientCloseRequested)
+              creq = "close";
+              else if (iss.s2cShutdownRequested)
+              creq = "shut";
+              System.out.print(creq);
+              System.out.print("\t");
+              String sreq = " ";
+              if (iss.serverCloseRequested)
+              sreq = "close";
+              else if (iss.c2sShutdownRequested)
+              sreq = "shut";
+              System.out.println(sreq);
+              }
             */
         }
     }

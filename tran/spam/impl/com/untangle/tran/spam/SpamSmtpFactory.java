@@ -26,22 +26,22 @@ import com.untangle.tran.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
 
 public class SpamSmtpFactory
-  implements TokenHandlerFactory {
+    implements TokenHandlerFactory {
 
-  private final Logger m_logger = Logger.getLogger(getClass());
+    private final Logger m_logger = Logger.getLogger(getClass());
 
-  private MailExport m_mailExport;
-  private QuarantineTransformView m_quarantine;
-  private SafelistTransformView m_safelist;
-  private SpamImpl m_spamImpl;
+    private MailExport m_mailExport;
+    private QuarantineTransformView m_quarantine;
+    private SafelistTransformView m_safelist;
+    private SpamImpl m_spamImpl;
 
-  public SpamSmtpFactory(SpamImpl impl) {
-    Policy p = impl.getTid().getPolicy();
-    m_mailExport = MailExportFactory.factory().getExport();
-    m_quarantine = m_mailExport.getQuarantineTransformView();
-    m_safelist = m_mailExport.getSafelistTransformView();
-    m_spamImpl = impl;
-  }
+    public SpamSmtpFactory(SpamImpl impl) {
+        Policy p = impl.getTid().getPolicy();
+        m_mailExport = MailExportFactory.factory().getExport();
+        m_quarantine = m_mailExport.getQuarantineTransformView();
+        m_safelist = m_mailExport.getSafelistTransformView();
+        m_spamImpl = impl;
+    }
 
     public TokenHandler tokenHandler(TCPSession session) {
         boolean inbound = session.isInbound();
@@ -60,8 +60,8 @@ public class SpamSmtpFactory
             casingSettings.getSmtpInboundTimeout() :
             casingSettings.getSmtpOutboundTimeout();
         return new Session(session,
-          new SmtpSessionHandler(session, timeout, timeout, m_spamImpl,
-                                 spamConfig, m_quarantine, m_safelist));
+                           new SmtpSessionHandler(session, timeout, timeout, m_spamImpl,
+                                                  spamConfig, m_quarantine, m_safelist));
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)

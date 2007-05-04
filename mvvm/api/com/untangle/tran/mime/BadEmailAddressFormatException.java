@@ -17,19 +17,19 @@ package com.untangle.tran.mime;
  * valid email address.
  */
 public class BadEmailAddressFormatException
-  extends Exception {
+    extends Exception {
 
-  public BadEmailAddressFormatException() {
-    super();
-  }
-  public BadEmailAddressFormatException(Exception ex) {
-    super(ex);
-  }
-  public BadEmailAddressFormatException(String msg) {
-    super(msg);
-  }
-  public BadEmailAddressFormatException(String msg, Exception ex) {
-    super(msg, ex);
-  }
+    public BadEmailAddressFormatException() {
+        super();
+    }
+    public BadEmailAddressFormatException(Exception ex) {
+        super(ex);
+    }
+    public BadEmailAddressFormatException(String msg) {
+        super(msg);
+    }
+    public BadEmailAddressFormatException(String msg, Exception ex) {
+        super(msg, ex);
+    }
 
 }

@@ -9,7 +9,6 @@
  * $Id$
  */
 package com.untangle.tran.sasl;
-import java.nio.ByteBuffer;
 import static com.untangle.tran.util.ASCIIUtil.*;
 
 
@@ -20,13 +19,13 @@ import static com.untangle.tran.util.ASCIIUtil.*;
  * <b>cannot</b> result in an encrypted channel.
  */
 class CRAM_MD5Observer
-  extends ClearObserver {
+    extends ClearObserver {
 
-  static final String[] MECH_NAMES = new String[] {
-    "CRAM-MD5".toLowerCase()
-  };
+    static final String[] MECH_NAMES = new String[] {
+        "CRAM-MD5".toLowerCase()
+    };
 
-  CRAM_MD5Observer() {
-    super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
-  }
+    CRAM_MD5Observer() {
+        super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
+    }
 }

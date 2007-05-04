@@ -10,12 +10,11 @@
  */
 package com.untangle.tran.mail.web.euv.tags;
 
-import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.BodyTagSupport;
+import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyContent;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import java.util.Iterator;
 
 
 /**
@@ -23,34 +22,34 @@ import java.util.Iterator;
  * body at "doEndTag"
  */
 public abstract class WritesBodyAtEndTag
-  extends BodyTagSupport {
+    extends BodyTagSupport {
 
-  private boolean m_isEmpty = false;
+    private boolean m_isEmpty = false;
 
-  protected void mvSetEmpty() {
-    m_isEmpty = true;
-  }
+    protected void mvSetEmpty() {
+        m_isEmpty = true;
+    }
 
-  public int doEndTag() throws JspException{
-    try {
-      BodyContent body = getBodyContent();
-      if(m_isEmpty || body == null || body.getString() == null) {
+    public int doEndTag() throws JspException{
+        try {
+            BodyContent body = getBodyContent();
+            if(m_isEmpty || body == null || body.getString() == null) {
+                m_isEmpty = false;
+                return EVAL_PAGE;
+            }
+            JspWriter writer = body.getEnclosingWriter();
+            String bodyString = body.getString();
+            writer.println(bodyString);
+            return EVAL_PAGE;
+        }
+        catch (Exception ioe){
+            ioe.printStackTrace(System.out);
+            throw new JspException(ioe.getMessage());
+        }
+    }
+
+    public void release() {
         m_isEmpty = false;
-        return EVAL_PAGE;
-      }
-      JspWriter writer = body.getEnclosingWriter();
-      String bodyString = body.getString();
-      writer.println(bodyString);
-      return EVAL_PAGE;
+        super.release();
     }
-    catch (Exception ioe){
-      ioe.printStackTrace(System.out);
-      throw new JspException(ioe.getMessage());
-    }
-  }
-
-  public void release() {
-    m_isEmpty = false;
-    super.release();
-  }  
 }

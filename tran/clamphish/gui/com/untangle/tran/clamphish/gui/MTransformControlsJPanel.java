@@ -14,64 +14,62 @@
 package com.untangle.tran.clamphish.gui;
 
 import com.untangle.gui.transform.*;
-import com.untangle.gui.pipeline.MPipelineJPanel;
 import com.untangle.gui.util.*;
 
-import com.untangle.mvvm.tran.TransformContext;
 
 public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
-    
+
     private static final String NAME_SPAM_GOOGLE = "Web";
-	private static final String NAME_WEB_LOG = "Web Event Log";
-	
-	private static final String NAME_SPAM_SMTP = "SMTP";
+    private static final String NAME_WEB_LOG = "Web Event Log";
+
+    private static final String NAME_SPAM_SMTP = "SMTP";
     private static final String NAME_SPAM_POP = "POP";
     private static final String NAME_SPAM_IMAP = "IMAP";
     private static final String NAME_EMAIL_LOG = "Email Event Log";
-    
+
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel)  {
         super(mTransformJPanel);
     }
 
     public void generateGui(){
-	// HTTP ////////		
-	GoogleConfigJPanel googleConfigJPanel = new GoogleConfigJPanel();
-	addTab(NAME_SPAM_GOOGLE, null, googleConfigJPanel);
-	addSavable(NAME_SPAM_GOOGLE, googleConfigJPanel);
-	addRefreshable(NAME_SPAM_GOOGLE, googleConfigJPanel);
-	googleConfigJPanel.setSettingsChangedListener(this);
-	
-	// SMTP ////////
-	SmtpConfigJPanel smtpConfigJPanel = new SmtpConfigJPanel();
-	addTab(NAME_SPAM_SMTP, null, smtpConfigJPanel);
-	addSavable(NAME_SPAM_SMTP, smtpConfigJPanel);
-	addRefreshable(NAME_SPAM_SMTP, smtpConfigJPanel);
-	smtpConfigJPanel.setSettingsChangedListener(this);
+        // HTTP ////////
+        GoogleConfigJPanel googleConfigJPanel = new GoogleConfigJPanel();
+        addTab(NAME_SPAM_GOOGLE, null, googleConfigJPanel);
+        addSavable(NAME_SPAM_GOOGLE, googleConfigJPanel);
+        addRefreshable(NAME_SPAM_GOOGLE, googleConfigJPanel);
+        googleConfigJPanel.setSettingsChangedListener(this);
 
-	// POP ////////
-	PopConfigJPanel popConfigJPanel = new PopConfigJPanel();
-	addTab(NAME_SPAM_POP, null, popConfigJPanel);
-	addSavable(NAME_SPAM_POP, popConfigJPanel);
-	addRefreshable(NAME_SPAM_POP, popConfigJPanel);
-	popConfigJPanel.setSettingsChangedListener(this);
+        // SMTP ////////
+        SmtpConfigJPanel smtpConfigJPanel = new SmtpConfigJPanel();
+        addTab(NAME_SPAM_SMTP, null, smtpConfigJPanel);
+        addSavable(NAME_SPAM_SMTP, smtpConfigJPanel);
+        addRefreshable(NAME_SPAM_SMTP, smtpConfigJPanel);
+        smtpConfigJPanel.setSettingsChangedListener(this);
 
-	// IMAP ////////
-	ImapConfigJPanel imapConfigJPanel = new ImapConfigJPanel();
-	addTab(NAME_SPAM_IMAP, null, imapConfigJPanel);
-	addSavable(NAME_SPAM_IMAP, imapConfigJPanel);
-	addRefreshable(NAME_SPAM_IMAP, imapConfigJPanel);
-	imapConfigJPanel.setSettingsChangedListener(this);
+        // POP ////////
+        PopConfigJPanel popConfigJPanel = new PopConfigJPanel();
+        addTab(NAME_SPAM_POP, null, popConfigJPanel);
+        addSavable(NAME_SPAM_POP, popConfigJPanel);
+        addRefreshable(NAME_SPAM_POP, popConfigJPanel);
+        popConfigJPanel.setSettingsChangedListener(this);
 
-	// WEB EVENT LOG /////
-	WebLogJPanel webLogJPanel = new WebLogJPanel(mTransformJPanel.getTransform(), this);
-	addTab(NAME_WEB_LOG, null, webLogJPanel);
-	addShutdownable(NAME_WEB_LOG, webLogJPanel);
-	
-	// EMAIL EVENT LOG /////
-	EmailLogJPanel emailLogJPanel = new EmailLogJPanel(mTransformJPanel.getTransform(), this);
-	addTab(NAME_EMAIL_LOG, null, emailLogJPanel);
-	addShutdownable(NAME_EMAIL_LOG, emailLogJPanel);
+        // IMAP ////////
+        ImapConfigJPanel imapConfigJPanel = new ImapConfigJPanel();
+        addTab(NAME_SPAM_IMAP, null, imapConfigJPanel);
+        addSavable(NAME_SPAM_IMAP, imapConfigJPanel);
+        addRefreshable(NAME_SPAM_IMAP, imapConfigJPanel);
+        imapConfigJPanel.setSettingsChangedListener(this);
+
+        // WEB EVENT LOG /////
+        WebLogJPanel webLogJPanel = new WebLogJPanel(mTransformJPanel.getTransform(), this);
+        addTab(NAME_WEB_LOG, null, webLogJPanel);
+        addShutdownable(NAME_WEB_LOG, webLogJPanel);
+
+        // EMAIL EVENT LOG /////
+        EmailLogJPanel emailLogJPanel = new EmailLogJPanel(mTransformJPanel.getTransform(), this);
+        addTab(NAME_EMAIL_LOG, null, emailLogJPanel);
+        addShutdownable(NAME_EMAIL_LOG, emailLogJPanel);
     }
-    
+
 }
 

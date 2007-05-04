@@ -16,10 +16,10 @@ package com.untangle.tran.mail.web.euv.tags;
  * is an index
  */
 public final class HasInboxIndexTag
-  extends IfElseTag {
+    extends IfElseTag {
 
-  @Override
-  protected boolean isConditionTrue() {
-    return InboxIndexTag.hasCurrentIndex(pageContext.getRequest());
-  }
+    @Override
+    protected boolean isConditionTrue() {
+        return InboxIndexTag.hasCurrentIndex(pageContext.getRequest());
+    }
 }

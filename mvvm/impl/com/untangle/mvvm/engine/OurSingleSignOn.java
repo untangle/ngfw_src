@@ -14,27 +14,13 @@ package com.untangle.mvvm.engine;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Realm;
-import org.apache.catalina.Session;
-import org.apache.catalina.SessionEvent;
-import org.apache.catalina.SessionListener;
 import org.apache.catalina.authenticator.*;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
-import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
-import org.apache.tomcat.util.buf.ByteChunk;
-import org.apache.tomcat.util.buf.CharChunk;
 
 
 /**
@@ -77,7 +63,7 @@ public class OurSingleSignOn extends ValveBase {
         if (request.getUserPrincipal() != null) {
             if (containerLog.isDebugEnabled())
                 containerLog.debug(" Principal '" + request.getUserPrincipal().getName() +
-                    "' has already been authenticated");
+                                   "' has already been authenticated");
             getNext().invoke(request, response);
             return;
         }

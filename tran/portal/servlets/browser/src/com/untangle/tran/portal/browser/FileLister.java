@@ -31,7 +31,6 @@ import jcifs.smb.SmbAuthException;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileFilter;
-import jcifs.smb.SmbFileFilter;
 import jcifs.util.transport.TransportException;
 import org.apache.log4j.Logger;
 
@@ -217,19 +216,19 @@ public class FileLister extends HttpServlet
         }
 
         Arrays.sort(files, new Comparator<SmbFile>() {
-                public int compare(SmbFile o1, SmbFile o2) {
-                    String o1Name = o1.getName();
-                    String o2Name = o2.getName();
-                    if (o1Name == null && o2Name == null) {
-                        return 0;
-                    } if (o1Name == null) {
-                        return -1;
-                    } if (o2Name == null) {
-                        return 1;
-                    }
-                    return o1Name.compareTo(o2Name);
+            public int compare(SmbFile o1, SmbFile o2) {
+                String o1Name = o1.getName();
+                String o2Name = o2.getName();
+                if (o1Name == null && o2Name == null) {
+                    return 0;
+                } if (o1Name == null) {
+                    return -1;
+                } if (o2Name == null) {
+                    return 1;
                 }
-            });
+                return o1Name.compareTo(o2Name);
+            }
+        });
 
         os.println("<root path='" + p + "'>");
 

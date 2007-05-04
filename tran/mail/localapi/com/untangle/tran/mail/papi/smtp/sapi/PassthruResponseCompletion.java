@@ -16,15 +16,15 @@ import com.untangle.tran.mail.papi.smtp.Response;
 /**
  * Convienence implementation of ResponseCompletion
  * which simply passes back to the client.
- * 
+ *
  */
 public class PassthruResponseCompletion
-  implements ResponseCompletion {
+    implements ResponseCompletion {
 
 
-  public void handleResponse(Response resp,
-    Session.SmtpResponseActions actions) {
-    actions.sendResponseToClient(resp);
-  }
+    public void handleResponse(Response resp,
+                               Session.SmtpResponseActions actions) {
+        actions.sendResponseToClient(resp);
+    }
 
 }

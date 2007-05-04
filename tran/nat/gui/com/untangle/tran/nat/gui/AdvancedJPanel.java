@@ -11,49 +11,49 @@
 
 package com.untangle.tran.nat.gui;
 
-import com.untangle.gui.util.Util;
-import com.untangle.gui.transform.*;
-import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.tran.nat.*;
-import com.untangle.mvvm.networking.*;
-import com.untangle.mvvm.client.MvvmRemoteContextFactory;
-
 import java.awt.Window;
 import javax.swing.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.Util;
+import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.mvvm.client.MvvmRemoteContextFactory;
+import com.untangle.mvvm.networking.*;
+import com.untangle.tran.nat.*;
 
 public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Object> {
 
     private MTransformControlsJPanel mTransformControlsJPanel;
-    
+
     public AdvancedJPanel(MTransformControlsJPanel mTransformControlsJPanel) {
-	this.mTransformControlsJPanel = mTransformControlsJPanel;
+        this.mTransformControlsJPanel = mTransformControlsJPanel;
         initComponents();
     }
 
     public void doRefresh(Object settings){
-	SetupState setupState = ((NatCommonSettings)settings).getSetupState();
-	if( SetupState.ADVANCED.equals(setupState) ){
-	    statusJLabel.setText("Advanced (Net Spaces & Routing)");
-	    advancedJButton.setEnabled(false);
-	    standardJButton.setEnabled(true);
-	}
-	else if( SetupState.BASIC.equals(setupState) ){
-	    statusJLabel.setText("Standard (NAT & DMZ Host)");
-	    advancedJButton.setEnabled(true);
-	    standardJButton.setEnabled(false);
-	}
-	else if( SetupState.UNCONFIGURED.equals(setupState) ){
-	    statusJLabel.setText("Unconfigured");
-	    advancedJButton.setEnabled(true);
-	    standardJButton.setEnabled(true);
-	}
-	else{
-	    statusJLabel.setText("Network Sharing (deprecated)");
-	    advancedJButton.setEnabled(true);
-	    standardJButton.setEnabled(true);
-	}
+        SetupState setupState = ((NatCommonSettings)settings).getSetupState();
+        if( SetupState.ADVANCED.equals(setupState) ){
+            statusJLabel.setText("Advanced (Net Spaces & Routing)");
+            advancedJButton.setEnabled(false);
+            standardJButton.setEnabled(true);
+        }
+        else if( SetupState.BASIC.equals(setupState) ){
+            statusJLabel.setText("Standard (NAT & DMZ Host)");
+            advancedJButton.setEnabled(true);
+            standardJButton.setEnabled(false);
+        }
+        else if( SetupState.UNCONFIGURED.equals(setupState) ){
+            statusJLabel.setText("Unconfigured");
+            advancedJButton.setEnabled(true);
+            standardJButton.setEnabled(true);
+        }
+        else{
+            statusJLabel.setText("Network Sharing (deprecated)");
+            advancedJButton.setEnabled(true);
+            standardJButton.setEnabled(true);
+        }
     }
-    
+
 
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
@@ -121,10 +121,10 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
         advancedJButton.setMinimumSize(new java.awt.Dimension(175, 60));
         advancedJButton.setPreferredSize(new java.awt.Dimension(175, 60));
         advancedJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                advancedJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    advancedJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -166,10 +166,10 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
         standardJButton.setMinimumSize(new java.awt.Dimension(175, 60));
         standardJButton.setPreferredSize(new java.awt.Dimension(175, 60));
         standardJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                standardJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    standardJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -201,85 +201,85 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
     }//GEN-END:initComponents
 
     private void standardJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_standardJButtonActionPerformed
-	if( Util.getIsDemo() )
-	    return;
+        if( Util.getIsDemo() )
+            return;
         standardJButton.setEnabled(false);
-	MTwoButtonJDialog proceedJDialog = MTwoButtonJDialog.factory((Window)getTopLevelAncestor(), "Router",
-                                                                 "Proceeding will cause your currently saved settings to be reset to defaults.<br>"
-                                                               + "<b>Your GUI may be logged out.</b>", "Router Warning", "Router Warning");
-	proceedJDialog.setVisible(true);
-	if( proceedJDialog.isProceeding() )
-	    new NatModeResetThread(false);
-	standardJButton.setEnabled(true);
+        MTwoButtonJDialog proceedJDialog = MTwoButtonJDialog.factory((Window)getTopLevelAncestor(), "Router",
+                                                                     "Proceeding will cause your currently saved settings to be reset to defaults.<br>"
+                                                                     + "<b>Your GUI may be logged out.</b>", "Router Warning", "Router Warning");
+        proceedJDialog.setVisible(true);
+        if( proceedJDialog.isProceeding() )
+            new NatModeResetThread(false);
+        standardJButton.setEnabled(true);
     }//GEN-LAST:event_standardJButtonActionPerformed
-    
+
     private void advancedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_advancedJButtonActionPerformed
-	if( Util.getIsDemo() )
-	    return;
-	advancedJButton.setEnabled(false);
-	MTwoButtonJDialog proceedJDialog = MTwoButtonJDialog.factory((Window)getTopLevelAncestor(), "Router",
-                                                                 "You should only use this mode if Standard Mode can not handle your network configuration.<br>"
-                                                            + "<b>Your current settings will automatically be converted, but you can not go back to Standard Mode<br>"
-                                                               + "without losing your converted settings.</b>", "Router Warning", "Router Warning");
-	proceedJDialog.setVisible(true);
-	if( proceedJDialog.isProceeding() )
-	    new NatModeResetThread(true);
-	advancedJButton.setEnabled(true);
+        if( Util.getIsDemo() )
+            return;
+        advancedJButton.setEnabled(false);
+        MTwoButtonJDialog proceedJDialog = MTwoButtonJDialog.factory((Window)getTopLevelAncestor(), "Router",
+                                                                     "You should only use this mode if Standard Mode can not handle your network configuration.<br>"
+                                                                     + "<b>Your current settings will automatically be converted, but you can not go back to Standard Mode<br>"
+                                                                     + "without losing your converted settings.</b>", "Router Warning", "Router Warning");
+        proceedJDialog.setVisible(true);
+        if( proceedJDialog.isProceeding() )
+            new NatModeResetThread(true);
+        advancedJButton.setEnabled(true);
     }//GEN-LAST:event_advancedJButtonActionPerformed
-    
+
 
     private class NatModeResetThread extends Thread{
-	private boolean isAdvanced;
-	private MProgressJDialog progressJDialog;
-	public NatModeResetThread(boolean isAdvanced){
-	    setDaemon(true);
-	    this.isAdvanced = isAdvanced;
-	    mTransformControlsJPanel.getInfiniteProgressJComponent().start("Reconfiguring...");
-	    start();
-	}
-	public void run(){
-	    /*
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		progressJDialog = MProgressJDialog.factory("Network Sharing Reconfiguring...",
-									    "Please wait a moment...",
-									    (Window)AdvancedJPanel.this.getTopLevelAncestor());
-		progressJDialog.getJProgressBar().setString("Reconfiguring...");
-		progressJDialog.getJProgressBar().setIndeterminate(true);
-		progressJDialog.setVisible(true);
-	    }});
-	    */
+        private boolean isAdvanced;
+        private MProgressJDialog progressJDialog;
+        public NatModeResetThread(boolean isAdvanced){
+            setDaemon(true);
+            this.isAdvanced = isAdvanced;
+            mTransformControlsJPanel.getInfiniteProgressJComponent().start("Reconfiguring...");
+            start();
+        }
+        public void run(){
+            /*
+              SwingUtilities.invokeLater( new Runnable(){ public void run(){
+              progressJDialog = MProgressJDialog.factory("Network Sharing Reconfiguring...",
+              "Please wait a moment...",
+              (Window)AdvancedJPanel.this.getTopLevelAncestor());
+              progressJDialog.getJProgressBar().setString("Reconfiguring...");
+              progressJDialog.getJProgressBar().setIndeterminate(true);
+              progressJDialog.setVisible(true);
+              }});
+            */
 
-	    try{
-		Nat natTransform = com.untangle.tran.nat.gui.MTransformControlsJPanel.getNatTransform();
-		int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
-		MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);		
-		if( isAdvanced )
-		    natTransform.switchToAdvanced();
-		else
-		    natTransform.resetBasic();
-		MvvmRemoteContextFactory.factory().setTimeout(previousTimeout);		
-	    }
-	    catch(Exception e){
-		try{ Util.handleExceptionWithRestart("Error reconfiguring", e); }
-		catch(Exception f){
-		    Util.handleExceptionNoRestart("Error reconfiguring", f);
-		    MOneButtonJDialog.factory((Window)getTopLevelAncestor(),
-					      "Router", "An error has occurred, please retry.",
-					      "Router Warning", "Warning");
-		}
-	    }
-	    mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(3000l);
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		mTransformControlsJPanel.refreshGui();
-	    }});
-	    /*
-	    SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		progressJDialog.setVisible(false);
-	    }});
-	    */
-	}
+            try{
+                Nat natTransform = com.untangle.tran.nat.gui.MTransformControlsJPanel.getNatTransform();
+                int previousTimeout = MvvmRemoteContextFactory.factory().getTimeout();
+                MvvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
+                if( isAdvanced )
+                    natTransform.switchToAdvanced();
+                else
+                    natTransform.resetBasic();
+                MvvmRemoteContextFactory.factory().setTimeout(previousTimeout);
+            }
+            catch(Exception e){
+                try{ Util.handleExceptionWithRestart("Error reconfiguring", e); }
+                catch(Exception f){
+                    Util.handleExceptionNoRestart("Error reconfiguring", f);
+                    MOneButtonJDialog.factory((Window)getTopLevelAncestor(),
+                                              "Router", "An error has occurred, please retry.",
+                                              "Router Warning", "Warning");
+                }
+            }
+            mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(3000l);
+            SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                mTransformControlsJPanel.refreshGui();
+            }});
+            /*
+              SwingUtilities.invokeLater( new Runnable(){ public void run(){
+              progressJDialog.setVisible(false);
+              }});
+            */
+        }
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton advancedJButton;
     private javax.swing.JPanel clientJPanel;
@@ -291,5 +291,5 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
     private javax.swing.JLabel statusJLabel;
     private javax.swing.JPanel statusJPanel;
     // End of variables declaration//GEN-END:variables
-    
+
 }

@@ -12,19 +12,17 @@
 
 package com.untangle.tran.openvpn.gui;
 
+import java.util.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
+
 import com.untangle.gui.transform.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.tran.*;
 import com.untangle.mvvm.tran.firewall.*;
 import com.untangle.tran.openvpn.*;
-
-import java.awt.Insets;
-import java.awt.Font;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
 
 
 public class TableModelClientToSite extends MSortedTableModel<Object>{
@@ -41,15 +39,15 @@ public class TableModelClientToSite extends MSortedTableModel<Object>{
     private static final int C3_MW = 150;  /* name */
     private static final int C4_MW = 150; /* group */
     private static final int C5_MW = 150; /* action */
-    private static final int C6_MW = 150; /* virtual address */    
+    private static final int C6_MW = 150; /* virtual address */
     private static final int C7_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW), 120); /* description */
-    
+
     private DefaultComboBoxModel groupModel = new DefaultComboBoxModel();
 
     public void updateGroupModel(List<VpnGroup> vpnGroups){
-	groupModel.removeAllElements();
-	for( VpnGroup vpnGroup : vpnGroups )
-	    groupModel.addElement(vpnGroup);
+        groupModel.removeAllElements();
+        for( VpnGroup vpnGroup : vpnGroups )
+            groupModel.addElement(vpnGroup);
     }
 
     public TableColumnModel getTableColumnModel(){
@@ -69,76 +67,76 @@ public class TableModelClientToSite extends MSortedTableModel<Object>{
     }
 
     public void handleDependencies(int viewCol, int viewRow){
-	Vector rowVector = (Vector) getDataVector().elementAt(viewRow);
-	String rowState = (String) rowVector.elementAt( getStateModelIndex() );
-	KeyButtonRunnable keyButtonRunnable = (KeyButtonRunnable) rowVector.elementAt(5);
-	if( !rowState.equals(ROW_SAVED) ){
-	    keyButtonRunnable.setEnabled(false);	
-	}
-	else{
-	    keyButtonRunnable.setEnabled(true);	
-	}
-	super.handleDependencies(viewCol,viewRow);
+        Vector rowVector = (Vector) getDataVector().elementAt(viewRow);
+        String rowState = (String) rowVector.elementAt( getStateModelIndex() );
+        KeyButtonRunnable keyButtonRunnable = (KeyButtonRunnable) rowVector.elementAt(5);
+        if( !rowState.equals(ROW_SAVED) ){
+            keyButtonRunnable.setEnabled(false);
+        }
+        else{
+            keyButtonRunnable.setEnabled(true);
+        }
+        super.handleDependencies(viewCol,viewRow);
     }
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-	List elemList = new ArrayList(tableVector.size());
-	VpnClient newElem = null;
-	int rowIndex = 0;
-	
-	for( Vector rowVector : tableVector ){
-	    rowIndex++;
-            newElem = (VpnClient) rowVector.elementAt(8);
-	    newElem.setLive( (Boolean) rowVector.elementAt(2) );
-	    
-	    String rowState = (String) rowVector.elementAt( getStateModelIndex() );
-	    String proposedName = (String) rowVector.elementAt(3);
-	    if( rowState.equals(ROW_CHANGED) && !proposedName.equals(newElem.getName()) ){
-		throw new Exception(EXCEPTION_CANNOT_CHANGE_NAME);
-	    }	    
-	    newElem.setName( (String) rowVector.elementAt(3) );
+        List elemList = new ArrayList(tableVector.size());
+        VpnClient newElem = null;
+        int rowIndex = 0;
 
-	    newElem.setGroup( (VpnGroup) ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem() );
+        for( Vector rowVector : tableVector ){
+            rowIndex++;
+            newElem = (VpnClient) rowVector.elementAt(8);
+            newElem.setLive( (Boolean) rowVector.elementAt(2) );
+
+            String rowState = (String) rowVector.elementAt( getStateModelIndex() );
+            String proposedName = (String) rowVector.elementAt(3);
+            if( rowState.equals(ROW_CHANGED) && !proposedName.equals(newElem.getName()) ){
+                throw new Exception(EXCEPTION_CANNOT_CHANGE_NAME);
+            }
+            newElem.setName( (String) rowVector.elementAt(3) );
+
+            newElem.setGroup( (VpnGroup) ((ComboBoxModel) rowVector.elementAt(4)).getSelectedItem() );
             /* rbs: do not modify the client address */
-	    newElem.setDescription( (String) rowVector.elementAt(7) );
-	    elemList.add(newElem);
+            newElem.setDescription( (String) rowVector.elementAt(7) );
+            elemList.add(newElem);
         }
-	
-	// SAVE SETTINGS ////////
-	if( !validateOnly ){
-	    VpnSettings vpnSettings = (VpnSettings) settings;
-	    vpnSettings.setClientList(elemList);
-	}
+
+        // SAVE SETTINGS ////////
+        if( !validateOnly ){
+            VpnSettings vpnSettings = (VpnSettings) settings;
+            vpnSettings.setClientList(elemList);
+        }
 
     }
 
     public Vector<Vector> generateRows(Object settings) {
         VpnSettings vpnSettings = (VpnSettings) settings;
-	List<VpnClient> vpnClients = (List<VpnClient>) vpnSettings.getClientList();
+        List<VpnClient> vpnClients = (List<VpnClient>) vpnSettings.getClientList();
         Vector<Vector> allRows = new Vector<Vector>(vpnClients.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
-	
-	updateGroupModel( (List<VpnGroup>) vpnSettings.getGroupList() );
-	
-	for( VpnClient vpnClient : vpnClients ){
-	    rowIndex++;
-	    tempRow = new Vector(8);
-	    tempRow.add( super.ROW_SAVED );
-	    tempRow.add( rowIndex );
-	    tempRow.add( vpnClient.isLive() );
-	    tempRow.add( vpnClient.getName() );
-	    ComboBoxModel groupComboBoxModel = super.copyComboBoxModel(groupModel);
-	    groupComboBoxModel.setSelectedItem( vpnClient.getGroup() );
-	    tempRow.add( groupComboBoxModel );
-	    KeyButtonRunnable keyButtonRunnable = new KeyButtonRunnable("true");
-	    keyButtonRunnable.setVpnClient( vpnClient );
-	    tempRow.add( keyButtonRunnable  );
+        Vector tempRow = null;
+        int rowIndex = 0;
+
+        updateGroupModel( (List<VpnGroup>) vpnSettings.getGroupList() );
+
+        for( VpnClient vpnClient : vpnClients ){
+            rowIndex++;
+            tempRow = new Vector(8);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            tempRow.add( vpnClient.isLive() );
+            tempRow.add( vpnClient.getName() );
+            ComboBoxModel groupComboBoxModel = super.copyComboBoxModel(groupModel);
+            groupComboBoxModel.setSelectedItem( vpnClient.getGroup() );
+            tempRow.add( groupComboBoxModel );
+            KeyButtonRunnable keyButtonRunnable = new KeyButtonRunnable("true");
+            keyButtonRunnable.setVpnClient( vpnClient );
+            tempRow.add( keyButtonRunnable  );
             tempRow.add( getClientAddress( vpnClient ));
-	    tempRow.add( vpnClient.getDescription() );
-	    tempRow.add( vpnClient );
-	    allRows.add(tempRow);
-	}
+            tempRow.add( vpnClient.getDescription() );
+            tempRow.add( vpnClient );
+            allRows.add(tempRow);
+        }
 
         return allRows;
     }

@@ -87,15 +87,15 @@ public class VirusScannerResult
     }
 
     /**
-    * For use in Templates (see JavaDoc at the top of this class
-    * for explanation of the key which can be used).
-    */
+     * For use in Templates (see JavaDoc at the top of this class
+     * for explanation of the key which can be used).
+     */
     public String getTemplateValue(String key) {
-      key = key.trim().toLowerCase();
-      if(key.equalsIgnoreCase(VIRUS_NAME_KEY)) {
-        return getVirusName();
-      }
-      return null;
+        key = key.trim().toLowerCase();
+        if(key.equalsIgnoreCase(VIRUS_NAME_KEY)) {
+            return getVirusName();
+        }
+        return null;
     }
 
     // Object methods ---------------------------------------------------------

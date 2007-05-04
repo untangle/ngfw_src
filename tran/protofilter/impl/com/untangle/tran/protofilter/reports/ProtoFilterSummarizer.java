@@ -29,9 +29,9 @@ public class ProtoFilterSummarizer extends BaseSummarizer {
         int blockCount = 0;
 
         try {
-        String sql;
-        PreparedStatement ps;
-        ResultSet rs;
+            String sql;
+            PreparedStatement ps;
+            ResultSet rs;
 
             sql = "SELECT COUNT(*) FROM tr_protofilter_evt WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);

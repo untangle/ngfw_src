@@ -20,8 +20,8 @@ import com.untangle.tran.mail.papi.smtp.SMTPNotifyAction;
 // XXX convert to enum when we dump XDoclet
 
 public class SpamSMTPNotifyAction// extends SMTPNotifyAction
-  implements java.io.Serializable {
-   
+    implements java.io.Serializable {
+
     private static final long serialVersionUID = -6364692037092527263L;
 
     private static final Map INSTANCES = new HashMap();
@@ -40,7 +40,7 @@ public class SpamSMTPNotifyAction// extends SMTPNotifyAction
     }
 
     private final String name;
-    private final char key;    
+    private final char key;
 
     protected SpamSMTPNotifyAction(char key, String name)
     {
@@ -57,12 +57,12 @@ public class SpamSMTPNotifyAction// extends SMTPNotifyAction
     {
         SpamSMTPNotifyAction a;
         for (Iterator i = INSTANCES.keySet().iterator(); true == i.hasNext(); )
-        {
-            a = (SpamSMTPNotifyAction)INSTANCES.get(i.next());
-            if (name.equals(a.getName())) {
-                return a;
+            {
+                a = (SpamSMTPNotifyAction)INSTANCES.get(i.next());
+                if (name.equals(a.getName())) {
+                    return a;
+                }
             }
-        }
         return null;
     }
 
@@ -84,8 +84,8 @@ public class SpamSMTPNotifyAction// extends SMTPNotifyAction
     Object readResolve()
     {
         return getInstance(key);
-    }    
-    
+    }
+
 
     public static SpamSMTPNotifyAction[] getValues()
     {
@@ -100,12 +100,12 @@ public class SpamSMTPNotifyAction// extends SMTPNotifyAction
     }
 
     public static SMTPNotifyAction toSMTPNotifyAction(SpamSMTPNotifyAction action) {
-      if(action == SENDER) {
-        return SMTPNotifyAction.SENDER;
-      }
-      if(action == NEITHER) {
-        return SMTPNotifyAction.NEITHER;
-      }
-      return null;
+        if(action == SENDER) {
+            return SMTPNotifyAction.SENDER;
+        }
+        if(action == NEITHER) {
+            return SMTPNotifyAction.NEITHER;
+        }
+        return null;
     }
 }

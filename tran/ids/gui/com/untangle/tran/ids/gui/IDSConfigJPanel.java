@@ -11,21 +11,17 @@
 
 package com.untangle.tran.ids.gui;
 
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.gui.transform.*;
-import com.untangle.gui.pipeline.MPipelineJPanel;
-import com.untangle.mvvm.tran.*;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.util.*;
-
-import com.untangle.tran.ids.*;
-
-import java.awt.*;
+import java.awt.Insets;
 import java.util.*;
-import java.util.List;
 import javax.swing.*;
-import javax.swing.table.*;
 import javax.swing.event.*;
+import javax.swing.table.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.editTable.*;
+import com.untangle.mvvm.tran.*;
+import com.untangle.tran.ids.*;
 
 public class IDSConfigJPanel extends MEditTableJPanel{
 
@@ -36,7 +32,7 @@ public class IDSConfigJPanel extends MEditTableJPanel{
         super.setTableTitle("protocols");
         super.setDetailsTitle("protocol details");
         super.setAddRemoveEnabled(true);
-        
+
         // create actual table model
         IDSTableModel idsTableModel = new IDSTableModel();
         this.setTableModel( idsTableModel );
@@ -45,7 +41,7 @@ public class IDSConfigJPanel extends MEditTableJPanel{
 }
 
 
-class IDSTableModel extends MSortedTableModel<Object>{ 
+class IDSTableModel extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -58,7 +54,7 @@ class IDSTableModel extends MSortedTableModel<Object>{
     private static final int C7_MW = 70;  /* SID */
     private static final int C8_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW), 120); /* signature */
 
-    
+
     public TableColumnModel getTableColumnModel(){
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
@@ -75,48 +71,48 @@ class IDSTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  9,  10,     false, false, true,  false, IDSRule.class, null, "");
         return tableColumnModel;
     }
-    
+
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
-	List elemList = new ArrayList(tableVector.size());
+        List elemList = new ArrayList(tableVector.size());
 
-	IDSRule newElem = null;
+        IDSRule newElem = null;
 
-	for( Vector rowVector : tableVector ){            
-	    newElem = (IDSRule) rowVector.elementAt(9);
+        for( Vector rowVector : tableVector ){
+            newElem = (IDSRule) rowVector.elementAt(9);
             newElem.setCategory( (String) rowVector.elementAt(2) );
             newElem.setLive( (Boolean) rowVector.elementAt(3) );
             newElem.setLog( (Boolean) rowVector.elementAt(4) );
             newElem.setText( (String) rowVector.elementAt(8) );
 
-	    // an optimization so that the transform knows which rows are changed
-	    String ruleState = (String) rowVector.elementAt(0);
-	    boolean ruleChanged;
-	    if( ROW_ADD.equals(ruleState) || ROW_CHANGED.equals(ruleState) )
-		ruleChanged = true;
-	    else
-		ruleChanged = false;
-	    newElem.setModified(ruleChanged);
+            // an optimization so that the transform knows which rows are changed
+            String ruleState = (String) rowVector.elementAt(0);
+            boolean ruleChanged;
+            if( ROW_ADD.equals(ruleState) || ROW_CHANGED.equals(ruleState) )
+                ruleChanged = true;
+            else
+                ruleChanged = false;
+            newElem.setModified(ruleChanged);
 
             elemList.add(newElem);
         }
 
-	// SAVE SETTINGS ////////
-	if( !validateOnly ){
-	    IDSSettings transformSettings = (IDSSettings) settings;
-	    transformSettings.setRules(elemList);
-	}
+        // SAVE SETTINGS ////////
+        if( !validateOnly ){
+            IDSSettings transformSettings = (IDSSettings) settings;
+            transformSettings.setRules(elemList);
+        }
 
     }
-    
-    public Vector<Vector> generateRows(Object settings){
-	IDSSettings idsSettings = (IDSSettings) settings;
-	List<IDSRule> rules = (List<IDSRule>) idsSettings.getRules();
-	Vector<Vector> allRows = new Vector<Vector>(rules.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
 
-	for( IDSRule newElem : rules ){
-	    rowIndex++;
+    public Vector<Vector> generateRows(Object settings){
+        IDSSettings idsSettings = (IDSSettings) settings;
+        List<IDSRule> rules = (List<IDSRule>) idsSettings.getRules();
+        Vector<Vector> allRows = new Vector<Vector>(rules.size());
+        Vector tempRow = null;
+        int rowIndex = 0;
+
+        for( IDSRule newElem : rules ){
+            rowIndex++;
             tempRow = new Vector(10);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );

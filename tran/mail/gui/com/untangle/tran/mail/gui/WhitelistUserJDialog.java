@@ -11,23 +11,18 @@
 
 package com.untangle.tran.mail.gui;
 
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.table.*;
+
+import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.util.*;
-
 import com.untangle.mvvm.tran.*;
-import com.untangle.mvvm.security.Tid;
-
 import com.untangle.tran.mail.papi.*;
 import com.untangle.tran.mail.papi.safelist.*;
-
-import java.lang.reflect.Constructor;
-
-import java.awt.Dimension;
-import java.awt.Dialog;
-import java.util.*;
-import javax.swing.table.*;
-import javax.swing.*;
 
 
 
@@ -37,34 +32,34 @@ public class WhitelistUserJDialog extends MConfigJDialog {
 
     private SafelistAdminView safelistAdminView;
     private String account;
-        
+
     public WhitelistUserJDialog(Dialog topLevelDialog, MailTransformCompoundSettings mailTransformCompoundSettings, String account) {
-	super(topLevelDialog);
-	setHelpSource("email_config");
-	compoundSettings = mailTransformCompoundSettings;
+        super(topLevelDialog);
+        setHelpSource("email_config");
+        compoundSettings = mailTransformCompoundSettings;
         this.account = account;
-	INSTANCE = this;
+        INSTANCE = this;
     }
 
     protected Dimension getMinSize(){
-	return new Dimension(640, 550);
+        return new Dimension(640, 550);
     }
-    
+
     private static WhitelistUserJDialog INSTANCE;
     public static WhitelistUserJDialog instance(){ return INSTANCE; }
-    
+
     protected void generateGui(){
         this.setTitle(NAME_WHITELIST_USER + account);
         saveJButton.setVisible(false);
-        
+
         // ALL ACCOUNTS //////
-	WhitelistUserJPanel whitelistUserJPanel = new WhitelistUserJPanel(account);
-	addRefreshable(NAME_WHITELIST_USER, whitelistUserJPanel);
+        WhitelistUserJPanel whitelistUserJPanel = new WhitelistUserJPanel(account);
+        addRefreshable(NAME_WHITELIST_USER, whitelistUserJPanel);
         addTab(NAME_WHITELIST_USER + account, null, whitelistUserJPanel);
     }
-    
+
     protected void refreshAll() throws Exception {
-	super.refreshAll();
-	((MailTransformCompoundSettings)compoundSettings).loadSafelistContents(account);
+        super.refreshAll();
+        ((MailTransformCompoundSettings)compoundSettings).loadSafelistContents(account);
     }
 }

@@ -39,7 +39,6 @@ import com.untangle.mvvm.tran.HostName;
 import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.Validatable;
 import com.untangle.mvvm.tran.ValidateException;
-import com.untangle.mvvm.tran.firewall.ip.IPDBMatcher;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
@@ -174,12 +173,12 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
     @Column(name="nat_enabled", nullable=false)
     public boolean getNatEnabled()
     {
-    return natEnabled;
+        return natEnabled;
     }
 
     public void setNatEnabled( boolean enabled )
     {
-    natEnabled = enabled;
+        natEnabled = enabled;
     }
 
     /**
@@ -280,7 +279,7 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinTable(name="tr_nat_redirects",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
@@ -426,7 +425,7 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinTable(name="tr_dhcp_leases",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
@@ -484,7 +483,7 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinTable(name="tr_nat_dns_hosts",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))

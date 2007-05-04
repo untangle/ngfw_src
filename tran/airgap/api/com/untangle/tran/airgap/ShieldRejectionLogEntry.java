@@ -11,9 +11,8 @@
 package com.untangle.tran.airgap;
 
 import java.io.Serializable;
-
-import java.util.Date;
 import java.sql.Timestamp;
+import java.util.Date;
 
 public class ShieldRejectionLogEntry implements Serializable
 {
@@ -25,14 +24,14 @@ public class ShieldRejectionLogEntry implements Serializable
     private final int    dropped;
     private final int    rejected;
 
-    ShieldRejectionLogEntry( Date createDate, String client, String clientIntf, 
+    ShieldRejectionLogEntry( Date createDate, String client, String clientIntf,
                              double reputation, int limited, int dropped, int rejected )
-                             
+
     {
-	if( createDate instanceof Timestamp )
-	    this.createDate = new Date(createDate.getTime());
-	else
-	    this.createDate = createDate;
+        if( createDate instanceof Timestamp )
+            this.createDate = new Date(createDate.getTime());
+        else
+            this.createDate = createDate;
         this.client     = client;
         this.clientIntf = clientIntf;
         this.reputation = reputation;
@@ -71,7 +70,7 @@ public class ShieldRejectionLogEntry implements Serializable
     {
         return this.dropped;
     }
-    
+
     public int getRejected()
     {
         return this.rejected;

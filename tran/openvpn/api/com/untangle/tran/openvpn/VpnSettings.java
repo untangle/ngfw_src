@@ -12,12 +12,10 @@
 package com.untangle.tran.openvpn;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,7 +23,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -54,7 +51,7 @@ public class VpnSettings implements Serializable, Validatable
 
     private static final String INVALID_CHARACTERS_STRING = "[^-a-zA-Z0-9- ]";
     private static final Pattern INVALID_CHARACTERS_PATTERN;
-    
+
     private static final String MULTISPACE_STRING = " +";
     private static final Pattern MULTISPACE_PATTERN;
 
@@ -91,7 +88,7 @@ public class VpnSettings implements Serializable, Validatable
     private List<VpnGroup> groupList;
     private List<VpnClient> clientList;
     private List<VpnSite> siteList;
-    
+
     private boolean isDnsOverrideEnabled = false;
     private IPaddr dns1;
     private IPaddr dns2;
@@ -223,7 +220,7 @@ public class VpnSettings implements Serializable, Validatable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
     public List<VpnGroup> getGroupList()
@@ -245,7 +242,7 @@ public class VpnSettings implements Serializable, Validatable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
     public List<VpnClient> getClientList()
@@ -267,7 +264,7 @@ public class VpnSettings implements Serializable, Validatable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
     public List<VpnSite> getSiteList()
@@ -286,7 +283,7 @@ public class VpnSettings implements Serializable, Validatable
      * True if DNS override is enabled.
      * This determines if the user specified DNS servers should be used as opposed to the
      * default ones from the MVVM.
-     * @return whether or not to override DNS 
+     * @return whether or not to override DNS
      */
     @Column(name="is_dns_override", nullable=false)
     public boolean getIsDnsOverrideEnabled()
@@ -327,7 +324,7 @@ public class VpnSettings implements Serializable, Validatable
     public List<IPaddr> getDnsServerList()
     {
         List<IPaddr> dnsServerList = new LinkedList<IPaddr>();
-        
+
         if (( this.dns1 != null ) && ( !this.dns1.isEmpty())) dnsServerList.add( this.dns1 );
         if (( this.dns2 != null ) && ( !this.dns2.isEmpty())) dnsServerList.add( this.dns2 );
 
@@ -372,7 +369,7 @@ public class VpnSettings implements Serializable, Validatable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
     public List<ServerSiteNetwork> getExportedAddressList()
@@ -594,22 +591,22 @@ public class VpnSettings implements Serializable, Validatable
     public String getSiteName()
     {
         if ( this.siteName == null ) this.siteName = DEFAULT_SITE_NAME;
-        
+
         this.siteName = this.siteName.trim();
-        
+
         if ( this.siteName.length() == 0 ) this.siteName = DEFAULT_SITE_NAME;
-        
+
         return this.siteName;
     }
 
     public void setSiteName( String newValue )
     {
         if ( newValue == null ) newValue = DEFAULT_SITE_NAME;
-        newValue = newValue.trim(); 
+        newValue = newValue.trim();
         if ( newValue.length() == 0 ) newValue = DEFAULT_SITE_NAME;
         this.siteName = newValue;
     }
-    
+
     /**
      * Name of this VPN site.  This is the value that identifies this
      * office in the config file */
@@ -617,10 +614,10 @@ public class VpnSettings implements Serializable, Validatable
     public String getInternalSiteName()
     {
         String site = getSiteName();
-        
+
         /* try using the organization if the site name is not intialized */
         if ( DEFAULT_SITE_NAME.equals( site )) site = this.organization;
-        
+
         /* fall back to the site name if necessary */
         if ( site == null ) site = DEFAULT_SITE_NAME;
         site = site.trim();
@@ -637,11 +634,11 @@ public class VpnSettings implements Serializable, Validatable
         site = INVALID_CHARACTERS_PATTERN.matcher( site ).replaceAll( "" );
 
         /* Trim off whitespace again */
-        site = site.trim(); 
+        site = site.trim();
 
         /* replace all of the spaces with dashes */
         site = MULTISPACE_PATTERN.matcher( site ).replaceAll( "-" );
-        
+
         return site;
     }
 

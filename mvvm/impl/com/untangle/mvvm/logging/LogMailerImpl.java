@@ -166,7 +166,7 @@ public class LogMailerImpl implements LogMailer, Runnable
     private void doSend(String subjectBase, String bodyBase,
                         List<MimeBodyPart> parts) {
         String host = MvvmContextFactory.context().networkManager().
-                getAddressSettingsInternal().getHostName().toString();
+            getAddressSettingsInternal().getHostName().toString();
 
         String bodyText = sysstat.systemStatus();
         String version = Version.getVersion();

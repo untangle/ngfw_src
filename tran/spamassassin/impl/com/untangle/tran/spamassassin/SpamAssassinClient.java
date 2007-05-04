@@ -11,9 +11,8 @@
 
 package com.untangle.tran.spamassassin;
 
-import java.io.BufferedReader;
 import java.io.BufferedOutputStream;
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.InterruptedException;
@@ -21,9 +20,9 @@ import java.net.SocketException;
 import java.nio.channels.ClosedByInterruptException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.StringTokenizer;
 
 import com.untangle.tran.spam.ReportItem;
 import com.untangle.tran.spam.SpamReport;
@@ -188,9 +187,9 @@ public final class SpamAssassinClient implements Runnable {
             rBuf = CRLF.getBytes(); // add extra CRLF
             bufOutputStream.write(rBuf, 0, rBuf.length);
             bufOutputStream.flush();
-	    // Can't close the bufOutputStream here or it closes the
-	    // whole socket.  Instead shutdown.
-	    spamcSocket.shutdownOutput();
+            // Can't close the bufOutputStream here or it closes the
+            // whole socket.  Instead shutdown.
+            spamcSocket.shutdownOutput();
             fInputStream.close();
             fInputStream = null;
             rBuf = null;
@@ -356,28 +355,28 @@ public final class SpamAssassinClient implements Runnable {
                true == sTokenizer.hasMoreTokens()) {
             tStr = sTokenizer.nextToken();
             switch(tIdx) {
-                case 0:
-                    break; // skip SPAMD tag
-                case 1:
-                    float version = Float.parseFloat(tStr);
-                    if (1.0 > version)
-                        throw new Exception(dbgName + ", spamd response has unsupported version: " + version);
+            case 0:
+                break; // skip SPAMD tag
+            case 1:
+                float version = Float.parseFloat(tStr);
+                if (1.0 > version)
+                    throw new Exception(dbgName + ", spamd response has unsupported version: " + version);
 
-                    break;
-                case 2:
-                    int retCode = Integer.parseInt(tStr);
-                    if (0 != retCode) {
-                        logger.warn(dbgName + ", spamd response has non-success return code: " + retCode);
-                        isOK = false;
-                        // continue if non-success because spamc doesn't care
-                        // -> spamd will terminate connection soon
-                    }
+                break;
+            case 2:
+                int retCode = Integer.parseInt(tStr);
+                if (0 != retCode) {
+                    logger.warn(dbgName + ", spamd response has non-success return code: " + retCode);
+                    isOK = false;
+                    // continue if non-success because spamc doesn't care
+                    // -> spamd will terminate connection soon
+                }
 
-                    break;
-                default:
-                case 3:
-                    dumpRest = true;
-                    break;
+                break;
+            default:
+            case 3:
+                dumpRest = true;
+                break;
             }
             tIdx++;
         }
@@ -393,9 +392,9 @@ public final class SpamAssassinClient implements Runnable {
             }
 
             if (false == isOK) {
-               logger.warn(dbgName + ", spamd response has non-success description: " + remaining);
+                logger.warn(dbgName + ", spamd response has non-success description: " + remaining);
             } else {
-               logger.debug(dbgName + ", spamd response has success description: " + remaining);
+                logger.debug(dbgName + ", spamd response has success description: " + remaining);
             }
             // continue because spamc doesn't care
         }
@@ -418,15 +417,15 @@ public final class SpamAssassinClient implements Runnable {
         while (true == sTokenizer.hasMoreTokens()) {
             tStr = sTokenizer.nextToken();
             switch(tIdx) {
-                case 0:
-                    break; // skip Content-Length tag
-                case 1:
-                    len = Long.parseLong(tStr);
-                    break;
-                default:
-                    logger.warn(dbgName + ", spamd content-length has extra parameter: " + tStr);
-                    // continue because spamc doesn't care
-                    break;
+            case 0:
+                break; // skip Content-Length tag
+            case 1:
+                len = Long.parseLong(tStr);
+                break;
+            default:
+                logger.warn(dbgName + ", spamd content-length has extra parameter: " + tStr);
+                // continue because spamc doesn't care
+                break;
             }
             tIdx++;
         }
@@ -449,19 +448,19 @@ public final class SpamAssassinClient implements Runnable {
         while (true == sTokenizer.hasMoreTokens()) {
             tStr = sTokenizer.nextToken();
             switch(tIdx) {
-                case 0:
-                    break; // skip Spam tag
-                case 1:
-                    break; // skip isspam flag; is identified later
-                case 2:
-                    score = Float.parseFloat(tStr);
-                    break;
-                case 3:
-                    break; // skip threshold; we already have it
-                default:
-                    logger.warn(dbgName + ", spamd reply has extra parameter: " + tStr);
-                    // continue because spamc doesn't care
-                    break;
+            case 0:
+                break; // skip Spam tag
+            case 1:
+                break; // skip isspam flag; is identified later
+            case 2:
+                score = Float.parseFloat(tStr);
+                break;
+            case 3:
+                break; // skip threshold; we already have it
+            default:
+                logger.warn(dbgName + ", spamd reply has extra parameter: " + tStr);
+                // continue because spamc doesn't care
+                break;
             }
             tIdx++;
         }

@@ -18,27 +18,27 @@ import javax.servlet.jsp.tagext.*;
  * This is a test tag
  */
 public class HelloTag extends
-  TagSupport {
+                          TagSupport {
 
-  private String m_message = null;
-  
-  public void setMessage(String value){
-    m_message = value;
-  }
-  
-  public String getMessage(){
-    return m_message;
-  }
+    private String m_message = null;
 
-  
-  public int doStartTag() {
-    try {
-      JspWriter out = pageContext.getOut();
-      out.println(m_message);
+    public void setMessage(String value){
+        m_message = value;
     }
-    catch (Exception ex) {
-      throw new Error("Something went wrong");
+
+    public String getMessage(){
+        return m_message;
     }
-    return SKIP_BODY;
-  }
+
+
+    public int doStartTag() {
+        try {
+            JspWriter out = pageContext.getOut();
+            out.println(m_message);
+        }
+        catch (Exception ex) {
+            throw new Error("Something went wrong");
+        }
+        return SKIP_BODY;
+    }
 }

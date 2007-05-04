@@ -26,8 +26,8 @@ import com.sun.mail.smtp.SMTPTransport;
 import com.untangle.mvvm.MailSender;
 import com.untangle.mvvm.MailSettings;
 import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.networking.NetworkManagerImpl;
 import com.untangle.mvvm.networking.AddressSettingsListener;
+import com.untangle.mvvm.networking.NetworkManagerImpl;
 import com.untangle.mvvm.networking.internal.AddressSettingsInternal;
 import com.untangle.mvvm.security.AdminSettings;
 import com.untangle.mvvm.security.User;
@@ -414,16 +414,16 @@ class MailSenderImpl implements MailSender
 
     // Not currently used
     /*
-    public void sendReport(String subject, String bodyText) {
-        String reportEmailAddr = mailSettings.getReportEmail();
-        if (reportEmailAddr == null) {
-            logger.info("Not sending report email, no address");
-        } else {
-            String[] recipients = new String[1];
-            recipients[0] = reportEmailAddr;
-            sendSimple(reportSession, recipients, subject, bodyText, null);
-        }
-    }
+      public void sendReport(String subject, String bodyText) {
+      String reportEmailAddr = mailSettings.getReportEmail();
+      if (reportEmailAddr == null) {
+      logger.info("Not sending report email, no address");
+      } else {
+      String[] recipients = new String[1];
+      recipients[0] = reportEmailAddr;
+      sendSimple(reportSession, recipients, subject, bodyText, null);
+      }
+      }
     */
 
     public void sendReports(String subject, String bodyHTML, List<String> extraLocations, List<File> extras) {
@@ -503,7 +503,7 @@ class MailSenderImpl implements MailSender
     }
 
     private void sendMessageWithAttachment(String[] recipients, String subject,
-                                          String bodyText, List attachment)
+                                           String bodyText, List attachment)
     {
         if (attachment == null) {
             sendSimple(alertSession, recipients, subject, bodyText, null);
@@ -517,29 +517,29 @@ class MailSenderImpl implements MailSender
      * See doc on interface
      */
     public boolean sendMessage(InputStream msgStream) {
-      //TODO bscott Need better error handling
-      //TODO bscott by using JavaMail, we don't seem to be able to have
-      //     a null ("<>") MAIL FROM.  This is a violation of some spec
-      //     or another, which declares that the envelope from should
-      //     be blank for notifications (so other servers don't send
-      //     dead letters causing a loop).
+        //TODO bscott Need better error handling
+        //TODO bscott by using JavaMail, we don't seem to be able to have
+        //     a null ("<>") MAIL FROM.  This is a violation of some spec
+        //     or another, which declares that the envelope from should
+        //     be blank for notifications (so other servers don't send
+        //     dead letters causing a loop).
 
-      MimeMessage msg = streamToMIMEMessage(msgStream);
+        MimeMessage msg = streamToMIMEMessage(msgStream);
 
-      if(msg == null) {
-        return false;
-      }
+        if(msg == null) {
+            return false;
+        }
 
-      //Send the message
-      try {
-        dosend(reportSession, msg);
-        logIt(msg);
-        return true;
-      }
-      catch(Exception ex) {
-        logger.warn("Unable to send Message", ex);
-        return false;
-      }
+        //Send the message
+        try {
+            dosend(reportSession, msg);
+            logIt(msg);
+            return true;
+        }
+        catch(Exception ex) {
+            logger.warn("Unable to send Message", ex);
+            return false;
+        }
     }
 
     /*
@@ -547,36 +547,36 @@ class MailSenderImpl implements MailSender
      */
     public boolean sendMessage(InputStream msgStream, String...rcptStrs) {
 
-      //First, convert the addresses
-      Address[] addresses = parseAddresses(rcptStrs);
-      if(addresses == null || addresses.length == 0) {
-        logger.warn("No recipients for email");
-        return false;
-      }
+        //First, convert the addresses
+        Address[] addresses = parseAddresses(rcptStrs);
+        if(addresses == null || addresses.length == 0) {
+            logger.warn("No recipients for email");
+            return false;
+        }
 
-      //TODO bscott Need better error handling
-      //TODO bscott by using JavaMail, we don't seem to be able to have
-      //     a null ("<>") MAIL FROM.  This is a violation of some spec
-      //     or another, which declares that the envelope from should
-      //     be blank for notifications (so other servers don't send
-      //     dead letters causing a loop).
+        //TODO bscott Need better error handling
+        //TODO bscott by using JavaMail, we don't seem to be able to have
+        //     a null ("<>") MAIL FROM.  This is a violation of some spec
+        //     or another, which declares that the envelope from should
+        //     be blank for notifications (so other servers don't send
+        //     dead letters causing a loop).
 
-      MimeMessage msg = streamToMIMEMessage(msgStream);
+        MimeMessage msg = streamToMIMEMessage(msgStream);
 
-      if(msg == null) {
-        return false;
-      }
+        if(msg == null) {
+            return false;
+        }
 
-      //Send the message
-      try {
-        dosend(reportSession, msg, addresses);
-        logIt(msg);
-        return true;
-      }
-      catch(Exception ex) {
-        logger.warn("Unable to send Message", ex);
-        return false;
-      }
+        //Send the message
+        try {
+            dosend(reportSession, msg, addresses);
+            logIt(msg);
+            return true;
+        }
+        catch(Exception ex) {
+            logger.warn("Unable to send Message", ex);
+            return false;
+        }
     }
 
 
@@ -593,35 +593,35 @@ class MailSenderImpl implements MailSender
      * any errors
      */
     private MimeMessage streamToMIMEMessage(InputStream in) {
-      try {
-        MimeMessage msg = new MimeMessage(alertSession, in);
-        msg.setHeader("X-Mailer", Mailer);
-        return msg;
-      }
-      catch(Exception ex) {
-        logger.error("Unable to convert input stream to MIMEMessage", ex);
-        return null;
-      }
+        try {
+            MimeMessage msg = new MimeMessage(alertSession, in);
+            msg.setHeader("X-Mailer", Mailer);
+            return msg;
+        }
+        catch(Exception ex) {
+            logger.error("Unable to convert input stream to MIMEMessage", ex);
+            return null;
+        }
     }
 
     private Address[] parseAddresses(String[] addrStrings) {
-      List<Address> ret = new ArrayList<Address>();
-      for(String s : addrStrings) {
-        try {
-          for(Address addr : InternetAddress.parse(s, false)) {
-            InternetAddress inetAddr = (InternetAddress) addr;
-            if(inetAddr.getAddress() != null &&
-              !"".equals(inetAddr.getAddress()) &&
-              !"<>".equals(inetAddr.getAddress())) {
-              ret.add(inetAddr);
+        List<Address> ret = new ArrayList<Address>();
+        for(String s : addrStrings) {
+            try {
+                for(Address addr : InternetAddress.parse(s, false)) {
+                    InternetAddress inetAddr = (InternetAddress) addr;
+                    if(inetAddr.getAddress() != null &&
+                       !"".equals(inetAddr.getAddress()) &&
+                       !"<>".equals(inetAddr.getAddress())) {
+                        ret.add(inetAddr);
+                    }
+                }
             }
-          }
+            catch(Exception ex) {
+                logger.warn("Unable to parse \"" + s + "\" into email address");
+            }
         }
-        catch(Exception ex) {
-          logger.warn("Unable to parse \"" + s + "\" into email address");
-        }
-      }
-      return (Address[]) ret.toArray(new Address[ret.size()]);
+        return (Address[]) ret.toArray(new Address[ret.size()]);
     }
 
 
@@ -763,7 +763,7 @@ class MailSenderImpl implements MailSender
     }
 
     boolean sendMixed(Session session, String[] to, String subject,
-                   String bodyText, List<MimeBodyPart> extras)
+                      String bodyText, List<MimeBodyPart> extras)
     {
         if (SessionDebug)
             session.setDebug(true);
@@ -800,7 +800,7 @@ class MailSenderImpl implements MailSender
     private void dosend(Session session, Message msg)
         throws MessagingException
     {
-      dosend(session, msg, msg.getAllRecipients());
+        dosend(session, msg, msg.getAllRecipients());
     }
 
     // Here's where we actually do the sending

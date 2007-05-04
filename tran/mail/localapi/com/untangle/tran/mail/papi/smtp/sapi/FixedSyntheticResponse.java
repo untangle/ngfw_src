@@ -11,7 +11,6 @@
 
 package com.untangle.tran.mail.papi.smtp.sapi;
 
-import java.nio.ByteBuffer;
 import com.untangle.tran.mail.papi.smtp.Response;
 
 
@@ -23,21 +22,21 @@ import com.untangle.tran.mail.papi.smtp.Response;
  * {@link com.untangle.tran.mail.papi.smtp.sapi.SessionHandler SessionHandler}
  */
 public class FixedSyntheticResponse
-  implements SyntheticResponse {
+    implements SyntheticResponse {
 
-  private Response m_resp;
+    private Response m_resp;
 
-  /**
-   * Copnstruct a new (single-line) response with the given
-   * code (e.g. "250") and the given text (e.g. "OK").
-   */
-  public FixedSyntheticResponse(int code, String cmdString) {
-    m_resp = new Response(code, cmdString);
-  }
+    /**
+     * Copnstruct a new (single-line) response with the given
+     * code (e.g. "250") and the given text (e.g. "OK").
+     */
+    public FixedSyntheticResponse(int code, String cmdString) {
+        m_resp = new Response(code, cmdString);
+    }
 
-  
-  public void handle(Session.SmtpResponseActions actions) {
-    actions.sendResponseToClient(m_resp);
-  }
+
+    public void handle(Session.SmtpResponseActions actions) {
+        actions.sendResponseToClient(m_resp);
+    }
 
 }

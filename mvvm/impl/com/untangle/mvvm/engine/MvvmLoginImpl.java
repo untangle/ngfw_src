@@ -107,7 +107,7 @@ class MvvmLoginImpl implements MvvmLogin
         if (null == user) {
             logger.debug("no user found with login: " + login);
             eventLogger.log(new LoginEvent(clientAddr, login, false, false,
-                                            LoginFailureReason.UNKNOWN_USER));
+                                           LoginFailureReason.UNKNOWN_USER));
             try {
                 Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
             } catch (InterruptedException exn) { }
@@ -116,7 +116,7 @@ class MvvmLoginImpl implements MvvmLogin
         } else if (!PasswordUtil.check(password, user.getPassword())) {
             logger.debug("password check failed");
             eventLogger.log(new LoginEvent(clientAddr, login, false, false,
-                                            LoginFailureReason.BAD_PASSWORD));
+                                           LoginFailureReason.BAD_PASSWORD));
 
             try {
                 Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
@@ -145,7 +145,7 @@ class MvvmLoginImpl implements MvvmLogin
             logger.debug("systemLogin failed, not localhost");
 
             eventLogger.log(new LoginEvent(clientAddr, username, true,
-                                            false));
+                                           false));
 
             try {
                 Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
@@ -154,7 +154,7 @@ class MvvmLoginImpl implements MvvmLogin
             throw new FailedLoginException("system login not from localhost");
         } else if (!isSystemLogin(username, password)) {
             eventLogger.log(new LoginEvent(clientAddr, username, true,
-                                            false));
+                                           false));
             try {
                 Thread.sleep(LOGIN_FAIL_SLEEP_TIME);
             } catch (InterruptedException exn) { }

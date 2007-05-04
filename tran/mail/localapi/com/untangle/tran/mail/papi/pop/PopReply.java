@@ -192,9 +192,9 @@ public class PopReply implements Token
     {
         String zTmp = AsciiCharBuffer.wrap(getBytes()).toString();
         if (false == zTmp.matches(PASSWDOK))
-        {
-            return zTmp;
-        }
+            {
+                return zTmp;
+            }
 
         return "+ (encoded username/password)";
     }

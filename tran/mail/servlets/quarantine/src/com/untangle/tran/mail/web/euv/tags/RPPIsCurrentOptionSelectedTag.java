@@ -10,24 +10,23 @@
  */
 package com.untangle.tran.mail.web.euv.tags;
 
-import javax.servlet.ServletRequest;
 
 /**
  * Includes/excludes body chunks if the
  * current RowsPerPage option is currently active
  */
 public final class RPPIsCurrentOptionSelectedTag
-  extends IfElseTag {
+    extends IfElseTag {
 
-  private static final String KEY = "untangle.RPPIsCurrentOptionSelectedTag";
-  
-  @Override
-  protected boolean isConditionTrue() {
-    String currentOption = RPPCurrentOptionTag.getCurrent(pageContext);
-    String currentValue = PagnationPropertiesTag.getCurrentRowsPerPAge(pageContext.getRequest());
+    private static final String KEY = "untangle.RPPIsCurrentOptionSelectedTag";
 
-    return (currentValue==null || currentOption==null)?
-      false:
-      currentValue.trim().equals(currentOption.trim());
-  }
+    @Override
+    protected boolean isConditionTrue() {
+        String currentOption = RPPCurrentOptionTag.getCurrent(pageContext);
+        String currentValue = PagnationPropertiesTag.getCurrentRowsPerPAge(pageContext.getRequest());
+
+        return (currentValue==null || currentOption==null)?
+            false:
+        currentValue.trim().equals(currentOption.trim());
+    }
 }

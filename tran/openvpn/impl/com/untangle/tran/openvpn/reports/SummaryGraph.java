@@ -11,12 +11,12 @@
 
 package com.untangle.tran.openvpn.reports;
 
-import com.untangle.mvvm.reporting.*;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.sql.*;
 import java.util.*;
+
+import com.untangle.mvvm.reporting.*;
 import net.sf.jasperreports.engine.JRScriptletException;
 import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
@@ -111,12 +111,12 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         ResultSet rs;
 
         sql = "SELECT DATE_TRUNC('minute', start_time) AS trunc_ts,"
-                + " SUM(rx_bytes),"
-                + " SUM(tx_bytes)"
-                + " FROM tr_openvpn_statistic_evt"
-                + " WHERE start_time >= ? AND start_time < ?"
-                + " GROUP BY trunc_ts"
-                + " ORDER BY trunc_ts";
+            + " SUM(rx_bytes),"
+            + " SUM(tx_bytes)"
+            + " FROM tr_openvpn_statistic_evt"
+            + " WHERE start_time >= ? AND start_time < ?"
+            + " GROUP BY trunc_ts"
+            + " ORDER BY trunc_ts";
 
         bindIdx = 1;
         stmt = con.prepareStatement(sql);
@@ -190,11 +190,11 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         totalProcessTime = System.currentTimeMillis() - totalProcessTime;
         System.out.println("====== RESULTS ======");
         System.out.println("TOTAL query time:   "
-               + totalQueryTime/1000 + "s"
-               + " (" + ((float)totalQueryTime/(float)(totalQueryTime+totalProcessTime))  + ")");
+                           + totalQueryTime/1000 + "s"
+                           + " (" + ((float)totalQueryTime/(float)(totalQueryTime+totalProcessTime))  + ")");
         System.out.println("TOTAL process time: "
-               + totalProcessTime/1000 + "s"
-               + " (" + ((float)totalProcessTime/(float)(totalQueryTime+totalProcessTime))  + ")");
+                           + totalProcessTime/1000 + "s"
+                           + " (" + ((float)totalProcessTime/(float)(totalQueryTime+totalProcessTime))  + ")");
         System.out.println("=====================");
 
         TimeSeriesCollection tsc = new TimeSeriesCollection();

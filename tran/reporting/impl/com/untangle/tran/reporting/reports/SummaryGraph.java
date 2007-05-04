@@ -11,12 +11,12 @@
 
 package com.untangle.tran.reporting.reports;
 
-import com.untangle.mvvm.reporting.*;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.sql.*;
 import java.util.*;
+
+import com.untangle.mvvm.reporting.*;
 import net.sf.jasperreports.engine.JRScriptletException;
 import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
@@ -44,7 +44,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
     private long totalProcessTime = 0l;
 
     public SummaryGraph(){
-       this("Traffic", true, true, "Outgoing Traffic", "Incoming Traffic", "Total", "Kilobytes/sec.");
+        this("Traffic", true, true, "Outgoing Traffic", "Incoming Traffic", "Total", "Kilobytes/sec.");
     }
 
     // Produces a single line graph of one series
@@ -264,11 +264,11 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         totalProcessTime = System.currentTimeMillis() - totalProcessTime;
         System.out.println("====== RESULTS ======");
         System.out.println("TOTAL query time:   "
-               + totalQueryTime/1000 + "s"
-               + " (" + ((float)totalQueryTime/(float)(totalQueryTime+totalProcessTime))  + ")");
+                           + totalQueryTime/1000 + "s"
+                           + " (" + ((float)totalQueryTime/(float)(totalQueryTime+totalProcessTime))  + ")");
         System.out.println("TOTAL process time: "
-               + totalProcessTime/1000 + "s"
-               + " (" + ((float)totalProcessTime/(float)(totalQueryTime+totalProcessTime))  + ")");
+                           + totalProcessTime/1000 + "s"
+                           + " (" + ((float)totalProcessTime/(float)(totalQueryTime+totalProcessTime))  + ")");
         System.out.println("=====================");
 
         //TimeSeriesCollection tsc = new TimeSeriesCollection(dataset);

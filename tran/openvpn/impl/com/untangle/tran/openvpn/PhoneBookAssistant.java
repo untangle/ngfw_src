@@ -11,38 +11,34 @@
 package com.untangle.tran.openvpn;
 
 import java.net.InetAddress;
-
 import java.util.Collections;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.log4j.Logger;
-
-import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.HostName;
 import com.untangle.mvvm.tran.ParseException;
-
 import com.untangle.mvvm.user.Assistant;
 import com.untangle.mvvm.user.UserInfo;
 import com.untangle.mvvm.user.Username;
+import org.apache.log4j.Logger;
 
 class PhoneBookAssistant implements Assistant
 {
     private final int PRIORITY = 1;
-    
+
     /* These are the special addresses that are inside of the DNS map */
     private Map<InetAddress,Data> userMap = Collections.emptyMap();
-    
+
     /* determines whether or not VPN is presently enabled */
     private boolean isVpnEnabled = false;
-    
+
     private final Logger logger = Logger.getLogger( getClass());
 
     /* -------------- Constructors -------------- */
     PhoneBookAssistant()
     {
     }
-    
+
     /* ----------------- Public ----------------- */
     public void lookup( UserInfo info )
     {
@@ -54,7 +50,7 @@ class PhoneBookAssistant implements Assistant
         Map<InetAddress,Data> currentMap = this.userMap;
 
         Data d = currentMap.get( address );
-        
+
         if ( d != null ) d.fillInfo( info );
     }
 
@@ -84,7 +80,7 @@ class PhoneBookAssistant implements Assistant
             for ( VpnClientBase client : settings.getClientList()) {
                 /* ignore the disabled rules */
                 if ( !client.isEnabled()) continue;
-                
+
                 /* Attempt to convert the client name into a hostname */
                 Username u = null;
                 HostName h = null;
@@ -123,11 +119,11 @@ class PhoneBookAssistant implements Assistant
             this.username = u;
             this.hostname = h;
         }
-        
+
         void fillInfo( UserInfo info )
         {
             if ( this.username != null ) info.setUsername( this.username );
             if ( this.hostname != null ) info.setHostname( this.hostname );
         }
-   }
+    }
 }

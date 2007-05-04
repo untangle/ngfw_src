@@ -13,20 +13,18 @@
 
 package com.untangle.tran.virus.gui;
 
-import com.untangle.gui.transform.*;
-import com.untangle.gui.pipeline.MPipelineJPanel;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.util.*;
+import java.awt.*;
+import java.util.Vector;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
 
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.*;
 import com.untangle.mvvm.tran.*;
 import com.untangle.tran.virus.*;
-
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import java.util.Vector;
-import javax.swing.event.*;
 
 public class GeneralConfigJPanel extends MEditTableJPanel {
 
@@ -36,7 +34,7 @@ public class GeneralConfigJPanel extends MEditTableJPanel {
         super.setTableTitle("General Settings");
         super.setDetailsTitle("rule notes");
         super.setAddRemoveEnabled(false);
-        
+
         // create actual table model
         GeneralTableModel tableModel = new GeneralTableModel();
         this.setTableModel( tableModel );
@@ -44,7 +42,7 @@ public class GeneralConfigJPanel extends MEditTableJPanel {
 }
 
 
-class GeneralTableModel extends MSortedTableModel<Object>{ 
+class GeneralTableModel extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -53,9 +51,9 @@ class GeneralTableModel extends MSortedTableModel<Object>{
     private static final int C3_MW = 200; /* setting value */
     private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW), 120); /* description */
 
-    
+
     public TableColumnModel getTableColumnModel(){
-        
+
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS );
@@ -68,47 +66,47 @@ class GeneralTableModel extends MSortedTableModel<Object>{
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly){
         Vector tempRowVector;
-	
+
         // ftpDisableResume
         tempRowVector = tableVector.elementAt(0);
-	boolean ftpDisableResume = (Boolean) tempRowVector.elementAt(3);
-	String ftpDisableResumeDetails = (String) tempRowVector.elementAt(4);
-        
+        boolean ftpDisableResume = (Boolean) tempRowVector.elementAt(3);
+        String ftpDisableResumeDetails = (String) tempRowVector.elementAt(4);
+
         // httpDisableResume
         tempRowVector = tableVector.elementAt(1);
-	boolean httpDisableResume = (Boolean) tempRowVector.elementAt(3);
-	String httpDisableResumeDetails = (String) tempRowVector.elementAt(4);
+        boolean httpDisableResume = (Boolean) tempRowVector.elementAt(3);
+        String httpDisableResumeDetails = (String) tempRowVector.elementAt(4);
 
         // tricklePercent
         tempRowVector = tableVector.elementAt(2);
-	int tricklePercent = (Integer) ((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue();
-	String tricklePercentDetails = (String) tempRowVector.elementAt(4);
+        int tricklePercent = (Integer) ((SpinnerNumberModel)tempRowVector.elementAt(3)).getValue();
+        String tricklePercentDetails = (String) tempRowVector.elementAt(4);
 
-	// SAVE SETTINGS //////////
-	if( !validateOnly ){
-	    VirusSettings virusSettings = (VirusSettings) settings;
-	    virusSettings.setFtpDisableResume( ftpDisableResume );
-      //8/11/05 - wrs.  Commented-out as they are never "really"
-      //                persisted (they are really "help") and
-      //                the help text overflows the back-end DB
-      //                constraint
-//	    virusSettings.setFtpDisableResumeDetails( ftpDisableResumeDetails );
-	    virusSettings.setHttpDisableResume( httpDisableResume );
-//	    virusSettings.setHttpDisableResumeDetails( httpDisableResumeDetails );
-	    virusSettings.setTricklePercent( tricklePercent );
-//	    virusSettings.setTricklePercentDetails( tricklePercentDetails );
-	}
+        // SAVE SETTINGS //////////
+        if( !validateOnly ){
+            VirusSettings virusSettings = (VirusSettings) settings;
+            virusSettings.setFtpDisableResume( ftpDisableResume );
+            //8/11/05 - wrs.  Commented-out as they are never "really"
+            //                persisted (they are really "help") and
+            //                the help text overflows the back-end DB
+            //                constraint
+            //      virusSettings.setFtpDisableResumeDetails( ftpDisableResumeDetails );
+            virusSettings.setHttpDisableResume( httpDisableResume );
+            //      virusSettings.setHttpDisableResumeDetails( httpDisableResumeDetails );
+            virusSettings.setTricklePercent( tricklePercent );
+            //      virusSettings.setTricklePercentDetails( tricklePercentDetails );
+        }
 
     }
-    
+
     public Vector<Vector> generateRows(Object settings){
-	VirusSettings virusSettings = (VirusSettings) settings;
+        VirusSettings virusSettings = (VirusSettings) settings;
         Vector<Vector> allRows = new Vector<Vector>(3);
         Vector tempRow = null;
-	int rowIndex = 0;
+        int rowIndex = 0;
 
         // ftpDisableResume
-	rowIndex++;
+        rowIndex++;
         tempRow = new Vector(5);
         tempRow.add( super.ROW_SAVED );
         tempRow.add( rowIndex );
@@ -116,9 +114,9 @@ class GeneralTableModel extends MSortedTableModel<Object>{
         tempRow.add( virusSettings.getFtpDisableResume() );
         tempRow.add( "This setting specifies that if an FTP transfer has stopped or been blocked for some reason (perhaps a virus was detected), the transfer cannot be restarted from the middle where it was left off.  Allowing transfers to restart from the middle may allow unwanted traffic to enter the network." ); //virusSettings.getFtpDisableResumeDetails() );
         allRows.add( tempRow );
-        
+
         // httpDisableResume
-	rowIndex++;
+        rowIndex++;
         tempRow = new Vector(5);
         tempRow.add( super.ROW_SAVED );
         tempRow.add( rowIndex );
@@ -126,9 +124,9 @@ class GeneralTableModel extends MSortedTableModel<Object>{
         tempRow.add( virusSettings.getHttpDisableResume() );
         tempRow.add( "This setting specifies that if an HTTP transfer has stopped or been blocked for some reason (perhaps a virus was detected), the transfer cannot be restarted from the middle where it was left off.  Allowing transfers to restart from the middle may allow unwanted traffic to enter the network." ); //virusSettings.getHttpDisableResumeDetails() );
         allRows.add( tempRow );
-        
+
         // tricklePercent
-	rowIndex++;
+        rowIndex++;
         tempRow = new Vector(5);
         tempRow.add( super.ROW_SAVED );
         tempRow.add( rowIndex );

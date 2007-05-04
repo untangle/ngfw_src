@@ -16,9 +16,9 @@ import java.net.InetSocketAddress;
 import com.untangle.mvvm.tapi.Protocol;
 import com.untangle.mvvm.tapi.TCPSession;
 import com.untangle.tran.ftp.FtpCommand;
+import com.untangle.tran.ftp.FtpEpsvReply;
 import com.untangle.tran.ftp.FtpFunction;
 import com.untangle.tran.ftp.FtpReply;
-import com.untangle.tran.ftp.FtpEpsvReply;
 import com.untangle.tran.ftp.FtpStateMachine;
 import com.untangle.tran.token.ParseException;
 import com.untangle.tran.token.Token;
@@ -116,7 +116,7 @@ class NatFtpHandler extends FtpStateMachine
             switch ( replyCode ) {
             case FtpReply.PASV:
                 return pasvReply( reply );
-                
+
             case FtpReply.EPSV:
                 return epsvReply( reply );
 
@@ -190,7 +190,7 @@ class NatFtpHandler extends FtpStateMachine
          * if ( !ip.equals( sessionData.originalClientAddr())) {
          * logger.warn( "Dropping command from modified client address" );
          * return new TokenResult();
-        }
+         }
         */
 
         /* Indicate that a port command has been received, don't create the session redirect until
@@ -217,7 +217,7 @@ class NatFtpHandler extends FtpStateMachine
             if (logger.isDebugEnabled()) {
                 logger.debug( "Mangling PORT command to address: " + addr );
             }
-            
+
             FtpFunction function = command.getFunction();
 
             if ( FtpFunction.EPRT.equals( function )) {
@@ -310,7 +310,7 @@ class NatFtpHandler extends FtpStateMachine
     {
         return new TokenResult( null, new Token[] { command } );
     }
-    
+
     private TokenResult epsvReply( FtpReply reply ) throws TokenException
     {
         InetSocketAddress addr;
@@ -323,14 +323,14 @@ class NatFtpHandler extends FtpStateMachine
         if ( null == addr ) {
             throw new TokenException( "Error getting socket address" );
         }
-        
+
         /* Create a new socket address with the original server address.
          * extended passive mode doesn't specify the address, so in order to catch
          * the data session, NAT creates a new extended passive reply which keeps a
          * separate copy of the InetSocketAddress.
          */
         addr = new InetSocketAddress( sessionData.originalServerAddr(), addr.getPort());
-        
+
         /* Nothing has to be done here, the server address isn't sent with extended
          * passive replies, so redirects don't really matter */
         return new TokenResult( new Token[] { FtpEpsvReply.makeEpsvReply( addr ) }, null );

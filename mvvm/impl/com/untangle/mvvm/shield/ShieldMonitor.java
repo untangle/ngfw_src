@@ -45,7 +45,7 @@ public class ShieldMonitor implements ShieldEventListener
             clientIntf = MvvmContextFactory.context().localIntfManager().toArgon( clientIntf );
 
             eventLogger.log( new ShieldRejectionEvent( ip, clientIntf, reputation, mode, limited, dropped,
-                                                        rejected ));
+                                                       rejected ));
         } catch ( IllegalArgumentException e ) {
             logger.warn( "Invalid interface for shield rejection event: " + clientIntf );
         }
@@ -59,7 +59,7 @@ public class ShieldMonitor implements ShieldEventListener
         }
 
         eventLogger.log( new ShieldStatisticEvent( accepted, limited, dropped, rejected, relaxed,
-                                                    lax, tight, closed ));
+                                                   lax, tight, closed ));
     }
 
     public synchronized static ShieldMonitor getInstance()

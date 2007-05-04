@@ -12,17 +12,16 @@
 
 package com.untangle.gui.pipeline;
 
-import com.untangle.gui.transform.MTransformControlsJPanel;
-import com.untangle.mvvm.portal.*;
-import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.gui.util.*;
-import java.awt.Window;
 import java.awt.Dialog;
+import java.awt.Window;
 import java.awt.event.*;
-import java.util.List;
 import java.util.Vector;
 import javax.swing.CellEditor;
 import javax.swing.SwingUtilities;
+
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.mvvm.portal.*;
 
 public class EditButtonRunnable implements ButtonRunnable {
 
@@ -55,8 +54,8 @@ public class EditButtonRunnable implements ButtonRunnable {
         else
             valueChanged = false;
 
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    cellEditor.stopCellEditing();
-	}});
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            cellEditor.stopCellEditing();
+        }});
     }
 }

@@ -12,26 +12,25 @@
 package com.untangle.mvvm.networking;
 
 import java.net.InetAddress;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.HostName;
 import com.untangle.mvvm.tran.AddressRange;
 import com.untangle.mvvm.tran.AddressValidator;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.mvvm.tran.HostName;
+import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.ParseException;
-
+import com.untangle.mvvm.tran.ValidateException;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
 
-public class NetworkUtil 
+public class NetworkUtil
 {
     private static final NetworkUtil INSTANCE;
-    
+
     public static final IPaddr  EMPTY_IPADDR;
     public static final IPaddr  DEF_OUTSIDE_NETWORK;
     public static final IPaddr  DEF_OUTSIDE_NETMASK;
@@ -47,10 +46,10 @@ public class NetworkUtil
 
     /* This is the address to use during setup */
     public static final IPaddr SETUP_ADDRESS;
-    
+
     /* ??? which one */
     public static final HostName DEFAULT_HOSTNAME;
-    
+
     public static int DEFAULT_LEASE_TIME_SEC = 4 * 60 * 60;
 
     public static final String DEFAULT_SPACE_NAME_PRIMARY = "public";
@@ -68,8 +67,8 @@ public class NetworkUtil
     public static final boolean DEF_OUTSIDE_ADMINISTRATION = false;
     public static final boolean DEF_OUTSIDE_QUARANTINE = true;
     public static final boolean DEF_OUTSIDE_REPORTING = false;
-    
-    private static final String PRIVATE_NETWORK_STRINGS[] = 
+
+    private static final String PRIVATE_NETWORK_STRINGS[] =
     {
         "192.168.0.0/16", "10.0.0.0/8", "172.16.0.0/12"
     };
@@ -77,7 +76,7 @@ public class NetworkUtil
     /* ports 9500 -> 9650 are redirect ports, 10000 -> 60000 are reserved for NAT */
     public static final int INTERNAL_OPEN_HTTPS_PORT = 64157;
 
-    private static final String PUBLIC_ADDRESS_EXCEPTION = 
+    private static final String PUBLIC_ADDRESS_EXCEPTION =
         "A public address is an ip address, optionally followed by a port.  (e.g. 1.2.3.4:445 or 1.2.3.4)";
 
     /* XXX This should be final, but there is a bug in javac that won't let it be. */
@@ -96,7 +95,7 @@ public class NetworkUtil
                 System.err.println( "Unable to parse: " + matcherString );
             }
         }
-        
+
         privateNetworkList = Collections.unmodifiableList( matchers );
     }
 
@@ -104,13 +103,13 @@ public class NetworkUtil
     public List<Interface> getInterfaceList( NetworkSpacesSettings settings, NetworkSpace space )
     {
         List<Interface> list = new LinkedList<Interface>();
-        
+
         long papers = space.getBusinessPapers();
         for ( Interface intf : settings.getInterfaceList()) {
             NetworkSpace intfSpace = intf.getNetworkSpace();
             if ( intfSpace.equals( space ) || ( intfSpace.getBusinessPapers() == papers )) list.add( intf );
         }
-        
+
         return list;
     }
 
@@ -139,7 +138,7 @@ public class NetworkUtil
             if ( space.getIsPrimary()) continue;
             if ( getInterfaceList( settings, space ).size() == 0 ) space.setLive( false );
         }
-        
+
         for ( NetworkSpace space : settings.getNetworkSpaceList()) {
             if ( index == 0 && !space.isLive()) {
                 throw new ValidateException( "The primary network space must be active." );
@@ -154,17 +153,17 @@ public class NetworkUtil
 
             /* If dhcp is not enabled, there must be at least one address */
             validate( space );
-                        
+
             index++;
         }
-        
+
         if ( settings.getNetworkSpaceList().size() < 1 ) {
             throw new ValidateException( "There must be at least one network space" );
         }
 
         /* Have to validate that all of the next hops are reachable */
         for ( Route route : (List<Route>)settings.getRoutingTable()) validate( route );
-        
+
         for ( Interface intf : settings.getInterfaceList()) {
             NetworkSpace space = intf.getNetworkSpace();
             if ( space == null ) {
@@ -183,28 +182,28 @@ public class NetworkUtil
     {
         boolean isDhcpEnabled = space.getIsDhcpEnabled();
         List<IPNetworkRule> networkList = (List<IPNetworkRule>)space.getNetworkList();
-        
+
         if (( space.getName() == null ) || ( space.getName().trim().length() == 0 )) {
             throw new ValidateException( "A network space should have a non-empty an empty name" );
         }
-        
+
         if ( space.isLive()) {
             if ( !isDhcpEnabled && (( networkList == null ) || ( networkList.size() < 1 ))) {
                 throw new ValidateException( "A network space should either have at least one address,"+
                                              " or use DHCP." );
             }
-            
+
             AddressValidator av = AddressValidator.getInstance();
             int index = 0;
             for ( IPNetworkRule network : networkList ) {
                 index++;
                 InetAddress address = network.getNetwork().getAddr();
                 if ( av.isIllegalAddress( address )) {
-                    throw new ValidateException( "The network address: " + address.getHostAddress() + 
+                    throw new ValidateException( "The network address: " + address.getHostAddress() +
                                                  " in network space: " + space.getName() + " is not valid." );
                 }
             }
-                        
+
             if ( space.getIsNatEnabled()) {
                 if ( isDhcpEnabled ) {
                     throw new ValidateException( "A network space running NAT should not get its address" +
@@ -233,7 +232,7 @@ public class NetworkUtil
         if ( space.getIsDmzHostEnabled() && (( dmzHost == null ) || dmzHost.isEmpty())) {
             throw new ValidateException( "If DMZ is enabled, the DMZ host should also be set" );
         }
-        
+
     }
 
     public void validate( Route route ) throws ValidateException
@@ -254,7 +253,7 @@ public class NetworkUtil
     public boolean isUnicast( IPNetwork network )
     {
         byte[] address = network.getNetwork().getAddr().getAddress();
-        
+
         /* Magic numbers, -127, because of unsigned bytes */
         return (( address[3] != 0 ) && ( address[3] != -127 ));
     }
@@ -267,7 +266,7 @@ public class NetworkUtil
 
         try {
             int cidr = netmask.toCidr();
-            
+
             IPaddr networkAddress = network.getNetwork().and( netmask );
             /* Very important, the ip command barfs on spaces. */
             return networkAddress.toString() + "/" + cidr;
@@ -275,11 +274,11 @@ public class NetworkUtil
             throw new NetworkException( "Unable to convert the netmask " + netmask + " into a cidr suffix" );
         }
     }
-    
+
     public String generatePublicAddress( IPaddr publicAddress, int publicPort )
     {
         if ( publicAddress == null || publicAddress.isEmpty()) return "";
-                
+
         if ( publicPort == DEF_HTTPS_PORT ) return publicAddress.toString();
 
         return publicAddress.toString() + ":" + publicPort;
@@ -305,7 +304,7 @@ public class NetworkUtil
     {
         return INSTANCE;
     }
-    
+
     static
     {
         IPaddr emptyAddr      = null;
@@ -318,7 +317,7 @@ public class NetworkUtil
 
         IPaddr natAddress     = null;
         IPaddr natNetmask     = null;
-        
+
         IPaddr setupAddress = null;
 
         HostName h, l;
@@ -367,12 +366,12 @@ public class NetworkUtil
 
         DEFAULT_NAT_ADDRESS = natAddress;
         DEFAULT_NAT_NETMASK = natNetmask;
-        
+
         SETUP_ADDRESS = setupAddress;
 
         LOCAL_DOMAIN_DEFAULT = h;
         DEFAULT_HOSTNAME = l;
 
-	INSTANCE = new NetworkUtil();
+        INSTANCE = new NetworkUtil();
     }
 }

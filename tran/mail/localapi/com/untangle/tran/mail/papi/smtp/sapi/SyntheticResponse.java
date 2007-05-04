@@ -21,13 +21,13 @@ package com.untangle.tran.mail.papi.smtp.sapi;
 public interface SyntheticResponse {
 
 
-  /**
-   * Perform the Synthetic action.  There are no
-   * Commands/MIME-bits or Responses available to
-   * Synthetic Actions.
-   *
-   * @param actions the available set of actions.
-   */
-  public void handle(Session.SmtpResponseActions actions);
+    /**
+     * Perform the Synthetic action.  There are no
+     * Commands/MIME-bits or Responses available to
+     * Synthetic Actions.
+     *
+     * @param actions the available set of actions.
+     */
+    public void handle(Session.SmtpResponseActions actions);
 
 }

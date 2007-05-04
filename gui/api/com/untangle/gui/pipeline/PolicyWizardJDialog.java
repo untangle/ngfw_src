@@ -11,25 +11,24 @@
 
 package com.untangle.gui.pipeline;
 
-import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.gui.widgets.editTable.*;
+import java.awt.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.table.*;
+
+import com.untangle.gui.configuration.*;
 import com.untangle.gui.transform.CompoundSettings;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.policy.*;
-import com.untangle.gui.configuration.*;
-
-import java.awt.*;
-import java.util.*;
-import javax.swing.table.*;
-import javax.swing.*;
 
 
 
 public class PolicyWizardJDialog extends MConfigJDialog {
 
     private static final String NAME_POLICY_WIZARD      = "Policy Wizard";
-    
+
     Vector newRow;
 
     public PolicyWizardJDialog( Dialog parentDialog, Vector newRow ) {
@@ -44,23 +43,23 @@ public class PolicyWizardJDialog extends MConfigJDialog {
     protected Dimension getMinSize(){
         return new Dimension(700, 480);
     }
-    
-    protected void generateGui(){        
+
+    protected void generateGui(){
         // WIZARD //////
         PolicyWizardJPanel policyWizardJPanel = new PolicyWizardJPanel(newRow);
         addScrollableTab(null, NAME_POLICY_WIZARD, null, policyWizardJPanel, false, true);
         addSavable(NAME_POLICY_WIZARD, policyWizardJPanel);
     }
-    
-	protected void populateAll() throws Exception {
-		super.populateAll();
-	    SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
-				saveJButton.setEnabled(true);
-		}});
-	}
-	
+
+    protected void populateAll() throws Exception {
+        super.populateAll();
+        SwingUtilities.invokeAndWait( new Runnable(){ public void run(){
+            saveJButton.setEnabled(true);
+        }});
+    }
+
     protected void saveAll() throws Exception{
-			isProceeding = true;
+        isProceeding = true;
         super.saveAll();
         isProceeding = true;
     }

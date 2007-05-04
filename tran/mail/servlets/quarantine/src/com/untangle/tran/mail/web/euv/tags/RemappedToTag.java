@@ -18,40 +18,40 @@ import javax.servlet.ServletRequest;
  * the address is remapped
  */
 public final class RemappedToTag
-  extends SingleValueTag {
+    extends SingleValueTag {
 
-  private static final String KEY = "untangle.remapping.RemappedToTag";
+    private static final String KEY = "untangle.remapping.RemappedToTag";
 
-  private boolean m_encoded = false;
+    private boolean m_encoded = false;
 
-  public boolean isEncoded() {
-    return m_encoded;
-  }
-  public void setEncoded(boolean encoded) {
-    m_encoded = encoded;
-  }  
+    public boolean isEncoded() {
+        return m_encoded;
+    }
+    public void setEncoded(boolean encoded) {
+        m_encoded = encoded;
+    }
 
-  @Override
-  protected String getValue() {
-    return getCurrent(pageContext.getRequest());
-  }  
+    @Override
+    protected String getValue() {
+        return getCurrent(pageContext.getRequest());
+    }
 
-  public static final void setCurrent(ServletRequest request,
-    String address) {
-    request.setAttribute(KEY, address);
-  }
-  public static final void clearCurret(ServletRequest request) {
-    request.removeAttribute(KEY);
-  }
+    public static final void setCurrent(ServletRequest request,
+                                        String address) {
+        request.setAttribute(KEY, address);
+    }
+    public static final void clearCurret(ServletRequest request) {
+        request.removeAttribute(KEY);
+    }
 
-  /**
-   * Returns null if there is no remap-to address
-   */
-  static String getCurrent(ServletRequest request) {
-    return (String) request.getAttribute(KEY);
-  }
+    /**
+     * Returns null if there is no remap-to address
+     */
+    static String getCurrent(ServletRequest request) {
+        return (String) request.getAttribute(KEY);
+    }
 
-  static boolean hasCurrent(ServletRequest request) {
-    return getCurrent(request) != null;
-  }  
+    static boolean hasCurrent(ServletRequest request) {
+        return getCurrent(request) != null;
+    }
 }

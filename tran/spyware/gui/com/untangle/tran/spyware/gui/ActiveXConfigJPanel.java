@@ -12,34 +12,30 @@
 
 package com.untangle.tran.spyware.gui;
 
-import com.untangle.mvvm.tran.TransformContext;
 
-import com.untangle.mvvm.tran.IPMaddr;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.tran.StringRule;
 import com.untangle.tran.spyware.*;
 
-import com.untangle.gui.transform.*;
-import com.untangle.gui.pipeline.MPipelineJPanel;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.util.*;
-
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import java.util.Vector;
-import java.util.List;
-import java.util.ArrayList;
-import javax.swing.event.*;
-
 public class ActiveXConfigJPanel extends MEditTableJPanel {
-    
+
     public ActiveXConfigJPanel() {
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("ActiveX sources");
         super.setDetailsTitle("source details");
         super.setAddRemoveEnabled(true);
-        
+
         // create actual table model
         ActiveXTableModel activeXTableModel = new ActiveXTableModel();
         this.setTableModel( activeXTableModel );
@@ -47,7 +43,7 @@ public class ActiveXConfigJPanel extends MEditTableJPanel {
 }
 
 
-class ActiveXTableModel extends MSortedTableModel<Object>{ 
+class ActiveXTableModel extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -57,7 +53,7 @@ class ActiveXTableModel extends MSortedTableModel<Object>{
     private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW), 120); /* description */
 
     public TableColumnModel getTableColumnModel(){
-        
+
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS);
@@ -68,45 +64,45 @@ class ActiveXTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  5, 10,    false, false, true,  false, StringRule.class, null, "");
         return tableColumnModel;
     }
-    
+
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
         List elemList = new ArrayList(tableVector.size());
-	StringRule newElem = null;
+        StringRule newElem = null;
 
-	for( Vector rowVector : tableVector ){
-	    newElem = (StringRule) rowVector.elementAt(5);
+        for( Vector rowVector : tableVector ){
+            newElem = (StringRule) rowVector.elementAt(5);
             newElem.setString( (String) rowVector.elementAt(2) );
             newElem.setLive( (Boolean) rowVector.elementAt(3) );
             newElem.setDescription( (String) rowVector.elementAt(4) );
             elemList.add(newElem);
         }
 
-	// SAVE SETTINGS ///////
-	if( !validateOnly ){
-	    SpywareSettings spywareSettings = (SpywareSettings) settings;
-	    spywareSettings.setActiveXRules(elemList);
-	}
+        // SAVE SETTINGS ///////
+        if( !validateOnly ){
+            SpywareSettings spywareSettings = (SpywareSettings) settings;
+            spywareSettings.setActiveXRules(elemList);
+        }
 
     }
-    
-    public Vector<Vector> generateRows(Object settings){
-	SpywareSettings spywareSettings = (SpywareSettings) settings;
-	List<StringRule> activeXRules = (List<StringRule>) spywareSettings.getActiveXRules();
-        Vector<Vector> allRows = new Vector<Vector>(activeXRules.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
 
-	for( StringRule newElem : activeXRules ){
-	    rowIndex++;
+    public Vector<Vector> generateRows(Object settings){
+        SpywareSettings spywareSettings = (SpywareSettings) settings;
+        List<StringRule> activeXRules = (List<StringRule>) spywareSettings.getActiveXRules();
+        Vector<Vector> allRows = new Vector<Vector>(activeXRules.size());
+        Vector tempRow = null;
+        int rowIndex = 0;
+
+        for( StringRule newElem : activeXRules ){
+            rowIndex++;
             tempRow = new Vector(6);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( newElem.getString() );
             tempRow.add( newElem.isLive() );
             tempRow.add( newElem.getDescription() );
-	    tempRow.add( newElem );
+            tempRow.add( newElem );
             allRows.add( tempRow );
         }
         return allRows;
-    }  
+    }
 }

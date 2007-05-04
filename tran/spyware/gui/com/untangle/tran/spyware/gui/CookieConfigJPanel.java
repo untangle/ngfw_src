@@ -12,45 +12,40 @@
 
 package com.untangle.tran.spyware.gui;
 
-import com.untangle.mvvm.tran.TransformContext;
-
-import com.untangle.mvvm.tran.IPMaddr;
-import com.untangle.mvvm.tran.StringRule;
-
-import com.untangle.tran.spyware.*;
-
-import com.untangle.gui.transform.*;
-import com.untangle.gui.pipeline.MPipelineJPanel;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.util.*;
 
 import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import java.util.Vector;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.table.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.editTable.*;
+import com.untangle.mvvm.tran.StringRule;
+import com.untangle.tran.spyware.*;
 
 public class CookieConfigJPanel extends MEditTableJPanel{
-    
-    
+
+
     public CookieConfigJPanel() {
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("Cookies");
         super.setDetailsTitle("cookie details");
         super.setAddRemoveEnabled(true);
-        
+
         // create actual table model
         CookieTableModel cookieTableModel = new CookieTableModel();
         this.setTableModel( cookieTableModel );
-	cookieTableModel.setSortingStatus(2, SpyTableModel.ASCENDING);
+        cookieTableModel.setSortingStatus(2, SpyTableModel.ASCENDING);
     }
 }
 
 
-class CookieTableModel extends MSortedTableModel<Object>{ 
+class CookieTableModel extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -60,9 +55,9 @@ class CookieTableModel extends MSortedTableModel<Object>{
     private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW), 120); /* description */
 
 
-    
+
     public TableColumnModel getTableColumnModel(){
-        
+
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS);
@@ -73,45 +68,45 @@ class CookieTableModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  5, 10,    false, false, true,  false, StringRule.class, null, "");
         return tableColumnModel;
     }
-    
+
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         List elemList = new ArrayList(tableVector.size());
-	StringRule newElem = null;
+        StringRule newElem = null;
 
-	for( Vector rowVector : tableVector ){
-	    newElem = (StringRule) rowVector.elementAt(5);
+        for( Vector rowVector : tableVector ){
+            newElem = (StringRule) rowVector.elementAt(5);
             newElem.setString( (String) rowVector.elementAt(2) );
             newElem.setLive( (Boolean) rowVector.elementAt(3) );
             newElem.setDescription( (String) rowVector.elementAt(4) );
             elemList.add(newElem);
         }
 
-	// SAVE SETTINGS //////////
-	if( !validateOnly ){
-	    SpywareSettings spywareSettings = (SpywareSettings) settings;
-	    spywareSettings.setCookieRules(elemList);
-	}
+        // SAVE SETTINGS //////////
+        if( !validateOnly ){
+            SpywareSettings spywareSettings = (SpywareSettings) settings;
+            spywareSettings.setCookieRules(elemList);
+        }
 
     }
-    
-    public Vector<Vector> generateRows(Object settings){
-	SpywareSettings spywareSettings = (SpywareSettings) settings;
-	List<StringRule> cookieRules = (List<StringRule>) spywareSettings.getCookieRules();
-        Vector<Vector> allRows = new Vector<Vector>(cookieRules.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
 
-	for( StringRule newElem : cookieRules ){
-	    rowIndex++;
-	    tempRow = new Vector(6);
+    public Vector<Vector> generateRows(Object settings){
+        SpywareSettings spywareSettings = (SpywareSettings) settings;
+        List<StringRule> cookieRules = (List<StringRule>) spywareSettings.getCookieRules();
+        Vector<Vector> allRows = new Vector<Vector>(cookieRules.size());
+        Vector tempRow = null;
+        int rowIndex = 0;
+
+        for( StringRule newElem : cookieRules ){
+            rowIndex++;
+            tempRow = new Vector(6);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( newElem.getString() );
             tempRow.add( newElem.isLive() );
             tempRow.add( newElem.getDescription() );
-	    tempRow.add( newElem );
+            tempRow.add( newElem );
             allRows.add( tempRow );
         }
         return allRows;
-    }  
+    }
 }

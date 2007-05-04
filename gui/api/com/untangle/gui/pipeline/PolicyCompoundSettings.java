@@ -11,10 +11,10 @@
 
 package com.untangle.gui.pipeline;
 
-import com.untangle.gui.util.Util;
 import com.untangle.gui.transform.CompoundSettings;
-import com.untangle.mvvm.policy.PolicyConfiguration;
+import com.untangle.gui.util.Util;
 import com.untangle.mvvm.IntfEnum;
+import com.untangle.mvvm.policy.PolicyConfiguration;
 
 public class PolicyCompoundSettings implements CompoundSettings {
 
@@ -27,12 +27,12 @@ public class PolicyCompoundSettings implements CompoundSettings {
     public IntfEnum getIntfEnum(){ return intfEnum; }
 
     public void save() throws Exception {
-	Util.getPolicyManager().setPolicyConfiguration(policyConfiguration);
+        Util.getPolicyManager().setPolicyConfiguration(policyConfiguration);
     }
 
     public void refresh() throws Exception {
-	policyConfiguration = Util.getPolicyManager().getPolicyConfiguration();
-	intfEnum = Util.getIntfManager().getIntfEnum();
+        policyConfiguration = Util.getPolicyManager().getPolicyConfiguration();
+        intfEnum = Util.getIntfManager().getIntfEnum();
     }
 
     public void validate() throws Exception {

@@ -122,14 +122,14 @@ public class IDSStringParser {
     }
 
     /*
-    private static int parseAction(String action) throws ParseException {
-        String validActions[] = IDSRuleManager.ACTIONS;
-        for(int i=0; i < validActions.length;i++) {
-            if(validActions[i].equalsIgnoreCase(action))
-                return i;
-        }
-        throw new ParseException("Not a valid action: " + action);
-    }
+      private static int parseAction(String action) throws ParseException {
+      String validActions[] = IDSRuleManager.ACTIONS;
+      for(int i=0; i < validActions.length;i++) {
+      if(validActions[i].equalsIgnoreCase(action))
+      return i;
+      }
+      throw new ParseException("Not a valid action: " + action);
+      }
     */
 
     private static Protocol parseProtocol(String protoString) throws ParseException {

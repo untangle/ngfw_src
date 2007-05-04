@@ -11,6 +11,7 @@
 package com.untangle.tran.mail.web.euv.tags;
 
 import javax.servlet.jsp.PageContext;
+
 import sun.misc.BASE64Encoder;
 
 
@@ -21,44 +22,44 @@ import sun.misc.BASE64Encoder;
  * iterating through a collection of 'em
  * <br><br>
  * Works with SafelistListTag
- * 
+ *
  */
-public final class SafelistEntryTag 
-  extends SingleValueTag {
+public final class SafelistEntryTag
+    extends SingleValueTag {
 
-  private static final String ENTRY_KEY = "untangle.safelist.entry";
+    private static final String ENTRY_KEY = "untangle.safelist.entry";
 
-  private boolean m_encoded = false;
+    private boolean m_encoded = false;
 
-  public boolean isEncoded() {
-    return m_encoded;
-  }
-  public void setEncoded(boolean encoded) {
-    m_encoded = encoded;
-  }
-
-  @Override
-  protected String getValue() {
-    String ret = (String) pageContext.getAttribute(ENTRY_KEY, PageContext.PAGE_SCOPE);
-    if(isEncoded()) {
-      ret = base64Encode(ret);
+    public boolean isEncoded() {
+        return m_encoded;
     }
-    return ret;
-  }  
+    public void setEncoded(boolean encoded) {
+        m_encoded = encoded;
+    }
 
-  public static void setCurrent(PageContext pageContext, String entry) {
-    pageContext.setAttribute(ENTRY_KEY, entry, PageContext.PAGE_SCOPE);
-  }
+    @Override
+    protected String getValue() {
+        String ret = (String) pageContext.getAttribute(ENTRY_KEY, PageContext.PAGE_SCOPE);
+        if(isEncoded()) {
+            ret = base64Encode(ret);
+        }
+        return ret;
+    }
 
-  private String base64Encode(String s) {
-    if(s == null) {
-      return null;
+    public static void setCurrent(PageContext pageContext, String entry) {
+        pageContext.setAttribute(ENTRY_KEY, entry, PageContext.PAGE_SCOPE);
     }
-    try {
-      return new BASE64Encoder().encode(s.getBytes());
+
+    private String base64Encode(String s) {
+        if(s == null) {
+            return null;
+        }
+        try {
+            return new BASE64Encoder().encode(s.getBytes());
+        }
+        catch(Exception ex) {
+            return null;
+        }
     }
-    catch(Exception ex) {
-      return null;
-    }
-  }   
 }

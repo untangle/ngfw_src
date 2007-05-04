@@ -17,23 +17,23 @@ import com.untangle.mvvm.tran.TransformStats;
 import org.apache.log4j.Logger;
 
 /**
-    // Airgap isn't real, so we get stats from /proc/net/dev, which looks like:
-    // Inter-|   Receive                                                |  Transmit
-    //  face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed
-    //   eth0:10006263   19526    0    0    8     0          0         0  2902562   15012    0    0    0     0       0          0
-    //     lo:    2564      37    0    0    0     0          0         0     2564      37    0    0    0     0       0          0
-    // dummy0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
-    //   eth1: 1260552    4645    1    0    0     0          0         0   642460    4512    0    0    0     0       0          0
-    //    br0: 9086448   10976    0    0    0     0          0         0  1645622   10402    0    0    0     0       0          0
-    //
-    // 11/05 jdi:
-    // Since there can now be more than two interfaces, we no longer try to map client to inside
-    // and server to outside.  Instead we total up the counts over all interfaces, where
-    // C->S arbitrarily means receive, S->C means transmit.  We only fill in the chunk and byte counts.
-    // So:
-    //     C->T and T->S is count of all received bytes/chunks
-    //     S->T and T->C is count of all transmitted bytes/chunks
-    //
+ // Airgap isn't real, so we get stats from /proc/net/dev, which looks like:
+ // Inter-|   Receive                                                |  Transmit
+ //  face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed
+ //   eth0:10006263   19526    0    0    8     0          0         0  2902562   15012    0    0    0     0       0          0
+ //     lo:    2564      37    0    0    0     0          0         0     2564      37    0    0    0     0       0          0
+ // dummy0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
+ //   eth1: 1260552    4645    1    0    0     0          0         0   642460    4512    0    0    0     0       0          0
+ //    br0: 9086448   10976    0    0    0     0          0         0  1645622   10402    0    0    0     0       0          0
+ //
+ // 11/05 jdi:
+ // Since there can now be more than two interfaces, we no longer try to map client to inside
+ // and server to outside.  Instead we total up the counts over all interfaces, where
+ // C->S arbitrarily means receive, S->C means transmit.  We only fill in the chunk and byte counts.
+ // So:
+ //     C->T and T->S is count of all received bytes/chunks
+ //     S->T and T->C is count of all transmitted bytes/chunks
+ //
  * Describe class <code>FakeTransformStats</code> here.
  *
  * @author <a href="mailto:jdi@slab.ninthwave.com">John Irwin</a>

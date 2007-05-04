@@ -100,7 +100,7 @@ class BuildEnv
 
     @servletcommon = "#{Dir.pwd}/servlet/common"
 
-    @javahome = "/usr/lib/jvm/java-1.5.0-sun-1.5.0.10"
+    @javahome = "/usr/lib/jvm/java-1.5.0-sun"
 
     ## Flag indicating whether or not this is a development or
     ## package/production build.

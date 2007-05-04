@@ -10,7 +10,6 @@
  */
 
 package com.untangle.tran.mail.impl.quarantine.store;
-import org.apache.log4j.Logger;
 
 import java.io.*;
 
@@ -23,22 +22,22 @@ import java.io.*;
  */
 class RelativeFileName {
 
-  /**
-   * The relative path
-   */
-  final String relativePath;
+    /**
+     * The relative path
+     */
+    final String relativePath;
 
-  RelativeFileName(String path) {
-    this.relativePath = path;
-  }
+    RelativeFileName(String path) {
+        this.relativePath = path;
+    }
 
-  @Override
-  public boolean equals(Object obj) {
-    return relativePath.equals(obj);
-  }
+    @Override
+    public boolean equals(Object obj) {
+        return relativePath.equals(obj);
+    }
 
-  @Override
-  public int hashCode() {
-    return relativePath.hashCode();
-  }
+    @Override
+    public int hashCode() {
+        return relativePath.hashCode();
+    }
 }

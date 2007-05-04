@@ -607,7 +607,7 @@ public abstract class PopStateMachine extends AbstractTokenHandler
 
             try {
                 for (; true == zBuf.hasRemaining(); ) {
-                     zWrChannel.write(zBuf);
+                    zWrChannel.write(zBuf);
                 }
             } catch (IOException exn) {
                 logger.error("cannot write date to byte unstuffed message file: ", exn);

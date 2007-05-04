@@ -12,23 +12,23 @@
 
 package com.untangle.tran.test.gui;
 
+import com.untangle.gui.util.Util;
 import com.untangle.mvvm.tran.TransformContext;
 import com.untangle.tran.test.TestSettings;
 import com.untangle.tran.test.TestTransform;
-import com.untangle.gui.util.Util;
 
 public class AdvancedControlsJPanel extends javax.swing.JPanel {
-    
+
     private TransformContext transformContext;
     private TestSettings transformSettings;
-    
-    
+
+
     public AdvancedControlsJPanel(TransformContext transformContext) {
         this.transformContext = transformContext;
-        
+
         initComponents();
-        
-        
+
+
         if(transformContext != null){
             transformSettings =  ((TestTransform)transformContext.transform()).getTestSettings();
             // FIXME: DEPRECATED
@@ -41,9 +41,9 @@ public class AdvancedControlsJPanel extends javax.swing.JPanel {
             minJSpinner.setValue( new Integer(transformSettings.getMinRandomBufferSize()) );
             maxJSpinner.setValue( new Integer(transformSettings.getMaxRandomBufferSize()) );
         }
-         
+
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -105,10 +105,10 @@ public class AdvancedControlsJPanel extends javax.swing.JPanel {
         commitJButton.setFont(new java.awt.Font("Dialog", 0, 12));
         commitJButton.setText("Commit");
         commitJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                commitJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    commitJButtonActionPerformed(evt);
+                }
+            });
 
         add(commitJButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 240, -1, -1));
 
@@ -117,7 +117,7 @@ public class AdvancedControlsJPanel extends javax.swing.JPanel {
     private void commitJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commitJButtonActionPerformed
         if( transformContext == null)
             return;
-        
+
         // FIXME
         // transformSettings.modeDEM(doubleEndpointJCheckBox.isSelected());
         transformSettings.setBuffered(bufferedJCheckBox.isSelected());
@@ -127,15 +127,15 @@ public class AdvancedControlsJPanel extends javax.swing.JPanel {
         transformSettings.setRandomBufferSizes(randomBufferSizeJCheckBox.isSelected());
         transformSettings.setMinRandomBufferSize( ((Integer)minJSpinner.getValue()).intValue() );
         transformSettings.setMaxRandomBufferSize( ((Integer)maxJSpinner.getValue()).intValue() );
-        try { 
-            ((TestTransform)transformContext.transform()).setTestSettings(transformSettings); 
+        try {
+            ((TestTransform)transformContext.transform()).setTestSettings(transformSettings);
         } catch (Exception e) {
-            Util.handleExceptionNoRestart("Error comitting", e); 
+            Util.handleExceptionNoRestart("Error comitting", e);
         }
-        
+
     }//GEN-LAST:event_commitJButtonActionPerformed
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox bufferedJCheckBox;
     private javax.swing.JButton commitJButton;
@@ -149,5 +149,5 @@ public class AdvancedControlsJPanel extends javax.swing.JPanel {
     private javax.swing.JCheckBox randomBufferSizeJCheckBox;
     private javax.swing.JCheckBox releaseJCheckBox;
     // End of variables declaration//GEN-END:variables
-    
+
 }

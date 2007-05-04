@@ -13,9 +13,6 @@
 package com.untangle.mvvm.tran.firewall;
 
 import java.io.Serializable;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-
 
 import com.untangle.mvvm.tran.ParseException;
 
@@ -23,14 +20,14 @@ public final class MACAddress implements Serializable, Comparable
 {
     static final int MACADDRSZ = 6;
     static final String SAMPLE = "01:23:45:67:89:ab";
-    
+
     private final String mac;
 
     private MACAddress( String mac )
     {
         this.mac = mac.toLowerCase();
     }
-    
+
     public static MACAddress parse( String mac ) throws ParseException
     {
         /* Trim any whitespace */
@@ -81,6 +78,6 @@ public final class MACAddress implements Serializable, Comparable
     }
 
     public int compareTo(Object o){
-	return mac.compareToIgnoreCase(o.toString());
+        return mac.compareToIgnoreCase(o.toString());
     }
 }

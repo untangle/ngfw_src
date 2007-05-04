@@ -82,12 +82,12 @@ class GeneralTableModel extends MSortedTableModel<Object>{
         UserWhitelistMode userWhitelistMode = (UserWhitelistMode) ((ComboBoxModel)tempRowVector.elementAt(3)).getSelectedItem();
 
 
-    // SAVE SETTINGS ////////////
-    if( !validateOnly ){
-        SpywareSettings spywareSettings = (SpywareSettings) settings;
-        spywareSettings.setBlockAllActiveX( blockAllActiveX );
-        spywareSettings.setBlockAllActiveXDetails( blockAllActiveXDetails );
-        spywareSettings.setUserWhitelistMode( userWhitelistMode );
+        // SAVE SETTINGS ////////////
+        if( !validateOnly ){
+            SpywareSettings spywareSettings = (SpywareSettings) settings;
+            spywareSettings.setBlockAllActiveX( blockAllActiveX );
+            spywareSettings.setBlockAllActiveXDetails( blockAllActiveXDetails );
+            spywareSettings.setUserWhitelistMode( userWhitelistMode );
         }
 
     }

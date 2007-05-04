@@ -15,10 +15,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import com.untangle.mvvm.tran.IPaddr;
-
 import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.Parser;
-import com.untangle.mvvm.tran.firewall.ParsingConstants;
 
 public final class IPRangeMatcher extends IPDBMatcher
 {
@@ -45,7 +43,7 @@ public final class IPRangeMatcher extends IPDBMatcher
     {
         return toString();
     }
-    
+
     public String toString()
     {
         return this.string;
@@ -61,39 +59,39 @@ public final class IPRangeMatcher extends IPDBMatcher
         if ( start == null || end == null ) throw new NullPointerException( "Null address" );
 
         IPMatcherUtil imu = IPMatcherUtil.getInstance();
-        
+
         String user = start.getHostAddress() + " " + MARKER_RANGE +  " " + end.getHostAddress();
-    
+
         return new IPRangeMatcher( imu.toLong( start ), imu.toLong( end ), user );
     }
 
     /* This is just for matching a list of interfaces */
-    static final Parser<IPDBMatcher> PARSER = new Parser<IPDBMatcher>() 
+    static final Parser<IPDBMatcher> PARSER = new Parser<IPDBMatcher>()
     {
         public int priority()
         {
             return 10;
         }
-        
+
         public boolean isParseable( String value )
         {
             return ( value.contains( MARKER_RANGE ));
         }
-        
+
         public IPDBMatcher parse( String value ) throws ParseException
         {
             if ( !isParseable( value )) {
                 throw new ParseException( "Invalid ip range matcher '" + value + "'" );
             }
-            
+
             String ipArray[] = value.split( MARKER_RANGE );
             if ( ipArray.length != 2 ) {
                 throw new ParseException( "Range matcher contains two components: " + value );
             }
 
             try {
-                return makeRangeInstance( IPaddr.parse( ipArray[0] ).getAddr(), 
-                                           IPaddr.parse( ipArray[1] ).getAddr());
+                return makeRangeInstance( IPaddr.parse( ipArray[0] ).getAddr(),
+                                          IPaddr.parse( ipArray[1] ).getAddr());
             } catch ( UnknownHostException e ) {
                 throw new ParseException( e );
             }

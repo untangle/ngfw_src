@@ -13,6 +13,7 @@ package com.untangle.mvvm.engine;
 
 import java.net.InetAddress;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -20,7 +21,6 @@ import com.untangle.mvvm.logging.LogEvent;
 import com.untangle.mvvm.logging.SyslogBuilder;
 import com.untangle.mvvm.logging.SyslogPriority;
 import com.untangle.mvvm.security.LoginFailureReason;
-import javax.persistence.Entity;
 import org.hibernate.annotations.Type;
 
 /**
@@ -31,155 +31,155 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-@Table(name="mvvm_login_evt", schema="events")
-public class LoginEvent extends LogEvent
-{
-    private InetAddress clientAddr;
-    private String login;
-    private boolean local;
-    private boolean succeeded;
-    private LoginFailureReason reason;
-
-    // constructors -----------------------------------------------------------
-
-    public LoginEvent() { }
-
-    // For successes
-    public LoginEvent(InetAddress clientAddr, String login, boolean local, boolean succeeded)
+    @Table(name="mvvm_login_evt", schema="events")
+    public class LoginEvent extends LogEvent
     {
-        this(clientAddr, login, local, succeeded, null);
-    }
+        private InetAddress clientAddr;
+        private String login;
+        private boolean local;
+        private boolean succeeded;
+        private LoginFailureReason reason;
 
-    // For failures
-    public LoginEvent(InetAddress clientAddr, String login, boolean local, boolean succeeded, LoginFailureReason reason)
-    {
-        if (login.length() > DEFAULT_STRING_SIZE) login = login.substring(0, DEFAULT_STRING_SIZE);
-        this.clientAddr = clientAddr;
-        this.login = login;
-        this.local = local;
-        this.succeeded = succeeded;
-        this.reason = reason;
-    }
+        // constructors -----------------------------------------------------------
 
-    // accessors --------------------------------------------------------------
+        public LoginEvent() { }
 
-    /**
-     * Client address
-     *
-     * @return the address of the client
-     */
-    @Column(name="client_addr")
-    @Type(type="com.untangle.mvvm.type.InetAddressUserType")
-    public InetAddress getClientAddr()
-    {
-        return clientAddr;
-    }
+        // For successes
+        public LoginEvent(InetAddress clientAddr, String login, boolean local, boolean succeeded)
+        {
+            this(clientAddr, login, local, succeeded, null);
+        }
 
-    public void setClientAddr(InetAddress clientAddr)
-    {
-        this.clientAddr = clientAddr;
-    }
+        // For failures
+        public LoginEvent(InetAddress clientAddr, String login, boolean local, boolean succeeded, LoginFailureReason reason)
+        {
+            if (login.length() > DEFAULT_STRING_SIZE) login = login.substring(0, DEFAULT_STRING_SIZE);
+            this.clientAddr = clientAddr;
+            this.login = login;
+            this.local = local;
+            this.succeeded = succeeded;
+            this.reason = reason;
+        }
 
-    /**
-     * Login used to login.  May be  used to join to MVVM_USER.
-     *
-     * @return a <code>String</code> giving the login for the user
-     */
-    public String getLogin()
-    {
-        return login;
-    }
+        // accessors --------------------------------------------------------------
 
-    public void setLogin(String login)
-    {
-        if (login.length() > DEFAULT_STRING_SIZE) login = login.substring(0, DEFAULT_STRING_SIZE);
-        this.login = login;
-    }
+        /**
+         * Client address
+         *
+         * @return the address of the client
+         */
+        @Column(name="client_addr")
+        @Type(type="com.untangle.mvvm.type.InetAddressUserType")
+        public InetAddress getClientAddr()
+        {
+            return clientAddr;
+        }
 
-    /**
-     * Whether or not the login is local (from internal tools on
-     * system, ignored for reporting).
-     *
-     * @return whether or not the login was local
-     */
-    @Column(nullable=false)
-    public boolean isLocal()
-    {
-        return local;
-    }
+        public void setClientAddr(InetAddress clientAddr)
+        {
+            this.clientAddr = clientAddr;
+        }
 
-    public void setLocal(boolean local)
-    {
-        this.local = local;
-    }
+        /**
+         * Login used to login.  May be  used to join to MVVM_USER.
+         *
+         * @return a <code>String</code> giving the login for the user
+         */
+        public String getLogin()
+        {
+            return login;
+        }
 
-    /**
-     * Whether or not the login succeeeded, if not there will be a reason.
-     *
-     * @return whether or not the login was successful
-     */
-    @Column(nullable=false)
-    public boolean isSucceeded()
-    {
-        return succeeded;
-    }
+        public void setLogin(String login)
+        {
+            if (login.length() > DEFAULT_STRING_SIZE) login = login.substring(0, DEFAULT_STRING_SIZE);
+            this.login = login;
+        }
 
-    public void setSucceeded(boolean succeeded)
-    {
-        this.succeeded = succeeded;
-    }
+        /**
+         * Whether or not the login is local (from internal tools on
+         * system, ignored for reporting).
+         *
+         * @return whether or not the login was local
+         */
+        @Column(nullable=false)
+        public boolean isLocal()
+        {
+            return local;
+        }
 
-    /**
-     * Reason for login failure.
-     *
-     * @return the reason.
-     */
-    @Type(type="com.untangle.mvvm.security.LoginFailureReasonUserType")
-    public LoginFailureReason getReason()
-    {
-        return reason;
-    }
+        public void setLocal(boolean local)
+        {
+            this.local = local;
+        }
 
-    public void setReason(LoginFailureReason reason)
-    {
-        this.reason = reason;
-    }
+        /**
+         * Whether or not the login succeeeded, if not there will be a reason.
+         *
+         * @return whether or not the login was successful
+         */
+        @Column(nullable=false)
+        public boolean isSucceeded()
+        {
+            return succeeded;
+        }
 
-    // Syslog methods ---------------------------------------------------------
+        public void setSucceeded(boolean succeeded)
+        {
+            this.succeeded = succeeded;
+        }
 
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        sb.startSection("info");
-        sb.addField("client-addr", clientAddr);
-        sb.addField("login", login);
-        sb.addField("local", local);
-        sb.addField("succeeded", succeeded);
-        if (reason != null)
-            // Don't need a reason for success
-            sb.addField("reason", reason.toString());
-    }
+        /**
+         * Reason for login failure.
+         *
+         * @return the reason.
+         */
+        @Type(type="com.untangle.mvvm.security.LoginFailureReasonUserType")
+        public LoginFailureReason getReason()
+        {
+            return reason;
+        }
 
-    @Transient
-    public String getSyslogId()
-    {
-        return "AdminLogin"; // XXX
-    }
+        public void setReason(LoginFailureReason reason)
+        {
+            this.reason = reason;
+        }
 
-    @Transient
-    public SyslogPriority getSyslogPriority()
-    {
-        if (false == succeeded) {
-            return SyslogPriority.WARNING; // login attempt failed
-        } else {
-            // local logins are not as interesting to enduser
-            return true == local ? SyslogPriority.DEBUG : SyslogPriority.INFORMATIONAL;
+        // Syslog methods ---------------------------------------------------------
+
+        public void appendSyslog(SyslogBuilder sb)
+        {
+            sb.startSection("info");
+            sb.addField("client-addr", clientAddr);
+            sb.addField("login", login);
+            sb.addField("local", local);
+            sb.addField("succeeded", succeeded);
+            if (reason != null)
+                // Don't need a reason for success
+                sb.addField("reason", reason.toString());
+        }
+
+        @Transient
+        public String getSyslogId()
+        {
+            return "AdminLogin"; // XXX
+        }
+
+        @Transient
+        public SyslogPriority getSyslogPriority()
+        {
+            if (false == succeeded) {
+                return SyslogPriority.WARNING; // login attempt failed
+            } else {
+                // local logins are not as interesting to enduser
+                return true == local ? SyslogPriority.DEBUG : SyslogPriority.INFORMATIONAL;
+            }
+        }
+
+        // Object methods ---------------------------------------------------------
+
+        public String toString()
+        {
+            return "LoginEvent id: " + getId() + " login: " + login + " succeeded: " + succeeded;
         }
     }
-
-    // Object methods ---------------------------------------------------------
-
-    public String toString()
-    {
-        return "LoginEvent id: " + getId() + " login: " + login + " succeeded: " + succeeded;
-    }
-}

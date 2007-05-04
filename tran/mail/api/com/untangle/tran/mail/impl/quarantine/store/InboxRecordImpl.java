@@ -11,25 +11,26 @@
 
 package com.untangle.tran.mail.impl.quarantine.store;
 
+import java.io.Serializable;
+
 import com.untangle.tran.mail.papi.quarantine.InboxRecord;
 import com.untangle.tran.mail.papi.quarantine.MailSummary;
-import java.io.Serializable;
 
 /**
  * Private implementation of an Inbox record
  */
 public final class InboxRecordImpl
-  extends InboxRecord
-  implements Serializable {
+    extends InboxRecord
+    implements Serializable {
 
-  public InboxRecordImpl() {}
+    public InboxRecordImpl() {}
 
-  public InboxRecordImpl(String mailID,
-    long addedOn,
-    MailSummary summary,
-    String[] recipients) {
-    
-    super(mailID, addedOn, summary, recipients);
-    
-  }
+    public InboxRecordImpl(String mailID,
+                           long addedOn,
+                           MailSummary summary,
+                           String[] recipients) {
+
+        super(mailID, addedOn, summary, recipients);
+
+    }
 }

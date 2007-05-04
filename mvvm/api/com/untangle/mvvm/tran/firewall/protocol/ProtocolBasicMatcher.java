@@ -15,10 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.untangle.mvvm.tapi.Protocol;
-
 import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.Parser;
-import com.untangle.mvvm.tran.firewall.ParsingConstants;
 
 import static com.untangle.mvvm.tran.firewall.protocol.ProtocolParsingConstants.MARKER_TCP;
 import static com.untangle.mvvm.tran.firewall.protocol.ProtocolParsingConstants.MARKER_UDP;
@@ -36,7 +34,7 @@ public final class ProtocolBasicMatcher extends ProtocolDBMatcher
 {
     private static final long serialVersionUID = 2396418065775379605L;
 
-    private static final Map<String,ProtocolBasicMatcher> nameToMatcherMap = 
+    private static final Map<String,ProtocolBasicMatcher> nameToMatcherMap =
         new HashMap<String,ProtocolBasicMatcher>();
 
     private static final ProtocolBasicMatcher MATCHER_TCP =
@@ -55,7 +53,7 @@ public final class ProtocolBasicMatcher extends ProtocolDBMatcher
     private final boolean tcp;
     private final boolean udp;
     private final boolean ping;
-    
+
     private ProtocolBasicMatcher( String name, boolean tcp, boolean udp, boolean ping )
     {
         this.name = name;
@@ -67,9 +65,9 @@ public final class ProtocolBasicMatcher extends ProtocolDBMatcher
     public boolean isMatch( Protocol protocol )
     {
         if (( protocol == Protocol.TCP ) && this.tcp ) return true;
-        
+
         if (( protocol == Protocol.UDP ) && this.udp ) return true;
-        
+
         /* Right now Ping is a UDP session. [XXX ICMP HACK] */
         if (( protocol == Protocol.UDP ) && this.ping ) return true;
 
@@ -82,9 +80,9 @@ public final class ProtocolBasicMatcher extends ProtocolDBMatcher
     public boolean isMatch( short protocol )
     {
         if (( protocol == Protocol.TCP.getId() ) && this.tcp ) return true;
-        
+
         if (( protocol == Protocol.UDP.getId() ) && this.udp ) return true;
-        
+
         /* Right now Ping is a UDP session. [XXX ICMP HACK] */
         if (( protocol == Protocol.UDP.getId() ) && this.ping ) return true;
 
@@ -99,11 +97,11 @@ public final class ProtocolBasicMatcher extends ProtocolDBMatcher
         return toString();
     }
 
-        public String toString()
+    public String toString()
     {
         return this.name;
     }
-    
+
     public static ProtocolDBMatcher getTCPMatcher()
     {
         return MATCHER_TCP;
@@ -127,7 +125,7 @@ public final class ProtocolBasicMatcher extends ProtocolDBMatcher
     private static ProtocolBasicMatcher makeMatcher( String name, boolean tcp, boolean udp, boolean ping )
     {
         ProtocolBasicMatcher matcher = nameToMatcherMap.get( name );
-        
+
         /* If necessary add the matcher to the map */
         if ( matcher == null ) {
             matcher = new ProtocolBasicMatcher( name, tcp, udp, ping );
@@ -137,24 +135,24 @@ public final class ProtocolBasicMatcher extends ProtocolDBMatcher
         return matcher;
     }
 
-    static final Parser<ProtocolDBMatcher> PARSER = new Parser<ProtocolDBMatcher>() 
+    static final Parser<ProtocolDBMatcher> PARSER = new Parser<ProtocolDBMatcher>()
     {
         public int priority()
         {
             return 10;
         }
-        
+
         public boolean isParseable( String value )
         {
             value = value.trim();
-            
+
             return ( nameToMatcherMap.get( value ) != null );
         }
-        
+
         public ProtocolDBMatcher parse( String value ) throws ParseException
         {
             value = value.trim();
-            
+
             if ( !isParseable( value )) {
                 throw new ParseException( "Invalid protocol basic matcher '" + value + "'" );
             }
@@ -164,7 +162,7 @@ public final class ProtocolBasicMatcher extends ProtocolDBMatcher
             if ( matcher == null ) {
                 throw new ParseException( "Invalid protocol basic matcher '" + value + "'" );
             }
-            
+
             return matcher;
         }
     };

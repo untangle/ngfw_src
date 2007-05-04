@@ -13,18 +13,10 @@ package com.untangle.tran.spam;
 
 import java.io.Serializable;
 import java.util.*;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.untangle.tran.mail.papi.WrappedMessageGenerator;
@@ -261,7 +253,7 @@ public abstract class SpamProtoConfig implements Serializable
     public static final int VERY_HIGH_STRENGTH = 33;
     public static final int EXTREME_STRENGTH = 30;
     public static final Map<String, Integer> scanStrengthEnumeration
-        = new LinkedHashMap<String, Integer>();
+                                                              = new LinkedHashMap<String, Integer>();
     static {
         scanStrengthEnumeration.put("low",       LOW_STRENGTH);
         scanStrengthEnumeration.put("medium",    MEDIUM_STRENGTH);

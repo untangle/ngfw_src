@@ -30,9 +30,9 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
         long webTraffic = 0l; // filtered web traffic (to other transforms)
 
         try {
-        String sql;
-        PreparedStatement ps;
-        ResultSet rs;
+            String sql;
+            PreparedStatement ps;
+            ResultSet rs;
 
             sql = "SELECT COUNT(*) FROM tr_http_evt_req WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);

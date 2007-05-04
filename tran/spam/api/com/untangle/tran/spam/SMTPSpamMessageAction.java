@@ -67,12 +67,12 @@ public class SMTPSpamMessageAction implements Serializable
     {
         SMTPSpamMessageAction zMsgAction;
         for (Iterator i = INSTANCES.keySet().iterator(); true == i.hasNext(); )
-        {
-            zMsgAction = (SMTPSpamMessageAction)INSTANCES.get(i.next());
-            if (name.equals(zMsgAction.getName())) {
-                return zMsgAction;
+            {
+                zMsgAction = (SMTPSpamMessageAction)INSTANCES.get(i.next());
+                if (name.equals(zMsgAction.getName())) {
+                    return zMsgAction;
+                }
             }
-        }
         return null;
     }
 

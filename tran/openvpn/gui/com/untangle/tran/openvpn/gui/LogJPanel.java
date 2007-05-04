@@ -13,17 +13,14 @@
 package com.untangle.tran.openvpn.gui;
 
 import java.util.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.table.*;
 
 import com.untangle.gui.transform.*;
-import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.logging.EventManager;
 import com.untangle.mvvm.logging.EventRepository;
 import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.mvvm.tran.PipelineEndpoints;
 import com.untangle.mvvm.tran.Transform;
 import com.untangle.tran.openvpn.*;
 
@@ -34,7 +31,7 @@ public class LogJPanel extends MLogTableJPanel {
     public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
         super(transform, mTransformControlsJPanel);
 
-	vpnTransform = (VpnTransform)logTransform;
+        vpnTransform = (VpnTransform)logTransform;
 
         setTableModel(new LogTableModel());
 
@@ -45,7 +42,7 @@ public class LogJPanel extends MLogTableJPanel {
     }
 
     protected void refreshSettings(){
-	EventManager<ClientConnectEvent> em = vpnTransform.getClientConnectEventManager();
+        EventManager<ClientConnectEvent> em = vpnTransform.getClientConnectEventManager();
         EventRepository<ClientConnectEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
         settings = ef.getEvents();
     }
@@ -75,12 +72,12 @@ public class LogJPanel extends MLogTableJPanel {
             for( ClientConnectEvent requestLog : requestLogList ){
 
                 event = new Vector(6);
-		event.add( requestLog.getStart() );
-		event.add( (requestLog.getEnd()==null?new Date(0):requestLog.getEnd()) );
-		event.add( requestLog.getClientName() );
-		event.add( new IPPortString(requestLog.getAddress(), requestLog.getPort()) );
-		event.add( requestLog.getBytesTx()/1024l );
-		event.add( requestLog.getBytesRx()/1024l );
+                event.add( requestLog.getStart() );
+                event.add( (requestLog.getEnd()==null?new Date(0):requestLog.getEnd()) );
+                event.add( requestLog.getClientName() );
+                event.add( new IPPortString(requestLog.getAddress(), requestLog.getPort()) );
+                event.add( requestLog.getBytesTx()/1024l );
+                event.add( requestLog.getBytesRx()/1024l );
                 allEvents.add( event );
             }
 

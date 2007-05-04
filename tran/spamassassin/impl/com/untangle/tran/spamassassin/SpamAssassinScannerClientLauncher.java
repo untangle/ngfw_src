@@ -99,10 +99,10 @@ public class SpamAssassinScannerClientLauncher {
         SpamAssassinClientContext cContext = new SpamAssassinClientContext(msgFile, SpamAssassinClientSocket.SPAMD_DEFHOST, SpamAssassinClientSocket.SPAMD_DEFPORT, threshold);
         SpamAssassinClient client = createClient(cContext);
 
-/* XXXX
-        cContext = new SpamAssassinClientContext(msgFile, SpamAssassinClientSocket.SPAMD_DEFHOST, SpamAssassinClientSocket.SPAMD_DEFPORT, threshold);
-        client = createClient(cContext);
-*/
+        /* XXXX
+           cContext = new SpamAssassinClientContext(msgFile, SpamAssassinClientSocket.SPAMD_DEFHOST, SpamAssassinClientSocket.SPAMD_DEFPORT, threshold);
+           client = createClient(cContext);
+        */
 
         Object[] cObjects = getClients();
         SpamAssassinClient[] clients = new SpamAssassinClient[cObjects.length];

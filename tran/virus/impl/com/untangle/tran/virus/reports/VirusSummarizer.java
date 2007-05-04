@@ -43,15 +43,15 @@ public class VirusSummarizer extends BaseSummarizer {
         int httpBlocked = 0;
         int ftpScanned = 0;
         int ftpBlocked = 0;
-    int emailScanned = 0;
-    int emailBlocked = 0;
+        int emailScanned = 0;
+        int emailBlocked = 0;
 
         try {
             String sql;
-        PreparedStatement ps;
-        ResultSet rs;
+            PreparedStatement ps;
+            ResultSet rs;
 
-        sql = "SELECT COUNT(*) FROM tr_virus_evt_http WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?";
+            sql = "SELECT COUNT(*) FROM tr_virus_evt_http WHERE time_stamp >= ? AND time_stamp < ? AND vendor_name = ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);

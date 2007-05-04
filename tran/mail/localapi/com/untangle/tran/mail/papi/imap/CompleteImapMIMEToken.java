@@ -11,12 +11,12 @@
 
 package com.untangle.tran.mail.papi.imap;
 
-import com.untangle.tran.mail.papi.CompleteMIMEToken;
-import com.untangle.tran.mime.MIMEMessage;
-import com.untangle.tran.mail.papi.MessageInfo;
-import com.untangle.tran.mail.papi.MIMETCPStreamer;
 import com.untangle.mvvm.tapi.Pipeline;
 import com.untangle.mvvm.tapi.event.TCPStreamer;
+import com.untangle.tran.mail.papi.CompleteMIMEToken;
+import com.untangle.tran.mail.papi.MIMETCPStreamer;
+import com.untangle.tran.mail.papi.MessageInfo;
+import com.untangle.tran.mime.MIMEMessage;
 import org.apache.log4j.Logger;
 
 
@@ -30,29 +30,29 @@ import org.apache.log4j.Logger;
  * to be prepended.
  */
 public class CompleteImapMIMEToken
-  extends CompleteMIMEToken {
+    extends CompleteMIMEToken {
 
-  private final Logger m_logger =
-    Logger.getLogger(CompleteImapMIMEToken.class);
+    private final Logger m_logger =
+        Logger.getLogger(CompleteImapMIMEToken.class);
 
-  public CompleteImapMIMEToken(MIMEMessage msg,
-    MessageInfo msgInfo) {
-    super(msg, msgInfo);
-  }
+    public CompleteImapMIMEToken(MIMEMessage msg,
+                                 MessageInfo msgInfo) {
+        super(msg, msgInfo);
+    }
 
-  /**
-   * Create a TCPStreamer for Imap (which includes the leading literal).
-   */
-  public TCPStreamer toImapTCPStreamer(Pipeline pipeline,
-    boolean disposeMessageWhenDone) {
-    
-    MIMETCPStreamer mimeStreamer = createMIMETCPStreamer(pipeline, disposeMessageWhenDone);
-    int len = (int) mimeStreamer.getFileLength();
-    
-    m_logger.debug("About to return a Literal-leading streamer for literal length: " + len);
-      
-    return new LiteralLeadingTCPStreamer(
-      mimeStreamer,
-      len);
-  }
+    /**
+     * Create a TCPStreamer for Imap (which includes the leading literal).
+     */
+    public TCPStreamer toImapTCPStreamer(Pipeline pipeline,
+                                         boolean disposeMessageWhenDone) {
+
+        MIMETCPStreamer mimeStreamer = createMIMETCPStreamer(pipeline, disposeMessageWhenDone);
+        int len = (int) mimeStreamer.getFileLength();
+
+        m_logger.debug("About to return a Literal-leading streamer for literal length: " + len);
+
+        return new LiteralLeadingTCPStreamer(
+                                             mimeStreamer,
+                                             len);
+    }
 }

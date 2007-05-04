@@ -11,16 +11,16 @@
 
 
 package com.untangle.tran.ids.gui;
-import com.untangle.tran.ids.*;
-import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.gui.util.*;
 import java.awt.Window;
-import java.awt.Component;
 import java.awt.event.*;
 import java.net.URL;
 import javax.jnlp.BasicService;
 import javax.jnlp.ServiceManager;
 import javax.swing.CellEditor;
+
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.tran.ids.*;
 
 public class UrlButtonRunnable implements ButtonRunnable, Comparable<UrlButtonRunnable> {
     private String url;
@@ -50,16 +50,16 @@ public class UrlButtonRunnable implements ButtonRunnable, Comparable<UrlButtonRu
 
     public void actionPerformed(ActionEvent evt){ run(); }
     public void run(){
-	if(url!=null){
-	    try{
-		URL newURL = new URL(url);
-		((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
-	    }
-	    catch(Exception e){
-		Util.handleExceptionNoRestart("Error showing URL", e);
-		MOneButtonJDialog.factory(topLevelWindow, "Intrusion Prevention", "Unable to show URL", "Intrusion Prevention Warning", "Warning");
-	    }
-	}
+        if(url!=null){
+            try{
+                URL newURL = new URL(url);
+                ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
+            }
+            catch(Exception e){
+                Util.handleExceptionNoRestart("Error showing URL", e);
+                MOneButtonJDialog.factory(topLevelWindow, "Intrusion Prevention", "Unable to show URL", "Intrusion Prevention Warning", "Warning");
+            }
+        }
     }
     public int compareTo(UrlButtonRunnable o){
         return url.compareTo(o.url);

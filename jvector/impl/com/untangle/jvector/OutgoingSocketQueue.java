@@ -11,8 +11,8 @@
 
 package com.untangle.jvector;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 public class OutgoingSocketQueue extends Source
 {
@@ -20,7 +20,7 @@ public class OutgoingSocketQueue extends Source
      * List of events to go out
      */
     private final List<Crumb> eventList = new LinkedList<Crumb>();
-    
+
     /**
      * List of listeners
      */
@@ -41,14 +41,14 @@ public class OutgoingSocketQueue extends Source
      * relay
      */
     private boolean isRelaySideClosed = false;
-    
+
     private boolean isEnabled             = false;
     private boolean containsReset         = false;
     private boolean containsShutdown      = false;
-    
+
     /* Max events is the capacity of the outgoing socket queue */
     private int maxEvents = 1;
-    
+
     public OutgoingSocketQueue()
     {
         pointer = create();
@@ -60,16 +60,16 @@ public class OutgoingSocketQueue extends Source
             Vector.logError( "get_event without any data in the OutgoingSocketQueue" );
 
             if ( isRelaySideClosed ) return ShutdownCrumb.getInstance();
-                
+
             throw new IllegalStateException( "get_event without any data in the socket queue" );
         }
 
         Crumb crumb = eventList.remove( 0 );
         callListenersRemove();
-        
+
         if ( Vector.isDebugEnabled()) {
             if ( crumb.isData()) {
-                Vector.logDebug( "get_event data crumb(" + this + "): " + crumb + 
+                Vector.logDebug( "get_event data crumb(" + this + "): " + crumb +
                                  ", limit: " + ((DataCrumb)crumb).limit());
             } else {
                 Vector.logDebug( "get_event crumb(" + this + "): " + crumb );
@@ -93,7 +93,7 @@ public class OutgoingSocketQueue extends Source
     {
         if ( Vector.isDebugEnabled()) {
             if ( crumb.isData()) {
-                Vector.logDebug( "Write data crumb(" + this + "): " + crumb + 
+                Vector.logDebug( "Write data crumb(" + this + "): " + crumb +
                                  ", limit: " + ((DataCrumb)crumb).limit());
             } else {
                 Vector.logDebug( "Write crumb(" + this + "): " + crumb );
@@ -107,10 +107,10 @@ public class OutgoingSocketQueue extends Source
 
         return add( crumb );
     }
-   
-    /** 
+
+    /**
      * Check to see if the listeners side of the Outgoing Socket Queue is closed.
-     * This is true once the transform has written a shutdown crumb into the 
+     * This is true once the transform has written a shutdown crumb into the
      * outgoing socket queue.
      */
     public boolean isClosed()
@@ -168,18 +168,18 @@ public class OutgoingSocketQueue extends Source
         this.eventList.clear();
 
         /* Call the shutdown hook */
-        
+
         for ( SocketQueueListener listener : this.listenerList ) {
             listener.shutdownEvent( this );
         }
 
         return 0;
     }
-    
+
     public boolean isEmpty()
     {
         return this.eventList.isEmpty();
-    } 
+    }
 
     public boolean isFull()
     {
@@ -193,14 +193,14 @@ public class OutgoingSocketQueue extends Source
 
     public boolean containsShutdown()
     {
-        return this.containsShutdown; 
+        return this.containsShutdown;
     }
 
-    public int 	numEvents()
+    public int  numEvents()
     {
-        return eventList.size(); 
+        return eventList.size();
     }
-    
+
     public int numBytes()
     {
         return -1;
@@ -216,7 +216,7 @@ public class OutgoingSocketQueue extends Source
         this.attachment = o;
     }
 
-    public Object attachment() { 
+    public Object attachment() {
         return this.attachment;
     }
 
@@ -236,8 +236,8 @@ public class OutgoingSocketQueue extends Source
         default:
             eventList.add( crumb );
         }
-       
-         /* Relay side was closed, but the transform is not aware yet */
+
+        /* Relay side was closed, but the transform is not aware yet */
         if ( isRelaySideClosed ) {
             /* Drop the buffer */
             eventList.clear();
@@ -250,7 +250,7 @@ public class OutgoingSocketQueue extends Source
 
     public boolean registerListener( SocketQueueListener l )
     {
-        return this.listenerList.add( l ); 
+        return this.listenerList.add( l );
     }
 
     public boolean unregisterListener( SocketQueueListener l )
@@ -262,31 +262,31 @@ public class OutgoingSocketQueue extends Source
     {
         /* If the relay side is closed, always return HUP */
         if ( isRelaySideClosed ) return Vector.MVPOLLHUP;
-        
+
         if ( containsShutdown ) {
             /* containsShutdown, doesn't matter if it is enabled, already shutdown */
-            
+
             /* If the event list is empty (shutdown already read), or the next event is
              * shutdown, return a HUP */
             if ( eventList.isEmpty() || (eventList.get( 0 )).isShutdown()) {
                 return Vector.MVPOLLHUP;
             }
-            
+
             /* More events, but not a shutdown */
             return Vector.MVPOLLIN;
         }
-        
+
         /* If enabled, and there are more events, then this is readable */
         if ( isEnabled && !eventList.isEmpty())
             return Vector.MVPOLLIN;
-        
+
         /* No events are ready right now */
         return 0;
     }
 
     private void mvpollNotifyObservers()
     {
-       mvpollNotifyObservers( this.pointer, poll());
+        mvpollNotifyObservers( this.pointer, poll());
     }
 
     private void callListenersRemove() /* call Listeners Non Full (writable) Event */
@@ -297,9 +297,9 @@ public class OutgoingSocketQueue extends Source
          * changed (its still not writable)
          **/
         if ( isFull()) return;
-        
+
         mvpollNotifyObservers();
-        
+
         /** Only call the listeners if there side is open */
         if ( !isListenersSideClosed ) {
             for ( SocketQueueListener listener : this.listenerList ) {

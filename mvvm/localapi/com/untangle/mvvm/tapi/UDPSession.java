@@ -11,15 +11,15 @@
 
 package com.untangle.mvvm.tapi;
 
-import java.nio.ByteBuffer;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 
 /**
-* A UDPSession is 
-*
-* @author <a href="mailto:jdi@untangle.com"></a>
-* @version 1.0
-*/
+ * A UDPSession is
+ *
+ * @author <a href="mailto:jdi@untangle.com"></a>
+ * @version 1.0
+ */
 public interface UDPSession extends UDPSessionDesc, IPSession {
 
     static final int UDP_MAX_MESG_SIZE = 65536;
@@ -49,7 +49,7 @@ public interface UDPSession extends UDPSessionDesc, IPSession {
      * @return an <code>int</code> giving the capacity in bytes
      */
     int serverMaxPacketSize();
-    
+
     /**
      * Sets the <code>serverMaxPacketSize</code> to the given number of bytes, which must be
      * >1, >=server_read_limit, <= MAX_BUFFER_SIZE

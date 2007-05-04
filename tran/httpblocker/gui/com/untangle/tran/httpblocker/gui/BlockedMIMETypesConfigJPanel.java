@@ -11,31 +11,28 @@
 
 package com.untangle.tran.httpblocker.gui;
 
-import com.untangle.gui.transform.*;
-import com.untangle.gui.pipeline.MPipelineJPanel;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.tran.httpblocker.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.util.*;
-
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.*;
+import java.awt.Insets;
 import java.util.*;
-import java.util.List;
+import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.table.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.editTable.*;
+import com.untangle.mvvm.tran.*;
+import com.untangle.tran.httpblocker.*;
 
 public class BlockedMIMETypesConfigJPanel extends MEditTableJPanel {
-    
-    
+
+
     public BlockedMIMETypesConfigJPanel() {
         super(true, true);
         super.setInsets(new Insets(4, 4, 2, 2));
         super.setTableTitle("Blocked MIME Types");
         super.setDetailsTitle("rule notes");
         super.setAddRemoveEnabled(true);
-        
+
         // create actual table model
         MIMETypeTableModel mimeTypeTableModel = new MIMETypeTableModel();
         super.setTableModel( mimeTypeTableModel );
@@ -44,7 +41,7 @@ public class BlockedMIMETypesConfigJPanel extends MEditTableJPanel {
 
 
 
-class MIMETypeTableModel extends MSortedTableModel<Object>{ 
+class MIMETypeTableModel extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -54,9 +51,9 @@ class MIMETypeTableModel extends MSortedTableModel<Object>{
     private static final int C3_MW = 55; /* block */
     private static final int C4_MW = Util.chooseMax(T_TW - (C0_MW + C2_MW + C3_MW), 120); /* description */
 
-    
+
     public TableColumnModel getTableColumnModel(){
-        
+
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS);
@@ -69,45 +66,45 @@ class MIMETypeTableModel extends MSortedTableModel<Object>{
         return tableColumnModel;
     }
 
-    
+
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
         List elemList = new ArrayList(tableVector.size());
-	MimeTypeRule newElem = null;
+        MimeTypeRule newElem = null;
 
-	for( Vector rowVector : tableVector ){
+        for( Vector rowVector : tableVector ){
             newElem = (MimeTypeRule) rowVector.elementAt(5);
             // newElem.setCategory( (String) rowVector.elementAt(2) );
             newElem.setMimeType( new MimeType( (String)rowVector.elementAt(2) ));  // MimeType is immutable, so we must create a new one
             newElem.setLive( (Boolean) rowVector.elementAt(3) );
-            newElem.setName( (String) rowVector.elementAt(4) );                                    
-            elemList.add(newElem);  
+            newElem.setName( (String) rowVector.elementAt(4) );
+            elemList.add(newElem);
         }
-        
-	// SAVE SETTINGS //////////////
-	if( !validateOnly ){
-	    HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-	    httpBlockerSettings.setBlockedMimeTypes( elemList );
-	}
+
+        // SAVE SETTINGS //////////////
+        if( !validateOnly ){
+            HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
+            httpBlockerSettings.setBlockedMimeTypes( elemList );
+        }
 
     }
-    
-    public Vector<Vector> generateRows(Object settings){
-	HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
-	List<MimeTypeRule> blockedMimeTypes = (List<MimeTypeRule>) httpBlockerSettings.getBlockedMimeTypes();
-        Vector<Vector> allRows = new Vector<Vector>(blockedMimeTypes.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
 
-	for( MimeTypeRule newElem : blockedMimeTypes ){
-	    rowIndex++;
-	    tempRow = new Vector(6);
+    public Vector<Vector> generateRows(Object settings){
+        HttpBlockerSettings httpBlockerSettings = (HttpBlockerSettings) settings;
+        List<MimeTypeRule> blockedMimeTypes = (List<MimeTypeRule>) httpBlockerSettings.getBlockedMimeTypes();
+        Vector<Vector> allRows = new Vector<Vector>(blockedMimeTypes.size());
+        Vector tempRow = null;
+        int rowIndex = 0;
+
+        for( MimeTypeRule newElem : blockedMimeTypes ){
+            rowIndex++;
+            tempRow = new Vector(6);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             // tempRow.add( newElem.getCategory() );
             tempRow.add( newElem.getMimeType().getType() );
             tempRow.add( newElem.isLive() );
             tempRow.add( newElem.getName() );
-	    tempRow.add( newElem );
+            tempRow.add( newElem );
             allRows.add( tempRow );
         }
         return allRows;

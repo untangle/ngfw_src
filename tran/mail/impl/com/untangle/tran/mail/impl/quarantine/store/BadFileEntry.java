@@ -16,9 +16,9 @@ package com.untangle.tran.mail.impl.quarantine.store;
  * to convey that something read from a file was in a bad format.
  */
 class BadFileEntry
-  extends Exception {
+    extends Exception {
 
-  BadFileEntry() {}
-  BadFileEntry(String s) {super(s);}  
-  
+    BadFileEntry() {}
+    BadFileEntry(String s) {super(s);}
+
 }

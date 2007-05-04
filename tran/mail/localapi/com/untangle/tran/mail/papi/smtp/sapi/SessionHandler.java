@@ -63,145 +63,145 @@ import com.untangle.tran.mail.papi.smtp.SmtpTransaction;
  *   </li>
  *   <li>
  *     <i>Buffering</i>.  This form of manipulation takes data from the
- *        client yet does not pass it along to the server.  
- *   </li>  
+ *        client yet does not pass it along to the server.
+ *   </li>
  * </ul>
- * 
+ *
  */
 public abstract class SessionHandler {
 
-  private Session m_session;
+    private Session m_session;
 
-  /**
-   * <b>Only to be called by the Session passing
-   * itself</b>
-   */
-  protected final void setSession(Session stream) {
-    m_session = stream;
-  }
+    /**
+     * <b>Only to be called by the Session passing
+     * itself</b>
+     */
+    protected final void setSession(Session stream) {
+        m_session = stream;
+    }
 
-  /**
-   * Get the Session which is calling this class during
-   * an SMTP Session.   If this instance is not registered
-   * with any Session, this method
-   * returns null.
-   */
-  public final Session getSession() {
-    return m_session;
-  }
-
-
-  /**
-   * Handle a "normal" Command from the client.  This
-   * includes things like "HELO" or "HELP" issued
-   * outside the boundaries of a transaction.
-   * <br><br>
-   * Note that it may be confusing, but a client
-   * can issue a "RSET" when not within a transaction.
-   * This is a "safety" thing, for servers which
-   * reuse Mail sessions (and want the session in
-   * a known state before begining a new Transaction).
-   * <br><br>
-   * Note also that because of the Session's built-in
-   * manipulation of the EHLO command, the EHLO
-   * command will never be sent to this method.
-   * Instead, the EHLO Command is passed to the
-   * {@link #observeEHLOCommand observeEHLOCommand()}
-   * method which can optionally be overidden.
-   *
-   * @param command the client command
-   * @param actions the available actions
-   */
-  public abstract void handleCommand(Command command,
-    Session.SmtpCommandActions actions);
-
-  /**
-   * Edge-case handler.  When an SMTP Session is created,
-   * the server is the first actor to send data.  However,
-   * the SessionHandler did not "see" any request corresponding
-   * to this response and could not have installed
-   * a ResponseCompletion.  Instead, this method is used
-   * to handle this "misaligned" response.
-   *
-   * @param resp the response
-   * @param actions the available actions.
-   */
-  public abstract void handleOpeningResponse(Response resp,
-    Session.SmtpResponseActions actions);
-
-  /**
-   * The calling {@link #getSession Session} handles
-   * the EHLO command and its response, to ensure
-   * {@link com.untangle.tran.mail.papi.smtp.sapi.Session#setAllowedExtensions only allowed extensions}
-   * are seen by the client.  As-such, subclasses do
-   * <b>not</b> have a chance to explicitly manipulate this
-   * portion of the protocol.  However, for logging purposes
-   * the handler is shown the EHLO line
-   * <br><br>
-   * Default implementation does nothing
-   *
-   * @param cmd the EHLO command
-   */
-  public void observeEHLOCommand(Command cmd) {
-    //Do nothing
-  }
-
-  /**
-   * Chance for subclasses to manipulate the EHLO response.  Note
-   * that the EHLO response has already been altered to ensure
-   * {@link com.untangle.tran.mail.papi.smtp.sapi.Session#setAllowedExtensions only allowed extensions}
-   * are advertized.  Subclasses may wish to further reduce available
-   * extensions, or simply to log what transpired.
-   * <br><br>
-   * Default implementation simply returns the argument (does nothing).
-   *
-   * @param resp the Response from server, already manipulated by
-   *        the {@link @getSession session}
-   * @return the manipualted response, or <code>resp</code>
-   *         if no manipulation is to take place. 
-   */
-  public Response manipulateEHLOResponse(Response resp) {
-    return resp;
-  }
-
-  /**
-   * Create a new TransactionHandler.  This method is called
-   * as the Session crosses a Transaction boundary.  Note that
-   * the previous Transaction may still be incomplete (waiting
-   * for final server disposition) when pipelining (either legal
-   * or otherwise) is employed by the client.
-   *
-   * @param tx the Transaction to be associated with the Handler
-   * @return a new TransactionHandler
-   */
-  public abstract TransactionHandler createTxHandler(SmtpTransaction tx);
+    /**
+     * Get the Session which is calling this class during
+     * an SMTP Session.   If this instance is not registered
+     * with any Session, this method
+     * returns null.
+     */
+    public final Session getSession() {
+        return m_session;
+    }
 
 
-  /**
-   * Handle a FIN from the server.
-   *
-   * @param currentTX the current transaction (if there is one open).
-   *
-   * @return true if the client should be shutdown.  False
-   *         to leave the client side open.
-   */  
-  public abstract boolean handleServerFIN(TransactionHandler currentTX);
+    /**
+     * Handle a "normal" Command from the client.  This
+     * includes things like "HELO" or "HELP" issued
+     * outside the boundaries of a transaction.
+     * <br><br>
+     * Note that it may be confusing, but a client
+     * can issue a "RSET" when not within a transaction.
+     * This is a "safety" thing, for servers which
+     * reuse Mail sessions (and want the session in
+     * a known state before begining a new Transaction).
+     * <br><br>
+     * Note also that because of the Session's built-in
+     * manipulation of the EHLO command, the EHLO
+     * command will never be sent to this method.
+     * Instead, the EHLO Command is passed to the
+     * {@link #observeEHLOCommand observeEHLOCommand()}
+     * method which can optionally be overidden.
+     *
+     * @param command the client command
+     * @param actions the available actions
+     */
+    public abstract void handleCommand(Command command,
+                                       Session.SmtpCommandActions actions);
 
-  /**
-   * Handle a FIN from the client.
-   *
-   * @param currentTX the current transaction (if there is one open).
-   *
-   * @return true if the server should be shutdown.  False
-   *         to leave the server side open.
-   */  
-  public abstract boolean handleClientFIN(TransactionHandler currentTX);
+    /**
+     * Edge-case handler.  When an SMTP Session is created,
+     * the server is the first actor to send data.  However,
+     * the SessionHandler did not "see" any request corresponding
+     * to this response and could not have installed
+     * a ResponseCompletion.  Instead, this method is used
+     * to handle this "misaligned" response.
+     *
+     * @param resp the response
+     * @param actions the available actions.
+     */
+    public abstract void handleOpeningResponse(Response resp,
+                                               Session.SmtpResponseActions actions);
 
-  /**
-   * Called when both client and server sides are closed.  Any
-   * associated resources should be closed and any interesting logging
-   * made.
-   */
-  public abstract void handleFinalized();  
+    /**
+     * The calling {@link #getSession Session} handles
+     * the EHLO command and its response, to ensure
+     * {@link com.untangle.tran.mail.papi.smtp.sapi.Session#setAllowedExtensions only allowed extensions}
+     * are seen by the client.  As-such, subclasses do
+     * <b>not</b> have a chance to explicitly manipulate this
+     * portion of the protocol.  However, for logging purposes
+     * the handler is shown the EHLO line
+     * <br><br>
+     * Default implementation does nothing
+     *
+     * @param cmd the EHLO command
+     */
+    public void observeEHLOCommand(Command cmd) {
+        //Do nothing
+    }
+
+    /**
+     * Chance for subclasses to manipulate the EHLO response.  Note
+     * that the EHLO response has already been altered to ensure
+     * {@link com.untangle.tran.mail.papi.smtp.sapi.Session#setAllowedExtensions only allowed extensions}
+     * are advertized.  Subclasses may wish to further reduce available
+     * extensions, or simply to log what transpired.
+     * <br><br>
+     * Default implementation simply returns the argument (does nothing).
+     *
+     * @param resp the Response from server, already manipulated by
+     *        the {@link @getSession session}
+     * @return the manipualted response, or <code>resp</code>
+     *         if no manipulation is to take place.
+     */
+    public Response manipulateEHLOResponse(Response resp) {
+        return resp;
+    }
+
+    /**
+     * Create a new TransactionHandler.  This method is called
+     * as the Session crosses a Transaction boundary.  Note that
+     * the previous Transaction may still be incomplete (waiting
+     * for final server disposition) when pipelining (either legal
+     * or otherwise) is employed by the client.
+     *
+     * @param tx the Transaction to be associated with the Handler
+     * @return a new TransactionHandler
+     */
+    public abstract TransactionHandler createTxHandler(SmtpTransaction tx);
+
+
+    /**
+     * Handle a FIN from the server.
+     *
+     * @param currentTX the current transaction (if there is one open).
+     *
+     * @return true if the client should be shutdown.  False
+     *         to leave the client side open.
+     */
+    public abstract boolean handleServerFIN(TransactionHandler currentTX);
+
+    /**
+     * Handle a FIN from the client.
+     *
+     * @param currentTX the current transaction (if there is one open).
+     *
+     * @return true if the server should be shutdown.  False
+     *         to leave the server side open.
+     */
+    public abstract boolean handleClientFIN(TransactionHandler currentTX);
+
+    /**
+     * Called when both client and server sides are closed.  Any
+     * associated resources should be closed and any interesting logging
+     * made.
+     */
+    public abstract void handleFinalized();
 
 }

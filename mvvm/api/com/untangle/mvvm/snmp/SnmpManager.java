@@ -18,8 +18,8 @@ package com.untangle.mvvm.snmp;
  */
 public interface SnmpManager {
 
-  SnmpSettings getSnmpSettings();
+    SnmpSettings getSnmpSettings();
 
-  void setSnmpSettings(SnmpSettings settings);
+    void setSnmpSettings(SnmpSettings settings);
 
 }

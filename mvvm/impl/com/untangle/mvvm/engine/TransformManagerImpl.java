@@ -182,13 +182,13 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
 
     public List<Tid> transformInstancesVisible(Policy policy)
     {
-    List<Tid> transformInstances = transformInstances(policy);
-    Vector<Tid> visibleVector = new Vector<Tid>();
-    for( Tid tid : transformInstances ){
-        if( transformContext(tid).getMackageDesc().getViewPosition() >= 0 )
-        visibleVector.add(tid);
-    }
-    return (List<Tid>) visibleVector;
+        List<Tid> transformInstances = transformInstances(policy);
+        Vector<Tid> visibleVector = new Vector<Tid>();
+        for( Tid tid : transformInstances ){
+            if( transformContext(tid).getMackageDesc().getViewPosition() >= 0 )
+                visibleVector.add(tid);
+        }
+        return (List<Tid>) visibleVector;
     }
 
     public TransformContextImpl transformContext(Tid tid)
@@ -396,8 +396,8 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
                                                                     tDescs,
                                                                     loadedParents);
             if (0 == startQueue.size()) {
-                 logger.info("not all parents loaded, proceeding");
-                 startUnloaded(unloaded, tDescs, loadedParents);
+                logger.info("not all parents loaded, proceeding");
+                startUnloaded(unloaded, tDescs, loadedParents);
                 break;
             }
 

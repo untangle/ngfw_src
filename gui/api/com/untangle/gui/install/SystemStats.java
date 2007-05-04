@@ -23,7 +23,7 @@ public class SystemStats
         sys.test();
         System.exit(0);
     }
-    
+
     public static void test()
     {
         System.out.println("Memory: " + getMemoryMegs() + "MB");
@@ -31,9 +31,9 @@ public class SystemStats
         System.out.println("Logical  CPU(s): " + getLogicalCPU());
         System.out.println("Clock Speed: " + getClockSpeed() + " MHz" );
         System.out.println("BogoMIPS: " + getBogoMIPS());
-	for (String disk : getAvailableDisks()) {
-	    System.out.println(disk + " : " + getDiskGigs(disk) + "GB");
-	}
+        for (String disk : getAvailableDisks()) {
+            System.out.println(disk + " : " + getDiskGigs(disk) + "GB");
+        }
         System.out.println("Network Cards: " + getNumNICs());
     }
 
@@ -130,25 +130,25 @@ public class SystemStats
             Process proc = Runtime.getRuntime().exec(args);
             BufferedReader input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 
-	    String diskSize = input.readLine();
+            String diskSize = input.readLine();
 
-	    int    len 	    = diskSize.length();
-	    String unit     = diskSize.substring(len - 2);
-	    float  number   = -1f;
+            int    len      = diskSize.length();
+            String unit     = diskSize.substring(len - 2);
+            float  number   = -1f;
 
             try {
-		number = (float)Float.parseFloat(diskSize.substring(0, len - 2));
-	    }
+                number = (float)Float.parseFloat(diskSize.substring(0, len - 2));
+            }
             catch (java.lang.NumberFormatException e) {
-		return -1f;
-	    }
-	    
-	    if (unit.equalsIgnoreCase("GB"))
-		return number;
-	    else if (unit.equalsIgnoreCase("MB"))
-		return number / 1000;
-	    else
-		return -1f;
+                return -1f;
+            }
+
+            if (unit.equalsIgnoreCase("GB"))
+                return number;
+            else if (unit.equalsIgnoreCase("MB"))
+                return number / 1000;
+            else
+                return -1f;
 
         }
         catch (IOException e) {}
@@ -158,7 +158,7 @@ public class SystemStats
     public static List<String> getAvailableDisks()
     {
         LinkedList<String> avail = new LinkedList();
-        
+
         try {
             String[] args = {"/bin/sh","-c"," fdisk -l | awk '/Disk/ { gsub(/(\\/dev\\/|:)/, \"\", $2) ; print $2}'"};
             Process proc = Runtime.getRuntime().exec(args);
@@ -169,7 +169,7 @@ public class SystemStats
             }
         }
         catch (IOException e) {}
-        
+
         return avail;
     }
 

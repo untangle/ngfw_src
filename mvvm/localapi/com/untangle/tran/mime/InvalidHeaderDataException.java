@@ -16,19 +16,19 @@ package com.untangle.tran.mime;
  * is invalid data.
  */
 public class InvalidHeaderDataException
-  extends Exception {
+    extends Exception {
 
-  public InvalidHeaderDataException() {
-    super();
-  }
-  public InvalidHeaderDataException(Exception ex) {
-    super(ex);
-  }
-  public InvalidHeaderDataException(String msg) {
-    super(msg);
-  }
-  public InvalidHeaderDataException(String msg, Exception ex) {
-    super(msg, ex);
-  }
+    public InvalidHeaderDataException() {
+        super();
+    }
+    public InvalidHeaderDataException(Exception ex) {
+        super(ex);
+    }
+    public InvalidHeaderDataException(String msg) {
+        super(msg);
+    }
+    public InvalidHeaderDataException(String msg, Exception ex) {
+        super(msg, ex);
+    }
 
 }

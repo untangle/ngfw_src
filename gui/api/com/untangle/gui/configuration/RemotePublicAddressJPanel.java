@@ -11,19 +11,15 @@
 
 package com.untangle.gui.configuration;
 
-import com.untangle.gui.widgets.dialogs.MConfigJDialog;
+import java.awt.*;
+import javax.swing.JSpinner;
+
 import com.untangle.gui.transform.*;
 import com.untangle.gui.util.*;
-
-import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.*;
 import com.untangle.mvvm.networking.AddressSettings;
+import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.tran.*;
-
-import java.awt.*;
-import javax.swing.JDialog;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.JSpinner;
 
 public class RemotePublicAddressJPanel extends javax.swing.JPanel
     implements Savable<RemoteCompoundSettings>, Refreshable<RemoteCompoundSettings> {
@@ -33,26 +29,26 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
     public RemotePublicAddressJPanel() {
         initComponents();
         Util.setPortView(portJSpinner, 443);
-		Util.addPanelFocus(this, disabledJRadioButton);
+        Util.addPanelFocus(this, disabledJRadioButton);
         Util.addFocusHighlight(addressJTextField);
         Util.addFocusHighlight(portJSpinner);
     }
 
-	// SETTINGS CHANGE NOTIFICATION /////////
+    // SETTINGS CHANGE NOTIFICATION /////////
     private SettingsChangedListener settingsChangedListener;
     public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
-	this.settingsChangedListener = settingsChangedListener;
+        this.settingsChangedListener = settingsChangedListener;
     }
     ///////////////////////////////////////////
-	
+
     public void doSave(RemoteCompoundSettings remoteCompoundSettings, boolean validateOnly) throws Exception {
 
         // PUBLIC ADDRESS ENABLED //////////
-	boolean isPublicAddressEnabled = enabledJRadioButton.isSelected();
-        
+        boolean isPublicAddressEnabled = enabledJRadioButton.isSelected();
+
         // ADDRESS //
-	addressJTextField.setBackground( Color.WHITE );
-	IPaddr address = null;
+        addressJTextField.setBackground( Color.WHITE );
+        IPaddr address = null;
         try{ address = IPaddr.parse(addressJTextField.getText()); }
         catch(Exception e){
             /* Only throw an expception if it is enabled */
@@ -63,20 +59,20 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
         }
 
         // PORT //
-	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
-	int port = 0;
-	try{ portJSpinner.commitEdit(); }
-	catch(Exception e){ 
-	    ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
-	    throw new Exception(Util.EXCEPTION_PORT_RANGE);
-	}
+        ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+        int port = 0;
+        try{ portJSpinner.commitEdit(); }
+        catch(Exception e){
+            ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Util.INVALID_BACKGROUND_COLOR);
+            throw new Exception(Util.EXCEPTION_PORT_RANGE);
+        }
         port = (Integer) portJSpinner.getValue();
-		
-	// SAVE SETTINGS ////////////
-	if( !validateOnly ){
-	    AddressSettings addressSettings = remoteCompoundSettings.getAddressSettings();
+
+        // SAVE SETTINGS ////////////
+        if( !validateOnly ){
+            AddressSettings addressSettings = remoteCompoundSettings.getAddressSettings();
             addressSettings.setIsPublicAddressEnabled( isPublicAddressEnabled );
-            
+
             if ( address != null ) addressSettings.setPublicIPaddr( address );
             if ( 0 < port && port < 0xFFFF ) addressSettings.setPublicPort( port );
         }
@@ -88,18 +84,18 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
     int portCurrent;
 
     public void doRefresh(RemoteCompoundSettings remoteCompoundSettings){
-	AddressSettings addressSettings = remoteCompoundSettings.getAddressSettings();
-        
-	// PUBLIC ADDRESS ENABLED /////
-	isPublicAddressEnabledCurrent = addressSettings.getIsPublicAddressEnabled();
-        
-	setEnabledDependency( isPublicAddressEnabledCurrent );
-	if( isPublicAddressEnabledCurrent )
+        AddressSettings addressSettings = remoteCompoundSettings.getAddressSettings();
+
+        // PUBLIC ADDRESS ENABLED /////
+        isPublicAddressEnabledCurrent = addressSettings.getIsPublicAddressEnabled();
+
+        setEnabledDependency( isPublicAddressEnabledCurrent );
+        if( isPublicAddressEnabledCurrent )
             enabledJRadioButton.setSelected(true);
         else
             disabledJRadioButton.setSelected(true);
-	Util.addSettingChangeListener(settingsChangedListener, this, enabledJRadioButton);
-	Util.addSettingChangeListener(settingsChangedListener, this, disabledJRadioButton);
+        Util.addSettingChangeListener(settingsChangedListener, this, enabledJRadioButton);
+        Util.addSettingChangeListener(settingsChangedListener, this, disabledJRadioButton);
 
         // ADDRESS //
         addressCurrent = addressSettings.getPublicIPaddr();
@@ -109,178 +105,178 @@ public class RemotePublicAddressJPanel extends javax.swing.JPanel
             addressJTextField.setText(addressCurrent.toString());
         }
         addressJTextField.setBackground(Color.WHITE);
-		Util.addSettingChangeListener(settingsChangedListener, this, addressJTextField);
-	
+        Util.addSettingChangeListener(settingsChangedListener, this, addressJTextField);
+
         // PORT //
         portCurrent = addressSettings.getPublicPort();
         portJSpinner.setValue(portCurrent);
-	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(portCurrent));
-	((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
-	Util.addSettingChangeListener(settingsChangedListener, this, portJSpinner);
+        ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setText(Integer.toString(portCurrent));
+        ((JSpinner.DefaultEditor)portJSpinner.getEditor()).getTextField().setBackground(Color.WHITE);
+        Util.addSettingChangeListener(settingsChangedListener, this, portJSpinner);
     }
-    
-    
-        private void initComponents() {//GEN-BEGIN:initComponents
-                java.awt.GridBagConstraints gridBagConstraints;
 
-                dnsButtonGroup = new javax.swing.ButtonGroup();
-                dhcpJPanel = new javax.swing.JPanel();
-                jLabel9 = new javax.swing.JLabel();
-                disabledJRadioButton = new javax.swing.JRadioButton();
-                enabledJRadioButton = new javax.swing.JRadioButton();
-                staticIPJPanel = new javax.swing.JPanel();
-                addressJLabel = new javax.swing.JLabel();
-                addressJTextField = new javax.swing.JTextField();
-                portJLabel = new javax.swing.JLabel();
-                portJSpinner = new javax.swing.JSpinner();
 
-                setLayout(new java.awt.GridBagLayout());
+    private void initComponents() {//GEN-BEGIN:initComponents
+        java.awt.GridBagConstraints gridBagConstraints;
 
-                setMaximumSize(new java.awt.Dimension(550, 250));
-                setMinimumSize(new java.awt.Dimension(550, 250));
-                setPreferredSize(new java.awt.Dimension(550, 250));
-                dhcpJPanel.setLayout(new java.awt.GridBagLayout());
+        dnsButtonGroup = new javax.swing.ButtonGroup();
+        dhcpJPanel = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
+        disabledJRadioButton = new javax.swing.JRadioButton();
+        enabledJRadioButton = new javax.swing.JRadioButton();
+        staticIPJPanel = new javax.swing.JPanel();
+        addressJLabel = new javax.swing.JLabel();
+        addressJTextField = new javax.swing.JTextField();
+        portJLabel = new javax.swing.JLabel();
+        portJSpinner = new javax.swing.JSpinner();
 
-                dhcpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Public Address", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
-                jLabel9.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel9.setText("<html> The Public Address must be set when the Untangle Server is placed behind a Router on your network (it is not at the \"edge\" of your network).  This is the IP Address and port that will direct traffic to the Untangle Server.  This will also be used in emails.</html>");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
-                dhcpJPanel.add(jLabel9, gridBagConstraints);
+        setLayout(new java.awt.GridBagLayout());
 
-                dnsButtonGroup.add(disabledJRadioButton);
-                disabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                disabledJRadioButton.setText("<html><b>Disabled</b></html>");
-                disabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
-                disabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                disabledJRadioButtonActionPerformed(evt);
-                        }
-                });
+        setMaximumSize(new java.awt.Dimension(550, 250));
+        setMinimumSize(new java.awt.Dimension(550, 250));
+        setPreferredSize(new java.awt.Dimension(550, 250));
+        dhcpJPanel.setLayout(new java.awt.GridBagLayout());
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                dhcpJPanel.add(disabledJRadioButton, gridBagConstraints);
+        dhcpJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Public Address", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
+        jLabel9.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel9.setText("<html> The Public Address must be set when the Untangle Server is placed behind a Router on your network (it is not at the \"edge\" of your network).  This is the IP Address and port that will direct traffic to the Untangle Server.  This will also be used in emails.</html>");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
+        dhcpJPanel.add(jLabel9, gridBagConstraints);
 
-                dnsButtonGroup.add(enabledJRadioButton);
-                enabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                enabledJRadioButton.setText("<html><b>Enabled</b></html>");
-                enabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                enabledJRadioButtonActionPerformed(evt);
-                        }
-                });
+        dnsButtonGroup.add(disabledJRadioButton);
+        disabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        disabledJRadioButton.setText("<html><b>Disabled</b></html>");
+        disabledJRadioButton.setActionCommand("<html><b>Use DHCP</b> to automatically set Untangle's IP address from the network's DHCP server.</html>");
+        disabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    disabledJRadioButtonActionPerformed(evt);
+                }
+            });
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                dhcpJPanel.add(enabledJRadioButton, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        dhcpJPanel.add(disabledJRadioButton, gridBagConstraints);
 
-                staticIPJPanel.setLayout(new java.awt.GridBagLayout());
+        dnsButtonGroup.add(enabledJRadioButton);
+        enabledJRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        enabledJRadioButton.setText("<html><b>Enabled</b></html>");
+        enabledJRadioButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    enabledJRadioButtonActionPerformed(evt);
+                }
+            });
 
-                addressJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                addressJLabel.setText("IP Address: ");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-                staticIPJPanel.add(addressJLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        dhcpJPanel.add(enabledJRadioButton, gridBagConstraints);
 
-                addressJTextField.setMaximumSize(null);
-                addressJTextField.setMinimumSize(null);
-                addressJTextField.setPreferredSize(null);
-                addressJTextField.addCaretListener(new javax.swing.event.CaretListener() {
-                        public void caretUpdate(javax.swing.event.CaretEvent evt) {
-                                addressJTextFieldCaretUpdate(evt);
-                        }
-                });
+        staticIPJPanel.setLayout(new java.awt.GridBagLayout());
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-                staticIPJPanel.add(addressJTextField, gridBagConstraints);
+        addressJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        addressJLabel.setText("IP Address: ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        staticIPJPanel.add(addressJLabel, gridBagConstraints);
 
-                portJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                portJLabel.setText("Port: ");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                staticIPJPanel.add(portJLabel, gridBagConstraints);
+        addressJTextField.setMaximumSize(null);
+        addressJTextField.setMinimumSize(null);
+        addressJTextField.setPreferredSize(null);
+        addressJTextField.addCaretListener(new javax.swing.event.CaretListener() {
+                public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                    addressJTextFieldCaretUpdate(evt);
+                }
+            });
 
-                portJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
-                portJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
-                portJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
-                portJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
-                staticIPJPanel.add(portJSpinner, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        staticIPJPanel.add(addressJTextField, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.ipadx = 150;
-                gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
-                dhcpJPanel.add(staticIPJPanel, gridBagConstraints);
+        portJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        portJLabel.setText("Port: ");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        staticIPJPanel.add(portJLabel, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
-                add(dhcpJPanel, gridBagConstraints);
+        portJSpinner.setFont(new java.awt.Font("Dialog", 0, 12));
+        portJSpinner.setMaximumSize(new java.awt.Dimension(75, 19));
+        portJSpinner.setMinimumSize(new java.awt.Dimension(75, 19));
+        portJSpinner.setPreferredSize(new java.awt.Dimension(75, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 2, 0);
+        staticIPJPanel.add(portJSpinner, gridBagConstraints);
 
-        }//GEN-END:initComponents
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.ipadx = 150;
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
+        dhcpJPanel.add(staticIPJPanel, gridBagConstraints);
 
-		private void addressJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_addressJTextFieldCaretUpdate
-				// TODO add your handling code here:
-		}//GEN-LAST:event_addressJTextFieldCaretUpdate
-                        
-	private void enabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enabledJRadioButtonActionPerformed
-	    setEnabledDependency( true );
-	}//GEN-LAST:event_enabledJRadioButtonActionPerformed
-    
-	private void disabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_disabledJRadioButtonActionPerformed
-	    setEnabledDependency( false );
-	}//GEN-LAST:event_disabledJRadioButtonActionPerformed
-    
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        add(dhcpJPanel, gridBagConstraints);
+
+    }//GEN-END:initComponents
+
+    private void addressJTextFieldCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_addressJTextFieldCaretUpdate
+        // TODO add your handling code here:
+    }//GEN-LAST:event_addressJTextFieldCaretUpdate
+
+    private void enabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enabledJRadioButtonActionPerformed
+        setEnabledDependency( true );
+    }//GEN-LAST:event_enabledJRadioButtonActionPerformed
+
+    private void disabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_disabledJRadioButtonActionPerformed
+        setEnabledDependency( false );
+    }//GEN-LAST:event_disabledJRadioButtonActionPerformed
+
     private void setEnabledDependency(boolean enabled){
-	addressJLabel.setEnabled(enabled);
-	portJLabel.setEnabled(enabled);
-	addressJTextField.setEnabled(enabled);
-	portJSpinner.setEnabled(enabled);
+        addressJLabel.setEnabled(enabled);
+        portJLabel.setEnabled(enabled);
+        addressJTextField.setEnabled(enabled);
+        portJSpinner.setEnabled(enabled);
     }
 
-    
-        // Variables declaration - do not modify//GEN-BEGIN:variables
-        private javax.swing.JLabel addressJLabel;
-        public javax.swing.JTextField addressJTextField;
-        private javax.swing.JPanel dhcpJPanel;
-        public javax.swing.JRadioButton disabledJRadioButton;
-        private javax.swing.ButtonGroup dnsButtonGroup;
-        public javax.swing.JRadioButton enabledJRadioButton;
-        private javax.swing.JLabel jLabel9;
-        private javax.swing.JLabel portJLabel;
-        private javax.swing.JSpinner portJSpinner;
-        private javax.swing.JPanel staticIPJPanel;
-        // End of variables declaration//GEN-END:variables
-    
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel addressJLabel;
+    public javax.swing.JTextField addressJTextField;
+    private javax.swing.JPanel dhcpJPanel;
+    public javax.swing.JRadioButton disabledJRadioButton;
+    private javax.swing.ButtonGroup dnsButtonGroup;
+    public javax.swing.JRadioButton enabledJRadioButton;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel portJLabel;
+    private javax.swing.JSpinner portJSpinner;
+    private javax.swing.JPanel staticIPJPanel;
+    // End of variables declaration//GEN-END:variables
+
 
 }

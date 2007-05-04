@@ -11,17 +11,16 @@
 
 package com.untangle.mvvm.networking.internal;
 
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
-import com.untangle.mvvm.tran.ValidateException;
-import com.untangle.mvvm.tran.IPaddr;
-
-import com.untangle.mvvm.networking.Interface;
 import com.untangle.mvvm.networking.IPNetwork;
 import com.untangle.mvvm.networking.IPNetworkRule;
+import com.untangle.mvvm.networking.Interface;
 import com.untangle.mvvm.networking.NetworkSpace;
+import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.mvvm.tran.ValidateException;
 
 public class NetworkSpaceInternal
 {
@@ -33,30 +32,30 @@ public class NetworkSpaceInternal
 
     /** List of networks on this network space */
     private final List<IPNetwork> networkList;
-    
+
     /* This is the primary address for this network space, it may come
      * from DHCP or from the network list, if always is never null and
      * never the empty address. */
     private final IPNetwork primaryAddress;
-    
+
     /** List of interfaces inside of this network space */
     private final List<InterfaceInternal> interfaceList;
-    
+
     /* True if DHCP is enabled for this network space */
     private final boolean isDhcpEnabled;
 
     /* True if traffic can leave this network space */
     private final boolean isTrafficForwarded;
-    
+
     /* MTU of the interfaces inside of the network space */
     private final int mtu;
 
     /* Index of this network space in the list of spaces */
     private final int index;
-    
+
     /* nat settings */
     private final boolean isNatEnabled;
-    
+
     /* The address to NAT to.  If DHCP modifies the address to nat to,
      * then a new network space internal object is created. */
     private final IPaddr natAddress;
@@ -67,7 +66,7 @@ public class NetworkSpaceInternal
     /* The value of the nat address (this is the less interesting value, the value that is
      * stored inside of the database) */
     private final IPaddr natDBAddress;
-    
+
     /* DMZ settings */
     /* True if DMZ host is enabled. */
     private final boolean isDmzHostEnabled;
@@ -92,7 +91,7 @@ public class NetworkSpaceInternal
 
 
     /* List of interfaces in this network space */
-    private NetworkSpaceInternal( NetworkSpace networkSpace, List<Interface> intfList, 
+    private NetworkSpaceInternal( NetworkSpace networkSpace, List<Interface> intfList,
                                   IPNetwork primaryAddress, String deviceName, int index,
                                   IPaddr natAddress, int natSpaceIndex, boolean isBridge )
         throws ValidateException
@@ -114,7 +113,7 @@ public class NetworkSpaceInternal
 
         /* Build the interface list */
         List<InterfaceInternal> interfaceList = new LinkedList<InterfaceInternal>();
-        
+
         for ( Interface intf : intfList ) {
             interfaceList.add( InterfaceInternal.makeInterfaceInternal( intf, this ));
         }
@@ -127,13 +126,13 @@ public class NetworkSpaceInternal
 
         /* set whether or not DHCP is enabled */
         this.isDhcpEnabled = networkSpace.getIsDhcpEnabled();
-        
+
         /* Set whether or not traffic is forwarded */
         this.isTrafficForwarded = networkSpace.getIsTrafficForwarded();
-        
+
         /* Set the MTU */
         this.mtu = networkSpace.getMtu();
-        
+
         /* Set the index of the network space */
         this.index = index;
 
@@ -145,7 +144,7 @@ public class NetworkSpaceInternal
 
         /* Set the space index */
         this.natSpaceIndex = natSpaceIndex;
-        
+
         /* Set the value for the database (may be null) */
         this.natDBAddress = networkSpace.getNatAddress();
 
@@ -169,7 +168,7 @@ public class NetworkSpaceInternal
         this.category = networkSpace.getCategory();
         this.description = networkSpace.getDescription();
     }
-    
+
     public boolean getIsEnabled()
     {
         return this.isEnabled;
@@ -179,7 +178,7 @@ public class NetworkSpaceInternal
     {
         return this.businessPapers;
     }
-    
+
     public List<IPNetwork> getNetworkList()
     {
         return this.networkList;
@@ -216,7 +215,7 @@ public class NetworkSpaceInternal
     {
         return this.mtu;
     }
-    
+
     public int getIndex()
     {
         return this.index;
@@ -236,22 +235,22 @@ public class NetworkSpaceInternal
     {
         return this.natSpaceIndex;
     }
-    
+
     public boolean getIsDmzHostEnabled()
     {
         return this.isDmzHostEnabled;
     }
 
-        public boolean getIsDmzHostLoggingEnabled()
+    public boolean getIsDmzHostLoggingEnabled()
     {
         return this.isDmzHostLoggingEnabled;
     }
-    
+
     public IPaddr getDmzHost()
     {
         return this.dmzHost;
     }
-       
+
     public String getDeviceName()
     {
         return this.deviceName;
@@ -291,14 +290,14 @@ public class NetworkSpaceInternal
         s.setDescription( getDescription());
         s.setCategory( getCategory());
         s.setBusinessPapers( getBusinessPapers());
-        
+
         return s;
     }
 
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append( "name:      "     + getName());
         sb.append( "\nisEnabled:   " + getIsEnabled());
         sb.append( "\nnetworks:    " + getNetworkList());
@@ -310,19 +309,19 @@ public class NetworkSpaceInternal
         for ( InterfaceInternal intf :  getInterfaceList()) intfList += intf.getArgonIntf() + " ";
         sb.append( intfList.trim());
         sb.append( "]" );
-        sb.append( "\nmtu:         " + getMtu()); 
+        sb.append( "\nmtu:         " + getMtu());
         sb.append( "\nindex:       " + getIndex());
         sb.append( "\nnat:         " + getIsNatEnabled());
         sb.append( "\nnat-address: " + getNatAddress());
         sb.append( "\nnat-index:   " + getNatSpaceIndex());
-        sb.append( "\ndmz-host:    " + getIsDmzHostEnabled() + " logging " + getIsDmzHostLoggingEnabled() + 
+        sb.append( "\ndmz-host:    " + getIsDmzHostEnabled() + " logging " + getIsDmzHostLoggingEnabled() +
                    "["  + getDmzHost() + "]" );
         sb.append( "\ndevice:      " + getDeviceName());
 
         return sb.toString();
     }
 
-    public static NetworkSpaceInternal makeInstance( NetworkSpace networkSpace, 
+    public static NetworkSpaceInternal makeInstance( NetworkSpace networkSpace,
                                                      List<Interface> intfList,
                                                      IPNetwork primaryAddress, String deviceName,
                                                      int index, IPaddr natAddress, int natSpaceIndex )
@@ -334,17 +333,17 @@ public class NetworkSpaceInternal
 
     /* A new function that allows setup of single interface bridges.
      * This is required in order to work with ebtables */
-    public static NetworkSpaceInternal makeInstance( NetworkSpace networkSpace, 
+    public static NetworkSpaceInternal makeInstance( NetworkSpace networkSpace,
                                                      List<Interface> intfList,
                                                      IPNetwork primaryAddress, String deviceName,
-                                                     int index, IPaddr natAddress, int natSpaceIndex, 
+                                                     int index, IPaddr natAddress, int natSpaceIndex,
                                                      boolean isBridge )
         throws ValidateException
     {
-        return new NetworkSpaceInternal( networkSpace, intfList, primaryAddress, deviceName, index, 
+        return new NetworkSpaceInternal( networkSpace, intfList, primaryAddress, deviceName, index,
                                          natAddress, natSpaceIndex, isBridge );
     }
 
 
-    
+
 }

@@ -11,47 +11,46 @@
 
 package com.untangle.tran.openvpn.gui;
 
-import com.untangle.gui.util.Util;
-import com.untangle.gui.transform.Refreshable;
-
 import java.awt.Window;
 
+import com.untangle.gui.transform.Refreshable;
+import com.untangle.gui.util.Util;
 import com.untangle.tran.openvpn.*;
 
 public class WizardJPanel extends javax.swing.JPanel implements Refreshable<Object>{
-    
+
     private VpnTransform vpnTransform;
     private MTransformControlsJPanel mTransformControlsJPanel;
 
     public WizardJPanel(VpnTransform vpnTransform, MTransformControlsJPanel mTransformControlsJPanel) {
         this.vpnTransform = vpnTransform;
-	this.mTransformControlsJPanel = mTransformControlsJPanel;
+        this.mTransformControlsJPanel = mTransformControlsJPanel;
         initComponents();
     }
 
     public void doRefresh(Object settings){
-	VpnTransform.ConfigState configState = com.untangle.tran.openvpn.gui.MTransformControlsJPanel.getConfigState();
-	if( VpnTransform.ConfigState.UNCONFIGURED.equals(configState) ){
-	    statusJLabel.setText("Unconfigured: Use buttons below.");
-	}
-	else if( VpnTransform.ConfigState.CLIENT.equals(configState) ){
-	    statusJLabel.setText("VPN Client: Connected to " + com.untangle.tran.openvpn.gui.MTransformControlsJPanel.getVpnServerAddress().toString());
-	    serverRoutingJButton.setEnabled(true);
-	    clientJButton.setEnabled(false);
-	}
-	else if( VpnTransform.ConfigState.SERVER_ROUTE.equals(configState) ){
-	    statusJLabel.setText("VPN Server");
-	    serverRoutingJButton.setEnabled(false);
-	    clientJButton.setEnabled(true);
-	}
-	else{
-	    // bad shite happened
-	    serverRoutingJButton.setEnabled(false);
-	    clientJButton.setEnabled(false);
-	}
+        VpnTransform.ConfigState configState = com.untangle.tran.openvpn.gui.MTransformControlsJPanel.getConfigState();
+        if( VpnTransform.ConfigState.UNCONFIGURED.equals(configState) ){
+            statusJLabel.setText("Unconfigured: Use buttons below.");
+        }
+        else if( VpnTransform.ConfigState.CLIENT.equals(configState) ){
+            statusJLabel.setText("VPN Client: Connected to " + com.untangle.tran.openvpn.gui.MTransformControlsJPanel.getVpnServerAddress().toString());
+            serverRoutingJButton.setEnabled(true);
+            clientJButton.setEnabled(false);
+        }
+        else if( VpnTransform.ConfigState.SERVER_ROUTE.equals(configState) ){
+            statusJLabel.setText("VPN Server");
+            serverRoutingJButton.setEnabled(false);
+            clientJButton.setEnabled(true);
+        }
+        else{
+            // bad shite happened
+            serverRoutingJButton.setEnabled(false);
+            clientJButton.setEnabled(false);
+        }
 
     }
-    
+
 
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
@@ -119,10 +118,10 @@ public class WizardJPanel extends javax.swing.JPanel implements Refreshable<Obje
         clientJButton.setMinimumSize(new java.awt.Dimension(150, 60));
         clientJButton.setPreferredSize(new java.awt.Dimension(150, 60));
         clientJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clientJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    clientJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -164,10 +163,10 @@ public class WizardJPanel extends javax.swing.JPanel implements Refreshable<Obje
         serverRoutingJButton.setMinimumSize(new java.awt.Dimension(150, 60));
         serverRoutingJButton.setPreferredSize(new java.awt.Dimension(150, 60));
         serverRoutingJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                serverRoutingJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    serverRoutingJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -199,22 +198,22 @@ public class WizardJPanel extends javax.swing.JPanel implements Refreshable<Obje
     }//GEN-END:initComponents
 
     private void serverRoutingJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serverRoutingJButtonActionPerformed
-	if( Util.getIsDemo() )
-	    return;
+        if( Util.getIsDemo() )
+            return;
         serverRoutingJButton.setEnabled(false);
-	ServerRoutingWizard.factory((Window)this.getTopLevelAncestor(),vpnTransform,mTransformControlsJPanel).setVisible(true);
-	serverRoutingJButton.setEnabled(true);
+        ServerRoutingWizard.factory((Window)this.getTopLevelAncestor(),vpnTransform,mTransformControlsJPanel).setVisible(true);
+        serverRoutingJButton.setEnabled(true);
     }//GEN-LAST:event_serverRoutingJButtonActionPerformed
 
     private void clientJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clientJButtonActionPerformed
-	if( Util.getIsDemo() )
-	    return;
-	clientJButton.setEnabled(false);
-	ClientWizard.factory((Window)this.getTopLevelAncestor(),vpnTransform,mTransformControlsJPanel).setVisible(true);
-	clientJButton.setEnabled(true);
+        if( Util.getIsDemo() )
+            return;
+        clientJButton.setEnabled(false);
+        ClientWizard.factory((Window)this.getTopLevelAncestor(),vpnTransform,mTransformControlsJPanel).setVisible(true);
+        clientJButton.setEnabled(true);
     }//GEN-LAST:event_clientJButtonActionPerformed
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton clientJButton;
     private javax.swing.JPanel clientJPanel;
@@ -226,5 +225,5 @@ public class WizardJPanel extends javax.swing.JPanel implements Refreshable<Obje
     private javax.swing.JLabel statusJLabel;
     private javax.swing.JPanel statusJPanel;
     // End of variables declaration//GEN-END:variables
-    
+
 }

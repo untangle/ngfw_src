@@ -26,214 +26,214 @@ import com.untangle.tran.token.Token;
  * by a client.
  */
 public class Command
-  implements Token {
+    implements Token {
 
-  /**
-  * Enumeration of the SMTP Commands we know about (not
-  * that we accept all of them).
-  */
-  public enum CommandType {
-    HELO,
-    EHLO,
-    MAIL,
-    RCPT,
-    DATA,
-    RSET,
-    QUIT,
-    SEND,//
-    SOML,//
-    SAML,//
-    TURN,//
-    VRFY,
-    EXPN,
-    HELP,
-    NOOP,
-    SIZE,
-    STARTTLS,
-    AUTH,
-    UNKNOWN
-  };
+    /**
+     * Enumeration of the SMTP Commands we know about (not
+     * that we accept all of them).
+     */
+    public enum CommandType {
+        HELO,
+        EHLO,
+        MAIL,
+        RCPT,
+        DATA,
+        RSET,
+        QUIT,
+        SEND,//
+        SOML,//
+        SAML,//
+        TURN,//
+        VRFY,
+        EXPN,
+        HELP,
+        NOOP,
+        SIZE,
+        STARTTLS,
+        AUTH,
+        UNKNOWN
+    };
 
-  //==========================================
-  // Warning - if you add to the list above,
-  // you must also modify the
-  // "stringToCommandType" method
-  //==========================================
+    //==========================================
+    // Warning - if you add to the list above,
+    // you must also modify the
+    // "stringToCommandType" method
+    //==========================================
 
-  private final CommandType m_type;
-  private final String m_cmdStr;
-  private String m_argStr;
+    private final CommandType m_type;
+    private final String m_cmdStr;
+    private String m_argStr;
 
-  public Command(CommandType type,
-    String cmdStr,
-    String argStr) throws ParseException {
-    m_type = type;
-    m_cmdStr = cmdStr;
-    m_argStr = argStr;
-  }
-
-  public Command(CommandType type) {
-    m_type = type;
-    m_cmdStr = type.toString();
-    m_argStr = null;
-  }
-
-  /**
-   * Get the string of the command (i.e. "HELO", "RCPT").
-   */
-  public String getCmdString() {
-    return m_cmdStr;
-  }
-
-  protected void setArgStr(String argStr) {
-    m_argStr = argStr;
-  }
-
-
-  /**
-   * Get the argument to a command.  For example,
-   * in "MAIL FROM:<>" "FROM:<>" is the argument. This may
-   * be null.
-   */
-  public String getArgString() {
-    return m_argStr;
-  }
-
-  /**
-   * Get the type of the command.  Be warned -
-   * the type may be "UNKNOWN"
-   */
-  public CommandType getType() {
-    return m_type;
-  }
-
-  /**
-   * Convert the command back to a valid line (with
-   * terminator).
-   * This is done by appending the type with
-   * the results of {@link #getArgString getArgString()}.
-   */
-  public ByteBuffer getBytes() {
-    //Do a bit of fixup on the string
-    String cmdStr = m_type.toString();
-    if(getType() == CommandType.UNKNOWN) {
-      cmdStr = m_cmdStr;
+    public Command(CommandType type,
+                   String cmdStr,
+                   String argStr) throws ParseException {
+        m_type = type;
+        m_cmdStr = cmdStr;
+        m_argStr = argStr;
     }
 
-    String argStr = getArgString();
+    public Command(CommandType type) {
+        m_type = type;
+        m_cmdStr = type.toString();
+        m_argStr = null;
+    }
 
-    ByteBuffer buf = ByteBuffer.allocate(
-      cmdStr.length()/*always 4?*/ +
-      (argStr == null?(0):(argStr.length() + 1)) +
-      3);
+    /**
+     * Get the string of the command (i.e. "HELO", "RCPT").
+     */
+    public String getCmdString() {
+        return m_cmdStr;
+    }
 
-    buf.put(cmdStr.getBytes());
+    protected void setArgStr(String argStr) {
+        m_argStr = argStr;
+    }
 
-    if(argStr != null) {
-      argStr = argStr.trim();
-      if(!"".equals(argStr)) {
-        buf.put((byte)SP);
-        buf.put(argStr.getBytes());
-      }
-    }
-    buf.put((byte)CR);
-    buf.put((byte)LF);
 
-    buf.flip();
+    /**
+     * Get the argument to a command.  For example,
+     * in "MAIL FROM:<>" "FROM:<>" is the argument. This may
+     * be null.
+     */
+    public String getArgString() {
+        return m_argStr;
+    }
 
-    return buf;
-  }
+    /**
+     * Get the type of the command.  Be warned -
+     * the type may be "UNKNOWN"
+     */
+    public CommandType getType() {
+        return m_type;
+    }
 
-  /**
-   * For debug logging
-   */
-  public String toDebugString() {
-    ByteBuffer buf = getBytes();
-    buf.limit(buf.limit() - 2);//Remove CRLF for debugging
-    return bbToString(buf);
-  }
+    /**
+     * Convert the command back to a valid line (with
+     * terminator).
+     * This is done by appending the type with
+     * the results of {@link #getArgString getArgString()}.
+     */
+    public ByteBuffer getBytes() {
+        //Do a bit of fixup on the string
+        String cmdStr = m_type.toString();
+        if(getType() == CommandType.UNKNOWN) {
+            cmdStr = m_cmdStr;
+        }
 
-  public String toString() {
-    return toDebugString();
-  }
+        String argStr = getArgString();
 
-  /**
-   * Converts the given String to a CommandType.  Note that
-   * the type may come back as "UNKNOWN".
-   */
-  public static CommandType stringToCommandType(String cmdStr) {
+        ByteBuffer buf = ByteBuffer.allocate(
+                                             cmdStr.length()/*always 4?*/ +
+                                             (argStr == null?(0):(argStr.length() + 1)) +
+                                             3);
 
-    //Commands, aligned with their enum type.
+        buf.put(cmdStr.getBytes());
 
-    if(cmdStr.equalsIgnoreCase("HELO")) {
-      return CommandType.HELO;
+        if(argStr != null) {
+            argStr = argStr.trim();
+            if(!"".equals(argStr)) {
+                buf.put((byte)SP);
+                buf.put(argStr.getBytes());
+            }
+        }
+        buf.put((byte)CR);
+        buf.put((byte)LF);
+
+        buf.flip();
+
+        return buf;
     }
-    if(cmdStr.equalsIgnoreCase("EHLO")) {
-      return CommandType.EHLO;
+
+    /**
+     * For debug logging
+     */
+    public String toDebugString() {
+        ByteBuffer buf = getBytes();
+        buf.limit(buf.limit() - 2);//Remove CRLF for debugging
+        return bbToString(buf);
     }
-    if(cmdStr.equalsIgnoreCase("MAIL")) {
-      return CommandType.MAIL;
+
+    public String toString() {
+        return toDebugString();
     }
-    if(cmdStr.equalsIgnoreCase("RCPT")) {
-      return CommandType.RCPT;
+
+    /**
+     * Converts the given String to a CommandType.  Note that
+     * the type may come back as "UNKNOWN".
+     */
+    public static CommandType stringToCommandType(String cmdStr) {
+
+        //Commands, aligned with their enum type.
+
+        if(cmdStr.equalsIgnoreCase("HELO")) {
+            return CommandType.HELO;
+        }
+        if(cmdStr.equalsIgnoreCase("EHLO")) {
+            return CommandType.EHLO;
+        }
+        if(cmdStr.equalsIgnoreCase("MAIL")) {
+            return CommandType.MAIL;
+        }
+        if(cmdStr.equalsIgnoreCase("RCPT")) {
+            return CommandType.RCPT;
+        }
+        if(cmdStr.equalsIgnoreCase("DATA")) {
+            return CommandType.DATA;
+        }
+        if(cmdStr.equalsIgnoreCase("RSET")) {
+            return CommandType.RSET;
+        }
+        if(cmdStr.equalsIgnoreCase("QUIT")) {
+            return CommandType.QUIT;
+        }
+        if(cmdStr.equalsIgnoreCase("SEND")) {
+            return CommandType.SEND;
+        }
+        if(cmdStr.equalsIgnoreCase("SOML")) {
+            return CommandType.SOML;
+        }
+        if(cmdStr.equalsIgnoreCase("SAML")) {
+            return CommandType.SAML;
+        }
+        if(cmdStr.equalsIgnoreCase("TURN")) {
+            return CommandType.TURN;
+        }
+        if(cmdStr.equalsIgnoreCase("VRFY")) {
+            return CommandType.VRFY;
+        }
+        if(cmdStr.equalsIgnoreCase("EXPN")) {
+            return CommandType.EXPN;
+        }
+        if(cmdStr.equalsIgnoreCase("HELP")) {
+            return CommandType.HELP;
+        }
+        if(cmdStr.equalsIgnoreCase("NOOP")) {
+            return CommandType.NOOP;
+        }
+        if(cmdStr.equalsIgnoreCase("SIZE")) {
+            return CommandType.SIZE;
+        }
+        if(cmdStr.equalsIgnoreCase("STARTTLS")) {
+            return CommandType.STARTTLS;
+        }
+        if(cmdStr.equalsIgnoreCase("AUTH")) {
+            return CommandType.AUTH;
+        }
+        return CommandType.UNKNOWN;
     }
-    if(cmdStr.equalsIgnoreCase("DATA")) {
-      return CommandType.DATA;
-    }
-    if(cmdStr.equalsIgnoreCase("RSET")) {
-      return CommandType.RSET;
-    }
-    if(cmdStr.equalsIgnoreCase("QUIT")) {
-      return CommandType.QUIT;
-    }
-    if(cmdStr.equalsIgnoreCase("SEND")) {
-      return CommandType.SEND;
-    }
-    if(cmdStr.equalsIgnoreCase("SOML")) {
-      return CommandType.SOML;
-    }
-    if(cmdStr.equalsIgnoreCase("SAML")) {
-      return CommandType.SAML;
-    }
-    if(cmdStr.equalsIgnoreCase("TURN")) {
-      return CommandType.TURN;
-    }
-    if(cmdStr.equalsIgnoreCase("VRFY")) {
-      return CommandType.VRFY;
-    }
-    if(cmdStr.equalsIgnoreCase("EXPN")) {
-      return CommandType.EXPN;
-    }
-    if(cmdStr.equalsIgnoreCase("HELP")) {
-      return CommandType.HELP;
-    }
-    if(cmdStr.equalsIgnoreCase("NOOP")) {
-      return CommandType.NOOP;
-    }
-    if(cmdStr.equalsIgnoreCase("SIZE")) {
-      return CommandType.SIZE;
-    }
-    if(cmdStr.equalsIgnoreCase("STARTTLS")) {
-      return CommandType.STARTTLS;
-    }
-    if(cmdStr.equalsIgnoreCase("AUTH")) {
-      return CommandType.AUTH;
-    }
-    return CommandType.UNKNOWN;
-  }
 
     public int getEstimatedSize()
     {
-    String cmdStr = m_type.toString();
-    if(getType() == CommandType.UNKNOWN) {
-      cmdStr = m_cmdStr;
-    }
+        String cmdStr = m_type.toString();
+        if(getType() == CommandType.UNKNOWN) {
+            cmdStr = m_cmdStr;
+        }
 
-    String argStr = getArgString();
+        String argStr = getArgString();
 
 
-    return cmdStr.length()
-        + (argStr == null?(0):(argStr.length() + 1))
-        + 3;
+        return cmdStr.length()
+            + (argStr == null?(0):(argStr.length() + 1))
+            + 3;
     }
 }

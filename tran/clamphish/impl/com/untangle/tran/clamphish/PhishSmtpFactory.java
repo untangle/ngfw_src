@@ -26,46 +26,46 @@ import com.untangle.tran.token.TokenHandlerFactory;
 import org.apache.log4j.Logger;
 
 public class PhishSmtpFactory
-  implements TokenHandlerFactory {
+    implements TokenHandlerFactory {
 
-  private MailExport m_mailExport;
-  private ClamPhishTransform m_phishImpl;
-  private QuarantineTransformView m_quarantine;
-  private SafelistTransformView m_safelist;
-  private final Logger m_logger = Logger.getLogger(getClass());
+    private MailExport m_mailExport;
+    private ClamPhishTransform m_phishImpl;
+    private QuarantineTransformView m_quarantine;
+    private SafelistTransformView m_safelist;
+    private final Logger m_logger = Logger.getLogger(getClass());
 
-  public PhishSmtpFactory(ClamPhishTransform impl) {
-    m_mailExport = MailExportFactory.factory().getExport();
-    m_phishImpl = impl;
-    m_quarantine = m_mailExport.getQuarantineTransformView();
-    m_safelist = m_mailExport.getSafelistTransformView();
-  }
-
-
-
-  public TokenHandler tokenHandler(TCPSession session) {
-
-      boolean inbound = session.isInbound();
-
-    SpamSMTPConfig spamConfig = inbound?
-      m_phishImpl.getSpamSettings().getSMTPInbound():
-      m_phishImpl.getSpamSettings().getSMTPOutbound();
-
-    if(!spamConfig.getScan()) {
-      m_logger.debug("Scanning disabled.  Return passthrough token handler");
-      return Session.createPassthruSession(session);
+    public PhishSmtpFactory(ClamPhishTransform impl) {
+        m_mailExport = MailExportFactory.factory().getExport();
+        m_phishImpl = impl;
+        m_quarantine = m_mailExport.getQuarantineTransformView();
+        m_safelist = m_mailExport.getSafelistTransformView();
     }
 
-    MailTransformSettings casingSettings = m_mailExport.getExportSettings();
-    return new Session(session,
-      new PhishSmtpHandler(session,
-        inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
-        inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
-        m_phishImpl,
-        spamConfig,
-        m_quarantine,
-        m_safelist));
-  }
+
+
+    public TokenHandler tokenHandler(TCPSession session) {
+
+        boolean inbound = session.isInbound();
+
+        SpamSMTPConfig spamConfig = inbound?
+            m_phishImpl.getSpamSettings().getSMTPInbound():
+            m_phishImpl.getSpamSettings().getSMTPOutbound();
+
+        if(!spamConfig.getScan()) {
+            m_logger.debug("Scanning disabled.  Return passthrough token handler");
+            return Session.createPassthruSession(session);
+        }
+
+        MailTransformSettings casingSettings = m_mailExport.getExportSettings();
+        return new Session(session,
+                           new PhishSmtpHandler(session,
+                                                inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
+                                                inbound?casingSettings.getSmtpInboundTimeout():casingSettings.getSmtpOutboundTimeout(),
+                                                m_phishImpl,
+                                                spamConfig,
+                                                m_quarantine,
+                                                m_safelist));
+    }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)
     {

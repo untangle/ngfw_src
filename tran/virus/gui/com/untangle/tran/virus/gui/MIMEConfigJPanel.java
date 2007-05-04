@@ -14,7 +14,6 @@ package com.untangle.tran.virus.gui;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.*;
@@ -76,9 +75,9 @@ class MIMETableModel extends MSortedTableModel<Object>{
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         List elemList = new ArrayList(tableVector.size());
-	MimeTypeRule newElem = null;
+        MimeTypeRule newElem = null;
 
-	for( Vector rowVector : tableVector ){
+        for( Vector rowVector : tableVector ){
             newElem = (MimeTypeRule) rowVector.elementAt(5);
             newElem.setMimeType( new MimeType( (String)rowVector.elementAt(2) ) ); // new because MimeType is immutable
             newElem.setLive( (Boolean) rowVector.elementAt(3)  );
@@ -86,30 +85,30 @@ class MIMETableModel extends MSortedTableModel<Object>{
             elemList.add(newElem);
         }
 
-	// SAVE SETTINGS /////////
-	if( !validateOnly ){
-	    VirusSettings virusSettings = (VirusSettings) settings;
-	    virusSettings.setHttpMimeTypes( elemList );
-	}
+        // SAVE SETTINGS /////////
+        if( !validateOnly ){
+            VirusSettings virusSettings = (VirusSettings) settings;
+            virusSettings.setHttpMimeTypes( elemList );
+        }
 
     }
 
     public Vector<Vector> generateRows(Object settings){
         VirusSettings virusSettings = (VirusSettings) settings;
-	List<MimeTypeRule> httpMimeTypes = (List<MimeTypeRule>) virusSettings.getHttpMimeTypes();
+        List<MimeTypeRule> httpMimeTypes = (List<MimeTypeRule>) virusSettings.getHttpMimeTypes();
         Vector<Vector> allRows = new Vector<Vector>(httpMimeTypes.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
+        Vector tempRow = null;
+        int rowIndex = 0;
 
-	for( MimeTypeRule newElem : httpMimeTypes ){
-	    rowIndex++;
+        for( MimeTypeRule newElem : httpMimeTypes ){
+            rowIndex++;
             tempRow = new Vector(6);
             tempRow.add( super.ROW_SAVED );
-	    tempRow.add( rowIndex );
+            tempRow.add( rowIndex );
             tempRow.add( newElem.getMimeType().getType() );
             tempRow.add( newElem.isLive() );
             tempRow.add( newElem.getName() );
-	    tempRow.add( newElem );
+            tempRow.add( newElem );
             allRows.add( tempRow );
         }
 

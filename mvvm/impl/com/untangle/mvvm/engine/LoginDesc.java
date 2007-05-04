@@ -90,10 +90,10 @@ class LoginDesc
     void steal(LoginSession loginThief)
     {
         this.loginThief = loginThief;
-            targets.clear();
-            synchronized (proxies) {
-                proxies.clear();
-            }
+        targets.clear();
+        synchronized (proxies) {
+            proxies.clear();
+        }
     }
 
     LoginSession getLoginThief()

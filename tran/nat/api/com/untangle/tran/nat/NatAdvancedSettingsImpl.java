@@ -12,30 +12,29 @@
 package com.untangle.tran.nat;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 
 import com.untangle.mvvm.networking.BasicNetworkSettings;
-import com.untangle.mvvm.networking.NetworkUtil;
-import com.untangle.mvvm.networking.NetworkSpacesSettings;
-import com.untangle.mvvm.networking.NetworkSpacesSettingsImpl;
-import com.untangle.mvvm.networking.ServicesSettings;
-import com.untangle.mvvm.networking.ServicesSettingsImpl;
-import com.untangle.mvvm.networking.NetworkSpace;
-import com.untangle.mvvm.networking.Interface;
-import com.untangle.mvvm.networking.Route;
 import com.untangle.mvvm.networking.DhcpLeaseRule;
 import com.untangle.mvvm.networking.DnsStaticHostRule;
+import com.untangle.mvvm.networking.Interface;
+import com.untangle.mvvm.networking.NetworkSpace;
+import com.untangle.mvvm.networking.NetworkSpacesSettings;
+import com.untangle.mvvm.networking.NetworkSpacesSettingsImpl;
+import com.untangle.mvvm.networking.NetworkUtil;
 import com.untangle.mvvm.networking.RedirectRule;
+import com.untangle.mvvm.networking.Route;
+import com.untangle.mvvm.networking.ServicesSettings;
+import com.untangle.mvvm.networking.ServicesSettingsImpl;
 import com.untangle.mvvm.networking.SetupState;
-
 import com.untangle.mvvm.tran.HostName;
 import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.ValidateException;
 import com.untangle.mvvm.tran.firewall.ip.IPDBMatcher;
 
 public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializable
-{    
+{
     private static final long serialVersionUID = -5344795278019860714L;
     private final NetworkSpacesSettings networkSpacesSettings;
     private final ServicesSettings servicesSettings;
@@ -58,8 +57,8 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
         /* As null, this object will not be able to generate a complete getLocalMatcherList */
         this.localMatcherList = NatUtil.getInstance().getEmptyLocalMatcherList();
     }
-    
-    NatAdvancedSettingsImpl( NetworkSpacesSettings networkSpaces, ServicesSettings services, 
+
+    NatAdvancedSettingsImpl( NetworkSpacesSettings networkSpaces, ServicesSettings services,
                              List<IPDBMatcher> localMatcherList )
     {
         this.networkSpacesSettings = networkSpaces;
@@ -73,7 +72,7 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
     {
         return SetupState.ADVANCED;
     }
-    
+
     /** True if network spaces is enabled */
     public boolean getIsEnabled()
     {
@@ -84,25 +83,25 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
     {
         this.isEnabled = newValue;
     }
-    
+
     /** Retrieve a list of interfaces */
     public List<Interface> getInterfaceList()
     {
         return networkSpacesSettings.getInterfaceList();
     }
-    
+
     public void setInterfaceList( List<Interface> newValue )
     {
         networkSpacesSettings.setInterfaceList( newValue );
     }
 
-    
+
     /** The list of network spaces for the box. */
     public List<NetworkSpace> getNetworkSpaceList()
     {
         return networkSpacesSettings.getNetworkSpaceList();
     }
-    
+
     public void setNetworkSpaceList( List<NetworkSpace> newValue )
     {
         networkSpacesSettings.setNetworkSpaceList( newValue );
@@ -134,7 +133,7 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
     {
         return NatUtil.getInstance().getGlobalRedirectList( getRedirectList());
     }
-    
+
     public void setGlobalRedirectList( List<RedirectRule> newValue )
     {
         setRedirectList( NatUtil.getInstance().setGlobalRedirectList( getRedirectList(), newValue ));
@@ -145,7 +144,7 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
     {
         return NatUtil.getInstance().getLocalRedirectList( getRedirectList());
     }
-    
+
     public void setLocalRedirectList( List<RedirectRule> newValue )
     {
         setRedirectList( NatUtil.getInstance().setLocalRedirectList( getRedirectList(), newValue ));
@@ -164,13 +163,13 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
     {
         return networkSpacesSettings.getDefaultRoute();
     }
-    
+
     public void setDefaultRoute( IPaddr newValue )
     {
         networkSpacesSettings.setDefaultRoute( newValue );
     }
-    
-    
+
+
     /** IP address of the primary dns server, may be empty (dhcp is enabled) */
     public IPaddr getDns1()
     {
@@ -295,7 +294,7 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
 
 
     /* DNS Settings */
-        /**
+    /**
      * If DNS Masquerading is enabled.
      */
     public boolean getDnsEnabled()
@@ -340,7 +339,7 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
     {
         return this.networkSettings;
     }
-    
+
     public void setNetworkSettings( BasicNetworkSettings networkSettings )
     {
         this.networkSettings = networkSettings;
@@ -357,5 +356,5 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
         SettingsValidator.getInstance().validate( this );
     }
 
-    
+
 }

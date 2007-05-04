@@ -78,10 +78,10 @@ public class PcreOption extends IDSOption {
     public boolean run(IDSSessionInfo sessionInfo) {
         ByteBuffer eventData = sessionInfo.getEvent().data();
 
-    //  if(pcrePattern == null) {
-    //      System.out.println("pcrePattern is null\n\n"+getSignature());
-    //      return false;
-    //  }
+        //  if(pcrePattern == null) {
+        //      System.out.println("pcrePattern is null\n\n"+getSignature());
+        //      return false;
+        //  }
 
         AsciiCharBuffer acb = AsciiCharBuffer.wrap(eventData);
         boolean patMatch = pcrePattern.matcher(acb).find();

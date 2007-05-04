@@ -12,8 +12,8 @@
 package com.untangle.mvvm.tran.firewall.intf;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.untangle.mvvm.tran.ParseException;
 
@@ -31,7 +31,7 @@ class IntfMatcherUtil
         Map<Byte,String> intfToData = new HashMap<Byte,String>();
         Map<Byte,String> intfToUser = new HashMap<Byte,String>();
 
-        
+
         /* XXXXXXXXXXXXXXXXXXXXX Use argon or something else */
         mapIntf( (byte)0, "External", "O", dataToIntf, intfToData, intfToUser );
         mapIntf( (byte)1, "Internal", "I", dataToIntf, intfToData, intfToUser );
@@ -49,7 +49,7 @@ class IntfMatcherUtil
         if ( intf == null ) throw new ParseException( "Invalid interface: " + value );
         return intf;
     }
-    
+
     String intfToDatabase( byte intf ) throws ParseException
     {
         String value = INTF_TO_DATA_MAP.get( intf );
@@ -65,7 +65,7 @@ class IntfMatcherUtil
     }
 
     private  void mapIntf( byte intf, String user, String database, Map<String,Byte> dataToIntf,
-                                 Map<Byte,String> intfToData, Map<Byte,String> intfToUser )
+                           Map<Byte,String> intfToData, Map<Byte,String> intfToUser )
     {
         dataToIntf.put( database, intf );
         intfToData.put( intf, database );

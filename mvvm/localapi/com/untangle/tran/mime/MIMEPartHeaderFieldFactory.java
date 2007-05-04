@@ -25,41 +25,41 @@ import static com.untangle.tran.mime.HeaderNames.*;
  *
  */
 public class MIMEPartHeaderFieldFactory
-  extends HeaderFieldFactory {
+    extends HeaderFieldFactory {
 
-  @Override
-  protected HeaderField createHeaderField(String mixedCaseName) {
+    @Override
+    protected HeaderField createHeaderField(String mixedCaseName) {
 
 
-    LCString lcString = new LCString(mixedCaseName);
+        LCString lcString = new LCString(mixedCaseName);
 
-    if(lcString.equals(CONTENT_TYPE_LC)) {
-      return new ContentTypeHeaderField(mixedCaseName);
+        if(lcString.equals(CONTENT_TYPE_LC)) {
+            return new ContentTypeHeaderField(mixedCaseName);
+        }
+        if(lcString.equals(CONTENT_DISPOSITION_LC)) {
+            return new ContentDispositionHeaderField(mixedCaseName);
+        }
+        if(lcString.equals(CONTENT_TRANSFER_ENCODING_LC)) {
+            return new ContentXFerEncodingHeaderField(mixedCaseName);
+        }
+
+        return super.createHeaderField(mixedCaseName);
     }
-    if(lcString.equals(CONTENT_DISPOSITION_LC)) {
-      return new ContentDispositionHeaderField(mixedCaseName);
+
+    @Override
+    protected Headers createHeaders(MIMESource source,
+                                    int sourceStart,
+                                    int sourceLen,
+                                    List<HeaderField> headersInOrder,
+                                    Map<LCString, List<HeaderField>> headersByName) {
+
+        return new MIMEPartHeaders(this,
+                                   source,
+                                   sourceStart,
+                                   sourceLen,
+                                   headersInOrder,
+                                   headersByName);
+
     }
-    if(lcString.equals(CONTENT_TRANSFER_ENCODING_LC)) {
-      return new ContentXFerEncodingHeaderField(mixedCaseName);
-    }
-
-    return super.createHeaderField(mixedCaseName);
-  }
-
-  @Override
-  protected Headers createHeaders(MIMESource source,
-    int sourceStart,
-    int sourceLen,
-    List<HeaderField> headersInOrder,
-    Map<LCString, List<HeaderField>> headersByName) {
-
-    return new MIMEPartHeaders(this,
-      source,
-      sourceStart,
-      sourceLen,
-      headersInOrder,
-      headersByName);
-
-  }
 
 }

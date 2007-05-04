@@ -15,11 +15,11 @@ package com.untangle.mvvm.addrbook;
  * ...name says it all
  */
 public class NoSuchEmailException
-  extends Exception {
+    extends Exception {
 
-  public NoSuchEmailException(String email) {
-    super("No such email address \"" + email + "\"");
-  }
+    public NoSuchEmailException(String email) {
+        super("No such email address \"" + email + "\"");
+    }
 
 }
 

@@ -38,114 +38,114 @@ import java.nio.ByteBuffer;
  * folks passwords into reports.
  */
 class LOGINObserver
-  extends ClearObserver {
+    extends ClearObserver {
 
-  static final String[] MECH_NAMES = new String[] {
-    "LOGIN".toLowerCase()
-  };
+    static final String[] MECH_NAMES = new String[] {
+        "LOGIN".toLowerCase()
+    };
 
-  private static final ByteBuffer USERNAME_1 =
-    ByteBuffer.wrap("username".getBytes());
-  private static final ByteBuffer USERNAME_2 =
-    ByteBuffer.wrap("username:".getBytes());
-  private static final ByteBuffer USERNAME_3 =
-    ByteBuffer.wrap("user name".getBytes());
-  private static final ByteBuffer USERNAME_4 =
-    ByteBuffer.wrap("user name:".getBytes());
+    private static final ByteBuffer USERNAME_1 =
+        ByteBuffer.wrap("username".getBytes());
+    private static final ByteBuffer USERNAME_2 =
+        ByteBuffer.wrap("username:".getBytes());
+    private static final ByteBuffer USERNAME_3 =
+        ByteBuffer.wrap("user name".getBytes());
+    private static final ByteBuffer USERNAME_4 =
+        ByteBuffer.wrap("user name:".getBytes());
 
-  private String m_id;
-  private boolean m_lastServerResponseUsername = false;
+    private String m_id;
+    private boolean m_lastServerResponseUsername = false;
 
 
-  LOGINObserver() {
-    super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
-  }
-  
-  @Override
-  public FeatureStatus exchangeAuthIDFound() {
-    return m_id==null?
-      FeatureStatus.UNKNOWN:FeatureStatus.YES;
-  }
+    LOGINObserver() {
+        super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
+    }
 
-  @Override
-  public String getAuthID() {
-    return m_id;
-  }
+    @Override
+    public FeatureStatus exchangeAuthIDFound() {
+        return m_id==null?
+            FeatureStatus.UNKNOWN:FeatureStatus.YES;
+    }
 
-  @Override
-  public boolean clientData(ByteBuffer buf) {
+    @Override
+    public String getAuthID() {
+        return m_id;
+    }
 
-    if(m_lastServerResponseUsername) {
+    @Override
+    public boolean clientData(ByteBuffer buf) {
 
-      //Trim trailing null (if found)
-      if(
-        buf.remaining() > 0 &&
-        buf.get(buf.position() + buf.remaining()-1) == 0
-        ) {
-        if(buf.remaining() == 1) {
-          return false;
+        if(m_lastServerResponseUsername) {
+
+            //Trim trailing null (if found)
+            if(
+               buf.remaining() > 0 &&
+               buf.get(buf.position() + buf.remaining()-1) == 0
+               ) {
+                if(buf.remaining() == 1) {
+                    return false;
+                }
+                buf.limit(buf.limit()-1);
+            }
+
+            if(!buf.hasRemaining()) {
+                return false;
+            }
+            m_id = bbToString(buf);
+            return m_id != null;
         }
-        buf.limit(buf.limit()-1);
-      }    
-    
-      if(!buf.hasRemaining()) {
         return false;
-      }
-      m_id = bbToString(buf);
-      return m_id != null;
-    }
-    return false;
-  }
-
-  @Override
-  public boolean serverData(ByteBuffer buf) {
-
-    fixupBuffer(buf);
-
-    if(!buf.hasRemaining()) {
-      return false;
     }
 
-    //Compare buffer against our variants
-    //of "User Name"
-    m_lastServerResponseUsername = (buffersEqual(buf, USERNAME_1, true) ||
-      buffersEqual(buf, USERNAME_2, true) ||
-      buffersEqual(buf, USERNAME_3, true) ||
-      buffersEqual(buf, USERNAME_4, true));
-    return false;
-  }
+    @Override
+    public boolean serverData(ByteBuffer buf) {
 
-  private void fixupBuffer(ByteBuffer buf) {
-    if(!buf.hasRemaining()) {
-      return;
-    }  
-    //Trim trailing null
-    if(buf.get(buf.limit() - 1) == 0) {
-      if(buf.remaining() == 1) {
-        return;
-      }
-      buf.limit(buf.limit()-1);
+        fixupBuffer(buf);
+
+        if(!buf.hasRemaining()) {
+            return false;
+        }
+
+        //Compare buffer against our variants
+        //of "User Name"
+        m_lastServerResponseUsername = (buffersEqual(buf, USERNAME_1, true) ||
+                                        buffersEqual(buf, USERNAME_2, true) ||
+                                        buffersEqual(buf, USERNAME_3, true) ||
+                                        buffersEqual(buf, USERNAME_4, true));
+        return false;
     }
 
-    //Trim leading/trailing LWS
-    while(buf.hasRemaining()) {
-      if(
-        isEOL(buf.get(buf.position())) ||
-        isLWS(buf.get(buf.position()))) {
-        buf.get();
-        continue;
-      }
-      break;
+    private void fixupBuffer(ByteBuffer buf) {
+        if(!buf.hasRemaining()) {
+            return;
+        }
+        //Trim trailing null
+        if(buf.get(buf.limit() - 1) == 0) {
+            if(buf.remaining() == 1) {
+                return;
+            }
+            buf.limit(buf.limit()-1);
+        }
+
+        //Trim leading/trailing LWS
+        while(buf.hasRemaining()) {
+            if(
+               isEOL(buf.get(buf.position())) ||
+               isLWS(buf.get(buf.position()))) {
+                buf.get();
+                continue;
+            }
+            break;
+        }
+        while(buf.hasRemaining()) {
+            if(
+               isEOL(buf.get(buf.limit()-1)) ||
+               isLWS(buf.get(buf.limit()-1))) {
+                buf.limit(buf.limit()-1);
+                continue;
+            }
+            break;
+        }
     }
-    while(buf.hasRemaining()) {
-      if(
-        isEOL(buf.get(buf.limit()-1)) ||
-        isLWS(buf.get(buf.limit()-1))) {
-        buf.limit(buf.limit()-1);
-        continue;
-      }
-      break;
-    }
-  }
 
 }

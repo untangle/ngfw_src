@@ -247,7 +247,7 @@ class AdminManagerImpl implements AdminManager
     }
 
     public SnmpManager getSnmpManager() {
-      return snmpManager;
+        return snmpManager;
     }
 
     public String generateAuthNonce() {

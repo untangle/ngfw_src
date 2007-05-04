@@ -11,39 +11,37 @@
 
 package com.untangle.gui.pipeline;
 
+import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
+import javax.swing.*;
+
 import com.untangle.gui.transform.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.dialogs.MConfigJDialog;
-import com.untangle.mvvm.snmp.*;
-import com.untangle.mvvm.security.*;
 import com.untangle.mvvm.*;
+import com.untangle.mvvm.security.*;
+import com.untangle.mvvm.snmp.*;
 import com.untangle.mvvm.tran.*;
-
 import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
 import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
-import com.untangle.mvvm.tran.firewall.time.DayOfWeekMatcherConstants;
-import java.text.SimpleDateFormat;
-
-import java.awt.*;
-import javax.swing.*;
-import java.util.Vector;
-import java.util.List;
-import java.util.Date;
 
 public class PolicyWizardJPanel extends javax.swing.JPanel
     implements Savable<CompoundVector> {
 
     Vector newRow;
-    
+
     public PolicyWizardJPanel(Vector newRow) {
         initComponents();
-		MConfigJDialog.setInitialFocusComponent(protocolSettingJComboBox);
-		Util.addFocusHighlight(addressClientJTextField);
-		Util.addFocusHighlight(addressServerJTextField);
-		Util.addFocusHighlight(portServerJTextField);
-		Util.addFocusHighlight(timeStartJTextField);
-		Util.addFocusHighlight(timeEndJTextField);
-		Util.addFocusHighlight(rackDescJTextField);
+        MConfigJDialog.setInitialFocusComponent(protocolSettingJComboBox);
+        Util.addFocusHighlight(addressClientJTextField);
+        Util.addFocusHighlight(addressServerJTextField);
+        Util.addFocusHighlight(portServerJTextField);
+        Util.addFocusHighlight(timeStartJTextField);
+        Util.addFocusHighlight(timeEndJTextField);
+        Util.addFocusHighlight(rackDescJTextField);
         this.newRow = newRow;
         doRefresh(newRow);
     }
@@ -211,7 +209,7 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
             fridayJCheckBox.setSelected(true);
             saturdayJCheckBox.setSelected(true);
         }
-        
+
         ComboBoxModel policyModel = (ComboBoxModel) newRow.elementAt(4);
         rackSelectJComboBox.setModel(policyModel);
 
@@ -219,11 +217,11 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
         rackDescJTextField.setText(description);
 
         boolean enabled = (Boolean) newRow.elementAt(3);
-        rackEnableJCheckBox.setSelected(enabled);        
+        rackEnableJCheckBox.setSelected(enabled);
 
     }
-    
-    
+
+
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
@@ -539,10 +537,10 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
         userSettingsJButton.setFont(new java.awt.Font("Dialog", 0, 12));
         userSettingsJButton.setText("Change Users");
         userSettingsJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                userSettingsJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    userSettingsJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -823,22 +821,22 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
 
     }//GEN-END:initComponents
 
-		private void userSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userSettingsJButtonActionPerformed
-            UidSelectJDialog uidSelectJDialog = UidSelectJDialog.factory((Window) getTopLevelAncestor());
-			uidSelectJDialog.setUidList(newUserList);
-            uidSelectJDialog.setVisible(true);
-            newUserList = uidSelectJDialog.getUidList();
-			String newUserString;
-			if(newUserList.size()>1)
-					newUserString = UidSelectJDialog.MULTIPLE_USERS;
-			else
-					newUserString = newUserList.get(0);
-			
-            userSettingsJLabel.setText("User: " + newUserString);
-		}//GEN-LAST:event_userSettingsJButtonActionPerformed
-                
-                
-    
+    private void userSettingsJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userSettingsJButtonActionPerformed
+        UidSelectJDialog uidSelectJDialog = UidSelectJDialog.factory((Window) getTopLevelAncestor());
+        uidSelectJDialog.setUidList(newUserList);
+        uidSelectJDialog.setVisible(true);
+        newUserList = uidSelectJDialog.getUidList();
+        String newUserString;
+        if(newUserList.size()>1)
+            newUserString = UidSelectJDialog.MULTIPLE_USERS;
+        else
+            newUserString = newUserList.get(0);
+
+        userSettingsJLabel.setText("User: " + newUserString);
+    }//GEN-LAST:event_userSettingsJButtonActionPerformed
+
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel addressClientJLabel;
     public javax.swing.JTextField addressClientJTextField;
@@ -900,6 +898,6 @@ public class PolicyWizardJPanel extends javax.swing.JPanel
     private javax.swing.JPanel userSettingsJPanel;
     private javax.swing.JCheckBox wednesdayJCheckBox;
     // End of variables declaration//GEN-END:variables
-    
+
 
 }

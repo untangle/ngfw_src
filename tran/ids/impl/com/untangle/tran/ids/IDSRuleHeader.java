@@ -89,12 +89,12 @@ public class IDSRuleHeader {
         boolean portMatch = (clientPortMatch ^ clientPortFlag) && (serverPortMatch ^ serverPortFlag);
 
         /*      if(!portMatch && !bidirectional) {
-            System.out.println();
-            System.out.println("Header: " + this);
-            System.out.println("ClientPort: " + clientPort);
-            System.out.println("ServerPort: " + serverPort);
-            System.out.println();
-                        }*/
+                System.out.println();
+                System.out.println("Header: " + this);
+                System.out.println("ClientPort: " + clientPort);
+                System.out.println("ServerPort: " + serverPort);
+                System.out.println();
+                }*/
 
         if(!portMatch && !bidirectional)
             return false;
@@ -146,12 +146,12 @@ public class IDSRuleHeader {
         }
 
         /*      if(!(ipMatch && portMatch)) {
-            System.out.println();
-            System.out.println("Header: " + this);
-            System.out.println("ClientIP: " + clientAddr);
-            System.out.println("ServerIP: " + serverAddr);
-            System.out.println();
-                        }*/
+                System.out.println();
+                System.out.println("Header: " + this);
+                System.out.println("ClientIP: " + clientAddr);
+                System.out.println("ServerIP: " + serverAddr);
+                System.out.println();
+                }*/
 
         return ipMatch && portMatch;
     }

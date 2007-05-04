@@ -99,7 +99,7 @@ public class EventHandler extends AbstractEventHandler
     }
 
     public void handleUDPClientPacket (UDPPacketEvent e)
-       throws MPipeException
+        throws MPipeException
     {
         UDPSession sess = e.session();
         ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
@@ -108,7 +108,7 @@ public class EventHandler extends AbstractEventHandler
     }
 
     public void handleUDPServerPacket (UDPPacketEvent e)
-       throws MPipeException
+        throws MPipeException
     {
         UDPSession sess = e.session();
         ByteBuffer packet = e.packet().duplicate(); // Save position/limit for sending.
@@ -249,7 +249,7 @@ public class EventHandler extends AbstractEventHandler
                 if (logger.isInfoEnabled()) {
                     logger.info(" ----------------BLOCKED: " + sessInfo.protocol + " traffic----------------");
                     logger.info( l4prot + ": " + sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                                  sess.serverAddr().getHostAddress() + ":" + sess.serverPort() + " matched " + sessInfo.protocol);
+                                 sess.serverAddr().getHostAddress() + ":" + sess.serverPort() + " matched " + sessInfo.protocol);
                     logger.info(" ----------------BLOCKED: "+ sessInfo.protocol + " traffic----------------");
                 }
 

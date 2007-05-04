@@ -16,15 +16,15 @@ import com.untangle.tran.mail.papi.smtp.Response;
 /**
  * Convienence implementation of ResponseCompletion
  * which does nothing
- * 
+ *
  */
 public class NoopResponseCompletion
-  implements ResponseCompletion {
+    implements ResponseCompletion {
 
 
-  public void handleResponse(Response resp,
-    Session.SmtpResponseActions actions) {
-    //Nothing to do...
-  }
+    public void handleResponse(Response resp,
+                               Session.SmtpResponseActions actions) {
+        //Nothing to do...
+    }
 
 }

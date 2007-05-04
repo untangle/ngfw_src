@@ -16,10 +16,10 @@ import java.util.*;
 import org.apache.log4j.Logger;
 
 /**
-    // We get loadavg from /proc/loadavg, which looks like:
-    // 0.00 0.00 0.00   2/74 28933
-    // 1min 5min 15min nr_running/nr_threads lastpid
-    //
+ // We get loadavg from /proc/loadavg, which looks like:
+ // 0.00 0.00 0.00   2/74 28933
+ // 1min 5min 15min nr_running/nr_threads lastpid
+ //
  * LoadAvg gets the load average from the kernel.  It does this efficiently, only sampling
  * once every 5 seconds, which is how often the load average is updated by the kernel.
  *

@@ -56,7 +56,7 @@ public final class AsciiCharBufferCharacterIterator implements CharacterIterator
             pos = end;
         }
         return current();
-     }
+    }
 
     public char setIndex(int p)
     {

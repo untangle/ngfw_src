@@ -13,6 +13,7 @@ package com.untangle.tran.virus;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -23,7 +24,6 @@ import com.untangle.mvvm.tran.PipelineEndpoints;
 import com.untangle.tran.mail.papi.MessageInfo;
 import com.untangle.tran.mail.papi.smtp.SMTPNotifyAction;
 import org.hibernate.annotations.Columns;
-import javax.persistence.Entity;
 import org.hibernate.annotations.Type;
 
 /**
@@ -34,169 +34,169 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-@Table(name="tr_virus_evt_smtp", schema="events")
-public class VirusSmtpEvent extends VirusEvent
-{
-    private MessageInfo messageInfo;
-    private VirusScannerResult result;
-    private SMTPVirusMessageAction action;
-    private SMTPNotifyAction notifyAction;
-    private String vendorName;
-
-    // constructors -----------------------------------------------------------
-
-    public VirusSmtpEvent() { }
-
-    public VirusSmtpEvent(MessageInfo messageInfo, VirusScannerResult result,
-                          SMTPVirusMessageAction action,
-                          SMTPNotifyAction notifyAction, String vendorName)
+    @Table(name="tr_virus_evt_smtp", schema="events")
+    public class VirusSmtpEvent extends VirusEvent
     {
-        this.messageInfo = messageInfo;
-        this.result = result;
-        this.action = action;
-        this.notifyAction = notifyAction;
-        this.vendorName = vendorName;
-    }
+        private MessageInfo messageInfo;
+        private VirusScannerResult result;
+        private SMTPVirusMessageAction action;
+        private SMTPNotifyAction notifyAction;
+        private String vendorName;
 
-    // VirusEvent methods -----------------------------------------------------
+        // constructors -----------------------------------------------------------
 
-    @Transient
-    public String getType()
-    {
-        return "SMTP";
-    }
+        public VirusSmtpEvent() { }
 
-    @Transient
-    public String getLocation()
-    {
-        return null == messageInfo ? "" : messageInfo.getSubject();
-    }
-
-    @Transient
-    public boolean isInfected()
-    {
-        return !result.isClean();
-    }
-
-    @Transient
-    public int getActionType()
-    {
-        char type = action.getKey();
-        if (SMTPVirusMessageAction.PASS_KEY == type) {
-            return PASSED;
-        } else if (SMTPVirusMessageAction.REMOVE_KEY == type) {
-            return CLEANED;
-        } else {
-            return BLOCKED;
+        public VirusSmtpEvent(MessageInfo messageInfo, VirusScannerResult result,
+                              SMTPVirusMessageAction action,
+                              SMTPNotifyAction notifyAction, String vendorName)
+        {
+            this.messageInfo = messageInfo;
+            this.result = result;
+            this.action = action;
+            this.notifyAction = notifyAction;
+            this.vendorName = vendorName;
         }
-    }
 
-    @Transient
-    public String getActionName()
-    {
-        return action.getName();
-    }
+        // VirusEvent methods -----------------------------------------------------
 
-    @Transient
-    public String getVirusName()
-    {
-        String n = result.getVirusName();
+        @Transient
+        public String getType()
+        {
+            return "SMTP";
+        }
 
-        return null == n ? "" : n;
-    }
+        @Transient
+        public String getLocation()
+        {
+            return null == messageInfo ? "" : messageInfo.getSubject();
+        }
 
-    @Transient
-    public PipelineEndpoints getPipelineEndpoints()
-    {
-        return null == messageInfo ? null : messageInfo.getPipelineEndpoints();
-    }
+        @Transient
+        public boolean isInfected()
+        {
+            return !result.isClean();
+        }
 
-    // accessors --------------------------------------------------------------
+        @Transient
+        public int getActionType()
+        {
+            char type = action.getKey();
+            if (SMTPVirusMessageAction.PASS_KEY == type) {
+                return PASSED;
+            } else if (SMTPVirusMessageAction.REMOVE_KEY == type) {
+                return CLEANED;
+            } else {
+                return BLOCKED;
+            }
+        }
 
-    /**
-     * Associate e-mail message info with event.
-     *
-     * @return e-mail message info.
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="msg_id")
-    public MessageInfo getMessageInfo()
-    {
-        return messageInfo;
-    }
+        @Transient
+        public String getActionName()
+        {
+            return action.getName();
+        }
 
-    public void setMessageInfo(MessageInfo messageInfo)
-    {
-        this.messageInfo = messageInfo;
-    }
+        @Transient
+        public String getVirusName()
+        {
+            String n = result.getVirusName();
 
-    /**
-     * Virus scan result.
-     *
-     * @return the scan result.
-     */
-    @Columns(columns = {
+            return null == n ? "" : n;
+        }
+
+        @Transient
+        public PipelineEndpoints getPipelineEndpoints()
+        {
+            return null == messageInfo ? null : messageInfo.getPipelineEndpoints();
+        }
+
+        // accessors --------------------------------------------------------------
+
+        /**
+         * Associate e-mail message info with event.
+         *
+         * @return e-mail message info.
+         */
+        @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+        @JoinColumn(name="msg_id")
+        public MessageInfo getMessageInfo()
+        {
+            return messageInfo;
+        }
+
+        public void setMessageInfo(MessageInfo messageInfo)
+        {
+            this.messageInfo = messageInfo;
+        }
+
+        /**
+         * Virus scan result.
+         *
+         * @return the scan result.
+         */
+        @Columns(columns = {
             @Column(name="clean"),
             @Column(name="virus_name"),
             @Column(name="virus_cleaned")
         })
-    @Type(type="com.untangle.tran.virus.VirusScannerResultUserType")
-    public VirusScannerResult getResult()
-    {
-        return result;
-    }
+        @Type(type="com.untangle.tran.virus.VirusScannerResultUserType")
+        public VirusScannerResult getResult()
+        {
+            return result;
+        }
 
-    public void setResult(VirusScannerResult result)
-    {
-        this.result = result;
-    }
+        public void setResult(VirusScannerResult result)
+        {
+            this.result = result;
+        }
 
-    /**
-     * The action taken
-     *
-     * @return action.
-     */
-    @Type(type="com.untangle.tran.virus.SMTPVirusMessageActionUserType")
-    public SMTPVirusMessageAction getAction()
-    {
-        return action;
-    }
+        /**
+         * The action taken
+         *
+         * @return action.
+         */
+        @Type(type="com.untangle.tran.virus.SMTPVirusMessageActionUserType")
+        public SMTPVirusMessageAction getAction()
+        {
+            return action;
+        }
 
-    public void setAction(SMTPVirusMessageAction action)
-    {
-        this.action = action;
-    }
+        public void setAction(SMTPVirusMessageAction action)
+        {
+            this.action = action;
+        }
 
-    /**
-     * The notify action taken
-     *
-     * @return action.
-     */
-    @Column(name="notify_action")
-    @Type(type="com.untangle.tran.mail.papi.smtp.SMTPNotifyActionUserType")
-    public SMTPNotifyAction getNotifyAction()
-    {
-        return notifyAction;
-    }
+        /**
+         * The notify action taken
+         *
+         * @return action.
+         */
+        @Column(name="notify_action")
+        @Type(type="com.untangle.tran.mail.papi.smtp.SMTPNotifyActionUserType")
+        public SMTPNotifyAction getNotifyAction()
+        {
+            return notifyAction;
+        }
 
-    public void setNotifyAction(SMTPNotifyAction notifyAction)
-    {
-        this.notifyAction = notifyAction;
-    }
+        public void setNotifyAction(SMTPNotifyAction notifyAction)
+        {
+            this.notifyAction = notifyAction;
+        }
 
-    /**
-     * Spam scanner vendor.
-     *
-     * @return the vendor
-     */
-    @Column(name="vendor_name")
-    public String getVendorName()
-    {
-        return vendorName;
-    }
+        /**
+         * Spam scanner vendor.
+         *
+         * @return the vendor
+         */
+        @Column(name="vendor_name")
+        public String getVendorName()
+        {
+            return vendorName;
+        }
 
-    public void setVendorName(String vendorName)
-    {
-        this.vendorName = vendorName;
+        public void setVendorName(String vendorName)
+        {
+            this.vendorName = vendorName;
+        }
     }
-}

@@ -11,21 +11,19 @@
 
 package com.untangle.gui.pipeline;
 
-import com.untangle.mvvm.security.Tid;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import javax.swing.JPanel;
 
-import com.untangle.gui.widgets.separator.*;
 import com.untangle.gui.main.*;
 import com.untangle.gui.transform.*;
 import com.untangle.gui.util.*;
-
-
-import java.util.TreeMap;
-import java.util.Map;
-import java.util.List;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.GridBagLayout;
-import javax.swing.JPanel;
+import com.untangle.gui.widgets.separator.*;
+import com.untangle.mvvm.security.Tid;
 
 
 public class RackSection<T> {
@@ -49,33 +47,33 @@ public class RackSection<T> {
 
     // CONSTRAINTS //
     private GridBagConstraints separatorViewConstraints = new GridBagConstraints( 0, 0, 1, 1, 0d, 0d,
-										  GridBagConstraints.NORTH,
-										  GridBagConstraints.NONE,
-										  new Insets(1,0,101,12), 0, 0);
+                                                                                  GridBagConstraints.NORTH,
+                                                                                  GridBagConstraints.NONE,
+                                                                                  new Insets(1,0,101,12), 0, 0);
     private GridBagConstraints rackViewConstraints = new GridBagConstraints( 0, 0, 1, 1, 0d, 0d,
-									     GridBagConstraints.SOUTH,
-									     GridBagConstraints.NONE,
-									     new Insets(51,0,0,12), 0, 0);
+                                                                             GridBagConstraints.SOUTH,
+                                                                             GridBagConstraints.NONE,
+                                                                             new Insets(51,0,0,12), 0, 0);
 
     public RackSection(Separator separator) {
-	this.separator = separator;
-	toolboxViewJPanel.setOpaque(false);
-	rackViewJPanel.setOpaque(false);
-	toolboxViewJPanel.setLayout(new GridBagLayout());
-	rackViewJPanel.setLayout(new GridBagLayout());
-	
+        this.separator = separator;
+        toolboxViewJPanel.setOpaque(false);
+        rackViewJPanel.setOpaque(false);
+        toolboxViewJPanel.setLayout(new GridBagLayout());
+        rackViewJPanel.setLayout(new GridBagLayout());
+
     }
-    
+
     public void addToRack(T selector, MTransformJPanel appliance, boolean doRevalidate){
-	if( rackDataMap.isEmpty() ){
-	    // ADD SEPARATOR
-	    rackViewJPanel.add(separator, separatorViewConstraints);
-	}
-	Map<ButtonKey,MTransformJPanel> applianceMap;
-	if( !rackDataMap.containsKey(selector) ){
-	    applianceMap = new TreeMap<ButtonKey,MTransformJPanel>();
-	    rackDataMap.put(selector, applianceMap);
-	}
+        if( rackDataMap.isEmpty() ){
+            // ADD SEPARATOR
+            rackViewJPanel.add(separator, separatorViewConstraints);
+        }
+        Map<ButtonKey,MTransformJPanel> applianceMap;
+        if( !rackDataMap.containsKey(selector) ){
+            applianceMap = new TreeMap<ButtonKey,MTransformJPanel>();
+            rackDataMap.put(selector, applianceMap);
+        }
 
     }
 

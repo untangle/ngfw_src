@@ -15,16 +15,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
 
 import com.untangle.mvvm.ArgonException;
 import com.untangle.mvvm.IntfConstants;
-
 import com.untangle.mvvm.localapi.ArgonInterface;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -36,11 +34,11 @@ import com.untangle.mvvm.localapi.ArgonInterface;
 final class ArgonInterfaceConverter
 {
     private static Logger logger = Logger.getLogger( ArgonInterfaceConverter.class );
-        
+
     private final ArgonInterface external;
     private final ArgonInterface internal;
     private final ArgonInterface dmz;
-    
+
     private final Map<Byte,ArgonInterface> argonToInterfaceMap;
     private final Map<Byte,ArgonInterface> netcapToInterfaceMap;
     private final Map<String,ArgonInterface> nameToInterfaceMap;
@@ -49,7 +47,7 @@ final class ArgonInterfaceConverter
 
     /* Build an interface converter from a list of the argon interfaces */
     private ArgonInterfaceConverter( ArgonInterface external, ArgonInterface internal,
-                                     ArgonInterface dmz, 
+                                     ArgonInterface dmz,
                                      Map<Byte,ArgonInterface> argon,
                                      Map<Byte,ArgonInterface> netcap,
                                      Map<String,ArgonInterface> name,
@@ -59,7 +57,7 @@ final class ArgonInterfaceConverter
         this.external = external;
         this.internal = internal;
         this.dmz = dmz;
-        
+
         /* Create unmodifiable copies of all of the maps and lists */
         this.argonToInterfaceMap = Collections.unmodifiableMap( new HashMap<Byte,ArgonInterface>( argon ));
         this.netcapToInterfaceMap = Collections.unmodifiableMap( new HashMap<Byte,ArgonInterface>( netcap ));
@@ -88,7 +86,7 @@ final class ArgonInterfaceConverter
     {
         ArgonInterface intf = nameToInterfaceMap.get( name );
         if ( null == intf ) throw new ArgonException( "Invalid interface: '" + name + "'" );
-        return intf;        
+        return intf;
     }
 
     /* Get the External interface */
@@ -113,7 +111,7 @@ final class ArgonInterfaceConverter
     {
         return this.intfList;
     }
-    
+
     /* This is a list of non-physical interfaces (everything except for internal, external and dmz ).
      * This list would contain interfaces like VPN. */
     List<ArgonInterface> getCustomIntfList()
@@ -150,10 +148,10 @@ final class ArgonInterfaceConverter
         int c = 0;
         for ( ArgonInterface intf : this.intfList ) nameIntfArray[c++] = intf.getName();
         return nameIntfArray;
-    }   
+    }
 
     /* Returns true if both converters have the same set of argon interfaces */
-    boolean hasMatchingInterfaces( ArgonInterfaceConverter o ) 
+    boolean hasMatchingInterfaces( ArgonInterfaceConverter o )
     {
         if ( null == o ) return false;
         return o.argonToInterfaceMap.keySet().equals( this.argonToInterfaceMap.keySet());
@@ -179,14 +177,14 @@ final class ArgonInterfaceConverter
 
         /* Add the new item to the list */
         newIntfList.add( newIntf );
-        
+
         return makeInstance( newIntfList );
     }
 
     /* Remove an interface from the interface list */
     ArgonInterfaceConverter unregisterIntf( byte argonIntf ) throws ArgonException
     {
-        if (( 0 > argonIntf ) || ( argonIntf > IntfConstants.MAX_INTF ) || 
+        if (( 0 > argonIntf ) || ( argonIntf > IntfConstants.MAX_INTF ) ||
             ( argonIntf < IntfConstants.DMZ_INTF )) {
             throw new ArgonException( "Unable to unregister the argon interface: " + argonIntf );
         }
@@ -197,12 +195,12 @@ final class ArgonInterfaceConverter
             logger.info( "Attempt to unregister an unregistered interface [" + argonIntf + "]" );
             return this;
         }
-        
+
         List<ArgonInterface> newIntfList = new LinkedList<ArgonInterface>( this.intfList );
         if ( !newIntfList.remove( intf )) {
             logger.warn( "Error de-registering the interface [" + argonIntf + "] continuing" );
         }
-        
+
         return makeInstance( newIntfList );
     }
 
@@ -217,7 +215,7 @@ final class ArgonInterfaceConverter
     }
 
     /** Update the interface enumeration */
-    
+
 
     /* Make a new interface converter from a list of interfaces */
     static ArgonInterfaceConverter makeInstance( List<ArgonInterface> intfList )
@@ -252,7 +250,7 @@ final class ArgonInterfaceConverter
 
         if ( internal == null ) throw new ArgonException( "The internal interface is not set" );
         if ( external == null ) throw new ArgonException( "The external interface is not set" );
-        
+
         return new ArgonInterfaceConverter( external, internal, dmz, argon, netcap, name, intfList );
     }
 
@@ -263,11 +261,11 @@ final class ArgonInterfaceConverter
         List<ArgonInterface> sortedIntfList = new LinkedList<ArgonInterface>( intfList );
 
         Collections.sort( sortedIntfList, new Comparator<ArgonInterface>() {
-                public int compare(  ArgonInterface a, ArgonInterface b )
+            public int compare(  ArgonInterface a, ArgonInterface b )
                 {
                     return ( a.getTrustworthiness() - b.getTrustworthiness());
                 }
-            } );
+        } );
 
         return sortedIntfList;
     }

@@ -30,32 +30,32 @@ package com.untangle.tran.mime;
  */
 public class MIMESourceRecord {
 
-  public final MIMESource source;
-  public final int start;
-  public final int len;
-  private boolean m_shared;
+    public final MIMESource source;
+    public final int start;
+    public final int len;
+    private boolean m_shared;
 
-  public MIMESourceRecord(MIMESource source,
-    int start,
-    int len,
-    boolean shared) {
+    public MIMESourceRecord(MIMESource source,
+                            int start,
+                            int len,
+                            boolean shared) {
 
-    this.source = source;
-    this.start = start;
-    this.len = len;
-    m_shared = shared;
+        this.source = source;
+        this.start = start;
+        this.len = len;
+        m_shared = shared;
 
-  }
+    }
 
-  /**
-   * Is the underlying MIMESource shared by the owner
-   * of this record and other objects.
-   */
-  public boolean isShared() {
-    return m_shared;
-  }
-  public void setShared(boolean shared) {
-    m_shared = shared;
-  }
+    /**
+     * Is the underlying MIMESource shared by the owner
+     * of this record and other objects.
+     */
+    public boolean isShared() {
+        return m_shared;
+    }
+    public void setShared(boolean shared) {
+        m_shared = shared;
+    }
 
 }

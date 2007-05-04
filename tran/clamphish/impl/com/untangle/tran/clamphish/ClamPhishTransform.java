@@ -59,7 +59,7 @@ public class ClamPhishTransform extends SpamImpl
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final String OUT_MOD_SUB_TEMPLATE =
-      "[PHISH] $MIMEMessage:SUBJECT$";
+        "[PHISH] $MIMEMessage:SUBJECT$";
     private static final String OUT_MOD_BODY_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$\r\n" +
         "was determined by Untangle Identity Theft Blocker to be PHISH (a\r\n" +
@@ -80,7 +80,7 @@ public class ClamPhishTransform extends SpamImpl
     private static final String PHISH_HEADER_NAME = "X-Phish-Flag";
 
     private static final String OUT_NOTIFY_SUB_TEMPLATE =
-      "[PHISH NOTIFICATION] re: $MIMEMessage:SUBJECT$";
+        "[PHISH NOTIFICATION] re: $MIMEMessage:SUBJECT$";
 
     private static final String OUT_NOTIFY_BODY_TEMPLATE =
         "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
@@ -267,37 +267,37 @@ public class ClamPhishTransform extends SpamImpl
 
     @Override
     public String getDefaultSubjectWrapperTemplate(boolean inbound) {
-      return inbound?IN_MOD_SUB_TEMPLATE:OUT_MOD_SUB_TEMPLATE;
+        return inbound?IN_MOD_SUB_TEMPLATE:OUT_MOD_SUB_TEMPLATE;
     }
 
     @Override
     public String getDefaultBodyWrapperTemplate(boolean inbound) {
-      return inbound?IN_MOD_BODY_TEMPLATE:OUT_MOD_BODY_TEMPLATE;
+        return inbound?IN_MOD_BODY_TEMPLATE:OUT_MOD_BODY_TEMPLATE;
     }
 
     @Override
     public String getDefaultSMTPSubjectWrapperTemplate(boolean inbound) {
-      return getDefaultSubjectWrapperTemplate(inbound);
+        return getDefaultSubjectWrapperTemplate(inbound);
     }
 
     @Override
     public String getDefaultSMTPBodyWrapperTemplate(boolean inbound) {
-      return inbound?IN_MOD_BODY_SMTP_TEMPLATE:OUT_MOD_BODY_SMTP_TEMPLATE;
+        return inbound?IN_MOD_BODY_SMTP_TEMPLATE:OUT_MOD_BODY_SMTP_TEMPLATE;
     }
 
     @Override
     public String getDefaultIndicatorHeaderName() {
-      return PHISH_HEADER_NAME;
+        return PHISH_HEADER_NAME;
     }
 
     @Override
     public String getDefaultNotifySubjectTemplate(boolean inbound) {
-      return inbound?IN_NOTIFY_SUB_TEMPLATE:OUT_NOTIFY_SUB_TEMPLATE;
+        return inbound?IN_NOTIFY_SUB_TEMPLATE:OUT_NOTIFY_SUB_TEMPLATE;
     }
 
     @Override
     public String getDefaultNotifyBodyTemplate(boolean inbound) {
-      return inbound?IN_NOTIFY_BODY_TEMPLATE:OUT_NOTIFY_BODY_TEMPLATE;
+        return inbound?IN_NOTIFY_BODY_TEMPLATE:OUT_NOTIFY_BODY_TEMPLATE;
     }
 
     @Override

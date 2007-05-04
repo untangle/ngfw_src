@@ -66,335 +66,335 @@ import org.apache.log4j.Logger;
  * for a list of possible variables).
  */
 public class MIMEMessage
-  extends MIMEPart
-  implements TemplateValues {
+    extends MIMEPart
+    implements TemplateValues {
 
-  private static final String MIME_MESSAGE_TEMPLATE_PREFIX = "MIMEMessage:".toLowerCase();
-  private static final String TO_TV = "TO".toLowerCase();
-  private static final String CC_TV = "CC".toLowerCase();
-  private static final String RECIP_TV = "RECIPIENTS".toLowerCase();
-  private static final String FROM_TV = "FROM".toLowerCase();
-  private static final String SUBJECT_TV = "SUBJECT".toLowerCase();
+    private static final String MIME_MESSAGE_TEMPLATE_PREFIX = "MIMEMessage:".toLowerCase();
+    private static final String TO_TV = "TO".toLowerCase();
+    private static final String CC_TV = "CC".toLowerCase();
+    private static final String RECIP_TV = "RECIPIENTS".toLowerCase();
+    private static final String FROM_TV = "FROM".toLowerCase();
+    private static final String SUBJECT_TV = "SUBJECT".toLowerCase();
 
-  private final Logger m_logger = Logger.getLogger(MIMEPart.class);
+    private final Logger m_logger = Logger.getLogger(MIMEPart.class);
 
-  public MIMEMessage() {
-    super();
-  }
-  public MIMEMessage(MIMEMessageHeaders headers) {
-    super(headers);
-  }
-
-  /**
-   * Construct a MIME part, reading until the outerBoundary.
-   */
-  public MIMEMessage(MIMEParsingInputStream stream,
-    MIMESource source,
-    boolean ownsSource,
-    MIMEPolicy policy,
-    String outerBoundary) throws IOException,
-      InvalidHeaderDataException,
-      HeaderParseException,
-      MIMEPartParseException {
-
-    super();
-
-    parse(new MailMessageHeaderFieldFactory(),
-      stream,
-      source,
-      ownsSource,
-      policy,
-      outerBoundary);
-  }
-
-  /**
-   * Construct a MIME part, reading until the outerBoundary.
-   */
-  public MIMEMessage(MIMEParsingInputStream stream,
-    MIMESource source,
-    MIMEPolicy policy,
-    String outerBoundary) throws IOException,
-      InvalidHeaderDataException,
-      HeaderParseException,
-      MIMEPartParseException {
-    this(stream, source, true, policy, outerBoundary);
-  }
-
-  /**
-   * Construct a MIMEMessage using the already-parsed headers.
-   */
-  public MIMEMessage(MIMEParsingInputStream stream,
-    MIMESource source,
-    MIMEPolicy policy,
-    String outerBoundary,
-    MIMEMessageHeaders headers) throws IOException,
-      InvalidHeaderDataException,
-      HeaderParseException,
-      MIMEPartParseException {
-    super(stream, source, true, policy, outerBoundary, headers);
-  }
-
-  /**
-   * For use in a Template
-   */
-  public String getTemplateValue(String key) {
-    //First, see if this key is for the child
-    //Headers
-    String headerRet = getMMHeaders().getTemplateValue(key);
-    if(headerRet != null) {
-      return headerRet;
+    public MIMEMessage() {
+        super();
+    }
+    public MIMEMessage(MIMEMessageHeaders headers) {
+        super(headers);
     }
 
-    //Not for the headers.  Evaluate if this
-    //is a MIMEMessage variable
-    key = key.trim().toLowerCase();
-    if(key.startsWith(MIME_MESSAGE_TEMPLATE_PREFIX)) {
-      key = key.substring(MIME_MESSAGE_TEMPLATE_PREFIX.length());
-      if(key.equals(TO_TV)) {
-        Set<EmailAddress> tos = getMMHeaders().getRecipients(RcptType.TO);
-        StringBuilder sb = new StringBuilder();
-        for(EmailAddress addr : tos) {
-          sb.append(addr.toMIMEString());
-          sb.append(CRLF);
-        }
-        return sb.toString();
-      }
-      else if(key.equals(CC_TV)) {
-        Set<EmailAddress> ccs = getMMHeaders().getRecipients(RcptType.CC);
-        StringBuilder sb = new StringBuilder();
-        for(EmailAddress addr : ccs) {
-          sb.append(addr.toMIMEString());
-          sb.append(CRLF);
-        }
-        return sb.toString();
-      }
-      else if(key.equals(RECIP_TV)) {
-        List<EmailAddressWithRcptType> allRcpts = getMMHeaders().getAllRecipients();
-        StringBuilder sb = new StringBuilder();
-        for(EmailAddressWithRcptType eawrt : allRcpts) {
-          sb.append(eawrt.address.toMIMEString());
-          sb.append(CRLF);
-        }
-        return sb.toString();
-      }
-      else if(key.equals(FROM_TV)) {
-        EmailAddress from = getMMHeaders().getFrom();
-        if(from == null || from.isNullAddress()) {
-          return "<>";
-        }
-        return from.toMIMEString();
-      }
-      else if(key.equals(SUBJECT_TV)) {
-        return getMMHeaders().getSubject() == null?
-          "":getMMHeaders().getSubject();
-      }
-    }
-    return null;
-  }
+    /**
+     * Construct a MIME part, reading until the outerBoundary.
+     */
+    public MIMEMessage(MIMEParsingInputStream stream,
+                       MIMESource source,
+                       boolean ownsSource,
+                       MIMEPolicy policy,
+                       String outerBoundary) throws IOException,
+                                                    InvalidHeaderDataException,
+                                                    HeaderParseException,
+                                                    MIMEPartParseException {
 
-  /**
-   * Get the MIMEMessageHeaders for this MIMEMessage.  Changes
-   * to the headers will be known by this message.
-   *
-   * @return the headers
-   */
-  public MIMEMessageHeaders getMMHeaders() {
-    return (MIMEMessageHeaders) getMPHeaders();
-  }
+        super();
 
-  /**
-   * Convieience method to count attachments
-   */
-  public int getAttachmentCount() {
-    MIMEPart[] kids = getLeafParts(true);
-    if(kids == null) {
-      return 0;
+        parse(new MailMessageHeaderFieldFactory(),
+              stream,
+              source,
+              ownsSource,
+              policy,
+              outerBoundary);
     }
-    int ret = 0;
-    for(MIMEPart part : kids) {
-      if(part.isAttachment()) {
-        ret++;
-      }
-    }
-    return ret;
-  }
 
- /**
-  * Get the contents of this MIMEPart as a file.  This applies to
-  *
-  */
-  public final File toFile(FileFactory fileFactory)
-    throws IOException {
-    //TODO bscott an optimization would be to accumulate old SourceRecords,
-    //     so if a changed MIMEMessage is written to file twice, we really only
-    //     write it once (and assign the new File as the SourceRecord).
-    if(isChanged() || getSourceRecord() == null) {
-      FileOutputStream fOut = null;
-      try {
-        File ret = fileFactory.createFile();
-        fOut = new FileOutputStream(ret);
-        BufferedOutputStream bufOut = new BufferedOutputStream(fOut);
-        MIMEOutputStream mimeOut = new MIMEOutputStream(bufOut);
-        writeTo(mimeOut);
-        mimeOut.flush();
-        bufOut.flush();
+    /**
+     * Construct a MIME part, reading until the outerBoundary.
+     */
+    public MIMEMessage(MIMEParsingInputStream stream,
+                       MIMESource source,
+                       MIMEPolicy policy,
+                       String outerBoundary) throws IOException,
+                                                    InvalidHeaderDataException,
+                                                    HeaderParseException,
+                                                    MIMEPartParseException {
+        this(stream, source, true, policy, outerBoundary);
+    }
+
+    /**
+     * Construct a MIMEMessage using the already-parsed headers.
+     */
+    public MIMEMessage(MIMEParsingInputStream stream,
+                       MIMESource source,
+                       MIMEPolicy policy,
+                       String outerBoundary,
+                       MIMEMessageHeaders headers) throws IOException,
+                                                          InvalidHeaderDataException,
+                                                          HeaderParseException,
+                                                          MIMEPartParseException {
+        super(stream, source, true, policy, outerBoundary, headers);
+    }
+
+    /**
+     * For use in a Template
+     */
+    public String getTemplateValue(String key) {
+        //First, see if this key is for the child
+        //Headers
+        String headerRet = getMMHeaders().getTemplateValue(key);
+        if(headerRet != null) {
+            return headerRet;
+        }
+
+        //Not for the headers.  Evaluate if this
+        //is a MIMEMessage variable
+        key = key.trim().toLowerCase();
+        if(key.startsWith(MIME_MESSAGE_TEMPLATE_PREFIX)) {
+            key = key.substring(MIME_MESSAGE_TEMPLATE_PREFIX.length());
+            if(key.equals(TO_TV)) {
+                Set<EmailAddress> tos = getMMHeaders().getRecipients(RcptType.TO);
+                StringBuilder sb = new StringBuilder();
+                for(EmailAddress addr : tos) {
+                    sb.append(addr.toMIMEString());
+                    sb.append(CRLF);
+                }
+                return sb.toString();
+            }
+            else if(key.equals(CC_TV)) {
+                Set<EmailAddress> ccs = getMMHeaders().getRecipients(RcptType.CC);
+                StringBuilder sb = new StringBuilder();
+                for(EmailAddress addr : ccs) {
+                    sb.append(addr.toMIMEString());
+                    sb.append(CRLF);
+                }
+                return sb.toString();
+            }
+            else if(key.equals(RECIP_TV)) {
+                List<EmailAddressWithRcptType> allRcpts = getMMHeaders().getAllRecipients();
+                StringBuilder sb = new StringBuilder();
+                for(EmailAddressWithRcptType eawrt : allRcpts) {
+                    sb.append(eawrt.address.toMIMEString());
+                    sb.append(CRLF);
+                }
+                return sb.toString();
+            }
+            else if(key.equals(FROM_TV)) {
+                EmailAddress from = getMMHeaders().getFrom();
+                if(from == null || from.isNullAddress()) {
+                    return "<>";
+                }
+                return from.toMIMEString();
+            }
+            else if(key.equals(SUBJECT_TV)) {
+                return getMMHeaders().getSubject() == null?
+                    "":getMMHeaders().getSubject();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the MIMEMessageHeaders for this MIMEMessage.  Changes
+     * to the headers will be known by this message.
+     *
+     * @return the headers
+     */
+    public MIMEMessageHeaders getMMHeaders() {
+        return (MIMEMessageHeaders) getMPHeaders();
+    }
+
+    /**
+     * Convieience method to count attachments
+     */
+    public int getAttachmentCount() {
+        MIMEPart[] kids = getLeafParts(true);
+        if(kids == null) {
+            return 0;
+        }
+        int ret = 0;
+        for(MIMEPart part : kids) {
+            if(part.isAttachment()) {
+                ret++;
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Get the contents of this MIMEPart as a file.  This applies to
+     *
+     */
+    public final File toFile(FileFactory fileFactory)
+        throws IOException {
+        //TODO bscott an optimization would be to accumulate old SourceRecords,
+        //     so if a changed MIMEMessage is written to file twice, we really only
+        //     write it once (and assign the new File as the SourceRecord).
+        if(isChanged() || getSourceRecord() == null) {
+            FileOutputStream fOut = null;
+            try {
+                File ret = fileFactory.createFile();
+                fOut = new FileOutputStream(ret);
+                BufferedOutputStream bufOut = new BufferedOutputStream(fOut);
+                MIMEOutputStream mimeOut = new MIMEOutputStream(bufOut);
+                writeTo(mimeOut);
+                mimeOut.flush();
+                bufOut.flush();
+                fOut.flush();
+                fOut.close();
+                return ret;
+            }
+            catch(IOException ex) {
+                try{fOut.close();}catch(Exception ignore){}
+                IOException ex2 = new IOException();
+                ex2.initCause(ex);
+                throw ex;
+            }
+        }
+        return getSourceRecord().source.toFile(fileFactory);
+    }
+
+    /**
+     * <b>Do not use this method.  It is for debugging.  It will
+     * cause too much to be read into memory</b>
+     *
+     * Returned buffer is ready for reading.
+     */
+    public ByteBuffer toByteBuffer() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        MIMEOutputStream mos = new MIMEOutputStream(baos);
+        writeTo(mos);
+        mos.flush();
+        return ByteBuffer.wrap(baos.toByteArray());
+    }
+
+    //------------- Debug/Test ---------------
+
+    public static void main(String[] args) throws Exception {
+
+        File f = new File(args[0]);
+
+        File tempDir = new File(new File(System.getProperty("user.dir")),
+                                "mimeFiles");
+        if(!tempDir.exists()) {
+            tempDir.mkdirs();
+        }
+
+        //Dump file to another file, with byte offsets.  This
+        //makes troubleshooting really easy
+        FileInputStream fIn = new FileInputStream(f);
+        FileOutputStream fOut =
+            new FileOutputStream(new File("byteMap.txt"));
+        int rawRead = fIn.read();
+        int counter = 0;
+        while(rawRead != -1) {
+            fOut.write((counter + ": ").getBytes());
+            if(rawRead < 33 || rawRead > 126) {
+                fOut.write(("(unprintable)" + rawRead).getBytes());
+            }
+            else {
+                fOut.write((byte) rawRead);
+            }
+            fOut.write(System.getProperty("line.separator").getBytes());
+            rawRead = fIn.read();
+            counter++;
+        }
+        fIn.close();
         fOut.flush();
         fOut.close();
-        return ret;
-      }
-      catch(IOException ex) {
-        try{fOut.close();}catch(Exception ignore){}
-        IOException ex2 = new IOException();
-        ex2.initCause(ex);
-        throw ex;
-      }
-    }
-    return getSourceRecord().source.toFile(fileFactory);
-  }
 
-  /**
-   * <b>Do not use this method.  It is for debugging.  It will
-   * cause too much to be read into memory</b>
-   *
-   * Returned buffer is ready for reading.
-   */
-  public ByteBuffer toByteBuffer() throws IOException {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    MIMEOutputStream mos = new MIMEOutputStream(baos);
-    writeTo(mos);
-    mos.flush();
-    return ByteBuffer.wrap(baos.toByteArray());
-  }
+        FileMIMESource source = new FileMIMESource(f);
 
-//------------- Debug/Test ---------------
+        MIMEMessage mp = new MIMEMessage(source.getInputStream(),
+                                         source,
+                                         new MIMEPolicy(),
+                                         null);
 
-  public static void main(String[] args) throws Exception {
-
-    File f = new File(args[0]);
-
-    File tempDir = new File(new File(System.getProperty("user.dir")),
-      "mimeFiles");
-    if(!tempDir.exists()) {
-      tempDir.mkdirs();
-    }
-
-    //Dump file to another file, with byte offsets.  This
-    //makes troubleshooting really easy
-    FileInputStream fIn = new FileInputStream(f);
-    FileOutputStream fOut =
-      new FileOutputStream(new File("byteMap.txt"));
-    int rawRead = fIn.read();
-    int counter = 0;
-    while(rawRead != -1) {
-      fOut.write((counter + ": ").getBytes());
-      if(rawRead < 33 || rawRead > 126) {
-        fOut.write(("(unprintable)" + rawRead).getBytes());
-      }
-      else {
-        fOut.write((byte) rawRead);
-      }
-      fOut.write(System.getProperty("line.separator").getBytes());
-      rawRead = fIn.read();
-      counter++;
-    }
-    fIn.close();
-    fOut.flush();
-    fOut.close();
-
-    FileMIMESource source = new FileMIMESource(f);
-
-    MIMEMessage mp = new MIMEMessage(source.getInputStream(),
-      source,
-      new MIMEPolicy(),
-      null);
-
-    System.out.println("");
-    System.out.println("Message has subject: \"" +
-      mp.getMMHeaders().getSubject() + "\"");
-    System.out.println("BEGIN Recipients");
-    List<EmailAddressWithRcptType> allRcpts = mp.getMMHeaders().getAllRecipients();
-    for(EmailAddressWithRcptType rwt : allRcpts) {
-      System.out.println(rwt);
-    }
-    System.out.println("ENDOF Recipients");
-    mp.dump("");
-
-
-
-    MyFileFactory factory = new MyFileFactory(tempDir);
-
-    File file = null;
-    if(mp.isMultipart()) {
-
-      MIMEPart[] children = mp.getLeafParts(true);
-
-      System.out.println("Now, decode the " + children.length + " leaf children");
-      for(MIMEPart part : children) {
-        if(!part.isMultipart()) {
-          file = part.getContentAsFile(factory, false);
-          System.out.println("Raw part to: " + file.getName());
-          file = part.getContentAsFile(factory, true);
-          System.out.println("Decoded part to: " + file.getName());
+        System.out.println("");
+        System.out.println("Message has subject: \"" +
+                           mp.getMMHeaders().getSubject() + "\"");
+        System.out.println("BEGIN Recipients");
+        List<EmailAddressWithRcptType> allRcpts = mp.getMMHeaders().getAllRecipients();
+        for(EmailAddressWithRcptType rwt : allRcpts) {
+            System.out.println(rwt);
         }
-      }
+        System.out.println("ENDOF Recipients");
+        mp.dump("");
 
-      for(MIMEPart part : children) {
-        part.changed();
-        part.getObserver().mIMEPartChanged(part);
-        part.getMPHeaders().addHeaderField("FooBar", "Goo");
-        part.getMPHeaders().removeHeaderFields(new LCString("FooBar"));
-      }
-      System.out.println("Try writing it out (after declaring changed)");
-      fOut = new FileOutputStream(new File(tempDir, "redone.txt"));
-      mp.writeTo(new MIMEOutputStream(fOut));
-      fOut.flush();
-      fOut.close();
+
+
+        MyFileFactory factory = new MyFileFactory(tempDir);
+
+        File file = null;
+        if(mp.isMultipart()) {
+
+            MIMEPart[] children = mp.getLeafParts(true);
+
+            System.out.println("Now, decode the " + children.length + " leaf children");
+            for(MIMEPart part : children) {
+                if(!part.isMultipart()) {
+                    file = part.getContentAsFile(factory, false);
+                    System.out.println("Raw part to: " + file.getName());
+                    file = part.getContentAsFile(factory, true);
+                    System.out.println("Decoded part to: " + file.getName());
+                }
+            }
+
+            for(MIMEPart part : children) {
+                part.changed();
+                part.getObserver().mIMEPartChanged(part);
+                part.getMPHeaders().addHeaderField("FooBar", "Goo");
+                part.getMPHeaders().removeHeaderFields(new LCString("FooBar"));
+            }
+            System.out.println("Try writing it out (after declaring changed)");
+            fOut = new FileOutputStream(new File(tempDir, "redone.txt"));
+            mp.writeTo(new MIMEOutputStream(fOut));
+            fOut.flush();
+            fOut.close();
+        }
+        else {
+            file = mp.getContentAsFile(factory, false);
+            System.out.println("Raw part to: " + file.getName());
+            file = mp.getContentAsFile(factory, true);
+            System.out.println("Decoded part to: " + file.getName());
+            System.out.println("Try writing it out (after declaring changed)");
+            mp.changed();
+            //        mp.getObserver().mIMEPartChanged(part);
+            mp.getMPHeaders().addHeaderField("FooBar", "Goo");
+            mp.getMPHeaders().removeHeaderFields(new LCString("FooBar"));
+            fOut = new FileOutputStream(new File(tempDir, "redone.txt"));
+            mp.writeTo(new MIMEOutputStream(fOut));
+            fOut.flush();
+            fOut.close();
+        }
+
     }
-    else {
-      file = mp.getContentAsFile(factory, false);
-      System.out.println("Raw part to: " + file.getName());
-      file = mp.getContentAsFile(factory, true);
-      System.out.println("Decoded part to: " + file.getName());
-      System.out.println("Try writing it out (after declaring changed)");
-        mp.changed();
-//        mp.getObserver().mIMEPartChanged(part);
-        mp.getMPHeaders().addHeaderField("FooBar", "Goo");
-        mp.getMPHeaders().removeHeaderFields(new LCString("FooBar"));
-      fOut = new FileOutputStream(new File(tempDir, "redone.txt"));
-      mp.writeTo(new MIMEOutputStream(fOut));
-      fOut.flush();
-      fOut.close();
+
+    //------------- Debug/Test ---------------
+
+    //================= Inner Class =================
+
+    /**
+     * Acts as a FileFactory, to create temp files
+     * when a MIME part needs to be decoded to disk.
+     */
+    private static class MyFileFactory implements FileFactory {
+        private File m_dir;
+        public MyFileFactory(File rootDir) {
+            m_dir = rootDir;
+        }
+
+        public File createFile(String name)
+            throws IOException {
+            if(name == null) {
+                name = "meta";
+            }
+            //Javasoft requires 3 characters in prefix !?!
+            while(name.length() < 3) {
+                name = name+"X";
+            }
+            return File.createTempFile(name, null, m_dir);
+        }
+        public File createFile() throws IOException {
+            return createFile(null);
+        }
     }
-
-  }
-
-//------------- Debug/Test ---------------
-
-//================= Inner Class =================
-
-  /**
-   * Acts as a FileFactory, to create temp files
-   * when a MIME part needs to be decoded to disk.
-   */
-  private static class MyFileFactory implements FileFactory {
-      private File m_dir;
-      public MyFileFactory(File rootDir) {
-          m_dir = rootDir;
-      }
-
-      public File createFile(String name)
-          throws IOException {
-          if(name == null) {
-              name = "meta";
-          }
-          //Javasoft requires 3 characters in prefix !?!
-          while(name.length() < 3) {
-              name = name+"X";
-          }
-          return File.createTempFile(name, null, m_dir);
-      }
-      public File createFile() throws IOException {
-          return createFile(null);
-      }
-  }
 }

@@ -11,26 +11,20 @@
 
 package com.untangle.tran.airgap.gui;
 
-import com.untangle.gui.transform.*;
-import com.untangle.gui.pipeline.MPipelineJPanel;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.util.*;
-
-import java.awt.*;
+import java.awt.Insets;
 import java.util.*;
-import java.util.List;
 import javax.swing.*;
-import javax.swing.table.*;
 import javax.swing.event.*;
+import javax.swing.table.*;
 
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.editTable.*;
 import com.untangle.tran.airgap.AirgapSettings;
-
-import com.untangle.mvvm.tran.IPaddr;
-
 import com.untangle.tran.airgap.ShieldNodeRule;
 
 public class ShieldNodeConfigurationJPanel extends MEditTableJPanel{
-    
+
     public ShieldNodeConfigurationJPanel() {
         super(true, true);
         super.setFillJButtonEnabled( true );
@@ -38,18 +32,18 @@ public class ShieldNodeConfigurationJPanel extends MEditTableJPanel{
         super.setTableTitle("");
         super.setDetailsTitle("");
         super.setAddRemoveEnabled(true);
-        
+
         // create actual table model
         ShieldNodeConfigurationModel interfaceAliasModel = new ShieldNodeConfigurationModel();
         this.setTableModel( interfaceAliasModel );
     }
 }
-    
 
 
 
-class ShieldNodeConfigurationModel extends MSortedTableModel<Object>{ 
-    
+
+class ShieldNodeConfigurationModel extends MSortedTableModel<Object>{
+
     private static final int  T_TW  = Util.TABLE_TOTAL_WIDTH;
     private static final int  C0_MW = Util.STATUS_MIN_WIDTH; /* status */
     private static final int  C1_MW = Util.LINENO_MIN_WIDTH; /* # */
@@ -62,11 +56,11 @@ class ShieldNodeConfigurationModel extends MSortedTableModel<Object>{
 
     private ComboBoxModel dividerModel = super.generateComboBoxModel( ShieldNodeRule.getDividerEnumeration(),
                                                                       ShieldNodeRule.getDividerDefault());
-    
+
     protected boolean getSortable(){ return true; }
-    
+
     public TableColumnModel getTableColumnModel(){
-        
+
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0,  C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS );
@@ -79,15 +73,15 @@ class ShieldNodeConfigurationModel extends MSortedTableModel<Object>{
         addTableColumn( tableColumnModel,  7,     10, false, false, true,  false, ShieldNodeRule.class, null, "");
         return tableColumnModel;
     }
-    
-    
-    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {        
+
+
+    public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         List<ShieldNodeRule> elemList = new ArrayList(tableVector.size());
-	ShieldNodeRule newElem = null;
+        ShieldNodeRule newElem = null;
         int rowIndex = 0;
 
         for( Vector rowVector : tableVector ){
-	    rowIndex++;
+            rowIndex++;
             newElem = (ShieldNodeRule)rowVector.elementAt(7);
             newElem.setLive((Boolean)rowVector.elementAt(2));
             try{ newElem.setAddress( ((IPaddrString)rowVector.elementAt(3)).getString() ); }
@@ -99,35 +93,35 @@ class ShieldNodeConfigurationModel extends MSortedTableModel<Object>{
             newElem.setDescription((String)rowVector.elementAt(6));
             elemList.add(newElem);
         }
-        
-	// SAVE SETTINGS //////////
-	if( !validateOnly ){
-	    AirgapSettings airgapSettings = (AirgapSettings) settings;
-	    airgapSettings.setShieldNodeRuleList( elemList );
-	}
+
+        // SAVE SETTINGS //////////
+        if( !validateOnly ){
+            AirgapSettings airgapSettings = (AirgapSettings) settings;
+            airgapSettings.setShieldNodeRuleList( elemList );
+        }
     }
 
     public Vector<Vector> generateRows(Object settings) {
         AirgapSettings airgapSettings = (AirgapSettings) settings;
-	List<ShieldNodeRule> shieldNodeList = 
+        List<ShieldNodeRule> shieldNodeList =
             (List<ShieldNodeRule>) airgapSettings.getShieldNodeRuleList();
         Vector<Vector> allRows = new Vector<Vector>( shieldNodeList.size());
-	Vector tempRow = null;
+        Vector tempRow = null;
         int rowIndex = 0;
 
         for( ShieldNodeRule newElem : shieldNodeList ){
-	    rowIndex++;
-	    tempRow = new Vector(8);
-	    tempRow.add( super.ROW_SAVED );
-	    tempRow.add( rowIndex );
+            rowIndex++;
+            tempRow = new Vector(8);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
             tempRow.add( newElem.isLive());
             tempRow.add( new IPaddrString(newElem.getAddress()) );
-	    tempRow.add( super.generateComboBoxModel( ShieldNodeRule.getDividerEnumeration(), newElem.getDividerString()));
+            tempRow.add( super.generateComboBoxModel( ShieldNodeRule.getDividerEnumeration(), newElem.getDividerString()));
             tempRow.add( newElem.getCategory() );
             tempRow.add( newElem.getDescription() );
             tempRow.add( newElem );
-	    allRows.add( tempRow );
+            allRows.add( tempRow );
         }
         return allRows;
-    }    
+    }
 }

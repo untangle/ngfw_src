@@ -15,16 +15,16 @@ import com.untangle.tran.mail.papi.quarantine.InboxRecord;
 
 /**
  * Works with InboxIndexTag (i.e. must be within one).
- * 
+ *
  */
 public final class InboxRecordHasAttachmentTag
-  extends IfElseTag {
+    extends IfElseTag {
 
-  @Override
-  protected boolean isConditionTrue() {
-    InboxRecord record = InboxRecordTag.getCurrent(pageContext);
-    return record==null?false:record.getMailSummary().getAttachmentCount() > 0;
-  }
-}  
+    @Override
+    protected boolean isConditionTrue() {
+        InboxRecord record = InboxRecordTag.getCurrent(pageContext);
+        return record==null?false:record.getMailSummary().getAttachmentCount() > 0;
+    }
+}
 
 

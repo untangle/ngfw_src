@@ -18,31 +18,31 @@ import javax.servlet.ServletRequest;
  * if there 'aint one
  */
 public final class CurrentEmailAddressTag
-  extends SingleValueTag {
+    extends SingleValueTag {
 
-  private static final String ADDRESS_KEY = "untangle.email_address";
+    private static final String ADDRESS_KEY = "untangle.email_address";
 
-  @Override
-  protected String getValue() {
-    return getCurrent(pageContext.getRequest());
-  }  
+    @Override
+    protected String getValue() {
+        return getCurrent(pageContext.getRequest());
+    }
 
-  public static final void setCurrent(ServletRequest request,
-    String address) {
-    request.setAttribute(ADDRESS_KEY, address);
-  }
-  public static final void clearCurret(ServletRequest request) {
-    request.removeAttribute(ADDRESS_KEY);
-  }
+    public static final void setCurrent(ServletRequest request,
+                                        String address) {
+        request.setAttribute(ADDRESS_KEY, address);
+    }
+    public static final void clearCurret(ServletRequest request) {
+        request.removeAttribute(ADDRESS_KEY);
+    }
 
-  /**
-   * Returns null if there is no current address
-   */
-  static String getCurrent(ServletRequest request) {
-    return (String) request.getAttribute(ADDRESS_KEY);
-  }
+    /**
+     * Returns null if there is no current address
+     */
+    static String getCurrent(ServletRequest request) {
+        return (String) request.getAttribute(ADDRESS_KEY);
+    }
 
-  static boolean hasCurrent(ServletRequest request) {
-    return getCurrent(request) != null;
-  }  
+    static boolean hasCurrent(ServletRequest request) {
+        return getCurrent(request) != null;
+    }
 }

@@ -64,12 +64,12 @@ public class AddressValidator
     public boolean isIllegalAddress( InetAddress address )
     {
         List<AddressRange> checkList = new LinkedList<AddressRange>();
-        
+
         /* Add an entry to the checklist for the single IP */
         checkList.add( AddressRange.makeAddress( address ));
 
         checkList.addAll( ILLEGAL_ADDRESS_LIST );
-        
+
         if ( null != checkOverlap( checkList )) return true;
 
         return false;
@@ -97,9 +97,9 @@ public class AddressValidator
                                      range.getDescription() + "," + previous.getDescription());
                     } else if ( range.getIsIllegal()) {
                         return new
-                             ValidateException( "The network: " + previous.getDescription() +
-                                                " cannot overlap with the network " +
-                                                range.getDescription());
+                            ValidateException( "The network: " + previous.getDescription() +
+                                               " cannot overlap with the network " +
+                                               range.getDescription());
 
                     } else if ( previous.getIsIllegal()) {
                         return new

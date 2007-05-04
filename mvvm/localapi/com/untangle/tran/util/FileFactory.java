@@ -21,20 +21,20 @@ import java.io.IOException;
  */
 public interface FileFactory {
 
-  /**
-   * Create a file based on the given name.  Implementations
-   * are permitted to create a File with a name which is
-   * a function of <code>name</code>, or ignore the
-   * name alltogether.  In other words, the name
-   * is a hint.
-   */
-  public File createFile(String name)
-    throws IOException;
+    /**
+     * Create a file based on the given name.  Implementations
+     * are permitted to create a File with a name which is
+     * a function of <code>name</code>, or ignore the
+     * name alltogether.  In other words, the name
+     * is a hint.
+     */
+    public File createFile(String name)
+        throws IOException;
 
-  /**
-   * Create an anonymous file.
-   */
-  public File createFile()
-    throws IOException;
+    /**
+     * Create an anonymous file.
+     */
+    public File createFile()
+        throws IOException;
 
 }

@@ -77,7 +77,7 @@ public class UserPolicyRuleSet implements Serializable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="set_id")
     @IndexColumn(name="position")
     public List<UserPolicyRule> getRules()

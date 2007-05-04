@@ -31,13 +31,13 @@ public class ReportingSummarizer extends BaseSummarizer {
         long p2sOut = 0;
         long s2pOut = 0;
         long p2cOut = 0;
-    long numOut = 0;
+        long numOut = 0;
 
         long c2pIn = 0;
         long p2sIn = 0;
         long s2pIn = 0;
         long p2cIn = 0;
-    long numIn = 0;
+        long numIn = 0;
 
         try {
             String sql = "SELECT SUM(c2p_bytes), SUM(p2s_bytes), SUM(s2p_bytes), SUM(p2c_bytes), COUNT(*) FROM pl_endp endp JOIN pl_stats stats ON (endp.event_id = stats.pl_endp_id) WHERE client_intf = 1 AND stats.time_stamp >= ? AND endp.time_stamp < ?";
@@ -50,7 +50,7 @@ public class ReportingSummarizer extends BaseSummarizer {
             p2sOut = rs.getLong(2);
             s2pOut = rs.getLong(3);
             p2cOut = rs.getLong(4);
-        numOut = rs.getLong(5);
+            numOut = rs.getLong(5);
             rs.close();
             ps.close();
 
@@ -64,7 +64,7 @@ public class ReportingSummarizer extends BaseSummarizer {
             p2sIn = rs.getLong(2);
             s2pIn = rs.getLong(3);
             p2cIn = rs.getLong(4);
-        numIn = rs.getLong(5);
+            numIn = rs.getLong(5);
             rs.close();
             ps.close();
 

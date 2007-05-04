@@ -11,17 +11,13 @@
 
 package com.untangle.mvvm.networking;
 
-import org.apache.log4j.Logger;
-
 import com.untangle.mvvm.MvvmContextFactory;
-
+import com.untangle.mvvm.networking.internal.MiscSettingsInternal;
 import com.untangle.mvvm.tran.script.ScriptWriter;
-
 import com.untangle.mvvm.util.DataLoader;
 import com.untangle.mvvm.util.DataSaver;
 import com.untangle.mvvm.util.DeletingDataSaver;
-
-import com.untangle.mvvm.networking.internal.MiscSettingsInternal;
+import org.apache.log4j.Logger;
 
 import static com.untangle.mvvm.networking.ShellFlags.FLAG_TCP_WIN;
 import static com.untangle.mvvm.networking.ShellFlags.FLAG_POST_FUNC;
@@ -41,7 +37,7 @@ class MiscManagerImpl implements LocalMiscManager
     MiscManagerImpl()
     {
     }
-    
+
     /* Use this to retrieve just the remote settings */
     public MiscSettings getSettings()
     {
@@ -59,15 +55,15 @@ class MiscManagerImpl implements LocalMiscManager
         setSettings( settings, false );
     }
 
-        /* Use this to mess with the remote settings without modifying the network settings */
+    /* Use this to mess with the remote settings without modifying the network settings */
     public synchronized void setSettings( MiscSettings settings, boolean forceSave )
     {
         /* should validate settings */
         if ( !forceSave && settings.isClean()) logger.debug( "settings are clean, leaving alone." );
-        
+
         /* Need to save the settings to the database, then update the
          * local value, everything is executed later */
-        DataSaver<MiscSettings> saver = 
+        DataSaver<MiscSettings> saver =
             new DeletingDataSaver<MiscSettings>( MvvmContextFactory.context(), "MiscSettings" );
 
         MiscSettingsInternal newSettings = MiscSettingsInternal.makeInstance( settings );
@@ -83,7 +79,7 @@ class MiscManagerImpl implements LocalMiscManager
             new DataLoader<MiscSettings>( "MiscSettings", MvvmContextFactory.context());
 
         MiscSettings settings = loader.loadData();
-        
+
         if ( settings == null ) {
             logger.info( "There are no misc settings in the database, must initialize from files." );
 
@@ -110,7 +106,7 @@ class MiscManagerImpl implements LocalMiscManager
 
         /* Append the variables that need to be written to networking.sh */
         scriptWriter.appendVariable( FLAG_TCP_WIN, misc.getIsTcpWindowScalingEnabled());
-        
+
         /* append the post configuration script if it exist */
         addFunction( scriptWriter, misc.getPostConfigurationScript(),
                      FLAG_POST_FUNC, POST_FUNC_NAME, DECL_POST_CONF );
@@ -119,21 +115,21 @@ class MiscManagerImpl implements LocalMiscManager
         addFunction( scriptWriter, misc.getCustomRules(),
                      FLAG_CUSTOM_RULES, CUSTOM_RULES_NAME, DECL_CUSTOM_RULES );
     }
-    private void addFunction( ScriptWriter scriptWriter, 
+    private void addFunction( ScriptWriter scriptWriter,
                               String script, String flag, String name, String declaration )
     {
         /* no script, return */
         if ( script == null ) return;
-        
+
         script = script.trim();
         /* empty script, return */
         if ( script.length() == 0 ) return;
-        
+
         /* append the script to the string builder */
         scriptWriter.appendLine( declaration );
         scriptWriter.appendLine( script );
         scriptWriter.appendLine( "}\n" );
-        
+
         /* Append the flag to indicate that there is a postConfiguration script */
         scriptWriter.appendVariable( flag, name );
     }

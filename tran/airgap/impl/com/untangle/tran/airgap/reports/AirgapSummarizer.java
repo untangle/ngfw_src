@@ -36,11 +36,11 @@ public class AirgapSummarizer extends BaseSummarizer {
         long loadClosed = 0l;
 
         try {
-        String sql;
-        PreparedStatement ps;
-        ResultSet rs;
+            String sql;
+            PreparedStatement ps;
+            ResultSet rs;
 
-        sql = "SELECT SUM(accepted), SUM(limited), SUM(rejected), SUM(dropped), SUM(relaxed), SUM(lax), SUM(tight), SUM(closed) FROM shield_statistic_evt WHERE time_stamp >= ? AND time_stamp < ?";
+            sql = "SELECT SUM(accepted), SUM(limited), SUM(rejected), SUM(dropped), SUM(relaxed), SUM(lax), SUM(tight), SUM(closed) FROM shield_statistic_evt WHERE time_stamp >= ? AND time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);

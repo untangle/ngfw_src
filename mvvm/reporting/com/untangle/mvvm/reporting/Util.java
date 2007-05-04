@@ -11,10 +11,10 @@
 
 package com.untangle.mvvm.reporting;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.io.*;
 import java.sql.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -55,12 +55,12 @@ public class Util {
 
 
     static void init(Date whichMidnight) {
-	// INITIALIZE TIME CONSTANTS
+        // INITIALIZE TIME CONSTANTS
         Calendar c = Calendar.getInstance();
         c.setTime(whichMidnight);
         reportNow = (Calendar) c.clone();
-	midnight = new Timestamp(c.getTimeInMillis());
-	Calendar lastdayCalendar = (Calendar) c.clone();
+        midnight = new Timestamp(c.getTimeInMillis());
+        Calendar lastdayCalendar = (Calendar) c.clone();
         Calendar lastweekCalendar = (Calendar) c.clone();
         Calendar lastmonthCalendar = (Calendar) c.clone();
         lastdayCalendar.add(Calendar.DAY_OF_YEAR, -1);
@@ -73,42 +73,42 @@ public class Util {
 
 
     public static String trimNumber(String suffix, long number) {
-	String returnString;
+        String returnString;
 
-	if(number < KILOB)
-	    returnString = new String(  Long.toString(number) + (suffix.length() == 0 ? "" : " " + suffix) );
-	else if(number < MEGAB) {
-	    if( suffix.length() == 0 )
+        if(number < KILOB)
+            returnString = new String(  Long.toString(number) + (suffix.length() == 0 ? "" : " " + suffix) );
+        else if(number < MEGAB) {
+            if( suffix.length() == 0 )
                 returnString = NumberFormat.getNumberInstance().format(number);
-	    else
-		returnString = new String(  Long.toString(number/KILOB) + "." + String.format("%1$03d", number%KILOB) + " K" + suffix );
-	}
-	else if(number < GIGAB)
-	    returnString = new String(  Long.toString(number/MEGAB) + "." + String.format("%1$03d", (number%MEGAB)/KILOB) + " M" + suffix );
-	else if(number < TERAB)
-	    returnString = new String(  Long.toString(number/GIGAB) + "." + String.format("%1$03d", (number%GIGAB)/MEGAB) + " G" + suffix );
-	else if(number < PETAB)
-	    returnString = new String(  Long.toString(number/TERAB) + "." + String.format("%1$03d", (number%TERAB)/GIGAB) + " T" + suffix );
-	else if(number < EXAB)
-	    returnString = new String(  Long.toString(number/PETAB) + "." + String.format("%1$03d", (number%PETAB)/TERAB) + " P" + suffix );
-	else
-	    returnString = new String(  Long.toString(number/EXAB) + "." + String.format("%1$03d", (number%EXAB)/PETAB) + " E" + suffix );
+            else
+                returnString = new String(  Long.toString(number/KILOB) + "." + String.format("%1$03d", number%KILOB) + " K" + suffix );
+        }
+        else if(number < GIGAB)
+            returnString = new String(  Long.toString(number/MEGAB) + "." + String.format("%1$03d", (number%MEGAB)/KILOB) + " M" + suffix );
+        else if(number < TERAB)
+            returnString = new String(  Long.toString(number/GIGAB) + "." + String.format("%1$03d", (number%GIGAB)/MEGAB) + " G" + suffix );
+        else if(number < PETAB)
+            returnString = new String(  Long.toString(number/TERAB) + "." + String.format("%1$03d", (number%TERAB)/GIGAB) + " T" + suffix );
+        else if(number < EXAB)
+            returnString = new String(  Long.toString(number/PETAB) + "." + String.format("%1$03d", (number%PETAB)/TERAB) + " P" + suffix );
+        else
+            returnString = new String(  Long.toString(number/EXAB) + "." + String.format("%1$03d", (number%EXAB)/PETAB) + " E" + suffix );
 
-	return returnString;
+        return returnString;
     }
 
     public static String percentNumber(long number, long total) {
-	if( total < 1 )
-	    return "0.00%";
-	DecimalFormat decimalFormat = new DecimalFormat("#0.00%");
-	decimalFormat.setMultiplier(100);
+        if( total < 1 )
+            return "0.00%";
+        DecimalFormat decimalFormat = new DecimalFormat("#0.00%");
+        decimalFormat.setMultiplier(100);
 
-	double percentage = (double) number / (double) total;
-	return decimalFormat.format( percentage );
+        double percentage = (double) number / (double) total;
+        return decimalFormat.format( percentage );
     }
 
     public static String getDateDirName(Calendar c)
-    {      
+    {
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH) + 1; // Java is stupid
         int day = c.get(Calendar.DAY_OF_MONTH);
@@ -127,7 +127,7 @@ public class Util {
         } catch (IOException e) {
             return false;
         }
-  
+
         // a symbolic link has a different canonical path than its actual path,
         // unless it's a link to itself
         if (!candir.equals(dir.getAbsoluteFile())) {
@@ -136,14 +136,14 @@ public class Util {
             // the directory we were told to delete
             return false;
         }
-  
+
         // now we go through all of the files and subdirectories in the
         // directory and delete them one by one
         File[] files = candir.listFiles();
         if (files != null) {
             for (int i = 0; i < files.length; i++) {
                 File file = files[i];
-  
+
                 // in case this directory is actually a symbolic link, or it's
                 // empty, we want to try to delete the link before we try
                 // anything
@@ -152,14 +152,14 @@ public class Util {
                     // deleting the file failed, so maybe it's a non-empty
                     // directory
                     if (file.isDirectory()) deleteDir(file);
-  
+
                     // otherwise, there's nothing else we can do
                 }
             }
         }
-  
+
         // now that we tried to clear the directory out, we can try to delete it
         // again
-        return dir.delete();  
+        return dir.delete();
     }
 }

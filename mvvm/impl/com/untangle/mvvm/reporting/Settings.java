@@ -35,36 +35,36 @@ public class Settings
     private final boolean monthlyNFirst;
 
     private static final String EMAIL_DETAIL =
-     "SELECT email_detail " +
-       "FROM settings.tr_reporting_settings settings " +
-         "JOIN settings.transform_persistent_state tstate " +
-           "ON (settings.tid = tstate.tid " +
-             "AND name = 'reporting-transform' " +
-             "AND target_state = 'running')";
+        "SELECT email_detail " +
+        "FROM settings.tr_reporting_settings settings " +
+        "JOIN settings.transform_persistent_state tstate " +
+        "ON (settings.tid = tstate.tid " +
+        "AND name = 'reporting-transform' " +
+        "AND target_state = 'running')";
 
     private static final String SCHED_DAILY_MONTHLY =
-     "SELECT daily, monthly_n_daily, monthly_n_day_of_wk, monthly_n_first " +
-       "FROM settings.tr_reporting_sched sched " +
-         "JOIN settings.tr_reporting_settings settings " +
-           "ON (sched.id = settings.schedule) " +
-         "JOIN settings.transform_persistent_state tstate " +
-           "ON (settings.tid = tstate.tid " +
-             "AND name = 'reporting-transform' " +
-             "AND target_state = 'running')";
+        "SELECT daily, monthly_n_daily, monthly_n_day_of_wk, monthly_n_first " +
+        "FROM settings.tr_reporting_sched sched " +
+        "JOIN settings.tr_reporting_settings settings " +
+        "ON (sched.id = settings.schedule) " +
+        "JOIN settings.transform_persistent_state tstate " +
+        "ON (settings.tid = tstate.tid " +
+        "AND name = 'reporting-transform' " +
+        "AND target_state = 'running')";
 
     private static final String SCHED_WEEKLY =
-     "SELECT day " +
-       "FROM settings.tr_reporting_wk_sched_rule wksched_rule " +
-         "JOIN settings.tr_reporting_wk_sched wksched " +
-           "ON (wksched_rule.id = wksched.rule_id) " +
-         "JOIN settings.tr_reporting_sched sched " +
-           "ON (wksched.setting_id = sched.id) " +
-         "JOIN settings.tr_reporting_settings settings " +
-           "ON (sched.id = settings.schedule) " +
-         "JOIN settings.transform_persistent_state tstate " +
-           "ON (settings.tid = tstate.tid " +
-             "AND name = 'reporting-transform' " +
-             "AND target_state = 'running')";
+        "SELECT day " +
+        "FROM settings.tr_reporting_wk_sched_rule wksched_rule " +
+        "JOIN settings.tr_reporting_wk_sched wksched " +
+        "ON (wksched_rule.id = wksched.rule_id) " +
+        "JOIN settings.tr_reporting_sched sched " +
+        "ON (wksched.setting_id = sched.id) " +
+        "JOIN settings.tr_reporting_settings settings " +
+        "ON (sched.id = settings.schedule) " +
+        "JOIN settings.transform_persistent_state tstate " +
+        "ON (settings.tid = tstate.tid " +
+        "AND name = 'reporting-transform' " +
+        "AND target_state = 'running')";
 
     public Settings(Connection conn, Calendar cal) {
         PreparedStatement ps;
@@ -100,9 +100,9 @@ public class Settings
             if (true == rs.first()) {
                 Integer dayOfWk;
                 do {
-                   dayOfWk = new Integer(rs.getInt(1));
-                   //logger.info("day of week: " + dayOfWk);
-                   wyL.add(dayOfWk);
+                    dayOfWk = new Integer(rs.getInt(1));
+                    //logger.info("day of week: " + dayOfWk);
+                    wyL.add(dayOfWk);
                 } while (true == rs.next());
             }
             rs.close();

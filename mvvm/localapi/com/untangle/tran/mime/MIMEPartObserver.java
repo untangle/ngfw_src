@@ -24,9 +24,9 @@ package com.untangle.tran.mime;
 public interface MIMEPartObserver {
 
 
-  /**
-   * A MIMEPart has changed
-   */
-  public void mIMEPartChanged(MIMEPart part);
+    /**
+     * A MIMEPart has changed
+     */
+    public void mIMEPartChanged(MIMEPart part);
 
 }

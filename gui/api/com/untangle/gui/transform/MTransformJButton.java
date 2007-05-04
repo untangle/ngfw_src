@@ -44,33 +44,33 @@ public class MTransformJButton extends JButton {
         this.mackageDesc = mackageDesc;
 
         // INITIAL LAYOUT
-	contentJPanel = new JPanel();
-	contentJPanel.setOpaque(false);
-	contentJPanel.setLayout(new GridBagLayout());
-	setLayout(new BorderLayout());
-	add(contentJPanel);
+        contentJPanel = new JPanel();
+        contentJPanel.setOpaque(false);
+        contentJPanel.setLayout(new GridBagLayout());
+        setLayout(new BorderLayout());
+        add(contentJPanel);
 
         // ORG ICON
-    /*
-        organizationIconJLabel = new JLabel();
-        if( mackageDesc.getOrgIcon() != null )
-            organizationIconJLabel.setIcon( new javax.swing.ImageIcon(mackageDesc.getOrgIcon()) );
-        else
-            organizationIconJLabel.setIcon( new ImageIcon(getClass().getResource("/com/untangle/gui/transform/IconOrgUnknown42x42.png")) );
-    */
+        /*
+          organizationIconJLabel = new JLabel();
+          if( mackageDesc.getOrgIcon() != null )
+          organizationIconJLabel.setIcon( new javax.swing.ImageIcon(mackageDesc.getOrgIcon()) );
+          else
+          organizationIconJLabel.setIcon( new ImageIcon(getClass().getResource("/com/untangle/gui/transform/IconOrgUnknown42x42.png")) );
+        */
         //organizationIconJLabel.setDisabledIcon(this.orgIcon);
         /*
-        organizationIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        organizationIconJLabel.setFocusable(false);
-        organizationIconJLabel.setPreferredSize(new java.awt.Dimension(42, 42));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 4);
-        contentJPanel.add(organizationIconJLabel, gridBagConstraints);
+          organizationIconJLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+          organizationIconJLabel.setFocusable(false);
+          organizationIconJLabel.setPreferredSize(new java.awt.Dimension(42, 42));
+          gridBagConstraints = new java.awt.GridBagConstraints();
+          gridBagConstraints.gridx = 0;
+          gridBagConstraints.gridy = 0;
+          gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+          gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+          gridBagConstraints.weightx = 0.5;
+          gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 4);
+          contentJPanel.add(organizationIconJLabel, gridBagConstraints);
         */
 
         // DESC ICON
@@ -96,7 +96,7 @@ public class MTransformJButton extends JButton {
         //DISPLAY NAME
         nameJLabel = new JLabel();
         String tempName;
-	    tempName = mackageDesc.getDisplayName();
+        tempName = mackageDesc.getDisplayName();
         if( (mackageDesc.getExtraName()!=null) && (mackageDesc.getExtraName().contains("Trial")) )
             tempName += " (Trial)";
         nameJLabel.setText( "<html>" + Util.wrapString(tempName, 19) + "</html>");
@@ -113,8 +113,8 @@ public class MTransformJButton extends JButton {
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         contentJPanel.add(nameJLabel, gridBagConstraints);
-	try{ ((JComponent)nameJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
-	catch(Throwable t){}
+        try{ ((JComponent)nameJLabel).putClientProperty(com.sun.java.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, new Boolean(true)); }
+        catch(Throwable t){}
 
         //status progressbar
         statusJProgressBar = new JProgressBar();
@@ -148,12 +148,12 @@ public class MTransformJButton extends JButton {
     }
 
     public Dimension getPreferredSize(){
-	Dimension d = contentJPanel.getPreferredSize();
-	Insets i = getMargin();
-	d.width = 140;
-	d.height += i.top;
-	d.height += i.bottom;
-	return d;
+        Dimension d = contentJPanel.getPreferredSize();
+        Insets i = getMargin();
+        d.width = 140;
+        d.height += i.top;
+        d.height += i.bottom;
+        return d;
     }
 
     public MTransformJButton duplicate(){
@@ -169,12 +169,12 @@ public class MTransformJButton extends JButton {
     public void setIsTrial(boolean isTrial){
         this.isTrial = isTrial;
         /*
-        String tempName;
-    	if(isTrial)
-            tempName = mackageDesc.getDisplayName() + " (Trial)";
-        else
-            tempName = mackageDesc.getDisplayName();
-        nameJLabel.setText( "<html><b>" + Util.wrapString(tempName, 19) + "</b></html>");
+          String tempName;
+          if(isTrial)
+          tempName = mackageDesc.getDisplayName() + " (Trial)";
+          else
+          tempName = mackageDesc.getDisplayName();
+          nameJLabel.setText( "<html><b>" + Util.wrapString(tempName, 19) + "</b></html>");
         */
     }
 
@@ -265,10 +265,10 @@ public class MTransformJButton extends JButton {
         //organizationIconJLabel.setEnabled(enabled);
         descriptionIconJLabel.setEnabled(enabled);
         nameJLabel.setEnabled(enabled);
-	if(enabled)
-	    nameJLabel.setForeground(Color.BLACK);
-	else
-	    nameJLabel.setForeground(COLOR_NAME_DISABLED);
+        if(enabled)
+            nameJLabel.setForeground(Color.BLACK);
+        else
+            nameJLabel.setForeground(COLOR_NAME_DISABLED);
     }
     ///////////////////////////////////
 

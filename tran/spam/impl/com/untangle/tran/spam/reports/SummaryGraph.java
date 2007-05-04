@@ -11,13 +11,12 @@
 
 package com.untangle.tran.spam.reports;
 
-import com.untangle.mvvm.reporting.*;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.sql.*;
 import java.util.*;
-import net.sf.jasperreports.engine.JRDefaultScriptlet;
+
+import com.untangle.mvvm.reporting.*;
 import net.sf.jasperreports.engine.JRScriptletException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -149,7 +148,7 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
             //countA = rs.getLong(2) + rs.getLong(3);
             countB = rs.getLong(2);
             countC = rs.getLong(3);
-            
+
             // ALLOCATE COUNT TO EACH MINUTE WE WERE ALIVE EQUALLY
             eventStart = (eventDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
             realStart = eventStart < startMinuteInMillis ? (long) 0 : eventStart - startMinuteInMillis;
@@ -242,12 +241,12 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
         totalProcessTime = System.currentTimeMillis() - totalProcessTime;
         System.out.println("====== RESULTS ======");
-        System.out.println("TOTAL query time:   " 
-               + totalQueryTime/1000 + "s" 
-               + " (" + ((float)totalQueryTime/(float)(totalQueryTime+totalProcessTime))  + ")");
-        System.out.println("TOTAL process time: " 
-               + totalProcessTime/1000 + "s" 
-               + " (" + ((float)totalProcessTime/(float)(totalQueryTime+totalProcessTime))  + ")");
+        System.out.println("TOTAL query time:   "
+                           + totalQueryTime/1000 + "s"
+                           + " (" + ((float)totalQueryTime/(float)(totalQueryTime+totalProcessTime))  + ")");
+        System.out.println("TOTAL process time: "
+                           + totalProcessTime/1000 + "s"
+                           + " (" + ((float)totalProcessTime/(float)(totalQueryTime+totalProcessTime))  + ")");
         System.out.println("=====================");
 
         TimeSeriesCollection tsc = new TimeSeriesCollection();
@@ -257,9 +256,9 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
 
         JFreeChart jfChart =
             ChartFactory.createTimeSeriesChart(chartTitle,
-                                                  timeAxisLabel, valueAxisLabel,
-                                                  tsc,
-                                                  true, true, false);
+                                               timeAxisLabel, valueAxisLabel,
+                                               tsc,
+                                               true, true, false);
         XYPlot xyPlot = (XYPlot) jfChart.getPlot();
         XYItemRenderer xyIRenderer = xyPlot.getRenderer();
         //xyIRenderer.setSeriesStroke(seriesA, new BasicStroke(1.3f));

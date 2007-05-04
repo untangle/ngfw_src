@@ -39,8 +39,8 @@ public abstract class AbstractUnparser implements Unparser
     }
 
     public void handleFinalized() {
-      //Noop
-    }    
+        //Noop
+    }
 
     // protected methods ------------------------------------------------------
 

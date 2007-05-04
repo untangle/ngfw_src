@@ -11,8 +11,9 @@
 
 package com.untangle.tran.mail.papi.imap;
 
-import com.untangle.tran.token.Chunk;
 import java.nio.ByteBuffer;
+
+import com.untangle.tran.token.Chunk;
 
 
 /**
@@ -20,10 +21,10 @@ import java.nio.ByteBuffer;
  * handling.
  */
 public class ImapChunk
-  extends Chunk {
+    extends Chunk {
 
-  public ImapChunk(ByteBuffer data) {
-    super(data==null?
-      data:(data.position()>0?data.slice():data));
-  }  
+    public ImapChunk(ByteBuffer data) {
+        super(data==null?
+              data:(data.position()>0?data.slice():data));
+    }
 }

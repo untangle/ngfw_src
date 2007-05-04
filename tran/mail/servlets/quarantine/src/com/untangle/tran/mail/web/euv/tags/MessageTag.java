@@ -19,19 +19,19 @@ import javax.servlet.jsp.PageContext;
  * contents of the page-scope variable {@link #MESSAGE_PS_KEY MESSAGE_PS_KEY}.
  * <br><br>
  * Works with MessagesSetTag
- * 
+ *
  */
-public final class MessageTag 
-  extends SingleValueTag {
+public final class MessageTag
+    extends SingleValueTag {
 
-  private static final String MESSAGE_PS_KEY = "untangle.message";
+    private static final String MESSAGE_PS_KEY = "untangle.message";
 
-  @Override
-  protected String getValue() {
-    return (String) pageContext.getAttribute(MESSAGE_PS_KEY, PageContext.PAGE_SCOPE);
-  }  
+    @Override
+    protected String getValue() {
+        return (String) pageContext.getAttribute(MESSAGE_PS_KEY, PageContext.PAGE_SCOPE);
+    }
 
-  public static void setCurrent(PageContext pageContext, String msg) {
-    pageContext.setAttribute(MESSAGE_PS_KEY, msg, PageContext.PAGE_SCOPE);
-  }
+    public static void setCurrent(PageContext pageContext, String msg) {
+        pageContext.setAttribute(MESSAGE_PS_KEY, msg, PageContext.PAGE_SCOPE);
+    }
 }

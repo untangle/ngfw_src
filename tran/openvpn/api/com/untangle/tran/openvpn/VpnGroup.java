@@ -49,7 +49,7 @@ public class VpnGroup extends Rule implements Validatable
     @Column(name="use_dns", nullable=false)
     public boolean isUseDNS()
     {
-       return useDNS;
+        return useDNS;
     }
 
     public void setUseDNS(boolean useDNS)

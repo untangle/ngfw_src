@@ -22,18 +22,18 @@ public class IPaddrString implements Comparable<IPaddrString> {
     public IPaddrString(){}
 
     public IPaddrString(String unparsedString){
-	this.unparsedString = unparsedString;
+        this.unparsedString = unparsedString;
     }
 
     public IPaddrString( IPaddr ipAddr ){
-	this.ipAddr = ipAddr;
+        this.ipAddr = ipAddr;
     }
 
     public void setString(String unparsedString){
-	this.unparsedString = unparsedString;
+        this.unparsedString = unparsedString;
     }
     public String getString(){
-	return toString();
+        return toString();
     }
 
     public void setEmptyString(String s){
@@ -41,27 +41,27 @@ public class IPaddrString implements Comparable<IPaddrString> {
     }
 
     public boolean equals(Object obj){
-	if( !(obj instanceof IPaddrString) )
-	    return false;
-	else
-	    return 0 == compareTo( (IPaddrString) obj );
+        if( !(obj instanceof IPaddrString) )
+            return false;
+        else
+            return 0 == compareTo( (IPaddrString) obj );
     }
 
     public int compareTo(IPaddrString ipAddrString){
-	if( (unparsedString != null) && (ipAddrString.unparsedString != null) )
-	    return unparsedString.compareTo(ipAddrString.unparsedString);
-	else if( (unparsedString == null) && (ipAddrString.unparsedString != null) )
-	    return 1;
-	else if( (unparsedString != null) && (ipAddrString.unparsedString == null) )
-	    return -1;
+        if( (unparsedString != null) && (ipAddrString.unparsedString != null) )
+            return unparsedString.compareTo(ipAddrString.unparsedString);
+        else if( (unparsedString == null) && (ipAddrString.unparsedString != null) )
+            return 1;
+        else if( (unparsedString != null) && (ipAddrString.unparsedString == null) )
+            return -1;
         else if( (ipAddr == null) && (ipAddrString.ipAddr == null) )
-	    return 0;
-	else if( (ipAddr != null) && (ipAddrString.ipAddr == null) )
-	    return 1;
-	else if( (ipAddr == null) && (ipAddrString.ipAddr != null) )
-	    return -1;
-	else
-	    return ipAddr.compareTo(ipAddrString.ipAddr);
+            return 0;
+        else if( (ipAddr != null) && (ipAddrString.ipAddr == null) )
+            return 1;
+        else if( (ipAddr == null) && (ipAddrString.ipAddr != null) )
+            return -1;
+        else
+            return ipAddr.compareTo(ipAddrString.ipAddr);
     }
 
     public String toString(){

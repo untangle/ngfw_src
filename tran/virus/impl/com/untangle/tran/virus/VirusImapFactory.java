@@ -26,46 +26,46 @@ import org.apache.log4j.Logger;
  * virus scanning
  */
 public final class VirusImapFactory
-  implements TokenHandlerFactory {
+    implements TokenHandlerFactory {
 
 
-  private final Logger m_logger = Logger.getLogger(getClass());
+    private final Logger m_logger = Logger.getLogger(getClass());
 
-  private final VirusTransformImpl m_virusImpl;
-  private final MailExport m_mailExport;
-
-
-  VirusImapFactory(VirusTransformImpl transform) {
-    m_virusImpl = transform;
-    /* XXX RBS I don't know if this will work */
-    m_mailExport = MailExportFactory.factory().getExport();
-  }
+    private final VirusTransformImpl m_virusImpl;
+    private final MailExport m_mailExport;
 
 
-  public TokenHandler tokenHandler(TCPSession session) {
-
-    boolean inbound = session.isInbound();
-
-    VirusIMAPConfig virusConfig = (!inbound)?
-      m_virusImpl.getVirusSettings().getIMAPInbound():
-      m_virusImpl.getVirusSettings().getIMAPOutbound();
-
-    if(!virusConfig.getScan()) {
-      m_logger.debug("Scanning disabled.  Return passthrough token handler");
-      return new ImapTokenStream(session);
+    VirusImapFactory(VirusTransformImpl transform) {
+        m_virusImpl = transform;
+        /* XXX RBS I don't know if this will work */
+        m_mailExport = MailExportFactory.factory().getExport();
     }
 
-    long timeout = (!inbound)?m_mailExport.getExportSettings().getImapInboundTimeout():
-      m_mailExport.getExportSettings().getImapOutboundTimeout();
 
-    return new ImapTokenStream(session,
-        new VirusImapHandler(session,
-          timeout,
-          timeout,
-          m_virusImpl,
-          virusConfig)
-      );
-  }
+    public TokenHandler tokenHandler(TCPSession session) {
+
+        boolean inbound = session.isInbound();
+
+        VirusIMAPConfig virusConfig = (!inbound)?
+            m_virusImpl.getVirusSettings().getIMAPInbound():
+            m_virusImpl.getVirusSettings().getIMAPOutbound();
+
+        if(!virusConfig.getScan()) {
+            m_logger.debug("Scanning disabled.  Return passthrough token handler");
+            return new ImapTokenStream(session);
+        }
+
+        long timeout = (!inbound)?m_mailExport.getExportSettings().getImapInboundTimeout():
+            m_mailExport.getExportSettings().getImapOutboundTimeout();
+
+        return new ImapTokenStream(session,
+                                   new VirusImapHandler(session,
+                                                        timeout,
+                                                        timeout,
+                                                        m_virusImpl,
+                                                        virusConfig)
+                                   );
+    }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)
     {

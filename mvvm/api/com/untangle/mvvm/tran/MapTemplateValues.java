@@ -18,12 +18,12 @@ package com.untangle.mvvm.tran;
  * @see Template
  */
 public class MapTemplateValues
-  extends java.util.Properties
-  implements TemplateValues {
+    extends java.util.Properties
+    implements TemplateValues {
 
 
-  public String getTemplateValue(String key) {
-    return getProperty(key);
-  }
+    public String getTemplateValue(String key) {
+        return getProperty(key);
+    }
 
 }

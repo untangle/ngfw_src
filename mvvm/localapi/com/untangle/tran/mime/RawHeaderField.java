@@ -17,13 +17,13 @@ package com.untangle.tran.mime;
  */
 public class RawHeaderField {
 
-  public final Line[] lines;
-  public final int valueStartOffset;
+    public final Line[] lines;
+    public final int valueStartOffset;
 
-  public RawHeaderField(Line[] lines,
-    int valueStartOffset) {
-    this.lines = lines;
-    this.valueStartOffset = valueStartOffset;
-  }
+    public RawHeaderField(Line[] lines,
+                          int valueStartOffset) {
+        this.lines = lines;
+        this.valueStartOffset = valueStartOffset;
+    }
 
 }

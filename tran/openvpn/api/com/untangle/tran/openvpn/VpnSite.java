@@ -64,7 +64,7 @@ public class VpnSite extends VpnClientBase
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="client_id")
     @IndexColumn(name="position")
     public List<ClientSiteNetwork> getExportedAddressList()

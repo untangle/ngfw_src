@@ -12,17 +12,16 @@
 
 package com.untangle.gui.pipeline;
 
-import com.untangle.mvvm.portal.*;
-import com.untangle.mvvm.tran.firewall.user.UserMatcherConstants;
-
-import com.untangle.gui.transform.MTransformControlsJPanel;
-import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.gui.util.*;
 import java.awt.Window;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.CellEditor;
 import javax.swing.SwingUtilities;
+
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.mvvm.portal.*;
+import com.untangle.mvvm.tran.firewall.user.UserMatcherConstants;
 
 public class UidButtonRunnable implements ButtonRunnable, Comparable<UidButtonRunnable> {
 
@@ -33,89 +32,89 @@ public class UidButtonRunnable implements ButtonRunnable, Comparable<UidButtonRu
     private boolean valueChanged;
 
     public UidButtonRunnable(String isEnabled){
-			uidList.add(UidSelectJDialog.ANY_USER);
+        uidList.add(UidSelectJDialog.ANY_USER);
     }
 
     public String getButtonText(){
-			StringBuilder sb = new StringBuilder();
-			boolean first = true;
-			for(String s : uidList){
-					if(!first)
-							sb.append(", " + s);
-					else
-							sb.append(s);
-					first = false;
-			}
-			return sb.toString();
-	}
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for(String s : uidList){
+            if(!first)
+                sb.append(", " + s);
+            else
+                sb.append(s);
+            first = false;
+        }
+        return sb.toString();
+    }
     public boolean isEnabled(){ return true; }
     public void setEnabled(boolean isEnabled){ }
     public boolean valueChanged(){ return valueChanged; }
-	public void setUid(String s){
+    public void setUid(String s){
         StringTokenizer st = new StringTokenizer(s," \t\n\r\f"+UserMatcherConstants.MARKER_SEPERATOR);
-			uidList.clear();
-			while(st.hasMoreTokens()){
-                String ss = st.nextToken();
-					uidList.add(ss);
-            }
-	}
+        uidList.clear();
+        while(st.hasMoreTokens()){
+            String ss = st.nextToken();
+            uidList.add(ss);
+        }
+    }
     public void setUidList(List<String> uidList){ this.uidList = uidList; }
     public List<String> getUidList(){ return uidList; }
-	public String getUids(){
-			StringBuilder sb = new StringBuilder();
-			boolean first = true;
-			for(String s : uidList){
-					if(!first)
-							sb.append(UserMatcherConstants.MARKER_SEPERATOR + s);
-					else
-							sb.append(s);
-					first = false;
-			}
-			String outputString = sb.toString();
-			return outputString;
-	}
+    public String getUids(){
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for(String s : uidList){
+            if(!first)
+                sb.append(UserMatcherConstants.MARKER_SEPERATOR + s);
+            else
+                sb.append(s);
+            first = false;
+        }
+        String outputString = sb.toString();
+        return outputString;
+    }
 
     public void setTopLevelWindow(Window topLevelWindow){ this.topLevelWindow = topLevelWindow; }
     public void setCellEditor(CellEditor cellEditor){ this.cellEditor = cellEditor; }
 
     public void actionPerformed(ActionEvent evt){ run(); }
-	
-	
+
+
     public int compareTo(UidButtonRunnable uidButtonRunnable){
-			List<String> thisList = uidList;
-			List<String> thatList = uidButtonRunnable.uidList;
-			int thisLen = thisList.size();
-			int thatLen = thatList.size();
-			int minSize = Math.min(thisLen, thatLen);
-			for(int i=0; i<minSize; i++){
-				if(thisList.get(i).compareTo(thatList.get(i)) != 0)
-						return thisList.get(i).compareTo(thatList.get(i));
-			}
-			if(thisLen==thatLen)
-					return 0;
-			else if(thisLen > thatLen)
-					return 1;
-			else
-					return -1;
+        List<String> thisList = uidList;
+        List<String> thatList = uidButtonRunnable.uidList;
+        int thisLen = thisList.size();
+        int thatLen = thatList.size();
+        int minSize = Math.min(thisLen, thatLen);
+        for(int i=0; i<minSize; i++){
+            if(thisList.get(i).compareTo(thatList.get(i)) != 0)
+                return thisList.get(i).compareTo(thatList.get(i));
+        }
+        if(thisLen==thatLen)
+            return 0;
+        else if(thisLen > thatLen)
+            return 1;
+        else
+            return -1;
     }
-	 
-	
+
+
     public void run(){
-	UidSelectJDialog uidSelectJDialog = UidSelectJDialog.factory(topLevelWindow);
-	uidSelectJDialog.setUidList(uidList);
-	uidSelectJDialog.setVisible(true);
-	List<String> newUidList = uidSelectJDialog.getUidList();
-	
-	if(Arrays.equals(uidList.toArray(), newUidList.toArray()))
-		valueChanged = false;
-	else
-		valueChanged = true;
-	
-	if(valueChanged)
-	    uidList = newUidList;
-	
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    cellEditor.stopCellEditing();
-	}});
+        UidSelectJDialog uidSelectJDialog = UidSelectJDialog.factory(topLevelWindow);
+        uidSelectJDialog.setUidList(uidList);
+        uidSelectJDialog.setVisible(true);
+        List<String> newUidList = uidSelectJDialog.getUidList();
+
+        if(Arrays.equals(uidList.toArray(), newUidList.toArray()))
+            valueChanged = false;
+        else
+            valueChanged = true;
+
+        if(valueChanged)
+            uidList = newUidList;
+
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            cellEditor.stopCellEditing();
+        }});
     }
 }

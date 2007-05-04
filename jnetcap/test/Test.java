@@ -9,23 +9,21 @@
  * $Id$
  */
 
-import com.untangle.jvector.*;
-import com.untangle.jnetcap.*;
-
-import java.net.InetAddress;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
-import org.apache.log4j.BasicConfigurator;
-
-
 import java.util.Random;
+
+import com.untangle.jnetcap.*;
+import com.untangle.jvector.*;
+import org.apache.log4j.BasicConfigurator;
 
 public class Test {
     private static final String inetConverterFlag = "InetConverter";
     private static final String ipFlag            = "IP";
     private static final String subscribeFlag     = "Subscribe";
     private static final String verboseFlag       = "verbose";
-    
+
     private static final String usage = "::::::Usage:::::\n\n\t<test-type> <test-args>\n" +
         "\ttest-type: '" + inetConverterFlag + "', test-args: space separated list of hosts/IP addresss\n" +
         "\ttest-type: '" + ipFlag + "', print out the ip configuration (no args)\n" +
@@ -40,7 +38,7 @@ public class Test {
         System.exit( 1 );
     }
 
-    public static void main ( String args[] ) 
+    public static void main ( String args[] )
     {
         if ( args.length == 0 ) usage();
 
@@ -58,30 +56,30 @@ public class Test {
     private static void inetConverter ( String args[] )
     {
         int length = args.length;
-        
+
         try {
             for ( int c = 1 ; c < length ; c ++ ) {
                 InetAddress test = Inet4Address.getByName ( args[c] );
                 byte testArray[] = test.getAddress();
                 long result;
-                
+
                 System.out.println ( "This is a test: " +  test.getHostAddress() );
-                
+
                 result = Inet4AddressConverter.toLong ( test );
-                
+
                 System.out.println ( "toLong: " + Long.toHexString ( result ));
-                
+
                 System.out.println( "toAddress: " + Inet4AddressConverter.toAddress( result ).getHostAddress());
             }
-            
+
             Random generator = new Random();
             boolean passed = true;
             for ( int c = 0 ; c < 1000 ; c++ ) {
                 long val = generator.nextLong();
                 long convert = Inet4AddressConverter.toLong( Inet4AddressConverter.toAddress( val ));
-                
+
                 if ( (int)val != (int)convert ) {
-                    System.out.println( "Error in conversion("+ c + "): " + Long.toHexString( val ) + "|" + 
+                    System.out.println( "Error in conversion("+ c + "): " + Long.toHexString( val ) + "|" +
                                         Long.toHexString( convert ));
                     passed = false;
                     break;
@@ -95,7 +93,7 @@ public class Test {
     }
 
     private static void ipTest( String args[] ) {
-        System.out.println( "\n\nHOST CONFIGURATION:\n" );  
+        System.out.println( "\n\nHOST CONFIGURATION:\n" );
         System.out.println( "IP      " + Netcap.getHost());
         System.out.println( "NETMASK " + Netcap.getNetmask());
         System.out.println( "GATEWAY " + Netcap.getGateway());
@@ -106,21 +104,21 @@ public class Test {
         boolean verbose = false;
 
         if ( args.length > 3 ) usage();
-        
+
         for ( int c = 1 ; c < args.length ; c++ ) {
             if ( args[c].equalsIgnoreCase( verboseFlag )) {
                 if ( verbose == true ) usage();
                 verbose = true;
-            } else { 
+            } else {
                 try {
                     numTransforms = Integer.parseInt( args[c] );
                 } catch ( NumberFormatException e ) {
                     System.err.println( "Unable to parse: " + args[c] );
                     usage();
                 }
-                
+
                 if ( numTransforms < 0 ) usage();
-            } 
+            }
         }
 
         if ( verbose ) {
@@ -148,13 +146,13 @@ public class Test {
 
         /* Donate a few threads */
         Netcap.donateThreads( 10 );
-        
+
         /* Start the scheduler */
         Netcap.startScheduler();
 
         /* XXX How do I make TestUDPHook a singleton that has one instance */
         Netcap.registerUDPHook( new TestUDPHook( numTransforms, verbose ));
-        
+
         Netcap.registerTCPHook( new TestTCPHook( numTransforms, verbose ));
 
         /* Make one subscription */
@@ -172,10 +170,10 @@ public class Test {
 
         gen = new SubscriptionGenerator( Netcap.IPPROTO_TCP );
         // Disable local antisubscribes
-        // gen = new SubscriptionGenerator( Netcap.IPPROTO_TCP, SubscriptionGenerator.DEFAULT_FLAGS | 
-//                                          SubscriptionGenerator.LOCAL_ANTI_SUBSCRIBE );
+        // gen = new SubscriptionGenerator( Netcap.IPPROTO_TCP, SubscriptionGenerator.DEFAULT_FLAGS |
+        //                                          SubscriptionGenerator.LOCAL_ANTI_SUBSCRIBE );
 
-        
+
         /* Port 60000 will direct through the header transform. */
         /* Port 60001 will direct through the TestHalfWriteTransform */
         gen.server().port( new Range( 60000, 60001 ));

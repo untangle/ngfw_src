@@ -11,32 +11,30 @@
 
 package com.untangle.gui.upgrade;
 
-import com.untangle.mvvm.toolbox.*;
-import com.untangle.mvvm.policy.Policy;
+import java.awt.Insets;
+import java.util.*;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+import javax.swing.table.*;
+
 import com.untangle.gui.transform.*;
+import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.MEditTableJPanel;
 import com.untangle.gui.widgets.editTable.MSortedTableModel;
-import com.untangle.gui.util.Util;
-
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.table.*;
-import java.util.*;
-import java.awt.Insets;
+import com.untangle.mvvm.toolbox.*;
 
 public class UpgradeProcessJPanel extends JPanel
     implements Refreshable<UpgradeCompoundSettings> {
 
     private static final int DOWNLOAD_SLEEP_MILLIS = 1000;
     private static final int DOWNLOAD_FINAL_SLEEP_MILLIS = 3000;
-    		
+
     private UpgradeTableModel upgradeTableModel;
     private MEditTableJPanel mEditTableJPanel;
 
     public UpgradeProcessJPanel() {
-	// UPGRADE TABLE //
+        // UPGRADE TABLE //
         mEditTableJPanel = new MEditTableJPanel(false, true);
         mEditTableJPanel.setInsets(new Insets(0,0,0,0));
         mEditTableJPanel.setTableTitle("Available Upgrades");
@@ -51,141 +49,141 @@ public class UpgradeProcessJPanel extends JPanel
         initComponents();
         MConfigJDialog.setInitialFocusComponent(upgradeJButton);
     }
-    
+
 
     public void doRefresh(UpgradeCompoundSettings upgradeCompoundSettings){
-	upgradeTableModel.doRefresh(upgradeCompoundSettings);
-	if( Util.isArrayEmpty(upgradeCompoundSettings.getUpgradableMackageDescs()) ){
-	    upgradeJButton.setEnabled(false);
-	}
-	else{
-	    upgradeJButton.setEnabled(true);
-	}
+        upgradeTableModel.doRefresh(upgradeCompoundSettings);
+        if( Util.isArrayEmpty(upgradeCompoundSettings.getUpgradableMackageDescs()) ){
+            upgradeJButton.setEnabled(false);
+        }
+        else{
+            upgradeJButton.setEnabled(true);
+        }
     }
 
 
     class UpgradeTableModel extends MSortedTableModel<UpgradeCompoundSettings> {
-	
-	public TableColumnModel getTableColumnModel(){	    
-	    DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
-	    //                                 #  min  rsz    edit   remv   desc   typ            def
-	    addTableColumn( tableColumnModel,  0,  30, false, false, true, false, String.class, null, "status");
-	    addTableColumn( tableColumnModel,  1,  30, false, false, true, false, Integer.class, null, "#");
-	    addTableColumn( tableColumnModel,  2,  49, false, false, false, false, ImageIcon.class, null, "");
-	    addTableColumn( tableColumnModel,  3, 150, true,  false, false, false, String.class, null, "name");
-	    addTableColumn( tableColumnModel,  4,  75, false, false, false, false, String.class, null, sc.html("new<br>version"));
-	    addTableColumn( tableColumnModel,  5, 125, false, false, false, false, String.class, null, "type");
-	    addTableColumn( tableColumnModel,  6,  70, true,  false, false, false, Integer.class, null, sc.html("size<br>(KB)"));
-	    addTableColumn( tableColumnModel,  7, 125, false, false, true,  true,  String.class, null, "description");	    
-	    return tableColumnModel;
-	}
-	
-	public void generateSettings(UpgradeCompoundSettings upgradeCompoundSettings,
-				     Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
-	
-	public Vector<Vector> generateRows(UpgradeCompoundSettings upgradeCompoundSettings){
-	    MackageDesc[] mackageDescs = upgradeCompoundSettings.getUpgradableMackageDescs();
 
-	    if( mackageDescs == null ) 	// deal with the case of an unreachable store
-		return new Vector<Vector>();
+        public TableColumnModel getTableColumnModel(){
+            DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
+            //                                 #  min  rsz    edit   remv   desc   typ            def
+            addTableColumn( tableColumnModel,  0,  30, false, false, true, false, String.class, null, "status");
+            addTableColumn( tableColumnModel,  1,  30, false, false, true, false, Integer.class, null, "#");
+            addTableColumn( tableColumnModel,  2,  49, false, false, false, false, ImageIcon.class, null, "");
+            addTableColumn( tableColumnModel,  3, 150, true,  false, false, false, String.class, null, "name");
+            addTableColumn( tableColumnModel,  4,  75, false, false, false, false, String.class, null, sc.html("new<br>version"));
+            addTableColumn( tableColumnModel,  5, 125, false, false, false, false, String.class, null, "type");
+            addTableColumn( tableColumnModel,  6,  70, true,  false, false, false, Integer.class, null, sc.html("size<br>(KB)"));
+            addTableColumn( tableColumnModel,  7, 125, false, false, true,  true,  String.class, null, "description");
+            return tableColumnModel;
+        }
 
-	    Vector<Vector> allRows = new Vector<Vector>(mackageDescs.length);
-	    Vector tempRow = null;
-	    int rowIndex = 0;
-	    
-	    for( MackageDesc mackageDesc : mackageDescs ){
-		if( mackageDesc.getType() == MackageDesc.CASING_TYPE ||
-		    mackageDesc.getType() == MackageDesc.TRANSFORM_BASE_TYPE)
-		    continue;
-		try{
-		    rowIndex++;
-		    tempRow = new Vector(8);
-            tempRow.add( MSortedTableModel.ROW_SAVED  );
-		    tempRow.add( rowIndex );
-		    
-		    byte[] descIcon = mackageDesc.getDescIcon();
-		    
-		    if( descIcon != null)
-			tempRow.add( new ImageIcon(descIcon) );
-		    else
-			tempRow.add( new ImageIcon(getClass().getResource("/com/untangle/gui/transform/IconDescUnknown42x42.png"))) ;
-		    
-		    tempRow.add( mackageDesc.getDisplayName() );
-		    tempRow.add( mackageDesc.getAvailableVersion() );
-		    if( mackageDesc.getType() == MackageDesc.SYSTEM_TYPE )
-			tempRow.add( "System Component" );
-		    else if( mackageDesc.getType() == MackageDesc.TRANSFORM_TYPE )
-			tempRow.add( "Product" );
-		    else
-			tempRow.add( "Unknown" );
-		    tempRow.add( Integer.toString(mackageDesc.getSize()/1000));
-		    tempRow.add( mackageDesc.getLongDescription() );
-		    allRows.add( tempRow );
-		}
-		catch(Exception e){
-		    Util.handleExceptionNoRestart("Error adding upgrade row", e);
-		}
-	    }
-	    return allRows;
-	}
+        public void generateSettings(UpgradeCompoundSettings upgradeCompoundSettings,
+                                     Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
+
+        public Vector<Vector> generateRows(UpgradeCompoundSettings upgradeCompoundSettings){
+            MackageDesc[] mackageDescs = upgradeCompoundSettings.getUpgradableMackageDescs();
+
+            if( mackageDescs == null )  // deal with the case of an unreachable store
+                return new Vector<Vector>();
+
+            Vector<Vector> allRows = new Vector<Vector>(mackageDescs.length);
+            Vector tempRow = null;
+            int rowIndex = 0;
+
+            for( MackageDesc mackageDesc : mackageDescs ){
+                if( mackageDesc.getType() == MackageDesc.CASING_TYPE ||
+                    mackageDesc.getType() == MackageDesc.TRANSFORM_BASE_TYPE)
+                    continue;
+                try{
+                    rowIndex++;
+                    tempRow = new Vector(8);
+                    tempRow.add( MSortedTableModel.ROW_SAVED  );
+                    tempRow.add( rowIndex );
+
+                    byte[] descIcon = mackageDesc.getDescIcon();
+
+                    if( descIcon != null)
+                        tempRow.add( new ImageIcon(descIcon) );
+                    else
+                        tempRow.add( new ImageIcon(getClass().getResource("/com/untangle/gui/transform/IconDescUnknown42x42.png"))) ;
+
+                    tempRow.add( mackageDesc.getDisplayName() );
+                    tempRow.add( mackageDesc.getAvailableVersion() );
+                    if( mackageDesc.getType() == MackageDesc.SYSTEM_TYPE )
+                        tempRow.add( "System Component" );
+                    else if( mackageDesc.getType() == MackageDesc.TRANSFORM_TYPE )
+                        tempRow.add( "Product" );
+                    else
+                        tempRow.add( "Unknown" );
+                    tempRow.add( Integer.toString(mackageDesc.getSize()/1000));
+                    tempRow.add( mackageDesc.getLongDescription() );
+                    allRows.add( tempRow );
+                }
+                catch(Exception e){
+                    Util.handleExceptionNoRestart("Error adding upgrade row", e);
+                }
+            }
+            return allRows;
+        }
     }
-    
-        private void initComponents() {//GEN-BEGIN:initComponents
-                java.awt.GridBagConstraints gridBagConstraints;
 
-                contentJPanel = mEditTableJPanel;
-                actionJPanel = new javax.swing.JPanel();
-                upgradeJButton = new javax.swing.JButton();
+    private void initComponents() {//GEN-BEGIN:initComponents
+        java.awt.GridBagConstraints gridBagConstraints;
 
-                setLayout(new java.awt.GridBagLayout());
+        contentJPanel = mEditTableJPanel;
+        actionJPanel = new javax.swing.JPanel();
+        upgradeJButton = new javax.swing.JButton();
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
-                add(contentJPanel, gridBagConstraints);
+        setLayout(new java.awt.GridBagLayout());
 
-                actionJPanel.setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+        add(contentJPanel, gridBagConstraints);
 
-                upgradeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/IconConfigUpgrade36x36.png")));
-                upgradeJButton.setText("Upgrade");
-                upgradeJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
-                upgradeJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                upgradeJButtonActionPerformed(evt);
-                        }
-                });
+        actionJPanel.setLayout(new java.awt.GridBagLayout());
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.weightx = 0.5;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 0);
-                actionJPanel.add(upgradeJButton, gridBagConstraints);
+        upgradeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        upgradeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/IconConfigUpgrade36x36.png")));
+        upgradeJButton.setText("Upgrade");
+        upgradeJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+        upgradeJButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    upgradeJButtonActionPerformed(evt);
+                }
+            });
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 0, 15, 0);
-                add(actionJPanel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 15, 0);
+        actionJPanel.add(upgradeJButton, gridBagConstraints);
 
-        }//GEN-END:initComponents
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(15, 0, 15, 0);
+        add(actionJPanel, gridBagConstraints);
+
+    }//GEN-END:initComponents
 
     private void upgradeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeJButtonActionPerformed
-	if( Util.getIsDemo() )
-	    return;
-	ProceedJDialog proceedJDialog = new ProceedJDialog();
-	if( !proceedJDialog.isUpgrading() )
-	    return;
-	new PerformUpgradeThread();
+        if( Util.getIsDemo() )
+            return;
+        ProceedJDialog proceedJDialog = new ProceedJDialog();
+        if( !proceedJDialog.isUpgrading() )
+            return;
+        new PerformUpgradeThread();
     }//GEN-LAST:event_upgradeJButtonActionPerformed
-		
+
     private class PerformUpgradeThread extends Thread {
         public PerformUpgradeThread(){
             super("MVCLIENT-PerformUpgradeThread");
@@ -223,8 +221,8 @@ public class UpgradeProcessJPanel extends JPanel
                     // LET THE USER KNOW WERE FINISHED NORMALLY
                     ((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Download Complete!");
                     MOneButtonJDialog.factory(UpgradeProcessJPanel.this.getTopLevelAncestor(), "",
-					      "The updates have successfully downloaded.<br>The client will now exit while the upgrade is performed.",
-					      "Upgrade Success", "");
+                                              "The updates have successfully downloaded.<br>The client will now exit while the upgrade is performed.",
+                                              "Upgrade Success", "");
                 }
                 else{
                     throw new Exception();
@@ -234,20 +232,20 @@ public class UpgradeProcessJPanel extends JPanel
                 Util.handleExceptionNoRestart("Termination of upgrade:", e);
                 ((MConfigJDialog)UpgradeProcessJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Upgrade Failure");
                 MOneButtonJDialog.factory(UpgradeProcessJPanel.this.getTopLevelAncestor(), "",
-					  "The upgrade procedure did not finish properly.<br>" +
-					  "Please contact Untangle Support.",
-					  "Upgrade Failure Warning", "");
+                                          "The upgrade procedure did not finish properly.<br>" +
+                                          "Please contact Untangle Support.",
+                                          "Upgrade Failure Warning", "");
             }
             finally{
                 RestartDialog.factory(UpgradeProcessJPanel.this.getTopLevelAncestor());
             }
         }
     }
-		
-        // Variables declaration - do not modify//GEN-BEGIN:variables
-        private javax.swing.JPanel actionJPanel;
-        private javax.swing.JPanel contentJPanel;
-        protected javax.swing.JButton upgradeJButton;
-        // End of variables declaration//GEN-END:variables
-		
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel actionJPanel;
+    private javax.swing.JPanel contentJPanel;
+    protected javax.swing.JButton upgradeJButton;
+    // End of variables declaration//GEN-END:variables
+
 }

@@ -18,12 +18,12 @@ import java.io.Serializable;
  * in a URL) is of a bad format (garbage).
  */
 public class BadTokenException
-  extends Exception
-  implements Serializable {
+    extends Exception
+    implements Serializable {
 
-  public BadTokenException(String token) {
-    super("Bad Token \"" + token + "\"");
-  }
+    public BadTokenException(String token) {
+        super("Bad Token \"" + token + "\"");
+    }
 
-  
+
 }

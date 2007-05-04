@@ -10,9 +10,9 @@
  */
 
 package com.untangle.tran.mail.impl.imap;
-import org.apache.log4j.Logger;
-import com.untangle.tran.mail.papi.imap.IMAPTokenizer;
 import java.nio.ByteBuffer;
+
+import com.untangle.tran.mail.papi.imap.IMAPTokenizer;
 import static com.untangle.tran.util.Ascii.*;
 
 /**
@@ -28,302 +28,302 @@ import static com.untangle.tran.util.Ascii.*;
  * A note about counts and line types.  There are a few methods which
  * subclasses may call to determine the current type of line, and the number
  * of tokens on that line.  These values hold true <b>as the terminating EOL is encountered</b>
- * 
+ *
  */
 abstract class TokMon {
 
-  /**
-   * Enumeration of the different Client Request types
-   * (see RFC 3501 sec 2.2).
-   */
-  enum ClientReqType {
-    CONTINUATION,
-    TAGGED,
-    UNKNOWN//Positioned at start of new line
-  };
+    /**
+     * Enumeration of the different Client Request types
+     * (see RFC 3501 sec 2.2).
+     */
+    enum ClientReqType {
+        CONTINUATION,
+        TAGGED,
+        UNKNOWN//Positioned at start of new line
+    };
 
-  /**
-   * Enumeration of the different Server Response types
-   * (see RFC 3501 sec 2.2).
-   */
-  enum ServerRespType {
-    CONTINUATION_REQUEST,
-    UNTAGGED,
-    TAGGED,
-    UNKNOWN//Positioned at start of new line
-  };
+    /**
+     * Enumeration of the different Server Response types
+     * (see RFC 3501 sec 2.2).
+     */
+    enum ServerRespType {
+        CONTINUATION_REQUEST,
+        UNTAGGED,
+        TAGGED,
+        UNKNOWN//Positioned at start of new line
+    };
 
-  private ServerRespType m_serverLineType = ServerRespType.UNKNOWN;
-  private ClientReqType m_clientLineType = ClientReqType.UNKNOWN;
-  private boolean m_clientAtNewLine = true;
-  private boolean m_serverAtNewLine = true;
-  private boolean m_lastServerLineContReq = false;
-  private int m_serverLineTokenCount = 0;
-  private int m_clientLineTokenCount = 0;
-  private final ImapSessionMonitor m_sessionMonitor;
+    private ServerRespType m_serverLineType = ServerRespType.UNKNOWN;
+    private ClientReqType m_clientLineType = ClientReqType.UNKNOWN;
+    private boolean m_clientAtNewLine = true;
+    private boolean m_serverAtNewLine = true;
+    private boolean m_lastServerLineContReq = false;
+    private int m_serverLineTokenCount = 0;
+    private int m_clientLineTokenCount = 0;
+    private final ImapSessionMonitor m_sessionMonitor;
 
-  /**
-   * Construct a new TokMon, driven by the
-   * given ImapSessionMonitor
-   *
-   * @param sesMon the parent caller
-   */
-  TokMon(ImapSessionMonitor sesMon) {
-    this(sesMon, null);
-  }
-
-  /**
-   * Construct a new TokMon, driven by the
-   * given ImapSessionMonitor.  The new ImapSessionMonitor
-   * will get its current state from the
-   * passed-in TokMon
-   *
-   * @param sesMon the parent caller
-   * @param cloneState a TokMon to clone current state from
-   *
-   */
-  TokMon(ImapSessionMonitor sesMon,
-    TokMon cloneState) {
-    
-    m_sessionMonitor = sesMon;
-    if(cloneState != null) {
-      m_serverLineType = cloneState.m_serverLineType;
-      m_clientLineType = cloneState.m_clientLineType;
-      m_clientAtNewLine = cloneState.m_clientAtNewLine;
-      m_serverAtNewLine = cloneState.m_serverAtNewLine;
-      m_lastServerLineContReq = cloneState.m_lastServerLineContReq;
-      m_serverLineTokenCount = cloneState.m_serverLineTokenCount;
-      m_clientLineTokenCount = cloneState.m_clientLineTokenCount;
+    /**
+     * Construct a new TokMon, driven by the
+     * given ImapSessionMonitor
+     *
+     * @param sesMon the parent caller
+     */
+    TokMon(ImapSessionMonitor sesMon) {
+        this(sesMon, null);
     }
-  }
 
-  /**
-   * Get the ImapSessionMonitor associated with this
-   * TokMon
-   *
-   * @return the ImapSessionMonitor
-   */
-  protected final ImapSessionMonitor getSessionMonitor() {
-    return m_sessionMonitor;
-  }
+    /**
+     * Construct a new TokMon, driven by the
+     * given ImapSessionMonitor.  The new ImapSessionMonitor
+     * will get its current state from the
+     * passed-in TokMon
+     *
+     * @param sesMon the parent caller
+     * @param cloneState a TokMon to clone current state from
+     *
+     */
+    TokMon(ImapSessionMonitor sesMon,
+           TokMon cloneState) {
 
-  /**
-   * Get the count of tokens on the current client request line.
-   * This does <b>not</b> include the terminating EOL.
-   */
-  protected final int getClientRequestTokenCount() {
-    return m_clientLineTokenCount;
-  }
-  
-  /**
-   * Get the count of tokens on the current client request line.
-   * This does <b>not</b> include the terminating EOL.
-   */  
-  protected final int getServerResponseTokenCount() {
-    return m_serverLineTokenCount;
-  }
-
-  /**
-   * Get the current client request type.  Note that this property
-   * still holds true while the terminating EOL is being handled.
-   */
-  protected final ClientReqType getClientReqType() {
-    return m_clientLineType;
-  }
-
-  /**
-   * Get the current server response type.  Note that this property
-   * still holds true while the terminating EOL is being handled.
-   */  
-  protected final ServerRespType getServerRespType() {
-    return m_serverLineType;
-  }
-
-  /**
-   * Call from the ImapSessionMonitor to observe a literal.
-   * The token which defined the literal should have
-   * already been passed to {@link #handleToken handleToken}
-   *
-   * @param buf the buffer
-   * @param bytesFromPosAsLiteral bytes (from buffer's position)
-   *        containing bytes from the literal
-   * @param client true if this literal is from the client.
-   *
-   * @return true if the ImapSessionMonitor should declare this
-   *         session unparsable, and abandon scanning (i.e. if
-   *         encryption is encountered).
-   */
-  final boolean handleLiteral(ByteBuffer buf, int bytesFromPosAsLiteral, boolean client) {
-    if(client) {
-      return handleLiteralFromClient(buf, bytesFromPosAsLiteral);
-    }
-    else {
-      return handleLiteralFromServer(buf, bytesFromPosAsLiteral);
-    }
-  }
-
-
-  /**
-   * Handle a token, called by ImapSessionMonitor.
-   *
-   * @param tokenizer the tokenizer
-   * @param buf the buffer
-   * @param fromClient true if from the client
-   * 
-   * @return true if the ImapSessionMonitor should declare this
-   *         session unparsable, and abandon scanning (i.e. if
-   *         encryption is encountered).
-   */
-  final boolean handleToken(IMAPTokenizer tokenizer,
-    ByteBuffer buf,
-    boolean fromClient) {
-    if(fromClient) {
-      previewTokenFromClient(tokenizer, buf);
-      return handleTokenFromClient(tokenizer, buf);
-    }
-    else {
-      previewTokenFromServer(tokenizer, buf);
-      return handleTokenFromServer(tokenizer, buf);
-    }
-  }
-
-  /**
-   * This method is called before {@link #handleTokenFromClient handleTokenFromClient}.
-   * If subclasses override, <b>make sure to call super</b>
-   *
-   * @param tokenizer the tokenizer
-   * @param buf the buffer
-   */
-  protected void previewTokenFromClient(IMAPTokenizer tokenizer,
-    ByteBuffer buf) {
-    if(m_clientAtNewLine) {
-      //Two EOLs in a row we'll skip
-      if(tokenizer.isTokenEOL()) {
-        //Just leave the state as-is
-        return;
-      }
-      //Based on the last Server line, determine
-      //the type of this client request
-      m_clientLineType = m_lastServerLineContReq?
-        ClientReqType.CONTINUATION:ClientReqType.TAGGED;
-
-      m_clientAtNewLine = false;
-      m_clientLineTokenCount = 1;
-    }
-    else {
-      if(tokenizer.isTokenEOL()) {
-        m_clientAtNewLine = true;
-      }
-      else {
-        m_clientLineTokenCount++;
-      }
-    }
-  }
-  
-  /**
-   * This method is called before {@link handleTokenFromServer handleTokenFromServer}.
-   * If subclasses override, <b>make sure to call super</b>
-   *
-   * @param tokenizer the tokenizer
-   * @param buf the buffer
-   */
-  protected void previewTokenFromServer(IMAPTokenizer tokenizer,
-    ByteBuffer buf) {
-    if(m_serverAtNewLine) {
-      //This means the last token we saw was an EOL.
-
-      //Two EOLs in a row we'll skip
-      if(tokenizer.isTokenEOL()) {
-        //Just leave the state as-is
-        return;
-      }
-      else {
-        m_serverAtNewLine = false;
-        m_serverLineTokenCount = 1;
-
-        //Figure out what type of response this is
-        if(tokenizer.compareCtlAgainstByte(buf, PLUS_B)) {
-          m_serverLineType = ServerRespType.CONTINUATION_REQUEST;
+        m_sessionMonitor = sesMon;
+        if(cloneState != null) {
+            m_serverLineType = cloneState.m_serverLineType;
+            m_clientLineType = cloneState.m_clientLineType;
+            m_clientAtNewLine = cloneState.m_clientAtNewLine;
+            m_serverAtNewLine = cloneState.m_serverAtNewLine;
+            m_lastServerLineContReq = cloneState.m_lastServerLineContReq;
+            m_serverLineTokenCount = cloneState.m_serverLineTokenCount;
+            m_clientLineTokenCount = cloneState.m_clientLineTokenCount;
         }
-        else if(tokenizer.compareCtlAgainstByte(buf, STAR_B)) {
-          m_serverLineType = ServerRespType.UNTAGGED;
+    }
+
+    /**
+     * Get the ImapSessionMonitor associated with this
+     * TokMon
+     *
+     * @return the ImapSessionMonitor
+     */
+    protected final ImapSessionMonitor getSessionMonitor() {
+        return m_sessionMonitor;
+    }
+
+    /**
+     * Get the count of tokens on the current client request line.
+     * This does <b>not</b> include the terminating EOL.
+     */
+    protected final int getClientRequestTokenCount() {
+        return m_clientLineTokenCount;
+    }
+
+    /**
+     * Get the count of tokens on the current client request line.
+     * This does <b>not</b> include the terminating EOL.
+     */
+    protected final int getServerResponseTokenCount() {
+        return m_serverLineTokenCount;
+    }
+
+    /**
+     * Get the current client request type.  Note that this property
+     * still holds true while the terminating EOL is being handled.
+     */
+    protected final ClientReqType getClientReqType() {
+        return m_clientLineType;
+    }
+
+    /**
+     * Get the current server response type.  Note that this property
+     * still holds true while the terminating EOL is being handled.
+     */
+    protected final ServerRespType getServerRespType() {
+        return m_serverLineType;
+    }
+
+    /**
+     * Call from the ImapSessionMonitor to observe a literal.
+     * The token which defined the literal should have
+     * already been passed to {@link #handleToken handleToken}
+     *
+     * @param buf the buffer
+     * @param bytesFromPosAsLiteral bytes (from buffer's position)
+     *        containing bytes from the literal
+     * @param client true if this literal is from the client.
+     *
+     * @return true if the ImapSessionMonitor should declare this
+     *         session unparsable, and abandon scanning (i.e. if
+     *         encryption is encountered).
+     */
+    final boolean handleLiteral(ByteBuffer buf, int bytesFromPosAsLiteral, boolean client) {
+        if(client) {
+            return handleLiteralFromClient(buf, bytesFromPosAsLiteral);
         }
         else {
-          m_serverLineType = ServerRespType.TAGGED;
+            return handleLiteralFromServer(buf, bytesFromPosAsLiteral);
         }
-      }
     }
-    else {
-      if(tokenizer.isTokenEOL()) {
-        m_serverAtNewLine = true;
-        //Record if the *previous* server line was a continuation request
-        m_lastServerLineContReq = m_serverLineType==ServerRespType.CONTINUATION_REQUEST;
-      }
-      else {
-        m_serverLineTokenCount++;
-      }
+
+
+    /**
+     * Handle a token, called by ImapSessionMonitor.
+     *
+     * @param tokenizer the tokenizer
+     * @param buf the buffer
+     * @param fromClient true if from the client
+     *
+     * @return true if the ImapSessionMonitor should declare this
+     *         session unparsable, and abandon scanning (i.e. if
+     *         encryption is encountered).
+     */
+    final boolean handleToken(IMAPTokenizer tokenizer,
+                              ByteBuffer buf,
+                              boolean fromClient) {
+        if(fromClient) {
+            previewTokenFromClient(tokenizer, buf);
+            return handleTokenFromClient(tokenizer, buf);
+        }
+        else {
+            previewTokenFromServer(tokenizer, buf);
+            return handleTokenFromServer(tokenizer, buf);
+        }
     }
-  }   
 
-  /**
-   * Handle portion of an IMAP literal.  Note that the literal
-   * declaration ("{nnn}EOL") should already have been passed
-   * to {@link #handleTokenFromClient handleTokenFromClient}.
-   *
-   * @param tokenizer the tokenizer
-   * @param buf the buffer
-   * 
-   * @return true if the ImapSessionMonitor should declare this
-   *         session unparsable, and abandon scanning (i.e. if
-   *         encryption is encountered).
-   */
-  protected boolean handleLiteralFromClient(ByteBuffer buf, int bytesFromPosAsLiteral) {
-    return false;
-  }
+    /**
+     * This method is called before {@link #handleTokenFromClient handleTokenFromClient}.
+     * If subclasses override, <b>make sure to call super</b>
+     *
+     * @param tokenizer the tokenizer
+     * @param buf the buffer
+     */
+    protected void previewTokenFromClient(IMAPTokenizer tokenizer,
+                                          ByteBuffer buf) {
+        if(m_clientAtNewLine) {
+            //Two EOLs in a row we'll skip
+            if(tokenizer.isTokenEOL()) {
+                //Just leave the state as-is
+                return;
+            }
+            //Based on the last Server line, determine
+            //the type of this client request
+            m_clientLineType = m_lastServerLineContReq?
+                ClientReqType.CONTINUATION:ClientReqType.TAGGED;
 
-  /**
-   * Handle portion of an IMAP literal.  Note that the literal
-   * declaration ("{nnn}EOL") should already have been passed
-   * to {@link handleTokenFromServer handleTokenFromServer}.
-   *
-   * @param tokenizer the tokenizer
-   * @param buf the buffer
-   * 
-   * @return true if the ImapSessionMonitor should declare this
-   *         session unparsable, and abandon scanning (i.e. if
-   *         encryption is encountered).
-   */  
-  protected boolean handleLiteralFromServer(ByteBuffer buf, int bytesFromPosAsLiteral) {
-    return false;
-  }
+            m_clientAtNewLine = false;
+            m_clientLineTokenCount = 1;
+        }
+        else {
+            if(tokenizer.isTokenEOL()) {
+                m_clientAtNewLine = true;
+            }
+            else {
+                m_clientLineTokenCount++;
+            }
+        }
+    }
 
-  /**
-   * Handle a server token
-   *
-   * @param tokenizer the tokenizer
-   * @param buf the buffer
-   * 
-   * @return true if the ImapSessionMonitor should declare this
-   *         session unparsable, and abandon scanning (i.e. if
-   *         encryption is encountered).
-   */    
-  protected boolean handleTokenFromServer(IMAPTokenizer tokenizer,
-    ByteBuffer buf) {
-    return false;
-  }
+    /**
+     * This method is called before {@link handleTokenFromServer handleTokenFromServer}.
+     * If subclasses override, <b>make sure to call super</b>
+     *
+     * @param tokenizer the tokenizer
+     * @param buf the buffer
+     */
+    protected void previewTokenFromServer(IMAPTokenizer tokenizer,
+                                          ByteBuffer buf) {
+        if(m_serverAtNewLine) {
+            //This means the last token we saw was an EOL.
 
-  /**
-   * Handle a client token
-   *
-   * @param tokenizer the tokenizer
-   * @param buf the buffer
-   * 
-   * @return true if the ImapSessionMonitor should declare this
-   *         session unparsable, and abandon scanning (i.e. if
-   *         encryption is encountered).
-   */  
-  protected boolean handleTokenFromClient(IMAPTokenizer tokenizer,
-    ByteBuffer buf) {
-    return false;
-  }
+            //Two EOLs in a row we'll skip
+            if(tokenizer.isTokenEOL()) {
+                //Just leave the state as-is
+                return;
+            }
+            else {
+                m_serverAtNewLine = false;
+                m_serverLineTokenCount = 1;
+
+                //Figure out what type of response this is
+                if(tokenizer.compareCtlAgainstByte(buf, PLUS_B)) {
+                    m_serverLineType = ServerRespType.CONTINUATION_REQUEST;
+                }
+                else if(tokenizer.compareCtlAgainstByte(buf, STAR_B)) {
+                    m_serverLineType = ServerRespType.UNTAGGED;
+                }
+                else {
+                    m_serverLineType = ServerRespType.TAGGED;
+                }
+            }
+        }
+        else {
+            if(tokenizer.isTokenEOL()) {
+                m_serverAtNewLine = true;
+                //Record if the *previous* server line was a continuation request
+                m_lastServerLineContReq = m_serverLineType==ServerRespType.CONTINUATION_REQUEST;
+            }
+            else {
+                m_serverLineTokenCount++;
+            }
+        }
+    }
+
+    /**
+     * Handle portion of an IMAP literal.  Note that the literal
+     * declaration ("{nnn}EOL") should already have been passed
+     * to {@link #handleTokenFromClient handleTokenFromClient}.
+     *
+     * @param tokenizer the tokenizer
+     * @param buf the buffer
+     *
+     * @return true if the ImapSessionMonitor should declare this
+     *         session unparsable, and abandon scanning (i.e. if
+     *         encryption is encountered).
+     */
+    protected boolean handleLiteralFromClient(ByteBuffer buf, int bytesFromPosAsLiteral) {
+        return false;
+    }
+
+    /**
+     * Handle portion of an IMAP literal.  Note that the literal
+     * declaration ("{nnn}EOL") should already have been passed
+     * to {@link handleTokenFromServer handleTokenFromServer}.
+     *
+     * @param tokenizer the tokenizer
+     * @param buf the buffer
+     *
+     * @return true if the ImapSessionMonitor should declare this
+     *         session unparsable, and abandon scanning (i.e. if
+     *         encryption is encountered).
+     */
+    protected boolean handleLiteralFromServer(ByteBuffer buf, int bytesFromPosAsLiteral) {
+        return false;
+    }
+
+    /**
+     * Handle a server token
+     *
+     * @param tokenizer the tokenizer
+     * @param buf the buffer
+     *
+     * @return true if the ImapSessionMonitor should declare this
+     *         session unparsable, and abandon scanning (i.e. if
+     *         encryption is encountered).
+     */
+    protected boolean handleTokenFromServer(IMAPTokenizer tokenizer,
+                                            ByteBuffer buf) {
+        return false;
+    }
+
+    /**
+     * Handle a client token
+     *
+     * @param tokenizer the tokenizer
+     * @param buf the buffer
+     *
+     * @return true if the ImapSessionMonitor should declare this
+     *         session unparsable, and abandon scanning (i.e. if
+     *         encryption is encountered).
+     */
+    protected boolean handleTokenFromClient(IMAPTokenizer tokenizer,
+                                            ByteBuffer buf) {
+        return false;
+    }
 }

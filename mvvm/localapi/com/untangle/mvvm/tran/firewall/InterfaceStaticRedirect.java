@@ -11,9 +11,6 @@
 
 package com.untangle.mvvm.tran.firewall;
 
-import org.apache.log4j.Logger;
-
-import com.untangle.mvvm.IntfConstants;
 import com.untangle.mvvm.tran.firewall.intf.IntfMatcher;
 import com.untangle.mvvm.tran.firewall.intf.IntfSimpleMatcher;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
@@ -22,13 +19,14 @@ import com.untangle.mvvm.tran.firewall.port.PortMatcher;
 import com.untangle.mvvm.tran.firewall.port.PortSimpleMatcher;
 import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcher;
 import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
+import org.apache.log4j.Logger;
 
 public class InterfaceStaticRedirect extends InterfaceRedirect
 {
     private final byte argonIntf;
     private final Logger logger = Logger.getLogger(getClass());
 
-   /* Null matcher, these are automatically removed before adds */
+    /* Null matcher, these are automatically removed before adds */
     private static final InterfaceRedirect NIL_REDIRECT =
         new InterfaceStaticRedirect( ProtocolMatcherFactory.getInstance().getNilMatcher(),
                                      IntfSimpleMatcher.getNilMatcher(), IntfSimpleMatcher.getNilMatcher(),

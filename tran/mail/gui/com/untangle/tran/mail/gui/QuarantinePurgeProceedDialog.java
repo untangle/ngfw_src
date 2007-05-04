@@ -11,24 +11,24 @@
 
 package com.untangle.tran.mail.gui;
 
-import com.untangle.gui.util.Util;
-import com.untangle.gui.widgets.dialogs.*;
 import java.awt.Dialog;
 
+import com.untangle.gui.widgets.dialogs.*;
+
 final public class QuarantinePurgeProceedDialog extends MTwoButtonJDialog {
-    
+
     public QuarantinePurgeProceedDialog(Dialog topLevelDialog) {
-	super( topLevelDialog );
+        super( topLevelDialog );
         this.setTitle("Email Quarantine Purge Warning");
         this.cancelJButton.setIcon(null);
         this.proceedJButton.setIcon(null);
-	this.cancelJButton.setText("<html><b>Cancel</b> purge</html>");
-	this.proceedJButton.setText("<html><b>Continue</b> purging</html>");
+        this.cancelJButton.setText("<html><b>Cancel</b> purge</html>");
+        this.proceedJButton.setText("<html><b>Continue</b> purging</html>");
         messageJLabel.setText("<html><center>Purging emails will permanently delete them<br>"
-			      + "so that no one can view them.<br>"
-			      + "Purged emails cannot be recovered."
-			      + "<br><b>Would you like to purge?<b></center></html>");
+                              + "so that no one can view them.<br>"
+                              + "Purged emails cannot be recovered."
+                              + "<br><b>Would you like to purge?<b></center></html>");
         this.setVisible(true);
     }
-    
+
 }

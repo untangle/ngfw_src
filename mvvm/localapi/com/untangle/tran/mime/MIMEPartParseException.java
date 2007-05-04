@@ -16,19 +16,19 @@ package com.untangle.tran.mime;
  * cannot be parsed.
  */
 public class MIMEPartParseException
-  extends Exception {
+    extends Exception {
 
-  public MIMEPartParseException() {
-    super();
-  }
-  public MIMEPartParseException(Exception ex) {
-    super(ex);
-  }
-  public MIMEPartParseException(String msg) {
-    super(msg);
-  }
-  public MIMEPartParseException(String msg, Exception ex) {
-    super(msg, ex);
-  }
+    public MIMEPartParseException() {
+        super();
+    }
+    public MIMEPartParseException(Exception ex) {
+        super(ex);
+    }
+    public MIMEPartParseException(String msg) {
+        super(msg);
+    }
+    public MIMEPartParseException(String msg, Exception ex) {
+        super(msg, ex);
+    }
 
 }

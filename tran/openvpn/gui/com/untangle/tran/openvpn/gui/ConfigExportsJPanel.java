@@ -12,19 +12,18 @@
 
 package com.untangle.tran.openvpn.gui;
 
+import java.awt.Insets;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
+
 import com.untangle.gui.transform.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.tran.*;
 import com.untangle.mvvm.tran.firewall.*;
 import com.untangle.tran.openvpn.*;
-
-import java.awt.Insets;
-import java.awt.Font;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
 
 
 public class ConfigExportsJPanel extends MEditTableJPanel {
@@ -75,51 +74,51 @@ class ExportTableModel extends MSortedTableModel<Object>{
 
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-	List elemList = new ArrayList(tableVector.size());
-	ServerSiteNetwork newElem = null;
-	int rowIndex = 0;
-	
-	for( Vector rowVector : tableVector ){
-	    rowIndex++;
+        List elemList = new ArrayList(tableVector.size());
+        ServerSiteNetwork newElem = null;
+        int rowIndex = 0;
+
+        for( Vector rowVector : tableVector ){
+            rowIndex++;
             newElem = (ServerSiteNetwork) rowVector.elementAt(7);
-	    newElem.setLive( (Boolean) rowVector.elementAt(2) );
-	    newElem.setName( (String) rowVector.elementAt(3) );
-	    try{ newElem.setNetwork( IPaddr.parse( ((IPaddrString) rowVector.elementAt(4)).getString() ) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"IP address\" in row: " + rowIndex);  }
-	    try{ newElem.setNetmask( IPaddr.parse( ((IPaddrString) rowVector.elementAt(5)).getString() ) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"netmask\" in row: " + rowIndex);  }
-	    newElem.setDescription( (String) rowVector.elementAt(6) );
-	    elemList.add(newElem);
+            newElem.setLive( (Boolean) rowVector.elementAt(2) );
+            newElem.setName( (String) rowVector.elementAt(3) );
+            try{ newElem.setNetwork( IPaddr.parse( ((IPaddrString) rowVector.elementAt(4)).getString() ) ); }
+            catch(Exception e){ throw new Exception("Invalid \"IP address\" in row: " + rowIndex);  }
+            try{ newElem.setNetmask( IPaddr.parse( ((IPaddrString) rowVector.elementAt(5)).getString() ) ); }
+            catch(Exception e){ throw new Exception("Invalid \"netmask\" in row: " + rowIndex);  }
+            newElem.setDescription( (String) rowVector.elementAt(6) );
+            elemList.add(newElem);
         }
-	
-	// SAVE SETTINGS ////////
-	if( !validateOnly ){
-	    VpnSettings vpnSettings = (VpnSettings) settings;
-	    vpnSettings.setExportedAddressList(elemList);
-	}
+
+        // SAVE SETTINGS ////////
+        if( !validateOnly ){
+            VpnSettings vpnSettings = (VpnSettings) settings;
+            vpnSettings.setExportedAddressList(elemList);
+        }
 
     }
 
     public Vector<Vector> generateRows(Object settings) {
         VpnSettings vpnSettings = (VpnSettings) settings;
-	List<ServerSiteNetwork> serverSiteNetworks = (List<ServerSiteNetwork>) vpnSettings.getExportedAddressList();
+        List<ServerSiteNetwork> serverSiteNetworks = (List<ServerSiteNetwork>) vpnSettings.getExportedAddressList();
         Vector<Vector> allRows = new Vector<Vector>(serverSiteNetworks.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
+        Vector tempRow = null;
+        int rowIndex = 0;
 
-	for( ServerSiteNetwork serverSiteNetwork : serverSiteNetworks ){
-	    rowIndex++;
-	    tempRow = new Vector(8);
-	    tempRow.add( super.ROW_SAVED );
-	    tempRow.add( rowIndex );
-	    tempRow.add( serverSiteNetwork.isLive() );
-	    tempRow.add( serverSiteNetwork.getName() );
-	    tempRow.add( new IPaddrString(serverSiteNetwork.getNetwork()) );
-	    tempRow.add( new IPaddrString(serverSiteNetwork.getNetmask()) );
-	    tempRow.add( serverSiteNetwork.getDescription() );
-	    tempRow.add( serverSiteNetwork );
-	    allRows.add(tempRow);
-	}
+        for( ServerSiteNetwork serverSiteNetwork : serverSiteNetworks ){
+            rowIndex++;
+            tempRow = new Vector(8);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            tempRow.add( serverSiteNetwork.isLive() );
+            tempRow.add( serverSiteNetwork.getName() );
+            tempRow.add( new IPaddrString(serverSiteNetwork.getNetwork()) );
+            tempRow.add( new IPaddrString(serverSiteNetwork.getNetmask()) );
+            tempRow.add( serverSiteNetwork.getDescription() );
+            tempRow.add( serverSiteNetwork );
+            allRows.add(tempRow);
+        }
 
         return allRows;
     }

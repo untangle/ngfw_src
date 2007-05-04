@@ -15,8 +15,6 @@ import java.io.File;
 import java.io.IOException;
 
 import com.untangle.mvvm.addrbook.AddressBook;
-import com.untangle.mvvm.api.RemoteIntfManager;
-import com.untangle.mvvm.api.RemoteShieldManager;
 import com.untangle.mvvm.localapi.LocalIntfManager;
 import com.untangle.mvvm.localapi.LocalShieldManager;
 import com.untangle.mvvm.logging.EventLogger;
@@ -106,7 +104,7 @@ public interface MvvmLocalContext
     PingManager pingManager();
 
     /** Get the <code>LocalShieldManager</code> singleton.
-         *
+     *
      * @return the ShieldManager.
      */
     LocalShieldManager localShieldManager();
@@ -254,7 +252,7 @@ public interface MvvmLocalContext
      *            to have come from a valid backup (is the user's fault).
      */
     void restoreBackup(byte[] backupFileBytes)
-      throws IOException, IllegalArgumentException;
+        throws IOException, IllegalArgumentException;
 
     /*
      * Loads a shared library (.so) into the MVVM classloader.  This is so a transform

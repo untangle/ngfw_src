@@ -11,13 +11,13 @@
 
 package com.untangle.tran.http.gui;
 
-import com.untangle.gui.util.Util;
-import com.untangle.gui.transform.CompoundSettings;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.tran.http.HttpTransform;
-import com.untangle.tran.http.HttpSettings;
-
 import java.awt.Component;
+
+import com.untangle.gui.transform.CompoundSettings;
+import com.untangle.gui.util.Util;
+import com.untangle.mvvm.tran.Transform;
+import com.untangle.tran.http.HttpSettings;
+import com.untangle.tran.http.HttpTransform;
 
 public class HttpTransformCompoundSettings implements CompoundSettings {
 
@@ -31,16 +31,16 @@ public class HttpTransformCompoundSettings implements CompoundSettings {
     public Component getGeneralSettingsComponent(){ return generalSettingsComponent; }
 
     public void save() throws Exception {
-	((Transform)httpTransform).setSettings(httpTransformSettings);
+        ((Transform)httpTransform).setSettings(httpTransformSettings);
     }
 
     public void refresh() throws Exception {
-	if(httpTransform == null)
-	    httpTransform = (HttpTransform) Util.getTransform("http-casing");
-	httpTransformSettings = (HttpSettings) ((Transform)httpTransform).getSettings();
+        if(httpTransform == null)
+            httpTransform = (HttpTransform) Util.getTransform("http-casing");
+        httpTransformSettings = (HttpSettings) ((Transform)httpTransform).getSettings();
 
-	if(generalSettingsComponent == null)
-	    generalSettingsComponent = Util.getSettingsComponent("com.untangle.tran.http.gui.MCasingJPanel", "http-casing");
+        if(generalSettingsComponent == null)
+            generalSettingsComponent = Util.getSettingsComponent("com.untangle.tran.http.gui.MCasingJPanel", "http-casing");
     }
 
     public void validate() throws Exception {

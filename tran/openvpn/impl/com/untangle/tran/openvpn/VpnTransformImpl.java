@@ -92,7 +92,7 @@ public class VpnTransformImpl extends AbstractTransform
          * next to towards the outside, then there is OpenVpn and then Nat */
         this.pipeSpec = new SoloPipeSpec
             ( TRAN_NAME, this, handler, Fitting.OCTET_STREAM, Affinity.OUTSIDE,
-             SoloPipeSpec.MAX_STRENGTH - 2);
+              SoloPipeSpec.MAX_STRENGTH - 2);
         this.pipeSpecs = new SoloPipeSpec[] { pipeSpec };
     }
 
@@ -408,7 +408,7 @@ public class VpnTransformImpl extends AbstractTransform
         }
         isWebAppDeployed = false;
 
-        
+
         /* unregister the service with the MVVM */
         MvvmContextFactory.context().networkManager().unregisterService( SERVICE_NAME );
     }
@@ -616,7 +616,7 @@ public class VpnTransformImpl extends AbstractTransform
             logger.info( "null, host address, returning empty address." );
             return EMPTY_HOST_ADDRESS;
         }
-        
+
         return address;
     }
 

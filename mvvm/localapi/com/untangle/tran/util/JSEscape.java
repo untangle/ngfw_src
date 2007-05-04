@@ -18,19 +18,19 @@ package com.untangle.tran.util;
  */
 public class JSEscape {
 
-  /**
-   * Neuter any JavaScript found in the given String
-   */
-  public static String escapeJS(String str) {
+    /**
+     * Neuter any JavaScript found in the given String
+     */
+    public static String escapeJS(String str) {
 
-    if(str == null) {
-      return str;
+        if(str == null) {
+            return str;
+        }
+
+        //TODO: bscott Someday we may learn more about
+        //      this type of attack, but for now it seems that this
+        //      is all Yahoo does
+        return str.replace(">", "&gt;").replace("<", "&lt;");
     }
-
-    //TODO: bscott Someday we may learn more about
-    //      this type of attack, but for now it seems that this
-    //      is all Yahoo does
-    return str.replace(">", "&gt;").replace("<", "&lt;");
-  }
 
 }

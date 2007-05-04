@@ -11,15 +11,15 @@
 
 package com.untangle.gui.install;
 
-import com.untangle.gui.widgets.wizard.*;
-import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.gui.util.*;
-import javax.swing.SwingUtilities;
 import java.awt.Window;
+
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.gui.widgets.wizard.*;
 
 public class InstallWarningJPanel extends MWizardPageJPanel {
 
-    
+
     public InstallWarningJPanel() {
         initComponents();
     }
@@ -39,81 +39,81 @@ public class InstallWarningJPanel extends MWizardPageJPanel {
             return false;
     }
 
-        private void initComponents() {//GEN-BEGIN:initComponents
-                java.awt.GridBagConstraints gridBagConstraints;
+    private void initComponents() {//GEN-BEGIN:initComponents
+        java.awt.GridBagConstraints gridBagConstraints;
 
-                contentJPanel = new javax.swing.JPanel();
-                headerJLabel = new javax.swing.JLabel();
-                subheaderJLabel = new javax.swing.JLabel();
-                messageJLabel = new javax.swing.JLabel();
-                backgroundJPabel = new javax.swing.JLabel();
+        contentJPanel = new javax.swing.JPanel();
+        headerJLabel = new javax.swing.JLabel();
+        subheaderJLabel = new javax.swing.JLabel();
+        messageJLabel = new javax.swing.JLabel();
+        backgroundJPabel = new javax.swing.JLabel();
 
-                setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.GridBagLayout());
 
-                setOpaque(false);
-                contentJPanel.setLayout(new java.awt.GridBagLayout());
+        setOpaque(false);
+        contentJPanel.setLayout(new java.awt.GridBagLayout());
 
-                contentJPanel.setOpaque(false);
-                headerJLabel.setFont(new java.awt.Font("Dialog", 1, 18));
-                headerJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                headerJLabel.setText("<html><font color=\"#FF0000\">Warning!</font></html>");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
-                contentJPanel.add(headerJLabel, gridBagConstraints);
+        contentJPanel.setOpaque(false);
+        headerJLabel.setFont(new java.awt.Font("Dialog", 1, 18));
+        headerJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        headerJLabel.setText("<html><font color=\"#FF0000\">Warning!</font></html>");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+        contentJPanel.add(headerJLabel, gridBagConstraints);
 
-                subheaderJLabel.setFont(new java.awt.Font("Dialog", 0, 18));
-                subheaderJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-                subheaderJLabel.setText("<html><font color=\"#FF0000\">If you continue, in preparation for the Untangle Platform installation process, YOUR DISK WILL BE ERASED AND ALL ITS DATA WILL BE LOST!</font></html>");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
-                contentJPanel.add(subheaderJLabel, gridBagConstraints);
+        subheaderJLabel.setFont(new java.awt.Font("Dialog", 0, 18));
+        subheaderJLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        subheaderJLabel.setText("<html><font color=\"#FF0000\">If you continue, in preparation for the Untangle Platform installation process, YOUR DISK WILL BE ERASED AND ALL ITS DATA WILL BE LOST!</font></html>");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+        contentJPanel.add(subheaderJLabel, gridBagConstraints);
 
-                messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                messageJLabel.setText("<html>If you would not like to continue, press the Close Window button.  Otherwise, press the Finish button.</html>");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 2;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
-                contentJPanel.add(messageJLabel, gridBagConstraints);
+        messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        messageJLabel.setText("<html>If you would not like to continue, press the Close Window button.  Otherwise, press the Finish button.</html>");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+        contentJPanel.add(messageJLabel, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                add(contentJPanel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        add(contentJPanel, gridBagConstraints);
 
-                backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/install/ProductShot.png")));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-                gridBagConstraints.weightx = 1.0;
-                add(backgroundJPabel, gridBagConstraints);
+        backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/install/ProductShot.png")));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.weightx = 1.0;
+        add(backgroundJPabel, gridBagConstraints);
 
-        }//GEN-END:initComponents
-    
-    
-        // Variables declaration - do not modify//GEN-BEGIN:variables
-        private javax.swing.JLabel backgroundJPabel;
-        private javax.swing.JPanel contentJPanel;
-        private javax.swing.JLabel headerJLabel;
-        private javax.swing.JLabel messageJLabel;
-        private javax.swing.JLabel subheaderJLabel;
-        // End of variables declaration//GEN-END:variables
-    
+    }//GEN-END:initComponents
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel backgroundJPabel;
+    private javax.swing.JPanel contentJPanel;
+    private javax.swing.JLabel headerJLabel;
+    private javax.swing.JLabel messageJLabel;
+    private javax.swing.JLabel subheaderJLabel;
+    // End of variables declaration//GEN-END:variables
+
 }

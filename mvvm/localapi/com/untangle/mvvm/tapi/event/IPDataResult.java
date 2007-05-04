@@ -11,7 +11,6 @@
 
 package com.untangle.mvvm.tapi.event;
 
-import com.untangle.mvvm.tapi.MPipeException;
 import java.nio.ByteBuffer;
 
 
@@ -30,7 +29,7 @@ public class IPDataResult
 
     public static final IPDataResult PASS_THROUGH = new IPDataResult(TYPE_PASS_THROUGH);
 
-    
+
     /**
      * Describe constant <code>DO_NOT_PASS</code> here.  Also means "send nothing more"
      * when used with writable events.
@@ -60,7 +59,7 @@ public class IPDataResult
      *  system will write out each buffer from position to limit.
      * for the read buffer, that means:
      *  system will read into the buffer starting from position to a max of limit
-     *   XXX -- this conflicts/overrides 
+     *   XXX -- this conflicts/overrides
      * any of the buffers may be null, for the write buffers, that means:
      *  system will write nothing in that direction.
      * for the read buffer that means
@@ -97,19 +96,19 @@ public class IPDataResult
      * Streaming now handled in IPSession.
      *
 
-    protected IPDataResult(IPStreamer clientStreamer, IPStreamer serverStreamer)
-    {
-        this.clientStreamer = clientStreamer;
-        this.serverStreamer = serverStreamer;
-    }
+     protected IPDataResult(IPStreamer clientStreamer, IPStreamer serverStreamer)
+     {
+     this.clientStreamer = clientStreamer;
+     this.serverStreamer = serverStreamer;
+     }
 
-    public IPStreamer clientStreamer() {
-        return clientStreamer;
-    }
+     public IPStreamer clientStreamer() {
+     return clientStreamer;
+     }
 
-    public IPStreamer serverStreamer() {
-        return serverStreamer;
-    }
+     public IPStreamer serverStreamer() {
+     return serverStreamer;
+     }
 
     */
 }

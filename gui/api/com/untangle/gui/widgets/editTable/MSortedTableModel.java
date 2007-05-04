@@ -11,21 +11,22 @@
 
 package com.untangle.gui.widgets.editTable;
 
-import com.untangle.gui.widgets.MPasswordField;
-import com.untangle.gui.transform.*;
-import com.untangle.gui.util.*;
-
-import com.untangle.mvvm.tran.*;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.*;
-import java.util.*;
-import java.util.List;
 import java.lang.reflect.*;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.MPasswordField;
+import com.untangle.mvvm.tran.*;
 
 /**
  * TableSorter is a decorator for TableModels; adding sorting
@@ -71,9 +72,9 @@ import javax.swing.table.*;
  * <p/>
  * This is a long overdue rewrite of a class of the same name that
  * first appeared in the swing table demos in 1997.
- * 
+ *
  * @author Philip Milne
- * @author Brendon McLean 
+ * @author Brendon McLean
  * @author Dan van Enckevort
  * @author Parwinder Sekhon
  * @version 2.0 02/27/04
@@ -86,7 +87,7 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
         this.mouseListener = new MouseHandler();
         addTableModelListener(new TableModelHandler());
     }
-    
+
     // STRING CONSTANTS /////////////
     public static final String ROW_SAVED   = "MV_saved_";
     public static final String ROW_ADD     = "MV_add_";
@@ -94,13 +95,13 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
     public static final String ROW_REMOVE  = "MV_remove_";
     public static final StringConstants sc = new StringConstants();
     ////////////////////////////////
-	
+
     // MODES ///////////////////////
     private boolean doInstantRemove = false;
     private boolean alwaysSelectable = false;
     private boolean alwaysEditable = true;
     ////////////////////////////////
-	
+
     // COLUMN SETUP ////////////////
     private Vector editableVector = new Vector();
     private Vector classTypeVector = new Vector();
@@ -123,7 +124,7 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
     // SETTINGS CHANGE NOTIFICATION /////////
     private SettingsChangedListener settingsChangedListener;
     public void setSettingsChangedListener(SettingsChangedListener settingsChangedListener){
-	this.settingsChangedListener = settingsChangedListener;
+        this.settingsChangedListener = settingsChangedListener;
     }
 
     // PROTECTEDS ///////////////
@@ -134,28 +135,28 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
     private static Directive EMPTY_DIRECTIVE = new Directive(-1, NOT_SORTED);
 
     public static final Comparator COMPARABLE_COMPARATOR = new Comparator() {
-        public int compare(Object o1, Object o2) {
-	    if( o1 instanceof String && o2 instanceof String )
-		return ((String)o1).compareToIgnoreCase((String)o2);
-	    else
-		return ((Comparable) o1).compareTo((Comparable)o2);
-        }
-    };
+            public int compare(Object o1, Object o2) {
+                if( o1 instanceof String && o2 instanceof String )
+                    return ((String)o1).compareToIgnoreCase((String)o2);
+                else
+                    return ((Comparable) o1).compareTo((Comparable)o2);
+            }
+        };
     public static final Comparator LEXICAL_COMPARATOR = new Comparator() {
-        public int compare(Object o1, Object o2) {
-            return o1.toString().compareTo(o2.toString());
-        }
-    };
+            public int compare(Object o1, Object o2) {
+                return o1.toString().compareTo(o2.toString());
+            }
+        };
     public static final Comparator COMBOBOXMODEL_COMPARATOR = new Comparator() {
-        public int compare(Object o1, Object o2) {
-	    Object selectedObject1 = ((ComboBoxModel)o1).getSelectedItem();
-	    Object selectedObject2 = ((ComboBoxModel)o2).getSelectedItem();
-	    if( (selectedObject1 instanceof Comparable) && (selectedObject2 instanceof Comparable) )
-		return ((Comparable)selectedObject1).compareTo(selectedObject2);
-	    else
-		return selectedObject1.toString().compareTo(selectedObject2.toString());
-        }
-    };
+            public int compare(Object o1, Object o2) {
+                Object selectedObject1 = ((ComboBoxModel)o1).getSelectedItem();
+                Object selectedObject2 = ((ComboBoxModel)o2).getSelectedItem();
+                if( (selectedObject1 instanceof Comparable) && (selectedObject2 instanceof Comparable) )
+                    return ((Comparable)selectedObject1).compareTo(selectedObject2);
+                else
+                    return selectedObject1.toString().compareTo(selectedObject2.toString());
+            }
+        };
     public void setColumnComparator(Class type, Comparator comparator) {
         if (comparator == null) {
             columnComparators.remove(type);
@@ -188,10 +189,10 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
     private int[] rowModelToViewMapping;
 
     public int getColViewToModelIndex(int viewIndex){
-	return colViewToModelMapping.elementAt(viewIndex);
+        return colViewToModelMapping.elementAt(viewIndex);
     }
     public int getColModelToViewIndex(int modelIndex){
-	return colModelToViewMapping.elementAt(modelIndex);
+        return colModelToViewMapping.elementAt(modelIndex);
     }
     public int getRowViewToModelIndex(int viewIndex) {
         if (rowViewToModelMapping == null) {
@@ -230,17 +231,17 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
     public int getOrderViewIndex(){ return getColModelToViewIndex(orderModelIndex); }
     public void setOrderModelIndex(int index){ orderModelIndex = index; };
     public int getGreedyColumnViewIndex(){
-	if( greedyColumnModelIndex == -1 )
-	    return -1;
-	else
-	    return getColModelToViewIndex(greedyColumnModelIndex);
+        if( greedyColumnModelIndex == -1 )
+            return -1;
+        else
+            return getColModelToViewIndex(greedyColumnModelIndex);
     }
     public String getDescription(int row) {
         if( (descriptionModelIndex < 0) || (row < 0) )
             return "[no description]";
-	else if( getDataVector().size() <= 0 ){
-	    return "[no description]";
-	}
+        else if( getDataVector().size() <= 0 ){
+            return "[no description]";
+        }
         else{
             return (String) super.getValueAt(row, descriptionModelIndex);
         }
@@ -252,12 +253,12 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
     private MouseListener mouseListener;
 
     public void hideColumns(JTable jTable){
-	int initialColCount = this.getColumnCount();
+        int initialColCount = this.getColumnCount();
         Iterator columnIterator = removableVector.iterator();
         while(columnIterator.hasNext())
             jTable.removeColumn(jTable.getColumn( (String) columnIterator.next())  );
 
-	int finalColCount = this.getColumnCount();
+        int finalColCount = this.getColumnCount();
     }
     ///////////////////////////////////
 
@@ -298,7 +299,7 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
         return EMPTY_DIRECTIVE;
     }
     public boolean isSorting(int column){
-	return getSortingStatus(column) != this.NOT_SORTED ? true : false;
+        return getSortingStatus(column) != this.NOT_SORTED ? true : false;
     }
     public int getSortingStatus(int column) {
         return getDirective(column).direction;
@@ -331,7 +332,7 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
                                int index, int minWidth,
                                boolean isResizable, boolean isEditable, boolean isRemovable, boolean isDescription,
                                Class classType, Object defaultValue, String headerTitle){
-	
+
         TableColumn tableColumn;
         tableColumn = new TableColumn(index);
         tableColumn.setHeaderValue(headerTitle);
@@ -346,25 +347,25 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
             tableColumn.setPreferredWidth(minWidth);
         }
         defaultTableColumnModel.addColumn(tableColumn);
-        
+
         if(isDescription){
-             this.descriptionModelIndex = index;
-	     if( !isRemovable )
-		 this.greedyColumnModelIndex = index;
-	}
+            this.descriptionModelIndex = index;
+            if( !isRemovable )
+                this.greedyColumnModelIndex = index;
+        }
         if( isRemovable )
             removableVector.add(headerTitle);
-        
-        
+
+
         if( editableVector.size() <= index )
             editableVector.setSize(index+1);
         if(!isRemovable){
-	    editableVector.set(index, isEditable);
+            editableVector.set(index, isEditable);
         }
         else{
-	    editableVector.set(index, false);
+            editableVector.set(index, false);
         }
-        
+
         if( classTypeVector.size() <= index )
             classTypeVector.setSize(index+1);
         classTypeVector.set(index, classType);
@@ -372,13 +373,13 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
             defaultValueVector.setSize(index+1);
         defaultValueVector.set(index, defaultValue);
 
-	if(isRemovable){
-	    colModelToViewMapping.add(-1);
-	}
-	else{
-	    colViewToModelMapping.add(index);
-	    colModelToViewMapping.add(colViewToModelMapping.size()-1);
-	}
+        if(isRemovable){
+            colModelToViewMapping.add(-1);
+        }
+        else{
+            colViewToModelMapping.add(index);
+            colModelToViewMapping.add(colViewToModelMapping.size()-1);
+        }
 
     }
 
@@ -398,7 +399,7 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
         else{
             newRow.add(this.ROW_ADD);
         }
-        
+
         // deal with second column
         defaultValue = defaultValueIterator.next();
         newClass = (Class) classTypeIterator.next();
@@ -408,29 +409,29 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
         else{
             newRow.add(this.ROW_ADD);
         }
-                
+
         while(true){
             if( defaultValueIterator.hasNext() && classTypeIterator.hasNext() ){
                 Object newField = null;
                 defaultValue = defaultValueIterator.next();
                 newClass = (Class) classTypeIterator.next();
-                
+
                 if( newClass == ComboBoxModel.class ){
-		    newField = copyComboBoxModel( (ComboBoxModel) defaultValue );
+                    newField = copyComboBoxModel( (ComboBoxModel) defaultValue );
                 }
                 else if( newClass == Date.class ){
-		    newField = new Date(0l);  // rendered as a blank
-		}
+                    newField = new Date(0l);  // rendered as a blank
+                }
                 else{
                     try{
-			if(defaultValue != null){
-			    Constructor newClassConstructor = newClass.getConstructor( new Class[] {defaultValue.getClass()} );
-			    newField = newClassConstructor.newInstance( new Object[] {defaultValue} );
-			}
-			else{
-			    Constructor newClassConstructor = newClass.getConstructor( new Class[] {} );
-			    newField = newClassConstructor.newInstance( new Object[] {} );
-			}
+                        if(defaultValue != null){
+                            Constructor newClassConstructor = newClass.getConstructor( new Class[] {defaultValue.getClass()} );
+                            newField = newClassConstructor.newInstance( new Object[] {defaultValue} );
+                        }
+                        else{
+                            Constructor newClassConstructor = newClass.getConstructor( new Class[] {} );
+                            newField = newClassConstructor.newInstance( new Object[] {} );
+                        }
                     }
                     catch(Exception e){
                         Util.handleExceptionNoRestart("error generating row", e);
@@ -449,21 +450,21 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
                 break;
             }
         }
-	// WIRE DAT SHISE UP
-	wireUpNewRow(newRow);
-	return newRow;
+        // WIRE DAT SHISE UP
+        wireUpNewRow(newRow);
+        return newRow;
     }
     ////////////////////////////////
 
     // ROW OPERATIONS //////////////
     public void setInstantRemove(boolean enabled){
-	doInstantRemove = enabled;
+        doInstantRemove = enabled;
     }
     public void setAlwaysSelectable(boolean enabled){
-	alwaysSelectable = enabled;
+        alwaysSelectable = enabled;
     }
     public boolean getAlwaysSelectable(){
-	return alwaysSelectable;
+        return alwaysSelectable;
     }
     public void setAlwaysEditable(boolean enabled){
         alwaysEditable = enabled;
@@ -472,55 +473,55 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
         return alwaysEditable;
     }
     public void moveRow(final int fromModelRow, final int toModelRow){
-	if( fromModelRow != toModelRow ){
-	    // CREATE THE NEW INDEXES
-	    int orderModelIndex = getOrderModelIndex();
-	    int newIndex;
-	    if( fromModelRow < toModelRow){
-		for(int i=fromModelRow+1; i<=toModelRow; i++)
-		    changeRow(i, orderModelIndex, i);
-	    }
-	    else{ // fromModelRow > toModelRow
-		for(int i=toModelRow; i<fromModelRow; i++){
-		    changeRow(i, orderModelIndex, i+2);
-		}
-	    }
-	    // UPDATE THE MODEL
-	    Vector<Vector> dataVector = getDataVector();
-	    Vector movedRow = dataVector.remove(fromModelRow);
-	    dataVector.add(toModelRow, movedRow);
-	    fireTableDataChanged();
-	}
-	// HIGHLIGHT NEW ROW
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    int newViewRow = getRowModelToViewIndex(toModelRow);
-	    JTable table = getTableHeader().getTable();
-	    table.clearSelection();
-	    table.getSelectionModel().addSelectionInterval(newViewRow, newViewRow);
-	    // SCROLL TO ROW
-	    Rectangle rect = table.getCellRect(newViewRow, 0, true);
-	    table.scrollRectToVisible(rect);
-	}});
+        if( fromModelRow != toModelRow ){
+            // CREATE THE NEW INDEXES
+            int orderModelIndex = getOrderModelIndex();
+            int newIndex;
+            if( fromModelRow < toModelRow){
+                for(int i=fromModelRow+1; i<=toModelRow; i++)
+                    changeRow(i, orderModelIndex, i);
+            }
+            else{ // fromModelRow > toModelRow
+                for(int i=toModelRow; i<fromModelRow; i++){
+                    changeRow(i, orderModelIndex, i+2);
+                }
+            }
+            // UPDATE THE MODEL
+            Vector<Vector> dataVector = getDataVector();
+            Vector movedRow = dataVector.remove(fromModelRow);
+            dataVector.add(toModelRow, movedRow);
+            fireTableDataChanged();
+        }
+        // HIGHLIGHT NEW ROW
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            int newViewRow = getRowModelToViewIndex(toModelRow);
+            JTable table = getTableHeader().getTable();
+            table.clearSelection();
+            table.getSelectionModel().addSelectionInterval(newViewRow, newViewRow);
+            // SCROLL TO ROW
+            Rectangle rect = table.getCellRect(newViewRow, 0, true);
+            table.scrollRectToVisible(rect);
+        }});
     }
     public void fillColumn(int modelRow, int modelCol){
         if( !getColumnClass( modelCol ).equals(Boolean.class) )
-            return;   
+            return;
         boolean fillValue = (Boolean) super.getValueAt( modelRow, modelCol );
         int rowCount = getRowCount();
         for(int i=0; i<rowCount; i++){
             if( fillValue !=  super.getValueAt( i, modelCol ) ){
-		changeRow(i, modelCol, fillValue);
+                changeRow(i, modelCol, fillValue);
             }
         }
         fireTableDataChanged();
     }
     private void changeRow(int modelRow, int modelCol, Object value) {
-	Vector<Vector> dataVector = getDataVector();
-	Vector changedRow = dataVector.elementAt(modelRow);
-	String state = (String) changedRow.elementAt(stateModelIndex);
+        Vector<Vector> dataVector = getDataVector();
+        Vector changedRow = dataVector.elementAt(modelRow);
+        String state = (String) changedRow.elementAt(stateModelIndex);
         if( !ROW_ADD.equals(state) )
             changedRow.setElementAt(ROW_CHANGED, stateModelIndex);
-	changedRow.setElementAt(value, modelCol);
+        changedRow.setElementAt(value, modelCol);
     }
     public void insertNewRow(int modelRow) {
         int rowCount = getRowCount();
@@ -536,78 +537,78 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
             settingsChangedListener.settingsChanged(this);
     }
     public void insertNewRow(int modelRow, Vector newRow){
-	int rowCount = getRowCount();
-	Vector movedRow;
-	Vector<Vector> dataVector = getDataVector();
+        int rowCount = getRowCount();
+        Vector movedRow;
+        Vector<Vector> dataVector = getDataVector();
         for(int i=modelRow; i<rowCount; i++){
-	    movedRow = dataVector.elementAt(i);
-	    movedRow.setElementAt(i+2, orderModelIndex);
-	}
+            movedRow = dataVector.elementAt(i);
+            movedRow.setElementAt(i+2, orderModelIndex);
+        }
         dataVector.insertElementAt(newRow, modelRow);
         fireTableRowsInserted(modelRow, modelRow);
-	if( settingsChangedListener != null )
-	    settingsChangedListener.settingsChanged(this);
+        if( settingsChangedListener != null )
+            settingsChangedListener.settingsChanged(this);
     }
-    
+
 
     public void clearAllRows(){
-	this.getTableHeader().getTable().getCellEditor().stopCellEditing();
-	this.getTableHeader().getTable().clearSelection();
-	Vector<Vector> dataVector = getDataVector();
-	dataVector.removeAllElements();
-	fireTableDataChanged();
+        this.getTableHeader().getTable().getCellEditor().stopCellEditing();
+        this.getTableHeader().getTable().clearSelection();
+        Vector<Vector> dataVector = getDataVector();
+        dataVector.removeAllElements();
+        fireTableDataChanged();
     }
     public void removeSelectedRows(int[] modelRows){
-	Vector<Vector> dataVector = getDataVector();
-	Vector removedRow;
-	Vector reindexedRow;
-	if( doInstantRemove ){
-	    Vector modelEntries[] = new Vector[modelRows.length];
-	    // XXX not fast, but works for now
-	    for(int i=0; i<modelRows.length; i++){
-		modelEntries[i] = dataVector.get(modelRows[i]);
-	    }
-	    for(int i=0; i<modelEntries.length; i++){
-		dataVector.remove(modelEntries[i]);
-	    }
-	    for(int i=0; i<dataVector.size(); i++){
-		reindexedRow = dataVector.elementAt(i);
-		reindexedRow.setElementAt(i+1, orderModelIndex);
-	    }
-	    fireTableDataChanged();
-	}
-	else{
-	    for(int i=0; i< modelRows.length; i++){
-		removedRow = dataVector.elementAt(modelRows[i]);
-		removedRow.setElementAt(ROW_REMOVE, stateModelIndex);		
-	    }
-	    fireTableRowsUpdated(modelRows[0], modelRows[modelRows.length-1]);
+        Vector<Vector> dataVector = getDataVector();
+        Vector removedRow;
+        Vector reindexedRow;
+        if( doInstantRemove ){
+            Vector modelEntries[] = new Vector[modelRows.length];
+            // XXX not fast, but works for now
+            for(int i=0; i<modelRows.length; i++){
+                modelEntries[i] = dataVector.get(modelRows[i]);
+            }
+            for(int i=0; i<modelEntries.length; i++){
+                dataVector.remove(modelEntries[i]);
+            }
+            for(int i=0; i<dataVector.size(); i++){
+                reindexedRow = dataVector.elementAt(i);
+                reindexedRow.setElementAt(i+1, orderModelIndex);
+            }
+            fireTableDataChanged();
         }
-	if( settingsChangedListener != null )
-	    settingsChangedListener.settingsChanged(this);
+        else{
+            for(int i=0; i< modelRows.length; i++){
+                removedRow = dataVector.elementAt(modelRows[i]);
+                removedRow.setElementAt(ROW_REMOVE, stateModelIndex);
+            }
+            fireTableRowsUpdated(modelRows[0], modelRows[modelRows.length-1]);
+        }
+        if( settingsChangedListener != null )
+            settingsChangedListener.settingsChanged(this);
     }
     public String getRowState(int modelRow){
         //System.out.println("getting row state: (model row)  " + modelRow + " index: " + stateModelIndex);
-    	return (String) super.getValueAt(modelRow, stateModelIndex);
+        return (String) super.getValueAt(modelRow, stateModelIndex);
         //Vector<Vector> dataVector = getDataVector();
         //return (String) dataVector.elementAt(modelRow).elementAt(stateModelIndex);
     }
     public void setRowState(String state, int modelRow){
-	Vector<Vector> dataVector = getDataVector();
-	Vector row = dataVector.elementAt(modelRow);
-	row.setElementAt(state, stateModelIndex);
-	fireTableRowsUpdated(modelRow, modelRow);
+        Vector<Vector> dataVector = getDataVector();
+        Vector row = dataVector.elementAt(modelRow);
+        row.setElementAt(state, stateModelIndex);
+        fireTableRowsUpdated(modelRow, modelRow);
     }
     public void setRowChanged(int modelRow, boolean isFinalChange){
-	Vector<Vector> dataVector = getDataVector();
-	Vector changedRow = dataVector.elementAt(modelRow);
-	String state = (String) changedRow.elementAt(stateModelIndex);
+        Vector<Vector> dataVector = getDataVector();
+        Vector changedRow = dataVector.elementAt(modelRow);
+        String state = (String) changedRow.elementAt(stateModelIndex);
         if( !ROW_ADD.equals(state) ){
             changedRow.setElementAt(ROW_CHANGED, stateModelIndex);
-	    fireTableRowsUpdated(modelRow, modelRow);
-	}
-	if( isFinalChange && (settingsChangedListener != null) )
-	    settingsChangedListener.settingsChanged(this);
+            fireTableRowsUpdated(modelRow, modelRow);
+        }
+        if( isFinalChange && (settingsChangedListener != null) )
+            settingsChangedListener.settingsChanged(this);
     }
     ///////////////////////////////////
 
@@ -619,80 +620,80 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
     // getColumnClass(...) and isCellEditable(...) are my bitches though, and they shall be
     // in model space.
     public void setValueAt(Object value, int viewRow, int modelCol){
-	if( getAlwaysSelectable() )
-	    return;
-	super.setValueAt(value, getRowViewToModelIndex(viewRow), modelCol);
-	if( (getOrderModelIndex() != -1) && ( modelCol == getOrderModelIndex()) ){
-	    // deal with row order changing
-	    int modelRow = getRowViewToModelIndex(viewRow);
-	    moveRow(modelRow, ((Integer)value)-1);
-	}
-	if( getSortingStatus(modelCol) != NOT_SORTED ){
-	    fireTableDataChanged();  // because otherwise the table will only update the view of the changed column
-	}
+        if( getAlwaysSelectable() )
+            return;
+        super.setValueAt(value, getRowViewToModelIndex(viewRow), modelCol);
+        if( (getOrderModelIndex() != -1) && ( modelCol == getOrderModelIndex()) ){
+            // deal with row order changing
+            int modelRow = getRowViewToModelIndex(viewRow);
+            moveRow(modelRow, ((Integer)value)-1);
+        }
+        if( getSortingStatus(modelCol) != NOT_SORTED ){
+            fireTableDataChanged();  // because otherwise the table will only update the view of the changed column
+        }
     }
-    public Object getValueAt(int viewRow, int viewCol) {	
-	return super.getValueAt( getRowViewToModelIndex(viewRow), viewCol );
+    public Object getValueAt(int viewRow, int viewCol) {
+        return super.getValueAt( getRowViewToModelIndex(viewRow), viewCol );
     }
     public Class getColumnClass(int modelCol){
-	return (Class) classTypeVector.elementAt(modelCol);
+        return (Class) classTypeVector.elementAt(modelCol);
     }
     public boolean isCellEditable(int modelRow, int modelCol) {
-	if( alwaysSelectable ){
-	    Class targetClass = (Class) classTypeVector.elementAt(modelCol);
-	    if( targetClass == Integer.class )
-		return false;
-	    else if( targetClass == Long.class )
-		return false;
-	    else if( targetClass == Float.class )
-		return false;
-	    else if( targetClass == Double.class )
-		return false;
-	    else
-		return true;
-	}
-	else
-	    return ((Boolean)editableVector.elementAt(modelCol)).booleanValue();
+        if( alwaysSelectable ){
+            Class targetClass = (Class) classTypeVector.elementAt(modelCol);
+            if( targetClass == Integer.class )
+                return false;
+            else if( targetClass == Long.class )
+                return false;
+            else if( targetClass == Float.class )
+                return false;
+            else if( targetClass == Double.class )
+                return false;
+            else
+                return true;
+        }
+        else
+            return ((Boolean)editableVector.elementAt(modelCol)).booleanValue();
     }
     ///////////////////////////////////////////////////
-            
+
     // SAVABLE / REFRESHABLE ///////////////
     public void doRefresh(T compoundSettings){
-	this.getTableHeader().getTable().getCellEditor().stopCellEditing();
-	this.getTableHeader().getTable().clearSelection();
-	Vector<Vector> tableVector = generateRows( compoundSettings );
-	getDataVector().removeAllElements();
-	getDataVector().addAll(tableVector);
-	fireTableDataChanged();
+        this.getTableHeader().getTable().getCellEditor().stopCellEditing();
+        this.getTableHeader().getTable().clearSelection();
+        Vector<Vector> tableVector = generateRows( compoundSettings );
+        getDataVector().removeAllElements();
+        getDataVector().addAll(tableVector);
+        fireTableDataChanged();
     }
     public void doSave(T compoundSettings, boolean validateOnly) throws Exception {
-	if(Util.getIsDemo())
+        if(Util.getIsDemo())
             return;
-	this.getTableHeader().getTable().getCellEditor().stopCellEditing();
-	this.getTableHeader().getTable().clearSelection();
-	prevalidate(compoundSettings, getDataVector());
-	generateSettings(compoundSettings, getFilteredDataVector(), validateOnly);
+        this.getTableHeader().getTable().getCellEditor().stopCellEditing();
+        this.getTableHeader().getTable().clearSelection();
+        prevalidate(compoundSettings, getDataVector());
+        generateSettings(compoundSettings, getFilteredDataVector(), validateOnly);
     }
     public void prevalidate(T compoundSettings, Vector<Vector> tableVector) throws Exception {
-	// default implementation meant to do nothing
+        // default implementation meant to do nothing
     }
     ///////////////////////////
 
     // HELPERS //////////////////
     public Vector<Vector> getFilteredDataVector(){
-	Vector<Vector> dataVector = getDataVector();
-	Vector<Vector> filteredData = new Vector();
-	String state;
-	for( Vector rowVector : dataVector ){
-	    state = (String) rowVector.elementAt(stateModelIndex);
-	    if( !ROW_REMOVE.equals(state) )
-		filteredData.add(rowVector);
-	}
-	return filteredData;
+        Vector<Vector> dataVector = getDataVector();
+        Vector<Vector> filteredData = new Vector();
+        String state;
+        for( Vector rowVector : dataVector ){
+            state = (String) rowVector.elementAt(stateModelIndex);
+            if( !ROW_REMOVE.equals(state) )
+                filteredData.add(rowVector);
+        }
+        return filteredData;
     }
     public ComboBoxModel copyComboBoxModel(ComboBoxModel comboBoxModel){
         DefaultComboBoxModel newComboBoxModel = new DefaultComboBoxModel();
-	int size = comboBoxModel.getSize();
+        int size = comboBoxModel.getSize();
         for(int i=0; i<size; i++){
             newComboBoxModel.insertElementAt(comboBoxModel.getElementAt(i), i);
         }
@@ -700,13 +701,13 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
         return newComboBoxModel;
     }
     public ComboBoxModel generateComboBoxModel(List optionList, Object setting){
-	return generateComboBoxModel(optionList.toArray(), setting);
+        return generateComboBoxModel(optionList.toArray(), setting);
     }
     public ComboBoxModel generateComboBoxModel(Object[] options, Object setting){
         DefaultComboBoxModel returnComboBoxModel = new DefaultComboBoxModel();
-	for( Object option : options ){
-	    returnComboBoxModel.addElement(option);
-	}
+        for( Object option : options ){
+            returnComboBoxModel.addElement(option);
+        }
         returnComboBoxModel.setSelectedItem(setting);
         return returnComboBoxModel;
     }
@@ -762,62 +763,62 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
 
             // show that the row has been changed
             if( e.getType() == TableModelEvent.UPDATE ){
-		if( e.getColumn() == stateModelIndex ){
-		    return;
-		}
-	    }
-             
-            // If we're not sorting by anything, just pass the event along.             
+                if( e.getColumn() == stateModelIndex ){
+                    return;
+                }
+            }
+
+            // If we're not sorting by anything, just pass the event along.
             if (!isSorting()) {
                 clearSortingState();
-		//fireTableChanged(e);
-                return;
-            }
-                
-            // If the table structure has changed, cancel the sorting; the             
-            // sorting columns may have been either moved or deleted from             
-            // the model. 
-            if (e.getFirstRow() == TableModelEvent.HEADER_ROW) {
-                cancelSorting();
-		//fireTableChanged(e);
+                //fireTableChanged(e);
                 return;
             }
 
-            // We can map a cell event through to the view without widening             
-            // when the following conditions apply: 
-            // 
-            // a) all the changes are on one row (e.getFirstRow() == e.getLastRow()) and, 
+            // If the table structure has changed, cancel the sorting; the
+            // sorting columns may have been either moved or deleted from
+            // the model.
+            if (e.getFirstRow() == TableModelEvent.HEADER_ROW) {
+                cancelSorting();
+                //fireTableChanged(e);
+                return;
+            }
+
+            // We can map a cell event through to the view without widening
+            // when the following conditions apply:
+            //
+            // a) all the changes are on one row (e.getFirstRow() == e.getLastRow()) and,
             // b) all the changes are in one column (column != TableModelEvent.ALL_COLUMNS) and,
-            // c) we are not sorting on that column (getSortingStatus(column) == NOT_SORTED) and, 
+            // c) we are not sorting on that column (getSortingStatus(column) == NOT_SORTED) and,
             // d) a reverse lookup will not trigger a sort (modelToView != null)
             //
             // Note: INSERT and DELETE events fail this test as they have column == ALL_COLUMNS.
-            // 
-            // The last check, for (modelToView != null) is to see if modelToView 
-            // is already allocated. If we don't do this check; sorting can become 
-            // a performance bottleneck for applications where cells  
-            // change rapidly in different parts of the table. If cells 
-            // change alternately in the sorting column and then outside of             
-            // it this class can end up re-sorting on alternate cell updates - 
-            // which can be a performance problem for large tables. The last 
-            // clause avoids this problem. 
+            //
+            // The last check, for (modelToView != null) is to see if modelToView
+            // is already allocated. If we don't do this check; sorting can become
+            // a performance bottleneck for applications where cells
+            // change rapidly in different parts of the table. If cells
+            // change alternately in the sorting column and then outside of
+            // it this class can end up re-sorting on alternate cell updates -
+            // which can be a performance problem for large tables. The last
+            // clause avoids this problem.
             /*
-            int column = e.getColumn();
-            if (e.getFirstRow() == e.getLastRow()
-                    && column != TableModelEvent.ALL_COLUMNS
-                    && getSortingStatus(column) == NOT_SORTED
-                    && modelToView != null) {
-                int viewIndex = getModelToView()[e.getFirstRow()];
-                fireTableChanged(new TableModelEvent(MSortedTableModel.this, 
-                                                     viewIndex, viewIndex, 
-                                                     column, e.getType()));
-                return;
-            }
+              int column = e.getColumn();
+              if (e.getFirstRow() == e.getLastRow()
+              && column != TableModelEvent.ALL_COLUMNS
+              && getSortingStatus(column) == NOT_SORTED
+              && modelToView != null) {
+              int viewIndex = getModelToView()[e.getFirstRow()];
+              fireTableChanged(new TableModelEvent(MSortedTableModel.this,
+              viewIndex, viewIndex,
+              column, e.getType()));
+              return;
+              }
             */
 
-            // Something has happened to the data that may have invalidated the row order. 
+            // Something has happened to the data that may have invalidated the row order.
             clearSortingState();
-	    //fireTableChanged(e);
+            //fireTableChanged(e);
             return;
         }
     }
@@ -825,40 +826,40 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
     private class MouseHandler extends MouseAdapter {
         public void mouseClicked(MouseEvent e) {
 
-	    // prevent multi-clicks, and sorting where sorting is not allowed
-	    if ( e.getClickCount() != 1 ){
-		return;
-	    }
-	    else if( !MSortedTableModel.this.getSortable() ){
-		return;
-	    }
+            // prevent multi-clicks, and sorting where sorting is not allowed
+            if ( e.getClickCount() != 1 ){
+                return;
+            }
+            else if( !MSortedTableModel.this.getSortable() ){
+                return;
+            }
 
-	    // get the currently selected viewRow, and translate to a model row
-            JTableHeader tableHeader = (JTableHeader) e.getSource();	    
-	    int viewRow = tableHeader.getTable().getSelectedRow();
-	    int modelRow = -1;
-	    if( viewRow != -1 ){
-		modelRow = MSortedTableModel.this.getRowViewToModelIndex(viewRow);
-		if( tableHeader.getTable().isEditing() )
-		    ((DefaultCellEditor)tableHeader.getTable().getCellEditor()).stopCellEditing();
-	    }
-            
-	    // dont allow sorting of passwords, images, or generic objects
+            // get the currently selected viewRow, and translate to a model row
+            JTableHeader tableHeader = (JTableHeader) e.getSource();
+            int viewRow = tableHeader.getTable().getSelectedRow();
+            int modelRow = -1;
+            if( viewRow != -1 ){
+                modelRow = MSortedTableModel.this.getRowViewToModelIndex(viewRow);
+                if( tableHeader.getTable().isEditing() )
+                    ((DefaultCellEditor)tableHeader.getTable().getCellEditor()).stopCellEditing();
+            }
+
+            // dont allow sorting of passwords, images, or generic objects
             TableColumnModel columnModel = tableHeader.getColumnModel();
             int viewColumn = columnModel.getColumnIndexAtX(e.getX());
-	    if( viewColumn == -1 )
-		return;				  
+            if( viewColumn == -1 )
+                return;
             int modelColumn = columnModel.getColumn(viewColumn).getModelIndex();
             Class columnClass = MSortedTableModel.this.getColumnClass(modelColumn);
             if(    (modelColumn == -1)
-                || (MPasswordField.class.equals(columnClass))
-                || (ImageIcon.class.equals(columnClass))
-                || (Object.class.equals(columnClass))   ){
-                    return;
-            }            
+                   || (MPasswordField.class.equals(columnClass))
+                   || (ImageIcon.class.equals(columnClass))
+                   || (Object.class.equals(columnClass))   ){
+                return;
+            }
 
-            // Cycle the sorting states through {NOT_SORTED, ASCENDING, DESCENDING} or 
-            // {NOT_SORTED, DESCENDING, ASCENDING} depending on whether shift is pressed. 
+            // Cycle the sorting states through {NOT_SORTED, ASCENDING, DESCENDING} or
+            // {NOT_SORTED, DESCENDING, ASCENDING} depending on whether shift is pressed.
             int status = getSortingStatus(modelColumn);
             if (!e.isControlDown()) {
                 cancelSorting();
@@ -867,15 +868,15 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
             status = (status + 4) % 3 - 1; // signed mod, returning {-1, 0, 1}
             setSortingStatus(modelColumn, status);
 
-	    /*
-	    if( viewRow != -1 ){
-		int newRow = MSortedTableModel.this.getRowViewToModelIndex(modelRow);
-		tableHeader.getTable().clearSelection();
-		tableHeader.getTable().getSelectionModel().addSelectionInterval(newRow, newRow);
-		Rectangle selectionRect = tableHeader.getTable().getCellRect(newRow, 0, true);
-		tableHeader.getTable().scrollRectToVisible(selectionRect);
-	    }
-	    */
+            /*
+              if( viewRow != -1 ){
+              int newRow = MSortedTableModel.this.getRowViewToModelIndex(modelRow);
+              tableHeader.getTable().clearSelection();
+              tableHeader.getTable().getSelectionModel().addSelectionInterval(newRow, newRow);
+              Rectangle selectionRect = tableHeader.getTable().getCellRect(newRow, 0, true);
+              tableHeader.getTable().scrollRectToVisible(selectionRect);
+              }
+            */
 
         }
     }
@@ -892,27 +893,27 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
         }
 
         public void paintIcon(Component c, Graphics g, int x, int y) {
-            Color color = c == null ? Color.GRAY : c.getBackground();             
-            // In a compound sort, make each succesive triangle 20% 
-            // smaller than the previous one. 
+            Color color = c == null ? Color.GRAY : c.getBackground();
+            // In a compound sort, make each succesive triangle 20%
+            // smaller than the previous one.
             int dx = (int)(size/2*Math.pow(0.8, priority));
             int dy = descending ? dx : -dx;
-            // Align icon (roughly) with font baseline. 
+            // Align icon (roughly) with font baseline.
             y = y + 5*size/6 + (descending ? -dy : 0);
             int shift = descending ? 1 : -1;
             g.translate(x, y);
 
-            // Right diagonal. 
+            // Right diagonal.
             g.setColor(color.darker());
             g.drawLine(dx / 2, dy, 0, 0);
             g.drawLine(dx / 2, dy + shift, 0, shift);
-            
-            // Left diagonal. 
+
+            // Left diagonal.
             g.setColor(color.brighter());
             g.drawLine(dx / 2, dy, dx, 0);
             g.drawLine(dx / 2, dy + shift, dx, shift);
-            
-            // Horizontal line. 
+
+            // Horizontal line.
             if (descending) {
                 g.setColor(color.darker().darker());
             } else {
@@ -941,14 +942,14 @@ public abstract class MSortedTableModel<T> extends DefaultTableModel
             this.tableCellRenderer = tableCellRenderer;
         }
 
-        public Component getTableCellRendererComponent( JTable table, 
-                                                       Object value,
-                                                       boolean isSelected, 
-                                                       boolean hasFocus,
-                                                       int row, 
-                                                       int column) {
-            Component c = tableCellRenderer.getTableCellRendererComponent(table, 
-                    value, isSelected, hasFocus, row, column);
+        public Component getTableCellRendererComponent( JTable table,
+                                                        Object value,
+                                                        boolean isSelected,
+                                                        boolean hasFocus,
+                                                        int row,
+                                                        int column) {
+            Component c = tableCellRenderer.getTableCellRendererComponent(table,
+                                                                          value, isSelected, hasFocus, row, column);
             if (c instanceof JLabel) {
                 JLabel l = (JLabel) c;
                 l.setHorizontalTextPosition(JLabel.LEFT);

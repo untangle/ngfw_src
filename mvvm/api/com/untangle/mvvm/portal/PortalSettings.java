@@ -94,7 +94,7 @@ public class PortalSettings implements Serializable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
     public List<PortalUser> getUsers()
@@ -118,7 +118,7 @@ public class PortalSettings implements Serializable
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id")
     @IndexColumn(name="position")
     public List<PortalGroup> getGroups()

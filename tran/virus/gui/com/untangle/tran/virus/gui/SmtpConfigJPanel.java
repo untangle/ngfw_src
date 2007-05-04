@@ -12,20 +12,17 @@
 
 package com.untangle.tran.virus.gui;
 
-import com.untangle.gui.transform.*;
-import com.untangle.gui.util.*;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.tran.virus.*;
-import com.untangle.tran.mail.papi.*;
-import com.untangle.tran.mail.papi.smtp.SMTPNotifyAction;
-import com.untangle.mvvm.tran.TransformContext;
-
-
 import java.awt.*;
 import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.editTable.*;
+import com.untangle.tran.mail.papi.*;
+import com.untangle.tran.virus.*;
 
 
 public class SmtpConfigJPanel extends MEditTableJPanel {
@@ -76,29 +73,29 @@ class SmtpTableModel extends MSortedTableModel<Object>{
     private static final String SOURCE_OUTBOUND = "outgoing message";
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-	VirusSMTPConfig virusSMTPConfigInbound = null;
-	VirusSMTPConfig virusSMTPConfigOutbound = null;
+        VirusSMTPConfig virusSMTPConfigInbound = null;
+        VirusSMTPConfig virusSMTPConfigOutbound = null;
 
-	for( Vector rowVector : tableVector ){
+        for( Vector rowVector : tableVector ){
             VirusSMTPConfig virusSMTPConfig = (VirusSMTPConfig) rowVector.elementAt(6);
             virusSMTPConfig.setScan( (Boolean) rowVector.elementAt(3) );
             virusSMTPConfig.setMsgAction( (SMTPVirusMessageAction) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
             virusSMTPConfig.setNotes( (String) rowVector.elementAt(5) );
-	    
-	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
-		virusSMTPConfigInbound = virusSMTPConfig;
-	    }
-	    else if( ((String)rowVector.elementAt(2)).equals(SOURCE_OUTBOUND) ){
-		virusSMTPConfigOutbound = virusSMTPConfig;
-	    }  
+
+            if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
+                virusSMTPConfigInbound = virusSMTPConfig;
+            }
+            else if( ((String)rowVector.elementAt(2)).equals(SOURCE_OUTBOUND) ){
+                virusSMTPConfigOutbound = virusSMTPConfig;
+            }
         }
-	
-	// SAVE SETTINGS ////////
-	if( !validateOnly ){
-	    VirusSettings virusSettings = (VirusSettings) settings;
-	    virusSettings.setSMTPInbound( virusSMTPConfigInbound );
-	    virusSettings.setSMTPOutbound( virusSMTPConfigOutbound );
-	}
+
+        // SAVE SETTINGS ////////
+        if( !validateOnly ){
+            VirusSettings virusSettings = (VirusSettings) settings;
+            virusSettings.setSMTPInbound( virusSMTPConfigInbound );
+            virusSettings.setSMTPOutbound( virusSMTPConfigOutbound );
+        }
 
 
     }
@@ -106,11 +103,11 @@ class SmtpTableModel extends MSortedTableModel<Object>{
     public Vector<Vector> generateRows(Object settings) {
         VirusSettings virusSettings = (VirusSettings) settings;
         Vector<Vector> allRows = new Vector<Vector>(2);
-	int rowIndex = 0;
+        int rowIndex = 0;
 
-	// INBOUND
-	rowIndex++;
-	Vector inboundRow = new Vector(7);
+        // INBOUND
+        rowIndex++;
+        Vector inboundRow = new Vector(7);
         VirusSMTPConfig virusSMTPConfigInbound = virusSettings.getSMTPInbound();
         inboundRow.add( super.ROW_SAVED );
         inboundRow.add( rowIndex );
@@ -118,12 +115,12 @@ class SmtpTableModel extends MSortedTableModel<Object>{
         inboundRow.add( virusSMTPConfigInbound.getScan() );
         inboundRow.add( super.generateComboBoxModel(SMTPVirusMessageAction.getValues(), virusSMTPConfigInbound.getMsgAction()) );
         inboundRow.add( virusSMTPConfigInbound.getNotes() );
-	inboundRow.add( virusSMTPConfigInbound );
-	allRows.add(inboundRow);
+        inboundRow.add( virusSMTPConfigInbound );
+        allRows.add(inboundRow);
 
-	// OUTBOUND
-	rowIndex++;
-	Vector outboundRow = new Vector(7);
+        // OUTBOUND
+        rowIndex++;
+        Vector outboundRow = new Vector(7);
         VirusSMTPConfig virusSMTPConfigOutbound = virusSettings.getSMTPOutbound();
         outboundRow.add( super.ROW_SAVED );
         outboundRow.add( rowIndex );
@@ -131,8 +128,8 @@ class SmtpTableModel extends MSortedTableModel<Object>{
         outboundRow.add( virusSMTPConfigOutbound.getScan() );
         outboundRow.add( super.generateComboBoxModel(SMTPVirusMessageAction.getValues(), virusSMTPConfigOutbound.getMsgAction()) );
         outboundRow.add( virusSMTPConfigOutbound.getNotes() );
-	outboundRow.add( virusSMTPConfigOutbound );
-	allRows.add(outboundRow);
+        outboundRow.add( virusSMTPConfigOutbound );
+        allRows.add(outboundRow);
 
         return allRows;
     }

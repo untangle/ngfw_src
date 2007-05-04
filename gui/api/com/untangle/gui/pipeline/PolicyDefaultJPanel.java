@@ -22,8 +22,8 @@ import com.untangle.gui.transform.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
 import com.untangle.mvvm.policy.*;
+import com.untangle.mvvm.tran.*;
 
 public class PolicyDefaultJPanel extends MEditTableJPanel {
 
@@ -37,7 +37,7 @@ public class PolicyDefaultJPanel extends MEditTableJPanel {
         DefaultPolicyTableModel defaultPolicyTableModel = new DefaultPolicyTableModel();
         this.setTableModel( defaultPolicyTableModel );
         this.setAddRemoveEnabled(false);
-	this.setFillJButtonEnabled(false);
+        this.setFillJButtonEnabled(false);
     }
 }
 
@@ -59,12 +59,12 @@ class DefaultPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     private static final String OUTBOUND_STRING = " (outbound)";
     private Map<String,Policy> policyNames = new LinkedHashMap();
     private void updatePolicyNames(List<Policy> policyList){
-	policyNames.clear();
-	for( Policy policy : policyList ){
-	    policyNames.put( policy.getName() + INBOUND_STRING, policy );
-	    policyNames.put( policy.getName() + OUTBOUND_STRING, policy );
-	}
-	policyNames.put( NULL_STRING, null );
+        policyNames.clear();
+        for( Policy policy : policyList ){
+            policyNames.put( policy.getName() + INBOUND_STRING, policy );
+            policyNames.put( policy.getName() + OUTBOUND_STRING, policy );
+        }
+        policyNames.put( NULL_STRING, null );
     }
 
     public TableColumnModel getTableColumnModel(){
@@ -83,112 +83,112 @@ class DefaultPolicyTableModel extends MSortedTableModel<PolicyCompoundSettings>{
     }
 
     public void generateSettings(PolicyCompoundSettings policyCompoundSettings,
-				 Vector<Vector> tableVector, boolean validateOnly) throws Exception {
+                                 Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         List elemList = new ArrayList(tableVector.size());
-	SystemPolicyRule newElem = null;
+        SystemPolicyRule newElem = null;
 
-	int rowIndex = 0;
-	int parity = 0;
-	Policy firstPolicy = null;
-	boolean firstInbound = false;
+        int rowIndex = 0;
+        int parity = 0;
+        Policy firstPolicy = null;
+        boolean firstInbound = false;
 
-	for( Vector rowVector : tableVector ){
-	    rowIndex++;
+        for( Vector rowVector : tableVector ){
+            rowIndex++;
             newElem = (SystemPolicyRule) rowVector.elementAt(6);
-	    Policy policy = policyNames.get((String) ((ComboBoxModel)rowVector.elementAt(2)).getSelectedItem());
+            Policy policy = policyNames.get((String) ((ComboBoxModel)rowVector.elementAt(2)).getSelectedItem());
             newElem.setPolicy( policy );
-	    boolean isInbound = ((String) ((ComboBoxModel)rowVector.elementAt(2)).getSelectedItem()).contains(INBOUND_STRING);
-	    newElem.setInbound( isInbound );
-	    newElem.setDescription( (String) rowVector.elementAt(5) );
+            boolean isInbound = ((String) ((ComboBoxModel)rowVector.elementAt(2)).getSelectedItem()).contains(INBOUND_STRING);
+            newElem.setInbound( isInbound );
+            newElem.setDescription( (String) rowVector.elementAt(5) );
             elemList.add(newElem);
-	    if( parity == 0 ){
-		firstPolicy = policy;
-		firstInbound = isInbound;
-	    }
-	    else{
-		if( nullOk(policy,firstPolicy) ){
-		    // ok
-		}
-		else{
-		    if( policy.equals(firstPolicy) ){
-			if( isInbound != firstInbound ){
-			    // ok
-			}
-			else{
-			    throw new Exception("The racks chosen in rows " 
-						+ (rowIndex-1) 
-						+ " and " 
-						+ rowIndex 
-						+ " must be in opposite directions.");			    
-			}
-		    }
-		    else{
-			if( isInbound != firstInbound ){
-			    throw new Exception("The racks chosen in rows " 
-						+ (rowIndex-1) 
-						+ " and " 
-						+ rowIndex 
-						+ " must be the same rack.");
-			}
-			else{
-			    throw new Exception("The racks chosen in rows " 
-						+ (rowIndex-1) 
-						+ " and " 
-						+ rowIndex 
-						+ " must be the same rack, and in opposite directions.");			    
-			}
-		    }
-		}
-	    }
-	    parity = (parity+1)%2;
+            if( parity == 0 ){
+                firstPolicy = policy;
+                firstInbound = isInbound;
+            }
+            else{
+                if( nullOk(policy,firstPolicy) ){
+                    // ok
+                }
+                else{
+                    if( policy.equals(firstPolicy) ){
+                        if( isInbound != firstInbound ){
+                            // ok
+                        }
+                        else{
+                            throw new Exception("The racks chosen in rows "
+                                                + (rowIndex-1)
+                                                + " and "
+                                                + rowIndex
+                                                + " must be in opposite directions.");
+                        }
+                    }
+                    else{
+                        if( isInbound != firstInbound ){
+                            throw new Exception("The racks chosen in rows "
+                                                + (rowIndex-1)
+                                                + " and "
+                                                + rowIndex
+                                                + " must be the same rack.");
+                        }
+                        else{
+                            throw new Exception("The racks chosen in rows "
+                                                + (rowIndex-1)
+                                                + " and "
+                                                + rowIndex
+                                                + " must be the same rack, and in opposite directions.");
+                        }
+                    }
+                }
+            }
+            parity = (parity+1)%2;
         }
 
-	// SAVE SETTINGS /////////
-	if( !validateOnly ){
-	   PolicyConfiguration policyConfiguration = policyCompoundSettings.getPolicyConfiguration();
-	   policyConfiguration.setSystemPolicyRules( elemList );
-	}
+        // SAVE SETTINGS /////////
+        if( !validateOnly ){
+            PolicyConfiguration policyConfiguration = policyCompoundSettings.getPolicyConfiguration();
+            policyConfiguration.setSystemPolicyRules( elemList );
+        }
 
     }
 
     public Vector<Vector> generateRows(PolicyCompoundSettings policyCompoundSettings){
-	PolicyConfiguration policyConfiguration = policyCompoundSettings.getPolicyConfiguration();
-	List<SystemPolicyRule> systemPolicyRules = (List<SystemPolicyRule>) policyConfiguration.getSystemPolicyRules();
+        PolicyConfiguration policyConfiguration = policyCompoundSettings.getPolicyConfiguration();
+        List<SystemPolicyRule> systemPolicyRules = (List<SystemPolicyRule>) policyConfiguration.getSystemPolicyRules();
         Vector<Vector> allRows = new Vector<Vector>(systemPolicyRules.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
+        Vector tempRow = null;
+        int rowIndex = 0;
 
-	updatePolicyNames( policyConfiguration.getPolicies() );
+        updatePolicyNames( policyConfiguration.getPolicies() );
 
-	for( SystemPolicyRule newElem : systemPolicyRules ){
-	    rowIndex++;
-	    tempRow = new Vector(7);
-	    tempRow.add( super.ROW_SAVED );
-	    tempRow.add( rowIndex );
-	    String policyName;
-	    if( newElem.getPolicy() != null )
-		policyName = newElem.getPolicy().getName() + (newElem.isInbound()?INBOUND_STRING:OUTBOUND_STRING);
-	    else
-		policyName = NULL_STRING;
-	    tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(),
-						     policyName) );
-	    tempRow.add( policyCompoundSettings.getIntfEnum().getIntfName( newElem.getClientIntf() ) );
-	    tempRow.add( policyCompoundSettings.getIntfEnum().getIntfName( newElem.getServerIntf() ) );
-	    tempRow.add( newElem.getDescription() );
-	    tempRow.add( newElem );
-	    allRows.add( tempRow );
-	}
+        for( SystemPolicyRule newElem : systemPolicyRules ){
+            rowIndex++;
+            tempRow = new Vector(7);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            String policyName;
+            if( newElem.getPolicy() != null )
+                policyName = newElem.getPolicy().getName() + (newElem.isInbound()?INBOUND_STRING:OUTBOUND_STRING);
+            else
+                policyName = NULL_STRING;
+            tempRow.add( super.generateComboBoxModel(policyNames.keySet().toArray(),
+                                                     policyName) );
+            tempRow.add( policyCompoundSettings.getIntfEnum().getIntfName( newElem.getClientIntf() ) );
+            tempRow.add( policyCompoundSettings.getIntfEnum().getIntfName( newElem.getServerIntf() ) );
+            tempRow.add( newElem.getDescription() );
+            tempRow.add( newElem );
+            allRows.add( tempRow );
+        }
 
         return allRows;
     }
 
     private boolean nullOk(Object o1, Object o2){
-	if( (o1==null) && (o2==null) )
-	    return true;
-	else if( (o1==null) ^ (o2==null) )
-	    return true;
-	else
-	    return false;
+        if( (o1==null) && (o2==null) )
+            return true;
+        else if( (o1==null) ^ (o2==null) )
+            return true;
+        else
+            return false;
     }
 
 }

@@ -10,17 +10,16 @@
  */
 package com.untangle.tran.clam;
 
-import java.io.BufferedReader;
 import java.io.BufferedOutputStream;
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.InterruptedException;
 import java.net.SocketException;
 import java.nio.channels.ClosedByInterruptException;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.StringTokenizer;
 
 import com.untangle.tran.virus.VirusClient;
 import com.untangle.tran.virus.VirusClientContext;
@@ -111,23 +110,23 @@ public class ClamClient extends VirusClient {
 
             BufferedOutputStream bufMsgOutputStream = msgcSocket.getBufferedOutputStream();
             try {
-               // send message (on msg socket)
-               //
-               // if msg socket is interrupted (because of a thrown exception),
-               // we don't exit until we've checked the main socket
-               // - clamd will always have a result to report
+                // send message (on msg socket)
+                //
+                // if msg socket is interrupted (because of a thrown exception),
+                // we don't exit until we've checked the main socket
+                // - clamd will always have a result to report
 
-               FileInputStream fInputStream = new FileInputStream(cContext.getMsgFile());
-               rBuf = new byte[READ_SZ];
+                FileInputStream fInputStream = new FileInputStream(cContext.getMsgFile());
+                rBuf = new byte[READ_SZ];
 
-               int rLen;
-               while (0 < (rLen = fInputStream.read(rBuf))) {
-                   bufMsgOutputStream.write(rBuf, 0, rLen);
-                   bufMsgOutputStream.flush();
-               }
-               fInputStream.close();
-               fInputStream = null;
-               rBuf = null;
+                int rLen;
+                while (0 < (rLen = fInputStream.read(rBuf))) {
+                    bufMsgOutputStream.write(rBuf, 0, rLen);
+                    bufMsgOutputStream.flush();
+                }
+                fInputStream.close();
+                fInputStream = null;
+                rBuf = null;
             } catch (SocketException e) {
                 // thrown during read block
                 clogger.warn(dbgName + ", clamc msg socket closed/interrupted: " + clamcSocket + ", " + msgcSocket, e);
@@ -227,15 +226,15 @@ public class ClamClient extends VirusClient {
         while (true == sTokenizer.hasMoreTokens()) {
             tStr = sTokenizer.nextToken();
             switch(tIdx) {
-                case 0:
-                    break; // skip PORT tag
-                case 1:
-                    msgStreamPort = Integer.parseInt(tStr);
-                    break;
-                default:
-                    clogger.warn(dbgName + ", clamd response has extra parameter: " + tStr);
-                    // continue because clamc doesn't care
-                    break;
+            case 0:
+                break; // skip PORT tag
+            case 1:
+                msgStreamPort = Integer.parseInt(tStr);
+                break;
+            default:
+                clogger.warn(dbgName + ", clamd response has extra parameter: " + tStr);
+                // continue because clamc doesn't care
+                break;
             }
             tIdx++;
         }
@@ -259,31 +258,31 @@ public class ClamClient extends VirusClient {
         while (true == sTokenizer.hasMoreTokens()) {
             tStr = sTokenizer.nextToken();
             switch(tIdx) {
-                case 0:
-                    break; // skip stream: tag
-                case 1:
-                    if (false == RESULT_OK.equalsIgnoreCase(tStr)) {
-                        virusName.append(tStr);
-                        clean = false;
-                    }
-                    break;
-                case 2:
-                    if (false == RESULT_FOUND.equalsIgnoreCase(tStr)) {
-                        if (true == result.toUpperCase().endsWith(RESULT_FOUND)) {
-                            clogger.warn(dbgName + ", clamd changed format of result: " + result);
-                            virusName.append(" ").append(tStr);
-                        } else {
-                            clogger.warn(dbgName + ", clamd reported error result: " + result);
-                            cContext.setResultError();
-                            return;
-                        }
-                    }
-                    break;
-                default:
-                    if (false == RESULT_FOUND.equalsIgnoreCase(tStr)) {
+            case 0:
+                break; // skip stream: tag
+            case 1:
+                if (false == RESULT_OK.equalsIgnoreCase(tStr)) {
+                    virusName.append(tStr);
+                    clean = false;
+                }
+                break;
+            case 2:
+                if (false == RESULT_FOUND.equalsIgnoreCase(tStr)) {
+                    if (true == result.toUpperCase().endsWith(RESULT_FOUND)) {
+                        clogger.warn(dbgName + ", clamd changed format of result: " + result);
                         virusName.append(" ").append(tStr);
+                    } else {
+                        clogger.warn(dbgName + ", clamd reported error result: " + result);
+                        cContext.setResultError();
+                        return;
                     }
-                    break;
+                }
+                break;
+            default:
+                if (false == RESULT_FOUND.equalsIgnoreCase(tStr)) {
+                    virusName.append(" ").append(tStr);
+                }
+                break;
             }
             tIdx++;
         }

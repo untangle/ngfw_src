@@ -38,133 +38,133 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-@Table(name="tr_http_req_line", schema="events")
-public class RequestLine implements Serializable
-{
-    private static final long serialVersionUID = -2183950932382112727L;
-
-    private Long id;
-    private HttpMethod method;
-    private URI requestUri;
-    private PipelineEndpoints pipelineEndpoints;
-    private HttpRequestEvent httpRequestEvent; // Filled in after creation time.
-
-    // constructors -----------------------------------------------------------
-
-    public RequestLine() { }
-
-    public RequestLine(PipelineEndpoints pe, HttpMethod method, URI requestUri)
+    @Table(name="tr_http_req_line", schema="events")
+    public class RequestLine implements Serializable
     {
-        this.pipelineEndpoints = pe;
-        this.method = method;
-        this.requestUri = requestUri;
-    }
+        private static final long serialVersionUID = -2183950932382112727L;
 
-    // business methods -------------------------------------------------------
+        private Long id;
+        private HttpMethod method;
+        private URI requestUri;
+        private PipelineEndpoints pipelineEndpoints;
+        private HttpRequestEvent httpRequestEvent; // Filled in after creation time.
 
-    @Transient
-    public URL getUrl()
-    {
-        // XXX this shouldn't happen in practice
-        String host = null == httpRequestEvent ? ""
-            : httpRequestEvent.getHost();
+        // constructors -----------------------------------------------------------
 
-        URL url;
-        try {
-            url = new URL("http", host, getRequestUri().toString());
-        } catch (MalformedURLException exn) {
-            throw new RuntimeException(exn); // should never happen
+        public RequestLine() { }
+
+        public RequestLine(PipelineEndpoints pe, HttpMethod method, URI requestUri)
+        {
+            this.pipelineEndpoints = pe;
+            this.method = method;
+            this.requestUri = requestUri;
         }
 
-        return url;
+        // business methods -------------------------------------------------------
+
+        @Transient
+        public URL getUrl()
+        {
+            // XXX this shouldn't happen in practice
+            String host = null == httpRequestEvent ? ""
+                : httpRequestEvent.getHost();
+
+            URL url;
+            try {
+                url = new URL("http", host, getRequestUri().toString());
+            } catch (MalformedURLException exn) {
+                throw new RuntimeException(exn); // should never happen
+            }
+
+            return url;
+        }
+
+        // accessors --------------------------------------------------------------
+
+        @Id
+        @Column(name="request_id")
+        @GeneratedValue
+        private Long getId()
+        {
+            return id;
+        }
+
+        private void setId(Long id)
+        {
+            this.id = id;
+        }
+
+        /**
+         * Get the PipelineEndpoints.
+         *
+         * @return the PipelineEndpoints.
+         */
+        @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+        @JoinColumn(name="pl_endp_id", nullable=false)
+        public PipelineEndpoints getPipelineEndpoints()
+        {
+            return pipelineEndpoints;
+        }
+
+        public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
+        {
+            this.pipelineEndpoints = pipelineEndpoints;
+        }
+
+        /**
+         * Request method.
+         *
+         * @return the request method.
+         */
+        @Type(type="com.untangle.tran.http.HttpMethodUserType")
+        public HttpMethod getMethod()
+        {
+            return method;
+        }
+
+        public void setMethod(HttpMethod method)
+        {
+            this.method = method;
+        }
+
+        /**
+         * Request URI.
+         *
+         * @return the request URI.
+         */
+        @Column(name="uri")
+        @Type(type="com.untangle.mvvm.type.UriUserType")
+        public URI getRequestUri()
+        {
+            return requestUri;
+        }
+
+        public void setRequestUri(URI requestUri)
+        {
+            this.requestUri = requestUri;
+        }
+
+        /**
+         * The HttpRequestEvent that logged this item.
+         *
+         * @return the HttpRequestEvent.
+         */
+        @OneToOne(mappedBy="requestLine")
+        public HttpRequestEvent getHttpRequestEvent()
+        {
+            return httpRequestEvent;
+        }
+
+        public void setHttpRequestEvent(HttpRequestEvent httpRequestEvent)
+        {
+            this.httpRequestEvent = httpRequestEvent;
+        }
+
+        // Object methods ---------------------------------------------------------
+
+        public String toString()
+        {
+            return "RequestLine id: " + id + " length: "
+                + requestUri.toString().length() + " (" + super.toString() + ")";
+        }
     }
-
-    // accessors --------------------------------------------------------------
-
-    @Id
-    @Column(name="request_id")
-    @GeneratedValue
-    private Long getId()
-    {
-        return id;
-    }
-
-    private void setId(Long id)
-    {
-        this.id = id;
-    }
-
-    /**
-     * Get the PipelineEndpoints.
-     *
-     * @return the PipelineEndpoints.
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="pl_endp_id", nullable=false)
-    public PipelineEndpoints getPipelineEndpoints()
-    {
-        return pipelineEndpoints;
-    }
-
-    public void setPipelineEndpoints(PipelineEndpoints pipelineEndpoints)
-    {
-        this.pipelineEndpoints = pipelineEndpoints;
-    }
-
-    /**
-     * Request method.
-     *
-     * @return the request method.
-     */
-    @Type(type="com.untangle.tran.http.HttpMethodUserType")
-    public HttpMethod getMethod()
-    {
-        return method;
-    }
-
-    public void setMethod(HttpMethod method)
-    {
-        this.method = method;
-    }
-
-    /**
-     * Request URI.
-     *
-     * @return the request URI.
-     */
-    @Column(name="uri")
-    @Type(type="com.untangle.mvvm.type.UriUserType")
-    public URI getRequestUri()
-    {
-        return requestUri;
-    }
-
-    public void setRequestUri(URI requestUri)
-    {
-        this.requestUri = requestUri;
-    }
-
-    /**
-     * The HttpRequestEvent that logged this item.
-     *
-     * @return the HttpRequestEvent.
-     */
-    @OneToOne(mappedBy="requestLine")
-    public HttpRequestEvent getHttpRequestEvent()
-    {
-        return httpRequestEvent;
-    }
-
-    public void setHttpRequestEvent(HttpRequestEvent httpRequestEvent)
-    {
-        this.httpRequestEvent = httpRequestEvent;
-    }
-
-    // Object methods ---------------------------------------------------------
-
-    public String toString()
-    {
-        return "RequestLine id: " + id + " length: "
-            + requestUri.toString().length() + " (" + super.toString() + ")";
-    }
-}

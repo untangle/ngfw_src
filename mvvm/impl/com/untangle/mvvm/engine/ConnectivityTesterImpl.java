@@ -255,8 +255,8 @@ class ConnectionStatus implements ConnectivityTester.Status
 
     ConnectionStatus( boolean isDnsWorking, boolean isTcpWorking )
     {
-            this.isDnsWorking = isDnsWorking;
-            this.isTcpWorking = isTcpWorking;
+        this.isDnsWorking = isDnsWorking;
+        this.isTcpWorking = isTcpWorking;
     }
 
     public boolean isTcpWorking()

@@ -34,23 +34,23 @@ public class RemoteJDialog extends MConfigJDialog {
     private static final String NAME_MONITORING_SNMP        = "SNMP";
     private static final String NAME_MONITORING_SYSLOG      = "Syslog";
     private static final String NAME_MANUAL_REBOOT          = "Manual Reboot";
-    
+
     public RemoteJDialog( Frame parentFrame ) {
-	super(parentFrame);
-	setTitle(NAME_ADMINISTRATION_CONFIG);
-    setHelpSource("remote_admin_config");
-	compoundSettings = new RemoteCompoundSettings();
+        super(parentFrame);
+        setTitle(NAME_ADMINISTRATION_CONFIG);
+        setHelpSource("remote_admin_config");
+        compoundSettings = new RemoteCompoundSettings();
     }
 
     protected void generateGui(){
-	// ADMIN ACCOUNTS ////////
-	RemoteAdminJPanel remoteAdminJPanel = new RemoteAdminJPanel();
-	addTab(NAME_ADMIN_ACCOUNTS, null, remoteAdminJPanel);
-	addSavable(NAME_ADMIN_ACCOUNTS, remoteAdminJPanel);
-	addRefreshable(NAME_ADMIN_ACCOUNTS, remoteAdminJPanel);
-	remoteAdminJPanel.setSettingsChangedListener(this);
-	
-	// ACCESS //
+        // ADMIN ACCOUNTS ////////
+        RemoteAdminJPanel remoteAdminJPanel = new RemoteAdminJPanel();
+        addTab(NAME_ADMIN_ACCOUNTS, null, remoteAdminJPanel);
+        addSavable(NAME_ADMIN_ACCOUNTS, remoteAdminJPanel);
+        addRefreshable(NAME_ADMIN_ACCOUNTS, remoteAdminJPanel);
+        remoteAdminJPanel.setSettingsChangedListener(this);
+
+        // ACCESS //
         JTabbedPane accessJTabbedPane = addTabbedPane(NAME_ACCESS_TAB, null);
 
         // ACCESS RESTRICTIONS //////
@@ -58,44 +58,44 @@ public class RemoteJDialog extends MConfigJDialog {
         addScrollableTab(accessJTabbedPane, NAME_ACCESS_RESTRICTIONS, null, remoteRestrictionJPanel, false, true);
         addSavable(NAME_ACCESS_RESTRICTIONS, remoteRestrictionJPanel);
         addRefreshable(NAME_ACCESS_RESTRICTIONS, remoteRestrictionJPanel);
-		remoteRestrictionJPanel.setSettingsChangedListener(this);
+        remoteRestrictionJPanel.setSettingsChangedListener(this);
 
-	// ACCESS PUBLIC ADDRESS //
-	RemotePublicAddressJPanel remotePublicAddressJPanel = new RemotePublicAddressJPanel();
-	addScrollableTab(accessJTabbedPane, NAME_ACCESS_PUBLIC, null, remotePublicAddressJPanel, false, true);
-	addSavable(NAME_ACCESS_PUBLIC, remotePublicAddressJPanel);
-	addRefreshable(NAME_ACCESS_PUBLIC, remotePublicAddressJPanel);
-	remotePublicAddressJPanel.setSettingsChangedListener(this);
-	
+        // ACCESS PUBLIC ADDRESS //
+        RemotePublicAddressJPanel remotePublicAddressJPanel = new RemotePublicAddressJPanel();
+        addScrollableTab(accessJTabbedPane, NAME_ACCESS_PUBLIC, null, remotePublicAddressJPanel, false, true);
+        addSavable(NAME_ACCESS_PUBLIC, remotePublicAddressJPanel);
+        addRefreshable(NAME_ACCESS_PUBLIC, remotePublicAddressJPanel);
+        remotePublicAddressJPanel.setSettingsChangedListener(this);
+
         // CERTIFICATES /////////////
         JTabbedPane certificateJTabbedPane = addTabbedPane(NAME_CERTIFICATE_TAB, null);
-	
+
         // CERTIFICATE STATUS //////
         RemoteCertStatusJPanel remoteCertStatusJPanel = new RemoteCertStatusJPanel();
-	addScrollableTab(certificateJTabbedPane, NAME_CERTIFICATE_STATUS, null, remoteCertStatusJPanel, false, true);
+        addScrollableTab(certificateJTabbedPane, NAME_CERTIFICATE_STATUS, null, remoteCertStatusJPanel, false, true);
         addRefreshable(NAME_CERTIFICATE_STATUS, remoteCertStatusJPanel);
 
-	// CERTIFICATE GENERATION /////
-	RemoteCertGenJPanel remoteCertGenJPanel = new RemoteCertGenJPanel(this);
-	addScrollableTab(certificateJTabbedPane, NAME_CERTIFICATE_GENERATION, null, remoteCertGenJPanel, false, true);
+        // CERTIFICATE GENERATION /////
+        RemoteCertGenJPanel remoteCertGenJPanel = new RemoteCertGenJPanel(this);
+        addScrollableTab(certificateJTabbedPane, NAME_CERTIFICATE_GENERATION, null, remoteCertGenJPanel, false, true);
 
         // MONITORING /////////////
         JTabbedPane monitoringJTabbedPane = addTabbedPane(NAME_MONITORING_TAB, null);
-	
+
         // SNMP MONITORING //////
         RemoteSnmpJPanel remoteSnmpJPanel = new RemoteSnmpJPanel();
-	addScrollableTab(monitoringJTabbedPane, NAME_MONITORING_SNMP, null, remoteSnmpJPanel, false, true);
+        addScrollableTab(monitoringJTabbedPane, NAME_MONITORING_SNMP, null, remoteSnmpJPanel, false, true);
         addSavable(NAME_MONITORING_SNMP, remoteSnmpJPanel);
         addRefreshable(NAME_MONITORING_SNMP, remoteSnmpJPanel);
-		remoteSnmpJPanel.setSettingsChangedListener(this);
-	
+        remoteSnmpJPanel.setSettingsChangedListener(this);
+
         // SYSLOG MONITORING //////
         RemoteSyslogJPanel remoteSyslogJPanel = new RemoteSyslogJPanel();
-	addScrollableTab(monitoringJTabbedPane, NAME_MONITORING_SYSLOG, null, remoteSyslogJPanel, false, true);
+        addScrollableTab(monitoringJTabbedPane, NAME_MONITORING_SYSLOG, null, remoteSyslogJPanel, false, true);
         addSavable(NAME_MONITORING_SYSLOG, remoteSyslogJPanel);
         addRefreshable(NAME_MONITORING_SYSLOG, remoteSyslogJPanel);
-		remoteSyslogJPanel.setSettingsChangedListener(this);
-	
+        remoteSyslogJPanel.setSettingsChangedListener(this);
+
         // MANUAL REBOOT //////
         RemoteRestartJPanel remoteRestartJPanel = new RemoteRestartJPanel();
         addTab(NAME_MANUAL_REBOOT, null, remoteRestartJPanel);

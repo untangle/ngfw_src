@@ -28,111 +28,111 @@ import com.untangle.mvvm.tran.PipelineEndpoints;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-@Table(name="tr_ids_evt", schema="events")
-public class IDSLogEvent extends PipelineEvent {
+    @Table(name="tr_ids_evt", schema="events")
+    public class IDSLogEvent extends PipelineEvent {
 
-    private String classification;
-    private String message;
-    private boolean blocked;
-    private int ruleSid;
+        private String classification;
+        private String message;
+        private boolean blocked;
+        private int ruleSid;
 
-    // constructors -----------------------------------------------------------
+        // constructors -----------------------------------------------------------
 
-    public IDSLogEvent() { }
+        public IDSLogEvent() { }
 
-    public IDSLogEvent(PipelineEndpoints pe, int ruleSid, String classification,
-                       String message, boolean blocked) {
-        super(pe);
+        public IDSLogEvent(PipelineEndpoints pe, int ruleSid, String classification,
+                           String message, boolean blocked) {
+            super(pe);
 
-        this.ruleSid = ruleSid;
-        this.classification = classification;
-        this.message = message;
-        this.blocked = blocked;
+            this.ruleSid = ruleSid;
+            this.classification = classification;
+            this.message = message;
+            this.blocked = blocked;
+        }
+
+        // accessors --------------------------------------------------------------
+
+        /**
+         * SID of the rule that fired.
+         */
+        @Column(name="rule_sid", nullable=false)
+        public int getRuleSid() {
+            return this.ruleSid;
+        }
+
+        public void setRuleSid(int ruleSid) {
+            this.ruleSid = ruleSid;
+        }
+
+        /**
+         * Classification of signature that generated this event.
+         *
+         * @return the classification
+         */
+        public String getClassification() {
+            return classification;
+        }
+
+        public void setClassification(String classification) {
+            this.classification = classification;
+        }
+
+        /**
+         * Message of signature that generated this event.
+         *
+         * @return the message
+         */
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        /**
+         * Was it blocked.
+         *
+         * @return whether or not the session was blocked (closed)
+         */
+        @Column(nullable=false)
+        public boolean isBlocked() {
+            return blocked;
+        }
+
+        public void setBlocked(boolean blocked) {
+            this.blocked = blocked;
+        }
+
+        // Syslog methods ---------------------------------------------------------
+
+        public void appendSyslog(SyslogBuilder sb)
+        {
+            getPipelineEndpoints().appendSyslog(sb);
+
+            sb.startSection("info");
+            sb.addField("snort-id", ruleSid);
+            sb.addField("blocked", blocked);
+            sb.addField("message", message);
+        }
+
+        @Transient
+        public String getSyslogId()
+        {
+            return "Log";
+        }
+
+        @Transient
+        public SyslogPriority getSyslogPriority()
+        {
+            // NOTICE = ips event logged
+            // WARNING = traffic altered
+            return false == blocked ? SyslogPriority.NOTICE : SyslogPriority.WARNING;
+        }
+
+        // Object methods ---------------------------------------------------------
+
+        public String toString() {
+            return "IDSLogEvent id: " + getId() + " Message: " + message;
+        }
     }
-
-    // accessors --------------------------------------------------------------
-
-    /**
-     * SID of the rule that fired.
-     */
-    @Column(name="rule_sid", nullable=false)
-    public int getRuleSid() {
-        return this.ruleSid;
-    }
-
-    public void setRuleSid(int ruleSid) {
-        this.ruleSid = ruleSid;
-    }
-
-    /**
-     * Classification of signature that generated this event.
-     *
-     * @return the classification
-     */
-    public String getClassification() {
-        return classification;
-    }
-
-    public void setClassification(String classification) {
-        this.classification = classification;
-    }
-
-    /**
-     * Message of signature that generated this event.
-     *
-     * @return the message
-     */
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    /**
-     * Was it blocked.
-     *
-     * @return whether or not the session was blocked (closed)
-     */
-    @Column(nullable=false)
-    public boolean isBlocked() {
-        return blocked;
-    }
-
-    public void setBlocked(boolean blocked) {
-        this.blocked = blocked;
-    }
-
-    // Syslog methods ---------------------------------------------------------
-
-    public void appendSyslog(SyslogBuilder sb)
-    {
-        getPipelineEndpoints().appendSyslog(sb);
-
-        sb.startSection("info");
-        sb.addField("snort-id", ruleSid);
-        sb.addField("blocked", blocked);
-        sb.addField("message", message);
-    }
-
-    @Transient
-    public String getSyslogId()
-    {
-        return "Log";
-    }
-
-    @Transient
-    public SyslogPriority getSyslogPriority()
-    {
-        // NOTICE = ips event logged
-        // WARNING = traffic altered
-        return false == blocked ? SyslogPriority.NOTICE : SyslogPriority.WARNING;
-    }
-
-    // Object methods ---------------------------------------------------------
-
-    public String toString() {
-        return "IDSLogEvent id: " + getId() + " Message: " + message;
-    }
-}

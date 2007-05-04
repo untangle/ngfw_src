@@ -364,9 +364,9 @@ class TomcatManager
                                 }
                                 if (i == NUM_TOMCAT_RETRIES)
                                     MvvmContextImpl.getInstance().fatalError("Unable to start Tomcat after " +
-                                                    NUM_TOMCAT_RETRIES
-                                                    + " tries, giving up",
-                                                    null);
+                                                                             NUM_TOMCAT_RETRIES
+                                                                             + " tries, giving up",
+                                                                             null);
                             }
                         };
                     new Thread(tryAgain, "Tomcat starter").start();
@@ -515,7 +515,7 @@ class TomcatManager
             if (options.allowLinking)
                 ctx.setAllowLinking(true);
             ctx.setSessionTimeout(options.sessionTimeout);
-           if (null != realm) {
+            if (null != realm) {
                 ctx.setRealm(realm);
             }
 

@@ -29,14 +29,14 @@ public class SpywareSummarizer extends BaseSummarizer {
         long activeXBlockCount = 0l;
         long urlBlockCount = 0l;
         long subnetLogCount = 0l; // # of logged subnet access events
-    long passCount = 0l;
+        long passCount = 0l;
 
         try {
-        String sql;
-        PreparedStatement ps;
-        ResultSet rs;
+            String sql;
+            PreparedStatement ps;
+            ResultSet rs;
 
-        sql = "SELECT SUM(cookie) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
+            sql = "SELECT SUM(cookie) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -46,7 +46,7 @@ public class SpywareSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-        sql = "SELECT SUM(activeX) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
+            sql = "SELECT SUM(activeX) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -56,7 +56,7 @@ public class SpywareSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-        sql = "SELECT SUM(url) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
+            sql = "SELECT SUM(url) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -66,7 +66,7 @@ public class SpywareSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-        sql = "SELECT SUM(subnet_access) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
+            sql = "SELECT SUM(subnet_access) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -76,7 +76,7 @@ public class SpywareSummarizer extends BaseSummarizer {
             rs.close();
             ps.close();
 
-        sql = "SELECT SUM(pass) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
+            sql = "SELECT SUM(pass) FROM tr_spyware_statistic_evt WHERE time_stamp >= ? and time_stamp < ?";
             ps = conn.prepareStatement(sql);
             ps.setTimestamp(1, startDate);
             ps.setTimestamp(2, endDate);
@@ -90,7 +90,7 @@ public class SpywareSummarizer extends BaseSummarizer {
             logger.warn("could not summarize", exn);
         }
 
-    long totalCount = cookieBlockCount + activeXBlockCount + urlBlockCount + subnetLogCount;
+        long totalCount = cookieBlockCount + activeXBlockCount + urlBlockCount + subnetLogCount;
 
         addEntry("Potential spyware communications detected", Util.trimNumber("",totalCount));
         addEntry("&nbsp;&nbsp;&nbsp;Blocked cookies", Util.trimNumber("",cookieBlockCount), Util.percentNumber(cookieBlockCount,totalCount));

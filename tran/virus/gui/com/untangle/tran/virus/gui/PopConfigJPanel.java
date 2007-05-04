@@ -11,19 +11,16 @@
 
 package com.untangle.tran.virus.gui;
 
-import com.untangle.gui.transform.*;
-import com.untangle.gui.util.*;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.tran.virus.*;
-//import com.untangle.tran.mail.*;
-import com.untangle.mvvm.tran.TransformContext;
-
-
 import java.awt.*;
 import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.editTable.*;
+import com.untangle.tran.virus.*;
 
 
 public class PopConfigJPanel extends MEditTableJPanel {
@@ -73,61 +70,61 @@ class PopTableModel extends MSortedTableModel<Object>{
     private static final String SOURCE_OUTBOUND = "outgoing message";
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-	VirusPOPConfig virusPOPConfigInbound = null;
-	VirusPOPConfig virusPOPConfigOutbound = null;
+        VirusPOPConfig virusPOPConfigInbound = null;
+        VirusPOPConfig virusPOPConfigOutbound = null;
 
-	for( Vector rowVector : tableVector ){
+        for( Vector rowVector : tableVector ){
             VirusPOPConfig virusPOPConfig = (VirusPOPConfig) rowVector.elementAt(6);
             virusPOPConfig.setScan( (Boolean) rowVector.elementAt(3) );
             virusPOPConfig.setMsgAction( (VirusMessageAction) ((ComboBoxModel)rowVector.elementAt(4)).getSelectedItem() );
             virusPOPConfig.setNotes( (String) rowVector.elementAt(5) );
-	    
-	    if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
-		virusPOPConfigInbound = virusPOPConfig;
-	    }
-	    else if( ((String)rowVector.elementAt(2)).equals(SOURCE_OUTBOUND) ){
-		virusPOPConfigOutbound = virusPOPConfig;
-	    }  
+
+            if( ((String)rowVector.elementAt(2)).equals(SOURCE_INBOUND) ){
+                virusPOPConfigInbound = virusPOPConfig;
+            }
+            else if( ((String)rowVector.elementAt(2)).equals(SOURCE_OUTBOUND) ){
+                virusPOPConfigOutbound = virusPOPConfig;
+            }
         }
-	
-	// SAVE SETTINGS ////////
-	if( !validateOnly ){
-	    VirusSettings virusSettings = (VirusSettings) settings;
-	    virusSettings.setPOPInbound( virusPOPConfigInbound );
-	    virusSettings.setPOPOutbound( virusPOPConfigOutbound );
-	}
+
+        // SAVE SETTINGS ////////
+        if( !validateOnly ){
+            VirusSettings virusSettings = (VirusSettings) settings;
+            virusSettings.setPOPInbound( virusPOPConfigInbound );
+            virusSettings.setPOPOutbound( virusPOPConfigOutbound );
+        }
     }
 
     public Vector<Vector> generateRows(Object settings) {
         VirusSettings virusSettings = (VirusSettings) settings;
         Vector<Vector> allRows = new Vector<Vector>(2);
-	int rowIndex = 0;
+        int rowIndex = 0;
 
-	// INBOUND
-	rowIndex++;
-	Vector inboundRow = new Vector(7);
+        // INBOUND
+        rowIndex++;
+        Vector inboundRow = new Vector(7);
         VirusPOPConfig virusPOPConfigInbound = virusSettings.getPOPInbound();
         inboundRow.add( super.ROW_SAVED );
         inboundRow.add( rowIndex );
         inboundRow.add( SOURCE_INBOUND );
         inboundRow.add( virusPOPConfigInbound.getScan() );
-	inboundRow.add( super.generateComboBoxModel(VirusMessageAction.getValues(), virusPOPConfigInbound.getMsgAction()) );
+        inboundRow.add( super.generateComboBoxModel(VirusMessageAction.getValues(), virusPOPConfigInbound.getMsgAction()) );
         inboundRow.add( virusPOPConfigInbound.getNotes() );
-	inboundRow.add( virusPOPConfigInbound );
-	allRows.add(inboundRow);
+        inboundRow.add( virusPOPConfigInbound );
+        allRows.add(inboundRow);
 
-	// OUTBOUND
-	rowIndex++;
-	Vector outboundRow = new Vector(7);
+        // OUTBOUND
+        rowIndex++;
+        Vector outboundRow = new Vector(7);
         VirusPOPConfig virusPOPConfigOutbound = virusSettings.getPOPOutbound();
         outboundRow.add( super.ROW_SAVED );
         outboundRow.add( rowIndex );
         outboundRow.add( SOURCE_OUTBOUND );
         outboundRow.add( virusPOPConfigOutbound.getScan() );
-	outboundRow.add( super.generateComboBoxModel(VirusMessageAction.getValues(), virusPOPConfigOutbound.getMsgAction()) );
+        outboundRow.add( super.generateComboBoxModel(VirusMessageAction.getValues(), virusPOPConfigOutbound.getMsgAction()) );
         outboundRow.add( virusPOPConfigOutbound.getNotes() );
-	outboundRow.add( virusPOPConfigOutbound );
-	allRows.add(outboundRow);
+        outboundRow.add( virusPOPConfigOutbound );
+        allRows.add(outboundRow);
 
         return allRows;
     }

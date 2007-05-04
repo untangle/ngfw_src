@@ -39,7 +39,7 @@ public abstract class AbstractParser implements Parser
      * @return the session.
      */
     protected TCPSession getSession() {
-      return session;
+        return session;
     }
 
     // Parser noops -----------------------------------------------------------
@@ -86,7 +86,7 @@ public abstract class AbstractParser implements Parser
     }
 
     protected boolean isClientSide() {
-      return clientSide;
+        return clientSide;
     }
 
     // no-ops methods ---------------------------------------------------------

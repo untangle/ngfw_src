@@ -22,9 +22,9 @@ public interface HeaderFieldObserver {
 
 
 
-  /**
-   * The given Field has changed.
-   */
-  public void headerFieldChanged(HeaderField field);
+    /**
+     * The given Field has changed.
+     */
+    public void headerFieldChanged(HeaderField field);
 
 }

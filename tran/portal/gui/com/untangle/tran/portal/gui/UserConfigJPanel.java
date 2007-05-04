@@ -11,25 +11,18 @@
 
 package com.untangle.tran.portal.gui;
 
-import com.untangle.gui.configuration.DirectoryCompoundSettings;
-import com.untangle.gui.configuration.DirectoryJDialog;
-
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.gui.transform.*;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.widgets.MPasswordField;
-import com.untangle.gui.util.*;
-
-import com.untangle.tran.portal.*;
-import com.untangle.mvvm.portal.*;
-import com.untangle.mvvm.addrbook.UserEntry;
-
-import java.awt.*;
+import java.awt.Insets;
+import java.awt.Window;
 import java.util.*;
-import java.util.List;
 import javax.swing.*;
-import javax.swing.table.*;
 import javax.swing.event.*;
+import javax.swing.table.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.editTable.*;
+import com.untangle.mvvm.portal.*;
+import com.untangle.tran.portal.*;
 
 public class UserConfigJPanel extends MEditTableJPanel{
 
@@ -40,7 +33,7 @@ public class UserConfigJPanel extends MEditTableJPanel{
         super.setTableTitle("");
         super.setDetailsTitle("");
         super.setAddRemoveEnabled(true);
-        
+
         // create actual table model
         UserConfigTableModel userConfigTableModel = new UserConfigTableModel(mTransformControlsJPanel);
         this.setTableModel( userConfigTableModel );
@@ -50,7 +43,7 @@ public class UserConfigJPanel extends MEditTableJPanel{
 }
 
 
-class UserConfigTableModel extends MSortedTableModel<Object>{ 
+class UserConfigTableModel extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -67,7 +60,7 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
     protected boolean getSortable(){ return false; }
 
     public UserConfigTableModel(MTransformControlsJPanel mTransformControlsJPanel){
-	this.mTransformControlsJPanel = mTransformControlsJPanel;
+        this.mTransformControlsJPanel = mTransformControlsJPanel;
     }
 
     private static final String PLEASE_SELECT_USER = "Please select a user";
@@ -75,17 +68,17 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
 
 
     public void updateGroupModel(List<PortalGroup> portalGroups){
-	groupModel.removeAllElements();
-	PortalGroupWrapper defaultPortalGroupWrapper = new PortalGroupWrapper(null);
-	groupModel.addElement(defaultPortalGroupWrapper); // for the "default" group
-	for( PortalGroup portalGroup : portalGroups ){
-	    groupModel.addElement(new PortalGroupWrapper(portalGroup));
-	}
-	groupModel.setSelectedItem(defaultPortalGroupWrapper);
+        groupModel.removeAllElements();
+        PortalGroupWrapper defaultPortalGroupWrapper = new PortalGroupWrapper(null);
+        groupModel.addElement(defaultPortalGroupWrapper); // for the "default" group
+        for( PortalGroup portalGroup : portalGroups ){
+            groupModel.addElement(new PortalGroupWrapper(portalGroup));
+        }
+        groupModel.setSelectedItem(defaultPortalGroupWrapper);
     }
-    
+
     public TableColumnModel getTableColumnModel(){
-        
+
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS );
@@ -115,23 +108,23 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
         int rowIndex = 1;
         // go through all the rows and perform some tests
         for( Vector tempUser : tableVector ){
-	    String state = (String) tempUser.elementAt(0);
-	    if( !ROW_REMOVE.equals(state) ){
-		String uid = ((UidButtonRunnable) tempUser.elementAt(3)).getUid();
-		// no uid is unselected
-		if( uid == null ){
-		    throw new Exception("No user id/login has been selected in row: " + rowIndex);
-		}
-		// all uid's are unique
-		if( uidHashtable.contains( uid ) )
-		    throw new Exception("The user/login ID in row: " + rowIndex + " already exists.");
-		else
-		    uidHashtable.put(uid,uid);
-	    }
-	    rowIndex++;
-	}
+            String state = (String) tempUser.elementAt(0);
+            if( !ROW_REMOVE.equals(state) ){
+                String uid = ((UidButtonRunnable) tempUser.elementAt(3)).getUid();
+                // no uid is unselected
+                if( uid == null ){
+                    throw new Exception("No user id/login has been selected in row: " + rowIndex);
+                }
+                // all uid's are unique
+                if( uidHashtable.contains( uid ) )
+                    throw new Exception("The user/login ID in row: " + rowIndex + " already exists.");
+                else
+                    uidHashtable.put(uid,uid);
+            }
+            rowIndex++;
+        }
     }
-        
+
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
         List elemList = new ArrayList(tableVector.size());
         PortalUser newElem = null;
@@ -152,7 +145,7 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
             portalSettings.setUsers(elemList);
         }
     }
-    
+
     public Vector<Vector> generateRows(Object settings){
         PortalSettings portalSettings = (PortalSettings) settings;
         List<PortalUser> users = (List<PortalUser>) portalSettings.getUsers();
@@ -188,31 +181,31 @@ class UserConfigTableModel extends MSortedTableModel<Object>{
     }
 
     class PortalGroupWrapper {
-	private PortalGroup portalGroup;
-	public PortalGroupWrapper(PortalGroup portalGroup){
-	    this.portalGroup = portalGroup;
-	}
-	public String toString(){
-	    if( portalGroup == null )
-		return "no group";
-	    else
-		return portalGroup.getName();
-	}
-	public PortalGroup getPortalGroup(){
-	    return portalGroup;
-	}
-	public boolean equals(Object obj){
-	    if( ! (obj instanceof PortalGroupWrapper) )
-		return false;
-	    PortalGroupWrapper other = (PortalGroupWrapper) obj;
-	    if( (getPortalGroup() == null) && (other.getPortalGroup() == null) )
-		return true;
-	    else if( (getPortalGroup() != null) && (other.getPortalGroup() == null) )
-		return false;
-	    else if( (getPortalGroup() == null) && (other.getPortalGroup() != null) )
-		return false;
-	    else
-		return getPortalGroup().equals(other.getPortalGroup());
-	}
+        private PortalGroup portalGroup;
+        public PortalGroupWrapper(PortalGroup portalGroup){
+            this.portalGroup = portalGroup;
+        }
+        public String toString(){
+            if( portalGroup == null )
+                return "no group";
+            else
+                return portalGroup.getName();
+        }
+        public PortalGroup getPortalGroup(){
+            return portalGroup;
+        }
+        public boolean equals(Object obj){
+            if( ! (obj instanceof PortalGroupWrapper) )
+                return false;
+            PortalGroupWrapper other = (PortalGroupWrapper) obj;
+            if( (getPortalGroup() == null) && (other.getPortalGroup() == null) )
+                return true;
+            else if( (getPortalGroup() != null) && (other.getPortalGroup() == null) )
+                return false;
+            else if( (getPortalGroup() == null) && (other.getPortalGroup() != null) )
+                return false;
+            else
+                return getPortalGroup().equals(other.getPortalGroup());
+        }
     }
 }

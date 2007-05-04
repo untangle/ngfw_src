@@ -13,41 +13,39 @@
 
 package com.untangle.tran.protofilter.gui;
 
-import com.untangle.gui.transform.*;
-import com.untangle.gui.pipeline.MPipelineJPanel;
-import com.untangle.tran.protofilter.*;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.util.*;
-
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.table.*;
-import java.util.Vector;
 import javax.swing.event.*;
+import javax.swing.table.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.editTable.*;
+import com.untangle.tran.protofilter.*;
 
 public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
-    
+
     private static final String NAME_BLOCK_LIST = "Protocol List";
     private static final String NAME_LOG = "Event Log";
-    
+
     public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
         super(mTransformJPanel);
     }
 
     public void generateGui(){
-	// BLOCK LIST /////
-	ProtoConfigJPanel protoConfigJPanel = new ProtoConfigJPanel();
+        // BLOCK LIST /////
+        ProtoConfigJPanel protoConfigJPanel = new ProtoConfigJPanel();
         addTab(NAME_BLOCK_LIST, null, protoConfigJPanel);
-	addSavable(NAME_BLOCK_LIST, protoConfigJPanel);
-	addRefreshable(NAME_BLOCK_LIST, protoConfigJPanel);
-	protoConfigJPanel.setSettingsChangedListener(this);
+        addSavable(NAME_BLOCK_LIST, protoConfigJPanel);
+        addRefreshable(NAME_BLOCK_LIST, protoConfigJPanel);
+        protoConfigJPanel.setSettingsChangedListener(this);
 
         // EVENT LOG ///////
         LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
         addTab(NAME_LOG, null, logJPanel);
-	addShutdownable(NAME_LOG, logJPanel);
+        addShutdownable(NAME_LOG, logJPanel);
     }
-    
+
 }
 
 

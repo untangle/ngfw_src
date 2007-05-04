@@ -20,8 +20,6 @@ import com.untangle.mvvm.ArgonException;
 import com.untangle.mvvm.IntfConstants;
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.NetworkManager;
-import com.untangle.mvvm.networking.LocalNetworkManager;
-import com.untangle.mvvm.networking.NetworkException;
 import com.untangle.mvvm.networking.internal.ServicesInternalSettings;
 import com.untangle.mvvm.tran.HostName;
 import com.untangle.mvvm.tran.IPaddr;
@@ -173,7 +171,7 @@ class OpenVpnManager
 
         try {
             boolean isBridgeMode = settings.isBridgeMode();
-            
+
             /* ** XXXXXXX Bridge mode is unsupported */
             MvvmContextFactory.context().localIntfManager().
                 registerIntf( DEVICE_ROUTING, IntfConstants.VPN_INTF );
@@ -408,20 +406,20 @@ class OpenVpnManager
             sw.appendVariable( FLAG_CLI_IFCONFIG, "" + localEndpoint + " " + remoteEndpoint );
 
             if(client.getGroup().isUseDNS()) {
-              List<IPaddr> dnsServers = sis.getDnsServerList();
+                List<IPaddr> dnsServers = sis.getDnsServerList();
 
-              if ( settings.getIsDnsOverrideEnabled()) dnsServers = settings.getDnsServerList();
+                if ( settings.getIsDnsOverrideEnabled()) dnsServers = settings.getDnsServerList();
 
-              for(IPaddr addr : dnsServers) {
-                  sw.appendVariable( "push", "\"dhcp-option DNS " + addr.toString() + "\"");
-              }
+                for(IPaddr addr : dnsServers) {
+                    sw.appendVariable( "push", "\"dhcp-option DNS " + addr.toString() + "\"");
+                }
 
-              if(sis.getIsEnabled() && sis.getIsDnsEnabled()) {
-                  HostName localDomain = sis.getDnsLocalDomain();
-                  if(localDomain != null) {
-                      sw.appendVariable( "push", "\"dhcp-option DOMAIN " + localDomain.toString() + "\"");
-                  }
-              }
+                if(sis.getIsEnabled() && sis.getIsDnsEnabled()) {
+                    HostName localDomain = sis.getDnsLocalDomain();
+                    if(localDomain != null) {
+                        sw.appendVariable( "push", "\"dhcp-option DOMAIN " + localDomain.toString() + "\"");
+                    }
+                }
             }
 
 

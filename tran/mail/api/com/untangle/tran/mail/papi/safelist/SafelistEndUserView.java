@@ -17,7 +17,7 @@ package com.untangle.tran.mail.papi.safelist;
  * interface
  */
 public interface SafelistEndUserView
-  extends SafelistManipulation {
+    extends SafelistManipulation {
 
 
 }

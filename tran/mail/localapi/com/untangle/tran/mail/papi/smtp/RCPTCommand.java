@@ -14,12 +14,9 @@ package com.untangle.tran.mail.papi.smtp;
 import static com.untangle.tran.util.Rfc822Util.*;
 import static com.untangle.tran.util.Ascii.*;
 
-import java.nio.ByteBuffer;
 
 import com.untangle.tran.mime.*;
-
 import com.untangle.tran.token.ParseException;
-import com.untangle.tran.token.Token;
 
 /**
  * Class representing the "RCPT TO:&lt;X>" Command.
@@ -31,59 +28,59 @@ import com.untangle.tran.token.Token;
  * the RCPT line, this class must be modified.
  */
 public class RCPTCommand
-  extends CommandWithEmailAddress {
+    extends CommandWithEmailAddress {
 
-  private static final String NULL_TO_STR = "TO:<>";
+    private static final String NULL_TO_STR = "TO:<>";
 
-  public RCPTCommand(String cmd,
-    String argStr) throws ParseException {
-    
-    super(CommandType.RCPT, cmd, argStr);
-    
-    if(argStr == null) {
-      setAddress(EmailAddress.NULL_ADDRESS);
+    public RCPTCommand(String cmd,
+                       String argStr) throws ParseException {
+
+        super(CommandType.RCPT, cmd, argStr);
+
+        if(argStr == null) {
+            setAddress(EmailAddress.NULL_ADDRESS);
+        }
+        argStr = argStr.trim();
+
+        if(argStr.length() == 0 || "<>".equals(argStr)) {
+            //TODO bscott What should we do?  Fix this up?
+            setAddress(EmailAddress.NULL_ADDRESS);
+        }
+        else {
+            //Strip-off the "from" if found
+            //TODO bscott  This is a hack
+            String argStrLower = argStr.toLowerCase();
+            if(argStrLower.startsWith("to:")) {
+                argStr = argStr.substring(3);
+            }
+            else if(argStrLower.startsWith("to")) {
+                argStr = argStr.substring(2);
+            }
+            assignFromWire(argStr);
+        }
     }
-    argStr = argStr.trim();
 
-    if(argStr.length() == 0 || "<>".equals(argStr)) {
-      //TODO bscott What should we do?  Fix this up?
-      setAddress(EmailAddress.NULL_ADDRESS);
-    }
-    else {
-      //Strip-off the "from" if found
-      //TODO bscott  This is a hack
-      String argStrLower = argStr.toLowerCase();
-      if(argStrLower.startsWith("to:")) {
-        argStr = argStr.substring(3);
-      }
-      else if(argStrLower.startsWith("to")) {
-        argStr = argStr.substring(2);
-      }
-      assignFromWire(argStr);
-    }
-  }
+    /**
+     * Constructs a valid RCPT command with the
+     * given address.  If the passed-in address
+     * is null, then the output string will
+     * become "RCPT TO:<>" (which is nonsense
+     * but this class is not intended to enforce
+     * protocol semantics, only command format).
+     */
+    public RCPTCommand(EmailAddress addr)
+        throws ParseException {
+        super(CommandType.MAIL, "RCPT", null);
 
-  /**
-   * Constructs a valid RCPT command with the
-   * given address.  If the passed-in address
-   * is null, then the output string will
-   * become "RCPT TO:<>" (which is nonsense
-   * but this class is not intended to enforce
-   * protocol semantics, only command format).
-   */
-  public RCPTCommand(EmailAddress addr)
-    throws ParseException {
-    super(CommandType.MAIL, "RCPT", null);
-    
-    setEsmtpExtra(null);
-    if(addr == null) {
-      addr = EmailAddress.NULL_ADDRESS;
+        setEsmtpExtra(null);
+        if(addr == null) {
+            addr = EmailAddress.NULL_ADDRESS;
+        }
+        setAddress(addr);
     }
-    setAddress(addr);
-  }
 
-  protected String getArgStrPrefix() {
-    return "TO:";
-  }  
+    protected String getArgStrPrefix() {
+        return "TO:";
+    }
 
 }

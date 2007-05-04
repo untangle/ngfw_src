@@ -12,7 +12,6 @@
 package com.untangle.tran.mail.papi.smtp.sapi;
 
 import com.untangle.tran.mail.papi.smtp.*;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -21,39 +20,39 @@ import org.apache.log4j.Logger;
  * and perform some debug logging.
  */
 public class SimpleSessionHandler
-  extends SessionHandler {
+    extends SessionHandler {
 
-  private final Logger m_logger = Logger.getLogger(SimpleSessionHandler.class);
+    private final Logger m_logger = Logger.getLogger(SimpleSessionHandler.class);
 
-  public void handleCommand(Command command,
-    Session.SmtpCommandActions actions) {
-    m_logger.debug("[handleCommand] with command of type \"" +
-      command.getType() + "\"");
-    actions.sendCommandToServer(command, new PassthruResponseCompletion());
+    public void handleCommand(Command command,
+                              Session.SmtpCommandActions actions) {
+        m_logger.debug("[handleCommand] with command of type \"" +
+                       command.getType() + "\"");
+        actions.sendCommandToServer(command, new PassthruResponseCompletion());
 
-  }
+    }
 
-  public void handleOpeningResponse(Response resp,
-    Session.SmtpResponseActions actions) {
-    m_logger.debug("[handleOpeningResponse]");
-    actions.sendResponseToClient(resp);
-  }
-    
-  public TransactionHandler createTxHandler(SmtpTransaction tx) {
-    return new SimpleTransactionHandler(tx);
-  }
-  public boolean handleServerFIN(TransactionHandler currentTX) {
-    return true;
-  }
+    public void handleOpeningResponse(Response resp,
+                                      Session.SmtpResponseActions actions) {
+        m_logger.debug("[handleOpeningResponse]");
+        actions.sendResponseToClient(resp);
+    }
 
-  public boolean handleClientFIN(TransactionHandler currentTX) {
-    return true;
-  }
+    public TransactionHandler createTxHandler(SmtpTransaction tx) {
+        return new SimpleTransactionHandler(tx);
+    }
+    public boolean handleServerFIN(TransactionHandler currentTX) {
+        return true;
+    }
 
-  @Override
-  public void handleFinalized() {
-    //
-  }
+    public boolean handleClientFIN(TransactionHandler currentTX) {
+        return true;
+    }
+
+    @Override
+    public void handleFinalized() {
+        //
+    }
 
 
 }

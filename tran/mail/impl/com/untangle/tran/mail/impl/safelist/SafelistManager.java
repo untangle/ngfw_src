@@ -18,13 +18,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
-import org.hibernate.Query;
-import org.hibernate.Session;
-
 import com.untangle.mvvm.util.TransactionWork;
-import com.untangle.tran.mail.impl.GlobEmailAddressMapper;
 import com.untangle.tran.mail.MailTransformImpl;
+import com.untangle.tran.mail.impl.GlobEmailAddressMapper;
 import com.untangle.tran.mail.papi.MailTransformSettings;
 import com.untangle.tran.mail.papi.safelist.NoSuchSafelistException;
 import com.untangle.tran.mail.papi.safelist.SafelistActionFailedException;
@@ -36,12 +32,15 @@ import com.untangle.tran.mail.papi.safelist.SafelistSender;
 import com.untangle.tran.mail.papi.safelist.SafelistSettings;
 import com.untangle.tran.mail.papi.safelist.SafelistTransformView;
 import com.untangle.tran.mime.EmailAddress;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 /**
  * Implementation of the safelist stuff
  */
 public class SafelistManager
-  implements SafelistAdminView, SafelistEndUserView, SafelistTransformView
+    implements SafelistAdminView, SafelistEndUserView, SafelistTransformView
 {
     private final Logger m_logger = Logger.getLogger(SafelistManager.class);
 
@@ -72,7 +71,7 @@ public class SafelistManager
 
     //See doc on SafelistTransformView.java
     public boolean isSafelisted(EmailAddress envelopeSender,
-      EmailAddress mimeFrom, List<EmailAddress> recipients)
+                                EmailAddress mimeFrom, List<EmailAddress> recipients)
     {
         //Fix for bug 1174 - check not only for a null
         //EmailAddress object, but a null internal address
@@ -83,12 +82,12 @@ public class SafelistManager
         String addrStr = null;
 
         if(envelopeSender != null && envelopeSender.getAddress() != null) {
-          addrStr = envelopeSender.getAddress().toLowerCase();
+            addrStr = envelopeSender.getAddress().toLowerCase();
         }
         if(addrStr == null) {
-          if(mimeFrom != null && mimeFrom.getAddress() != null) {
-            addrStr = mimeFrom.getAddress().toLowerCase();
-          }
+            if(mimeFrom != null && mimeFrom.getAddress() != null) {
+                addrStr = mimeFrom.getAddress().toLowerCase();
+            }
         }
 
         boolean bReturn = false;
@@ -124,7 +123,7 @@ public class SafelistManager
 
     //See doc on SafelistManipulation.java
     public String[] addToSafelist(String rcpnt, String newSndr)
-      throws NoSuchSafelistException, SafelistActionFailedException
+        throws NoSuchSafelistException, SafelistActionFailedException
     {
         m_logger.debug("recipient: " + rcpnt + ", added: " + newSndr + " to safelist");
         ArrayList<String> sndrs = getSndrs(rcpnt);
@@ -152,7 +151,7 @@ public class SafelistManager
 
     //See doc on SafelistManipulation.java
     public String[] removeFromSafelist(String rcpnt, String obsSndr)
-      throws NoSuchSafelistException, SafelistActionFailedException
+        throws NoSuchSafelistException, SafelistActionFailedException
     {
         m_logger.debug("recipient: " + rcpnt + ", removed: " + obsSndr + " from safelist");
         ArrayList<String> sndrs = getSndrs(rcpnt);
@@ -181,7 +180,7 @@ public class SafelistManager
 
     //See doc on SafelistManipulation.java
     public String[] replaceSafelist(String rcpnt, String...newSndrs)
-      throws NoSuchSafelistException, SafelistActionFailedException
+        throws NoSuchSafelistException, SafelistActionFailedException
     {
         m_logger.debug("recipient: " + rcpnt + ", replacing safelist");
         ArrayList<String> sndrs = getSndrs(rcpnt);
@@ -210,7 +209,7 @@ public class SafelistManager
 
     //See doc on SafelistManipulation.java
     public String[] getSafelistContents(String rcpnt)
-      throws NoSuchSafelistException, SafelistActionFailedException
+        throws NoSuchSafelistException, SafelistActionFailedException
     {
         m_logger.debug("recipient: " + rcpnt + ", getting safelist");
         ArrayList<String> sndrs = getSndrs(rcpnt);
@@ -224,7 +223,7 @@ public class SafelistManager
 
     //See doc on SafelistManipulation.java
     public int getSafelistCnt(String rcpnt)
-      throws NoSuchSafelistException, SafelistActionFailedException
+        throws NoSuchSafelistException, SafelistActionFailedException
     {
         m_logger.debug("recipient: " + rcpnt + ", getting safelist cnt");
         ArrayList<String> sndrs = getSndrs(rcpnt);
@@ -260,7 +259,7 @@ public class SafelistManager
 
     //See doc on SafelistAdminView.java
     public void deleteSafelist(String rcpnt)
-      throws SafelistActionFailedException
+        throws SafelistActionFailedException
     {
         m_logger.debug("recipient: " + rcpnt + ", deleted safelist");
         m_sndrsByRcpnt.remove(rcpnt.toLowerCase());
@@ -272,7 +271,7 @@ public class SafelistManager
 
     //See doc on SafelistAdminView.java
     public void createSafelist(String rcpnt)
-      throws SafelistActionFailedException
+        throws SafelistActionFailedException
     {
         createSL(rcpnt);
         return;
@@ -280,7 +279,7 @@ public class SafelistManager
 
     //See doc on SafelistAdminView.java
     public boolean safelistExists(String rcpnt)
-      throws SafelistActionFailedException
+        throws SafelistActionFailedException
     {
         boolean bReturn = m_sndrsByRcpnt.containsKey(rcpnt.toLowerCase());
         m_logger.debug("recipient: " + rcpnt + ", has safelist: " + bReturn);
@@ -455,16 +454,16 @@ public class SafelistManager
         mlSettings.setSafelistSettings(safelists);
 
         TransactionWork tw = new TransactionWork()
-        {
-            public boolean doWork(Session s)
             {
-                s.merge(mlSettings);
+                public boolean doWork(Session s)
+                {
+                    s.merge(mlSettings);
 
-                return true;
-            }
+                    return true;
+                }
 
-            public Object getResult() { return null; }
-        };
+                public Object getResult() { return null; }
+            };
         mlImpl.getTransformContext().runTransaction(tw);
 
         return;
@@ -484,18 +483,18 @@ public class SafelistManager
     private List getHMSafelists()
     {
         TransactionWork tw = new TransactionWork()
-        {
-            public boolean doWork(Session s)
             {
-                Query q = s.createQuery
-                    ("from MailTransformSettings");
-                mlSettings = (MailTransformSettings)q.uniqueResult();
+                public boolean doWork(Session s)
+                {
+                    Query q = s.createQuery
+                        ("from MailTransformSettings");
+                    mlSettings = (MailTransformSettings)q.uniqueResult();
 
-                return true;
-            }
+                    return true;
+                }
 
-            public Object getResult() { return null; }
-        };
+                public Object getResult() { return null; }
+            };
         mlImpl.getTransformContext().runTransaction(tw);
 
         // cast list because xdoclet does not support java 1.5
@@ -539,7 +538,7 @@ public class SafelistManager
 
             if (true == sndrs.contains(sndr)) {
                 // we explicitly ignore duplicates for ArrayList
-                continue; 
+                continue;
             }
             // else add sender to this recipient's safelist
 
@@ -579,7 +578,7 @@ public class SafelistManager
     }
 
     private ArrayList<String> createSL(String rcpnt)
-      throws SafelistActionFailedException
+        throws SafelistActionFailedException
     {
         m_logger.debug("recipient: " + rcpnt + ", created safelist");
         ArrayList<String> sndrs = getSndrs(rcpnt);

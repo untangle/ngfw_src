@@ -114,11 +114,11 @@ public class IDSRuleManager {
         rule.setModified(false);
     }
 
-//    public boolean addRule(String rule, Long key) throws ParseException {
-  //      IDSRule test = new IDSRule(rule,"Not set", "Not set");
+    //    public boolean addRule(String rule, Long key) throws ParseException {
+    //      IDSRule test = new IDSRule(rule,"Not set", "Not set");
     //    test.setLog(true);
-      //  test.setKeyValue(key);
-        //return addRule(test);
+    //  test.setKeyValue(key);
+    //return addRule(test);
     //}
 
     public boolean addRule(IDSRule rule) throws ParseException {

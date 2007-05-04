@@ -10,8 +10,8 @@
  */
 package com.untangle.tran.mail.web.euv.tags;
 
-import javax.servlet.ServletRequest;
 import java.net.URLEncoder;
+import javax.servlet.ServletRequest;
 
 
 /**
@@ -19,47 +19,47 @@ import java.net.URLEncoder;
  * if there 'aint one
  */
 public final class CurrentAuthTokenTag
-  extends SingleValueTag {
+    extends SingleValueTag {
 
-  private static final String AUTH_TOKEN_KEY = "untangle.auth_token";
+    private static final String AUTH_TOKEN_KEY = "untangle.auth_token";
 
-  private boolean m_encoded = false;
+    private boolean m_encoded = false;
 
-  public void setEncoded(boolean encoded) {
-    m_encoded = encoded;
-  }
-  public boolean isEncoded() {
-    return m_encoded;
-  }
-
-  @Override
-  protected String getValue() {
-    String s = null;
-    if(hasCurrent(pageContext.getRequest())) {
-      s = getCurrent(pageContext.getRequest());
-      if(isEncoded()) {
-        s = URLEncoder.encode(s);
-      }
+    public void setEncoded(boolean encoded) {
+        m_encoded = encoded;
     }
-    return s;
-  }
+    public boolean isEncoded() {
+        return m_encoded;
+    }
 
-  public static final void setCurrent(ServletRequest request,
-    String token) {
-    request.setAttribute(AUTH_TOKEN_KEY, token);
-  }
-  public static final void clearCurret(ServletRequest request) {
-    request.removeAttribute(AUTH_TOKEN_KEY);
-  }
+    @Override
+    protected String getValue() {
+        String s = null;
+        if(hasCurrent(pageContext.getRequest())) {
+            s = getCurrent(pageContext.getRequest());
+            if(isEncoded()) {
+                s = URLEncoder.encode(s);
+            }
+        }
+        return s;
+    }
 
-  /**
-   * Returns null if there is no current token
-   */
-  static String getCurrent(ServletRequest request) {
-    return (String) request.getAttribute(AUTH_TOKEN_KEY);
-  }
+    public static final void setCurrent(ServletRequest request,
+                                        String token) {
+        request.setAttribute(AUTH_TOKEN_KEY, token);
+    }
+    public static final void clearCurret(ServletRequest request) {
+        request.removeAttribute(AUTH_TOKEN_KEY);
+    }
 
-  static boolean hasCurrent(ServletRequest request) {
-    return getCurrent(request) != null;
-  }  
+    /**
+     * Returns null if there is no current token
+     */
+    static String getCurrent(ServletRequest request) {
+        return (String) request.getAttribute(AUTH_TOKEN_KEY);
+    }
+
+    static boolean hasCurrent(ServletRequest request) {
+        return getCurrent(request) != null;
+    }
 }

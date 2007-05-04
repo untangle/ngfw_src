@@ -86,7 +86,7 @@ public class IDSTest {
         }
     }
 
-/*Order is no longer preserved - same headers get compressed :/*/
+    /*Order is no longer preserved - same headers get compressed :/*/
     private boolean generateRuleTest() {
         String testValidStrings[]   = {
             /** Header 0*/
@@ -124,9 +124,9 @@ public class IDSTest {
 
             /** 3550 **/
             "alert tcp $EXTERNAL_NET $HTTP_PORTS -> $HOME_NET any (msg:\"(Rule 17) WEB-CLIENT HTML http scheme hostname overflow attempt\"; flow:to_client,established; content:\"http|3A|//\"; nocase; pcre:\"/=\\x22http\\x3a\\x2f\\x2f[^\\x3a\\x2f@\\s\\x22\\x3F\\x26]{255}|=\\x27http\\x3a\\x2f\\x2f[^\\x3a\\x2f@\\s\\x27\\x3F\\x26]{255}|=http\\x3a\\x2f\\x2f[^\\x3a\\x2f@\\s\\x3F\\x26]{255}/i\"; reference:cve,2005-0553; classtype:attempted-user; sid:3550; rev:5;)",
-};
+        };
 
-        
+
 
         for(int i=0; i < testValidStrings.length; i++) {
             try {
@@ -270,19 +270,19 @@ public class IDSTest {
     }
 
     private void matchTest(IDSRuleHeader header, Protocol protocol, String clientAddr, int clientPort, String serverAddr, int serverPort, boolean answer) {
-            InetAddress clientAddress = null;
-            InetAddress serverAddress = null;
-            try {
-                clientAddress = InetAddress.getByName(clientAddr);
-                serverAddress = InetAddress.getByName(serverAddr);
-            } catch( Exception e ) { log.error(e); }
+        InetAddress clientAddress = null;
+        InetAddress serverAddress = null;
+        try {
+            clientAddress = InetAddress.getByName(clientAddr);
+            serverAddress = InetAddress.getByName(serverAddr);
+        } catch( Exception e ) { log.error(e); }
 
-            SessionEndpoints se = new TestEndpoints((short)protocol.getId(), clientAddress, clientPort, serverAddress, serverPort);
-            if(!checkAnswer(header.matches(se, true, true),answer))
-                log.warn("Match Test Failed:\n"  +
-                         "Client:" +clientAddress+":"+clientPort +
-                         "\nServer:" +serverAddress+":"+serverPort +
-                         "\ndoes not match rule:\n" + header +"\n");
+        SessionEndpoints se = new TestEndpoints((short)protocol.getId(), clientAddress, clientPort, serverAddress, serverPort);
+        if(!checkAnswer(header.matches(se, true, true),answer))
+            log.warn("Match Test Failed:\n"  +
+                     "Client:" +clientAddress+":"+clientPort +
+                     "\nServer:" +serverAddress+":"+serverPort +
+                     "\ndoes not match rule:\n" + header +"\n");
     }
 
     private boolean checkAnswer(boolean eval, boolean correct) {
@@ -290,24 +290,24 @@ public class IDSTest {
             log.warn("Evaluated: "+ eval+ " Should be: " + correct);
         return eval == correct;
     }
-/*
-    private void runTimeTest(int seconds) {
-        long stopTime = System.currentTimeMillis() + seconds*1000;
-        int counter = 0;
-        manager = IDSDetectionEngine.instance().getRulesForTesting();
-        Random rand = new Random();
-        while(stopTime > System.currentTimeMillis()) {
-            try {
-                InetAddress addr1 = InetAddress.getByName(rand.nextInt(256)+"."+rand.nextInt(256)+"."+rand.nextInt(256)+"."+rand.nextInt(256));
-                InetAddress addr2 = InetAddress.getByName(rand.nextInt(256)+"."+rand.nextInt(256)+"."+rand.nextInt(256)+"."+rand.nextInt(256));
-                IPNewSessionRequest session = buildSessionRequest(Protocol.TCP, addr1, rand.nextInt(65536), addr2, rand.nextInt(65536));
-            } catch (Exception e) { log.error("er");}
-            counter++;
-        }
-        double timePerMatch = (double)seconds*1000/(double)counter;
-        log.info("Completed " + counter+ " matches in " + seconds + " seconds "+" ("+timePerMatch+" ms/match"+").");
-    }
-*/
+    /*
+      private void runTimeTest(int seconds) {
+      long stopTime = System.currentTimeMillis() + seconds*1000;
+      int counter = 0;
+      manager = IDSDetectionEngine.instance().getRulesForTesting();
+      Random rand = new Random();
+      while(stopTime > System.currentTimeMillis()) {
+      try {
+      InetAddress addr1 = InetAddress.getByName(rand.nextInt(256)+"."+rand.nextInt(256)+"."+rand.nextInt(256)+"."+rand.nextInt(256));
+      InetAddress addr2 = InetAddress.getByName(rand.nextInt(256)+"."+rand.nextInt(256)+"."+rand.nextInt(256)+"."+rand.nextInt(256));
+      IPNewSessionRequest session = buildSessionRequest(Protocol.TCP, addr1, rand.nextInt(65536), addr2, rand.nextInt(65536));
+      } catch (Exception e) { log.error("er");}
+      counter++;
+      }
+      double timePerMatch = (double)seconds*1000/(double)counter;
+      log.info("Completed " + counter+ " matches in " + seconds + " seconds "+" ("+timePerMatch+" ms/match"+").");
+      }
+    */
     private void generateRandomRuleHeaders(int num) {
         long startTime = System.currentTimeMillis();
         Random rand = new Random();
@@ -333,9 +333,9 @@ public class IDSTest {
             clientPort = getRandomPort();
             serverPort = getRandomPort();
 
-        //  try {
-                //manager.addRule("alert"+prot+clientIP+clientPort+dir+serverIP+serverPort+" ( content: \"I like spoons\"; msg: \"This is just a test\";)");
-        //  } catch(ParseException e) { log.error("Could not parse rule; " + e.getMessage()); }
+            //  try {
+            //manager.addRule("alert"+prot+clientIP+clientPort+dir+serverIP+serverPort+" ( content: \"I like spoons\"; msg: \"This is just a test\";)");
+            //  } catch(ParseException e) { log.error("Could not parse rule; " + e.getMessage()); }
         }
         long endTime = System.currentTimeMillis() - startTime;
         log.info("Time it took to parse " + num +" rules: " + endTime + " milliseconds");
@@ -345,19 +345,19 @@ public class IDSTest {
         String str;
         Random rand = new Random();
         switch(rand.nextInt(3)) {
-            case 0:
-                str = "any";
-                break;
-            case 1:
-                str = rand.nextInt(65536)+"";
-                break;
-            case 2:
-                int port1 = rand.nextInt(65536);
-                int port2 = rand.nextInt(65536);
-                str = port1+":"+port2;
-                break;
-            default:
-                str = "any";
+        case 0:
+            str = "any";
+            break;
+        case 1:
+            str = rand.nextInt(65536)+"";
+            break;
+        case 2:
+            int port1 = rand.nextInt(65536);
+            int port2 = rand.nextInt(65536);
+            str = port1+":"+port2;
+            break;
+        default:
+            str = "any";
         }
         return " "+str;
     }
@@ -366,20 +366,20 @@ public class IDSTest {
         String str;
         Random rand = new Random();
         switch(rand.nextInt(4))  {
-            case 0:
-                str = "any";
-                break;
-            case 1:
-                str ="10.0.0.1/24";
-                break;
-            case 2:
-                str = "[192.168.0.1,192.168.0.30,192.168.0.101]";
-                break;
-            case 3:
-                str = rand.nextInt(256)+"."+rand.nextInt(256)+"."+rand.nextInt(256)+"."+rand.nextInt(256);
-                break;
-            default:
-                str = "any";
+        case 0:
+            str = "any";
+            break;
+        case 1:
+            str ="10.0.0.1/24";
+            break;
+        case 2:
+            str = "[192.168.0.1,192.168.0.30,192.168.0.101]";
+            break;
+        case 3:
+            str = rand.nextInt(256)+"."+rand.nextInt(256)+"."+rand.nextInt(256)+"."+rand.nextInt(256);
+            break;
+        default:
+            str = "any";
         }
         return " "+str;
     }

@@ -17,7 +17,7 @@ package com.untangle.tran.mime;
  * has been added to assist in SMTP-type stuff.
  */
 public enum RcptType {
-  TO,
-  CC,
-  BCC
+    TO,
+    CC,
+    BCC
 }

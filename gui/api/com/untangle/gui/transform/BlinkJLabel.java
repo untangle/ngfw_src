@@ -11,24 +11,23 @@
 
 package com.untangle.gui.transform;
 
-import com.untangle.mvvm.tran.TransformState;
-import com.untangle.gui.util.Util;
-
-import javax.swing.*;
 import java.awt.event.*;
+import javax.swing.*;
+
+import com.untangle.gui.util.Util;
 
 
 public class BlinkJLabel extends JLabel implements ActionListener {
-    
+
     private static final int BLINK_DELAY_MILLIS = 750;
-    
+
     private Icon lastIcon, targetIcon;
     private volatile boolean blink = false;
     private Timer blinkTimer;
-    
-    public BlinkJLabel() {        
-	blinkTimer = new Timer( BLINK_DELAY_MILLIS, (ActionListener) this );
-	blinkTimer.setInitialDelay( 0 );
+
+    public BlinkJLabel() {
+        blinkTimer = new Timer( BLINK_DELAY_MILLIS, (ActionListener) this );
+        blinkTimer.setInitialDelay( 0 );
     }
 
 
@@ -43,40 +42,40 @@ public class BlinkJLabel extends JLabel implements ActionListener {
     public static final int DISABLED_STATE   = 7;
 
     public void setViewState( int viewState ){
-	switch(viewState){
-	    // dynamic states
-            case PROBLEM_STATE :
-                lastIcon = Util.getIconStoppedState();
-                blink(true);
-                break;
-            case PROCESSING_STATE :
-		if(this.getIcon() != Util.getIconPausedState())
-		    lastIcon = this.getIcon();
-                blink(true);
-                break;
-            case STARTING_STATE :
-                lastIcon = Util.getIconOnState();
-                blink(true);
-                break;
-            case STOPPING_STATE :
-            case REMOVING_STATE :
-                lastIcon = Util.getIconOffState();
-                blink(true);
-                break;
-		// static states
-            case ON_STATE :
-                targetIcon = Util.getIconOnState();
-                blink(false);
-                break;
-            case OFF_STATE :
-                targetIcon = Util.getIconOffState();
-                blink(false);
-                break;
-            case DISABLED_STATE :
-                targetIcon = Util.getIconStoppedState();
-                blink(false);
-                break;
-            }
+        switch(viewState){
+            // dynamic states
+        case PROBLEM_STATE :
+            lastIcon = Util.getIconStoppedState();
+            blink(true);
+            break;
+        case PROCESSING_STATE :
+            if(this.getIcon() != Util.getIconPausedState())
+                lastIcon = this.getIcon();
+            blink(true);
+            break;
+        case STARTING_STATE :
+            lastIcon = Util.getIconOnState();
+            blink(true);
+            break;
+        case STOPPING_STATE :
+        case REMOVING_STATE :
+            lastIcon = Util.getIconOffState();
+            blink(true);
+            break;
+            // static states
+        case ON_STATE :
+            targetIcon = Util.getIconOnState();
+            blink(false);
+            break;
+        case OFF_STATE :
+            targetIcon = Util.getIconOffState();
+            blink(false);
+            break;
+        case DISABLED_STATE :
+            targetIcon = Util.getIconStoppedState();
+            blink(false);
+            break;
+        }
     }
     /////////////////////////////////////////
 
@@ -88,12 +87,12 @@ public class BlinkJLabel extends JLabel implements ActionListener {
         if(blink)
             blinkTimer.restart();
         else{
-	    if( blinkTimer.isRunning() ){
-		lastIcon = targetIcon;
-	    }
-	    else{
-		this.setIcon(targetIcon);
-	    }
+            if( blinkTimer.isRunning() ){
+                lastIcon = targetIcon;
+            }
+            else{
+                this.setIcon(targetIcon);
+            }
         }
     }
 
@@ -108,9 +107,9 @@ public class BlinkJLabel extends JLabel implements ActionListener {
             this.setIcon(lastIcon);
             blinkTimer.stop();
         }
-        
+
     }
     //////////////////////////////////////
 
-    
+
 }

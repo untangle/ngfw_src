@@ -16,26 +16,26 @@ package com.untangle.tran.mail.web.euv.tags;
  * messages are present
  */
 public final class HasMessagesTag
-  extends IfElseTag {
+    extends IfElseTag {
 
-  private String m_type = null;
+    private String m_type = null;
 
-  public void setType(String type){
-    m_type = type;
-  }
-  
-  public String getType(){
-    return m_type;
-  }
-  
-  @Override
-  public boolean isIncludeIfTrue() {
-    return true;
-  }
-  
-  @Override
-  protected boolean isConditionTrue() {
-    return MessagesSetTag.hasMessages(pageContext.getRequest(), getType());
-  }
+    public void setType(String type){
+        m_type = type;
+    }
+
+    public String getType(){
+        return m_type;
+    }
+
+    @Override
+    public boolean isIncludeIfTrue() {
+        return true;
+    }
+
+    @Override
+    protected boolean isConditionTrue() {
+        return MessagesSetTag.hasMessages(pageContext.getRequest(), getType());
+    }
 
 }

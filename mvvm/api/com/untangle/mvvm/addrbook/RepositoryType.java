@@ -15,20 +15,20 @@ package com.untangle.mvvm.addrbook;
  * Enum of different repository types
  */
 public enum RepositoryType {
-  /**
-   * Microsoft Active Directory
-   */
-  MS_ACTIVE_DIRECTORY,
+    /**
+     * Microsoft Active Directory
+     */
+    MS_ACTIVE_DIRECTORY,
 
-  /**
-   * MVVM-local repository
-   */
-  LOCAL_DIRECTORY,
+    /**
+     * MVVM-local repository
+     */
+    LOCAL_DIRECTORY,
 
-  /**
-   * No repository
-   */
-  NONE
+    /**
+     * No repository
+     */
+    NONE
 }
 
 

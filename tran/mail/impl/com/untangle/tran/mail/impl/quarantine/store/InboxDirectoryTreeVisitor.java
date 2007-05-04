@@ -19,14 +19,14 @@ package com.untangle.tran.mail.impl.quarantine.store;
  */
 interface InboxDirectoryTreeVisitor {
 
-  /**
-   * Visit the given directory within the
-   * InboxDirectoryTree.
-   *
-   * @param f the relative file representing
-   *        a directory.  Note that this
-   *        may not be a terminal (inbox)
-   *        directory.
-   */
-  void visit(RelativeFile f);
+    /**
+     * Visit the given directory within the
+     * InboxDirectoryTree.
+     *
+     * @param f the relative file representing
+     *        a directory.  Note that this
+     *        may not be a terminal (inbox)
+     *        directory.
+     */
+    void visit(RelativeFile f);
 }

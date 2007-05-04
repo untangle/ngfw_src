@@ -53,28 +53,28 @@ abstract class SessionImpl implements Session {
     }
 
     /*
-    public ExtendedPreferences sessionNode()
-    {
-        return MvvmContextFactory.mvvmContext().preferencesManager()
-            .sessionPreferences(id());
-    }
+      public ExtendedPreferences sessionNode()
+      {
+      return MvvmContextFactory.mvvmContext().preferencesManager()
+      .sessionPreferences(id());
+      }
     */
 
     /*
-    public String sessionPath()
-    {
-        return MvvmContextFactory.mvvmContext().preferencesManager()
-            .sessionPreferencesPath(id());
-    }
+      public String sessionPath()
+      {
+      return MvvmContextFactory.mvvmContext().preferencesManager()
+      .sessionPreferencesPath(id());
+      }
     */
 
     /*
-    public JXPathContext sessionContext()
-    {
-        return JXPathContext.newContext(MvvmContextFactory.mvvmContext()
-                                        .preferencesManager()
-                                        .sessionPreferences(id()));
-    }
+      public JXPathContext sessionContext()
+      {
+      return JXPathContext.newContext(MvvmContextFactory.mvvmContext()
+      .preferencesManager()
+      .sessionPreferences(id()));
+      }
     */
 
     public Object attach(Object ob)
@@ -112,7 +112,7 @@ abstract class SessionImpl implements Session {
     {
         return this.pSession.s2tBytes();
     }
-    
+
     /**
      * Number of bytes transmitted to the client.
      */

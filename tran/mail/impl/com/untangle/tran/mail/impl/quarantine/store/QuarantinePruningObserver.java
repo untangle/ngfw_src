@@ -11,8 +11,9 @@
 
 package com.untangle.tran.mail.impl.quarantine.store;
 
-import com.untangle.tran.mail.papi.quarantine.InboxRecord;
 import java.io.File;
+
+import com.untangle.tran.mail.papi.quarantine.InboxRecord;
 
 /**
  * Callback interface, used while the
@@ -22,33 +23,33 @@ import java.io.File;
  */
 public interface QuarantinePruningObserver {
 
-  public static final QuarantinePruningObserver NOOP =
-    new QuarantinePruningObserver() {
-    public void preVisitInboxForOldMessages(String address, RelativeFileName inboxDir) {}
-  
+    public static final QuarantinePruningObserver NOOP =
+        new QuarantinePruningObserver() {
+            public void preVisitInboxForOldMessages(String address, RelativeFileName inboxDir) {}
+
+            public void pruningOldMessage(String recipient,
+                                          File data,
+                                          InboxRecord record) {}
+
+            public void postVisitInboxForOldMessages(String address, RelativeFileName inboxDir) {}
+
+            public void pruningOldMailbox(String account,
+                                          RelativeFileName dirName,
+                                          long lastTouched) {}
+
+        };
+
+
+    public void preVisitInboxForOldMessages(String address, RelativeFileName inboxDir);
+
     public void pruningOldMessage(String recipient,
-      File data,
-      InboxRecord record) {}
-    
-    public void postVisitInboxForOldMessages(String address, RelativeFileName inboxDir) {}
-  
+                                  File data,
+                                  InboxRecord record);
+
+    public void postVisitInboxForOldMessages(String address, RelativeFileName inboxDir);
+
     public void pruningOldMailbox(String account,
-      RelativeFileName dirName,
-      long lastTouched) {}    
-    
-  };
-
-
-  public void preVisitInboxForOldMessages(String address, RelativeFileName inboxDir);
-
-  public void pruningOldMessage(String recipient,
-    File data,
-    InboxRecord record);
-  
-  public void postVisitInboxForOldMessages(String address, RelativeFileName inboxDir);
-
-  public void pruningOldMailbox(String account,
-    RelativeFileName dirName,
-    long lastTouched);
+                                  RelativeFileName dirName,
+                                  long lastTouched);
 
 }

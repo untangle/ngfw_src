@@ -251,7 +251,7 @@ public class IPMaddr implements Serializable, Comparable
 
         switch (rebits) {
         case 0:
-        // Next line keeps the compiler happy but has no other effect.
+            // Next line keeps the compiler happy but has no other effect.
         default:
             return true;
         case 1:
@@ -414,13 +414,13 @@ public class IPMaddr implements Serializable, Comparable
         else if (oper1 > oper2)
             return 1;
         else{
-	    if( maskToNumbits(mask) > maskToNumbits(other.mask) )
-		return 1;
-	    else if( maskToNumbits(mask) < maskToNumbits(other.mask) )
-		return -1;
-	    else
-		return 0;
-	}
+            if( maskToNumbits(mask) > maskToNumbits(other.mask) )
+                return 1;
+            else if( maskToNumbits(mask) < maskToNumbits(other.mask) )
+                return -1;
+            else
+                return 0;
+        }
     }
 
     /** Convert an IPMaddr to a long */
@@ -428,7 +428,7 @@ public class IPMaddr implements Serializable, Comparable
     {
         long val = 0;
         byte valArray[] = textToNumericFormat(addr);
-        
+
         for ( int c = 0 ; c < INADDRSZ ; c++ ) {
             val += ((long)byteToInt(valArray[c])) << ( 8 * ( INADDRSZ - c - 1 ));
         }
@@ -436,7 +436,7 @@ public class IPMaddr implements Serializable, Comparable
         return val;
     }
 
-    static int byteToInt ( byte val ) 
+    static int byteToInt ( byte val )
     {
         int num = val;
         if ( num < 0 ) num = num & 0x7F + 0x80;

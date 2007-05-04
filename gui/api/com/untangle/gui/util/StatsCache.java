@@ -29,7 +29,7 @@ public class StatsCache implements Shutdownable
     public StatsCache(){
         fakies = new HashMap<Tid, FakeTransform>();
         statsCacheUpdateThread = new StatsCacheUpdateThread();
-	Util.addShutdownable("StatsCacheUpdateThread", statsCacheUpdateThread);
+        Util.addShutdownable("StatsCacheUpdateThread", statsCacheUpdateThread);
     }
 
     public void start(){
@@ -37,7 +37,7 @@ public class StatsCache implements Shutdownable
     }
 
     public void doShutdown(){
-	statsCacheUpdateThread.doShutdown();
+        statsCacheUpdateThread.doShutdown();
     }
 
     public Transform getFakeTransform(Tid tid)
@@ -47,20 +47,20 @@ public class StatsCache implements Shutdownable
 
     private class StatsCacheUpdateThread extends Thread implements Shutdownable {
 
-	private volatile boolean stop = false;
+        private volatile boolean stop = false;
 
-	public StatsCacheUpdateThread(){
-	    setName("MVCLIENT-StatsCacheUpdateThread");
-	    setDaemon(true);
-	}
+        public StatsCacheUpdateThread(){
+            setName("MVCLIENT-StatsCacheUpdateThread");
+            setDaemon(true);
+        }
 
         public void doShutdown(){
-	    if(!stop){
-		stop = true;
-		interrupt();
-	    }
+            if(!stop){
+                stop = true;
+                interrupt();
+            }
         }
-       
+
 
         public void run() {
 
@@ -75,34 +75,34 @@ public class StatsCache implements Shutdownable
                         fakies.clear();
                     }
 
-		    // PUT STATS IN RESPECTIVE SPOTS
-		    for(Tid tid : allStats.keySet()){
-			if( fakies.containsKey(tid) ) {
-			    fakies.get(tid).setStats(allStats.get(tid));
-			} else {
-			    fakies.put(tid, new FakeTransform(allStats.get(tid)));
-			}
-		    }
+                    // PUT STATS IN RESPECTIVE SPOTS
+                    for(Tid tid : allStats.keySet()){
+                        if( fakies.containsKey(tid) ) {
+                            fakies.get(tid).setStats(allStats.get(tid));
+                        } else {
+                            fakies.put(tid, new FakeTransform(allStats.get(tid)));
+                        }
+                    }
 
                     // PAUSE A REASONABLE AMOUNT OF TIME
                     sleep(NORMAL_SLEEP_MILLIS);
                 }
-		catch(InterruptedException e){ continue; }
-		catch(Exception e){
-		    if( !isInterrupted() ){
-			try { Util.handleExceptionWithRestart("Error getting graph data", e); }
-			catch(Exception f){
-			    Util.handleExceptionNoRestart("Error getting graph data", f);
-			    try{ sleep(PROBLEM_SLEEP_MILLIS); }
-			    catch(InterruptedException g){ continue; }
-			}
-		    }
-		}
+                catch(InterruptedException e){ continue; }
+                catch(Exception e){
+                    if( !isInterrupted() ){
+                        try { Util.handleExceptionWithRestart("Error getting graph data", e); }
+                        catch(Exception f){
+                            Util.handleExceptionNoRestart("Error getting graph data", f);
+                            try{ sleep(PROBLEM_SLEEP_MILLIS); }
+                            catch(InterruptedException g){ continue; }
+                        }
+                    }
+                }
             }
-	    Util.printMessage("StatsCacheUpdateThread Stopped");
+            Util.printMessage("StatsCacheUpdateThread Stopped");
         }
     }
-    
+
     public class FakeTransform implements Transform {
         private TransformStats stats;
 

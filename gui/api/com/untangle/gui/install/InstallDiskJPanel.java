@@ -11,29 +11,20 @@
 
 package com.untangle.gui.install;
 
-import javax.swing.table.*;
-import java.util.Vector;
-import java.util.List;
-
-import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.gui.widgets.editTable.MSortedTableModel;
-import com.untangle.gui.widgets.editTable.MEditTableJPanel;
-import com.untangle.gui.transform.CompoundSettings;
-import com.untangle.mvvm.networking.Interface;
-
-import com.untangle.gui.widgets.wizard.*;
-import com.untangle.gui.util.Util;
-import javax.swing.SwingUtilities;
-import javax.swing.JLabel;
-import javax.swing.ListSelectionModel;
-import javax.swing.ButtonGroup;
-import javax.swing.JRadioButton;
-import java.awt.Color;
-import java.awt.Insets;
 import java.awt.Font;
-import java.awt.GridBagLayout;
-import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.util.List;
+import java.util.Vector;
+import javax.swing.ButtonGroup;
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
+import javax.swing.table.*;
+
+import com.untangle.gui.util.Util;
+import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.gui.widgets.wizard.*;
 
 public class InstallDiskJPanel extends MWizardPageJPanel {
 
@@ -58,7 +49,7 @@ public class InstallDiskJPanel extends MWizardPageJPanel {
         return true;
     }
 
-	private void doRefresh(DiskListCompoundSettings diskListCompoundSettings){
+    private void doRefresh(DiskListCompoundSettings diskListCompoundSettings){
         // clear list
         diskJPanel.removeAll();
         // create button group
@@ -95,7 +86,7 @@ public class InstallDiskJPanel extends MWizardPageJPanel {
             return false;
         }
     }
-        
+
     class DiskListCompoundSettings{
         private List<DiskInfo> diskInfoList;
         public DiskListCompoundSettings(){}
@@ -132,72 +123,72 @@ public class InstallDiskJPanel extends MWizardPageJPanel {
     }
 
 
-        private void initComponents() {//GEN-BEGIN:initComponents
-                java.awt.GridBagConstraints gridBagConstraints;
+    private void initComponents() {//GEN-BEGIN:initComponents
+        java.awt.GridBagConstraints gridBagConstraints;
 
-                contentJPanel = new javax.swing.JPanel();
-                jLabel1 = new javax.swing.JLabel();
-                diskJScrollPane = new javax.swing.JScrollPane();
-                diskJPanel = new javax.swing.JPanel();
-                backgroundJPabel = new javax.swing.JLabel();
+        contentJPanel = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        diskJScrollPane = new javax.swing.JScrollPane();
+        diskJPanel = new javax.swing.JPanel();
+        backgroundJPabel = new javax.swing.JLabel();
 
-                setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.GridBagLayout());
 
-                setOpaque(false);
-                contentJPanel.setLayout(new java.awt.GridBagLayout());
+        setOpaque(false);
+        contentJPanel.setLayout(new java.awt.GridBagLayout());
 
-                contentJPanel.setOpaque(false);
-                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel1.setText("<html>This list shows the boot disks that were found.<br><font color=\"#FF0000\">Please choose a disk for the Untangle Platform installation.  Warning, all the data on the boot disk you select will be deleted.</font></html>");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
-                contentJPanel.add(jLabel1, gridBagConstraints);
+        contentJPanel.setOpaque(false);
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel1.setText("<html>This list shows the boot disks that were found.<br><font color=\"#FF0000\">Please choose a disk for the Untangle Platform installation.  Warning, all the data on the boot disk you select will be deleted.</font></html>");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+        contentJPanel.add(jLabel1, gridBagConstraints);
 
-                diskJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-                diskJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-                diskJPanel.setLayout(new javax.swing.BoxLayout(diskJPanel, javax.swing.BoxLayout.Y_AXIS));
+        diskJScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        diskJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        diskJPanel.setLayout(new javax.swing.BoxLayout(diskJPanel, javax.swing.BoxLayout.Y_AXIS));
 
-                diskJScrollPane.setViewportView(diskJPanel);
+        diskJScrollPane.setViewportView(diskJPanel);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(60, 100, 60, 100);
-                contentJPanel.add(diskJScrollPane, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(60, 100, 60, 100);
+        contentJPanel.add(diskJScrollPane, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                add(contentJPanel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        add(contentJPanel, gridBagConstraints);
 
-                backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/install/ProductShot.png")));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-                gridBagConstraints.weightx = 1.0;
-                add(backgroundJPabel, gridBagConstraints);
+        backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/install/ProductShot.png")));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.weightx = 1.0;
+        add(backgroundJPabel, gridBagConstraints);
 
-        }//GEN-END:initComponents
-    
-    
-        // Variables declaration - do not modify//GEN-BEGIN:variables
-        private javax.swing.JLabel backgroundJPabel;
-        private javax.swing.JPanel contentJPanel;
-        private javax.swing.JPanel diskJPanel;
-        private javax.swing.JScrollPane diskJScrollPane;
-        private javax.swing.JLabel jLabel1;
-        // End of variables declaration//GEN-END:variables
-    
+    }//GEN-END:initComponents
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel backgroundJPabel;
+    private javax.swing.JPanel contentJPanel;
+    private javax.swing.JPanel diskJPanel;
+    private javax.swing.JScrollPane diskJScrollPane;
+    private javax.swing.JLabel jLabel1;
+    // End of variables declaration//GEN-END:variables
+
 }

@@ -11,8 +11,8 @@
 
 package com.untangle.tran.spam;
 
-import java.util.Iterator;
 import java.net.InetAddress;
+import java.util.Iterator;
 
 import com.untangle.mvvm.logging.LogEvent;
 import com.untangle.mvvm.logging.SyslogBuilder;
@@ -138,7 +138,7 @@ public abstract class SpamEvent extends LogEvent
     public SyslogPriority getSyslogPriority()
     {
         switch(getActionType())
-        {
+            {
             case PASSED:
                 // NOTICE = spam but passed
                 // INFORMATIONAL = statistics or normal operation
@@ -149,7 +149,7 @@ public abstract class SpamEvent extends LogEvent
             case BLOCKED:
             case QUARANTINED:
                 return SyslogPriority.WARNING; // traffic altered
-        }
+            }
     }
 
     // internal methods ---------------------------------------------------------

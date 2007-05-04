@@ -12,19 +12,18 @@
 
 package com.untangle.tran.openvpn.gui;
 
+import java.awt.Insets;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
+
 import com.untangle.gui.transform.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.tran.*;
 import com.untangle.mvvm.tran.firewall.*;
 import com.untangle.tran.openvpn.*;
-
-import java.awt.Insets;
-import java.awt.Font;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
 
 
 public class ConfigAddressGroupsJPanel extends MEditTableJPanel {
@@ -74,90 +73,90 @@ class TableModelAddressGroups extends MSortedTableModel<Object>{
     Hashtable<String,String> groupSiteHashtable = new Hashtable<String,String>();
 
     public void prevalidate(Object settings, Vector<Vector> tableVector) throws Exception {
-	VpnSettings vpnSettings = (VpnSettings) settings;
-	
-	// BUILD THE LIST OF REFERENCED GROUPS (ASSUMES NAMES ARE UNIQUE)
-	groupClientHashtable.clear();
-	groupSiteHashtable.clear();
-	List<VpnClient> vpnClients = vpnSettings.getClientList();
-	for( VpnClient vpnClient : vpnClients )
-	    if( !groupClientHashtable.containsKey(vpnClient.getGroup().getName()) )
-		groupClientHashtable.put(vpnClient.getGroup().getName(), vpnClient.getName());
-	List<VpnSite> vpnSites = vpnSettings.getSiteList();
-	for( VpnSite vpnSite : vpnSites )
-	    if( !groupSiteHashtable.containsKey(vpnSite.getGroup().getName()) )
-		groupSiteHashtable.put(vpnSite.getGroup().getName(), vpnSite.getName());
+        VpnSettings vpnSettings = (VpnSettings) settings;
 
-	// CHECK THAT NO REMOVED GROUP IS REFERENCED
-	for( Vector tempGroup : tableVector ){
-	    String rowState = (String) tempGroup.elementAt(0);
-	    if( !ROW_REMOVE.equals(rowState) )
-		continue;
-	    VpnGroup vpnGroup = (VpnGroup) tempGroup.elementAt(8);
-	    if( groupClientHashtable.containsKey(vpnGroup.getName()) )
-		throw new Exception("The group \"" 
-				    + vpnGroup.getName() 
-				    + "\" cannot be deleted because it is being used by the client: " 
-				    + groupClientHashtable.get(vpnGroup.getName())
-				    + " in the Client To Site List." );
-	    else if( groupSiteHashtable.containsKey(vpnGroup.getName()) )
-		throw new Exception("The group \"" 
-				    + vpnGroup.getName() 
-				    + "\" cannot be deleted because it is being used by the site: " 
-				    + groupSiteHashtable.get(vpnGroup.getName())
-				    + " in the Site To Site List." );
-	}
+        // BUILD THE LIST OF REFERENCED GROUPS (ASSUMES NAMES ARE UNIQUE)
+        groupClientHashtable.clear();
+        groupSiteHashtable.clear();
+        List<VpnClient> vpnClients = vpnSettings.getClientList();
+        for( VpnClient vpnClient : vpnClients )
+            if( !groupClientHashtable.containsKey(vpnClient.getGroup().getName()) )
+                groupClientHashtable.put(vpnClient.getGroup().getName(), vpnClient.getName());
+        List<VpnSite> vpnSites = vpnSettings.getSiteList();
+        for( VpnSite vpnSite : vpnSites )
+            if( !groupSiteHashtable.containsKey(vpnSite.getGroup().getName()) )
+                groupSiteHashtable.put(vpnSite.getGroup().getName(), vpnSite.getName());
+
+        // CHECK THAT NO REMOVED GROUP IS REFERENCED
+        for( Vector tempGroup : tableVector ){
+            String rowState = (String) tempGroup.elementAt(0);
+            if( !ROW_REMOVE.equals(rowState) )
+                continue;
+            VpnGroup vpnGroup = (VpnGroup) tempGroup.elementAt(8);
+            if( groupClientHashtable.containsKey(vpnGroup.getName()) )
+                throw new Exception("The group \""
+                                    + vpnGroup.getName()
+                                    + "\" cannot be deleted because it is being used by the client: "
+                                    + groupClientHashtable.get(vpnGroup.getName())
+                                    + " in the Client To Site List." );
+            else if( groupSiteHashtable.containsKey(vpnGroup.getName()) )
+                throw new Exception("The group \""
+                                    + vpnGroup.getName()
+                                    + "\" cannot be deleted because it is being used by the site: "
+                                    + groupSiteHashtable.get(vpnGroup.getName())
+                                    + " in the Site To Site List." );
+        }
     }
 
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-	List elemList = new ArrayList(tableVector.size());
-	VpnGroup newElem = null;
-	int rowIndex = 0;
-	
-	for( Vector rowVector : tableVector ){
-	    rowIndex++;
+        List elemList = new ArrayList(tableVector.size());
+        VpnGroup newElem = null;
+        int rowIndex = 0;
+
+        for( Vector rowVector : tableVector ){
+            rowIndex++;
             newElem = (VpnGroup) rowVector.elementAt(8);
-	    newElem.setLive( (Boolean) rowVector.elementAt(2) );
-	    newElem.setUseDNS( (Boolean) rowVector.elementAt(3) );
-	    newElem.setName( (String) rowVector.elementAt(4) );
-	    try{ newElem.setAddress( IPaddr.parse( ((IPaddrString) rowVector.elementAt(5)).getString() ) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"IP address\" in row: " + rowIndex);  }
-	    try{ newElem.setNetmask( IPaddr.parse( ((IPaddrString) rowVector.elementAt(6)).getString() ) ); }
-	    catch(Exception e){ throw new Exception("Invalid \"netmask\" in row: " + rowIndex);  }
-	    newElem.setDescription( (String) rowVector.elementAt(7) );
-	    elemList.add(newElem);
+            newElem.setLive( (Boolean) rowVector.elementAt(2) );
+            newElem.setUseDNS( (Boolean) rowVector.elementAt(3) );
+            newElem.setName( (String) rowVector.elementAt(4) );
+            try{ newElem.setAddress( IPaddr.parse( ((IPaddrString) rowVector.elementAt(5)).getString() ) ); }
+            catch(Exception e){ throw new Exception("Invalid \"IP address\" in row: " + rowIndex);  }
+            try{ newElem.setNetmask( IPaddr.parse( ((IPaddrString) rowVector.elementAt(6)).getString() ) ); }
+            catch(Exception e){ throw new Exception("Invalid \"netmask\" in row: " + rowIndex);  }
+            newElem.setDescription( (String) rowVector.elementAt(7) );
+            elemList.add(newElem);
         }
-	
-	// SAVE SETTINGS ////////
-	if( !validateOnly ){
-	    VpnSettings vpnSettings = (VpnSettings) settings;
-	    vpnSettings.setGroupList(elemList);
-	}
+
+        // SAVE SETTINGS ////////
+        if( !validateOnly ){
+            VpnSettings vpnSettings = (VpnSettings) settings;
+            vpnSettings.setGroupList(elemList);
+        }
 
     }
 
     public Vector<Vector> generateRows(Object settings) {
         VpnSettings vpnSettings = (VpnSettings) settings;
-	List<VpnGroup> vpnGroups = (List<VpnGroup>) vpnSettings.getGroupList();
+        List<VpnGroup> vpnGroups = (List<VpnGroup>) vpnSettings.getGroupList();
         Vector<Vector> allRows = new Vector<Vector>(vpnGroups.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
+        Vector tempRow = null;
+        int rowIndex = 0;
 
-	for( VpnGroup vpnGroup : vpnGroups ){
-	    rowIndex++;
-	    tempRow = new Vector(9);
-	    tempRow.add( super.ROW_SAVED );
-	    tempRow.add( rowIndex );
-	    tempRow.add( vpnGroup.isLive() );
-	    tempRow.add( vpnGroup.isUseDNS() );
-	    tempRow.add( vpnGroup.getName() );
-	    tempRow.add( new IPaddrString(vpnGroup.getAddress()) );
-	    tempRow.add( new IPaddrString(vpnGroup.getNetmask()) );
-	    tempRow.add( vpnGroup.getDescription() );
-	    tempRow.add( vpnGroup );
-	    allRows.add(tempRow);
-	}
+        for( VpnGroup vpnGroup : vpnGroups ){
+            rowIndex++;
+            tempRow = new Vector(9);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            tempRow.add( vpnGroup.isLive() );
+            tempRow.add( vpnGroup.isUseDNS() );
+            tempRow.add( vpnGroup.getName() );
+            tempRow.add( new IPaddrString(vpnGroup.getAddress()) );
+            tempRow.add( new IPaddrString(vpnGroup.getNetmask()) );
+            tempRow.add( vpnGroup.getDescription() );
+            tempRow.add( vpnGroup );
+            allRows.add(tempRow);
+        }
 
         return allRows;
     }

@@ -11,27 +11,23 @@
 
 package com.untangle.gui.pipeline;
 
-import com.untangle.gui.util.*;
-import com.untangle.mvvm.toolbox.ToolboxManager;
-import com.untangle.mvvm.tran.firewall.user.UserMatcherConstants;
-import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.mvvm.addrbook.UserEntry;
-import com.untangle.mvvm.addrbook.RepositoryType;
-import com.untangle.gui.configuration.DirectoryCompoundSettings;
-import com.untangle.gui.configuration.DirectoryJDialog;
-
-
-import java.util.*;
-import java.util.List;
-import java.util.Vector;
-import java.awt.Container;
 import java.awt.Component;
-import java.awt.Frame;
+import java.awt.Container;
 import java.awt.Dialog;
+import java.awt.Frame;
 import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.*;
 import javax.swing.*;
+
+import com.untangle.gui.configuration.DirectoryCompoundSettings;
+import com.untangle.gui.configuration.DirectoryJDialog;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.mvvm.addrbook.RepositoryType;
+import com.untangle.mvvm.addrbook.UserEntry;
+import com.untangle.mvvm.tran.firewall.user.UserMatcherConstants;
 
 
 public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.event.WindowListener {
@@ -39,141 +35,141 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
     private static InfiniteProgressJComponent infiniteProgressJComponent = new InfiniteProgressJComponent();
 
     public static final String ANY_USER = UserMatcherConstants.MARKER_ANY;
-	public static final String MULTIPLE_USERS = "[multiple selections]";
+    public static final String MULTIPLE_USERS = "[multiple selections]";
 
     private List<String> uidList;
     private boolean isProceeding;
-	private Window window;
-	
+    private Window window;
+
     public static UidSelectJDialog factory(Container topLevelContainer){
-	UidSelectJDialog uidSelectJDialog;
-	if(topLevelContainer instanceof Frame)
-	    uidSelectJDialog = new UidSelectJDialog((Frame)topLevelContainer);
-	else
-	    uidSelectJDialog = new UidSelectJDialog((Dialog)topLevelContainer);
-	return uidSelectJDialog;
+        UidSelectJDialog uidSelectJDialog;
+        if(topLevelContainer instanceof Frame)
+            uidSelectJDialog = new UidSelectJDialog((Frame)topLevelContainer);
+        else
+            uidSelectJDialog = new UidSelectJDialog((Dialog)topLevelContainer);
+        return uidSelectJDialog;
     }
-    
+
     public UidSelectJDialog(Dialog topLevelDialog) {
         super( topLevelDialog, true);
-	init( topLevelDialog );
-	
+        init( topLevelDialog );
+
     }
-    
+
     public UidSelectJDialog(Frame topLevelFrame) {
         super( topLevelFrame, true);
-	init( topLevelFrame );
+        init( topLevelFrame );
     }
-    
+
     private void init(Window window) {
         initComponents();
-		userJScrolPane.getVerticalScrollBar().setFocusable(false);
-		uidJList.setCellRenderer(new UidCellRenderer());
-		
-		uidJList.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent me) {
-						int selectedIndex = uidJList.locationToIndex(me.getPoint());
-						if (selectedIndex < 0)
-								return;
-						UserEntryWrapper item = (UserEntryWrapper)uidJList.getModel().getElementAt(selectedIndex);
-						if(item.getUID().equals(ANY_USER)){
-								boolean enabled;
-								if(item.isSelected()){
-										enabled = true;
-								}
-								else{
-										enabled = false;
-								}
-								for(int i=1; i < uidJList.getModel().getSize(); i++){
-										UserEntryWrapper target = (UserEntryWrapper)uidJList.getModel().getElementAt(i);				
-										target.setEnabled(enabled);
-								}
-						}
-						if(item.isEnabled())
-								item.setSelected(!item.isSelected());
-						
-						uidJList.repaint();
-				}
-		});
-		
+        userJScrolPane.getVerticalScrollBar().setFocusable(false);
+        uidJList.setCellRenderer(new UidCellRenderer());
+
+        uidJList.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent me) {
+                    int selectedIndex = uidJList.locationToIndex(me.getPoint());
+                    if (selectedIndex < 0)
+                        return;
+                    UserEntryWrapper item = (UserEntryWrapper)uidJList.getModel().getElementAt(selectedIndex);
+                    if(item.getUID().equals(ANY_USER)){
+                        boolean enabled;
+                        if(item.isSelected()){
+                            enabled = true;
+                        }
+                        else{
+                            enabled = false;
+                        }
+                        for(int i=1; i < uidJList.getModel().getSize(); i++){
+                            UserEntryWrapper target = (UserEntryWrapper)uidJList.getModel().getElementAt(i);
+                            target.setEnabled(enabled);
+                        }
+                    }
+                    if(item.isEnabled())
+                        item.setSelected(!item.isSelected());
+
+                    uidJList.repaint();
+                }
+            });
+
         this.addWindowListener(this);
-		this.window = window;
-	    setGlassPane(infiniteProgressJComponent);	    
+        this.window = window;
+        setGlassPane(infiniteProgressJComponent);
     }
 
     public List<String> getUidList(){ return uidList; }
-	public void setUidList(List<String> uidList){
-			this.uidList = uidList;
-	}
-	
-    public void updateUidModel(List<UserEntry> userEntries){
-	   Vector<UserEntryWrapper> uidVector = new Vector<UserEntryWrapper>();
-	   
-	   UserEntryWrapper t = new UserEntryWrapper(null);	   
-	   uidVector.add(t);
-	for( UserEntry userEntry : userEntries ){
-		t = new UserEntryWrapper(userEntry);
-	    uidVector.add( t );
-	}
-	
-	boolean any=false;
-	for(String s : uidList){
-		if(s.equals(ANY_USER))
-			any=true;
-	}
-	if(any){
-			boolean first = true;
-			for(UserEntryWrapper u : uidVector){
-					
-					if(!first){
-							u.setEnabled(false);
-							u.setSelected(false);
-					}
-					else{
-							u.setSelected(true);
-					}
-					first = false;
-			}
-	}
-	else{
-		for(String s : uidList){
-				for(UserEntryWrapper u : uidVector){
-						if(s.equals(u.getUID())){
-								u.setSelected(true);
-						}
-						
-				}
-		}
-	}
-		uidJList.setListData(uidVector);
+    public void setUidList(List<String> uidList){
+        this.uidList = uidList;
     }
-   
-	 public void setVisible(boolean isVisible){
-        if(isVisible){
-			pack();
-			this.setBounds( Util.generateCenteredBounds(window, this.getWidth(), this.getHeight()) );
-			new PerformRefreshThread();
+
+    public void updateUidModel(List<UserEntry> userEntries){
+        Vector<UserEntryWrapper> uidVector = new Vector<UserEntryWrapper>();
+
+        UserEntryWrapper t = new UserEntryWrapper(null);
+        uidVector.add(t);
+        for( UserEntry userEntry : userEntries ){
+            t = new UserEntryWrapper(userEntry);
+            uidVector.add( t );
         }
-		super.setVisible(isVisible);
+
+        boolean any=false;
+        for(String s : uidList){
+            if(s.equals(ANY_USER))
+                any=true;
+        }
+        if(any){
+            boolean first = true;
+            for(UserEntryWrapper u : uidVector){
+
+                if(!first){
+                    u.setEnabled(false);
+                    u.setSelected(false);
+                }
+                else{
+                    u.setSelected(true);
+                }
+                first = false;
+            }
+        }
+        else{
+            for(String s : uidList){
+                for(UserEntryWrapper u : uidVector){
+                    if(s.equals(u.getUID())){
+                        u.setSelected(true);
+                    }
+
+                }
+            }
+        }
+        uidJList.setListData(uidVector);
+    }
+
+    public void setVisible(boolean isVisible){
+        if(isVisible){
+            pack();
+            this.setBounds( Util.generateCenteredBounds(window, this.getWidth(), this.getHeight()) );
+            new PerformRefreshThread();
+        }
+        super.setVisible(isVisible);
         if(!isVisible){
             dispose();
         }
     }
-	 
-	protected class UidCellRenderer implements ListCellRenderer {
-			private JCheckBox target = new JCheckBox();
-			public Component getListCellRendererComponent( JList list, Object value, int index,
-															boolean isSelected, boolean cellHasFocus){
-					JCheckBox cb = (JCheckBox) value;
-					target.setEnabled(cb.isEnabled());
-					target.setSelected(cb.isSelected());
-					target.setText(cb.getText());
-					target.setBorderPainted(cellHasFocus);
-					target.setFocusPainted(true);
-					return target;
-			}
-	
-	}
+
+    protected class UidCellRenderer implements ListCellRenderer {
+        private JCheckBox target = new JCheckBox();
+        public Component getListCellRendererComponent( JList list, Object value, int index,
+                                                       boolean isSelected, boolean cellHasFocus){
+            JCheckBox cb = (JCheckBox) value;
+            target.setEnabled(cb.isEnabled());
+            target.setSelected(cb.isSelected());
+            target.setText(cb.getText());
+            target.setBorderPainted(cellHasFocus);
+            target.setFocusPainted(true);
+            return target;
+        }
+
+    }
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
@@ -288,10 +284,10 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
         jButton1.setFont(new java.awt.Font("Dialog", 0, 12));
         jButton1.setText("Open User Directory");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    jButton1ActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -311,10 +307,10 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
         cancelJButton.setMinimumSize(null);
         cancelJButton.setPreferredSize(null);
         cancelJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cancelJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    cancelJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -330,10 +326,10 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
         proceedJButton.setDoubleBuffered(true);
         proceedJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
         proceedJButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                proceedJButtonActionPerformed(evt);
-            }
-        });
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    proceedJButtonActionPerformed(evt);
+                }
+            });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -379,156 +375,156 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
     }//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-	try{
-	    DirectoryJDialog directoryJDialog = new DirectoryJDialog((Dialog)this);
-	    directoryJDialog.setVisible(true);
-	    DirectoryCompoundSettings directoryCompoundSettings = (DirectoryCompoundSettings) directoryJDialog.getCompoundSettings();
-	    new PerformRefreshThread();
-	}
-	catch(Exception e){
-	    try{ Util.handleExceptionWithRestart("Error showing directory", e); }
-	    catch(Exception f){ Util.handleExceptionNoRestart("Error showing directory", f); }
-	}
+        try{
+            DirectoryJDialog directoryJDialog = new DirectoryJDialog((Dialog)this);
+            directoryJDialog.setVisible(true);
+            DirectoryCompoundSettings directoryCompoundSettings = (DirectoryCompoundSettings) directoryJDialog.getCompoundSettings();
+            new PerformRefreshThread();
+        }
+        catch(Exception e){
+            try{ Util.handleExceptionWithRestart("Error showing directory", e); }
+            catch(Exception f){ Util.handleExceptionNoRestart("Error showing directory", f); }
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
-    
+
     private void proceedJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proceedJButtonActionPerformed
-	ListModel uidModel = uidJList.getModel();
-	List<String> outputUidList = new Vector<String>();
-	for(int i=0; i<uidModel.getSize(); i++){
-			UserEntryWrapper target = ((UserEntryWrapper)uidModel.getElementAt(i));
-			if(target.isSelected() && target.isEnabled()){
-					outputUidList.add(target.getUID());
-			}
-	}
-			
-	uidList = outputUidList;
-	isProceeding = true;
-    windowClosing(null);
+        ListModel uidModel = uidJList.getModel();
+        List<String> outputUidList = new Vector<String>();
+        for(int i=0; i<uidModel.getSize(); i++){
+            UserEntryWrapper target = ((UserEntryWrapper)uidModel.getElementAt(i));
+            if(target.isSelected() && target.isEnabled()){
+                outputUidList.add(target.getUID());
+            }
+        }
+
+        uidList = outputUidList;
+        isProceeding = true;
+        windowClosing(null);
     }//GEN-LAST:event_proceedJButtonActionPerformed
-    
+
     private void cancelJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelJButtonActionPerformed
-	isProceeding = false;
+        isProceeding = false;
         windowClosing(null);
     }//GEN-LAST:event_cancelJButtonActionPerformed
-    
-    
+
+
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {
         this.setVisible(false);
-    }    
+    }
 
 
     class PerformRefreshThread extends Thread {
-	public PerformRefreshThread(){
-	    super("MVCLIENT-PerformRefreshThread");
-	    setDaemon(true);
-	    infiniteProgressJComponent.start("Refreshing...");
-	    start();
-	}
-	public void run(){
-	    try{
-            final List<UserEntry> allUserEntries = new Vector<UserEntry>();
+        public PerformRefreshThread(){
+            super("MVCLIENT-PerformRefreshThread");
+            setDaemon(true);
+            infiniteProgressJComponent.start("Refreshing...");
+            start();
+        }
+        public void run(){
             try{
-                allUserEntries.addAll( Util.getAddressBook().getUserEntries(RepositoryType.MS_ACTIVE_DIRECTORY) );
-            }
-            catch(Exception f){
-                Util.handleExceptionNoRestart("Error doing refresh", f);
-                MOneButtonJDialog.factory(UidSelectJDialog.this, "Policy Manager", "There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again.",
-                                          "Policy Manager Warning", "Policy Manager Warning");
-            }
+                final List<UserEntry> allUserEntries = new Vector<UserEntry>();
+                try{
+                    allUserEntries.addAll( Util.getAddressBook().getUserEntries(RepositoryType.MS_ACTIVE_DIRECTORY) );
+                }
+                catch(Exception f){
+                    Util.handleExceptionNoRestart("Error doing refresh", f);
+                    MOneButtonJDialog.factory(UidSelectJDialog.this, "Policy Manager", "There was a problem refreshing Active Directory users.  Please check your Active Directory settings and then try again.",
+                                              "Policy Manager Warning", "Policy Manager Warning");
+                }
 
-            try{
-                allUserEntries.addAll( Util.getAddressBook().getUserEntries(RepositoryType.LOCAL_DIRECTORY) );
+                try{
+                    allUserEntries.addAll( Util.getAddressBook().getUserEntries(RepositoryType.LOCAL_DIRECTORY) );
+                }
+                catch(Exception f){
+                    Util.handleExceptionNoRestart("Error doing refresh", f);
+                    MOneButtonJDialog.factory(UidSelectJDialog.this, "Policy Manager", "There was a problem refreshing Local Directory users.  Please check your Local Directory settings and try again.",
+                                              "Policy Manager Warning", "Policy Manager Warning");
+                }
+                SwingUtilities.invokeLater( new Runnable(){ public void run(){
+                    updateUidModel(allUserEntries);
+                }});
             }
-            catch(Exception f){
-                Util.handleExceptionNoRestart("Error doing refresh", f);
-                MOneButtonJDialog.factory(UidSelectJDialog.this, "Policy Manager", "There was a problem refreshing Local Directory users.  Please check your Local Directory settings and try again.",
-                                          "Policy Manager Warning", "Policy Manager Warning");
+            catch(Exception e){
+                try{ Util.handleExceptionWithRestart("Error doing refresh", e); }
+                catch(Exception f){
+                    Util.handleExceptionNoRestart("Error doing refresh", f);
+                    MOneButtonJDialog.factory(UidSelectJDialog.this, "Policy Manager", "There was a problem refreshing.  Please try again.",
+                                              "Policy Manager Warning", "Policy Manager Warning");
+                }
             }
-            SwingUtilities.invokeLater( new Runnable(){ public void run(){
-                updateUidModel(allUserEntries);
-            }});
-	    }
-	    catch(Exception e){
-		try{ Util.handleExceptionWithRestart("Error doing refresh", e); }
-		catch(Exception f){
-		    Util.handleExceptionNoRestart("Error doing refresh", f);
-		    MOneButtonJDialog.factory(UidSelectJDialog.this, "Policy Manager", "There was a problem refreshing.  Please try again.",
-					      "Policy Manager Warning", "Policy Manager Warning");
-		}
-	    }
-	    infiniteProgressJComponent.stopLater(1000l);
-	}
+            infiniteProgressJComponent.stopLater(1000l);
+        }
     }
 
     class UserEntryWrapper extends JCheckBox implements Comparable<UserEntryWrapper>{
-	private UserEntry userEntry;
-	public UserEntryWrapper(UserEntry userEntry){
-	    this.userEntry = userEntry;
-		setText(toString());
-		setSelected(false);
-		setOpaque(false);
-	}
-	
-	public String toString(){
-		if(userEntry==null)
-				return ANY_USER;
-	    String repository;
-	    switch(userEntry.getStoredIn()){
-	    case MS_ACTIVE_DIRECTORY : repository = "Active Directory";
-		break;
-	    case LOCAL_DIRECTORY : repository = "Local";
-		break;
-		default:
-	    case NONE : repository = "UNKNOWN";
-		break;
-	    }
-	    return userEntry.getUID() + " (" + repository + ")";
-	}
-	public String getUID(){
-			if(userEntry!=null)
-					return userEntry.getUID();
-			else
-					return ANY_USER;
-	}
-	public UserEntry getUserEntry(){
-	    return userEntry;
-	}
-	
-	public boolean equals(Object obj){
-	    if( ! (obj instanceof UserEntryWrapper) )
-		return false;
-		else if(userEntry==null)
-		return false;
-	    UserEntry other = ((UserEntryWrapper) obj).getUserEntry();
-	    return getUserEntry().equals(other);
-	}
-	
-	public int compareTo(UserEntryWrapper userEntryWrapper){
-			if(userEntry==null)
-					return -1;
-			else if(userEntryWrapper.userEntry==null)
-					return 1;
-	    switch(userEntry.getStoredIn().compareTo(userEntryWrapper.userEntry.getStoredIn())){
-	    case -1 :
-		return -1;
-	    case 1 :
-		return 1;
-	    default:
-	    case 0 :
-		return userEntry.getUID().compareTo(userEntryWrapper.userEntry.getUID());
-	    }
-	}
+        private UserEntry userEntry;
+        public UserEntryWrapper(UserEntry userEntry){
+            this.userEntry = userEntry;
+            setText(toString());
+            setSelected(false);
+            setOpaque(false);
+        }
+
+        public String toString(){
+            if(userEntry==null)
+                return ANY_USER;
+            String repository;
+            switch(userEntry.getStoredIn()){
+            case MS_ACTIVE_DIRECTORY : repository = "Active Directory";
+                break;
+            case LOCAL_DIRECTORY : repository = "Local";
+                break;
+            default:
+            case NONE : repository = "UNKNOWN";
+                break;
+            }
+            return userEntry.getUID() + " (" + repository + ")";
+        }
+        public String getUID(){
+            if(userEntry!=null)
+                return userEntry.getUID();
+            else
+                return ANY_USER;
+        }
+        public UserEntry getUserEntry(){
+            return userEntry;
+        }
+
+        public boolean equals(Object obj){
+            if( ! (obj instanceof UserEntryWrapper) )
+                return false;
+            else if(userEntry==null)
+                return false;
+            UserEntry other = ((UserEntryWrapper) obj).getUserEntry();
+            return getUserEntry().equals(other);
+        }
+
+        public int compareTo(UserEntryWrapper userEntryWrapper){
+            if(userEntry==null)
+                return -1;
+            else if(userEntryWrapper.userEntry==null)
+                return 1;
+            switch(userEntry.getStoredIn().compareTo(userEntryWrapper.userEntry.getStoredIn())){
+            case -1 :
+                return -1;
+            case 1 :
+                return 1;
+            default:
+            case 0 :
+                return userEntry.getUID().compareTo(userEntryWrapper.userEntry.getUID());
+            }
+        }
     }
 
-    
-    public void windowActivated(java.awt.event.WindowEvent windowEvent) {}    
-    public void windowClosed(java.awt.event.WindowEvent windowEvent) {}    
+
+    public void windowActivated(java.awt.event.WindowEvent windowEvent) {}
+    public void windowClosed(java.awt.event.WindowEvent windowEvent) {}
     public void windowDeactivated(java.awt.event.WindowEvent windowEvent) {}
     public void windowDeiconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowIconified(java.awt.event.WindowEvent windowEvent) {}
     public void windowOpened(java.awt.event.WindowEvent windowEvent) {}
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel backgroundJLabel;
     private javax.swing.ButtonGroup buttonGroup1;
@@ -546,5 +542,5 @@ public class UidSelectJDialog extends javax.swing.JDialog implements java.awt.ev
     private javax.swing.JList uidJList;
     private javax.swing.JScrollPane userJScrolPane;
     // End of variables declaration//GEN-END:variables
-    
+
 }

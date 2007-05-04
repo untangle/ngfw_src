@@ -23,7 +23,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.untangle.tran.mail.papi.EmailAddressPairRule;
 import com.untangle.tran.mail.papi.EmailAddressRule;
@@ -88,7 +87,7 @@ public class QuarantineSettings implements Serializable {
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id", nullable=false)
     @IndexColumn(name="position")
     public List<EmailAddressRule> getAllowedAddressPatterns() {
@@ -126,7 +125,7 @@ public class QuarantineSettings implements Serializable {
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
-            org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+                   org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name="settings_id", nullable=false)
     @IndexColumn(name="position")
     public List<EmailAddressPairRule> getAddressRemaps() {

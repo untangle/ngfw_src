@@ -18,21 +18,21 @@ import java.awt.Window;
 final public class RefreshLogFailureDialog extends MOneButtonJDialog {
 
     public static RefreshLogFailureDialog factory(Window parentWindow, String applianceName){
-	if( parentWindow instanceof Dialog )
-	    return new RefreshLogFailureDialog((Dialog) parentWindow, applianceName);
-	else if( parentWindow instanceof Frame )
-	    return new RefreshLogFailureDialog((Frame) parentWindow, applianceName);
-	else
-	    return null;
+        if( parentWindow instanceof Dialog )
+            return new RefreshLogFailureDialog((Dialog) parentWindow, applianceName);
+        else if( parentWindow instanceof Frame )
+            return new RefreshLogFailureDialog((Frame) parentWindow, applianceName);
+        else
+            return null;
     }
-    
+
     private RefreshLogFailureDialog(Dialog parentDialog, String applianceName) {
-	super(parentDialog);
-	init(applianceName);
+        super(parentDialog);
+        init(applianceName);
     }
     private RefreshLogFailureDialog(Frame parentFrame, String applianceName){
-	super(parentFrame);
-	init(applianceName);
+        super(parentFrame);
+        init(applianceName);
     }
 
     private void init(String applianceName){
@@ -46,10 +46,10 @@ final public class RefreshLogFailureDialog extends MOneButtonJDialog {
         }
 
         setTitle(applianceName + " Warning");
-        messageJLabel.setText("<html><center>" 
+        messageJLabel.setText("<html><center>"
                               + (( applianceName.length() > 0 ) ? applianceName + " was u" : "U" )
                               + "nable to properly refresh an event log.<br>Please try again later.</center></html>");
         setVisible(true);
     }
-    
+
 }

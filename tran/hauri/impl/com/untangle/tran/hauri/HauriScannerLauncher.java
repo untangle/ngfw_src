@@ -73,7 +73,7 @@ public class HauriScannerLauncher extends VirusScannerLauncher
                      * 1 Virus detected files.
                      */
 
-                     /*
+                    /*
                      * This returns the 2nd word
                      */
                     if (s.startsWith(" Detected")) {

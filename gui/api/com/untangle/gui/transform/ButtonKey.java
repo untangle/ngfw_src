@@ -47,18 +47,18 @@ public class ButtonKey implements Comparable<ButtonKey> {
     public int getRackType(){ return rackType; }
 
     public int compareTo(ButtonKey b){
-	if( getRackType() < b.getRackType() )
-	    return -1;
-	else if( getRackType() > b.getRackType() )
-	    return 1;
-	else{
+        if( getRackType() < b.getRackType() )
+            return -1;
+        else if( getRackType() > b.getRackType() )
+            return 1;
+        else{
             if( getViewPosition() < b.getViewPosition() )
                 return -1;
             else if ( getViewPosition() > b.getViewPosition() )
                 return 1;
             else
                 return getApplianceName().compareToIgnoreCase( b.getApplianceName() );
-	}
+        }
 
     }
 

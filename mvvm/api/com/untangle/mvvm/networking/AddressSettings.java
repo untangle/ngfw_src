@@ -12,7 +12,6 @@
 package com.untangle.mvvm.networking;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,21 +19,19 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Type;
-
-import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.HostName;
+import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.ParseException;
-
 import com.untangle.mvvm.tran.Validatable;
 import com.untangle.mvvm.tran.ValidateException;
+import org.hibernate.annotations.Type;
 
 /** These are settings related to the hostname and the adddress that is used to connect to box */
 @Entity
 @Table(name="mvvm_address_settings", schema="settings")
-    public class AddressSettings implements Serializable, Validatable
+public class AddressSettings implements Serializable, Validatable
 {
-    private static final String PUBLIC_ADDRESS_EXCEPTION = 
+    private static final String PUBLIC_ADDRESS_EXCEPTION =
         "A public address is an ip address, optionally followed by a port.  (e.g. 1.2.3.4:445 or 1.2.3.4)";
 
     private Long id;
@@ -54,7 +51,7 @@ import com.untangle.mvvm.tran.ValidateException;
     public AddressSettings()
     {
     }
-    
+
     @Id
     @Column(name="settings_id")
     @GeneratedValue
@@ -67,8 +64,8 @@ import com.untangle.mvvm.tran.ValidateException;
     {
         this.id = id;
     }
-    
-        /* Get the port to run HTTPs on in addition to port 443. */
+
+    /* Get the port to run HTTPs on in addition to port 443. */
     @Column(name="https_port")
     public int getHttpsPort()
     {
@@ -89,7 +86,7 @@ import com.untangle.mvvm.tran.ValidateException;
     {
         return this.hostname;
     }
-    
+
     public void setHostName( HostName newValue )
     {
         if ( newValue == null ) newValue = NetworkUtil.DEFAULT_HOSTNAME;
@@ -109,7 +106,7 @@ import com.untangle.mvvm.tran.ValidateException;
     public void setIsHostNamePublic( boolean newValue )
     {
         if ( newValue != this.isHostnamePublic ) this.isClean = false;
-        this.isHostnamePublic = newValue;        
+        this.isHostnamePublic = newValue;
     }
 
     /* True if the public address should be used */
@@ -122,7 +119,7 @@ import com.untangle.mvvm.tran.ValidateException;
     public void setIsPublicAddressEnabled( boolean newValue )
     {
         if ( newValue != this.isPublicAddressEnabled ) this.isClean = false;
-        this.isPublicAddressEnabled = newValue;        
+        this.isPublicAddressEnabled = newValue;
     }
 
     /** @return the public url for the box, this is the address (may be hostname or ip address) */
@@ -130,13 +127,13 @@ import com.untangle.mvvm.tran.ValidateException;
     public String getPublicAddress()
     {
         if ( this.publicIPaddr == null || this.publicIPaddr.isEmpty()) return "";
-        
+
         if ( this.publicPort == NetworkUtil.DEF_HTTPS_PORT ) return this.publicIPaddr.toString();
 
         return this.publicIPaddr.toString() + ":" + this.publicPort;
     }
 
-    /* Set the public address as a string, this is a convenience method for the GUI, 
+    /* Set the public address as a string, this is a convenience method for the GUI,
      * it sets the public ip address and port. */
     public void setPublicAddress( String newValue ) throws ParseException
     {
@@ -149,7 +146,7 @@ import com.untangle.mvvm.tran.ValidateException;
                 setPublicIPaddr( address );
                 setPublicPort( NetworkUtil.DEF_HTTPS_PORT );
                 break;
-                
+
             case 2:
                 address = IPaddr.parse( valueArray[0] );
                 int port = Integer.parseInt( valueArray[1] );
@@ -176,7 +173,7 @@ import com.untangle.mvvm.tran.ValidateException;
     public void setPublicIPaddr( IPaddr newValue )
     {
         if ( IPaddr.equals( this.publicIPaddr, newValue )) this.isClean = false;
-        this.publicIPaddr = newValue;        
+        this.publicIPaddr = newValue;
     }
 
     @Column(name="public_port")
@@ -194,7 +191,7 @@ import com.untangle.mvvm.tran.ValidateException;
         if (( newValue <= 0 ) || ( newValue >= 0xFFFF )) newValue = NetworkUtil.DEF_HTTPS_PORT;
 
         if ( newValue != this.publicPort ) this.isClean = false;
-        this.publicPort = newValue;                
+        this.publicPort = newValue;
     }
 
     /* Return true if the current settings have a public address */

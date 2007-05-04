@@ -222,14 +222,14 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     public void registerCasing(MPipe insideMPipe, MPipe outsideMPipe)
     {
-       if (insideMPipe.getPipeSpec() != outsideMPipe.getPipeSpec()) {
+        if (insideMPipe.getPipeSpec() != outsideMPipe.getPipeSpec()) {
             throw new IllegalArgumentException("casing constraint violated");
         }
 
-       synchronized (this) {
-           casings.put(insideMPipe, outsideMPipe);
-           clearCache();
-       }
+        synchronized (this) {
+            casings.put(insideMPipe, outsideMPipe);
+            clearCache();
+        }
     }
 
     public void deregisterCasing(MPipe insideMPipe)

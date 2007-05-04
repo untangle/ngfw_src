@@ -15,8 +15,8 @@ import static com.untangle.tran.util.Ascii.SP_B;
 import static com.untangle.tran.util.Ascii.CR_B;
 import static com.untangle.tran.util.Ascii.LF_B;
 import java.nio.ByteBuffer;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -49,418 +49,418 @@ import java.util.ArrayList;
  */
 public class BBTokenizer {
 
-  private static final byte[] BLANK_BYTES = new byte[0];
-  private static final byte[] LWS = new byte[] {HT_B, SP_B};
+    private static final byte[] BLANK_BYTES = new byte[0];
+    private static final byte[] LWS = new byte[] {HT_B, SP_B};
 
-  /**
-   * Enum of the types of tokens.
-   */
-  public enum TT {
-    WORD,
-    DELIM,
-    NONE
-  };
+    /**
+     * Enum of the types of tokens.
+     */
+    public enum TT {
+        WORD,
+        DELIM,
+        NONE
+    };
 
-  public enum NextResult {
-    HAVE_WORD,
-    HAVE_DELIM,
-    NEED_MORE_DATA,
-    EXCEEDED_LONGEST_WORD
-  }
-
-  private BAHolder m_delimHolder = new BAHolder(LWS);
-  private BAHolder m_delimsToSkipHolder = new BAHolder(LWS);
-  private int m_longestWord = 1024;
-  private int m_start = -1;
-  private int m_len = -1;
-  private TT m_tt = TT.NONE;
-  private int m_toSkip = 0;
-
-  public BBTokenizer() {
-  }
-
-  /**
-   * Call valid after a successful call to {@link #next next},
-   * indicating the type of Token encountered.
-   */
-  public TT getTokenType() {
-    return m_tt;
-  }
-
-  /**
-   * Get the offset within the ByteBuffer of the
-   * current token
-   */
-  public int tokenStart() {
-    return m_start;
-  }
-
-  /**
-   * Get the length from {@link #tokenStart tokenStart}
-   * of the current token
-   */
-  public int tokenLength() {
-    return m_len;
-  }
-
-  public int getLongestWord() {
-    return m_longestWord;
-  }
-
-  /**
-   * Set the maximum length of a word, before the
-   * tokenizer gives-up and returns EXCEEDED_LONGEST_WORD
-   * from a call to {@link #next next}.
-   */
-  public void setLongestWord(int len) {
-    m_longestWord = len;
-  }
-
-  /**
-   * Set the delimiters.  These are the superset
-   * of delimiters.  If some of these delimiters are
-   * not of interest to the caller, you may pass
-   * some of these to {@link #setSkipDelims setSkipDelims}.
-   */
-  public void setDelims(byte[] delims) {
-    m_delimHolder = new BAHolder(delims);
-  }
-
-  /**
-   * Note that any delims in this list which are <b>
-   * not</b> in the {@link #setDelims delimiter list}
-   * are ignored.  In other words, anything passed to
-   * this method should have already been declared a delimiter.
-   */
-  public void setSkipDelims(byte[] delims) {
-    m_delimsToSkipHolder = new BAHolder(delims);
-  }
-
-  /**
-   * Set the delimiters
-   *
-   * @param delims the delimiters
-   * @param toSkip a subset ot <code>delims</code> which
-   *        bound words, but are not of interest to be
-   *        returned as tokens.
-   */
-  public void setDelims(byte[] delims, byte[] toSkip) {
-    m_delimHolder = new BAHolder(delims);  
-    m_delimsToSkipHolder = new BAHolder(toSkip==null?BLANK_BYTES:toSkip);  
-  }
-
-  /**
-   * Instruct the tokenizer to skip-past the next
-   * <code>quantity</code> bytes.  Skipping begins
-   * on the next call to {@link #next next}.  This may result
-   * in some calls to {@link #next next}
-   * returning NEED_MORE_DATA.
-   */
-  public void skip(int quantity) {
-    m_toSkip = quantity;
-  }
-
-
-  /**
-   * Increment the buffer to the next token.  If the
-   * return is HAVE_WORD or HAVE_WORD, the ByteBuffer
-   * is advanced past the bytes of the encountered token.  To
-   * recover the token for investigation, the {@link #tokenStart tokenStart}
-   * and {@link #tokenLength tokenLength} methods describe the
-   * token's location within the ByteBuffer.
-   * <br><br>
-   * If "EXCEEDED_LONGEST_WORD" or "NEED_MORE_DATA"
-   * are returned, the buffer still contains the bytes which
-   * were candidates for the next word
-   *
-   * @param bb the ByteBuffer to scan
-   *
-   * @return the result
-   */
-  public NextResult next(final ByteBuffer bb) {
-    //Reset token type and values
-    m_tt = TT.NONE;
-    m_start = -1;
-    m_len = -1;
-
-    if(m_toSkip > 0) {
-      int q = m_toSkip>bb.remaining()?
-        bb.remaining():m_toSkip;
-      bb.position(bb.position() + q);
-      m_toSkip-=q;
-      if(!bb.hasRemaining()) {
-        return NextResult.NEED_MORE_DATA;
-      }
+    public enum NextResult {
+        HAVE_WORD,
+        HAVE_DELIM,
+        NEED_MORE_DATA,
+        EXCEEDED_LONGEST_WORD
     }
 
-    
-    NextResult ret = null;
-    do {
-      ret = nextImpl(bb);
-    }
-    while(ret == NextResult.HAVE_DELIM
-      && m_delimsToSkipHolder.contains(bb.get(tokenStart())));
-    return ret;
-  }
+    private BAHolder m_delimHolder = new BAHolder(LWS);
+    private BAHolder m_delimsToSkipHolder = new BAHolder(LWS);
+    private int m_longestWord = 1024;
+    private int m_start = -1;
+    private int m_len = -1;
+    private TT m_tt = TT.NONE;
+    private int m_toSkip = 0;
 
-  
-  private NextResult nextImpl(final ByteBuffer bb) {
-    m_start = bb.position();
-    while(bb.hasRemaining()) {
-      if(m_delimHolder.contains(bb.get())) {
-        if(m_start + 1 == bb.position()) {
-          m_len = 1;
-          m_tt = TT.DELIM;
-          return NextResult.HAVE_DELIM;
-        }
-        else {
-          //We have a word.  Re-wind the buffer by one to get the delim next time
-          bb.position(bb.position()-1);
-          m_len = bb.position() - m_start;
-          m_tt = TT.WORD;
-          return NextResult.HAVE_WORD;
-        }
-      }
-      if((bb.position() - m_start) > m_longestWord) {
-        bb.position(m_start);
+    public BBTokenizer() {
+    }
+
+    /**
+     * Call valid after a successful call to {@link #next next},
+     * indicating the type of Token encountered.
+     */
+    public TT getTokenType() {
+        return m_tt;
+    }
+
+    /**
+     * Get the offset within the ByteBuffer of the
+     * current token
+     */
+    public int tokenStart() {
+        return m_start;
+    }
+
+    /**
+     * Get the length from {@link #tokenStart tokenStart}
+     * of the current token
+     */
+    public int tokenLength() {
+        return m_len;
+    }
+
+    public int getLongestWord() {
+        return m_longestWord;
+    }
+
+    /**
+     * Set the maximum length of a word, before the
+     * tokenizer gives-up and returns EXCEEDED_LONGEST_WORD
+     * from a call to {@link #next next}.
+     */
+    public void setLongestWord(int len) {
+        m_longestWord = len;
+    }
+
+    /**
+     * Set the delimiters.  These are the superset
+     * of delimiters.  If some of these delimiters are
+     * not of interest to the caller, you may pass
+     * some of these to {@link #setSkipDelims setSkipDelims}.
+     */
+    public void setDelims(byte[] delims) {
+        m_delimHolder = new BAHolder(delims);
+    }
+
+    /**
+     * Note that any delims in this list which are <b>
+     * not</b> in the {@link #setDelims delimiter list}
+     * are ignored.  In other words, anything passed to
+     * this method should have already been declared a delimiter.
+     */
+    public void setSkipDelims(byte[] delims) {
+        m_delimsToSkipHolder = new BAHolder(delims);
+    }
+
+    /**
+     * Set the delimiters
+     *
+     * @param delims the delimiters
+     * @param toSkip a subset ot <code>delims</code> which
+     *        bound words, but are not of interest to be
+     *        returned as tokens.
+     */
+    public void setDelims(byte[] delims, byte[] toSkip) {
+        m_delimHolder = new BAHolder(delims);
+        m_delimsToSkipHolder = new BAHolder(toSkip==null?BLANK_BYTES:toSkip);
+    }
+
+    /**
+     * Instruct the tokenizer to skip-past the next
+     * <code>quantity</code> bytes.  Skipping begins
+     * on the next call to {@link #next next}.  This may result
+     * in some calls to {@link #next next}
+     * returning NEED_MORE_DATA.
+     */
+    public void skip(int quantity) {
+        m_toSkip = quantity;
+    }
+
+
+    /**
+     * Increment the buffer to the next token.  If the
+     * return is HAVE_WORD or HAVE_WORD, the ByteBuffer
+     * is advanced past the bytes of the encountered token.  To
+     * recover the token for investigation, the {@link #tokenStart tokenStart}
+     * and {@link #tokenLength tokenLength} methods describe the
+     * token's location within the ByteBuffer.
+     * <br><br>
+     * If "EXCEEDED_LONGEST_WORD" or "NEED_MORE_DATA"
+     * are returned, the buffer still contains the bytes which
+     * were candidates for the next word
+     *
+     * @param bb the ByteBuffer to scan
+     *
+     * @return the result
+     */
+    public NextResult next(final ByteBuffer bb) {
+        //Reset token type and values
         m_tt = TT.NONE;
-        return NextResult.EXCEEDED_LONGEST_WORD;
-      }
-    }
-    //Go back to the begining of the potential word
-    bb.position(m_start);
-    m_start = -1;
-    m_len = -1;
-    m_tt = TT.NONE;
-    return NextResult.NEED_MORE_DATA;
-  }
+        m_start = -1;
+        m_len = -1;
 
-
-
-  //I'm assuming the the byte[] will always be small
-  //enough that sorting and searching are not worth it.  However,
-  //it has been broken-off for later optimization.
-  private class BAHolder {
-    final byte[] a;
-    final int len;
-
-    BAHolder(byte[] bytes) {
-      if(bytes == null) {
-        bytes = new byte[0];
-      }
-      this.a = bytes;
-      this.len = a.length;
-    }
-    boolean contains(final byte b) {
-      for(int i = 0; i<len; i++) {
-        if(a[i] == b) {
-          return true;
+        if(m_toSkip > 0) {
+            int q = m_toSkip>bb.remaining()?
+                bb.remaining():m_toSkip;
+            bb.position(bb.position() + q);
+            m_toSkip-=q;
+            if(!bb.hasRemaining()) {
+                return NextResult.NEED_MORE_DATA;
+            }
         }
-      }
-      return false;
-    }
-  }
 
 
-//===============================
-// Test Code from here below
-//===============================  
-
-
-  public static void main(String[] args)
-    throws Exception {
-
-    //Test exceeding the longest word
-
-    //Test "normal" stuff
-    byte[] delims = new byte[] {
-      SP_B,
-      HT_B,
-      CR_B,
-      LF_B,
-      (byte) '|',
-      (byte) ','
-    };
-    byte[] delimsToSkip = new byte[] {
-      SP_B,
-      HT_B
-    };
-    String cr = new StringBuilder().append('\r').toString();
-    String lf = new StringBuilder().append('\n').toString();
-    String pipe = "|";
-    String comma = ",";
-
-    test("FOO".getBytes(),
-      delims,
-      delimsToSkip,
-      "FOO");
-      
-    test("  FOO".getBytes(),
-      delims,
-      delimsToSkip,
-      "FOO");
-
-    test("  FOO \t".getBytes(),
-      delims,
-      delimsToSkip,
-      "FOO");
-
-    test("FOO|".getBytes(),
-      delims,
-      delimsToSkip,
-      "FOO", "|");
-      
-    test("FOO |".getBytes(),
-      delims,
-      delimsToSkip,
-      "FOO", "|");
-      
-    test("\t FOO |".getBytes(),
-      delims,
-      delimsToSkip,
-      "FOO", "|");
-    
-    test("\t FOO |moo".getBytes(),
-      delims,
-      delimsToSkip,
-      "FOO", "|", "moo");                   
-   
-  }
-
-  private static void test(byte[] bytes,
-    byte[] delims,
-    byte[] delimsToSkip,
-    String...tokens) throws Exception {
-
-    System.out.println("----------Test------------");
-
-    BBTokenizer tokenizer = new BBTokenizer();
-    tokenizer.setDelims(delims, delimsToSkip);
-
-    for(int i = 1; i<bytes.length-1; i++) {
-      ArrayTester at = new ArrayTester(bytes, i);
-      while(at.hasNext()) {
-        ByteBuffer[] bufs = at.nextBuffers();
-        String lens = bbLensToString(bufs);
-        List<String> out = tokenize(tokenizer, bufs);
-        if(!compare(tokens, out)) {
-          errorReport(bytes, i, tokens, out, lens);
+        NextResult ret = null;
+        do {
+            ret = nextImpl(bb);
         }
-        else {
-          System.out.println("Passed (" + lens + ")");
+        while(ret == NextResult.HAVE_DELIM
+              && m_delimsToSkipHolder.contains(bb.get(tokenStart())));
+        return ret;
+    }
+
+
+    private NextResult nextImpl(final ByteBuffer bb) {
+        m_start = bb.position();
+        while(bb.hasRemaining()) {
+            if(m_delimHolder.contains(bb.get())) {
+                if(m_start + 1 == bb.position()) {
+                    m_len = 1;
+                    m_tt = TT.DELIM;
+                    return NextResult.HAVE_DELIM;
+                }
+                else {
+                    //We have a word.  Re-wind the buffer by one to get the delim next time
+                    bb.position(bb.position()-1);
+                    m_len = bb.position() - m_start;
+                    m_tt = TT.WORD;
+                    return NextResult.HAVE_WORD;
+                }
+            }
+            if((bb.position() - m_start) > m_longestWord) {
+                bb.position(m_start);
+                m_tt = TT.NONE;
+                return NextResult.EXCEEDED_LONGEST_WORD;
+            }
         }
-      }
-    }
-  }
-
-
-  private static void errorReport(byte[] bytes,
-    int numBuffers,
-    String[] expected,
-    List<String> outcome,
-    String lens) {
-    System.err.print("ERROR");
-    System.out.println("******************* ERROR REPORT *****************");
-    System.out.println("Lengths: " + lens);
-    System.out.println("===BEGIN Input===");
-    for(int i = 0; i<bytes.length; i++) {
-      System.out.println(i + " " + ASCIIUtil.asciiByteToString(bytes[i]));
-    }
-    System.out.println("===ENDOF Input===");
-    System.out.println("===BEGIN Arrays===");
-    System.out.println("Expected        Received");
-    int longest = Math.max(expected.length, outcome.size());
-
-    for(int i = 0; i<longest; i++) {
-      System.out.print(
-        i>=expected.length?"<null>":expected[i]);
-      System.out.print("    ");
-      System.out.println(
-        i>=outcome.size()?"<null>":outcome.get(i));
-      
-    }
-    System.out.println("===ENDOF Arrays===");
-  }
-
-  private static String bbLensToString(ByteBuffer[] bufs) {
-    String bufsLen = "";
-    for(int j = 0; j<bufs.length; j++) {
-      if(j != 0) {
-        bufsLen+=", ";
-      }
-      bufsLen+=Integer.toString(bufs[j].remaining());
-    }
-    return bufsLen;
-  }
-
-  private static boolean compare(String[] in,
-    List<String> out) {
-    if(in.length != out.size()) {
-      System.out.println("Length Wrong.  " +
-        in.length + " != " + out.size());
-      return false;
+        //Go back to the begining of the potential word
+        bb.position(m_start);
+        m_start = -1;
+        m_len = -1;
+        m_tt = TT.NONE;
+        return NextResult.NEED_MORE_DATA;
     }
 
-    for(int i = 0; i<in.length; i++) {
-      if(!in[i].equals(out.get(i))) {
-        System.out.println("\"" + in[i] + "\" != \"" + out.get(i) + "\"");
-        return false;
-      }
-    }
-    return true;
-  }
 
-  private static List<String> tokenize(BBTokenizer tokenizer,
-    ByteBuffer[] bufs) throws Exception {
 
-    List<String> ret = new ArrayList<String>();
-    
-    for(int i = 0; i<bufs.length; i++) {
-      tokenizeInto(ret, bufs[i], tokenizer);
-      if(bufs[i].hasRemaining()) {
-        if(i+1 == bufs.length) {
-          //Treat remainder as plain token (EOF is delim)
-          ret.add(ASCIIUtil.bbToString(bufs[i]));
+    //I'm assuming the the byte[] will always be small
+    //enough that sorting and searching are not worth it.  However,
+    //it has been broken-off for later optimization.
+    private class BAHolder {
+        final byte[] a;
+        final int len;
+
+        BAHolder(byte[] bytes) {
+            if(bytes == null) {
+                bytes = new byte[0];
+            }
+            this.a = bytes;
+            this.len = a.length;
         }
-        else {
-          bufs[i+1] = joinBuffers(bufs[i], bufs[i+1]);
+        boolean contains(final byte b) {
+            for(int i = 0; i<len; i++) {
+                if(a[i] == b) {
+                    return true;
+                }
+            }
+            return false;
         }
-      }
     }
-    return ret;
-  }
 
-  private static void tokenizeInto(List<String> list,
-    ByteBuffer buf,
-    BBTokenizer tokenizer) throws Exception{
-    
-    while(true) {
-      BBTokenizer.NextResult result = tokenizer.next(buf);
-      switch(result) {
-        case HAVE_WORD:
-          ByteBuffer dup = buf.duplicate();
-          dup.position(tokenizer.tokenStart());
-          dup.limit(dup.position() + tokenizer.tokenLength());
-          list.add(ASCIIUtil.bbToString(dup));
-          break;
-        case HAVE_DELIM:
-          list.add(new StringBuilder().append((char) buf.get(tokenizer.tokenStart())).toString());
-          break;
-        case NEED_MORE_DATA:
-          return;
-        case EXCEEDED_LONGEST_WORD:
-          throw new Exception("EXCEEDED_LONGEST_WORD.  Unexpected");
-      }
+
+    //===============================
+    // Test Code from here below
+    //===============================
+
+
+    public static void main(String[] args)
+        throws Exception {
+
+        //Test exceeding the longest word
+
+        //Test "normal" stuff
+        byte[] delims = new byte[] {
+            SP_B,
+            HT_B,
+            CR_B,
+            LF_B,
+            (byte) '|',
+            (byte) ','
+        };
+        byte[] delimsToSkip = new byte[] {
+            SP_B,
+            HT_B
+        };
+        String cr = new StringBuilder().append('\r').toString();
+        String lf = new StringBuilder().append('\n').toString();
+        String pipe = "|";
+        String comma = ",";
+
+        test("FOO".getBytes(),
+             delims,
+             delimsToSkip,
+             "FOO");
+
+        test("  FOO".getBytes(),
+             delims,
+             delimsToSkip,
+             "FOO");
+
+        test("  FOO \t".getBytes(),
+             delims,
+             delimsToSkip,
+             "FOO");
+
+        test("FOO|".getBytes(),
+             delims,
+             delimsToSkip,
+             "FOO", "|");
+
+        test("FOO |".getBytes(),
+             delims,
+             delimsToSkip,
+             "FOO", "|");
+
+        test("\t FOO |".getBytes(),
+             delims,
+             delimsToSkip,
+             "FOO", "|");
+
+        test("\t FOO |moo".getBytes(),
+             delims,
+             delimsToSkip,
+             "FOO", "|", "moo");
+
     }
-  }
 
-  private static ByteBuffer joinBuffers(ByteBuffer b1, ByteBuffer b2) {
-    ByteBuffer ret = ByteBuffer.allocate(b1.remaining() + b2.remaining());
-    ret.put(b1);
-    ret.put(b2);
-    ret.flip();
-    return ret;
-  }
-  
+    private static void test(byte[] bytes,
+                             byte[] delims,
+                             byte[] delimsToSkip,
+                             String...tokens) throws Exception {
+
+        System.out.println("----------Test------------");
+
+        BBTokenizer tokenizer = new BBTokenizer();
+        tokenizer.setDelims(delims, delimsToSkip);
+
+        for(int i = 1; i<bytes.length-1; i++) {
+            ArrayTester at = new ArrayTester(bytes, i);
+            while(at.hasNext()) {
+                ByteBuffer[] bufs = at.nextBuffers();
+                String lens = bbLensToString(bufs);
+                List<String> out = tokenize(tokenizer, bufs);
+                if(!compare(tokens, out)) {
+                    errorReport(bytes, i, tokens, out, lens);
+                }
+                else {
+                    System.out.println("Passed (" + lens + ")");
+                }
+            }
+        }
+    }
+
+
+    private static void errorReport(byte[] bytes,
+                                    int numBuffers,
+                                    String[] expected,
+                                    List<String> outcome,
+                                    String lens) {
+        System.err.print("ERROR");
+        System.out.println("******************* ERROR REPORT *****************");
+        System.out.println("Lengths: " + lens);
+        System.out.println("===BEGIN Input===");
+        for(int i = 0; i<bytes.length; i++) {
+            System.out.println(i + " " + ASCIIUtil.asciiByteToString(bytes[i]));
+        }
+        System.out.println("===ENDOF Input===");
+        System.out.println("===BEGIN Arrays===");
+        System.out.println("Expected        Received");
+        int longest = Math.max(expected.length, outcome.size());
+
+        for(int i = 0; i<longest; i++) {
+            System.out.print(
+                             i>=expected.length?"<null>":expected[i]);
+            System.out.print("    ");
+            System.out.println(
+                               i>=outcome.size()?"<null>":outcome.get(i));
+
+        }
+        System.out.println("===ENDOF Arrays===");
+    }
+
+    private static String bbLensToString(ByteBuffer[] bufs) {
+        String bufsLen = "";
+        for(int j = 0; j<bufs.length; j++) {
+            if(j != 0) {
+                bufsLen+=", ";
+            }
+            bufsLen+=Integer.toString(bufs[j].remaining());
+        }
+        return bufsLen;
+    }
+
+    private static boolean compare(String[] in,
+                                   List<String> out) {
+        if(in.length != out.size()) {
+            System.out.println("Length Wrong.  " +
+                               in.length + " != " + out.size());
+            return false;
+        }
+
+        for(int i = 0; i<in.length; i++) {
+            if(!in[i].equals(out.get(i))) {
+                System.out.println("\"" + in[i] + "\" != \"" + out.get(i) + "\"");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static List<String> tokenize(BBTokenizer tokenizer,
+                                         ByteBuffer[] bufs) throws Exception {
+
+        List<String> ret = new ArrayList<String>();
+
+        for(int i = 0; i<bufs.length; i++) {
+            tokenizeInto(ret, bufs[i], tokenizer);
+            if(bufs[i].hasRemaining()) {
+                if(i+1 == bufs.length) {
+                    //Treat remainder as plain token (EOF is delim)
+                    ret.add(ASCIIUtil.bbToString(bufs[i]));
+                }
+                else {
+                    bufs[i+1] = joinBuffers(bufs[i], bufs[i+1]);
+                }
+            }
+        }
+        return ret;
+    }
+
+    private static void tokenizeInto(List<String> list,
+                                     ByteBuffer buf,
+                                     BBTokenizer tokenizer) throws Exception{
+
+        while(true) {
+            BBTokenizer.NextResult result = tokenizer.next(buf);
+            switch(result) {
+            case HAVE_WORD:
+                ByteBuffer dup = buf.duplicate();
+                dup.position(tokenizer.tokenStart());
+                dup.limit(dup.position() + tokenizer.tokenLength());
+                list.add(ASCIIUtil.bbToString(dup));
+                break;
+            case HAVE_DELIM:
+                list.add(new StringBuilder().append((char) buf.get(tokenizer.tokenStart())).toString());
+                break;
+            case NEED_MORE_DATA:
+                return;
+            case EXCEEDED_LONGEST_WORD:
+                throw new Exception("EXCEEDED_LONGEST_WORD.  Unexpected");
+            }
+        }
+    }
+
+    private static ByteBuffer joinBuffers(ByteBuffer b1, ByteBuffer b2) {
+        ByteBuffer ret = ByteBuffer.allocate(b1.remaining() + b2.remaining());
+        ret.put(b1);
+        ret.put(b2);
+        ret.flip();
+        return ret;
+    }
+
 
 }

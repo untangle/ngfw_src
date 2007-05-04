@@ -293,8 +293,8 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
                 debug("tryWrite to full outgoing queue");
         } else {
             // Old busted comment:
-        // We know it's a data crumb since there can be nothing else
-        // enqueued for TCP.
+            // We know it's a data crumb since there can be nothing else
+            // enqueued for TCP.
             // New hotness comment:
             // It can be a shutdown crumb as well as a data crumb.
             Crumb crumb2send = getNextCrumb2Send(side);
@@ -577,9 +577,9 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
         // the position/mark/limit as desired.
         ByteBuffer userBuf;
         /*
-        if (readOnly())
-            userBuf = readBuf[side].asReadOnlyBuffer();
-        else
+          if (readOnly())
+          userBuf = readBuf[side].asReadOnlyBuffer();
+          else
         */
         userBuf = readBuf[side].duplicate();
         userBuf.flip();

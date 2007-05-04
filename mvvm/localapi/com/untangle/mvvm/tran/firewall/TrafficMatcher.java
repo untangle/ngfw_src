@@ -13,16 +13,13 @@ package com.untangle.mvvm.tran.firewall;
 
 import java.net.InetAddress;
 
- import org.apache.log4j.Logger;
-
 import com.untangle.mvvm.tapi.IPNewSessionRequest;
 import com.untangle.mvvm.tapi.IPSessionDesc;
 import com.untangle.mvvm.tapi.Protocol;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
 import com.untangle.mvvm.tran.firewall.port.PortMatcher;
-import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
 import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcher;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
+import org.apache.log4j.Logger;
 
 /**
  * A class for matching Traffic

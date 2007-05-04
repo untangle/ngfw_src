@@ -11,11 +11,11 @@
 
 package com.untangle.gui.widgets;
 
-import com.untangle.gui.util.*;
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
+import com.untangle.gui.util.*;
 
 public class CycleJLabel extends JLabel implements ActionListener{
 
@@ -27,64 +27,64 @@ public class CycleJLabel extends JLabel implements ActionListener{
     boolean goingForward;
 
     public CycleJLabel(ImageIcon[] imageIcons, int delay, boolean doRepeat, boolean doBackwardsRepeat){
-	this.doRepeat = doRepeat;
-	this.doBackwardsRepeat = doBackwardsRepeat;
-	goingForward = true;
-	this.imageIcons = imageIcons;
-	
-	animateTimer = new Timer(delay, this);
+        this.doRepeat = doRepeat;
+        this.doBackwardsRepeat = doBackwardsRepeat;
+        goingForward = true;
+        this.imageIcons = imageIcons;
+
+        animateTimer = new Timer(delay, this);
     }
-    
+
     public void actionPerformed(ActionEvent evt){
-	if( currentImage >= imageIcons.length )
-	    return;
-	setIcon( imageIcons[currentImage] );
-	if( doRepeat ){
-	    if( doBackwardsRepeat ){
-		if( goingForward ){
-		    if( currentImage == imageIcons.length-1 ){
-			goingForward = false;
-			currentImage--;
-		    }
-		    else{
-			currentImage++;
-		    }
-		}
-		else{
-		    if( currentImage == 0 ){
-			goingForward = true;
-			currentImage++;
-		    }
-		    else{
-			currentImage--;
-		    }
-		}
-	    }
-	    else{
-		currentImage++;
-		if( currentImage == imageIcons.length-1 )
-		    currentImage = 0;
-	    }
-	}
-	else{
-	    currentImage++;
-	}
+        if( currentImage >= imageIcons.length )
+            return;
+        setIcon( imageIcons[currentImage] );
+        if( doRepeat ){
+            if( doBackwardsRepeat ){
+                if( goingForward ){
+                    if( currentImage == imageIcons.length-1 ){
+                        goingForward = false;
+                        currentImage--;
+                    }
+                    else{
+                        currentImage++;
+                    }
+                }
+                else{
+                    if( currentImage == 0 ){
+                        goingForward = true;
+                        currentImage++;
+                    }
+                    else{
+                        currentImage--;
+                    }
+                }
+            }
+            else{
+                currentImage++;
+                if( currentImage == imageIcons.length-1 )
+                    currentImage = 0;
+            }
+        }
+        else{
+            currentImage++;
+        }
 
     }
-    
+
     public synchronized void start(){
-	if( imageIcons.length <= 1 )
-	    return;
-	currentImage = 0;
-	animateTimer.start();
+        if( imageIcons.length <= 1 )
+            return;
+        currentImage = 0;
+        animateTimer.start();
     }
     public synchronized void stop(){
-	animateTimer.stop();
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    setIcon(null);
-	}});
+        animateTimer.stop();
+        SwingUtilities.invokeLater( new Runnable(){ public void run(){
+            setIcon(null);
+        }});
     }
     public synchronized boolean isRunning(){
-	return animateTimer.isRunning();
+        return animateTimer.isRunning();
     }
 }

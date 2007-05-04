@@ -83,8 +83,8 @@ public class EventHandler extends AbstractEventHandler
 
         if (!settings.isQuiet())
             logger.debug("New TCP Session Request " +
-                               sessReq.clientAddr().getHostAddress() + ":" + sessReq.clientPort() + " -> " +
-                               sessReq.serverAddr().getHostAddress() + ":" + sessReq.serverPort());
+                         sessReq.clientAddr().getHostAddress() + ":" + sessReq.clientPort() + " -> " +
+                         sessReq.serverAddr().getHostAddress() + ":" + sessReq.serverPort());
 
         Mode localMode = getLocalMode(true);
 
@@ -115,8 +115,8 @@ public class EventHandler extends AbstractEventHandler
         sess.attach(sss);
         if (!settings.isQuiet())
             logger.debug("New TCP Session " +
-                               sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                               sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
+                         sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
+                         sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
     }
 
     public void handleUDPNewSessionRequest (UDPNewSessionRequestEvent event)
@@ -125,8 +125,8 @@ public class EventHandler extends AbstractEventHandler
 
         if (!settings.isQuiet())
             logger.debug("New UDP Session Request " +
-                               sessReq.clientAddr().getHostAddress() + ":" + sessReq.clientPort() + " -> " +
-                               sessReq.serverAddr().getHostAddress() + ":" + sessReq.serverPort());
+                         sessReq.clientAddr().getHostAddress() + ":" + sessReq.clientPort() + " -> " +
+                         sessReq.serverAddr().getHostAddress() + ":" + sessReq.serverPort());
 
         Mode localMode = getLocalMode(true);
 
@@ -151,8 +151,8 @@ public class EventHandler extends AbstractEventHandler
         sess.attach(sss);
         if (!settings.isQuiet())
             logger.debug("New UDP Session " +
-                               sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                               sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
+                         sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
+                         sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
     }
 
     public void handleUDPClientExpired(UDPSessionEvent event)
@@ -161,8 +161,8 @@ public class EventHandler extends AbstractEventHandler
         UDPSession sess = event.session();
         if (!settings.isQuiet())
             logger.debug("UDP Client Expired " +
-                               sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                               sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
+                         sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
+                         sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
         super.handleUDPClientExpired(event);
     }
 
@@ -172,8 +172,8 @@ public class EventHandler extends AbstractEventHandler
         UDPSession sess = event.session();
         if (!settings.isQuiet())
             logger.debug("UDP Server Expired " +
-                               sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                               sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
+                         sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
+                         sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
         super.handleUDPServerExpired(event);
     }
 
@@ -183,8 +183,8 @@ public class EventHandler extends AbstractEventHandler
         TCPSession sess = event.session();
         if (!settings.isQuiet())
             logger.warn("TCP Client RST " +
-                               sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                               sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
+                        sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
+                        sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
         super.handleTCPClientRST(event);
     }
 
@@ -194,8 +194,8 @@ public class EventHandler extends AbstractEventHandler
         TCPSession sess = event.session();
         if (!settings.isQuiet())
             logger.warn("TCP Server RST " +
-                               sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                               sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
+                        sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
+                        sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
         super.handleTCPServerRST(event);
     }
 
@@ -205,8 +205,8 @@ public class EventHandler extends AbstractEventHandler
         TCPSession sess = event.session();
         if (!settings.isQuiet())
             logger.debug("TCP Client Input Shutdown " +
-                               sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                               sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
+                         sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
+                         sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
         super.handleTCPClientFIN(event);
         sess.scheduleTimer(HALF_OPEN_TIMEOUT);
     }
@@ -217,8 +217,8 @@ public class EventHandler extends AbstractEventHandler
         TCPSession sess = event.session();
         if (!settings.isQuiet())
             logger.debug("TCP Server Input Shutdown " +
-                               sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                               sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
+                         sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
+                         sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
         super.handleTCPServerFIN(event);
         sess.scheduleTimer(HALF_OPEN_TIMEOUT);
     }
@@ -229,8 +229,8 @@ public class EventHandler extends AbstractEventHandler
         TCPSession sess = event.session();
         if (!settings.isQuiet())
             logger.debug("TCP Finalized " +
-                               sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                               sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
+                         sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
+                         sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
         super.handleTCPFinalized(event);
     }
 
@@ -240,8 +240,8 @@ public class EventHandler extends AbstractEventHandler
         UDPSession sess = event.session();
         if (!settings.isQuiet())
             logger.debug("UDP Finalized " +
-                               sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
-                               sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
+                         sess.clientAddr().getHostAddress() + ":" + sess.clientPort() + " -> " +
+                         sess.serverAddr().getHostAddress() + ":" + sess.serverPort());
         super.handleUDPFinalized(event);
     }
 
@@ -249,9 +249,9 @@ public class EventHandler extends AbstractEventHandler
     {
         IPSession sess = event.ipsession();
         logger.debug("Timing out session in client state " +
-                           SessionUtil.prettyState(sess.clientState()) + " server state " +
-                           SessionUtil.prettyState(sess.serverState()) + " after " +
-                           HALF_OPEN_TIMEOUT + "ms of inactivity");
+                     SessionUtil.prettyState(sess.clientState()) + " server state " +
+                     SessionUtil.prettyState(sess.serverState()) + " after " +
+                     HALF_OPEN_TIMEOUT + "ms of inactivity");
         // XXXX
         // sess.close();
     }
@@ -303,8 +303,8 @@ public class EventHandler extends AbstractEventHandler
         // copy it
         // return new IPDataResult(new ByteBuffer[] { copy_of_packet });
 
-    // Send it through;
-    super.handleUDPClientPacket(event);
+        // Send it through;
+        super.handleUDPClientPacket(event);
     }
 
     public void handleUDPServerPacket(UDPPacketEvent event)
@@ -318,8 +318,8 @@ public class EventHandler extends AbstractEventHandler
         // copy it
         // return new IPDataResult(new ByteBuffer[] { copy_of_packet });
 
-    // Send it through;
-    super.handleUDPServerPacket(event);
+        // Send it through;
+        super.handleUDPServerPacket(event);
     }
 
     static class TestSessionState {

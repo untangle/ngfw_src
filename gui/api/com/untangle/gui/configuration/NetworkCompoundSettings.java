@@ -11,8 +11,8 @@
 
 package com.untangle.gui.configuration;
 
-import com.untangle.gui.util.Util;
 import com.untangle.gui.transform.CompoundSettings;
+import com.untangle.gui.util.Util;
 import com.untangle.mvvm.networking.AddressSettings;
 import com.untangle.mvvm.networking.BasicNetworkSettings;
 import com.untangle.mvvm.networking.DynamicDNSSettings;
@@ -33,13 +33,13 @@ public class NetworkCompoundSettings implements CompoundSettings {
     public DynamicDNSSettings getDynamicDNSSettings(){ return dynamicDNSSettings; }
 
     public void save() throws Exception {
-	Util.getNetworkManager().setDynamicDnsSettings(dynamicDNSSettings);
+        Util.getNetworkManager().setDynamicDnsSettings(dynamicDNSSettings);
         Util.getNetworkManager().setSettings(basicSettings,addressSettings);
     }
 
     public void refresh() throws Exception {
-	basicSettings = Util.getNetworkManager().getBasicSettings();
-	dynamicDNSSettings = Util.getNetworkManager().getDynamicDnsSettings();
+        basicSettings = Util.getNetworkManager().getBasicSettings();
+        dynamicDNSSettings = Util.getNetworkManager().getDynamicDnsSettings();
         addressSettings = Util.getNetworkManager().getAddressSettings();
     }
 

@@ -14,8 +14,8 @@ package com.untangle.tran.spam;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -31,7 +31,7 @@ public class SpamAssassinDefFile {
     public SpamAssassinDefFile() {}
 
     public void readFromFile(List<SpamAssassinDef> saDefList) {
-        File fileOrg = new File(DEFAULT_FILE); 
+        File fileOrg = new File(DEFAULT_FILE);
         FileReader fileReader = null;
         BufferedReader bufReader = null;
         try {
@@ -72,13 +72,13 @@ public class SpamAssassinDefFile {
     }
 
     public void writeToFile(List<SpamAssassinDef> saDefList) {
-        File fileOrg = new File(DEFAULT_FILE); 
-        File fileNew = new File(NEW_DEFAULT_FILE); 
+        File fileOrg = new File(DEFAULT_FILE);
+        File fileNew = new File(NEW_DEFAULT_FILE);
         FileWriter fileWriter = null;
         BufferedWriter bufWriter = null;
         try {
             if (true == fileNew.exists())
-                 fileNew.delete(); // delete left-over copy, if any
+                fileNew.delete(); // delete left-over copy, if any
 
             fileNew.createNewFile(); // create new copy
             fileWriter = new FileWriter(fileNew);
@@ -147,13 +147,13 @@ public class SpamAssassinDefFile {
         while (true == sTokenizer.hasMoreTokens()) {
             tStr = sTokenizer.nextToken();
             switch(tIdx) {
-                case 0:
-                    toptName = tStr;
-                    break;
-                default:
-                case 1:
-                    toptValue = tStr.trim();
-                    break;
+            case 0:
+                toptName = tStr;
+                break;
+            default:
+            case 1:
+                toptValue = tStr.trim();
+                break;
             }
             tIdx++;
         }

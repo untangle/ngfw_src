@@ -12,32 +12,33 @@
 
 package com.untangle.tran.portal.gui;
 
-import com.untangle.gui.transform.MTransformControlsJPanel;
-import com.untangle.mvvm.portal.*;
-import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.gui.util.*;
 import java.awt.Window;
 import java.awt.event.*;
 import javax.swing.CellEditor;
 import javax.swing.SwingUtilities;
+
+import com.untangle.gui.transform.MTransformControlsJPanel;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.mvvm.portal.*;
 
 public class SettingsButtonRunnable implements ButtonRunnable {
     private boolean isUserType;
     private boolean isEnabled;
     private PortalUser portalUser;
     private PortalGroup portalGroup;
-    private Window topLevelWindow;    
+    private Window topLevelWindow;
     private MTransformControlsJPanel mTransformControlsJPanel;
     private boolean valueChanged;
     private CellEditor cellEditor;
 
     public SettingsButtonRunnable(String isEnabled){
-	if( "true".equals(isEnabled) ) {
-	    this.isEnabled = true;
-	}
-	else if( "false".equals(isEnabled) ){
-	    this.isEnabled = false;
-	}
+        if( "true".equals(isEnabled) ) {
+            this.isEnabled = true;
+        }
+        else if( "false".equals(isEnabled) ){
+            this.isEnabled = false;
+        }
     }
     public String getButtonText(){ return "Edit"; }
     public boolean isEnabled(){ return isEnabled; }
@@ -51,21 +52,21 @@ public class SettingsButtonRunnable implements ButtonRunnable {
     public void setMTransformControlsJPanel(MTransformControlsJPanel mTransformControlsJPanel){ this.mTransformControlsJPanel = mTransformControlsJPanel; }
     public void actionPerformed(ActionEvent evt){ run(); }
     public void run(){
-	if( isUserType ){
-	    UserSettingsJDialog userSettingsJDialog = UserSettingsJDialog.factory(topLevelWindow, portalUser, mTransformControlsJPanel);
-	    userSettingsJDialog.setVisible(true);
-	    //valueChanged = userSettingsJDialog.getSettingsSaved();
-	}
-	else{
-	    GroupSettingsJDialog groupSettingsJDialog = GroupSettingsJDialog.factory(topLevelWindow, portalGroup, mTransformControlsJPanel); 
-	    groupSettingsJDialog.setVisible(true);
-	    //valueChanged = groupSettingsJDialog.getSettingsSaved();
-	}
+        if( isUserType ){
+            UserSettingsJDialog userSettingsJDialog = UserSettingsJDialog.factory(topLevelWindow, portalUser, mTransformControlsJPanel);
+            userSettingsJDialog.setVisible(true);
+            //valueChanged = userSettingsJDialog.getSettingsSaved();
+        }
+        else{
+            GroupSettingsJDialog groupSettingsJDialog = GroupSettingsJDialog.factory(topLevelWindow, portalGroup, mTransformControlsJPanel);
+            groupSettingsJDialog.setVisible(true);
+            //valueChanged = groupSettingsJDialog.getSettingsSaved();
+        }
 
-    /*
-	SwingUtilities.invokeLater( new Runnable(){ public void run(){
-	    cellEditor.stopCellEditing();
-	}});
-    */
+        /*
+          SwingUtilities.invokeLater( new Runnable(){ public void run(){
+          cellEditor.stopCellEditing();
+          }});
+        */
     }
 }

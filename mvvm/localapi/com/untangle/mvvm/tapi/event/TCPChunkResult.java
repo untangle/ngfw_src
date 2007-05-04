@@ -51,12 +51,12 @@ public class TCPChunkResult extends IPDataResult
      * @param clientStreamer a <code>TCPStreamer</code> giving the stream to be chunked to the client.  If non-null, serverStreamer must be null.
      * @param serverStreamer a <code>TCPStreamer</code> giving the stream to be chunked to the server.  If non-null, clientStreamer must be null.
 
-    /*
+     /*
      * Streaming now handled in IPSession.
      *
-    public TCPChunkResult(TCPStreamer clientStreamer, TCPStreamer serverStreamer) {
-        super(clientStreamer, serverStreamer);
-    }
+     public TCPChunkResult(TCPStreamer clientStreamer, TCPStreamer serverStreamer) {
+     super(clientStreamer, serverStreamer);
+     }
     */
 
     public ByteBuffer[] chunksToClient() {

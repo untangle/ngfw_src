@@ -13,18 +13,16 @@ package com.untangle.tran.virus;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.persistence.Transient;
 
 import com.untangle.mvvm.tran.PipelineEndpoints;
-import com.untangle.tran.http.HttpRequestEvent;
 import com.untangle.tran.http.RequestLine;
 import org.hibernate.annotations.Columns;
-import javax.persistence.Entity;
 import org.hibernate.annotations.Type;
 
 /**
@@ -35,139 +33,139 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-@Table(name="tr_virus_evt_http", schema="events")
-public class VirusHttpEvent extends VirusEvent
-{
-    private RequestLine requestLine;
-    private VirusScannerResult result;
-    private String vendorName;
-
-    // constructors -----------------------------------------------------------
-
-    public VirusHttpEvent() { }
-
-    public VirusHttpEvent(RequestLine requestLine, VirusScannerResult result,
-                          String vendorName)
+    @Table(name="tr_virus_evt_http", schema="events")
+    public class VirusHttpEvent extends VirusEvent
     {
-        this.requestLine = requestLine;
-        this.result = result;
-        this.vendorName = vendorName;
-    }
+        private RequestLine requestLine;
+        private VirusScannerResult result;
+        private String vendorName;
 
-    // VirusEvent methods -----------------------------------------------------
+        // constructors -----------------------------------------------------------
 
-    @Transient
-    public String getType()
-    {
-        return "HTTP";
-    }
+        public VirusHttpEvent() { }
 
-    @Transient
-    public String getLocation()
-    {
-        return null == requestLine ? "" : requestLine.getUrl().toString();
-    }
-
-    @Transient
-    public boolean isInfected()
-    {
-        return !result.isClean();
-    }
-
-    @Transient
-    public int getActionType()
-    {
-        if (true == result.isClean()) {
-            return PASSED;
-        } else if (true == result.isVirusCleaned()) {
-            return CLEANED;
-        } else {
-            return BLOCKED;
-        }
-    }
-
-    @Transient
-    public String getActionName()
-    {
-        switch(getActionType())
+        public VirusHttpEvent(RequestLine requestLine, VirusScannerResult result,
+                              String vendorName)
         {
-            case PASSED:
-                return "clean";
-            case CLEANED:
-                return "cleaned";
-            default:
-            case BLOCKED:
-                return "blocked";
+            this.requestLine = requestLine;
+            this.result = result;
+            this.vendorName = vendorName;
         }
-    }
 
-    @Transient
-    public String getVirusName()
-    {
-        String n = result.getVirusName();
+        // VirusEvent methods -----------------------------------------------------
 
-        return null == n ? "" : n;
-    }
+        @Transient
+        public String getType()
+        {
+            return "HTTP";
+        }
 
-    @Transient
-    public PipelineEndpoints getPipelineEndpoints()
-    {
-        return null == requestLine ? null : requestLine.getPipelineEndpoints();
-    }
+        @Transient
+        public String getLocation()
+        {
+            return null == requestLine ? "" : requestLine.getUrl().toString();
+        }
 
-    // accessors --------------------------------------------------------------
+        @Transient
+        public boolean isInfected()
+        {
+            return !result.isClean();
+        }
 
-    /**
-     * Corresponding request line.
-     *
-     * @return the request line.
-     */
-    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="request_line")
-    public RequestLine getRequestLine()
-    {
-        return requestLine;
-    }
+        @Transient
+        public int getActionType()
+        {
+            if (true == result.isClean()) {
+                return PASSED;
+            } else if (true == result.isVirusCleaned()) {
+                return CLEANED;
+            } else {
+                return BLOCKED;
+            }
+        }
 
-    public void setRequestLine(RequestLine requestLine)
-    {
-        this.requestLine = requestLine;
-    }
+        @Transient
+        public String getActionName()
+        {
+            switch(getActionType())
+                {
+                case PASSED:
+                    return "clean";
+                case CLEANED:
+                    return "cleaned";
+                default:
+                case BLOCKED:
+                    return "blocked";
+                }
+        }
 
-    /**
-     * Virus scan result.
-     *
-     * @return the scan result.
-     */
-    @Columns(columns = {
+        @Transient
+        public String getVirusName()
+        {
+            String n = result.getVirusName();
+
+            return null == n ? "" : n;
+        }
+
+        @Transient
+        public PipelineEndpoints getPipelineEndpoints()
+        {
+            return null == requestLine ? null : requestLine.getPipelineEndpoints();
+        }
+
+        // accessors --------------------------------------------------------------
+
+        /**
+         * Corresponding request line.
+         *
+         * @return the request line.
+         */
+        @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+        @JoinColumn(name="request_line")
+        public RequestLine getRequestLine()
+        {
+            return requestLine;
+        }
+
+        public void setRequestLine(RequestLine requestLine)
+        {
+            this.requestLine = requestLine;
+        }
+
+        /**
+         * Virus scan result.
+         *
+         * @return the scan result.
+         */
+        @Columns(columns = {
             @Column(name="clean"),
             @Column(name="virus_name"),
             @Column(name="virus_cleaned")
         })
-    @Type(type="com.untangle.tran.virus.VirusScannerResultUserType")
-    public VirusScannerResult getResult()
-    {
-        return result;
-    }
+        @Type(type="com.untangle.tran.virus.VirusScannerResultUserType")
+        public VirusScannerResult getResult()
+        {
+            return result;
+        }
 
-    public void setResult(VirusScannerResult result)
-    {
-        this.result = result;
-    }
+        public void setResult(VirusScannerResult result)
+        {
+            this.result = result;
+        }
 
-    /**
-     * Spam scanner vendor.
-     *
-     * @return the vendor
-     */
-    @Column(name="vendor_name")
-    public String getVendorName()
-    {
-        return vendorName;
-    }
+        /**
+         * Spam scanner vendor.
+         *
+         * @return the vendor
+         */
+        @Column(name="vendor_name")
+        public String getVendorName()
+        {
+            return vendorName;
+        }
 
-    public void setVendorName(String vendorName)
-    {
-        this.vendorName = vendorName;
+        public void setVendorName(String vendorName)
+        {
+            this.vendorName = vendorName;
+        }
     }
-}

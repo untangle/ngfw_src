@@ -13,9 +13,9 @@ package com.untangle.mvvm.engine;
 
 import java.net.InetAddress;
 
-import com.untangle.mvvm.tran.PipelineEndpoints;
 import com.untangle.mvvm.tapi.IPNewSessionRequest;
 import com.untangle.mvvm.tapi.MPipe;
+import com.untangle.mvvm.tran.PipelineEndpoints;
 
 abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
@@ -98,7 +98,7 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
     {
         pRequest.clientAddr(addr);
         modified = true;
-   }
+    }
 
     public void serverAddr(InetAddress addr)
     {

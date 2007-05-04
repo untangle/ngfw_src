@@ -21,9 +21,9 @@ import java.nio.ByteBuffer;
  * they may wish to parse.
  */
 public class UnparsableMIMEChunk
-  extends ImapChunk {
-  
-  public UnparsableMIMEChunk(ByteBuffer data) {
-    super(data);
-  }   
+    extends ImapChunk {
+
+    public UnparsableMIMEChunk(ByteBuffer data) {
+        super(data);
+    }
 }

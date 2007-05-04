@@ -22,8 +22,8 @@ import com.untangle.gui.transform.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.*;
-import com.untangle.mvvm.tran.*;
 import com.untangle.mvvm.networking.*;
+import com.untangle.mvvm.tran.*;
 import com.untangle.tran.nat.*;
 
 public class SpaceListJPanel extends MEditTableJPanel {
@@ -38,8 +38,8 @@ public class SpaceListJPanel extends MEditTableJPanel {
         SpaceListTableModel spaceListTableModel = new SpaceListTableModel();
         this.setTableModel( spaceListTableModel );
         this.setAddRemoveEnabled(true);
-	this.setFillJButtonEnabled(false);
-	this.setAlwaysAddLast(true);
+        this.setFillJButtonEnabled(false);
+        this.setAlwaysAddLast(true);
     }
 }
 
@@ -70,50 +70,50 @@ class SpaceListTableModel extends MSortedTableModel<Object>{
 
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
         List elemList = new ArrayList(tableVector.size());
-	NetworkSpace newElem = null;
+        NetworkSpace newElem = null;
 
-	for( Vector rowVector : tableVector ){
+        for( Vector rowVector : tableVector ){
             newElem = (NetworkSpace) rowVector.elementAt(4);
             newElem.setName( (String) rowVector.elementAt(2) );
-	    newElem.setDescription( (String) rowVector.elementAt(3) );
+            newElem.setDescription( (String) rowVector.elementAt(3) );
             elemList.add(newElem);
         }
 
-	// SAVE SETTINGS /////////
-	if( !validateOnly ){
-	    NetworkSpacesSettings networkSpacesSettings = (NetworkSpacesSettings) settings;
-	    List<NetworkSpace> networkSpaceList = (List<NetworkSpace>) networkSpacesSettings.getNetworkSpaceList();
-	    // REMOVE ALL NON PRIMARY ENTRIES
-	    Iterator iter = networkSpaceList.iterator();
-	    while( iter.hasNext() ){
-		NetworkSpace tempSpace = (NetworkSpace) iter.next();
-		if( !tempSpace.getIsPrimary() )
-		    iter.remove();
-	    }
-	    networkSpaceList.addAll( (List<NetworkSpace>) elemList );
-	    networkSpacesSettings.setNetworkSpaceList( networkSpaceList );
-	}
+        // SAVE SETTINGS /////////
+        if( !validateOnly ){
+            NetworkSpacesSettings networkSpacesSettings = (NetworkSpacesSettings) settings;
+            List<NetworkSpace> networkSpaceList = (List<NetworkSpace>) networkSpacesSettings.getNetworkSpaceList();
+            // REMOVE ALL NON PRIMARY ENTRIES
+            Iterator iter = networkSpaceList.iterator();
+            while( iter.hasNext() ){
+                NetworkSpace tempSpace = (NetworkSpace) iter.next();
+                if( !tempSpace.getIsPrimary() )
+                    iter.remove();
+            }
+            networkSpaceList.addAll( (List<NetworkSpace>) elemList );
+            networkSpacesSettings.setNetworkSpaceList( networkSpaceList );
+        }
     }
 
     public Vector<Vector> generateRows(Object settings){
-	NetworkSpacesSettings networkSpacesSettings = (NetworkSpacesSettings) settings;
-	List<NetworkSpace> networkSpaces = (List<NetworkSpace>) networkSpacesSettings.getNetworkSpaceList();
+        NetworkSpacesSettings networkSpacesSettings = (NetworkSpacesSettings) settings;
+        List<NetworkSpace> networkSpaces = (List<NetworkSpace>) networkSpacesSettings.getNetworkSpaceList();
         Vector<Vector> allRows = new Vector<Vector>(networkSpaces.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
+        Vector tempRow = null;
+        int rowIndex = 0;
 
-	for( NetworkSpace newElem : networkSpaces ){
-	    if( newElem.getIsPrimary() )
-		continue;
-	    rowIndex++;
-	    tempRow = new Vector(5);
-	    tempRow.add( super.ROW_SAVED );
-	    tempRow.add( rowIndex );
-	    tempRow.add( newElem.getName() );
-	    tempRow.add( newElem.getDescription() );
-	    tempRow.add( newElem );
-	    allRows.add( tempRow );
-	}
+        for( NetworkSpace newElem : networkSpaces ){
+            if( newElem.getIsPrimary() )
+                continue;
+            rowIndex++;
+            tempRow = new Vector(5);
+            tempRow.add( super.ROW_SAVED );
+            tempRow.add( rowIndex );
+            tempRow.add( newElem.getName() );
+            tempRow.add( newElem.getDescription() );
+            tempRow.add( newElem );
+            allRows.add( tempRow );
+        }
 
         return allRows;
     }

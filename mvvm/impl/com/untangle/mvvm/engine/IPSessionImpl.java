@@ -132,15 +132,15 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         // only when !needsFinalization) XXX
 
         /** Someday...
-        try {
+            try {
             Mnp req = RequestUtil.createReleaseNewSession();
             ReleaseNewSessionType rl = req.getReleaseNewSession();
             rl.setSessId(id);
             xenon.requestNoReply(req);
-        } catch (XenonException x) {
+            } catch (XenonException x) {
             // Not expected, just log
             xenon.sessionLogger().warn("Exception releasing new session", x);
-        }
+            }
         */
         released = true;
         this.needsFinalization = needsFinalization;
@@ -616,7 +616,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         } catch (OutOfMemoryError x) {
             MvvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
-          MDC.remove(SESSION_ID_MDC_KEY);
+            MDC.remove(SESSION_ID_MDC_KEY);
         }
 
     }
@@ -691,7 +691,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         } catch (OutOfMemoryError x) {
             MvvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
-          MDC.remove(SESSION_ID_MDC_KEY);
+            MDC.remove(SESSION_ID_MDC_KEY);
         }
     }
 

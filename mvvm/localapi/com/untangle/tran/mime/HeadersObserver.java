@@ -22,18 +22,18 @@ package com.untangle.tran.mime;
  * already give that away).
  */
 public interface HeadersObserver
-  extends HeaderFieldObserver {
+    extends HeaderFieldObserver {
 
 
-  /**
-   * A HeaderField with the given name has been removed.
-   */
-  public void headerFieldsRemoved(LCString headerName);
+    /**
+     * A HeaderField with the given name has been removed.
+     */
+    public void headerFieldsRemoved(LCString headerName);
 
 
-  /**
-   * A HeaderField has been added.
-   */
-  public void headerFieldAdded(HeaderField field);
+    /**
+     * A HeaderField has been added.
+     */
+    public void headerFieldAdded(HeaderField field);
 
 }

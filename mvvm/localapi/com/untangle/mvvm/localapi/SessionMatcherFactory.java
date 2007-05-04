@@ -13,8 +13,6 @@ package com.untangle.mvvm.localapi;
 
 import com.untangle.mvvm.api.IPSessionDesc;
 import com.untangle.mvvm.api.SessionEndpoints;
-
-
 import com.untangle.mvvm.policy.Policy;
 
 public class SessionMatcherFactory
@@ -24,31 +22,31 @@ public class SessionMatcherFactory
     }
 
     static final SessionMatcher NULL_MATCHER = new SessionMatcher() {
-            public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server ) 
+            public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server )
             {
                 return false;
             }
         };
 
     static final SessionMatcher ALL_MATCHER = new SessionMatcher() {
-            public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server ) 
+            public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server )
             {
                 return true;
             }
         };
 
     static final SessionMatcher TCP_MATCHER = new SessionMatcher() {
-            public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server ) 
+            public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server )
             {
                 return ( client.protocol() == SessionEndpoints.PROTO_TCP ) ? true : false;
             }
         };
-    
+
 
     static final SessionMatcher UDP_MATCHER = new SessionMatcher() {
-            public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server ) 
+            public boolean isMatch( Policy policy, IPSessionDesc client, IPSessionDesc server )
             {
-                
+
                 return ( client.protocol() == SessionEndpoints.PROTO_UDP ) ? true : false;
             }
         };
@@ -79,11 +77,11 @@ public class SessionMatcherFactory
         if ( null == policy ) return getAllInstance();
 
         return new SessionMatcher() {
-            public boolean isMatch( Policy sessionPolicy, IPSessionDesc client, IPSessionDesc server ) 
-            {
-                return ( policy.equals( sessionPolicy ));
-            }
-        };
+                public boolean isMatch( Policy sessionPolicy, IPSessionDesc client, IPSessionDesc server )
+                {
+                    return ( policy.equals( sessionPolicy ));
+                }
+            };
     }
 
 }

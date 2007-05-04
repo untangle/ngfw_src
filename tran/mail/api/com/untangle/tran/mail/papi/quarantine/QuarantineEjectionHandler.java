@@ -24,18 +24,18 @@ import java.io.File;
  */
 public interface QuarantineEjectionHandler {
 
-  /**
-   * Eject the given mail.
-   *
-   * @param record the record (metadata) for the mail
-   * @param inboxAddress the inbox which contained the mail
-   * @param recipients the recipient(s) of the mail.  This may or may
-   *        not contain the inboxAddress.
-   * @param data the data file (MIME).
-   */
-  public void ejectMail(InboxRecord record,
-    String inboxAddress,
-    String[] recipients,
-    File data);
+    /**
+     * Eject the given mail.
+     *
+     * @param record the record (metadata) for the mail
+     * @param inboxAddress the inbox which contained the mail
+     * @param recipients the recipient(s) of the mail.  This may or may
+     *        not contain the inboxAddress.
+     * @param data the data file (MIME).
+     */
+    public void ejectMail(InboxRecord record,
+                          String inboxAddress,
+                          String[] recipients,
+                          File data);
 
 }

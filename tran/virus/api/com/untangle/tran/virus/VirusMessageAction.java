@@ -53,12 +53,12 @@ public class VirusMessageAction implements Serializable
     {
         VirusMessageAction zMsgAction;
         for (Iterator i = INSTANCES.keySet().iterator(); true == i.hasNext(); )
-        {
-            zMsgAction = (VirusMessageAction)INSTANCES.get(i.next());
-            if (name.equals(zMsgAction.getName())) {
-                return zMsgAction;
+            {
+                zMsgAction = (VirusMessageAction)INSTANCES.get(i.next());
+                if (name.equals(zMsgAction.getName())) {
+                    return zMsgAction;
+                }
             }
-        }
         return null;
     }
 

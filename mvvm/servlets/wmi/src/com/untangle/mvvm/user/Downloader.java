@@ -63,7 +63,7 @@ public class Downloader extends HttpServlet
      * @param downloadFileName - Name that should be given to the file that is downloaded
      */
     private void streamFile( HttpServletRequest request, HttpServletResponse response,
-                     String fileName, String downloadFileName, String type )
+                             String fileName, String downloadFileName, String type )
         throws ServletException, IOException
     {
         InputStream fileData;

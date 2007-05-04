@@ -26,38 +26,38 @@ import static com.untangle.tran.mime.HeaderNames.*;
  *
  */
 public class MailMessageHeaderFieldFactory
-  extends MIMEPartHeaderFieldFactory {
+    extends MIMEPartHeaderFieldFactory {
 
-  @Override
-  protected HeaderField createHeaderField(String mixedCaseName) {
+    @Override
+    protected HeaderField createHeaderField(String mixedCaseName) {
 
 
-    LCString lcString = new LCString(mixedCaseName);
+        LCString lcString = new LCString(mixedCaseName);
 
-    if(lcString.equals(TO_LC) ||
-      lcString.equals(CC_LC) ||
-      lcString.equals(FROM_LC)) {
-      return new EmailAddressHeaderField(mixedCaseName,
-        lcString);
+        if(lcString.equals(TO_LC) ||
+           lcString.equals(CC_LC) ||
+           lcString.equals(FROM_LC)) {
+            return new EmailAddressHeaderField(mixedCaseName,
+                                               lcString);
+        }
+
+        return super.createHeaderField(mixedCaseName);
     }
 
-    return super.createHeaderField(mixedCaseName);
-  }
+    @Override
+    protected Headers createHeaders(MIMESource source,
+                                    int sourceStart,
+                                    int sourceLen,
+                                    List<HeaderField> headersInOrder,
+                                    Map<LCString, List<HeaderField>> headersByName) {
 
-  @Override
-  protected Headers createHeaders(MIMESource source,
-    int sourceStart,
-    int sourceLen,
-    List<HeaderField> headersInOrder,
-    Map<LCString, List<HeaderField>> headersByName) {
+        return new MIMEMessageHeaders(this,
+                                      source,
+                                      sourceStart,
+                                      sourceLen,
+                                      headersInOrder,
+                                      headersByName);
 
-    return new MIMEMessageHeaders(this,
-      source,
-      sourceStart,
-      sourceLen,
-      headersInOrder,
-      headersByName);
-
-  }
+    }
 
 }

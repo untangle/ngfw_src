@@ -6,15 +6,15 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
- * $Id$ 
+ * $Id$
  */
 package com.untangle.mvvm.util;
 
-import com.untangle.mvvm.tapi.IPSessionDesc;
-import com.untangle.mvvm.tapi.TCPSessionDesc;
-import com.untangle.mvvm.tapi.SessionStats;
-
 import java.util.*;
+
+import com.untangle.mvvm.tapi.IPSessionDesc;
+import com.untangle.mvvm.tapi.SessionStats;
+import com.untangle.mvvm.tapi.TCPSessionDesc;
 
 
 public class SessionUtil {
@@ -34,20 +34,20 @@ public class SessionUtil {
     }
 
     /*
-    public static String prettyMode(byte mode) {
-        switch (mode) {
-        case IPSessionDesc.NORMAL_MODE:
-            return "NORMAL";
-        case IPSessionDesc.DOUBLE_ENDPOINT_MODE:
-            return "DEM";
-        case IPSessionDesc.SERVER_MODE:
-            return "SERVER";
-        case TCPSessionDesc.CLIENT_MODE:
-            return "CLIENT";
-        default:
-            return "UNKNOWN";
-        }
-    }
+      public static String prettyMode(byte mode) {
+      switch (mode) {
+      case IPSessionDesc.NORMAL_MODE:
+      return "NORMAL";
+      case IPSessionDesc.DOUBLE_ENDPOINT_MODE:
+      return "DEM";
+      case IPSessionDesc.SERVER_MODE:
+      return "SERVER";
+      case TCPSessionDesc.CLIENT_MODE:
+      return "CLIENT";
+      default:
+      return "UNKNOWN";
+      }
+      }
     */
 
     private static final IPSessionDesc[] sdtemp = new IPSessionDesc[0];

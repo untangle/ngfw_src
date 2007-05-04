@@ -42,7 +42,7 @@ import org.apache.log4j.Logger;
  * </ul>
  */
 public class SpamReport
-  implements TemplateValues {
+    implements TemplateValues {
 
     private static final String SPAM_REPORT_PREFIX = "SPAMReport:".toLowerCase();
     private static final String FULL_KEY = "FULL".toLowerCase();
@@ -82,59 +82,59 @@ public class SpamReport
         this.score = s;
     }
     /**
-    * For use in Templates (see JavaDoc at the top of this class
-    * for explanation of variable format).
-    */
+     * For use in Templates (see JavaDoc at the top of this class
+     * for explanation of variable format).
+     */
     public String getTemplateValue(String key) {
-      key = key.trim().toLowerCase();
-      if(key.startsWith(SPAM_REPORT_PREFIX)) {
-        key = key.substring(SPAM_REPORT_PREFIX.length());
-        if(key.equals(FULL_KEY)) {
-          StringBuilder sb = new StringBuilder();
-          for(ReportItem ri : items) {
-            sb.append('(');
-            sb.append(Float.toString(ri.getScore()));
-            sb.append(") ");
-            sb.append(ri.getCategory());
-            sb.append(CRLF);
-          }
-          return sb.toString();
+        key = key.trim().toLowerCase();
+        if(key.startsWith(SPAM_REPORT_PREFIX)) {
+            key = key.substring(SPAM_REPORT_PREFIX.length());
+            if(key.equals(FULL_KEY)) {
+                StringBuilder sb = new StringBuilder();
+                for(ReportItem ri : items) {
+                    sb.append('(');
+                    sb.append(Float.toString(ri.getScore()));
+                    sb.append(") ");
+                    sb.append(ri.getCategory());
+                    sb.append(CRLF);
+                }
+                return sb.toString();
+            }
+            else if(key.equals(SCORE_KEY)) {
+                return Float.toString(score);
+            }
+            else if(key.equals(THRESHOLD_KEY)) {
+                return Float.toString(threshold);
+            }
         }
-        else if(key.equals(SCORE_KEY)) {
-          return Float.toString(score);
-        }
-        else if(key.equals(THRESHOLD_KEY)) {
-          return Float.toString(threshold);
-        }
-      }
-      return null;
+        return null;
     }
 
     /**
      * @depricated
      */
-/*
-    public Rfc822Header rewriteHeader(Rfc822Header h)
-    {
-        if (isSpam()) {
-            logger.debug("isSpam, rewriting header");
-            String subject = h.getSubject();
-            subject = "[SPAM] " + (null == subject ? "" : subject);
-            h.setSubject(subject);
-        } else {
-            logger.debug("not spam, not rewriting");
-        }
+    /*
+      public Rfc822Header rewriteHeader(Rfc822Header h)
+      {
+      if (isSpam()) {
+      logger.debug("isSpam, rewriting header");
+      String subject = h.getSubject();
+      subject = "[SPAM] " + (null == subject ? "" : subject);
+      h.setSubject(subject);
+      } else {
+      logger.debug("not spam, not rewriting");
+      }
 
-        try {
-            h.setField("X-Spam-Flag", isSpam() ? "YES" : "NO");
-        } catch (IllegalFieldException exn) {
-            throw new IllegalStateException("should never happen");
-        }
+      try {
+      h.setField("X-Spam-Flag", isSpam() ? "YES" : "NO");
+      } catch (IllegalFieldException exn) {
+      throw new IllegalStateException("should never happen");
+      }
 
 
-        return h;
-    }
-*/
+      return h;
+      }
+    */
     public boolean isSpam()
     {
         return threshold <= score;

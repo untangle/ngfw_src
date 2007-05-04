@@ -11,20 +11,19 @@
 
 package com.untangle.tran.mail.gui;
 
-import com.untangle.gui.util.Util;
+import java.awt.Component;
+import java.util.Arrays;
+import java.util.List;
+
 import com.untangle.gui.transform.CompoundSettings;
+import com.untangle.gui.util.Util;
 import com.untangle.tran.mail.papi.MailTransform;
 import com.untangle.tran.mail.papi.MailTransformSettings;
 import com.untangle.tran.mail.papi.quarantine.Inbox;
 import com.untangle.tran.mail.papi.quarantine.InboxIndex;
-import com.untangle.tran.mail.papi.quarantine.QuarantineSettings;
 import com.untangle.tran.mail.papi.quarantine.QuarantineMaintenenceView;
+import com.untangle.tran.mail.papi.quarantine.QuarantineSettings;
 import com.untangle.tran.mail.papi.safelist.SafelistAdminView;
-
-import java.awt.Component;
-import java.util.List;
-import java.util.Vector;
-import java.util.Arrays;
 
 public class MailTransformCompoundSettings implements CompoundSettings {
 
@@ -55,7 +54,7 @@ public class MailTransformCompoundSettings implements CompoundSettings {
     private List<String> globalSafelist;
     public List<String> getGlobalSafelist(){ return globalSafelist; }
     public void setGlobalSafelist(List<String> inGlobalSafelist){
-	globalSafelist = inGlobalSafelist;
+        globalSafelist = inGlobalSafelist;
     }
 
 
@@ -71,21 +70,21 @@ public class MailTransformCompoundSettings implements CompoundSettings {
     public List<String> getSafelists(){ return safelists; }
     public int[] getSafelistCounts(){ return safelistCounts; }
     public List<Inbox> getInboxList() {
-	return inboxList;
+        return inboxList;
     }
     public InboxIndex getInboxIndex(){
-	return inboxIndex;
+        return inboxIndex;
     }
     public void loadSafelists() throws Exception {
-	safelists = safelistAdminView.listSafelists();
+        safelists = safelistAdminView.listSafelists();
     }
     public void loadSafelistCounts() throws Exception {
-	safelistCounts = new int[safelists.size()];
-	int i=0;
-	for(String account : safelists){
-	    safelistCounts[i] = safelistAdminView.getSafelistCnt(account);
-	    i++;
-	}
+        safelistCounts = new int[safelists.size()];
+        int i=0;
+        for(String account : safelists){
+            safelistCounts[i] = safelistAdminView.getSafelistCnt(account);
+            i++;
+        }
     }
     public void loadSafelistContents(String account) throws Exception { safelistContents = safelistAdminView.getSafelistContents(account); }
     public void loadInboxIndex(String account) throws Exception { inboxIndex = quarantineMaintenanceView.getInboxIndex(account); }
@@ -114,43 +113,43 @@ public class MailTransformCompoundSettings implements CompoundSettings {
 
 
     public void save() throws Exception {
-	mailTransformSettings.setQuarantineSettings(quarantineSettings);
-	mailTransform.setMailTransformSettings(mailTransformSettings);
+        mailTransformSettings.setQuarantineSettings(quarantineSettings);
+        mailTransform.setMailTransformSettings(mailTransformSettings);
 
-	// GLOBAL STUFF //
-	safelistAdminView.replaceSafelist(GLOBAL_BUSINESS_PAPERS, globalSafelist.toArray(new String[0]));
+        // GLOBAL STUFF //
+        safelistAdminView.replaceSafelist(GLOBAL_BUSINESS_PAPERS, globalSafelist.toArray(new String[0]));
     }
 
     public void refresh() throws Exception {
-	if(mailTransform == null)
-	    mailTransform = (MailTransform) Util.getTransform("mail-casing");
-	mailTransformSettings = mailTransform.getMailTransformSettings();
-	quarantineSettings = mailTransformSettings.getQuarantineSettings();
+        if(mailTransform == null)
+            mailTransform = (MailTransform) Util.getTransform("mail-casing");
+        mailTransformSettings = mailTransform.getMailTransformSettings();
+        quarantineSettings = mailTransformSettings.getQuarantineSettings();
 
-    // GENERAL SETTINGS //
-    minStorageGigs = mailTransform.getMinAllocatedStoreSize(true);
-    maxStorageGigs = mailTransform.getMaxAllocatedStoreSize(true);
+        // GENERAL SETTINGS //
+        minStorageGigs = mailTransform.getMinAllocatedStoreSize(true);
+        maxStorageGigs = mailTransform.getMaxAllocatedStoreSize(true);
 
-	if(quarantineMaintenanceView == null)
-	    quarantineMaintenanceView = mailTransform.getQuarantineMaintenenceView();
-	if(safelistAdminView == null)
-	    safelistAdminView = mailTransform.getSafelistAdminView();
+        if(quarantineMaintenanceView == null)
+            quarantineMaintenanceView = mailTransform.getQuarantineMaintenenceView();
+        if(safelistAdminView == null)
+            safelistAdminView = mailTransform.getSafelistAdminView();
 
-	// GLOBAL STUFF //
-	globalSafelist = Arrays.asList(	safelistAdminView.getSafelistContents(GLOBAL_BUSINESS_PAPERS) );
+        // GLOBAL STUFF //
+        globalSafelist = Arrays.asList( safelistAdminView.getSafelistContents(GLOBAL_BUSINESS_PAPERS) );
 
-	if(generalSettingsComponent == null)
-	    generalSettingsComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.MCasingJPanel", "mail-casing");
-	if(safelistComponent == null)
-	    safelistComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.WhitelistAllUsersJPanel", "mail-casing");
-	if(quarantineReleaseAndPurgeComponent == null)
-	    quarantineReleaseAndPurgeComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.QuarantineAllUsersJPanel", "mail-casing");
-	if(quarantinableAddressesComponent == null)
-	    quarantinableAddressesComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.QuarantinableAddressesJPanel", "mail-casing");
-	if(quarantinableForwardsComponent == null)
-	    quarantinableForwardsComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.QuarantinableForwardsJPanel", "mail-casing");
-	if(quarantineGeneralSettingsComponent == null)
-	    quarantineGeneralSettingsComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.QuarantineGeneralSettingsJPanel", "mail-casing");
+        if(generalSettingsComponent == null)
+            generalSettingsComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.MCasingJPanel", "mail-casing");
+        if(safelistComponent == null)
+            safelistComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.WhitelistAllUsersJPanel", "mail-casing");
+        if(quarantineReleaseAndPurgeComponent == null)
+            quarantineReleaseAndPurgeComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.QuarantineAllUsersJPanel", "mail-casing");
+        if(quarantinableAddressesComponent == null)
+            quarantinableAddressesComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.QuarantinableAddressesJPanel", "mail-casing");
+        if(quarantinableForwardsComponent == null)
+            quarantinableForwardsComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.QuarantinableForwardsJPanel", "mail-casing");
+        if(quarantineGeneralSettingsComponent == null)
+            quarantineGeneralSettingsComponent = Util.getSettingsComponent("com.untangle.tran.mail.gui.QuarantineGeneralSettingsJPanel", "mail-casing");
     }
 
     public void validate() throws Exception {

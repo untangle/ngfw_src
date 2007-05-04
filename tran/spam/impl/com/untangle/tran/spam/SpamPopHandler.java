@@ -17,13 +17,13 @@ import java.util.LinkedList;
 
 import com.untangle.mvvm.tapi.TCPSession;
 import com.untangle.mvvm.tran.Transform;
+import com.untangle.tran.mail.papi.MIMEMessageT;
 import com.untangle.tran.mail.papi.MailExport;
 import com.untangle.tran.mail.papi.MailTransformSettings;
 import com.untangle.tran.mail.papi.MessageInfo;
-import com.untangle.tran.mail.papi.MIMEMessageT;
+import com.untangle.tran.mail.papi.WrappedMessageGenerator;
 import com.untangle.tran.mail.papi.pop.PopStateMachine;
 import com.untangle.tran.mail.papi.safelist.SafelistTransformView;
-import com.untangle.tran.mail.papi.WrappedMessageGenerator;
 import com.untangle.tran.mime.HeaderParseException;
 import com.untangle.tran.mime.LCString;
 import com.untangle.tran.mime.MIMEMessage;
@@ -120,7 +120,7 @@ public class SpamPopHandler extends PopStateMachine
                 zTransform.incrementCount(PASS_COUNTER);
             }
         } //else {
-            //logger.debug("scan is not enabled");
+        //logger.debug("scan is not enabled");
         //}
 
         return new TokenResult(new Token[] { zMMessageT }, null);
@@ -135,7 +135,7 @@ public class SpamPopHandler extends PopStateMachine
             try {
                 zMMessage.getMMHeaders().removeHeaderFields(new LCString(zConfig.getHeaderName()));
                 zMMessage.getMMHeaders().addHeaderField(zConfig.getHeaderName(),
-                  zConfig.getHeaderValue(zReport.isSpam()));
+                                                        zConfig.getHeaderValue(zReport.isSpam()));
             }
             catch (HeaderParseException exn) {
                 /* we'll reuse original message */
@@ -155,7 +155,7 @@ public class SpamPopHandler extends PopStateMachine
     }
 
     private SpamReport cleanReport() {
-         return new SpamReport(new LinkedList<ReportItem>(), 0.0f, strength/10.0f);
+        return new SpamReport(new LinkedList<ReportItem>(), 0.0f, strength/10.0f);
     }
 
     private void postSpamEvent(MessageInfo msgInfo, SpamReport report, SpamMessageAction action) {

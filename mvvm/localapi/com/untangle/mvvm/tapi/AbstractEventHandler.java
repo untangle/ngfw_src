@@ -43,21 +43,21 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     // This should be enhanced. XXX
     public void handleMPipeHeartbeatRequest(MPipeHeartbeatRequestEvent event)
     {
-        // Check to make sure the client health is good.  XXX
-        boolean ok = true;
-        MPipe mPipe = event.mPipe();
-        try {
-            // What does it mean for exection from here? XXX
+    // Check to make sure the client health is good.  XXX
+    boolean ok = true;
+    MPipe mPipe = event.mPipe();
+    try {
+    // What does it mean for exection from here? XXX
 
-            if (ok) {
-                mPipe.sendOkHeartbeat();
-            } else {
-                // XXX
-                mPipe.sendErrHeartbeat("foo", MNPConstants.ERROR, "");
-            }
-        } catch (MPipeException x) {
-            // XXX
-        }
+    if (ok) {
+    mPipe.sendOkHeartbeat();
+    } else {
+    // XXX
+    mPipe.sendErrHeartbeat("foo", MNPConstants.ERROR, "");
+    }
+    } catch (MPipeException x) {
+    // XXX
+    }
     }
     */
 

@@ -145,7 +145,7 @@ public class VirusPopHandler extends PopStateMachine
                 zTransform.incrementCount(PASS_COUNTER);
             }
         } //else {
-            //logger.debug("scan is not enabled or message contains no MIME parts");
+        //logger.debug("scan is not enabled or message contains no MIME parts");
         //}
 
         return new TokenResult(new Token[] { zMMessageT }, null);

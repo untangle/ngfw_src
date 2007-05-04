@@ -18,21 +18,21 @@ import java.awt.Window;
 final public class RefreshFailureDialog extends MOneButtonJDialog {
 
     public static RefreshFailureDialog factory(Window parentWindow, String applianceName){
-	if( parentWindow instanceof Frame )
-	    return new RefreshFailureDialog((Frame)parentWindow, applianceName);
-	else if( parentWindow instanceof Dialog)
-	    return new RefreshFailureDialog((Dialog)parentWindow, applianceName);
-	else
-	    return null;
+        if( parentWindow instanceof Frame )
+            return new RefreshFailureDialog((Frame)parentWindow, applianceName);
+        else if( parentWindow instanceof Dialog)
+            return new RefreshFailureDialog((Dialog)parentWindow, applianceName);
+        else
+            return null;
     }
 
     private RefreshFailureDialog(Dialog parentDialog, String applianceName) {
-	super(parentDialog);
-	init(applianceName);
+        super(parentDialog);
+        init(applianceName);
     }
     private RefreshFailureDialog(Frame parentFrame, String applianceName) {
-	super(parentFrame);
-	init(applianceName);
+        super(parentFrame);
+        init(applianceName);
     }
 
     private void init(String applianceName){
@@ -46,5 +46,5 @@ final public class RefreshFailureDialog extends MOneButtonJDialog {
         setVisible(true);
     }
 
-    
+
 }

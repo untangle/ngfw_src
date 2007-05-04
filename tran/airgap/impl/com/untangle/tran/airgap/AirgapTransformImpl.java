@@ -19,9 +19,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.untangle.mvvm.localapi.LocalShieldManager;
 import com.untangle.mvvm.IntfEnum;
 import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.mvvm.localapi.LocalShieldManager;
 import com.untangle.mvvm.shield.ShieldNodeSettings;
 import com.untangle.mvvm.tapi.AbstractTransform;
 import com.untangle.mvvm.tapi.PipeSpec;
@@ -92,8 +92,8 @@ public class AirgapTransformImpl extends AbstractTransform
     public AirgapSettings getAirgapSettings()
     {
         validateSettings();
-	if( settings == null )
-	    logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+        if( settings == null )
+            logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
         return settings;
     }
 

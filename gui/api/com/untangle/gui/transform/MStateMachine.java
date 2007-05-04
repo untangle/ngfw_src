@@ -44,7 +44,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
         this.powerJToggleButton = mTransformJPanel.powerJToggleButton();
         this.transform = mTransformJPanel.getTransform();
         this.stateJLabel = mTransformJPanel.stateJLabel();
-	this.messageJLabel = mTransformJPanel.messageTextJLabel();
+        this.messageJLabel = mTransformJPanel.messageTextJLabel();
         this.saveJButton = mTransformControlsJPanel.saveJButton();
         this.reloadJButton = mTransformControlsJPanel.reloadJButton();
         this.removeJButton = mTransformControlsJPanel.removeJButton();
@@ -52,7 +52,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
         transformName = mTransformJPanel.getTransformDesc().getName();
         displayName = mTransformJPanel.getTransformDesc().getDisplayName();
 
-	doRefreshState();
+        doRefreshState();
     }
 
 
@@ -62,28 +62,28 @@ public class MStateMachine implements java.awt.event.ActionListener {
         Object source = evt.getSource();
 
         if( Util.getIsDemo() && !source.equals(reloadJButton) ){
-	    if( source.equals(powerJToggleButton) ){
-		if( readOnlyPowerState == null ){
-		    readOnlyPowerState = new Boolean(!powerJToggleButton.isSelected());
-		}
-		if( powerJToggleButton.isSelected() != readOnlyPowerState )
-		    powerJToggleButton.setSelected(readOnlyPowerState);
-	    }
+            if( source.equals(powerJToggleButton) ){
+                if( readOnlyPowerState == null ){
+                    readOnlyPowerState = new Boolean(!powerJToggleButton.isSelected());
+                }
+                if( powerJToggleButton.isSelected() != readOnlyPowerState )
+                    powerJToggleButton.setSelected(readOnlyPowerState);
+            }
             return;
-	}
+        }
         try{
             if( source.equals(saveJButton) ){
-		if( !mTransformControlsJPanel.shouldSave() )
-		    return;
-		new SaveThread();
+                if( !mTransformControlsJPanel.shouldSave() )
+                    return;
+                new SaveThread();
             }
             else if( source.equals(reloadJButton) ){
                 new RefreshThread();
             }
             else if( source.equals(removeJButton) ){
                 /* removeJButton.setEnabled(false); */
-		RemoveProceedDialog dialog = RemoveProceedDialog.factory((Window)mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
-									 displayName);
+                RemoveProceedDialog dialog = RemoveProceedDialog.factory((Window)mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
+                                                                         displayName);
                 if( dialog.isProceeding() ){
                     Util.getPolicyStateMachine().moveFromRackToToolbox(mTransformJPanel.getPolicy(),mTransformJPanel);
                 }
@@ -95,8 +95,8 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 // REMOVE
                 if( (modifiers & java.awt.event.ActionEvent.SHIFT_MASK) > 0 ){
                     if( (modifiers & java.awt.event.ActionEvent.CTRL_MASK) == 0 ){
-			RemoveProceedDialog dialog = RemoveProceedDialog.factory((Window)mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
-										 displayName);
+                        RemoveProceedDialog dialog = RemoveProceedDialog.factory((Window)mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
+                                                                                 displayName);
                         if( dialog.isProceeding() ){
                             Util.getPolicyStateMachine().moveFromRackToToolbox(mTransformJPanel.getPolicy(),mTransformJPanel);
                         }
@@ -143,9 +143,9 @@ public class MStateMachine implements java.awt.event.ActionListener {
     class SaveThread extends Thread{
         public SaveThread(){
             super("MVCLIENT-StateMachineSaveThread: " + displayName);
-	    setDaemon(true);
+            setDaemon(true);
             setProcessingView(false);
-	    mTransformControlsJPanel.getInfiniteProgressJComponent().start("Saving...");
+            mTransformControlsJPanel.getInfiniteProgressJComponent().start("Saving...");
             start();
         }
         public void run(){
@@ -154,19 +154,19 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 mTransformControlsJPanel.refreshAll();
                 mTransformControlsJPanel.populateAll();
             }
-	    catch(ValidationException v){
-		// this was handled with a dialog at a lower level
-	    }
+            catch(ValidationException v){
+                // this was handled with a dialog at a lower level
+            }
             catch(Exception e){
                 try{ Util.handleExceptionWithRestart("Error doing save", e); }
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error doing save", f);
                     setProblemView(true);
-		    SaveFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
+                    SaveFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
                 }
             }
 
-	    mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(MTransformControlsJPanel.MIN_PROGRESS_MILLIS);
+            mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(MTransformControlsJPanel.MIN_PROGRESS_MILLIS);
 
             try{ refreshState(true); }
             catch(Exception e){
@@ -174,20 +174,20 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error doing save", f);
                     setProblemView(true);
-		    SaveFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
+                    SaveFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
                 }
             }
         }
     }
 
-    
+
 
     class RefreshThread extends Thread{
         public RefreshThread(){
             super("MVCLIENT-StateMachineRefreshThread: " + displayName );
-	    setDaemon(true);
+            setDaemon(true);
             setProcessingView(false);
-	    mTransformControlsJPanel.getInfiniteProgressJComponent().start("Refreshing...");
+            mTransformControlsJPanel.getInfiniteProgressJComponent().start("Refreshing...");
             start();
         }
         public void run(){
@@ -199,23 +199,23 @@ public class MStateMachine implements java.awt.event.ActionListener {
                 try{ Util.handleExceptionWithRestart("Error doing refresh", e); }
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error doing refresh", f);
-                    setProblemView(true);		
-		    RefreshFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
+                    setProblemView(true);
+                    RefreshFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
                 }
             }
 
-	    mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(MTransformControlsJPanel.MIN_PROGRESS_MILLIS);
+            mTransformControlsJPanel.getInfiniteProgressJComponent().stopLater(MTransformControlsJPanel.MIN_PROGRESS_MILLIS);
 
-	    try{ refreshState(true); }
-	    catch(Exception e){
-		try{ Util.handleExceptionWithRestart("Error doing refresh", e); }
+            try{ refreshState(true); }
+            catch(Exception e){
+                try{ Util.handleExceptionWithRestart("Error doing refresh", e); }
                 catch(Exception f){
                     Util.handleExceptionNoRestart("Error doing refresh", f);
-                    setProblemView(true);		
-		    RefreshFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
+                    setProblemView(true);
+                    RefreshFailureDialog.factory( (Window) mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(), displayName );
                 }
-	    }
-		
+            }
+
         }
     }
 
@@ -223,7 +223,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
         private final boolean powerOn;
         public PowerThread(){
             super("MVCLIENT-StateMachinePowerThread: " + displayName );
-	    setDaemon(true);
+            setDaemon(true);
             powerOn = powerJToggleButton.isSelected();
             if( powerOn )
                 setStartingView(false);
@@ -310,7 +310,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
             SwingUtilities.invokeLater( runnable );
         else
             runnable.run();
-	mTransformDisplayJPanel.setDoVizUpdates( doVizUpdates );
+        mTransformDisplayJPanel.setDoVizUpdates( doVizUpdates );
     }
     ///////////////////////////////////////////////
 
@@ -320,7 +320,7 @@ public class MStateMachine implements java.awt.event.ActionListener {
     public boolean getDoneRefreshing(){ return doneRefreshing; }
 
     public void doRefreshState(){
-        new RefreshStateThread();	
+        new RefreshStateThread();
     }
 
     private void refreshState(boolean doLater) throws Exception {

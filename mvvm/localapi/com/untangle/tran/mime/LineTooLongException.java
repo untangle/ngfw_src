@@ -17,10 +17,10 @@ package com.untangle.tran.mime;
  * XXXXXX bscott a better base class?
  */
 public class LineTooLongException
-  extends Exception {
+    extends Exception {
 
-  public LineTooLongException(int limit) {
-    super("Line exceeded " + limit + " byte limit");
-  }
+    public LineTooLongException(int limit) {
+        super("Line exceeded " + limit + " byte limit");
+    }
 
 }

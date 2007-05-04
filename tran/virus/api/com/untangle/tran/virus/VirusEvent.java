@@ -75,7 +75,7 @@ public abstract class VirusEvent extends LogEvent
     public SyslogPriority getSyslogPriority()
     {
         switch(getActionType())
-        {
+            {
             case PASSED:
                 // NOTICE = infected but passed
                 // INFORMATIONAL = statistics or normal operation
@@ -85,6 +85,6 @@ public abstract class VirusEvent extends LogEvent
             case CLEANED:
             case BLOCKED:
                 return SyslogPriority.WARNING; // traffic altered
-        }
+            }
     }
 }

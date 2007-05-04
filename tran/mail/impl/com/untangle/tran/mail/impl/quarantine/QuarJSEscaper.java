@@ -20,8 +20,8 @@ import com.untangle.tran.util.JSEscape;
  */
 public class QuarJSEscaper {
 
-  public String escapeJS(String str) {
-    return JSEscape.escapeJS(str);
-  }
+    public String escapeJS(String str) {
+        return JSEscape.escapeJS(str);
+    }
 
 }

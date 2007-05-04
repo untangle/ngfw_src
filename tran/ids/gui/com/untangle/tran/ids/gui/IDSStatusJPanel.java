@@ -11,178 +11,175 @@
 
 package com.untangle.tran.ids.gui;
 
-import com.untangle.gui.util.Util;
-import com.untangle.gui.transform.Refreshable;
-
-import java.awt.Window;
 import java.util.List;
 
+import com.untangle.gui.transform.Refreshable;
 import com.untangle.tran.ids.*;
 
 public class IDSStatusJPanel extends javax.swing.JPanel implements Refreshable<Object>{
-    
+
     public IDSStatusJPanel() {
         initComponents();
     }
 
     public void doRefresh(Object settings){
-		IDSSettings idsSettings = (IDSSettings) settings;
-		List<IDSRule> rules = (List<IDSRule>) idsSettings.getRules();
-		int enabled = 0;
-		int logging = 0;
-		int blocking = 0;
-		for( IDSRule rule : rules){
-				enabled++;
-				if(rule.isLive())
-						blocking++;
-				if(rule.getLog())
-						logging++;
-		}
-		activeJLabel.setText(((Integer)enabled).toString());
-		loggingJLabel.setText(((Integer)logging).toString());
-		blockingJLabel.setText(((Integer)blocking).toString());
+        IDSSettings idsSettings = (IDSSettings) settings;
+        List<IDSRule> rules = (List<IDSRule>) idsSettings.getRules();
+        int enabled = 0;
+        int logging = 0;
+        int blocking = 0;
+        for( IDSRule rule : rules){
+            enabled++;
+            if(rule.isLive())
+                blocking++;
+            if(rule.getLog())
+                logging++;
+        }
+        activeJLabel.setText(((Integer)enabled).toString());
+        loggingJLabel.setText(((Integer)logging).toString());
+        blockingJLabel.setText(((Integer)blocking).toString());
 
     }
-    
 
-        private void initComponents() {//GEN-BEGIN:initComponents
-                java.awt.GridBagConstraints gridBagConstraints;
 
-                serverRoutingJPanel = new javax.swing.JPanel();
-                jLabel2 = new javax.swing.JLabel();
-                jLabel3 = new javax.swing.JLabel();
-                jLabel4 = new javax.swing.JLabel();
-                activeJLabel = new javax.swing.JLabel();
-                loggingJLabel = new javax.swing.JLabel();
-                blockingJLabel = new javax.swing.JLabel();
-                clientJPanel = new javax.swing.JPanel();
-                jLabel1 = new javax.swing.JLabel();
+    private void initComponents() {//GEN-BEGIN:initComponents
+        java.awt.GridBagConstraints gridBagConstraints;
 
-                setLayout(new java.awt.GridBagLayout());
+        serverRoutingJPanel = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        activeJLabel = new javax.swing.JLabel();
+        loggingJLabel = new javax.swing.JLabel();
+        blockingJLabel = new javax.swing.JLabel();
+        clientJPanel = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
 
-                serverRoutingJPanel.setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.GridBagLayout());
 
-                serverRoutingJPanel.setBorder(new javax.swing.border.TitledBorder("Statistics"));
-                serverRoutingJPanel.setMaximumSize(new java.awt.Dimension(1061, 64));
-                serverRoutingJPanel.setMinimumSize(new java.awt.Dimension(1061, 64));
-                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                jLabel2.setText("Total Signatures Available:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                gridBagConstraints.weightx = 0.5;
-                gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-                serverRoutingJPanel.add(jLabel2, gridBagConstraints);
+        serverRoutingJPanel.setLayout(new java.awt.GridBagLayout());
 
-                jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                jLabel3.setText("Total Signatures Logging:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                gridBagConstraints.weightx = 0.5;
-                gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-                serverRoutingJPanel.add(jLabel3, gridBagConstraints);
+        serverRoutingJPanel.setBorder(new javax.swing.border.TitledBorder("Statistics"));
+        serverRoutingJPanel.setMaximumSize(new java.awt.Dimension(1061, 64));
+        serverRoutingJPanel.setMinimumSize(new java.awt.Dimension(1061, 64));
+        jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel2.setText("Total Signatures Available:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        serverRoutingJPanel.add(jLabel2, gridBagConstraints);
 
-                jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                jLabel4.setText("Total Signatures Blocking:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 2;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                gridBagConstraints.weightx = 0.5;
-                gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-                serverRoutingJPanel.add(jLabel4, gridBagConstraints);
+        jLabel3.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel3.setText("Total Signatures Logging:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        serverRoutingJPanel.add(jLabel3, gridBagConstraints);
 
-                activeJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                activeJLabel.setText("Total Signatures Active:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                gridBagConstraints.weightx = 0.5;
-                gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-                serverRoutingJPanel.add(activeJLabel, gridBagConstraints);
+        jLabel4.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel4.setText("Total Signatures Blocking:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        serverRoutingJPanel.add(jLabel4, gridBagConstraints);
 
-                loggingJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                loggingJLabel.setText("Total Signatures Active:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                gridBagConstraints.weightx = 0.5;
-                gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-                serverRoutingJPanel.add(loggingJLabel, gridBagConstraints);
+        activeJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        activeJLabel.setText("Total Signatures Active:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        serverRoutingJPanel.add(activeJLabel, gridBagConstraints);
 
-                blockingJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                blockingJLabel.setText("Total Signatures Active:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 2;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-                gridBagConstraints.weightx = 0.5;
-                gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-                serverRoutingJPanel.add(blockingJLabel, gridBagConstraints);
+        loggingJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        loggingJLabel.setText("Total Signatures Active:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        serverRoutingJPanel.add(loggingJLabel, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.ipadx = 218;
-                gridBagConstraints.ipady = 30;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 50, 90, 50);
-                add(serverRoutingJPanel, gridBagConstraints);
+        blockingJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        blockingJLabel.setText("Total Signatures Active:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        serverRoutingJPanel.add(blockingJLabel, gridBagConstraints);
 
-                clientJPanel.setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 218;
+        gridBagConstraints.ipady = 30;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 50, 90, 50);
+        add(serverRoutingJPanel, gridBagConstraints);
 
-                clientJPanel.setBorder(new javax.swing.border.TitledBorder("Notice"));
-                clientJPanel.setMaximumSize(new java.awt.Dimension(1061, 64));
-                clientJPanel.setMinimumSize(new java.awt.Dimension(1061, 64));
-                clientJPanel.setPreferredSize(new java.awt.Dimension(1061, 64));
-                jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel1.setText("<html>Untangle, Inc. continues to maintain the default signature settings through automatic updates.  You are free to modify and add signatures, however, it is not required.</html>");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.gridwidth = 2;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 5);
-                clientJPanel.add(jLabel1, gridBagConstraints);
+        clientJPanel.setLayout(new java.awt.GridBagLayout());
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.ipadx = 218;
-                gridBagConstraints.ipady = 16;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(90, 50, 0, 50);
-                add(clientJPanel, gridBagConstraints);
+        clientJPanel.setBorder(new javax.swing.border.TitledBorder("Notice"));
+        clientJPanel.setMaximumSize(new java.awt.Dimension(1061, 64));
+        clientJPanel.setMinimumSize(new java.awt.Dimension(1061, 64));
+        clientJPanel.setPreferredSize(new java.awt.Dimension(1061, 64));
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel1.setText("<html>Untangle, Inc. continues to maintain the default signature settings through automatic updates.  You are free to modify and add signatures, however, it is not required.</html>");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 5);
+        clientJPanel.add(jLabel1, gridBagConstraints);
 
-        }//GEN-END:initComponents
-    
-    
-        // Variables declaration - do not modify//GEN-BEGIN:variables
-        private javax.swing.JLabel activeJLabel;
-        private javax.swing.JLabel blockingJLabel;
-        private javax.swing.JPanel clientJPanel;
-        private javax.swing.JLabel jLabel1;
-        private javax.swing.JLabel jLabel2;
-        private javax.swing.JLabel jLabel3;
-        private javax.swing.JLabel jLabel4;
-        private javax.swing.JLabel loggingJLabel;
-        private javax.swing.JPanel serverRoutingJPanel;
-        // End of variables declaration//GEN-END:variables
-    
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 218;
+        gridBagConstraints.ipady = 16;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(90, 50, 0, 50);
+        add(clientJPanel, gridBagConstraints);
+
+    }//GEN-END:initComponents
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel activeJLabel;
+    private javax.swing.JLabel blockingJLabel;
+    private javax.swing.JPanel clientJPanel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel loggingJLabel;
+    private javax.swing.JPanel serverRoutingJPanel;
+    // End of variables declaration//GEN-END:variables
+
 }

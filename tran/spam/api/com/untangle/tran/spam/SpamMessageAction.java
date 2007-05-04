@@ -61,12 +61,12 @@ public class SpamMessageAction implements Serializable
     {
         SpamMessageAction zMsgAction;
         for (Iterator i = INSTANCES.keySet().iterator(); true == i.hasNext(); )
-        {
-            zMsgAction = (SpamMessageAction)INSTANCES.get(i.next());
-            if (name.equals(zMsgAction.getName())) {
-                return zMsgAction;
+            {
+                zMsgAction = (SpamMessageAction)INSTANCES.get(i.next());
+                if (name.equals(zMsgAction.getName())) {
+                    return zMsgAction;
+                }
             }
-        }
         return null;
     }
 

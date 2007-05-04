@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.localapi.SessionMatcher;
 import com.untangle.mvvm.localapi.SessionMatcherFactory;
 import com.untangle.mvvm.logging.EventLogger;
@@ -30,11 +29,8 @@ import com.untangle.mvvm.tapi.SoloPipeSpec;
 import com.untangle.mvvm.tran.TransformContext;
 import com.untangle.mvvm.tran.TransformException;
 import com.untangle.mvvm.tran.TransformStartException;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
-import com.untangle.mvvm.tran.firewall.port.PortMatcher;
 import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcher;
 import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 import com.untangle.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
@@ -79,8 +75,8 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
     public FirewallSettings getFirewallSettings()
     {
-    if( settings == null )
-        logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+        if( settings == null )
+            logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
         return settings;
     }
 

@@ -42,136 +42,136 @@ import java.nio.ByteBuffer;
  */
 public abstract class SASLObserver {
 
-  protected static final int DEF_MAX_MSG_SZ = 1024*4;
+    protected static final int DEF_MAX_MSG_SZ = 1024*4;
 
-  /**
-   * Enumeration of values for
-   * the status of a feature.
-   */
-  public static enum FeatureStatus {
     /**
-     * The feature has been determined, and is positive
+     * Enumeration of values for
+     * the status of a feature.
      */
-    YES,
+    public static enum FeatureStatus {
+        /**
+         * The feature has been determined, and is positive
+         */
+        YES,
+        /**
+         * The feature has been determined, and is negative
+         */
+        NO,
+        /**
+         * The feature has yet to be determined
+         */
+        UNKNOWN
+    };
+
+    private final String m_mechName;
+    private final boolean m_supportsPrivacy;
+    private final boolean m_supportsIntegrity;
+    private final int m_maxMessageSz;
+
+    SASLObserver(String mechName,
+                 boolean supportsPrivacy,
+                 boolean supportsIntegrity,
+                 int maxMessageSz) {
+        m_mechName = mechName;
+        m_supportsPrivacy = supportsPrivacy;
+        m_supportsIntegrity = supportsIntegrity;
+        m_maxMessageSz = maxMessageSz;
+    }
+
     /**
-     * The feature has been determined, and is negative
-     */    
-    NO,
+     * Query this Observer about the mechansim's
+     * support for privacy (encryption).
+     *
+     * @return true if this mechanism supports privacy
+     */
+    public final boolean mechanismSupportsPrivacy() {
+        return m_supportsPrivacy;
+    }
+
     /**
-     * The feature has yet to be determined
-     */    
-    UNKNOWN
-  };
+     * Query this Observer about the mechansim's
+     * support for integrity checking.  Integrity
+     * protection without {@link #mechanismSupportsPrivacy privacy}
+     * means the protocol messages may be observed,
+     * but not altered.
+     *
+     * @return true if this mechanism supports integrity protection
+     */
+    public boolean mechanismSupportsIntegrity() {
+        return m_supportsIntegrity;
+    }
 
-  private final String m_mechName;
-  private final boolean m_supportsPrivacy;
-  private final boolean m_supportsIntegrity;
-  private final int m_maxMessageSz;
-  
-  SASLObserver(String mechName,
-    boolean supportsPrivacy,
-    boolean supportsIntegrity,
-    int maxMessageSz) {
-    m_mechName = mechName;
-    m_supportsPrivacy = supportsPrivacy;
-    m_supportsIntegrity = supportsIntegrity;
-    m_maxMessageSz = maxMessageSz;
-  }
+    /**
+     * Get the maximum reasonable message size for this
+     * mechanism.  Note that this is without the enveloping
+     * protocol.  For example, if things are base64 encoded
+     * the number should be multiplied by 4 then divided by 3.
+     *
+     * @return the max reasonable message size.
+     */
+    public int getMaxReasonableMessageSz() {
+        return m_maxMessageSz;
+    }
 
-  /**
-   * Query this Observer about the mechansim's
-   * support for privacy (encryption).
-   *
-   * @return true if this mechanism supports privacy
-   */
-  public final boolean mechanismSupportsPrivacy() {
-    return m_supportsPrivacy;
-  }
+    /**
+     * Get the SASL name of this mechanism
+     *
+     * @return the name
+     */
+    public final String getMechanismName() {
+        return m_mechName;
+    }
 
-  /**
-   * Query this Observer about the mechansim's
-   * support for integrity checking.  Integrity
-   * protection without {@link #mechanismSupportsPrivacy privacy}
-   * means the protocol messages may be observed,
-   * but not altered.
-   *
-   * @return true if this mechanism supports integrity protection
-   */
-  public boolean mechanismSupportsIntegrity() {
-    return m_supportsIntegrity;
-  }
+    public abstract FeatureStatus exchangeUsingPrivacy();
 
-  /**
-   * Get the maximum reasonable message size for this
-   * mechanism.  Note that this is without the enveloping
-   * protocol.  For example, if things are base64 encoded
-   * the number should be multiplied by 4 then divided by 3.
-   *
-   * @return the max reasonable message size.
-   */
-  public int getMaxReasonableMessageSz() {
-    return m_maxMessageSz;
-  }
+    public abstract FeatureStatus exchangeUsingIntegrity();
 
-  /**
-   * Get the SASL name of this mechanism
-   *
-   * @return the name
-   */
-  public final String getMechanismName() {
-    return m_mechName;
-  }
+    public abstract FeatureStatus exchangeAuthIDFound();
 
-  public abstract FeatureStatus exchangeUsingPrivacy();
-
-  public abstract FeatureStatus exchangeUsingIntegrity();
-
-  public abstract FeatureStatus exchangeAuthIDFound();
-
-  /**
-   * Get the AuthorizationID, if {@link #exchangeAuthIDFound it has been found}.
-   * Note that for some mechanisms, this can never be found.  For other
-   * mechanisms which separate the Authorization ID from the Authentication ID,
-   * implementations should always choose the AuthorizationID.
-   *
-   * @return the Authorization ID, or null if not (yet?) found.
-   */
-  public abstract String getAuthID();
+    /**
+     * Get the AuthorizationID, if {@link #exchangeAuthIDFound it has been found}.
+     * Note that for some mechanisms, this can never be found.  For other
+     * mechanisms which separate the Authorization ID from the Authentication ID,
+     * implementations should always choose the AuthorizationID.
+     *
+     * @return the Authorization ID, or null if not (yet?) found.
+     */
+    public abstract String getAuthID();
 
 
-  /**
-   * This one is perhaps useless - I'm still not sure.  SASL
-   * says that the profile (i.e. "SASL-in-SMTP" or "SASL-in-IMAP")
-   * determines (a) when the exchange is complete and (b)
-   * the outcome.  In other words, seeing "XXXX OK" in
-   * IMAP means that the SASL login is done.  However, in my reading
-   * is seems hard to parse those profiles to know if we're observing
-   * (a) SASL stuff or (b) protocol stuff.
-   * <br><br>
-   * This method then acts as a "hint" as to the disposition
-   * of the exchange, based on the SASL data.
-   */
-  public abstract FeatureStatus exchangeComplete();
+    /**
+     * This one is perhaps useless - I'm still not sure.  SASL
+     * says that the profile (i.e. "SASL-in-SMTP" or "SASL-in-IMAP")
+     * determines (a) when the exchange is complete and (b)
+     * the outcome.  In other words, seeing "XXXX OK" in
+     * IMAP means that the SASL login is done.  However, in my reading
+     * is seems hard to parse those profiles to know if we're observing
+     * (a) SASL stuff or (b) protocol stuff.
+     * <br><br>
+     * This method then acts as a "hint" as to the disposition
+     * of the exchange, based on the SASL data.
+     */
+    public abstract FeatureStatus exchangeComplete();
 
-  /**
-   * Pass-in initial client data.  This is an
-   * optional feature of SASL (see RFC 2222 Section 5.1).
-   * <br><br>
-   * Note that only some SASL profiles support this
-   * feature (SMTP seems to, yet IMAP does not).
-   *
-   * @param buf the buffer.  Note that implementations
-   *        <b>are permitted to modify the buffer</b>
-   *        so a duplicate should be passed if this
-   *        is a concern.
-   *
-   * @return true if this data has changed any of the
-   *         observed properties of this exchange.
-   */
-  public abstract boolean initialClientData(ByteBuffer buf);
+    /**
+     * Pass-in initial client data.  This is an
+     * optional feature of SASL (see RFC 2222 Section 5.1).
+     * <br><br>
+     * Note that only some SASL profiles support this
+     * feature (SMTP seems to, yet IMAP does not).
+     *
+     * @param buf the buffer.  Note that implementations
+     *        <b>are permitted to modify the buffer</b>
+     *        so a duplicate should be passed if this
+     *        is a concern.
+     *
+     * @return true if this data has changed any of the
+     *         observed properties of this exchange.
+     */
+    public abstract boolean initialClientData(ByteBuffer buf);
 
-  public abstract boolean clientData(ByteBuffer buf);
+    public abstract boolean clientData(ByteBuffer buf);
 
-  public abstract boolean serverData(ByteBuffer buf);
+    public abstract boolean serverData(ByteBuffer buf);
 
 }

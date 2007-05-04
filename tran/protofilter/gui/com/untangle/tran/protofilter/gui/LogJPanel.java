@@ -12,15 +12,13 @@
 package com.untangle.tran.protofilter.gui;
 
 import java.util.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.table.*;
 
 import com.untangle.gui.transform.*;
-import com.untangle.gui.widgets.editTable.*;
 import com.untangle.gui.util.*;
-import com.untangle.mvvm.logging.EventRepository;
+import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.logging.EventManager;
+import com.untangle.mvvm.logging.EventRepository;
 import com.untangle.mvvm.logging.RepositoryDesc;
 import com.untangle.mvvm.tran.PipelineEndpoints;
 import com.untangle.mvvm.tran.Transform;
@@ -76,7 +74,7 @@ public class LogJPanel extends MLogTableJPanel {
             for( ProtoFilterLogEvent log : logList ){
                 PipelineEndpoints pe = log.getPipelineEndpoints();
                 event = new Vector(7);
-		event.add( log.getTimeStamp() );
+                event.add( log.getTimeStamp() );
                 event.add( log.isBlocked() ? "blocked" : "passed" );
                 event.add( null == pe ? new IPPortString() : new IPPortString(pe.getCClientAddr(), pe.getCClientPort()) );
                 event.add( log.getProtocol() );

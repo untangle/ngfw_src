@@ -13,22 +13,18 @@
 
 package com.untangle.tran.reporting.gui;
 
-import com.untangle.gui.transform.*;
-import com.untangle.gui.pipeline.MPipelineJPanel;
-import com.untangle.mvvm.tran.*;
-import com.untangle.mvvm.MailSettings;
-import com.untangle.tran.reporting.*;
-
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.widgets.dialogs.*;
-import com.untangle.gui.util.*;
-
-
-import javax.swing.*;
-import javax.swing.table.*;
 import java.util.*;
+import javax.swing.*;
 import javax.swing.event.*;
-import java.awt.Window;
+import javax.swing.table.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.gui.widgets.editTable.*;
+import com.untangle.mvvm.MailSettings;
+import com.untangle.mvvm.tran.*;
+import com.untangle.tran.reporting.*;
 
 public class EmailConfigJPanel extends MEditTableJPanel {
 
@@ -47,7 +43,7 @@ public class EmailConfigJPanel extends MEditTableJPanel {
 }
 
 
-class EmailTableModel extends MSortedTableModel<Object>{ 
+class EmailTableModel extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -57,60 +53,60 @@ class EmailTableModel extends MSortedTableModel<Object>{
 
     private EmailConfigJPanel emailConfigJPanel;
     public EmailTableModel( EmailConfigJPanel emailConfigJPanel ){
-	this.emailConfigJPanel = emailConfigJPanel;
+        this.emailConfigJPanel = emailConfigJPanel;
     }
 
     public TableColumnModel getTableColumnModel(){
-        
+
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS);
         addTableColumn( tableColumnModel,  1, C1_MW, false, false, true,  false, Integer.class, null, sc.TITLE_INDEX);
         addTableColumn( tableColumnModel,  2, C2_MW, true,  true,  false, false, String.class,  "reportrecipient@example.com", "Email address");
-	//addTableColumn( tableColumnModel,  3, C3_MW, true,   true, false,  true, String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
+        //addTableColumn( tableColumnModel,  3, C3_MW, true,   true, false,  true, String.class,  sc.EMPTY_DESCRIPTION, sc.TITLE_DESCRIPTION);
         return tableColumnModel;
     }
-    
-    
-    
+
+
+
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-	StringBuilder elemList = new StringBuilder(tableVector.size());
-	String newElem = null;
-	int rowIndex = 0;
-
-	for( Vector rowVector : tableVector ){
-	    rowIndex++;
-	    newElem = ((String) rowVector.elementAt(2)).trim();
-
-	    if(rowIndex != 1)
-		elemList.append(", ");	    
-	    elemList.append(newElem);
-        }
-
-	// SAVE SETTINGS /////
-	if( !validateOnly ){
-	    MailSettings mailSettings = Util.getAdminManager().getMailSettings();
-	    mailSettings.setReportEmail(elemList.toString()); 
-	    Util.getAdminManager().setMailSettings( (MailSettings) mailSettings );
-	}
-    }
-    
-    public Vector<Vector> generateRows(Object settings){
-	MailSettings mailSettings = Util.getAdminManager().getMailSettings();
-	String recipients = mailSettings.getReportEmail();
-	StringTokenizer recipientsTokenizer = new StringTokenizer(recipients, ",");
-        Vector<Vector> allRows = new Vector<Vector>(recipientsTokenizer.countTokens());
-	Vector tempRow = null;
+        StringBuilder elemList = new StringBuilder(tableVector.size());
+        String newElem = null;
         int rowIndex = 0;
 
-	while( recipientsTokenizer.hasMoreTokens() ){
-	    rowIndex++;
-	    tempRow = new Vector(3);
+        for( Vector rowVector : tableVector ){
+            rowIndex++;
+            newElem = ((String) rowVector.elementAt(2)).trim();
+
+            if(rowIndex != 1)
+                elemList.append(", ");
+            elemList.append(newElem);
+        }
+
+        // SAVE SETTINGS /////
+        if( !validateOnly ){
+            MailSettings mailSettings = Util.getAdminManager().getMailSettings();
+            mailSettings.setReportEmail(elemList.toString());
+            Util.getAdminManager().setMailSettings( (MailSettings) mailSettings );
+        }
+    }
+
+    public Vector<Vector> generateRows(Object settings){
+        MailSettings mailSettings = Util.getAdminManager().getMailSettings();
+        String recipients = mailSettings.getReportEmail();
+        StringTokenizer recipientsTokenizer = new StringTokenizer(recipients, ",");
+        Vector<Vector> allRows = new Vector<Vector>(recipientsTokenizer.countTokens());
+        Vector tempRow = null;
+        int rowIndex = 0;
+
+        while( recipientsTokenizer.hasMoreTokens() ){
+            rowIndex++;
+            tempRow = new Vector(3);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( recipientsTokenizer.nextToken().trim() );
             allRows.add( tempRow );
-	}
+        }
         return allRows;
     }
-} 
+}

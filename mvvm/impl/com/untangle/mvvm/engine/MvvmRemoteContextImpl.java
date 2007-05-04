@@ -165,8 +165,8 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
     }
 
     public void restoreBackup(byte[] backupBytes)
-      throws IOException, IllegalArgumentException
+        throws IOException, IllegalArgumentException
     {
-       context.restoreBackup(backupBytes);
+        context.restoreBackup(backupBytes);
     }
 }

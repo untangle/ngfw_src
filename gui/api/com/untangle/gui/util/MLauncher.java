@@ -11,13 +11,13 @@
 
 package com.untangle.gui.util;
 
+import java.awt.*;
+import java.net.*;
+import java.security.*;
+import javax.swing.*;
+
 import com.untangle.gui.login.*;
 import com.untangle.mvvm.client.*;
-
-import java.awt.*;
-import javax.swing.*;
-import java.security.*;
-import java.net.*;
 
 
 public class MLauncher {
@@ -58,7 +58,7 @@ public class MLauncher {
                                                                                    new Color(215,215,215)); // POPUPS
             javax.swing.LookAndFeel alloyLnF = new com.incors.plaf.alloy.AlloyLookAndFeel(theme);
             Util.setLookAndFeel(alloyLnF);
-            UIManager.setLookAndFeel(alloyLnF);            
+            UIManager.setLookAndFeel(alloyLnF);
             UIManager.getLookAndFeelDefaults().put("ClassLoader", mUrlClassLoader);
         }
         catch (Exception e) {
@@ -70,7 +70,7 @@ public class MLauncher {
         // SET CLASSLOADER
         Util.initialize();
         Util.setClassLoader( mUrlClassLoader );
-	
+
         // SET THE REPAINT OPTIONS
         RepaintManager.setCurrentManager( new DebugRepaintManager() );
         try{
@@ -121,8 +121,8 @@ public class MLauncher {
                     initialSetupWizard.setVisible(true);
                     MLauncher.isRegistered = initialSetupWizard.isRegistered();
                 }});
-	    }
-	    catch(Exception e){ Util.handleExceptionNoRestart("unable to show setup wizard", e); }
+            }
+            catch(Exception e){ Util.handleExceptionNoRestart("unable to show setup wizard", e); }
         }
 
         // LOGIN
@@ -183,9 +183,9 @@ public class MLauncher {
                         System.out.println("Error resetting LAF");
                         e.printStackTrace();
                     }
-                }
             }
         }
+    }
 }
 
 

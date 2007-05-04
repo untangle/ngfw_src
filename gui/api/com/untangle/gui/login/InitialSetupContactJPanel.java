@@ -11,13 +11,14 @@
 
 package com.untangle.gui.login;
 
-import java.net.URL;
-import com.untangle.mvvm.security.*;
-import com.untangle.gui.widgets.wizard.*;
-import com.untangle.gui.util.*;
-import javax.swing.SwingUtilities;
-import com.untangle.mvvm.client.*;
 import java.awt.Color;
+import java.net.URL;
+import javax.swing.SwingUtilities;
+
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.wizard.*;
+import com.untangle.mvvm.client.*;
+import com.untangle.mvvm.security.*;
 
 public class InitialSetupContactJPanel extends MWizardPageJPanel {
 
@@ -29,7 +30,7 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
 
     public InitialSetupContactJPanel() {
         initComponents();
-		Util.addFocusHighlight(companyJTextField);
+        Util.addFocusHighlight(companyJTextField);
         Util.addFocusHighlight(firstNameJTextField);
         Util.addFocusHighlight(lastNameJTextField);
         Util.addFocusHighlight(address1JTextField);
@@ -43,9 +44,9 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
     }
 
     public void initialFocus(){
-	companyJTextField.requestFocus();
+        companyJTextField.requestFocus();
     }
-	
+
     String company;
     String firstName;
     String lastName;
@@ -59,72 +60,72 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
     String countString;
     int count;
     Exception exception;
-    
+
     public void doSave(Object settings, boolean validateOnly) throws Exception {
 
-	SwingUtilities.invokeAndWait( new Runnable(){ public void run() {
+        SwingUtilities.invokeAndWait( new Runnable(){ public void run() {
             companyJTextField.setBackground( Color.WHITE );
             firstNameJTextField.setBackground( Color.WHITE );
             lastNameJTextField.setBackground( Color.WHITE );
             emailJTextField.setBackground( Color.WHITE );
             countJTextField.setBackground( Color.WHITE );
-            
+
             company = companyJTextField.getText().trim();
             firstName = firstNameJTextField.getText().trim();
             lastName = lastNameJTextField.getText().trim();
-	    address1 = address1JTextField.getText().trim();
-	    address2 = address2JTextField.getText().trim();
-	    city = cityJTextField.getText().trim();
-	    state = stateJTextField.getText().trim();
-	    zipcode = zipcodeJTextField.getText().trim();
-	    phone = phoneJTextField.getText().trim();        
-	    email = emailJTextField.getText().trim();
-	    countString = countJTextField.getText().trim();
+            address1 = address1JTextField.getText().trim();
+            address2 = address2JTextField.getText().trim();
+            city = cityJTextField.getText().trim();
+            state = stateJTextField.getText().trim();
+            zipcode = zipcodeJTextField.getText().trim();
+            phone = phoneJTextField.getText().trim();
+            email = emailJTextField.getText().trim();
+            countString = countJTextField.getText().trim();
 
-	    exception = null;
-            
-	    if(company.length() == 0){
-		companyJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-		exception = new Exception(EXCEPTION_COMPANY_MISSING);
-		return;
-	    }
-        	
-	    if(firstName.length() == 0){
-		firstNameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-		exception = new Exception(EXCEPTION_FIRST_NAME_MISSING);
-		return;
-	    }
-       	
-	    if(lastName.length() == 0){
-		lastNameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-		exception = new Exception(EXCEPTION_LAST_NAME_MISSING);
-		return;
-	    }
+            exception = null;
 
-	    if(email.length() == 0){
-		emailJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-		exception = new Exception(EXCEPTION_EMAIL_MISSING);
-		return;
-	    }
+            if(company.length() == 0){
+                companyJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                exception = new Exception(EXCEPTION_COMPANY_MISSING);
+                return;
+            }
 
-	    try{
-		if(countString.length() == 0)
-		    throw new Exception();
-		count = Integer.parseInt(countString);
-		if( count < 0 )
-		    throw new Exception();
-	    }
-	    catch(Exception e){
-		countJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
-		exception = new Exception(EXCEPTION_COMPUTER_COUNT_MISSING);
-		return;
-	    }
-	}});
+            if(firstName.length() == 0){
+                firstNameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                exception = new Exception(EXCEPTION_FIRST_NAME_MISSING);
+                return;
+            }
+
+            if(lastName.length() == 0){
+                lastNameJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                exception = new Exception(EXCEPTION_LAST_NAME_MISSING);
+                return;
+            }
+
+            if(email.length() == 0){
+                emailJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                exception = new Exception(EXCEPTION_EMAIL_MISSING);
+                return;
+            }
+
+            try{
+                if(countString.length() == 0)
+                    throw new Exception();
+                count = Integer.parseInt(countString);
+                if( count < 0 )
+                    throw new Exception();
+            }
+            catch(Exception e){
+                countJTextField.setBackground( Util.INVALID_BACKGROUND_COLOR );
+                exception = new Exception(EXCEPTION_COMPUTER_COUNT_MISSING);
+                return;
+            }
+        }});
 
         if( exception != null)
             throw exception;
-	        
-	if( !validateOnly ){
+
+        if( !validateOnly ){
             try{
                 InitialSetupWizard.getInfiniteProgressJComponent().startLater("Saving Contact Information...");
                 RegistrationInfo registrationInfo = new RegistrationInfo(company, firstName, lastName, email, count);
@@ -146,7 +147,7 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
                                                                                                             "0000-0000-0000-0000",
                                                                                                             0,
                                                                                                             Util.getClassLoader(),
-                                                                                                            Util.isSecureViaHttps() );                        
+                                                                                                            Util.isSecureViaHttps() );
                         Util.setMvvmContext(mvvmContext);
                         KeepAliveThread keepAliveThread = new KeepAliveThread(mvvmContext);
                         InitialSetupWizard.setKeepAliveThread(keepAliveThread);
@@ -155,334 +156,334 @@ public class InitialSetupContactJPanel extends MWizardPageJPanel {
 
                 Util.getAdminManager().setRegistrationInfo(registrationInfo);
 
-                InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);	    
+                InitialSetupWizard.getInfiniteProgressJComponent().stopLater(1500l);
             }
             catch(Exception e){
                 InitialSetupWizard.getInfiniteProgressJComponent().stopLater(-1l);
                 Util.handleExceptionNoRestart("Error sending data", e);
                 throw new Exception("A network communication error occurred.  Please retry.");
             }
-	}
+        }
     }
-    
 
-        private void initComponents() {//GEN-BEGIN:initComponents
-                java.awt.GridBagConstraints gridBagConstraints;
 
-                contentJPanel = new javax.swing.JPanel();
-                jLabel2 = new javax.swing.JLabel();
-                jPanel1 = new javax.swing.JPanel();
-                jLabel17 = new javax.swing.JLabel();
-                companyJTextField = new javax.swing.JTextField();
-                jLabel18 = new javax.swing.JLabel();
-                firstNameJTextField = new javax.swing.JTextField();
-                jLabel19 = new javax.swing.JLabel();
-                lastNameJTextField = new javax.swing.JTextField();
-                jLabel20 = new javax.swing.JLabel();
-                address1JTextField = new javax.swing.JTextField();
-                jLabel21 = new javax.swing.JLabel();
-                address2JTextField = new javax.swing.JTextField();
-                jLabel22 = new javax.swing.JLabel();
-                cityJTextField = new javax.swing.JTextField();
-                jLabel23 = new javax.swing.JLabel();
-                stateJTextField = new javax.swing.JTextField();
-                jLabel24 = new javax.swing.JLabel();
-                zipcodeJTextField = new javax.swing.JTextField();
-                jLabel25 = new javax.swing.JLabel();
-                phoneJTextField = new javax.swing.JTextField();
-                jLabel26 = new javax.swing.JLabel();
-                emailJTextField = new javax.swing.JTextField();
-                jLabel27 = new javax.swing.JLabel();
-                jLabel28 = new javax.swing.JLabel();
-                jLabel29 = new javax.swing.JLabel();
-                jLabel30 = new javax.swing.JLabel();
-                jLabel16 = new javax.swing.JLabel();
-                countJTextField = new javax.swing.JTextField();
-                jLabel31 = new javax.swing.JLabel();
-                backgroundJPabel = new javax.swing.JLabel();
+    private void initComponents() {//GEN-BEGIN:initComponents
+        java.awt.GridBagConstraints gridBagConstraints;
 
-                setLayout(new java.awt.GridBagLayout());
+        contentJPanel = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel17 = new javax.swing.JLabel();
+        companyJTextField = new javax.swing.JTextField();
+        jLabel18 = new javax.swing.JLabel();
+        firstNameJTextField = new javax.swing.JTextField();
+        jLabel19 = new javax.swing.JLabel();
+        lastNameJTextField = new javax.swing.JTextField();
+        jLabel20 = new javax.swing.JLabel();
+        address1JTextField = new javax.swing.JTextField();
+        jLabel21 = new javax.swing.JLabel();
+        address2JTextField = new javax.swing.JTextField();
+        jLabel22 = new javax.swing.JLabel();
+        cityJTextField = new javax.swing.JTextField();
+        jLabel23 = new javax.swing.JLabel();
+        stateJTextField = new javax.swing.JTextField();
+        jLabel24 = new javax.swing.JLabel();
+        zipcodeJTextField = new javax.swing.JTextField();
+        jLabel25 = new javax.swing.JLabel();
+        phoneJTextField = new javax.swing.JTextField();
+        jLabel26 = new javax.swing.JLabel();
+        emailJTextField = new javax.swing.JTextField();
+        jLabel27 = new javax.swing.JLabel();
+        jLabel28 = new javax.swing.JLabel();
+        jLabel29 = new javax.swing.JLabel();
+        jLabel30 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        countJTextField = new javax.swing.JTextField();
+        jLabel31 = new javax.swing.JLabel();
+        backgroundJPabel = new javax.swing.JLabel();
 
-                setOpaque(false);
-                contentJPanel.setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.GridBagLayout());
 
-                contentJPanel.setOpaque(false);
-                jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel2.setText("<html>Please take a moment to register yourself as the operator of the Untangle Server.<br>  <b>This information is required.</b></html>");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
-                contentJPanel.add(jLabel2, gridBagConstraints);
+        setOpaque(false);
+        contentJPanel.setLayout(new java.awt.GridBagLayout());
 
-                jPanel1.setLayout(new java.awt.GridBagLayout());
+        contentJPanel.setOpaque(false);
+        jLabel2.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel2.setText("<html>Please take a moment to register yourself as the operator of the Untangle Server.<br>  <b>This information is required.</b></html>");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+        contentJPanel.add(jLabel2, gridBagConstraints);
 
-                jPanel1.setOpaque(false);
-                jLabel17.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel17.setText("Company Name:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                jPanel1.add(jLabel17, gridBagConstraints);
+        jPanel1.setLayout(new java.awt.GridBagLayout());
 
-                companyJTextField.setColumns(15);
-                companyJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
-                companyJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                jPanel1.add(companyJTextField, gridBagConstraints);
+        jPanel1.setOpaque(false);
+        jLabel17.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel17.setText("Company Name:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel1.add(jLabel17, gridBagConstraints);
 
-                jLabel18.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel18.setText("First Name:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                jPanel1.add(jLabel18, gridBagConstraints);
+        companyJTextField.setColumns(15);
+        companyJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
+        companyJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        jPanel1.add(companyJTextField, gridBagConstraints);
 
-                firstNameJTextField.setColumns(15);
-                firstNameJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                jPanel1.add(firstNameJTextField, gridBagConstraints);
+        jLabel18.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel18.setText("First Name:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel1.add(jLabel18, gridBagConstraints);
 
-                jLabel19.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel19.setText("Last Name:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                jPanel1.add(jLabel19, gridBagConstraints);
+        firstNameJTextField.setColumns(15);
+        firstNameJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        jPanel1.add(firstNameJTextField, gridBagConstraints);
 
-                lastNameJTextField.setColumns(15);
-                lastNameJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
-                lastNameJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                jPanel1.add(lastNameJTextField, gridBagConstraints);
+        jLabel19.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel19.setText("Last Name:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel1.add(jLabel19, gridBagConstraints);
 
-                jLabel20.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel20.setText("Address 1:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                jPanel1.add(jLabel20, gridBagConstraints);
+        lastNameJTextField.setColumns(15);
+        lastNameJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
+        lastNameJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        jPanel1.add(lastNameJTextField, gridBagConstraints);
 
-                address1JTextField.setColumns(15);
-                address1JTextField.setMinimumSize(new java.awt.Dimension(170, 19));
-                address1JTextField.setPreferredSize(new java.awt.Dimension(170, 19));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                jPanel1.add(address1JTextField, gridBagConstraints);
+        jLabel20.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel20.setText("Address 1:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel1.add(jLabel20, gridBagConstraints);
 
-                jLabel21.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel21.setText("Address 2:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                jPanel1.add(jLabel21, gridBagConstraints);
+        address1JTextField.setColumns(15);
+        address1JTextField.setMinimumSize(new java.awt.Dimension(170, 19));
+        address1JTextField.setPreferredSize(new java.awt.Dimension(170, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        jPanel1.add(address1JTextField, gridBagConstraints);
 
-                address2JTextField.setColumns(15);
-                address2JTextField.setMinimumSize(new java.awt.Dimension(170, 19));
-                address2JTextField.setPreferredSize(new java.awt.Dimension(170, 19));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                jPanel1.add(address2JTextField, gridBagConstraints);
+        jLabel21.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel21.setText("Address 2:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel1.add(jLabel21, gridBagConstraints);
 
-                jLabel22.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel22.setText("City :");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                jPanel1.add(jLabel22, gridBagConstraints);
+        address2JTextField.setColumns(15);
+        address2JTextField.setMinimumSize(new java.awt.Dimension(170, 19));
+        address2JTextField.setPreferredSize(new java.awt.Dimension(170, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        jPanel1.add(address2JTextField, gridBagConstraints);
 
-                cityJTextField.setColumns(15);
-                cityJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
-                cityJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                jPanel1.add(cityJTextField, gridBagConstraints);
+        jLabel22.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel22.setText("City :");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel1.add(jLabel22, gridBagConstraints);
 
-                jLabel23.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel23.setText("State:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                jPanel1.add(jLabel23, gridBagConstraints);
+        cityJTextField.setColumns(15);
+        cityJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
+        cityJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        jPanel1.add(cityJTextField, gridBagConstraints);
 
-                stateJTextField.setColumns(15);
-                stateJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
-                stateJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                jPanel1.add(stateJTextField, gridBagConstraints);
+        jLabel23.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel23.setText("State:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel1.add(jLabel23, gridBagConstraints);
 
-                jLabel24.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel24.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                jLabel24.setText("Zipcode:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                jPanel1.add(jLabel24, gridBagConstraints);
+        stateJTextField.setColumns(15);
+        stateJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
+        stateJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        jPanel1.add(stateJTextField, gridBagConstraints);
 
-                zipcodeJTextField.setColumns(15);
-                zipcodeJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
-                zipcodeJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                jPanel1.add(zipcodeJTextField, gridBagConstraints);
+        jLabel24.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel24.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel24.setText("Zipcode:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel1.add(jLabel24, gridBagConstraints);
 
-                jLabel25.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel25.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                jLabel25.setText("Phone #:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                jPanel1.add(jLabel25, gridBagConstraints);
+        zipcodeJTextField.setColumns(15);
+        zipcodeJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
+        zipcodeJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        jPanel1.add(zipcodeJTextField, gridBagConstraints);
 
-                phoneJTextField.setColumns(15);
-                phoneJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
-                phoneJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                jPanel1.add(phoneJTextField, gridBagConstraints);
+        jLabel25.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel25.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel25.setText("Phone #:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel1.add(jLabel25, gridBagConstraints);
 
-                jLabel26.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel26.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                jLabel26.setText("Email:");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-                jPanel1.add(jLabel26, gridBagConstraints);
+        phoneJTextField.setColumns(15);
+        phoneJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
+        phoneJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        jPanel1.add(phoneJTextField, gridBagConstraints);
 
-                emailJTextField.setColumns(15);
-                emailJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
-                emailJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                jPanel1.add(emailJTextField, gridBagConstraints);
+        jLabel26.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel26.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel26.setText("Email:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel1.add(jLabel26, gridBagConstraints);
 
-                jLabel27.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel27.setText("(required)");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 2;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-                jPanel1.add(jLabel27, gridBagConstraints);
+        emailJTextField.setColumns(15);
+        emailJTextField.setMinimumSize(new java.awt.Dimension(170, 19));
+        emailJTextField.setPreferredSize(new java.awt.Dimension(170, 19));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        jPanel1.add(emailJTextField, gridBagConstraints);
 
-                jLabel28.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel28.setText("(required)");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 2;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-                jPanel1.add(jLabel28, gridBagConstraints);
+        jLabel27.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel27.setText("(required)");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        jPanel1.add(jLabel27, gridBagConstraints);
 
-                jLabel29.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel29.setText("(required)");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 2;
-                gridBagConstraints.gridy = 2;
-                gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-                jPanel1.add(jLabel29, gridBagConstraints);
+        jLabel28.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel28.setText("(required)");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        jPanel1.add(jLabel28, gridBagConstraints);
 
-                jLabel30.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel30.setText("(required)");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 2;
-                gridBagConstraints.gridy = 9;
-                gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-                jPanel1.add(jLabel30, gridBagConstraints);
+        jLabel29.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel29.setText("(required)");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        jPanel1.add(jLabel29, gridBagConstraints);
 
-                jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-                jLabel16.setText("<html>Number of computers protected<br>by the Untangle Server:</html>");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 10;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-                gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-                jPanel1.add(jLabel16, gridBagConstraints);
+        jLabel30.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel30.setText("(required)");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 9;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        jPanel1.add(jLabel30, gridBagConstraints);
 
-                countJTextField.setColumns(15);
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 10;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-                jPanel1.add(countJTextField, gridBagConstraints);
+        jLabel16.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel16.setText("<html>Number of computers protected<br>by the Untangle Server:</html>");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 10;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        jPanel1.add(jLabel16, gridBagConstraints);
 
-                jLabel31.setFont(new java.awt.Font("Dialog", 0, 12));
-                jLabel31.setText("(required)");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 2;
-                gridBagConstraints.gridy = 10;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-                gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-                jPanel1.add(jLabel31, gridBagConstraints);
+        countJTextField.setColumns(15);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 10;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        jPanel1.add(countJTextField, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
-                contentJPanel.add(jPanel1, gridBagConstraints);
+        jLabel31.setFont(new java.awt.Font("Dialog", 0, 12));
+        jLabel31.setText("(required)");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 10;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        jPanel1.add(jLabel31, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                add(contentJPanel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(15, 15, 0, 15);
+        contentJPanel.add(jPanel1, gridBagConstraints);
 
-                backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/login/ProductShot.png")));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-                gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-                gridBagConstraints.weightx = 1.0;
-                add(backgroundJPabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        add(contentJPanel, gridBagConstraints);
 
-        }//GEN-END:initComponents
-    
-    
-        // Variables declaration - do not modify//GEN-BEGIN:variables
-        private javax.swing.JTextField address1JTextField;
-        private javax.swing.JTextField address2JTextField;
-        private javax.swing.JLabel backgroundJPabel;
-        private javax.swing.JTextField cityJTextField;
-        private javax.swing.JTextField companyJTextField;
-        private javax.swing.JPanel contentJPanel;
-        private javax.swing.JTextField countJTextField;
-        private javax.swing.JTextField emailJTextField;
-        private javax.swing.JTextField firstNameJTextField;
-        private javax.swing.JLabel jLabel16;
-        private javax.swing.JLabel jLabel17;
-        private javax.swing.JLabel jLabel18;
-        private javax.swing.JLabel jLabel19;
-        private javax.swing.JLabel jLabel2;
-        private javax.swing.JLabel jLabel20;
-        private javax.swing.JLabel jLabel21;
-        private javax.swing.JLabel jLabel22;
-        private javax.swing.JLabel jLabel23;
-        private javax.swing.JLabel jLabel24;
-        private javax.swing.JLabel jLabel25;
-        private javax.swing.JLabel jLabel26;
-        private javax.swing.JLabel jLabel27;
-        private javax.swing.JLabel jLabel28;
-        private javax.swing.JLabel jLabel29;
-        private javax.swing.JLabel jLabel30;
-        private javax.swing.JLabel jLabel31;
-        private javax.swing.JPanel jPanel1;
-        private javax.swing.JTextField lastNameJTextField;
-        private javax.swing.JTextField phoneJTextField;
-        private javax.swing.JTextField stateJTextField;
-        private javax.swing.JTextField zipcodeJTextField;
-        // End of variables declaration//GEN-END:variables
-    
+        backgroundJPabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/login/ProductShot.png")));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
+        gridBagConstraints.weightx = 1.0;
+        add(backgroundJPabel, gridBagConstraints);
+
+    }//GEN-END:initComponents
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField address1JTextField;
+    private javax.swing.JTextField address2JTextField;
+    private javax.swing.JLabel backgroundJPabel;
+    private javax.swing.JTextField cityJTextField;
+    private javax.swing.JTextField companyJTextField;
+    private javax.swing.JPanel contentJPanel;
+    private javax.swing.JTextField countJTextField;
+    private javax.swing.JTextField emailJTextField;
+    private javax.swing.JTextField firstNameJTextField;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
+    private javax.swing.JLabel jLabel29;
+    private javax.swing.JLabel jLabel30;
+    private javax.swing.JLabel jLabel31;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JTextField lastNameJTextField;
+    private javax.swing.JTextField phoneJTextField;
+    private javax.swing.JTextField stateJTextField;
+    private javax.swing.JTextField zipcodeJTextField;
+    // End of variables declaration//GEN-END:variables
+
 }

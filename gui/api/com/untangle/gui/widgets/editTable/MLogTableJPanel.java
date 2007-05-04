@@ -43,12 +43,12 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
         this.logTransform = logTransform;
         this.mTransformControlsJPanel = mTransformControlsJPanel;
 
-	// INIT GUI & CUSTOM INIT
-	initComponents();
-	entryJScrollPane.getViewport().setOpaque(true);
-	entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
-	entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
-	addComponentListener(MLogTableJPanel.this);
+        // INIT GUI & CUSTOM INIT
+        initComponents();
+        entryJScrollPane.getViewport().setOpaque(true);
+        entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
+        entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
+        addComponentListener(MLogTableJPanel.this);
     }
 
     public int getEventDepth(){ return 1000; }
@@ -67,7 +67,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
         mSortedTableModel.hideColumns( entryJTable );
         mSortedTableModel.setAlwaysSelectable(true);
         mSortedTableModel.setAlwaysEditable(false);
-        
+
     }
 
     public MSortedTableModel getTableModel(){
@@ -90,104 +90,104 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
         ((MColoredJTable)entryJTable).doGreedyColumn(entryJScrollPane.getViewport().getExtentSize().width);
     }
 
-        private void initComponents() {//GEN-BEGIN:initComponents
-                java.awt.GridBagConstraints gridBagConstraints;
+    private void initComponents() {//GEN-BEGIN:initComponents
+        java.awt.GridBagConstraints gridBagConstraints;
 
-                contentJPanel = new javax.swing.JPanel();
-                eventJPanel = new javax.swing.JPanel();
-                queryJComboBox = new javax.swing.JComboBox();
-                refreshLogJButton = new javax.swing.JButton();
-                streamingJToggleButton = new javax.swing.JToggleButton();
-                entryJScrollPane = new javax.swing.JScrollPane();
-                entryJTable = new MColoredJTable();
+        contentJPanel = new javax.swing.JPanel();
+        eventJPanel = new javax.swing.JPanel();
+        queryJComboBox = new javax.swing.JComboBox();
+        refreshLogJButton = new javax.swing.JButton();
+        streamingJToggleButton = new javax.swing.JToggleButton();
+        entryJScrollPane = new javax.swing.JScrollPane();
+        entryJTable = new MColoredJTable();
 
-                setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.GridBagLayout());
 
-                contentJPanel.setLayout(new java.awt.GridBagLayout());
+        contentJPanel.setLayout(new java.awt.GridBagLayout());
 
-                eventJPanel.setLayout(new java.awt.GridBagLayout());
+        eventJPanel.setLayout(new java.awt.GridBagLayout());
 
-                eventJPanel.setFocusCycleRoot(true);
-                eventJPanel.setFocusable(false);
-                queryJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
-                queryJComboBox.setMinimumSize(new java.awt.Dimension(230, 25));
-                queryJComboBox.setPreferredSize(new java.awt.Dimension(230, 25));
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
-                eventJPanel.add(queryJComboBox, gridBagConstraints);
+        eventJPanel.setFocusCycleRoot(true);
+        eventJPanel.setFocusable(false);
+        queryJComboBox.setFont(new java.awt.Font("Dialog", 0, 12));
+        queryJComboBox.setMinimumSize(new java.awt.Dimension(230, 25));
+        queryJComboBox.setPreferredSize(new java.awt.Dimension(230, 25));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
+        eventJPanel.add(queryJComboBox, gridBagConstraints);
 
-                refreshLogJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                refreshLogJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconRefresh_16x16.png")));
-                refreshLogJButton.setText("Refresh");
-                refreshLogJButton.setDoubleBuffered(true);
-                refreshLogJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
-                refreshLogJButton.setMaximumSize(null);
-                refreshLogJButton.setMinimumSize(null);
-                refreshLogJButton.setOpaque(false);
-                refreshLogJButton.setPreferredSize(null);
-                refreshLogJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                refreshLogJButtonActionPerformed(evt);
-                        }
-                });
+        refreshLogJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        refreshLogJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconRefresh_16x16.png")));
+        refreshLogJButton.setText("Refresh");
+        refreshLogJButton.setDoubleBuffered(true);
+        refreshLogJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+        refreshLogJButton.setMaximumSize(null);
+        refreshLogJButton.setMinimumSize(null);
+        refreshLogJButton.setOpaque(false);
+        refreshLogJButton.setPreferredSize(null);
+        refreshLogJButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    refreshLogJButtonActionPerformed(evt);
+                }
+            });
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
-                eventJPanel.add(refreshLogJButton, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
+        eventJPanel.add(refreshLogJButton, gridBagConstraints);
 
-                streamingJToggleButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                streamingJToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconAuto_16x16.png")));
-                streamingJToggleButton.setText("Auto-Refresh");
-                streamingJToggleButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
-                streamingJToggleButton.setMaximumSize(null);
-                streamingJToggleButton.setMinimumSize(null);
-                streamingJToggleButton.setOpaque(false);
-                streamingJToggleButton.setPreferredSize(null);
-                streamingJToggleButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                streamingJToggleButtonActionPerformed(evt);
-                        }
-                });
+        streamingJToggleButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        streamingJToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconAuto_16x16.png")));
+        streamingJToggleButton.setText("Auto-Refresh");
+        streamingJToggleButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+        streamingJToggleButton.setMaximumSize(null);
+        streamingJToggleButton.setMinimumSize(null);
+        streamingJToggleButton.setOpaque(false);
+        streamingJToggleButton.setPreferredSize(null);
+        streamingJToggleButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    streamingJToggleButtonActionPerformed(evt);
+                }
+            });
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 2;
-                gridBagConstraints.gridy = 0;
-                eventJPanel.add(streamingJToggleButton, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        eventJPanel.add(streamingJToggleButton, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
-                contentJPanel.add(eventJPanel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
+        contentJPanel.add(eventJPanel, gridBagConstraints);
 
-                entryJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-                entryJScrollPane.setDoubleBuffered(true);
-                entryJTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-                entryJTable.setDoubleBuffered(true);
-                entryJScrollPane.setViewportView(entryJTable);
+        entryJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        entryJScrollPane.setDoubleBuffered(true);
+        entryJTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        entryJTable.setDoubleBuffered(true);
+        entryJScrollPane.setViewportView(entryJTable);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                contentJPanel.add(entryJScrollPane, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        contentJPanel.add(entryJScrollPane, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(4, 2, 2, 2);
-                add(contentJPanel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(4, 2, 2, 2);
+        add(contentJPanel, gridBagConstraints);
 
-        }//GEN-END:initComponents
+    }//GEN-END:initComponents
 
     private RefreshThread refreshThread;
 
@@ -213,22 +213,22 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
     }//GEN-LAST:event_refreshLogJButtonActionPerformed
 
 
-        // Variables declaration - do not modify//GEN-BEGIN:variables
-        private javax.swing.JPanel contentJPanel;
-        protected javax.swing.JScrollPane entryJScrollPane;
-        protected javax.swing.JTable entryJTable;
-        private javax.swing.JPanel eventJPanel;
-        protected javax.swing.JComboBox queryJComboBox;
-        private javax.swing.JButton refreshLogJButton;
-        private javax.swing.JToggleButton streamingJToggleButton;
-        // End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel contentJPanel;
+    protected javax.swing.JScrollPane entryJScrollPane;
+    protected javax.swing.JTable entryJTable;
+    private javax.swing.JPanel eventJPanel;
+    protected javax.swing.JComboBox queryJComboBox;
+    private javax.swing.JButton refreshLogJButton;
+    private javax.swing.JToggleButton streamingJToggleButton;
+    // End of variables declaration//GEN-END:variables
 
     private Exception refreshException;
     class RefreshThread extends Thread implements ActionListener {
         private boolean isAutoRefresh;
         public RefreshThread(boolean isAutoRefresh){
             super("MVCLIENT-LogRefreshThread: " + logTransform.getTransformDesc().getDisplayName());
-	    setDaemon(true);
+            setDaemon(true);
             setContextClassLoader(Util.getClassLoader());
             this.isAutoRefresh = isAutoRefresh;
             if( !isAutoRefresh // a button was pressed, stop other streaming
@@ -283,7 +283,7 @@ public abstract class MLogTableJPanel extends javax.swing.JPanel implements Shut
                 catch(Exception h){
                     Util.handleExceptionNoRestart("Error refreshing event log", h);
                     RefreshLogFailureDialog.factory( (Window) MLogTableJPanel.this.mTransformControlsJPanel.getContentJPanel().getTopLevelAncestor(),
-						     logTransform.getTransformDesc().getDisplayName() );
+                                                     logTransform.getTransformDesc().getDisplayName() );
                 }
             }
             finally{

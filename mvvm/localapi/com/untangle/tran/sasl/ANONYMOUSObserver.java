@@ -9,7 +9,6 @@
  * $Id$
  */
 package com.untangle.tran.sasl;
-import java.nio.ByteBuffer;
 import static com.untangle.tran.util.ASCIIUtil.*;
 
 
@@ -17,13 +16,13 @@ import static com.untangle.tran.util.ASCIIUtil.*;
  * Observer for ANONYMOUS (RFC 2245) mechanism.
  */
 class ANONYMOUSObserver
-  extends InitialIDObserver {
+    extends InitialIDObserver {
 
-  static final String[] MECH_NAMES = new String[] {
-    "ANONYMOUS".toLowerCase()
-  };
+    static final String[] MECH_NAMES = new String[] {
+        "ANONYMOUS".toLowerCase()
+    };
 
-  ANONYMOUSObserver() {
-    super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
-  }
+    ANONYMOUSObserver() {
+        super(MECH_NAMES[0], DEF_MAX_MSG_SZ);
+    }
 }

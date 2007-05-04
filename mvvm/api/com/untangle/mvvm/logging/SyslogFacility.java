@@ -95,10 +95,10 @@ public class SyslogFacility implements Serializable
 
     public static SyslogFacility getFacility(String name)
     {
-	for( SyslogFacility sf : facilities ) // XXX linear, not fast but works for now
-	    if( sf.getFacilityName().equals(name) )
-		return sf;
-	return null;
+        for( SyslogFacility sf : facilities ) // XXX linear, not fast but works for now
+            if( sf.getFacilityName().equals(name) )
+                return sf;
+        return null;
     }
 
     public static List<SyslogFacility> values()

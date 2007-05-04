@@ -18,19 +18,19 @@ package com.untangle.tran.mime;
  * cannot be parsed.
  */
 public class HeaderParseException
-  extends Exception {
+    extends Exception {
 
-  public HeaderParseException() {
-    super();
-  }
-  public HeaderParseException(Exception ex) {
-    super(ex);
-  }
-  public HeaderParseException(String msg) {
-    super(msg);
-  }
-  public HeaderParseException(String msg, Exception ex) {
-    super(msg, ex);
-  }
+    public HeaderParseException() {
+        super();
+    }
+    public HeaderParseException(Exception ex) {
+        super(ex);
+    }
+    public HeaderParseException(String msg) {
+        super(msg);
+    }
+    public HeaderParseException(String msg, Exception ex) {
+        super(msg, ex);
+    }
 
 }

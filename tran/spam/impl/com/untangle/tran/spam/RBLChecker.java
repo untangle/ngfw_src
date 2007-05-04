@@ -52,24 +52,24 @@ public class RBLChecker {
      */
 
     /*
-    http://relays.osirusoft.com/faq.html:
-    For a given address, a.b.c.d will return one of the following values if a dns lookup of d.c.b.a.relays.osirusoft.com is performed.
+      http://relays.osirusoft.com/faq.html:
+      For a given address, a.b.c.d will return one of the following values if a dns lookup of d.c.b.a.relays.osirusoft.com is performed.
 
-    127.0.0.2 // bl.spamcop.net, dul.dnsbl.sorbs.net, list.dsbl.org return hit
-    127.0.0.4 // list.dsbl.org returns hit
+      127.0.0.2 // bl.spamcop.net, dul.dnsbl.sorbs.net, list.dsbl.org return hit
+      127.0.0.4 // list.dsbl.org returns hit
 
-    The DNS addressing is as follows:
-    127.0.0.2 Verified Open Relay
-    127.0.0.3 Dialup Spam Source
-    Dialup Spam Sources are imported into the Zone file from other sources and some known sources are manually added to the local include file.
-    127.0.0.4 Confirmed Spam Source
-    A site has been identified as a constant source of spam, and is manually added. Submissions for this type of spam require multiple nominations from multiple sites. Test Blockers also find themselves in this catagory.
-    127.0.0.5 Smart Host (In progress)
-    A Smart host is a site determined to be secure, but relays for those who are not, defeating one level of security. When this is ready, it will be labeled outputs.osirusoft.com. NOTE: I strongly discourage using outputs due to it being way too effective to be useful.
-    127.0.0.6 A Spamware software developer or spamvertized site. This information is maintained by spamsites.org and spamhaus.org.
-    127.0.0.7 A list server that automatically opts users in without confirmation
-    127.0.0.8 An insecure formmail.cgi script. (Planned)
-    127.0.0.9 Open proxy servers
+      The DNS addressing is as follows:
+      127.0.0.2 Verified Open Relay
+      127.0.0.3 Dialup Spam Source
+      Dialup Spam Sources are imported into the Zone file from other sources and some known sources are manually added to the local include file.
+      127.0.0.4 Confirmed Spam Source
+      A site has been identified as a constant source of spam, and is manually added. Submissions for this type of spam require multiple nominations from multiple sites. Test Blockers also find themselves in this catagory.
+      127.0.0.5 Smart Host (In progress)
+      A Smart host is a site determined to be secure, but relays for those who are not, defeating one level of security. When this is ready, it will be labeled outputs.osirusoft.com. NOTE: I strongly discourage using outputs due to it being way too effective to be useful.
+      127.0.0.6 A Spamware software developer or spamvertized site. This information is maintained by spamsites.org and spamhaus.org.
+      127.0.0.7 A list server that automatically opts users in without confirmation
+      127.0.0.8 An insecure formmail.cgi script. (Planned)
+      127.0.0.9 Open proxy servers
     */
 
     public boolean check(TCPNewSessionRequest tsr, long timeoutSec) {

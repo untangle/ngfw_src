@@ -204,5 +204,5 @@ public interface MvvmRemoteContext
      *            to have come from a valid backup (is the user's fault).
      */
     void restoreBackup(byte[] backupFileBytes)
-      throws IOException, IllegalArgumentException;
+        throws IOException, IllegalArgumentException;
 }

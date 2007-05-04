@@ -13,20 +13,16 @@ package com.untangle.mvvm.engine;
 
 import java.io.IOException;
 import java.security.Principal;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.apache.catalina.connector.Request;
-import org.apache.catalina.connector.Response;
+import com.untangle.mvvm.security.MvvmPrincipal;
 import org.apache.catalina.Realm;
 import org.apache.catalina.authenticator.BasicAuthenticator;
 import org.apache.catalina.authenticator.Constants;
+import org.apache.catalina.connector.Request;
+import org.apache.catalina.connector.Response;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.untangle.mvvm.portal.PortalLogin;
-import com.untangle.mvvm.security.MvvmPrincipal;
 
 
 class MvvmAuthenticator extends BasicAuthenticator
@@ -76,7 +72,7 @@ class MvvmAuthenticator extends BasicAuthenticator
         throws IOException {
         // Have we already authenticated someone?
         Principal principal = request.getUserPrincipal();
-        
+
         debug("Authenticating against [", principal,"]");
 
         if (!isValidPrincipal(principal)) {
@@ -90,7 +86,7 @@ class MvvmAuthenticator extends BasicAuthenticator
 
         if (isValidPrincipal(principal)) {
             debug("Found principal[", principal, "] accepting session.");
-                
+
             return true;
         } else  {
             // No -- check for the magic cookie
@@ -122,16 +118,16 @@ class MvvmAuthenticator extends BasicAuthenticator
 
         return super.authenticate(request, response, config);
 
-//         if (isAuthenticated) {
-//             org.apache.catalina.Session session = request.getSessionInternal(false);
-//             if (null != session) {
-//                 principal = session.getPrincipal();
-//                 debug("Found principal[", request.getUserPrincipal(), "] from getUserPrincipal ");
-//                 debug("Found principal[", principal, "] from session: ", session);
-//             }
-//         }
-        
-//         return isAuthenticated;
+        //         if (isAuthenticated) {
+        //             org.apache.catalina.Session session = request.getSessionInternal(false);
+        //             if (null != session) {
+        //                 principal = session.getPrincipal();
+        //                 debug("Found principal[", request.getUserPrincipal(), "] from getUserPrincipal ");
+        //                 debug("Found principal[", principal, "] from session: ", session);
+        //             }
+        //         }
+
+        //         return isAuthenticated;
     }
 
     private boolean isValidPrincipal(Principal principal)

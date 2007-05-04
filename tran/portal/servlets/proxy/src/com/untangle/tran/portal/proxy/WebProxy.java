@@ -209,7 +209,7 @@ public class WebProxy extends HttpServlet
             } else if (k.equalsIgnoreCase("referer")) {
                 String v = req.getHeader(k);
                 method.addRequestHeader("Referer", rewriter.unwriteUrl(v));
-             } else if (k.equalsIgnoreCase("user-agent")) {
+            } else if (k.equalsIgnoreCase("user-agent")) {
                 method.addRequestHeader("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8) Gecko/20051111 ]Firefox/1.5");
             } else {
                 for (Enumeration f = req.getHeaders(k); f.hasMoreElements(); ) {

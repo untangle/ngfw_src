@@ -15,25 +15,25 @@ import java.nio.ByteBuffer;
 
 /**
  * Class reprsenting an unparsable line reveived
- * when a Command was expected. 
+ * when a Command was expected.
  */
-public class UnparsableCommand 
-  extends Command {
+public class UnparsableCommand
+    extends Command {
 
-  private ByteBuffer m_unparsedLine;
+    private ByteBuffer m_unparsedLine;
 
-  public UnparsableCommand(ByteBuffer badLine) {
-    super(CommandType.UNKNOWN);
-    m_unparsedLine = badLine;
-  }
+    public UnparsableCommand(ByteBuffer badLine) {
+        super(CommandType.UNKNOWN);
+        m_unparsedLine = badLine;
+    }
 
-  @Override
-  public String getArgString() {
-    return bbToString(m_unparsedLine);
-  }  
+    @Override
+    public String getArgString() {
+        return bbToString(m_unparsedLine);
+    }
 
-  @Override
-  public ByteBuffer getBytes() {
-    return m_unparsedLine.duplicate();
-  }
+    @Override
+    public ByteBuffer getBytes() {
+        return m_unparsedLine.duplicate();
+    }
 }

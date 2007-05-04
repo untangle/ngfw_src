@@ -11,16 +11,15 @@
 
 package com.untangle.mvvm.networking;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
-import org.apache.log4j.Logger;
-
+import com.untangle.mvvm.networking.internal.InterfaceInternal;
+import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
 import com.untangle.mvvm.tran.TransformException;
 import com.untangle.mvvm.tran.script.ScriptRunner;
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.networking.internal.InterfaceInternal;
+import org.apache.log4j.Logger;
 
 
 class InterfaceTester
@@ -29,10 +28,10 @@ class InterfaceTester
 
     private static final String UNKNOWN = "unknown";
 
-/* Script to run whenever the interfaces should be reconfigured */
+    /* Script to run whenever the interfaces should be reconfigured */
     private static final String INTERFACE_STATUS_SCRIPT =
         NetworkManagerImpl.BUNNICULA_BASE + "/networking/get-interface-status";
-    
+
 
     /* The Flag is the value returned by the script, they are separated so the script
      * doesn't have to change if the value displayed inside of the GUI is going to change
@@ -54,7 +53,7 @@ class InterfaceTester
     private static final String CONNECTION_CONNECTED = "connected";
     private static final String CONNECTION_DISCONNECTED = "disconnected";
 
-    private final Logger logger = Logger.getLogger(getClass());    
+    private final Logger logger = Logger.getLogger(getClass());
 
     private InterfaceTester()
     {
@@ -67,11 +66,11 @@ class InterfaceTester
     void updateLinkStatus( NetworkSpacesInternalSettings settings )
     {
         logger.debug( "Updating link status" );
-        
+
         String[] args = getArgs( settings );
-        
+
         Map<String,String> statusMap;
-        
+
         try {
             statusMap = getStatus( args, settings );
         } catch ( TransformException e ) {
@@ -124,7 +123,7 @@ class InterfaceTester
         List<InterfaceInternal> interfaceList = settings.getEnabledList();
 
         String args[] = new String[interfaceList.size()];
-                
+
         int c = 0;
         for ( InterfaceInternal intf : interfaceList ) args[c++] = intf.getArgonIntf().getPhysicalName();
 
@@ -137,16 +136,16 @@ class InterfaceTester
         Map<String,String> map = new HashMap<String,String>();
 
         String status = ScriptRunner.getInstance().exec( INTERFACE_STATUS_SCRIPT, args );
-        
+
         logger.debug( "Script returned: \n" + status );
-        
+
         for ( String intfStatus : status.split( "\n" )) {
             String data[] = intfStatus.split( ":" );
             if ( data.length != 2 ) {
                 logger.warn( "Unable to use the string: " + intfStatus );
                 continue;
             }
-            
+
             map.put( data[0].trim(), data[1].trim());
         }
 

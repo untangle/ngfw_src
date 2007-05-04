@@ -11,27 +11,24 @@
 
 package com.untangle.tran.mail.gui;
 
-import com.untangle.gui.widgets.coloredTable.*;
-import com.untangle.gui.widgets.dialogs.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
+
 import com.untangle.gui.configuration.EmailCompoundSettings;
 import com.untangle.gui.configuration.EmailJDialog;
 import com.untangle.gui.transform.*;
 import com.untangle.gui.util.*;
-
+import com.untangle.gui.widgets.coloredTable.*;
+import com.untangle.gui.widgets.dialogs.*;
+import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.tran.*;
-import com.untangle.mvvm.security.Tid;
-
 import com.untangle.tran.mail.papi.*;
 import com.untangle.tran.mail.papi.quarantine.*;
-
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
-import javax.swing.border.*;
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import com.untangle.gui.widgets.editTable.*;
 
 public class QuarantineAllUsersJPanel extends javax.swing.JPanel
     implements Refreshable<EmailCompoundSettings>, ComponentListener {
@@ -39,7 +36,7 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
     private static final Color TABLE_BACKGROUND_COLOR = new Color(213, 213, 226);
     private QuarantineAllTableModel quarantineAllTableModel;
     private MailTransformCompoundSettings mailTransformCompoundSettings;
-    
+
     public QuarantineAllUsersJPanel() {
         // INIT GUI & CUSTOM INIT
         initComponents();
@@ -47,7 +44,7 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
         entryJScrollPane.getViewport().setBackground(TABLE_BACKGROUND_COLOR);
         entryJScrollPane.setViewportBorder(new MatteBorder(2, 2, 2, 1, TABLE_BACKGROUND_COLOR));
         addComponentListener(QuarantineAllUsersJPanel.this);
-        
+
         // create actual table model
         quarantineAllTableModel = new QuarantineAllTableModel();
         setTableModel( quarantineAllTableModel );
@@ -61,23 +58,23 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
         String usedSpace = mailTransformCompoundSettings.getQuarantineMaintenanceView().getFormattedInboxesTotalSize(true);
         totalJLabel.setText("Total Disk Space Used: " + usedSpace + " MB");
     }
-    
+
     public void setTableModel(MSortedTableModel mSortedTableModel){
         entryJTable.setModel( mSortedTableModel );
         entryJTable.setColumnModel( mSortedTableModel.getTableColumnModel() );
         mSortedTableModel.setTableHeader( entryJTable.getTableHeader() );
         mSortedTableModel.hideColumns( entryJTable );
     }
-    
+
     public MSortedTableModel getTableModel(){
         return (MSortedTableModel) entryJTable.getModel();
     }
-    
+
 
     public MColoredJTable getJTable(){
         return (MColoredJTable) entryJTable;
     }
-        
+
 
     public void componentHidden(ComponentEvent e){}
     public void componentMoved(ComponentEvent e){}
@@ -85,240 +82,240 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
     public void componentResized(ComponentEvent e){
         ((MColoredJTable)entryJTable).doGreedyColumn(entryJScrollPane.getViewport().getExtentSize().width);
     }
-    
-        private void initComponents() {//GEN-BEGIN:initComponents
-                java.awt.GridBagConstraints gridBagConstraints;
 
-                contentJPanel = new javax.swing.JPanel();
-                totalJLabel = new javax.swing.JLabel();
-                entryJScrollPane = new javax.swing.JScrollPane();
-                entryJTable = new MColoredJTable();
-                eventJPanel = new javax.swing.JPanel();
-                purgeJButton = new javax.swing.JButton();
-                releaseJButton = new javax.swing.JButton();
-                detailJButton = new javax.swing.JButton();
+    private void initComponents() {//GEN-BEGIN:initComponents
+        java.awt.GridBagConstraints gridBagConstraints;
 
-                setLayout(new java.awt.GridBagLayout());
+        contentJPanel = new javax.swing.JPanel();
+        totalJLabel = new javax.swing.JLabel();
+        entryJScrollPane = new javax.swing.JScrollPane();
+        entryJTable = new MColoredJTable();
+        eventJPanel = new javax.swing.JPanel();
+        purgeJButton = new javax.swing.JButton();
+        releaseJButton = new javax.swing.JButton();
+        detailJButton = new javax.swing.JButton();
 
-                contentJPanel.setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.GridBagLayout());
 
-                contentJPanel.setOpaque(false);
-                totalJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-                totalJLabel.setText("jLabel1");
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-                contentJPanel.add(totalJLabel, gridBagConstraints);
+        contentJPanel.setLayout(new java.awt.GridBagLayout());
 
-                entryJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-                entryJScrollPane.setDoubleBuffered(true);
-                entryJTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-                entryJTable.setDoubleBuffered(true);
-                entryJScrollPane.setViewportView(entryJTable);
+        contentJPanel.setOpaque(false);
+        totalJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
+        totalJLabel.setText("jLabel1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        contentJPanel.add(totalJLabel, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 1;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                gridBagConstraints.insets = new java.awt.Insets(2, 2, 0, 2);
-                contentJPanel.add(entryJScrollPane, gridBagConstraints);
+        entryJScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        entryJScrollPane.setDoubleBuffered(true);
+        entryJTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        entryJTable.setDoubleBuffered(true);
+        entryJScrollPane.setViewportView(entryJTable);
 
-                eventJPanel.setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 0, 2);
+        contentJPanel.add(entryJScrollPane, gridBagConstraints);
 
-                eventJPanel.setFocusCycleRoot(true);
-                eventJPanel.setFocusable(false);
-                eventJPanel.setOpaque(false);
-                purgeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                purgeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconPurge_16x16.png")));
-                purgeJButton.setText("Purge selected");
-                purgeJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
-                purgeJButton.setMaximumSize(null);
-                purgeJButton.setMinimumSize(null);
-                purgeJButton.setOpaque(false);
-                purgeJButton.setPreferredSize(null);
-                purgeJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                purgeJButtonActionPerformed(evt);
-                        }
-                });
+        eventJPanel.setLayout(new java.awt.GridBagLayout());
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
-                eventJPanel.add(purgeJButton, gridBagConstraints);
+        eventJPanel.setFocusCycleRoot(true);
+        eventJPanel.setFocusable(false);
+        eventJPanel.setOpaque(false);
+        purgeJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        purgeJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconPurge_16x16.png")));
+        purgeJButton.setText("Purge selected");
+        purgeJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+        purgeJButton.setMaximumSize(null);
+        purgeJButton.setMinimumSize(null);
+        purgeJButton.setOpaque(false);
+        purgeJButton.setPreferredSize(null);
+        purgeJButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    purgeJButtonActionPerformed(evt);
+                }
+            });
 
-                releaseJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                releaseJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconRelease_16x16.png")));
-                releaseJButton.setText("Release selected");
-                releaseJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
-                releaseJButton.setMaximumSize(null);
-                releaseJButton.setMinimumSize(null);
-                releaseJButton.setOpaque(false);
-                releaseJButton.setPreferredSize(null);
-                releaseJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                releaseJButtonActionPerformed(evt);
-                        }
-                });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
+        eventJPanel.add(purgeJButton, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 1;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
-                eventJPanel.add(releaseJButton, gridBagConstraints);
+        releaseJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        releaseJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconRelease_16x16.png")));
+        releaseJButton.setText("Release selected");
+        releaseJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+        releaseJButton.setMaximumSize(null);
+        releaseJButton.setMinimumSize(null);
+        releaseJButton.setOpaque(false);
+        releaseJButton.setPreferredSize(null);
+        releaseJButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    releaseJButtonActionPerformed(evt);
+                }
+            });
 
-                detailJButton.setFont(new java.awt.Font("Dialog", 0, 12));
-                detailJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconDetail_16x16.png")));
-                detailJButton.setText("Show detail");
-                detailJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
-                detailJButton.setMaximumSize(null);
-                detailJButton.setMinimumSize(null);
-                detailJButton.setOpaque(false);
-                detailJButton.setPreferredSize(null);
-                detailJButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                detailJButtonActionPerformed(evt);
-                        }
-                });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
+        eventJPanel.add(releaseJButton, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 2;
-                gridBagConstraints.gridy = 0;
-                eventJPanel.add(detailJButton, gridBagConstraints);
+        detailJButton.setFont(new java.awt.Font("Dialog", 0, 12));
+        detailJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/images/IconDetail_16x16.png")));
+        detailJButton.setText("Show detail");
+        detailJButton.setMargin(new java.awt.Insets(4, 8, 4, 8));
+        detailJButton.setMaximumSize(null);
+        detailJButton.setMinimumSize(null);
+        detailJButton.setOpaque(false);
+        detailJButton.setPreferredSize(null);
+        detailJButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    detailJButtonActionPerformed(evt);
+                }
+            });
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 2;
-                gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
-                contentJPanel.add(eventJPanel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        eventJPanel.add(detailJButton, gridBagConstraints);
 
-                gridBagConstraints = new java.awt.GridBagConstraints();
-                gridBagConstraints.gridx = 0;
-                gridBagConstraints.gridy = 0;
-                gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-                gridBagConstraints.weightx = 1.0;
-                gridBagConstraints.weighty = 1.0;
-                add(contentJPanel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 0);
+        contentJPanel.add(eventJPanel, gridBagConstraints);
 
-        }//GEN-END:initComponents
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        add(contentJPanel, gridBagConstraints);
+
+    }//GEN-END:initComponents
 
     private void detailJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detailJButtonActionPerformed
         int[] selectedModelRows = getSelectedModelRows();
         if( selectedModelRows.length == 0 )
-                return;
-        
+            return;
+
         // show detail dialog
         Vector<Vector> dataVector = quarantineAllTableModel.getDataVector();
         String account = (String) dataVector.elementAt(selectedModelRows[0]).elementAt(2);
         (new QuarantineSingleUserJDialog((Dialog)getTopLevelAncestor(), mailTransformCompoundSettings, account)).setVisible(true);
-        
+
         // refresh
         //EmailJDialog.instance().reassignInfiniteProgressJComponent(); // XXX hackorama
-	EmailJDialog.instance().refreshGui();
+        EmailJDialog.instance().refreshGui();
         //quarantineAllTableModel.doRefresh(mailTransformCompoundSettings);
     }//GEN-LAST:event_detailJButtonActionPerformed
 
     private void releaseJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_releaseJButtonActionPerformed
-	if( Util.getIsDemo() )
-	    return;
+        if( Util.getIsDemo() )
+            return;
         int[] selectedModelRows = getSelectedModelRows();
         if( selectedModelRows.length == 0 )
-                return;
-        
+            return;
+
         // release
         Vector<String> accounts = new Vector<String>();;
         Vector<Vector> dataVector = quarantineAllTableModel.getDataVector();
         for( int i : selectedModelRows ){
-	    accounts.add( (String) dataVector.elementAt(i).elementAt(2) );
-	}
-	new ReleaseAndPurgeThread(accounts,true);
+            accounts.add( (String) dataVector.elementAt(i).elementAt(2) );
+        }
+        new ReleaseAndPurgeThread(accounts,true);
     }//GEN-LAST:event_releaseJButtonActionPerformed
 
     private void purgeJButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_purgeJButtonActionPerformed
-	if( Util.getIsDemo() )
-	    return;
+        if( Util.getIsDemo() )
+            return;
         int[] selectedModelRows = getSelectedModelRows();
         if( selectedModelRows.length == 0 )
-                return;
+            return;
 
-	QuarantinePurgeProceedDialog quarantinePurgeProceedDialog = new QuarantinePurgeProceedDialog( (Dialog) this.getTopLevelAncestor() );
-	if( !quarantinePurgeProceedDialog.isProceeding() )
-	    return;
-        
+        QuarantinePurgeProceedDialog quarantinePurgeProceedDialog = new QuarantinePurgeProceedDialog( (Dialog) this.getTopLevelAncestor() );
+        if( !quarantinePurgeProceedDialog.isProceeding() )
+            return;
+
         // purge
         Vector<String> accounts = new Vector<String>();
         Vector<Vector> dataVector = quarantineAllTableModel.getDataVector();
         for( int i : selectedModelRows ){
-	    accounts.add( (String) dataVector.elementAt(i).elementAt(2) );
-	}
-	new ReleaseAndPurgeThread(accounts,false);
+            accounts.add( (String) dataVector.elementAt(i).elementAt(2) );
+        }
+        new ReleaseAndPurgeThread(accounts,false);
     }//GEN-LAST:event_purgeJButtonActionPerformed
 
     private class ReleaseAndPurgeThread extends Thread {
-	private Vector<String> accounts;
-	private boolean doRelease;
-	public ReleaseAndPurgeThread(Vector<String> accounts, boolean doRelease){
-	    this.accounts = accounts;
-	    this.doRelease = doRelease;
-	    setDaemon(true);
-	    if( doRelease )
-		((MConfigJDialog)QuarantineAllUsersJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().start("Releasing...");
-	    else
-		((MConfigJDialog)QuarantineAllUsersJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().start("Purging...");
-	    start();
-	}
-	public void run(){
-	    // DO RESCUE
+        private Vector<String> accounts;
+        private boolean doRelease;
+        public ReleaseAndPurgeThread(Vector<String> accounts, boolean doRelease){
+            this.accounts = accounts;
+            this.doRelease = doRelease;
+            setDaemon(true);
+            if( doRelease )
+                ((MConfigJDialog)QuarantineAllUsersJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().start("Releasing...");
+            else
+                ((MConfigJDialog)QuarantineAllUsersJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().start("Purging...");
+            start();
+        }
+        public void run(){
+            // DO RESCUE
             try{
-		for( String account : accounts )
-		    if( doRelease ){
-			mailTransformCompoundSettings.getQuarantineMaintenanceView().rescueInbox(account);
-		    }
-		    else{
-			mailTransformCompoundSettings.getQuarantineMaintenanceView().deleteInbox(account);
-		    }
+                for( String account : accounts )
+                    if( doRelease ){
+                        mailTransformCompoundSettings.getQuarantineMaintenanceView().rescueInbox(account);
+                    }
+                    else{
+                        mailTransformCompoundSettings.getQuarantineMaintenanceView().deleteInbox(account);
+                    }
             }
             catch(Exception e){
-		if( doRelease ){
-		    Util.handleExceptionNoRestart("Error releasing inbox", e);
-		    MOneButtonJDialog.factory(QuarantineAllUsersJPanel.this.getTopLevelAncestor(), "",
-					      "An account could not be released.",
-					      "Quarantine Release Warning", "");
-		}
-		else{
-		    Util.handleExceptionNoRestart("Error purging inbox", e);
-		    MOneButtonJDialog.factory(QuarantineAllUsersJPanel.this.getTopLevelAncestor(), "",
-					      "An account could not be purged.",
-					      "Quarantine Purge Warning", "");
-		}
-	    }
-	    // DO REFRESH
+                if( doRelease ){
+                    Util.handleExceptionNoRestart("Error releasing inbox", e);
+                    MOneButtonJDialog.factory(QuarantineAllUsersJPanel.this.getTopLevelAncestor(), "",
+                                              "An account could not be released.",
+                                              "Quarantine Release Warning", "");
+                }
+                else{
+                    Util.handleExceptionNoRestart("Error purging inbox", e);
+                    MOneButtonJDialog.factory(QuarantineAllUsersJPanel.this.getTopLevelAncestor(), "",
+                                              "An account could not be purged.",
+                                              "Quarantine Purge Warning", "");
+                }
+            }
+            // DO REFRESH
             /*
-	    ((MConfigJDialog)QuarantineAllUsersJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Refreshing...");
-            try{
-                mailTransformCompoundSettings.refresh();
-            }
-            catch(Exception e){
-                Util.handleExceptionNoRestart("Error refreshing inbox", e);
-                MOneButtonJDialog.factory(QuarantineAllUsersJPanel.this.getTopLevelAncestor(), "",
-                                          "Error refreshing inbox",
-                                          "Quarantine Warning", "");
-	    }
-            SwingUtilities.invokeLater( new Runnable(){ public void run(){
-		quarantineAllTableModel.doRefresh(mailTransformCompoundSettings);
-	    }});
-	    ((MConfigJDialog)QuarantineAllUsersJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().stopLater(1500l);
-             */
+              ((MConfigJDialog)QuarantineAllUsersJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().setTextLater("Refreshing...");
+              try{
+              mailTransformCompoundSettings.refresh();
+              }
+              catch(Exception e){
+              Util.handleExceptionNoRestart("Error refreshing inbox", e);
+              MOneButtonJDialog.factory(QuarantineAllUsersJPanel.this.getTopLevelAncestor(), "",
+              "Error refreshing inbox",
+              "Quarantine Warning", "");
+              }
+              SwingUtilities.invokeLater( new Runnable(){ public void run(){
+              quarantineAllTableModel.doRefresh(mailTransformCompoundSettings);
+              }});
+              ((MConfigJDialog)QuarantineAllUsersJPanel.this.getTopLevelAncestor()).getInfiniteProgressJComponent().stopLater(1500l);
+            */
             SwingUtilities.invokeLater(new Runnable(){ public void run(){
                 EmailJDialog.instance().refreshGui();  // XXX hackorama
             }});
         }
     }
-    
+
     private int[] getSelectedModelRows(){
         int[] selectedViewRows = entryJTable.getSelectedRows();
         if( (selectedViewRows==null) || (selectedViewRows.length==0) || (selectedViewRows[0]==-1) )
@@ -328,36 +325,36 @@ public class QuarantineAllUsersJPanel extends javax.swing.JPanel
         int[] selectedModelRows = new int[selectedViewRows.length];
         for( int i=0; i<selectedViewRows.length; i++ )
             selectedModelRows[i] = getTableModel().getRowViewToModelIndex(selectedViewRows[i]);
-        
+
         return selectedModelRows;
     }
-    
-        // Variables declaration - do not modify//GEN-BEGIN:variables
-        private javax.swing.JPanel contentJPanel;
-        private javax.swing.JButton detailJButton;
-        protected javax.swing.JScrollPane entryJScrollPane;
-        protected javax.swing.JTable entryJTable;
-        private javax.swing.JPanel eventJPanel;
-        private javax.swing.JButton purgeJButton;
-        private javax.swing.JButton releaseJButton;
-        private javax.swing.JLabel totalJLabel;
-        // End of variables declaration//GEN-END:variables
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel contentJPanel;
+    private javax.swing.JButton detailJButton;
+    protected javax.swing.JScrollPane entryJScrollPane;
+    protected javax.swing.JTable entryJTable;
+    private javax.swing.JPanel eventJPanel;
+    private javax.swing.JButton purgeJButton;
+    private javax.swing.JButton releaseJButton;
+    private javax.swing.JLabel totalJLabel;
+    // End of variables declaration//GEN-END:variables
 }
 
 
 class QuarantineAllTableModel extends MSortedTableModel<MailTransformCompoundSettings> {
 
     private static final StringConstants sc = StringConstants.getInstance();
-    
+
     public QuarantineAllTableModel(){
     }
-    
+
     public TableColumnModel getTableColumnModel(){
 
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #   min  rsz    edit   remv   desc   typ               def
         addTableColumn( tableColumnModel,  0,  Util.STATUS_MIN_WIDTH, false, false, true, false, String.class,     null, sc.TITLE_STATUS );
-	addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, true, false, Integer.class,    null, sc.TITLE_INDEX );
+        addTableColumn( tableColumnModel,  1,  Util.LINENO_MIN_WIDTH, false, false, true, false, Integer.class,    null, sc.TITLE_INDEX );
         addTableColumn( tableColumnModel,  2, 300, true,  false,  false, true,  String.class, null, sc.html("account address") );
         addTableColumn( tableColumnModel,  3,  85, true,  false,  false, false, Integer.class, null, sc.html("message<br>count") );
         addTableColumn( tableColumnModel,  4,  85, true,  false,  false, false, LongString.class,    null, sc.html("data size<br>(kB)") );
@@ -366,17 +363,17 @@ class QuarantineAllTableModel extends MSortedTableModel<MailTransformCompoundSet
 
 
     public void generateSettings(MailTransformCompoundSettings mailTransformCompoundSettings,
-				 Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
+                                 Vector<Vector> tableVector, boolean validateOnly) throws Exception { }
 
     public Vector<Vector> generateRows(MailTransformCompoundSettings mailTransformCompoundSettings) {
-        
+
         java.util.List<Inbox> inboxes = mailTransformCompoundSettings.getInboxList();
         Vector<Vector> allRows = new Vector<Vector>(inboxes.size());
-	Vector tempRow = null;
+        Vector tempRow = null;
         int rowIndex = 0;
 
-	for( Inbox inbox : inboxes ){
-	    rowIndex++;
+        for( Inbox inbox : inboxes ){
+            rowIndex++;
             tempRow = new Vector(5);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );

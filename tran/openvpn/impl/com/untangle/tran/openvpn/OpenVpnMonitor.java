@@ -135,7 +135,7 @@ class OpenVpnMonitor implements Runnable
      * to pass to the UI
      */
     EventLogger<ClientConnectEvent> getClientConnectLogger() {
-      return clientConnectLogger;
+        return clientConnectLogger;
     }
 
 
@@ -144,7 +144,7 @@ class OpenVpnMonitor implements Runnable
      * to pass to the UI
      */
     EventLogger<VpnStatisticEvent> getVpnStatsDistLogger() {
-      return vpnStatsDistLogger;
+        return vpnStatsDistLogger;
     }
 
 
@@ -153,7 +153,7 @@ class OpenVpnMonitor implements Runnable
      * to pass to the UI
      */
     EventLogger<ClientDistributionEvent> getClientDistLogger() {
-      return clientDistLogger;
+        return clientDistLogger;
     }
 
 
@@ -202,18 +202,18 @@ class OpenVpnMonitor implements Runnable
             //Grab lock, such that a concurrent read of the "activeMap"
             //doesn't happen during an update
             synchronized(this) {
-              try {
-                  /* Cleanup UNDEF sessions every time you are going to update the stats */
-                  boolean killUndef = now.after( nextUpdate );
-                  updateStatus( killUndef );
-              } catch ( Exception e ) {
-                  logger.info( "Error updating status", e );
-              }
+                try {
+                    /* Cleanup UNDEF sessions every time you are going to update the stats */
+                    boolean killUndef = now.after( nextUpdate );
+                    updateStatus( killUndef );
+                } catch ( Exception e ) {
+                    logger.info( "Error updating status", e );
+                }
 
-              if ( now.after( nextUpdate )) {
-                  logStatistics( now );
-                  nextUpdate.setTime( now.getTime() + LOG_TIME_MSEC );
-              }
+                if ( now.after( nextUpdate )) {
+                    logStatistics( now );
+                    nextUpdate.setTime( now.getTime() + LOG_TIME_MSEC );
+                }
             }
 
             /* Check if the transform is still running */
@@ -231,17 +231,17 @@ class OpenVpnMonitor implements Runnable
      * an end date.
      */
     private synchronized List<ClientConnectEvent> getOpenConnectionsAsEvents() {
-      Date now = new Date();
-      List<ClientConnectEvent> ret = new ArrayList<ClientConnectEvent>();
-      for(Stats s : activeMap.values()) {
-        if(s.isActive) {
-          ClientConnectEvent copy = s.copyCurrentEvent(now);
-          copy.setTimeStamp(copy.getStart());
-          copy.setEnd(null);
-          ret.add(copy);
+        Date now = new Date();
+        List<ClientConnectEvent> ret = new ArrayList<ClientConnectEvent>();
+        for(Stats s : activeMap.values()) {
+            if(s.isActive) {
+                ClientConnectEvent copy = s.copyCurrentEvent(now);
+                copy.setTimeStamp(copy.getStart());
+                copy.setEnd(null);
+                ret.add(copy);
+            }
         }
-      }
-      return ret;
+        return ret;
     }
 
 
@@ -346,13 +346,13 @@ class OpenVpnMonitor implements Runnable
         /* If the kernel is counting in 64-bits, just return the kernel count */
         /* This following doesn't work very well because the tun0 count gets reset to zero often */
         /* XXX This could overflow, but transmitting 4GB of VPN traffic is difficult */
-//         if ( kernelCount >= ( 1L << 32 ) ) return kernelCount;
+        //         if ( kernelCount >= ( 1L << 32 ) ) return kernelCount;
 
 
-//         long previousKernelCount = previousCount & 0xFFFFFFFFL;
-//         if ( previousKernelCount > kernelCount ) previousCount += ( 1L << 32 );
+        //         long previousKernelCount = previousCount & 0xFFFFFFFFL;
+        //         if ( previousKernelCount > kernelCount ) previousCount += ( 1L << 32 );
 
-//         return (( previousCount & 0x7FFFFFFF00000000L ) + kernelCount );
+        //         return (( previousCount & 0x7FFFFFFF00000000L ) + kernelCount );
         return kernelCount;
     }
 
@@ -642,9 +642,9 @@ class OpenVpnMonitor implements Runnable
     }
 
     private void logClientConnectEvent(Stats stats) {
-      if( stats.logged ) return;
-      clientConnectLogger.log( stats.sessionEvent );
-      stats.logged = true;
+        if( stats.logged ) return;
+        clientConnectLogger.log( stats.sessionEvent );
+        stats.logged = true;
     }
 
 
@@ -664,18 +664,18 @@ class OpenVpnMonitor implements Runnable
         }
 
         public RepositoryDesc getRepositoryDesc() {
-          return rd;
+            return rd;
         }
 
         public List<ClientConnectEvent> getEvents() {
-          List<ClientConnectEvent> list = getOpenConnectionsAsEvents();
-          Collections.sort(list,
-            ClientConnectEventComparator.getComparator(ClientConnectEventComparator.SortBy.END_DATE, false));
-          int maxLen = EventRepository.CACHE_SIZE;
-          if(list.size() > maxLen) {
-            list = list.subList(0, maxLen);
-          }
-          return list;
+            List<ClientConnectEvent> list = getOpenConnectionsAsEvents();
+            Collections.sort(list,
+                             ClientConnectEventComparator.getComparator(ClientConnectEventComparator.SortBy.END_DATE, false));
+            int maxLen = EventRepository.CACHE_SIZE;
+            if(list.size() > maxLen) {
+                list = list.subList(0, maxLen);
+            }
+            return list;
         }
     }
 
@@ -691,26 +691,26 @@ class OpenVpnMonitor implements Runnable
         }
 
         public RepositoryDesc getRepositoryDesc() {
-          return rd;
+            return rd;
         }
 
         public List<ClientConnectEvent> getEvents() {
 
-          List<ClientConnectEvent> openList =
-            eventLogger.getRepository(ACTIVE_SESSIONS_REPO_NAME).getEvents();
-          List<ClientConnectEvent> closedList =
-            eventLogger.getRepository(ClientConnectEventAllFilter.REPOSITORY_NAME).getEvents();
+            List<ClientConnectEvent> openList =
+                eventLogger.getRepository(ACTIVE_SESSIONS_REPO_NAME).getEvents();
+            List<ClientConnectEvent> closedList =
+                eventLogger.getRepository(ClientConnectEventAllFilter.REPOSITORY_NAME).getEvents();
 
-          openList.addAll(closedList);
+            openList.addAll(closedList);
 
-          Collections.sort(openList,
-            ClientConnectEventComparator.getComparator(ClientConnectEventComparator.SortBy.END_DATE, false));
+            Collections.sort(openList,
+                             ClientConnectEventComparator.getComparator(ClientConnectEventComparator.SortBy.END_DATE, false));
 
-          int maxLen = EventRepository.CACHE_SIZE;
-          if(openList.size() > maxLen) {
-            openList = openList.subList(0, maxLen);
-          }
-          return openList;
+            int maxLen = EventRepository.CACHE_SIZE;
+            if(openList.size() > maxLen) {
+                openList = openList.subList(0, maxLen);
+            }
+            return openList;
         }
     }
 }
@@ -822,13 +822,13 @@ class Stats
     }
 
     ClientConnectEvent copyCurrentEvent(Date now) {
-      ClientConnectEvent cce = new ClientConnectEvent(
-        sessionEvent.getStart(),
-        sessionEvent.getAddress(),
-        sessionEvent.getPort(),
-        sessionEvent.getClientName());
-      fillEventImpl(cce, now);
-      return cce;
+        ClientConnectEvent cce = new ClientConnectEvent(
+                                                        sessionEvent.getStart(),
+                                                        sessionEvent.getAddress(),
+                                                        sessionEvent.getPort(),
+                                                        sessionEvent.getClientName());
+        fillEventImpl(cce, now);
+        return cce;
     }
 
 

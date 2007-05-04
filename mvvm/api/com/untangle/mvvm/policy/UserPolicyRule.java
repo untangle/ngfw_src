@@ -11,26 +11,24 @@
 
 package com.untangle.mvvm.policy;
 
+import java.sql.Timestamp;
 import java.util.*;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import java.sql.Timestamp;
 
 import com.untangle.mvvm.api.IPSessionDesc;
 import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcher;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 import com.untangle.mvvm.tran.firewall.intf.IntfMatcher;
 import com.untangle.mvvm.tran.firewall.intf.IntfMatcherFactory;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
 import com.untangle.mvvm.tran.firewall.port.PortMatcher;
 import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
+import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcher;
+import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 import com.untangle.mvvm.tran.firewall.time.DayOfWeekMatcher;
 import com.untangle.mvvm.tran.firewall.time.DayOfWeekMatcherFactory;
 import com.untangle.mvvm.tran.firewall.user.UserMatcher;
@@ -95,14 +93,14 @@ public class UserPolicyRule extends PolicyRule
         this.serverAddr = serverAddr;
         this.clientPort = clientPort;
         this.serverPort = serverPort;
-	if( startTime instanceof Timestamp )
-	    this.startTime = new Date(startTime.getTime());
-	else
-	    this.startTime = startTime;
-	if( endTime instanceof Timestamp )
-	    this.endTime = new Date(endTime.getTime());
-	else
-	    this.endTime = endTime;
+        if( startTime instanceof Timestamp )
+            this.startTime = new Date(startTime.getTime());
+        else
+            this.startTime = startTime;
+        if( endTime instanceof Timestamp )
+            this.endTime = new Date(endTime.getTime());
+        else
+            this.endTime = endTime;
         this.dayOfWeek = dayOfWeek;
         this.user = user;
         this.invertEntireDuration = invertEntireDuration;
@@ -112,7 +110,7 @@ public class UserPolicyRule extends PolicyRule
 
     public boolean matches(IPSessionDesc sd)
     {
-        boolean basicOk = 
+        boolean basicOk =
             isLive()
             && clientIntf.isMatch(sd.clientIntf())
             && serverIntf.isMatch(sd.serverIntf())
@@ -125,7 +123,7 @@ public class UserPolicyRule extends PolicyRule
         if (!basicOk)
             return false;
 
-	boolean invertDuration = false;
+        boolean invertDuration = false;
         // Note that we assume we get back something from the database with
         // meaningless fields other than time ones.
         Calendar now = Calendar.getInstance();
@@ -140,15 +138,15 @@ public class UserPolicyRule extends PolicyRule
         end.set(Calendar.MONTH, now.get(Calendar.MONTH));
         end.set(Calendar.DAY_OF_MONTH, now.get(Calendar.DAY_OF_MONTH));
 
-	// Special case to handle 3:00 -> 2:59, for instance.
-	if (end.before(start)) {
-	    Calendar temp = end;
-	    end = start;
-	    start = temp;
-	    start.add(Calendar.MINUTE, 1);
+        // Special case to handle 3:00 -> 2:59, for instance.
+        if (end.before(start)) {
+            Calendar temp = end;
+            end = start;
+            start = temp;
+            start.add(Calendar.MINUTE, 1);
             end.add(Calendar.MINUTE, -1);
-	    invertDuration = true;
-	}
+            invertDuration = true;
+        }
 
         int nowhour = now.get(Calendar.HOUR_OF_DAY);
         int starthour = start.get(Calendar.HOUR_OF_DAY);
@@ -171,7 +169,7 @@ public class UserPolicyRule extends PolicyRule
         if (!outsideDuration) {
             Date dnow = now.getTime();
             outsideDuration = !dayOfWeek.isMatch(dnow);
-	}
+        }
 
         boolean durationTest = invertEntireDuration ? outsideDuration : !outsideDuration;
 
@@ -375,7 +373,7 @@ public class UserPolicyRule extends PolicyRule
      *  all Saturday, all Sunday, and Monday through Friday
      *  from 0000 -> 0859 and 1701 -> 2359
      *
-     * @return true if entire duration is inverted 
+     * @return true if entire duration is inverted
      */
     @Column(name="invert_entire_duration", nullable=false)
     public boolean isInvertEntireDuration()

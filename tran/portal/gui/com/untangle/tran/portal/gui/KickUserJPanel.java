@@ -11,25 +11,17 @@
 
 package com.untangle.tran.portal.gui;
 
-import com.untangle.gui.configuration.DirectoryCompoundSettings;
-import com.untangle.gui.configuration.DirectoryJDialog;
-
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.gui.transform.*;
-import com.untangle.gui.widgets.editTable.*;
-import com.untangle.gui.widgets.MPasswordField;
-import com.untangle.gui.util.*;
-
-import com.untangle.tran.portal.*;
-import com.untangle.mvvm.portal.*;
-import com.untangle.mvvm.addrbook.UserEntry;
-
-import java.awt.*;
+import java.awt.Insets;
 import java.util.*;
-import java.util.List;
 import javax.swing.*;
-import javax.swing.table.*;
 import javax.swing.event.*;
+import javax.swing.table.*;
+
+import com.untangle.gui.transform.*;
+import com.untangle.gui.util.*;
+import com.untangle.gui.widgets.editTable.*;
+import com.untangle.mvvm.portal.*;
+import com.untangle.tran.portal.*;
 
 public class KickUserJPanel extends MEditTableJPanel{
 
@@ -41,17 +33,17 @@ public class KickUserJPanel extends MEditTableJPanel{
         super.setDetailsTitle("");
         super.setAddRemoveEnabled(false);
         super.setRefreshJButtonEnabled(true);
-        
+
         // create actual table model
         KickUserTableModel kickUserTableModel = new KickUserTableModel(mTransformControlsJPanel);
         this.setTableModel( kickUserTableModel );
-	kickUserTableModel.setSortingStatus(2, UserConfigTableModel.ASCENDING);
+        kickUserTableModel.setSortingStatus(2, UserConfigTableModel.ASCENDING);
     }
 
 }
 
 
-class KickUserTableModel extends MSortedTableModel<Object>{ 
+class KickUserTableModel extends MSortedTableModel<Object>{
 
     private static final int T_TW = Util.TABLE_TOTAL_WIDTH_LARGE;
     private static final int C0_MW = Util.STATUS_MIN_WIDTH; /* status */
@@ -65,11 +57,11 @@ class KickUserTableModel extends MSortedTableModel<Object>{
     private MTransformControlsJPanel mTransformControlsJPanel;
 
     public KickUserTableModel(MTransformControlsJPanel mTransformControlsJPanel){
-	this.mTransformControlsJPanel = mTransformControlsJPanel;
+        this.mTransformControlsJPanel = mTransformControlsJPanel;
     }
 
     public TableColumnModel getTableColumnModel(){
-        
+
         DefaultTableColumnModel tableColumnModel = new DefaultTableColumnModel();
         //                                 #  min    rsz    edit   remv   desc   typ            def
         addTableColumn( tableColumnModel,  0, C0_MW, false, false, true, false, String.class,  null, sc.TITLE_STATUS );
@@ -84,25 +76,25 @@ class KickUserTableModel extends MSortedTableModel<Object>{
     }
 
 
-        
+
     public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception{
     }
-    
+
     public Vector<Vector> generateRows(Object settings){
-	List<PortalLogin> loginList = mTransformControlsJPanel.getLoginList();
+        List<PortalLogin> loginList = mTransformControlsJPanel.getLoginList();
         Vector<Vector> allRows = new Vector<Vector>(loginList.size());
-	Vector tempRow = null;
-	int rowIndex = 0;
+        Vector tempRow = null;
+        int rowIndex = 0;
 
 
-	for( PortalLogin newElem : loginList ){
-	    rowIndex++;
+        for( PortalLogin newElem : loginList ){
+            rowIndex++;
             tempRow = new Vector(8);
             tempRow.add( super.ROW_SAVED );
             tempRow.add( rowIndex );
             tempRow.add( newElem.getUser() );
             tempRow.add( (newElem.getGroup()==null?"no group":newElem.getGroup()) );
-	    tempRow.add( new KickButtonRunnable(newElem, "true") );
+            tempRow.add( new KickButtonRunnable(newElem, "true") );
             tempRow.add( new IPaddrString(newElem.getClientAddr()) );
             tempRow.add( newElem.getLoginDate() );
             tempRow.add( newElem );

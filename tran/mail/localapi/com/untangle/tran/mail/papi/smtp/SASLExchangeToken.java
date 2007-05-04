@@ -20,22 +20,22 @@ import com.untangle.tran.token.Token;
  * between casings, being ignored by Transforms.
  */
 public class SASLExchangeToken
-  implements Token {
+    implements Token {
 
-  private final ByteBuffer m_buf;
+    private final ByteBuffer m_buf;
 
-  public SASLExchangeToken(ByteBuffer data) {
-    m_buf = data;
-  }
+    public SASLExchangeToken(ByteBuffer data) {
+        m_buf = data;
+    }
 
-  /**
-    * Returns a duplicate of the internal ByteBuffer, allowing
-    * the caller to modify the returned ByteBuffer without concern
-    * for any downstream token handlers.
-    */
-  public ByteBuffer getBytes() {
-    return m_buf.slice();
-  }
+    /**
+     * Returns a duplicate of the internal ByteBuffer, allowing
+     * the caller to modify the returned ByteBuffer without concern
+     * for any downstream token handlers.
+     */
+    public ByteBuffer getBytes() {
+        return m_buf.slice();
+    }
 
     public int getEstimatedSize()
     {

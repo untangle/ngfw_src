@@ -28,13 +28,13 @@ public class SpamAssassinLclFile {
     public SpamAssassinLclFile() {}
 
     public void writeToFile(List<SpamAssassinLcl> saLclList) {
-        File fileOrg = new File(LOCAL_FILE); 
-        File fileNew = new File(NEW_LOCAL_FILE); 
+        File fileOrg = new File(LOCAL_FILE);
+        File fileNew = new File(NEW_LOCAL_FILE);
         FileWriter fileWriter = null;
         BufferedWriter bufWriter = null;
         try {
             if (true == fileNew.exists())
-                 fileNew.delete(); // delete left-over copy, if any
+                fileNew.delete(); // delete left-over copy, if any
 
             fileNew.createNewFile(); // create new copy
             fileWriter = new FileWriter(fileNew);
