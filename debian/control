@@ -1908,7 +1908,7 @@ Description: Untangle Client
 
 Package: untangle-client
 Architecture: any
-Depends: mvvm
+Depends: untangle-client-windows-jre
 Provides: metavize-client
 Conflicts: metavize-client (<< 4.1)
 Replaces: metavize-client (<< 4.1)
