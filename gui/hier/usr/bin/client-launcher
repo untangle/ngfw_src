@@ -29,4 +29,4 @@ echo "SET CLASSPATH"
 echo $CLASSPATH
 
 
-exec /opt/java/bin/java -verbose:class ${JAVA_OPTS} com.untangle.gui.util.MLauncher
+exec /usr/lib/jvm/java-1.5.0-sun-1.5.0.10/bin/java -verbose:class ${JAVA_OPTS} com.untangle.gui.util.MLauncher

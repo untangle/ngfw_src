@@ -1978,7 +1978,7 @@ Description: Untangle Client
 
 Package: libmvvm-thirdparty
 Architecture: any
-Depends: jre-mv
+Depends: sun-java5-jre
 Conflicts: mvvm (<< 3.0.0-39)
 Replaces: mvvm (<< 3.0.0-39)
 XB-Display-Name: Untangle Server Thirdparty Libraries
@@ -1987,9 +1987,9 @@ Description: Untangle Server Thirdparty Libraries
 
 Package: mvvm
 Architecture: any
-Depends: jre-mv, libmvvm-thirdparty, sudo, iptables (>= 1.3.3-mv1), restore-mv, libxml2, kernel-mv, pump-mv, ntp-simple, snmpd, snmp, sg3-utils, ddclient, slapd, ldap-utils, libnfnetlink0, libnetfilter-queue0, db4.2-util, ujac-to-pdf, at, ebtables, atop, mime-support, nsis, nsis-mv, dnsmasq, pppoe, bridge-utils, libsysfs1, iputils-ping, curl
+Depends: sun-java5-jre, libmvvm-thirdparty, sudo, iptables (>= 1.3.3-mv1), restore-mv, libxml2, kernel-mv, pump-mv, ntp-simple, snmpd, snmp, sg3-utils, ddclient, slapd, ldap-utils, libnfnetlink0, libnetfilter-queue0, db4.2-util, ujac-to-pdf, at, ebtables, atop, mime-support, nsis, nsis-mv, dnsmasq, pppoe, bridge-utils, libsysfs1, iputils-ping, curl
 Pre-Depends: postgresql-server-mv
-Conflicts: xenon, xenon-dbg, dlocate, slocate
+Conflicts: xenon, xenon-dbg, dlocate, slocate, jre-mv
 XB-Display-Name: Untangle Server
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d

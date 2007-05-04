@@ -1,6 +1,6 @@
 #!/bin/sh
 
-JAVA_HOME=${JAVA_HOME:-/opt/java}
+JAVA_HOME=${JAVA_HOME:-/usr/lib/jvm/java-1.5.0-sun-1.5.0.10}
 
 export JAVA_HOME
 

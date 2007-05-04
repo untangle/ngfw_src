@@ -100,7 +100,7 @@ class BuildEnv
 
     @servletcommon = "#{Dir.pwd}/servlet/common"
 
-    @javahome = ENV['JAVA_HOME'] || "/opt/java"
+    @javahome = "/usr/lib/jvm/java-1.5.0-sun-1.5.0.10"
 
     ## Flag indicating whether or not this is a development or
     ## package/production build.
@@ -114,7 +114,7 @@ class BuildEnv
 
     {
       /@PREFIX@/ => prefix,
-      /@DEFAULT_JAVA_HOME@/ => '/opt/java',
+      /@DEFAULT_JAVA_HOME@/ => '/usr/lib/jvm/java-1.5.0-sun-1.5.0.10',
       /@USR_BIN@/ => "#{prefix}/usr/bin",
       /@MVVM_HOME@/ => "#{prefix}/usr/share/metavize",
       /@MVVM_DUMP@/ => "#{prefix}/usr/share/metavize/dump",
