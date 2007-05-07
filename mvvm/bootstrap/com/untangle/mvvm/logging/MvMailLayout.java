@@ -22,6 +22,8 @@ public class MvMailLayout extends MvPatternLayout
     // If null, we're the mvvm.
     private final String componentName;
 
+    // constructors -----------------------------------------------------------
+
     public MvMailLayout(String componentName)
     {
         // This gets reset by our xml config later...
@@ -29,6 +31,8 @@ public class MvMailLayout extends MvPatternLayout
 
         this.componentName = componentName;
     }
+
+    // Layout methods ---------------------------------------------------------
 
     @Override
     public String getHeader()
