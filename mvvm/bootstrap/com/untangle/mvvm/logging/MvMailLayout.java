@@ -11,32 +11,50 @@
 
 package com.untangle.mvvm.logging;
 
-public class MvMailLayout extends MvPatternLayout {
-
+/**
+ * Layout for each logging context's section in the log emails.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
+public class MvMailLayout extends MvPatternLayout
+{
     // If null, we're the mvvm.
-    private String componentName;
+    private final String componentName;
 
-    public MvMailLayout(String componentName) {
-        // This will get reset by our xml config later...
+    public MvMailLayout(String componentName)
+    {
+        // This gets reset by our xml config later...
         super(MvPatternLayout.MV_DEFAULT_CONVERSION_PATTERN);
+
         this.componentName = componentName;
     }
 
-    @Override public String getHeader() {
+    @Override
+    public String getHeader()
+    {
         StringBuilder sb = new StringBuilder();
+
         sb.append("\n");
         sb.append(componentName);
         sb.append("\n");
-        for (int i = 0; i < componentName.length(); i++)
+        for (int i = 0; i < componentName.length(); i++) {
             sb.append('-');
+        }
         sb.append("\n");
+
         return sb.toString();
     }
-    @Override public String getFooter() {
+
+    @Override
+    public String getFooter()
+    {
         StringBuilder sb = new StringBuilder();
+
         sb.append("\nEnd of ");
         sb.append(componentName);
         sb.append("\n\n");
+
         return sb.toString();
     }
 }
