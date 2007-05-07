@@ -23,6 +23,19 @@ import org.apache.log4j.Logger;
 /**
  * Bootstraps the MVVM. Access to the Main object should be protected.
  *
+ * Properties defined by this class:
+ * <ul>
+ * <li>bunnicula.home - home of mvvm, usually
+ * <code>/usr/share/mvvm</code>.</li>
+ * <li>bunnicula.lib.dir - mvvm libraries.</li>
+ * <li>bunnicula.toolbox.dir - transform jars.</li>
+ * <li>bunnicula.log.dir - log files.</li>
+ * <li>bunnicula.data.dir - data files.</li>
+ * <li>bunnicula.db.dir - database files.</li>
+ * <li>bunnicula.web.dir - servlet directories.</li>
+ * <li>bunnicula.conf.dir - configuration files, added to classpath.</li>
+ * <li>bunnicula.tmp.dir - temporary files.</li>
+ *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */

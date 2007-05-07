@@ -11,9 +11,40 @@
 
 package com.untangle.mvvm.logging;
 
+/**
+ * A logging context represents the context in which a log was
+ * created. In our system, we associate a logging context with a
+ * {@link org.apache.log4j.Logger} on creation based on the
+ * <code>MvvmLoggingContext</code> associated with the thread.
+ *
+ * @author <a href="mailto:amread@nyx.net">Aaron Read</a>
+ * @version 1.0
+ */
 public interface MvvmLoggingContext
 {
+    /**
+     * Name of the log4j configuration file for this context. The
+     * configuration file should be in the classpath and the
+     * configName should be suitable for {@link
+     * ClassLoader.getResource()}.
+     *
+     * @return configuration file name.
+     */
     String getConfigName();
+
+    /**
+     * The name of the log file for this logging context. This file
+     * will be created in the directory specified in the system
+     * property: <code>bunnicula.log.dir</code>.
+     *
+     * @return log filename.
+     */
     String getFileName();
+
+    /**
+     * Descriptive name of this logging context.
+     *
+     * @return context name.
+     */
     String getName();
 }
