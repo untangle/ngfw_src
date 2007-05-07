@@ -74,52 +74,6 @@ public class LogMailerImpl implements LogMailer, Runnable
 
     // LogMailer methods ------------------------------------------------------
 
-    /**
-     * Send the contents of all the cyclic buffers as an e-mail
-     * message.
-     */
-    public void sendMessage(MvvmLoggingContext triggeringCtx) {
-        try {
-            Set<SMTPAppender> appenders = MvvmRepositorySelector.selector().getSmtpAppenders();
-
-            ArrayList<MimeBodyPart> parts = new ArrayList<MimeBodyPart>();
-            for (SMTPAppender appender : appenders) {
-                MvvmLoggingContext ctx = appender.getLoggingContext();
-                String partName = ctx.getName() + ".log";
-                MimeBodyPart part = appender.getPart();
-                if (part != null) {
-                    part.setFileName(partName);
-                    part.setDisposition(Part.INLINE);
-                    if (ctx.equals(triggeringCtx)) {
-                        parts.add(0, part);
-                    } else {
-                        parts.add(part);
-                    }
-                }
-            }
-
-            // Finally, get some of non-log4j logs: console.log and gc.log
-            MimeBodyPart part = getOtherLogPart("console.log");
-            if (part != null) {
-                part.setFileName("console.log");
-                part.setDisposition(Part.INLINE);
-                parts.add(part);
-            }
-
-            part = getOtherLogPart("gc.log");
-            if (part != null) {
-                part.setFileName("gc.log");
-                part.setDisposition(Part.INLINE);
-                parts.add(part);
-            }
-
-            // Send it!
-            doSend(SUBJECT_BASE, BODY_BASE, parts);
-        } catch(Exception e) {
-            logger.warn("Error occured while sending e-mail notification.", e);
-        }
-    }
-
     // Called from one of the SMTPAppenders to indicate the need to send.
     public void sendBuffer(MvvmLoggingContext ctx)
     {
@@ -162,6 +116,52 @@ public class LogMailerImpl implements LogMailer, Runnable
     }
 
     // private methods --------------------------------------------------------
+
+    /**
+     * Send the contents of all the cyclic buffers as an e-mail
+     * message.
+     */
+    private void sendMessage(MvvmLoggingContext triggeringCtx) {
+        try {
+            Set<SMTPAppender> appenders = MvvmRepositorySelector.selector().getSmtpAppenders();
+
+            ArrayList<MimeBodyPart> parts = new ArrayList<MimeBodyPart>();
+            for (SMTPAppender appender : appenders) {
+                MvvmLoggingContext ctx = appender.getLoggingContext();
+                String partName = ctx.getName() + ".log";
+                MimeBodyPart part = appender.getPart();
+                if (part != null) {
+                    part.setFileName(partName);
+                    part.setDisposition(Part.INLINE);
+                    if (ctx.equals(triggeringCtx)) {
+                        parts.add(0, part);
+                    } else {
+                        parts.add(part);
+                    }
+                }
+            }
+
+            // Finally, get some of non-log4j logs: console.log and gc.log
+            MimeBodyPart part = getOtherLogPart("console.log");
+            if (part != null) {
+                part.setFileName("console.log");
+                part.setDisposition(Part.INLINE);
+                parts.add(part);
+            }
+
+            part = getOtherLogPart("gc.log");
+            if (part != null) {
+                part.setFileName("gc.log");
+                part.setDisposition(Part.INLINE);
+                parts.add(part);
+            }
+
+            // Send it!
+            doSend(SUBJECT_BASE, BODY_BASE, parts);
+        } catch(Exception e) {
+            logger.warn("Error occured while sending e-mail notification.", e);
+        }
+    }
 
     private void doSend(String subjectBase, String bodyBase,
                         List<MimeBodyPart> parts) {
