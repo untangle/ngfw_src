@@ -1,3 +1,9 @@
+untangle-java (0.2.0-1114) stable; urgency=low
+
+  * auto build
+
+ -- Sebastien Delafond <seb@untangle.com>  Tue,  8 May 2007 13:33:59 -0700
+
 untangle-java (0.2.0-1113) stable; urgency=low
 
   * auto build
