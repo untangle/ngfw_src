@@ -28,7 +28,7 @@ JDK_HOME      ?= /opt/jdk
 java_include_base=$(JDK_HOME)/include
 
 # We need to set JAVA_HOME too as the 'ant' binary needs it.
-JAVA_HOME     ?= /usr/lib/jvm/java-1.5.0-sun-1.5.0.10
+JAVA_HOME     ?= /usr/lib/jvm/java-1.5.0-sun
 
 local_lib_path=lib
 
