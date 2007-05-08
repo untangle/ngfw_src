@@ -11,7 +11,8 @@
 
 package com.untangle.mvvm;
 
-public interface ConnectivityTester {
+public interface ConnectivityTester
+{
     /**
      * Retrieve the connectivity status of the network.
      */
@@ -20,7 +21,7 @@ public interface ConnectivityTester {
     interface Status
     {
         boolean isDnsWorking();
-        
+
         boolean isTcpWorking();
     }
 }
