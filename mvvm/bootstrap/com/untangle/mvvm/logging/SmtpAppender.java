@@ -21,6 +21,12 @@ import org.apache.log4j.helpers.CyclicBuffer;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.LoggingEvent;
 
+/**
+ * Contains circular buffer with recent log messages.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
 public class SmtpAppender extends AppenderSkeleton
 {
     // We use one of these sized buffers for each transform, and one for main.
@@ -28,9 +34,7 @@ public class SmtpAppender extends AppenderSkeleton
 
     private final MvvmLoggingContext ctx;
 
-    private final int bufferSize = CIRCULAR_BUFFER_SIZE;
-
-    protected CyclicBuffer cb = new CyclicBuffer(bufferSize);
+    protected CyclicBuffer cb = new CyclicBuffer(CIRCULAR_BUFFER_SIZE);
 
     // constructors -----------------------------------------------------------
 
@@ -84,19 +88,29 @@ public class SmtpAppender extends AppenderSkeleton
         }
     }
 
+    @Override
     synchronized public void close()
     {
         this.closed = true;
         MvvmRepositorySelector.selector().deregisterSmtpAppender(this);
     }
 
+    @Override
     public boolean requiresLayout()
     {
         return true;
     }
 
-    // Return null if there's nothing interesting or we can't make it
-    // for some reason.
+    // public methods ---------------------------------------------------------
+
+    /**
+     * Returns the contents of the circular buffer in the form of a
+     * Mime body part.
+     *
+     * @return a mime part with the buffer contents or null if there
+     * is nothing interesting
+     * @exception MessagingException if content cannot be set.
+     */
     public synchronized MimeBodyPart getPart() throws MessagingException
     {
         // Note: this code already owns the monitor for this
@@ -104,30 +118,37 @@ public class SmtpAppender extends AppenderSkeleton
         // 'cb'.
         MimeBodyPart part = new MimeBodyPart();
 
-        StringBuffer sbuf = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         String t = layout.getHeader();
-        if(t != null)
-            sbuf.append(t);
+        if(t != null) {
+            sb.append(t);
+        }
+
         int len =  cb.length();
-        if (len == 0)
+        if (len == 0) {
             return null;
+        }
+
         for(int i = 0; i < len; i++) {
-            //sbuf.append(MimeUtility.encodeText(layout.format(cb.get())));
             LoggingEvent event = cb.get();
-            sbuf.append(layout.format(event));
+            sb.append(layout.format(event));
             if(layout.ignoresThrowable()) {
                 String[] s = event.getThrowableStrRep();
                 if (s != null) {
                     for(int j = 0; j < s.length; j++) {
-                        sbuf.append(s[j]);
+                        sb.append(s[j]);
                     }
                 }
             }
         }
+
         t = layout.getFooter();
-        if(t != null)
-            sbuf.append(t);
-        part.setContent(sbuf.toString(), layout.getContentType());
+        if(t != null) {
+            sb.append(t);
+        }
+
+        part.setContent(sb.toString(), layout.getContentType());
+
         return part;
     }
 }
