@@ -28,58 +28,46 @@ import org.apache.log4j.spi.RootLogger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.apache.tools.ant.filters.ReplaceTokens;
 
+/**
+ * Selects logging repository based on the MvvmLoggingContext.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class MvvmRepositorySelector implements RepositorySelector
 {
-    public static final String TRAN_LOG_FILE_NAME_TOKEN
-        = "TranLogFileName";
+    public static final String TRAN_LOG_FILE_NAME_TOKEN;
 
-    private static final MvvmLoggingContext MVVM_CONTEXT = new MvvmLoggingContext()
-        {
-            public String getConfigName() { return "log4j-mvvm.xml"; }
-            public String getFileName() { return "mvvm"; }
-            public String getName() { return "mvvm"; }
+    private static final MvvmLoggingContext MVVM_CONTEXT;
+    private static final MvvmLoggingContextFactory MVVM_CONTEXT_FACTORY;
+    private static final LogMailer NULL_LOG_MAILER;
+    private static final MvvmRepositorySelector SELECTOR;
 
-            public MvvmLoggingContext get() { return this; }
-        };
-
-    private static final MvvmLoggingContextFactory MVVM_CONTEXT_FACTORY = new MvvmLoggingContextFactory()
-        {
-            public MvvmLoggingContext get() { return MVVM_CONTEXT; }
-        };
-
-    private static final LogMailer NULL_LOG_MAILER = new LogMailer()
-        {
-            public void sendBuffer(MvvmLoggingContext ctx) { }
-
-            public void sendMessage(MvvmLoggingContext ctx) { }
-        };
-
-    private static final MvvmRepositorySelector SELECTOR = new MvvmRepositorySelector();
-
-    private final Map<MvvmLoggingContext, MvvmHierarchy> repositories
-        = new HashMap<MvvmLoggingContext, MvvmHierarchy>();
-
+    private final Map<MvvmLoggingContext, MvvmHierarchy> repositories;
+    private final Set<SmtpAppender> smtpAppenders;
     private final ThreadLocal<MvvmLoggingContextFactory> currentContextFactory;
-    private final Set<SMTPAppender> smtpAppenders = new HashSet<SMTPAppender>();
 
     private LogMailer logMailer = NULL_LOG_MAILER;
 
-    // constructors ----------------------------------------------------------
+    // constructors -----------------------------------------------------------
 
     private MvvmRepositorySelector()
     {
+        repositories = new HashMap<MvvmLoggingContext, MvvmHierarchy>();
+        smtpAppenders = new HashSet<SmtpAppender>();
         currentContextFactory = new InheritableThreadLocal<MvvmLoggingContextFactory>();
         currentContextFactory.set(MVVM_CONTEXT_FACTORY);
     }
 
-    // factories -------------------------------------------------------------
+    // factories --------------------------------------------------------------
 
     public static MvvmRepositorySelector selector()
     {
         return SELECTOR;
     }
 
-    // public methods --------------------------------------------------------
+    // RepositorySelector methods ---------------------------------------------
 
     public LoggerRepository getLoggerRepository()
     {
@@ -100,27 +88,33 @@ public class MvvmRepositorySelector implements RepositorySelector
         return hier;
     }
 
+    // public methods ---------------------------------------------------------
+
+    /**
+     * Sets the {@link LogMailer} that will be used to email logs.
+     *
+     * @param logMailer the system {@link LogMailer}
+     */
     public void setLogMailer(LogMailer logMailer)
     {
         this.logMailer = logMailer;
     }
 
+    /**
+     * Gets the system {@link LogMailer}.
+     *
+     * @return the system {@link LogMailer}
+     */
     public LogMailer getLogMailer()
     {
         return logMailer;
     }
 
-    public MvvmLoggingContext registerSmtpAppender(SMTPAppender appender)
-    {
-        smtpAppenders.add(appender);
-        return getContextFactory().get();
-    }
-
-    public Set<SMTPAppender> getSmtpAppenders()
-    {
-        return smtpAppenders;
-    }
-
+    /**
+     * Deregister {@link MvvmLoggingContext} from the system.
+     *
+     * @param ctx {@link MvvmLoggingContext} to remove.
+     */
     public void remove(MvvmLoggingContext ctx)
     {
         synchronized (repositories) {
@@ -128,6 +122,11 @@ public class MvvmRepositorySelector implements RepositorySelector
         }
     }
 
+    /**
+     * Causes all logging repositories to reconfigure themselves from
+     * the configuration file specified in the {@link
+     * MvvmLoggingContext}.
+     */
     public void reconfigureAll()
     {
         synchronized (repositories) {
@@ -137,16 +136,29 @@ public class MvvmRepositorySelector implements RepositorySelector
         }
     }
 
+    /**
+     * Sets the current context to the MVVM context.
+     */
     public void mvvmContext()
     {
         currentContextFactory.set(MVVM_CONTEXT_FACTORY);
     }
 
+    /**
+     * Sets the current logging context factory.
+     *
+     * @param ctx the {@link MvvmLoggingContextFactory} to use.
+     */
     public void setContextFactory(MvvmLoggingContextFactory ctx)
     {
         currentContextFactory.set(ctx);
     }
 
+    /**
+     * Gets the current logging context factory.
+     *
+     * @return the current {@link MvvmLoggingContextFactory}.
+     */
     public MvvmLoggingContextFactory getContextFactory()
     {
         MvvmLoggingContextFactory ctx = currentContextFactory.get();
@@ -157,11 +169,53 @@ public class MvvmRepositorySelector implements RepositorySelector
         return ctx;
     }
 
+    // package protected methods ----------------------------------------------
+
+    /**
+     * Adds a {@link SmtpAppender} to the logging system.
+     *
+     * @param appender {@link SmtpAppender} to add.
+     * @return the MvvmLoggingContext for this appender.
+     */
+    MvvmLoggingContext registerSmtpAppender(SmtpAppender appender)
+    {
+        smtpAppenders.add(appender);
+        return getContextFactory().get();
+    }
+
+    /**
+     * Removes a {@link SmtpAppender} from the logging system.
+     *
+     * @param appender {@link SmtpAppender} to remove.
+     */
+    void deregisterSmtpAppender(SmtpAppender appender)
+    {
+        smtpAppenders.remove(appender);
+    }
+
+    /**
+     * Get the set of {@link SmtpAppender}s registered.
+     *
+     * @return the set of {@link SmtpAppender}s.
+     */
+    Set<SmtpAppender> getSmtpAppenders()
+    {
+        return smtpAppenders;
+    }
+
+    // private methods --------------------------------------------------------
+
+    /**
+     * A {@link org.apache.log4j.Hierarchy} that associates the
+     * current {@link MvvmLoggingContext} and allows configuration
+     * based on the contexts configuration file.
+     */
     private class MvvmHierarchy extends Hierarchy
     {
         private final MvvmLoggingContext ctx;
 
-        MvvmHierarchy(MvvmLoggingContext ctx) {
+        MvvmHierarchy(MvvmLoggingContext ctx)
+        {
             super(new RootLogger(Level.DEBUG));
 
             this.ctx = ctx;
@@ -190,5 +244,34 @@ public class MvvmRepositorySelector implements RepositorySelector
                 configurator.doConfigure(is, this);
             }
         }
+    }
+
+    // static initialization --------------------------------------------------
+
+    static {
+        TRAN_LOG_FILE_NAME_TOKEN = "TranLogFileName";
+
+        MVVM_CONTEXT = new MvvmLoggingContext()
+            {
+                public String getConfigName() { return "log4j-mvvm.xml"; }
+                public String getFileName() { return "mvvm"; }
+                public String getName() { return "mvvm"; }
+
+                public MvvmLoggingContext get() { return this; }
+            };
+
+        MVVM_CONTEXT_FACTORY = new MvvmLoggingContextFactory()
+            {
+                public MvvmLoggingContext get() { return MVVM_CONTEXT; }
+            };
+
+        NULL_LOG_MAILER = new LogMailer()
+            {
+                public void sendBuffer(MvvmLoggingContext ctx) { }
+
+                public void sendMessage(MvvmLoggingContext ctx) { }
+            };
+
+        SELECTOR = new MvvmRepositorySelector();
     }
 }

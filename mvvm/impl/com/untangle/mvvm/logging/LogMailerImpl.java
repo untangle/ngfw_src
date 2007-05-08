@@ -74,7 +74,7 @@ public class LogMailerImpl implements LogMailer, Runnable
 
     // LogMailer methods ------------------------------------------------------
 
-    // Called from one of the SMTPAppenders to indicate the need to send.
+    // Called from one of the SmtpAppenders to indicate the need to send.
     public void sendBuffer(MvvmLoggingContext ctx)
     {
         synchronized(sendMonitor) {
@@ -123,10 +123,11 @@ public class LogMailerImpl implements LogMailer, Runnable
      */
     private void sendMessage(MvvmLoggingContext triggeringCtx) {
         try {
-            Set<SMTPAppender> appenders = MvvmRepositorySelector.selector().getSmtpAppenders();
+            Set<SmtpAppender> appenders = MvvmRepositorySelector.selector()
+                .getSmtpAppenders();
 
             ArrayList<MimeBodyPart> parts = new ArrayList<MimeBodyPart>();
-            for (SMTPAppender appender : appenders) {
+            for (SmtpAppender appender : appenders) {
                 MvvmLoggingContext ctx = appender.getLoggingContext();
                 String partName = ctx.getName() + ".log";
                 MimeBodyPart part = appender.getPart();

@@ -21,7 +21,7 @@ import org.apache.log4j.helpers.CyclicBuffer;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.LoggingEvent;
 
-public class SMTPAppender extends AppenderSkeleton
+public class SmtpAppender extends AppenderSkeleton
 {
     // We use one of these sized buffers for each transform, and one for main.
     public static int CIRCULAR_BUFFER_SIZE = 100;
@@ -34,7 +34,7 @@ public class SMTPAppender extends AppenderSkeleton
 
     // constructors -----------------------------------------------------------
 
-    public SMTPAppender()
+    public SmtpAppender()
     {
         super();
 
@@ -87,6 +87,7 @@ public class SMTPAppender extends AppenderSkeleton
     synchronized public void close()
     {
         this.closed = true;
+        MvvmRepositorySelector.selector().deregisterSmtpAppender(this);
     }
 
     public boolean requiresLayout()
