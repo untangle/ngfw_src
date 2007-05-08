@@ -54,8 +54,8 @@ task :pkgs => Package['install'] do
   end
 
   Kernel.system('./buildtools/incVersion.sh', 'all')
-  Kernel.system(*%w(fakeroot ./debian/rules binary))
-  Kernel.system(*%w(sudo ./buildtools/rebuildmvvm.sh))
+  Kernel.system(*%w(/usr/bin/debuild --no-tgz-check -su -uc))
+#  Kernel.system(*%w(sudo ./buildtools/rebuildmvvm.sh))
 end
 
 task :pkgs => $InstallTarget

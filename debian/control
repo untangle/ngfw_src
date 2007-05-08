@@ -1,9 +1,9 @@
-Source: untangle-java
+Source: mvvm
 Section: net
 Priority: optional
-Maintainer: Dirk Morris <dmorris@untangle.com>
-Build-Depends: debhelper (>> 3.0.0)
-Standards-Version: 3.5.2
+Maintainer: Sebastien Delafond <seb@untangle.com>
+Build-Depends: debhelper (>> 3.0.0), unzip, build-essentials, sun-java5-jdk, libxml2-dev, iptables-dev (>= 1.2.11-10-mv1), libnfnetlink-dev, libnetfilter-queue-dev, libsysfs-dev, dput, rake (>> 0.7.1-1)
+Standards-Version: 3.7.2
 
 Package: ftp-casing
 Architecture: any

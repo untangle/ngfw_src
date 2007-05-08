@@ -104,6 +104,9 @@ binary-arch: build install
 	dh_md5sums
 	dh_builddeb --destdir=../ 2>&1 | egrep -v "(user-defined|ignoring)"
 
+mvvm: build install
+	dh_install -i -p$@ ../nat-transform_*`cat debian/$@.version`*deb var/lib/mvvm/nat-transform.deb
+
 binary-indep: build install
 # nothing to do
 
