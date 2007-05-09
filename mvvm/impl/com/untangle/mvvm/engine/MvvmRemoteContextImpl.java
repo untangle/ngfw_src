@@ -14,6 +14,7 @@ package com.untangle.mvvm.engine;
 import java.io.IOException;
 
 import com.untangle.mvvm.ArgonManager;
+import com.untangle.mvvm.BrandingManager;
 import com.untangle.mvvm.ConnectivityTester;
 import com.untangle.mvvm.NetworkManager;
 import com.untangle.mvvm.RemoteAppServerManager;
@@ -117,6 +118,11 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
     public AddressBook appAddressBook()
     {
         return context.appAddressBook();
+    }
+
+    public BrandingManager brandingManager()
+    {
+        return context.brandingManager();
     }
 
     public RemotePortalManager portalManager()

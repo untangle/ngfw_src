@@ -13,6 +13,7 @@ package com.untangle.mvvm.client;
 
 import java.io.IOException;
 
+import com.untangle.mvvm.BrandingManager;
 import com.untangle.mvvm.ConnectivityTester;
 import com.untangle.mvvm.NetworkManager;
 import com.untangle.mvvm.RemoteAppServerManager;
@@ -141,6 +142,14 @@ public interface MvvmRemoteContext
      * @return the singleton
      */
     AddressBook appAddressBook();
+
+    /**
+     * The BrandingManager allows for customization of logo and
+     * branding information.
+     *
+     * @return the BrandingManager.
+     */
+    BrandingManager brandingManager();
 
     /**
      * Save settings to local hard drive.

@@ -33,13 +33,13 @@ CREATE TABLE settings.upgrade_settings (
     PRIMARY KEY (upgrade_settings_id));
 
 -- com.untangle.mvvm.BrandingSettings
-CREATE TABLE settings.branding_settings (
+CREATE TABLE settings.mvvm_branding_settings (
     settings_id int8 NOT NULL,
     company_name text,
     logo bytea,
     contact_name text,
     contact_email text,
-    PRIMARY KEY (settings_id)));
+    PRIMARY KEY (settings_id));
 
 -- com.untangle.mvvm.MailSettings
 CREATE TABLE settings.mail_settings (

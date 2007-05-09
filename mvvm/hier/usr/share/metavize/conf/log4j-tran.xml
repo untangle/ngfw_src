@@ -34,11 +34,11 @@
 
   <!-- Log Emailer -->
 
-  <appender name="EmailAppender" class="com.untangle.mvvm.logging.SMTPAppender">
+  <appender name="EmailAppender" class="com.untangle.mvvm.logging.SmtpAppender">
     <!-- Note: We do *not* specify a layout here because we must
          create it programmatically so that we can get the transform
          name in there.  Instead we provide the Conversion Pattern
-         here at the top level so that the SMTPAppender constructor
+         here at the top level so that the SmtpAppender constructor
          can create the correct layout. -->
     <param name="LayoutConversionPattern"
            value="%D %-5p [%c{1}] &lt;%X{SessionID}&gt; %m%n"/>

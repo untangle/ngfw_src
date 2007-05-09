@@ -130,6 +130,14 @@ public interface MvvmLocalContext
     AddressBook appAddressBook();
 
     /**
+     * The BrandingManager allows for customization of logo and
+     * branding information.
+     *
+     * @return the BrandingManager.
+     */
+    BrandingManager brandingManager();
+
+    /**
      * Get the phonebook singleton
      * @return the singleton
      */

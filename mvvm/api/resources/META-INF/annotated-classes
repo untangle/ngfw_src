@@ -1,3 +1,4 @@
+com.untangle.mvvm.BrandingSettings
 com.untangle.mvvm.MailSettings
 com.untangle.mvvm.Period
 com.untangle.mvvm.addrbook.AddressBookSettings
@@ -13,8 +14,8 @@ com.untangle.mvvm.networking.Interface
 com.untangle.mvvm.networking.MiscSettings
 com.untangle.mvvm.networking.NetworkSpace
 com.untangle.mvvm.networking.NetworkSpacesSettingsImpl
-com.untangle.mvvm.networking.PPPoESettings
 com.untangle.mvvm.networking.PPPoEConnectionRule
+com.untangle.mvvm.networking.PPPoESettings
 com.untangle.mvvm.networking.RedirectRule
 com.untangle.mvvm.networking.Route
 com.untangle.mvvm.networking.ServicesSettingsImpl
