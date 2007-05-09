@@ -1,0 +1,11 @@
+#!/bin/sh
+
+OUTPUT_DIR=$1
+
+base_dir=${OUTPUT_DIR}/jfreechart-1.0.1
+lib_dir=${base_dir}/lib/
+
+## Flatten the directory
+mv ${lib_dir}/*  ${base_dir}/
+
+rm -rf ${lib_dir}

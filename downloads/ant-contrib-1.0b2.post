@@ -1,0 +1,4 @@
+#!/bin/sh
+#
+# Fixup location
+mv $1/ant-contrib $1/ant-contrib-1.0b2

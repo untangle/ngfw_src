@@ -1,0 +1,6 @@
+#!/bin/sh
+#
+# Fixup location
+mv $1/javamail-1_3_3_01/javamail-1.3.3_01 $1
+rmdir $1/javamail-1_3_3_01
+touch $1/javamail-1.3.3_01
