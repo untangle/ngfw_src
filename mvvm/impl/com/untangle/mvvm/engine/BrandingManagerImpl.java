@@ -12,92 +12,112 @@
 package com.untangle.mvvm.engine;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.sql.SQLException;
 
 import com.untangle.mvvm.BrandingManager;
+import com.untangle.mvvm.BrandingSettings;
+import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.mvvm.util.TransactionWork;
+import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 class BrandingManagerImpl implements BrandingManager
 {
-    private static final File BRANDING_DIR;
-    private static final File IMAGE_DIR;
+    private static final File DEFAULT_LOGO;
+    private static final File BRANDING_LOGO;
 
-    public Set<String> getImageNames()
-    {
-        String[] files = IMAGE_DIR.list();
-
-        Set<String> s = new TreeSet<String>();
-        for (int i = 0; i < files.length; i++) {
-            s.add(files[i]);
-        }
-
-        return s;
-    }
-
-    public byte[] getImage(String name)
-        throws IOException
-    {
-        File imageFile = new File(IMAGE_DIR, name);
-        if (!imageFile.exists()) {
-            return null;
-        } else {
-            RandomAccessFile f = null;
-            try {
-                f = new RandomAccessFile(imageFile, "r");
-                byte[] r = new byte[(int)f.length()];
-
-                int i = 0;
-                for (int c = 0; 0 <= (c = f.read(r, i, r.length - i)); i += c);
-
-                return r;
-            } finally {
-                if (null != f) {
-                    f.close();
-                }
-            }
-        }
-    }
-
-    public Map<String, byte[]> getImages()
-        throws IOException
-    {
-        String[] files = IMAGE_DIR.list();
-
-        Map<String, byte[]> m = new TreeMap<String, byte[]>();
-
-        for (int i = 0; i < files.length; i++) {
-            m.put(files[i], getImage(files[i]));
-        }
-
-        return m;
-    }
-
-    public void addImage(String name, byte[] image)
-        throws IOException
-    {
-        File f = new File(IMAGE_DIR, name);
-
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(f);
-            fos.write(image);
-        } finally {
-            if (null != fos) {
-                fos.close();
-            }
-        }
-    }
-
-    // static initialization --------------------------------------------------
+    private final Logger logger = Logger.getLogger(getClass());
 
     static {
         String wd = System.getProperty("bunnicula.web.dir");
-        BRANDING_DIR = new File(wd, "branding");
-        IMAGE_DIR = new File(BRANDING_DIR, "images");
+        File id = new File(wd, "ROOT/images");
+        DEFAULT_LOGO = new File(id, "Logo32x32.gif");
+        BRANDING_LOGO = new File(id, "BrandingLogo.gif");
+    }
+
+    private BrandingSettings settings;
+
+    BrandingManagerImpl()
+    {
+        TransactionWork<BrandingSettings> tw = new TransactionWork<BrandingSettings>()
+            {
+                private BrandingSettings bs;
+
+                public boolean doWork(Session s) throws SQLException
+                {
+                    Query q = s.createQuery("from BrandingSettings bs");
+                    bs = (BrandingSettings)q.uniqueResult();
+                    if (null == bs) {
+                        bs = new BrandingSettings();
+                        s.save(bs);
+                    }
+
+                    return true;
+                }
+
+                public BrandingSettings getResult() { return bs; }
+            };
+        MvvmContextFactory.context().runTransaction(tw);
+
+        this.settings = tw.getResult();
+        setLogo(settings.getLogo());
+    }
+
+    // public methods ---------------------------------------------------------
+
+    public BrandingSettings getBrandingSettings()
+    {
+        return settings;
+    }
+
+    public void setBrandingSettings(BrandingSettings settings)
+    {
+        this.settings = settings;
+        setLogo(settings.getLogo());
+    }
+
+    // private methods --------------------------------------------------------
+
+    private void setLogo(byte[] logo)
+    {
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+
+        try {
+            fos = new FileOutputStream(BRANDING_LOGO);
+
+            if (null == logo) {
+                byte[] buf = new byte[1024];
+                fis = new FileInputStream(DEFAULT_LOGO);
+                int c;
+                while (0 <= (c = fis.read(buf))) {
+                    fos.write(buf, 0, c);
+                }
+            } else {
+                fos.write(logo);
+            }
+        } catch (IOException exn) {
+            logger.warn("could not change icon", exn);
+        } finally {
+            if (null != fis) {
+                try {
+                    fis.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close", exn);
+                }
+            }
+
+            if (null != fos) {
+                try {
+                    fos.close();
+                } catch (IOException exn) {
+                    logger.warn("could not close", exn);
+                }
+            }
+        }
     }
 }

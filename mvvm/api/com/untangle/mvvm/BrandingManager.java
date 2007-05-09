@@ -11,10 +11,6 @@
 
 package com.untangle.mvvm;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * Allows the user to customize the branding of the product.
  *
@@ -23,8 +19,6 @@ import java.util.Set;
  */
 public interface BrandingManager
 {
-    Set<String> getImageNames();
-    byte[] getImage(String name) throws IOException;
-    Map<String, byte[]> getImages() throws IOException;
-    void addImage(String filename, byte[] image) throws IOException;
+    BrandingSettings getBrandingSettings();
+    void setBrandingSettings(BrandingSettings bs);
 }

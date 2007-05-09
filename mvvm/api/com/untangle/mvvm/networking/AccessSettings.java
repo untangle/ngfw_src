@@ -12,7 +12,6 @@
 package com.untangle.mvvm.networking;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,15 +19,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Type;
-
 import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.Validatable;
 import com.untangle.mvvm.tran.ValidateException;
-
-import com.untangle.mvvm.networking.NetworkUtil;
+import org.hibernate.annotations.Type;
 
 /** These are settings related to remote access to the untangle. */
 @Entity
@@ -36,14 +30,14 @@ import com.untangle.mvvm.networking.NetworkUtil;
 public class AccessSettings implements Serializable, Validatable
 {
     private boolean isClean = false;
-    
+
     private Long id;
 
     private boolean isSshEnabled;
     private boolean isInsideInsecureEnabled;
     private boolean isOutsideAccessEnabled;
     private boolean isOutsideAccessRestricted;
- 
+
     private IPaddr outsideNetwork;
     private IPaddr outsideNetmask;
 
@@ -70,21 +64,21 @@ public class AccessSettings implements Serializable, Validatable
     {
         this.id = id;
     }
-    
+
     /* Get whether or not ssh is enabled. */
     @Column(name="allow_ssh")
     public boolean getIsSshEnabled()
     {
         return this.isSshEnabled;
     }
-    
+
     /* Set whether or not ssh is enabled. */
     public void setIsSshEnabled( boolean newValue )
     {
         if ( newValue != this.isSshEnabled ) this.isClean = false;
         this.isSshEnabled = newValue;
     }
-        
+
     /** True if insecure access from the inside is enabled. */
     @Column(name="allow_insecure")
     public boolean getIsInsideInsecureEnabled()
@@ -97,7 +91,7 @@ public class AccessSettings implements Serializable, Validatable
         if ( newValue != this.isInsideInsecureEnabled ) this.isClean = false;
         this.isInsideInsecureEnabled = newValue;
     }
-    
+
     /** True if outside (secure) access is enabled. */
     @Column(name="allow_outside")
     public boolean getIsOutsideAccessEnabled()
@@ -121,7 +115,7 @@ public class AccessSettings implements Serializable, Validatable
     public void setIsOutsideAccessRestricted( boolean newValue )
     {
         if ( newValue != this.isOutsideAccessRestricted ) this.isClean = false;
-        this.isOutsideAccessRestricted = newValue;        
+        this.isOutsideAccessRestricted = newValue;
     }
 
     /**
@@ -145,7 +139,7 @@ public class AccessSettings implements Serializable, Validatable
         if ( !IPaddr.equals( this.outsideNetwork, newValue )) this.isClean = false;
         this.outsideNetwork = newValue;
     }
-   
+
     /** The restricted netmask of machines allowed to connect to the box. */
     @Column(name="outside_netmask")
     @Type(type="com.untangle.mvvm.type.IPaddrUserType")
@@ -181,7 +175,7 @@ public class AccessSettings implements Serializable, Validatable
     {
         return this.isOutsideQuarantineEnabled;
     }
-    
+
     public void setIsOutsideQuarantineEnabled( boolean newValue )
     {
         if ( newValue != this.isOutsideQuarantineEnabled ) this.isClean = false;
@@ -193,7 +187,7 @@ public class AccessSettings implements Serializable, Validatable
     {
         return this.isOutsideReportingEnabled;
     }
-    
+
     public void setIsOutsideReportingEnabled( boolean newValue )
     {
         if ( newValue != this.isOutsideReportingEnabled ) this.isClean = false;
@@ -214,6 +208,6 @@ public class AccessSettings implements Serializable, Validatable
     @Transient
     public void validate() throws ValidateException
     {
-        /* nothing appears to be necessary here for now */        
+        /* nothing appears to be necessary here for now */
     }
 }
