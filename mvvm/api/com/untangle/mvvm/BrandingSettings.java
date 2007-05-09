@@ -18,12 +18,19 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * Contains properties that a vendor may use to rebrand the product.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 @Entity
 @Table(name="mvvm_branding_settings", schema="settings")
 public class BrandingSettings implements Serializable
 {
     private Long id;
     private String companyName = "Untangle";
+    private String companyUrl = "http://www.untangle.com";
     private byte[] logo = null;
     private String contactName = "Your System Administrator";
     private String contactEmail = null;
@@ -54,6 +61,23 @@ public class BrandingSettings implements Serializable
         this.companyName = companyName;
     }
 
+    @Column(name="company_url")
+    public String getCompanyUrl()
+    {
+        return companyUrl;
+    }
+
+    public void setCompanyUrl(String companyUrl)
+    {
+        this.companyUrl = companyUrl;
+    }
+
+    /**
+     * The company logo to use, null means use the default untangle
+     * logo.
+     *
+     * @return a <code>byte[]</code> value
+     */
     public byte[] getLogo()
     {
         return logo;

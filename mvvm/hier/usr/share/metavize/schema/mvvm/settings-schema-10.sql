@@ -36,6 +36,7 @@ CREATE TABLE settings.upgrade_settings (
 CREATE TABLE settings.mvvm_branding_settings (
     settings_id int8 NOT NULL,
     company_name text,
+    company_url text,
     logo bytea,
     contact_name text,
     contact_email text,
