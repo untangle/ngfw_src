@@ -63,6 +63,7 @@ class DigestGenerator {
     private static final String TOTAL_SIZE_RECORDS_VV = "totalSizeRecords";
     private static final String MAX_DAYS_TO_INTERN_VV = "daysToIntern";
     private static final String MAX_DAYS_IDLE_INBOX_VV = "daysIdleInbox";
+    private static final String COMPANY_NAME_VV = "company_name";
     private static final String JS_ESCAPER = "jsEscaper";
 
     private static final String MAIL_BLAST = "http://www.untangle.com/mail_blast/quarantine/images";
@@ -278,6 +279,12 @@ class DigestGenerator {
 
             context.put(MAX_DAYS_TO_INTERN_VV, maxMailInternInDays);
             context.put(MAX_DAYS_IDLE_INBOX_VV, maxIdleInboxInDays);
+
+
+            String companyName = MvvmContextFactory.context().brandingManager()
+                .getBrandingSettings().getCompanyName();
+            context.put(COMPANY_NAME_VV, companyName);
+
 
             InboxRecord[] allRecords = index.getAllRecords();
             //Sort records by date, with "newest" (i.e. greatest numerical value for time)

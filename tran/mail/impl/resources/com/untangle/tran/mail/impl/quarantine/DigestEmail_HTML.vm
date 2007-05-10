@@ -100,11 +100,11 @@ does not include any table.slist styles.
 ##
 <html>
   <head>
-    <title>Untangle | Quarantine Digest for $user_email</title>
+    <title>$company_name | Quarantine Digest for $user_email</title>
   <style>
 
 .logoTable {
-  padding-left: 15; 
+  padding-left: 15;
   padding-top: 15;
 }
 
@@ -127,12 +127,12 @@ table.actions {
 }
 
 table.actions tbody TD {
-  background-color: #C1C1C1;  
+  background-color: #C1C1C1;
   padding: 15;
 }
 
 table.actions tbody TD + TD {
-  background-color: #C1C1C1;  
+  background-color: #C1C1C1;
   text-align: right;
   padding-right: 10;
 }
@@ -143,13 +143,13 @@ table.actions tbody TD + TD {
 }
 
 .msiehack1 {
-  background-color: #C1C1C1;  
+  background-color: #C1C1C1;
   text-align: right;
   color: #606060;
   padding-right: 10;
 }
 .msiehack2 {
-  background-color: #C1C1C1;  
+  background-color: #C1C1C1;
   text-align: left;
   color: #606060;
   padding-left: 10;
@@ -194,7 +194,7 @@ table.inbox th {
 
 /* XXX Differs from quarantine style.css */
 table.inbox thead th.first {
-  background-color: #C1C1C1;  
+  background-color: #C1C1C1;
   padding-left: 24px;
 }
 
@@ -205,7 +205,7 @@ table.inbox tbody td.first {
 
 /* XXX Differs from quarantine style.css */
 table.inbox thead th {
-  background-color: #C1C1C1;  
+  background-color: #C1C1C1;
 }
 
 table.inbox tbody th {
@@ -221,11 +221,11 @@ table.inbox tr.odd td, table.inbox tr.odd th {
 }
 
 table.inbox tfoot th, table.inbox tfoot td {
-  background-color: #C1C1C1;  
+  background-color: #C1C1C1;
 }
 
 table.inbox tfoot th {
-  background-color: #C1C1C1;  
+  background-color: #C1C1C1;
   text-align: right;
 }
 
@@ -247,7 +247,7 @@ body {
      margin: 15px;
      background: #FFFFFF url($image_root/background_body.gif) repeat-x top left;
      text-align: center;
-}  
+}
 
 table {
     font: normal normal normal 10pt/14pt Arial, Sans-Serif;
@@ -408,7 +408,7 @@ hr {
             <tr>
               <td valign="middle" width="150">
                 <a href="http://www.untangle.com">
-                  <img src="$image_root/Logo150x96.gif" border="0" alt="Untangle logo"/>
+                  <img src="$image_root/Logo150x96.gif" border="0" alt="$company_name"/>
                 </a>
               </td>
 
