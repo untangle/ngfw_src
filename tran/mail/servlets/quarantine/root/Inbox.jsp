@@ -15,10 +15,7 @@
 MvvmLocalContext mvvm = MvvmContextFactory.context();
 BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
 String company = bs.getCompanyName();
-if (null == company) { company = "Untangle"; }
 String companyUrl = bs.getCompanyUrl();
-if (null == companyUrl) { companyUrl = "http://www.untangle.com"; }
-
 %>
 <%@ taglib uri="/WEB-INF/taglibs/quarantine_euv.tld" prefix="quarantine" %>
 

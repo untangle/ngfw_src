@@ -4,7 +4,6 @@
 <%
     BrandingSettings bs = MvvmContextFactory.context().brandingManager().getBrandingSettings();
     String company = bs.getCompanyName();
-    if (null == company) { company = "Untangle"; }
 
     // ENUMERATE THE ARCHIVE REPORT DIRECTORIES
     // note that these directory names are in form of 'YYYY-MM-DD'

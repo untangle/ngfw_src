@@ -18,9 +18,7 @@
 MvvmLocalContext mvvm = MvvmContextFactory.context();
 BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
 String company = bs.getCompanyName();
-if (null == company) { company = "Untangle"; }
 String companyUrl = bs.getCompanyUrl();
-if (null == companyUrl) { companyUrl = "http://www.untangle.com"; }
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">

@@ -49,6 +49,9 @@ DATE_FORMAT='%A %B %e, %Y'
 
 EMAIL_TEMPLATE="@MVVM_HOME@/reporting/email.html"
 
+BRANDING_PROPS=@MVVM_CONF@/branding.properties
+COMPANY_NAME=$(grep '^mvvm.branding.companyName=' $BRANDING_PROPS |sed 's/^[^=]\+=\(.*\)$/\1/')
+
 function generateTopLevel()
 {
 ## Create the table of contents
@@ -90,7 +93,7 @@ function generateSubReports()
     local t_iconOrg
     local t_iconDesc
 
-    ## None of the transform use custom templates just yet.    
+    ## None of the transform use custom templates just yet.
     local t_template=""
     local t_detailedTemplate=""
 
@@ -111,7 +114,7 @@ function generateSubReports()
         ## Set the image directory.
         t_iconDesc="${t_key}/images/IconDesc42x42.png"
         t_iconOrg="${t_key}/images/IconOrg42x42.png"
-                
+
         ## Insert the data for each report
         echo "reports.${t}='${t_name}','${t_key}${SUFFIX_PROPERTIES}','${t_template}','${t_detailedTemplate}','${t_iconDesc}','${t_iconOrg}','${LINK_PREFIX}${t_key}','${t_hasDetailed}'" >> ${topLevel}
 
@@ -133,10 +136,10 @@ function generateSubProperties()
 
     ## This is the marketing name of the transform (eg Router)
     local t_name="${3}"
-   
+
     ## Name of the file containing the graph
     local t_graph=""
-    
+
     ## Name of the file containing the summary pdf.
     local t_summary=""
 
@@ -203,7 +206,7 @@ EOF
         -e "s|<td[^>]*>|'|g" \
         -e "s|</td>|',|g" ${t_statistics} \
         "${t_baseDir}/sum-${REPORT_TYPE}.html" \
-        | awk 'BEGIN { n = 0 }; { print "statistics." n++ "=" $0 }' >> ${t_properties} 
+        | awk 'BEGIN { n = 0 }; { print "statistics." n++ "=" $0 }' >> ${t_properties}
 
     ## Insert the detailed reports
     echo -e "\ndetailed.fields='description:string','filename:string','userSummaryLink:string','properties:string'" >> ${t_properties}
@@ -213,7 +216,7 @@ EOF
     ## 3. Ignore hostname summary (because it duplicates user summary)
     ## 4. Ignore parameters
     ## 5. Get rid of the path to the thing that generates the report
-    ## 6. Append two default field values ('' = user summary link, '' = properties (e.g., no user summary link, no properties file)) 
+    ## 6. Append two default field values ('' = user summary link, '' = properties (e.g., no user summary link, no properties file))
     ## 7. Swap position of report name field (from position 2 to position 1) for user summary report and replace userSummary title with more friendly "User Summary" title (so that the user summary report can be processed in step 8) (index-report also replaces userSummary title with "User Summary" title) and replace two default field values ('AAA.pdf' = user summary link, 'BBB.properties' = properties)
     ## 8. Swap the order of the title, and description, and add quotes, and prefix the directory.
     ## 9. Number all of the lines with AWK.
@@ -321,7 +324,7 @@ function generateEmail()
 {
     local t_email=${OUTPUT_FILE/%pdf/eml}
     local t_arguments="@PREFIX@/tmp/${OUTPUT_FILE/%pdf/txt}"
-    
+
     ## Generate the file (use the :-baz just in case EMAIL_TEMPLATE isn't set which causes
     ## sed to block
     sed -e "s|%%REPORT_TYPE%%|${reportType}|g" \
@@ -331,14 +334,14 @@ function generateEmail()
 
     ## Generate the file list
     cat > ${t_arguments} <<EOF
--s "Untangle Reports (${REPORT_TYPE})"
+-s "$COMPANY_NAME Reports (${REPORT_TYPE})"
 ${t_email}
-${OUTPUT_FILE} 
+${OUTPUT_FILE}
 EOF
-    
+
     ## Find all of the images that are for the email
     find "${DIRECTORY_IMAGES}/images" -type f -exec basename \{\} \; \
-        | grep 'Logo150x96.gif' \
+        | grep 'BrandingLogo.gif' \
         | sed "s|\(.*\)|images/\1|" \
         >> ${t_arguments}
 }
@@ -361,7 +364,7 @@ case ${REPORT_TYPE} in
     "monthly") REPORT_START="${MV_EG_MONTH_START}";;
 esac
 
-## Reports always end last night    
+## Reports always end last night
 REPORT_END="${MV_EG_REPORT_END}"
 
 ## Create the properties directory

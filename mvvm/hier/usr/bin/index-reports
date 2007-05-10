@@ -9,6 +9,9 @@ mail_reports_arguments_daily=@PREFIX@/tmp/mail_reports_arguments_daily.txt
 mail_reports_arguments_weekly=@PREFIX@/tmp/mail_reports_arguments_weekly.txt
 mail_reports_arguments_monthly=@PREFIX@/tmp/mail_reports_arguments_monthly.txt
 
+BRANDING_PROPS=@MVVM_CONF@/branding.properties
+COMPANY_NAME=$(grep '^mvvm.branding.companyName=' $BRANDING_PROPS |sed 's/^[^=]\+=\(.*\)$/\1/')
+
 ## Parameters:
 ## <estat> : exit status
 ## <src> : source of error
@@ -53,7 +56,7 @@ fi
 
 
 if [ "$generate_email_index" != false ]; then
-    echo "-s \"Untangle Reports ($period)\"" >> $mail_reports_arguments
+    echo "-s \"$COMPANY_NAME Reports ($period)\"" >> $mail_reports_arguments
     echo "./$index" >> $mail_reports_arguments
     find ./images/* -type f >> $mail_reports_arguments
 fi
@@ -66,7 +69,7 @@ cat > $main_index <<EOF
 
   <!-- HEADING -->
   <head>
-    <title>Untangle Reports</title>
+    <title>$COMPANY_NAME Reports</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
 
 
@@ -215,9 +218,9 @@ h4 {
             <table width="100%">
               <tr>
               <td width="96" valign="middle">
-                <img src="$web_base/images/Logo150x96.gif" alt="Untangle logo" width="150" height="96"/>
+                <img src="$web_base/images/BrandingLogo.gif" alt="$COMPANY_NAME" width="150" height="96"/>
               </td>
-              <td style="padding: 0px 0px 0px 10px" class="page_header_title" align="left" valign="middle">Untangle<br/>Reports</td>
+              <td style="padding: 0px 0px 0px 10px" class="page_header_title" align="left" valign="middle">$COMPANY_NAME<br/>Reports</td>
               <td align="right">
               <table width="100%">
                 <tr><td class="page_header_alternate" align="right">
@@ -254,7 +257,7 @@ EOF
     fi
 fi
 
-echo 
+echo
 /bin/date -d''$midnight'' +'%A %B %e, %Y' >> $main_index
 
 cat >> $main_index <<EOF
@@ -352,7 +355,7 @@ EOF
         please check back the morning after the scheduled day<br/>
         for daily, weekly, and/or monthly Reports.<br/>
         <br/>
-        When scheduled, Untangle Reports automatically generates<br/>
+        When scheduled, $COMPANY_NAME Reports automatically generates<br/>
         the requested Reports during the preceeding night.
         </i></b>
     </center>
@@ -516,7 +519,8 @@ EOF
 
 generate_summary_entry ()
 {
-# true allows you to print only non Untangle Platform software, false allows you to print only Untangle Platform software
+# true allows you to print only non Untangle Platform software, false
+# allows you to print only Untangle Platform software
 tran_dir=$1
 ls $tran_dir/name >/dev/null 2>&1 || return
 tran_name=$(cat $tran_dir/name)

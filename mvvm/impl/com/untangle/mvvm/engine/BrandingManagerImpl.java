@@ -15,6 +15,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 
 import com.untangle.mvvm.BrandingManager;
@@ -29,15 +32,9 @@ class BrandingManagerImpl implements BrandingManager
 {
     private static final File DEFAULT_LOGO;
     private static final File BRANDING_LOGO;
+    private static final File BRANDING_PROPS;
 
     private final Logger logger = Logger.getLogger(getClass());
-
-    static {
-        String wd = System.getProperty("bunnicula.web.dir");
-        File id = new File(wd, "ROOT/images");
-        DEFAULT_LOGO = new File(id, "Logo32x32.gif");
-        BRANDING_LOGO = new File(id, "BrandingLogo.gif");
-    }
 
     private BrandingSettings settings;
 
@@ -64,6 +61,7 @@ class BrandingManagerImpl implements BrandingManager
         MvvmContextFactory.context().runTransaction(tw);
 
         this.settings = tw.getResult();
+        setBrandingProperties(settings);
         setLogo(settings.getLogo());
     }
 
@@ -77,10 +75,36 @@ class BrandingManagerImpl implements BrandingManager
     public void setBrandingSettings(BrandingSettings settings)
     {
         this.settings = settings;
+        setBrandingProperties(settings);
         setLogo(settings.getLogo());
     }
 
     // private methods --------------------------------------------------------
+
+    private void setBrandingProperties(BrandingSettings settings)
+    {
+        PrintWriter pr = null;
+        try {
+            OutputStream os = new FileOutputStream(BRANDING_PROPS);
+            pr = new PrintWriter(new OutputStreamWriter(os));
+            pr.print("mvvm.branding.companyName=");
+            pr.println(settings.getCompanyName());
+            pr.print("mvvm.branding.companyUrl=");
+            pr.println(settings.getCompanyUrl());
+            pr.print("mvvm.branding.contactName=");
+            pr.println(settings.getContactName());
+            if (null != settings.getContactEmail()) {
+                pr.print("mvvm.branding.contactEmail=");
+                pr.println(settings.getContactEmail());
+            }
+        } catch (IOException exn) {
+            logger.warn("could not save branding properties", exn);
+        } finally {
+            if (null != pr) {
+                pr.close();
+            }
+        }
+    }
 
     private void setLogo(byte[] logo)
     {
@@ -119,5 +143,15 @@ class BrandingManagerImpl implements BrandingManager
                 }
             }
         }
+    }
+
+    static {
+        String wd = System.getProperty("bunnicula.web.dir");
+        File id = new File(wd, "ROOT/images");
+        DEFAULT_LOGO = new File(id, "Logo32x32.gif");
+        BRANDING_LOGO = new File(id, "BrandingLogo.gif");
+        wd = System.getProperty("bunnicula.conf.dir");
+        id = new File(wd);
+        BRANDING_PROPS = new File(id, "branding.properties");
     }
 }

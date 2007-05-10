@@ -170,9 +170,10 @@ public interface MvvmLocalContext
     void shutdown();
 
     /**
-     * Reboots the Untangle box as if the right button menu was used and confirmed.
-     * Note that this currently will not reboot a non-production (dev) box; this
-     * behavior may change in the future.  XXX
+     * Reboots the Untangle box as if the right button menu was used
+     * and confirmed.  Note that this currently will not reboot a
+     * non-production (dev) box; this behavior may change in the
+     * future.  XXX
      *
      */
     void rebootBox();
@@ -262,8 +263,9 @@ public interface MvvmLocalContext
         throws IOException, IllegalArgumentException;
 
     /*
-     * Loads a shared library (.so) into the MVVM classloader.  This is so a transform
-     * dosen't load it into its own, which doesn't work right.
+     * Loads a shared library (.so) into the MVVM classloader.  This
+     * is so a transform dosen't load it into its own, which doesn't
+     * work right.
      */
     void loadLibrary(String libname);
 }

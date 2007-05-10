@@ -5,7 +5,6 @@ MvvmLocalContext mvvm = MvvmContextFactory.context();
 
 BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
 String company = bs.getCompanyName();
-if (null == company) { company = "Untangle"; }
 
 ReportingManager reportingManager = mvvm.reportingManager();
 

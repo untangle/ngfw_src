@@ -53,7 +53,7 @@ public class BrandingSettings implements Serializable
     @Column(name="company_name")
     public String getCompanyName()
     {
-        return companyName;
+        return null == companyName ? "Untangle" : companyName;
     }
 
     public void setCompanyName(String companyName)
@@ -64,7 +64,7 @@ public class BrandingSettings implements Serializable
     @Column(name="company_url")
     public String getCompanyUrl()
     {
-        return companyUrl;
+        return null == companyUrl ? "http://www.untangle.com" : companyUrl;
     }
 
     public void setCompanyUrl(String companyUrl)
@@ -91,7 +91,7 @@ public class BrandingSettings implements Serializable
     @Column(name="contact_name")
     public String getContactName()
     {
-        return contactName;
+        return null == contactName ? "Your System Administrator" : contactName;
     }
 
     public void setContactName(String name)

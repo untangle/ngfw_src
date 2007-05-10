@@ -10,7 +10,6 @@ MvvmLocalContext mvvm = MvvmContextFactory.context();
 
 BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
 String company = bs.getCompanyName();
-if (null == company) { company = "Untangle"; }
 
 String scheme = request.getScheme();
 String cp = (String)request.getContextPath();
