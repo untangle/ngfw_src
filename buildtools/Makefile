@@ -21,7 +21,7 @@ source: checkroot
 		--exclude="todo" \
 		--exclude="staging" \
 		--exclude="dist" \
-		-f ../mvvm_`cat debian/version | perl -npe 's/-.*//'`.orig.tar.gz .
+		-f ../mvvm_`perl -npe 's/-.*//' debian/version`.orig.tar.gz .
 
 pkg: checkroot
 	# FIXME: sign packages when we move to apt 0.6

@@ -100,7 +100,7 @@ binary-arch: install
 #	@dh_perl
 #	@dh_gencontrol
 	@for i in $(PACKAGES) ; do \
-	  dh_gencontrol -p$$i -u-is -u-v"`cat VERSION``cat debian/version`" ; \
+	  dh_gencontrol -p$$i -u-is -u-v"`cat debian/version`" ; \
 	done
 	@dh_md5sums
 	@dh_builddeb --destdir=../ 2>&1 | egrep -v "(user-defined|ignoring)"
