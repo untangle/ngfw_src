@@ -6,18 +6,24 @@
 <!-- MagicComment: MVTimeout -->
 
 <%
+MvvmLocalContext mvvm = MvvmContextFactory.context();
+
+BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
+String company = bs.getCompanyName();
+if (null == company) { company = "Untangle"; }
+
 String scheme = request.getScheme();
 String cp = (String)request.getContextPath();
 String host = request.getHeader("host");
 
-PortalGlobal pg = MvvmContextFactory.context().portalManager().getPortalSettings().getGlobal();
+PortalGlobal pg = mvvm.portalManager().getPortalSettings().getGlobal();
 String title = pg.getLoginPageTitle();
 if (null == title) {
     title = "Remote Access Portal";
 }
 String text = pg.getLoginPageText();
 if (null == text) {
-    text = "Welcome to the Untangle Remote Access Portal";
+    text = "Welcome to the " + company + " Remote Access Portal";
 }
 %>
 
@@ -44,7 +50,7 @@ if (null == text) {
   <tr>
     <td style="vertical-align: top; font-family: helvetica,arial,sans-serif; width: 400px;">
       <div style="text-align: center;">
-      <img alt="" src="<%=scheme%>://<%=host%>/images/Logo150x96.gif"
+      <img alt="" src="<%=scheme%>://<%=host%>/images/BrandingLogo.gif"
       style="border: 0px solid ; width: 150px; height: 96px;" align="top"
       hspace="0" vspace="0"/>
       <br/>
@@ -73,7 +79,7 @@ if (null == text) {
       <br/>
       <br/>
       <div style="font-style: italic; font-size: 80%;">
-      <a href="<%=scheme%>://<%=host%>/webstart">Untangle Server Administration</a>
+      <a href="<%=scheme%>://<%=host%>/webstart"><%=company%> Server Administration</a>
       </div>
       </center>
       </div>

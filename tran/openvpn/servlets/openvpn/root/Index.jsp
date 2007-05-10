@@ -1,6 +1,13 @@
-<%@page language="java"%>
+<%@page language="java" import="com.untangle.mvvm.*"%>
 
 <%
+MvvmLocalContext mvvm = MvvmContextFactory.context();
+BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
+String company = bs.getCompanyName();
+if (null == company) { company = "Untangle"; }
+String companyUrl = bs.getCompanyUrl();
+if (null == companyUrl) { companyUrl = "http://www.untangle.com"; }
+
 boolean isValid;
 String debuggingMessages;
 String commonName;
@@ -61,8 +68,8 @@ response.setStatus( HttpServletResponse.SC_FORBIDDEN );
           <tbody>
             <tr>
               <td valign="middle" width="150">
-                <a href="http://www.untangle.com">
-                  <img src="images/Logo150x96.gif" border="0" alt="Untangle logo"/>
+                <a href="<%=companyUrl%>">
+                  <img src="images/BrandingLogo.gif" border="0" alt="<%=company%>"/>
                 </a>
               </td>
 

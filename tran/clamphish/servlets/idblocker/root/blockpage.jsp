@@ -1,7 +1,14 @@
 <%@ page language="java" import="com.untangle.mvvm.*,com.untangle.mvvm.tran.*, com.untangle.mvvm.security.*, com.untangle.tran.http.*, com.untangle.tran.clamphish.*"%>
 
 <%
-LocalTransformManager tman = MvvmContextFactory.context().transformManager();
+MvvmLocalContext mvvm = MvvmContextFactory.context();
+BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
+String company = bs.getCompanyName();
+if (null == company) { company = "Untangle"; }
+String companyUrl = bs.getCompanyUrl();
+if (null == companyUrl) { companyUrl = "http://www.untangle.com"; }
+
+LocalTransformManager tman = mvvm.transformManager();
 
 String nonce = request.getParameter("nonce");
 String tidStr = request.getParameter("tid");
@@ -21,7 +28,7 @@ String url = null == bd ? "" : bd.getFormattedUrl();
   <head>
     <link href="/main.css" rel="stylesheet" type="text/css"/>
 
-<title>Untangle Identity Theft Blocker Warning</title>
+<title><%=company%> Identity Theft Blocker Warning</title>
 <script language="JavaScript">
 nonce = '<%=nonce%>';
 tid = '<%=tidStr%>';
@@ -48,7 +55,7 @@ url = '<%=null == bd ? "javascript:history.back()" : bd.getUrl()%>';
 <tbody>
 <tr>
   <td colspan=1 width="154px">
-<a href="http://www.untangle.com"><img src="/images/Logo150x96.gif" border="0" alt="Untangle logo" width="150" height="96"/></a>
+<a href="<%=companyUrl%>"><img src="/images/BrandingLogo.gif" border="0" alt="<%=company%>" width="150" height="96"/></a>
   </td>
   <td style="padding: 0px 0px 0px 10px" class="page_header_title" align="left" valign="middle">
   <%=header%>
@@ -96,7 +103,7 @@ url = '<%=null == bd ? "javascript:history.back()" : bd.getUrl()%>';
 <td><hr width="100%" size="1" color="#969696"/></td>
 </tr>
 <tr>
-<td><address>Untangle Identity Theft Blocker</address></td>
+<td><address><%=company%> Identity Theft Blocker</address></td>
 </tr>
 </tfoot>
 </table>

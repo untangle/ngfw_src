@@ -1,3 +1,5 @@
+<%@page language="java" import="com.untangle.mvvm.*"%>
+
 <%
 /*
  * Copyright (c) 2003-2007 Untangle, Inc.
@@ -12,12 +14,21 @@
 %>
 <%@ taglib uri="/WEB-INF/taglibs/quarantine_euv.tld" prefix="quarantine" %>
 
+<%
+MvvmLocalContext mvvm = MvvmContextFactory.context();
+BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
+String company = bs.getCompanyName();
+if (null == company) { company = "Untangle"; }
+String companyUrl = bs.getCompanyUrl();
+if (null == companyUrl) { companyUrl = "http://www.untangle.com"; }
+%>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
 <!-- HEADING -->
-  <title>Untangle | Safelist for <quarantine:currentAddress/></title>
+  <title><%=company%> | Safelist for <quarantine:currentAddress/></title>
     <script>
       function CheckAll() {
         count = document.form1.elements.length;
@@ -59,8 +70,8 @@
           <tbody>
             <tr>
               <td valign="middle" width="150">
-                <a href="http://www.untangle.com">
-                  <img src="images/Logo150x96.gif" border="0" alt="Untangle logo"/>
+                <a href="<%=companyUrl%>">
+                  <img src="images/BrandingLogo.gif" border="0" alt="<%=company%>"/>
                 </a>
               </td>
 

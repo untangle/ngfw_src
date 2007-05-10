@@ -1,3 +1,5 @@
+<%@page language="java" import="com.untangle.mvvm.*"%>
+
 <%
 /*
  * Copyright (c) 2003-2007 Untangle, Inc.
@@ -12,13 +14,21 @@
 %>
 <%@ taglib uri="/WEB-INF/taglibs/quarantine_euv.tld" prefix="quarantine" %>
 
+<%
+MvvmLocalContext mvvm = MvvmContextFactory.context();
+BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
+String company = bs.getCompanyName();
+if (null == company) { company = "Untangle"; }
+String companyUrl = bs.getCompanyUrl();
+if (null == companyUrl) { companyUrl = "http://www.untangle.com"; }
+%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
 <!-- HEADING -->
-  <title>Untangle | Try Later</title>
+  <title><%=company%> | Try Later</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
   <link rel="stylesheet" href="styles/style.css" type="text/css"/>
 </head>
@@ -51,8 +61,8 @@
           <tbody>
             <tr>
               <td valign="middle" width="150">
-                <a href="http://www.untangle.com">
-                  <img src="images/Logo150x96.gif" border="0" alt="Untangle logo"/>
+                <a href="<%=companyUrl%>">
+                  <img src="images/BrandingLogo.gif" border="0" alt="<%=company%>"/>
                 </a>
               </td>
 
@@ -78,7 +88,7 @@
         <hr size="1" width="100%"/>
 
         <!-- INTRO MESSAGE -->
-        The Untangle Server has encountered an error.
+        The <%=company%> Server has encountered an error.
         Please try later.
         Thanks and sorry.
         <br><br>

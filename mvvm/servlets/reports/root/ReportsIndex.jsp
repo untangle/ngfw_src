@@ -2,6 +2,10 @@
 <%@ page language="java" import="com.untangle.mvvm.*, com.untangle.mvvm.client.*, com.untangle.mvvm.security.Tid, com.untangle.mvvm.tran.*, com.untangle.mvvm.tapi.*, com.untangle.mvvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.*, java.util.Vector, java.util.Collections, java.util.Comparator, java.util.Calendar, java.util.GregorianCalendar, java.util.StringTokenizer, javax.naming.*" %>
 
 <%
+    BrandingSettings bs = MvvmContextFactory.context().brandingManager().getBrandingSettings();
+    String company = bs.getCompanyName();
+    if (null == company) { company = "Untangle"; }
+
     // ENUMERATE THE ARCHIVE REPORT DIRECTORIES
     // note that these directory names are in form of 'YYYY-MM-DD'
     String path = System.getProperty("bunnicula.home") + "/web/reports";
@@ -58,7 +62,7 @@
 
   <!-- HEADING -->
   <head>
-    <title>Untangle Reports</title>
+    <title><%=company%> Reports</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
     <style type="text/css">
     <!--
@@ -206,10 +210,10 @@ h4 {
             <table width="100%">
               <tr>
               <td width="96" valign="middle">
-                <img src="./images/Logo150x96.gif" alt="Untangle logo" width="150" height="96"/>
+                <img src="./images/BrandingLogo.gif" alt="<%=company%>" width="150" height="96"/>
               </td>
               <td style="padding: 0px 0px 0px 10px" class="page_header_title" align="left" valign="middle">
-        Untangle Reports
+        <%=company%> Reports
               </td>
           <td align="right">
         <table width="100%">

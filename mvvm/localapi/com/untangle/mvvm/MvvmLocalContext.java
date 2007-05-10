@@ -33,7 +33,6 @@ import com.untangle.mvvm.user.LocalPhoneBook;
 import com.untangle.mvvm.user.RemotePhoneBook;
 import com.untangle.mvvm.util.TransactionWork;
 
-
 /**
  * Provides an interface to get all local MVVM components from an MVVM
  * instance.  This interface is accessible locally.

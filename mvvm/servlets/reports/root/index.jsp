@@ -2,6 +2,11 @@
 
 <%
 MvvmLocalContext mvvm = MvvmContextFactory.context();
+
+BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
+String company = bs.getCompanyName();
+if (null == company) { company = "Untangle"; }
+
 ReportingManager reportingManager = mvvm.reportingManager();
 
 boolean reportingEnabled = reportingManager.isReportingEnabled();
@@ -13,7 +18,7 @@ if (!reportsAvailable) {
 
   <!-- HEADING -->
   <head>
-    <title>Untangle Reports</title>
+    <title><%=company%> Reports</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
     <style type="text/css">
     <!--
@@ -157,10 +162,10 @@ h4 {
             <table>
               <tr>
               <td valign="middle">
-                <img src="./images/Logo150x96.gif" alt="Untangle logo" width="150" height="96"/>
+                <img src="./images/BrandingLogo.gif" alt="<%=company%>" width="150" height="96"/>
               </td>
               <td style="padding: 0px 0px 0px 10px" valign="middle">
-                <span class="page_header_title">Untangle Reports</span>
+                <span class="page_header_title"><%=company%> Reports</span>
               </td>
               </tr>
             </table>
@@ -180,14 +185,14 @@ h4 {
         <br/>
 
         <% if(!reportingEnabled){ %>
-            Untangle Reports is not installed into your rack or it is not turned on.<br/>
-            Reports are only generated when Untangle Reports is installed and turned on.
+            <%=company%> Reports is not installed into your rack or it is not turned on.<br/>
+            Reports are only generated when <%=company%> Reports is installed and turned on.
         <% } else{ %>
             When daily, weekly, and/or monthly Reports are scheduled,<br/>
             please check back the morning after the scheduled day<br/>
             for daily, weekly, and/or monthly Reports.<br/>
             <br/>
-            When scheduled, Untangle Reports automatically generates<br/>
+            When scheduled, <%=company%> Reports automatically generates<br/>
             the requested Reports during the preceeding night.
         <% } %>
 
@@ -225,7 +230,7 @@ h4 {
 
 %>
 
-<html><head><title>Untangle Reports</title>
+<html><head><title><%=company%> Reports</title>
 <STYLE><!---
 H1{font-family : sans-serif,Arial,Tahoma;color : white;
   background-color : #0086b2;}
@@ -233,7 +238,7 @@ BODY{font-family : sans-serif,Arial,Tahoma;color : black;
   background-color : white;}
 B{color : white;background-color : #0086b2;} HR{color : #0086b2;}
 --></STYLE> </head><body>
-<h1>Untangle Reports - HTTP Status 302 - Moved Temporarily</h1>
+<h1><%=company%> Reports - HTTP Status 302 - Moved Temporarily</h1>
 <HR size="1" noshade><p><b>type</b> Status report</p>
 <p><b>message</b> <u>Moved Temporarily</u></p>
 <p><b>description</b>

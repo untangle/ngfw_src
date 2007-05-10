@@ -1,3 +1,5 @@
+<%@page language="java" import="com.untangle.mvvm.*"%>
+
 <%
 /*
  * Copyright (c) 2003-2007 Untangle, Inc.
@@ -9,6 +11,14 @@
  *
  * $Id$
  */
+
+MvvmLocalContext mvvm = MvvmContextFactory.context();
+BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
+String company = bs.getCompanyName();
+if (null == company) { company = "Untangle"; }
+String companyUrl = bs.getCompanyUrl();
+if (null == companyUrl) { companyUrl = "http://www.untangle.com"; }
+
 %>
 <%@ taglib uri="/WEB-INF/taglibs/quarantine_euv.tld" prefix="quarantine" %>
 
@@ -18,7 +28,7 @@
 <head>
 
 <!-- HEADING -->
-  <title>Untangle | Quarantine Digest for <quarantine:currentAddress/></title>
+  <title><%=company%> | Quarantine Digest for <quarantine:currentAddress/></title>
     <script>
       function CheckAll() {
         count = document.form1.elements.length;
@@ -132,8 +142,8 @@
           <tbody>
             <tr>
               <td valign="middle" width="150">
-                <a href="http://www.untangle.com">
-                  <img src="images/Logo150x96.gif" border="0" alt="Untangle logo"/>
+                <a href="<%=companyUrl%>">
+                  <img src="images/BrandingLogo.gif" border="0" alt="<%=company%>"/>
                 </a>
               </td>
 
@@ -169,7 +179,7 @@
 
       <quarantine:isRemapped includeIfTrue="false">
         <quarantine:hasInboxRecords includeIfTrue="true">
-          The emails listed below have been quarantined by the Untangle Server and
+          The emails listed below have been quarantined by the <%=company%> Server and
           will be deleted automatically after <quarantine:maxDaysToIntern/> days.
           <br><br>
           To release emails from the quarantine and
