@@ -5,21 +5,29 @@ ENV["JAVA_HOME"] = "/usr/lib/jvm/java-1.5.0-sun"
 
 $DevelBuild = true
 ARGV.each do |arg|
-  if "pkgs" == arg then
+# the rakefile itself shouldn't deal with package creation/release
+#
+#   if "pkgs" == arg then
+#     $DevelBuild = false
+  if arg =~ /install/
     $DevelBuild = false
-  elsif arg =~ /release_?(.+)?/
-    # XXX release the hoonds!
-    releaseName = $1 || ENV["USER"]
-    $DevelBuild = false
-
-    task arg.to_sym => :pkgs do
-      Kernel.system('./buildtools/release.sh', 'all', releaseName)
-    end
   end
+#   elsif arg =~ /release_?(.+)?/
+#     # XXX release the hoonds!
+#     # FIXME: is this where the default target distribution should be set ?
+#     releaseName = $1 || "testing"
+#     $DevelBuild = false
+
+#     task arg.to_sym => :pkgs do
+#       Kernel.system('./buildtools/release.sh', releaseName)
+#     end
+#   end
 end
 
 ## Building downloads
-Kernel.system( "make -C ../downloads" )
+# FIXME: this can't quite be made a task without some hardcore
+# tinkering it seems
+Kernel.system( "make -C downloads" )
 
 ## This is how you define where the stamp file will go
 module Rake
@@ -27,7 +35,6 @@ module Rake
 end
 
 require 'buildtools/stamp-task.rb'
-
 require 'buildtools/rake-util.rb'
 require 'buildtools/c-compiler.rb'
 require 'buildtools/jars.rb'
@@ -38,30 +45,36 @@ task :default => :devel
 task :all => :devel
 
 task :clean do
+  Kernel.system( "make -C downloads distclean" )
   FileUtils.rm_rf($BuildEnv.devel) if File.exist?($BuildEnv.devel)
   FileUtils.rm_rf($BuildEnv.staging) if File.exist?($BuildEnv.staging)
-  FileUtils.rm_rf(FileList['debian/*.version'].map { |f| f =~ /(.*)\.version$/; $1 })
+  FileUtils.rm_rf("foo.dot") if File.exist?("foo.dot")
+  FileUtils.rm_rf(FileList['debian/*'].select { |f| File.directory?(f) })
   ## Clear the stamp hashes
   Rake::StampHash.instance.clear
 end
 
-task :devel => [Package['install']]
+task :build => [Package['mvvm'], Package['untangle-client'], Package['tran']]
+
 $InstallTarget = InstallTarget.new(Package['install'], [Package['mvvm'], Package['untangle-client'], Package['tran']], 'install')
 
-task :devel => $InstallTarget
+task :devel => [Package['install'], $InstallTarget]
 
 # See rake-util.rb, we check the arguments for "pkgs"
-task :pkgs => Package['install'] do
+task :install => Package['install'] do
+  # FIXME: hrm, we're taking init scripts from the staging area under
+  # debian/packagename/... and put it back under debian/ ????
   FileList['./debian/**/etc/init.d/*'].each do |f|
     FileUtils.cp(f, "./debian/#{File.basename(f)}.init")
   end
-
-  Kernel.system('./buildtools/incVersion.sh', 'all')
-  Kernel.system(*%w(/usr/bin/debuild --no-tgz-check -su -uc))
-#  Kernel.system(*%w(sudo ./buildtools/rebuildmvvm.sh))
 end
 
-task :pkgs => $InstallTarget
+# See comment at the top
+# task :pkgs => [:install,$InstallTarget] do
+#   Kernel.system('./buildtools/incVersion.sh')
+#   Kernel.system(*%w(debuild --no-tgz-check -us -uc))
+# #  Kernel.system(*%w(sudo ./buildtools/rebuildmvvm.sh))
+# end
 
 task Package['mvvm'] => [:structure]
 
@@ -103,8 +116,6 @@ file libalpine_so do
   CBuilder.new(compilerEnv).makeSharedLibrary(archivesFiles, libalpine_so, [],
                                               ['xml2', 'sysfs', 'netfilter_queue'], ['ipq'])
 end
-
-
 
 $InstallTarget.registerDependency(libalpine_so)
 

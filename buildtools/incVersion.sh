@@ -1,41 +1,36 @@
 #!/bin/sh
 
-if [ $# -lt 1 ] ; then
-    echo "Usage: $0 package_regex"
-    exit 1
+[[ ! $# -eq 1 ]] && echo "Usage: $0 distribution" && exit 1
+
+distribution=${1}
+
+echo -n "Setting version, setting distribution to \"$distribution\"..."
+
+if [[ ! -d ../pkgs ]] ; then
+  echo "You must check out the pkgs subversion directory" && exit 1
 fi
 
-if [ "$1" == "all" ] ; then
-    echo "Releasing all packages..."
-    pkg=""
+revision=`svn info . | awk '/Revision: / { print $2 }'`
+timestamp=`svn info | awk '/Last Changed Date: / { gsub(/-/, "", $4) ; print $4 }'`
+hasLocalChanges=`svn status | grep -v -E '^\?'`
+
+baseVersion=`cat VERSION`~svn${timestamp}r${revision}
+
+if [[ -z "$hasLocalChanges" ]] ; then
+  upstreamVersion=$baseVersion
 else
-    pkg="$1"
+  upstreamVersion=${baseVersion}+$USER`date +"%Y%m%dT%H%M"`
 fi
 
-echo "Incrementing Versions: \"$1\""
+previousUpstreamVersion=`dpkg-parsechangelog | awk '/Version: / { gsub(/-.*/, "", $2) ; print $2 }'`
 
-
-if [ ! -d ../pkgs ] ; then
-    echo "You must check out pkgs cvs module" ; exit 1
-elif [ ! "`hostname`" = "bebe" ] ; then
-    echo "Must be run on bebe"; exit 1
+if [[ "${upstreamVersion}" == "$previousUpstreamVersion" ]] ; then
+  dchArg="-i"
+else
+  dchArg="-v ${upstreamVersion}-1"
 fi
 
-echo "Incrementing source package version."
-dch -i "auto build"
+dch $dchArg -D ${distribution} "auto build"
 
-echo "Incrementing \"$pkg*deb\" versions:"
-echo > ./debian/release_list
-
-packages="`ls ./debian/*version | egrep \"$pkg\" `"
-for i in $packages ; do
-    cat $i | perl -pe 's/(\d+)(\D*)$/($1+1).$pkg/e' > $i.tmp
-    echo " -> " $i " (version: " "`cat $i.tmp`"  " )"
-    rm -f $i
-    mv $i.tmp $i
-    echo "`echo $i | sed -e 's/.version//' | sed -e 'sl./debian/ll'`" "`cat ../VERSION && cat $i`" " released. " >> ./debian/release_list
-done
-echo > ./debian/release_list
-
-echo "Done."
+echo " done."
 

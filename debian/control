@@ -2,7 +2,7 @@ Source: mvvm
 Section: net
 Priority: optional
 Maintainer: Sebastien Delafond <seb@untangle.com>
-Build-Depends: debhelper (>> 3.0.0), unzip, build-essentials, sun-java5-jdk, libxml2-dev, iptables-dev (>= 1.2.11-10-mv1), libnfnetlink-dev, libnetfilter-queue-dev, libsysfs-dev, dput, rake (>> 0.7.1-1)
+Build-Depends: debhelper (>> 3.0.0), unzip, build-essential, sun-java5-jdk, libxml2-dev, iptables-dev (>= 1.2.11-10-mv1), libnfnetlink-dev, libnetfilter-queue-dev, libsysfs-dev, dput, rake (> 0.7.1-1)
 Standards-Version: 3.7.2
 
 Package: ftp-casing
@@ -1838,73 +1838,6 @@ Depends: mvvm
 XB-Display-Name: Spam Blocker Base
 Description: Spam Blocker Base
  The Spam Blocker Base.
-
-Package: metavize-client
-Depends: untangle-client
-Architecture: all
-XB-Display-Name: Untangle Client
-XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
- RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAbzSURBVHja5Fh7bBzFGZ+ZnX3d
- 03e2c04cxwjjxI4fCSQhxKA0oYUUCRKpqgh/gPoHsahUqVKroioghT7U/lkJBbWi/1R9pA/1
- JUGlVEALFdShNXVcbIgdx3Hsc3xuYvved7s7uzP99va8WMRJz20PKnW1Ot38dnZ+33zzzW++
- b/GhL7+xpUlvjqrRoKyrEpUwqs8lESxTolBMCOZcPPfD9wHE2z939gdf6lFkIkuEEIRRfegr
- oxKMgBtjJAQCCz558h2ayaRNm586M5OIaWGdgo11oqcEa4oU1Cg4gAt0dF8DwNQpLtq2nbxe
- ZrYAelIfepgxLGtAlUI61RUJPGBzXqEvLSGHZdJpi0Xd2ddz7WHqEGFBTVIosR3h0gurgITD
- zWyZUIvp9aOH2RuW43DBbKopBP5U6Lkt3EiwBWecy1xIdaLnHMsSthhnMgdPCFEJRoQE+mgv
- 4d5VUoI+1utjpqf/1jaSqjqyVqPEWoUB79qrTYrEamcs/Qf0mDoOsm3LYUXMGUUMIgkLiCPk
- KpnkDo+JAE2xpQYux1wLMMXlRZWU4AnIjoRVpG/bOD2mDFSplGoJ53e0K11t4fZN4eamSENY
- CygKCLbLTjwrUOpq8sTpSYc2AlYuFR+/0/zi8YMV3cHffPG18TzfID2Wy7nrfZuWBo93PHjv
- IaqFb939/dnlgmhUMdAQxV76zP0744kW79FMRseqshF6LJuZ5OBB9NWnHqvRVW8Mz3DaAJ63
- BW0NG/29d3j4yNjEYpbGW3Ct9BjLpdw/njqEnx489uFnrGxYtgUrgrjDcTwe95+cv5Kn6mYE
- Sm6UDuwOISR7+Gt/mTExHDN87Xa7Fb1hmve0Lj89+ISPTE9f/tHZsfFkeaUglZjgHMRSasSp
- s999UlaC0CGZTF5doXIQCAhlCw/f1+m/+9aFNNVbkKiRHsuadfHrgwM+8POXX//2L+YKUgeo
- teTkFchNtEYwYtdWyeOG6+2xZN4J6+B6jrZGyvv3dFUDYmLqyjINN5NaZadcKj3QJ3d0dHjN
- d86Pf+On82b4TpWnH9mx8L0TzfuaZ5ltoXJ6oDvmvzU0voiVCOx7q5j71O4G3/O/e/OSgZsq
- nq+FHssqW3jyaL8PfOsnIyzSg/OXnjmmnH720QcP771uRpCkaSR7X2+rHxFjswZVNBg2iK49
- eqR3Fbf/+O6KHIjC0VoTPWOst9XZuWO71/zTuZH3FkPcNo702E989gggkxenk8tu7pQIs53d
- t3ndJibnFnOQz+GyYe69Tdze3u7h54bHZ9K6vF4iQ9YVGbucOXpgqw/87A/Tjr41zOa+8vg9
- HvLm32cNFGVWsbddQ7i6lf88NgcgBAY1Fj5/zJ86+vErU1xNIMFqoxc4KqcfGtjhtXLp5ZEZ
- V8D3dKC2tqpkvn1hmagRZOUGupv89wCUtDAo3b13mHfv6fNA2AtDk0zTtFpPPItZfa0kvinh
- NV89N7FixbC58siBKjcz8hPzjMp6SMoO7Kp62DHLF1PMxoGoM/m1Ewf90V741XBear0x6G5C
- jyXHyB6+K+EDr/wtxZV4o5J+YH/VHyPvzS6VNI74lqizbVvVpqHRycvz5Tgbff4Lu9va2jxw
- amrq7HkzEAjdGHQ32/cE5nT/3h6vYRr58aQlENnZioPRxmokjsLcG7BZ2N0V8l8LBrSTxzc/
- 9tD+NQoonv3+OVPtVNZb9fXpQUe7m2zf/KHR6SUjQnDmE/0f+GP4YoaqnZChD/Rt9sG7+rrg
- XjvUc8//ZmSxJRCRhX/2/0vn21bx7u2xNefHHKOxEFk+vK+qPyvXFi9fh+OVRpT8/p629bNK
- q3jyO788M6zpkcZbcK8ze5VnHh7o9pt/ncoLvKWzibe3V9d4eHwua4Ukam1PiObVk9T3diqV
- enVo4szrV6fzm/VoDN3c7evTK4Sd+f27L711Bf5nC/mrhaimiHw+f+qFlyACIIJGL2XlYCfG
- TiZbOHX6ZYGw4TiWxXMlfi1rpLJSjjXQYFcgBKk023Cu5wTaf3sBCiB3n2AS1jRVxs4833V5
- xPKSOVlOyFQCO5Kif/q8hapFKdStkExRWSO67iZ6orb0fZ0TT1XXgg4MBEWBpskfuLiyiz4E
- ep3deyN1w/93nv+/Qv9RVHrCre1E5VoNPShsQSfcXw7JGxQG9bLDEcSy3QrXkgUh3LOgUt9D
- smpk4LAhjnVjHfTf+8JByrZm2UGT8ZBOq/U9EMPU7cICYUVCA4jUix5DjUVVrkTSZiRbDDG7
- 8nGFmxnhMCc3z5UMphpUaaheH7dcekhSiBaTtJjj9FTobQMk7NcvPuOWYZUqsX6h584NjCAU
- EbkSc5Cnbep3I3KVG9fVAkKJHCJ6XAomArd/GoB/CjAAcIcK11SEGzIAAAAASUVORK5CYII=
-XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
- RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAATkSURBVHja1JhrKG1bFMftg1se
- myghESVKSClSSilSinyQV5S8SoqUV5RIKSJFREJuiigRpZQSUconIZ9IKVIOpWzv+zt7nrvu
- PGuvxd77nu12x6e15lxrjjn+4/8fY65liI6ODg4O9vf39/HxcXd3d3FxcXKMOTs7/2E2Ll5f
- X+vr6xk0eHt7Ly8vM+rq6sqEwWBwcph9+9ve39/ZQWxsrMvd3Z3JZKqtrQ0MDPTy8mIHjnBM
- VODq5ubm6elJqG9vb/n5+Yz/gPrl5eXs7Ozp6cnR7j08PIxGIynm9vn5+ad77Pb29vHxEfcO
- zT2hwzABADH/4x57eHhgB9a7j4iIaG1tBbOmpqabm5tPn2dlXJByXiELXPziHiMlzFnjmwjq
- 6uoqKiqCgoJqamra2to+fQV/sJsIcQESsO8HGe1DsqGhobOz8/7+/uTkZHV1NS8vz/p33832
- Uwt2+CZzyPX8/Fzc7u7upqSk2ClFO97JyMhYX1+XR9hKeHj4F7nPzMzc2NiQR8CfwS9yD/Jw
- WB45ODiIi4uzYyltmYEkouICcokSDdpra2uQFt8MaspaEUVaWlpCQgKPUVIDAgKQWW9v7/X1
- tbXuJycnc3NzLy8vFa6xYl9fHxekmVgtX8FZWVlZfHw8LtloS0uLjNbo6GhRUZG17i/NptwS
- 9KrZCLGrq4s0s+LQ0JCoNsRH+yLc7e3t6upqy9XuzGYD+EdHR5GRkWjasnSQ9dLSUl9f34GB
- ARYV9au/v39/f19FCMWQJbM2UI9UdXR0aLafkJCQi4sLUoAz0gwMYABUDDKlWR8LCwvHxsZs
- iJ5EEtDg4KAlmIRLlU1KSqLQChJAi6Wlpc3NTcuCzcMsQn20WXh7e3sLCwvDw8MyBmQEgZ2e
- nmZnZysERBTp6emkgHLk5+cn+x4fHycMnv9IfHBKb4q0zczMACDXlZWVkH9lZUXhc09PT3Nz
- M3IQt0zNzs5mZWVxSyuan5+PiYmRlckzoaGhHHISExO3trZ0wVcMSEkqOyAdc3NzpJBrMYUE
- yIIg9sjIiLhAXWyIHQBDVVWVLB/7q96r2VRMVG5F55YfVj1gc9WTwQfzkpISoueC6oHkxBTU
- g/zUsqmpKSUdgA9ICAcVwBuKDxr+ZAt6uU9OTsafHERYWNjh4aHIrgoJivTOzg4lSKYemVI6
- oWbudcGHNcXFxQhPxhYOE01UVBS0Utal3kE6liYMOdlgU15ezrZkOVgFPmTmNTBX5VUhGs6g
- GLOIAm7COCoB2KgeZgecybq7uzWLsW70LE2t0Dz3ER8ICymKniY+XBhUzj+q7S4uLubk5NjW
- cDUpgydRyOhpjY2NovOKlkPN0aus1CUqBN9S1roHRjwp0RMcq9PoGARqqqHsCTxguDgHTE9P
- owU8UTDksq+Xfm33JIyFBLaEywjhMsiGEB4FRxOYP82GJ/bKiUFUCzaHCNvb221wT38U32CW
- Rn8jUL2jDkb0Yh8fPPOvznpAoloLKep19N9/1ORUg8xUZ98P+tZvdm/5WQNVNVXnEPeADytp
- qeI2NTVV5rnD3YvTGFJGFIie2kybsf7rTv7Gs/NrHv4jv4mJCcoq9ceyNmt2bXSr+sK1/2fC
- 8fFxQUGBTa+YTKarqyt2YDQa1b8XvsYI+rvZxM+Vb07/kf0SvX2q/d/bXwIMAJ+e3tKQEpgP
-Description: Untangle Client
- The Untangle Client.
 
 Package: untangle-client
 Architecture: any

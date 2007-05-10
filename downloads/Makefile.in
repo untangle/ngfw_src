@@ -72,10 +72,10 @@ LD            = ld
 LN            = ln
 STRIP         = strip
 
-ANT_HOME        = $(alpine_root)/../downloads/output/apache-ant-1.6.5
+ANT_HOME        = $(alpine_root)/downloads/output/apache-ant-1.6.5
 ANTCONTRIB_VERSION = 1.0b2
-ANTCONTRIB_HOME = $(alpine_root)/../downloads/output/ant-contrib-$(ANTCONTRIB_VERSION)
-ANTPACK200_HOME = $(alpine_root)/../downloads/output/ant-pack200
+ANTCONTRIB_HOME = $(alpine_root)/downloads/output/ant-contrib-$(ANTCONTRIB_VERSION)
+ANTPACK200_HOME = $(alpine_root)/downloads/output/ant-pack200
 ANT_CLASSPATH   = $(ANTCONTRIB_HOME)/lib/ant-contrib-$(ANTCONTRIB_VERSION).jar:$(ANTPACK200_HOME)/Pack200Task.jar:${JDK_HOME}/lib/tools.jar
 ANT             = ANT_OPTS="-XX:MaxPermSize=128m" CLASSPATH=$(ANT_CLASSPATH) JDK_HOME=$(JDK_HOME) JAVA_HOME=$(JAVA_HOME) $(ANT_HOME)/bin/ant -Dworld.root=$(build_dist) -Dbuild.prefix=$(build_prefix) -emacs
 

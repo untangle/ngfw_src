@@ -1,4 +1,4 @@
-include ../alpine/buildtools/Makefile.in
+include Makefile.in
 
 OUTPUT_DIRECTORY=output
 

@@ -96,7 +96,7 @@ class BuildEnv
     @grabbag = "#{@staging}/grabbag"
 
     ## Repository of third party files
-    @downloads = "#{Dir.pwd}/../downloads/output"
+    @downloads = "#{Dir.pwd}/downloads/output"
 
     @servletcommon = "#{Dir.pwd}/servlet/common"
 
@@ -886,8 +886,8 @@ EOF
                 p = i
                 m[prereq] = p
               end
-              f.puts("\"#{n}\" -> \"#{p}\"")
-              #f.puts("\"#{t.name}\" -> \"#{prereq}\"[fontsize=8]")
+              #f.puts("\"#{n}\" -> \"#{p}\"")
+              f.puts("\"#{t.name}\" -> \"#{prereq}\"[fontsize=8]")
             end
           end
         end

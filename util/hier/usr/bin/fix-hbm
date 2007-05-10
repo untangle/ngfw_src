@@ -12,9 +12,9 @@ find "$dir" -name '*hbm.xml' -exec sed -i \
 
 util=$(dirname $0)
 util_classes=$util/output/util
-hibernate_jar=$util/../../downloads/output/hibernate-3.0/hibernate3.jar
-dom4j_jar=$util/../../downloads/output/hibernate-3.0/lib/dom4j-1.6.jar
-jaxen_jar=$util/../../downloads/output/hibernate-3.0/lib/jaxen-1.1-beta-4.jar
+hibernate_jar=$util/../downloads/output/hibernate-3.0/hibernate3.jar
+dom4j_jar=$util/../downloads/output/hibernate-3.0/lib/dom4j-1.6.jar
+jaxen_jar=$util/../downloads/output/hibernate-3.0/lib/jaxen-1.1-beta-4.jar
 
 find "$dir" -name '*hbm.xml' | xargs ${JAVA_HOME}/bin/java \
      -cp $util_classes:$hibernate_jar:$dom4j_jar:$jaxen_jar DomSerializer
