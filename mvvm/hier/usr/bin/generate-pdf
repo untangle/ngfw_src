@@ -329,6 +329,7 @@ function generateEmail()
     ## sed to block
     sed -e "s|%%REPORT_TYPE%%|${reportType}|g" \
         -e "s|%%REPORT_PREPARED%%|${REPORT_PREPARED}|g" \
+        -e "s|%%COMPANY_NAME%%|${COMPANY_NAME}|g" \
         ${EMAIL_TEMPLATE:-"baz"} \
         > ${t_email}
 
