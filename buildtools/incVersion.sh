@@ -12,28 +12,26 @@ else
   versionFile=../../VERSION
 fi
 
-revision=`svn info . | awk '/Revision: / { print $2 }'`
+revision=`svn info . | awk '/Last Changed Rev: / { print $4 }'`
 timestamp=`svn info | awk '/Last Changed Date: / { gsub(/-/, "", $4) ; print $4 }'`
 hasLocalChanges=`svn status | grep -v -E '^\?'`
 
 baseVersion=`cat $versionFile`~svn${timestamp}r${revision}
 
+previousUpstreamVersion=`dpkg-parsechangelog | awk '/Version: / { gsub(/-.*/, "", $2) ; print $2 }'`
+
+if [[ -f KEEP-UPSTREAM-VERSION ]] ; then
+  baseVersion=${previousUpstreamVersion}+${baseVersion}
+fi
+
 if [[ -z "$hasLocalChanges" ]] ; then
   upstreamVersion=$baseVersion
 else
-  upstreamVersion=${baseVersion}+$USER`date +"%Y%m%dT%H%M"`
+  upstreamVersion=${baseVersion}+$USER`date +"%Y%m%dT%H%M%S"`
   distribution=$USER
 fi
 
-previousUpstreamVersion=`dpkg-parsechangelog | awk '/Version: / { gsub(/-.*/, "", $2) ; print $2 }'`
-
-if [[ "${upstreamVersion}" == "$previousUpstreamVersion" ]] ; then
-  dchArg="-i"
-else
-  dchArg="-v ${upstreamVersion}-1"
-fi
-
-dch $dchArg -D ${distribution} "auto build"
+dch -v ${upstreamVersion}-1 -D ${distribution} "auto build"
 
 echo " done."
 
