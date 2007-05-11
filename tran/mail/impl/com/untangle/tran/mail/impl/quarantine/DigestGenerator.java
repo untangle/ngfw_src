@@ -19,6 +19,7 @@ import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.Properties;
 
+import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.tran.mail.papi.quarantine.InboxIndex;
 import com.untangle.tran.mail.papi.quarantine.InboxRecord;
 import com.untangle.tran.mail.papi.quarantine.InboxRecordComparator;

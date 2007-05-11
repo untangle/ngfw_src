@@ -44,7 +44,7 @@ import org.hibernate.Session;
 
 public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 {
-    private static boolean webappDeployed = false;
+    private static int deployCount = 0;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -452,8 +452,9 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         }
     }
 
-    private static synchronized void deployWebAppIfRequired(Logger logger) {
-        if (webappDeployed) {
+    private static synchronized void deployWebAppIfRequired(Logger logger)
+    {
+        if (0 == deployCount++) {
             return;
         }
 
@@ -491,12 +492,10 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         } else {
             logger.error("Unable to deploy HttpBlocker WebApp");
         }
-
-        webappDeployed = true;
     }
 
     private static synchronized void unDeployWebAppIfRequired(Logger logger) {
-        if (!webappDeployed) {
+        if (0 < --deployCount) {
             return;
         }
 
@@ -508,8 +507,6 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
         } else {
             logger.warn("Unable to unload HttpBlocker WebApp");
         }
-
-        webappDeployed = false;
     }
 
     // XXX soon to be deprecated ----------------------------------------------

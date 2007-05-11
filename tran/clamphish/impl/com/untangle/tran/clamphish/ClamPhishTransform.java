@@ -96,7 +96,7 @@ public class ClamPhishTransform extends SpamImpl
 
     private static UrlDatabase urlDatabase = null;
     private static int urlDatabaseCount = 0;
-    private static boolean webappDeployed = false;
+    private static int deployCount = 0;
 
     static {
         try {
@@ -371,7 +371,7 @@ public class ClamPhishTransform extends SpamImpl
 
     // XXX factor out this shit
     private static synchronized void deployWebAppIfRequired(Logger logger) {
-        if (webappDeployed) {
+        if (0 == deployCount++) {
             return;
         }
 
@@ -408,13 +408,11 @@ public class ClamPhishTransform extends SpamImpl
         } else {
             logger.error("Unable to deploy idblocker WebApp");
         }
-
-        webappDeployed = true;
     }
 
     // XXX factor out this shit
     private static synchronized void unDeployWebAppIfRequired(Logger logger) {
-        if (!webappDeployed) {
+        if (0 < --deployCount) {
             return;
         }
 
@@ -426,8 +424,6 @@ public class ClamPhishTransform extends SpamImpl
         } else {
             logger.warn("Unable to unload idblocker WebApp");
         }
-
-        webappDeployed = false;
     }
 
     // XXX factor this shit out!

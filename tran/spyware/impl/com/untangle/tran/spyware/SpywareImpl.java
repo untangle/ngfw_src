@@ -76,7 +76,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
     private static final int HTTP = 0;
     private static final int BYTE = 1;
 
-    private static boolean webappDeployed = false;
+    private static int deployCount = 0;
 
     private final SpywareHttpFactory factory = new SpywareHttpFactory(this);
     private final TokenAdaptor tokenAdaptor = new TokenAdaptor(this, factory);
@@ -670,7 +670,7 @@ public class SpywareImpl extends AbstractTransform implements Spyware
 
     // XXX factor out this shit
     private static synchronized void deployWebAppIfRequired(Logger logger) {
-        if (webappDeployed) {
+        if (0 == deployCount++) {
             return;
         }
 
@@ -707,13 +707,11 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         } else {
             logger.error("Unable to deploy Spyware WebApp");
         }
-
-        webappDeployed = true;
     }
 
     // XXX factor out this shit
     private static synchronized void unDeployWebAppIfRequired(Logger logger) {
-        if (!webappDeployed) {
+        if (0 < --deployCount) {
             return;
         }
 
@@ -725,8 +723,6 @@ public class SpywareImpl extends AbstractTransform implements Spyware
         } else {
             logger.warn("Unable to unload Spyware WebApp");
         }
-
-        webappDeployed = false;
     }
 
     // XXX avoid
