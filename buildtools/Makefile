@@ -1,5 +1,3 @@
-DISTRIBUTION ?= `cat ../version/resources/RELEASE_CODENAME`
-
 checkroot:
 	@if [ "$$UID" = "0" ]; then \
 	  echo "You can't be root to build packages"; \
@@ -11,7 +9,7 @@ clean: checkroot
 	fakeroot debian/rules clean
 
 version: checkroot
-	sh ./buildtools/incVersion.sh $(DISTRIBUTION)
+	sh ./buildtools/incVersion.sh $(USER)
 	# so we can use that later to find out what to upload if needs be
 	dpkg-parsechangelog | awk '/Version: / { print $$2 }' >| debian/version
 
