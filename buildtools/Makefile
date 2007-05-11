@@ -1,4 +1,4 @@
-DISTRIBUTION ?= `cat RELEASE_CODENAME`
+DISTRIBUTION ?= `cat ../version/resources/RELEASE_CODENAME`
 
 checkroot:
 	@if [ "$$UID" = "0" ]; then \
@@ -7,10 +7,11 @@ checkroot:
 	fi
 
 clean: checkroot
+	svn revert debian/changelog
 	fakeroot debian/rules clean
 
 version: checkroot
-	buildtools/incVersion.sh $(DISTRIBUTION)
+	sh ./buildtools/incVersion.sh $(DISTRIBUTION)
 	# so we can use that later to find out what to upload if needs be
 	dpkg-parsechangelog | awk '/Version: / { print $$2 }' >| debian/version
 
@@ -25,10 +26,11 @@ source: checkroot
 
 pkg: checkroot
 	# FIXME: sign packages when we move to apt 0.6
+	# FIXME: don't clean before building !!!
 	/usr/bin/debuild -i -us -uc
 	svn revert debian/changelog
 
 release: checkroot
 	dput -c buildtools/dput.cf mephisto ../mvvm_*`cat debian/version`*.changes
 
-.PHONY: clean checkroot version source pkg release
+.PHONY: checkroot clean version source pkg release
