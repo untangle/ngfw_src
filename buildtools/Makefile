@@ -21,7 +21,7 @@ source: checkroot
 		--exclude="todo" \
 		--exclude="staging" \
 		--exclude="dist" \
-		-f ../mvvm_`perl -npe 's/-.*//' debian/version`.orig.tar.gz .
+		-f ../`dpkg-parsechangelog | awk '/Source: / { print $$2 }'`_`perl -npe 's/-.*//' debian/version`.orig.tar.gz ../`basename $$(pwd)`
 
 pkg: checkroot
 	# FIXME: sign packages when we move to apt 0.6

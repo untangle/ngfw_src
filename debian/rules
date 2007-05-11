@@ -104,7 +104,7 @@ binary-arch: install
 	done
 	@dh_md5sums
 	@dh_builddeb --destdir=../ 2>&1 | egrep -v "(user-defined|ignoring)"
-	# FIXME: oh, nastiness...
+	# FIXME: oh, nastiness (not as nasty as Dirk's rebuildmvvm.sh, but that ain't saying much heh)
 	@cp -f ../nat-transform_*`cat debian/version`*deb $(MVVM_DESTDIR)/var/lib/mvvm/nat-transform.deb
 	@dh_md5sums
 	@dh_builddeb -p mvvm --destdir=../ 2>&1 | egrep -v "(user-defined|ignoring)"
