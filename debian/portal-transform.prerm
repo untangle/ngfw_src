@@ -1,3 +1,0 @@
-#! /bin/sh
-
-mcli -t 30 unregister portal-transform 2>/dev/null || true
