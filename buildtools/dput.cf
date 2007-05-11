@@ -1,9 +1,0 @@
-[mephisto]
-fqdn = 10.0.0.105
-method = ftp
-login = anonymous
-incoming = /incoming
-allow_unsigned_uploads = 1
-run_dinstall = 0
-run_lintian = 0
-check_version = 0
