@@ -1,3 +1,5 @@
+DISTRIBUTION ?= $(USER)
+
 checkroot:
 	@if [ "$$UID" = "0" ]; then \
 	  echo "You can't be root to build packages"; \
@@ -9,7 +11,8 @@ clean: checkroot
 	fakeroot debian/rules clean
 
 version: checkroot
-	sh ./buildtools/incVersion.sh $(USER)
+	svn revert debian/changelog
+	sh ./buildtools/incVersion.sh $(DISTRIBUTION)
 	# so we can use that later to find out what to upload if needs be
 	dpkg-parsechangelog | awk '/Version: / { print $$2 }' >| debian/version
 
@@ -29,6 +32,6 @@ pkg: checkroot
 	svn revert debian/changelog
 
 release: checkroot
-	dput -c buildtools/dput.cf mephisto ../mvvm_*`cat debian/version`*.changes
+	dput -c ./buildtools/dput.cf mephisto ../`basename $$(pwd)`_`cat debian/version`*.changes
 
 .PHONY: checkroot clean version source pkg release
