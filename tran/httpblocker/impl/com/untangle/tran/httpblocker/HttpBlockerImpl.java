@@ -454,7 +454,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
 
     private static synchronized void deployWebAppIfRequired(Logger logger)
     {
-        if (0 == deployCount++) {
+        if (0 != deployCount++) {
             return;
         }
 
@@ -495,7 +495,7 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
     }
 
     private static synchronized void unDeployWebAppIfRequired(Logger logger) {
-        if (0 < --deployCount) {
+        if (0 != --deployCount) {
             return;
         }
 
