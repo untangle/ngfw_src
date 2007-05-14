@@ -387,7 +387,7 @@ String companyUrl = bs.getCompanyUrl();
                               <td><!--<img src="images/no_attach.png" height="16px" width="16px"/>--></td>
                             </quarantine:hasAttachments>
                             <td><quarantine:inboxRecord prop="fdetail" JSEscape="true"/></td>
-                            <td><quarantine:inboxRecord prop="tsubject" JSEscape="true"/></td>
+                            <td><div style="width: 200px;white-space:nowrap;overflow:hidden;"><quarantine:inboxRecord prop="tsubject" JSEscape="true"/></div></td>
                             <td><quarantine:inboxRecord prop="fdate" JSEscape="true"/><br/><quarantine:inboxRecord prop="ftime" JSEscape="true"/></td>
                             <td><quarantine:inboxRecord prop="fsize" JSEscape="true"/></td>
                           </tr>
