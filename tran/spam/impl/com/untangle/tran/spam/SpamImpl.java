@@ -539,8 +539,8 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
         ensureTemplateSettings(newSpamSettings);
         // set lists if not already set
         initSpamRBLList(newSpamSettings);
-        initSpamAssassinLclList(newSpamSettings);
-        initSpamAssassinDefList(newSpamSettings); // def must be last
+        //initSpamAssassinLclList(newSpamSettings);
+        //initSpamAssassinDefList(newSpamSettings); // def must be last
 
         TransactionWork tw = new TransactionWork()
             {
@@ -667,8 +667,8 @@ public class SpamImpl extends AbstractTransform implements SpamTransform
                     ensureTemplateSettings(spamSettings);
                     // set lists if not already set
                     initSpamRBLList(spamSettings);
-                    initSpamAssassinLclList(spamSettings);
-                    initSpamAssassinDefList(spamSettings); // def must be last
+                    //initSpamAssassinLclList(spamSettings);
+                    //initSpamAssassinDefList(spamSettings); // def must be last
 
                     return true;
                 }
