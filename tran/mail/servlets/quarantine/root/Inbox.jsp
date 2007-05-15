@@ -97,12 +97,12 @@ String companyUrl = bs.getCompanyUrl();
       }
 
       function mv_doNext() {
-        document.form1.<quarantine:constants keyName="first"/>.value = <quarantine:pagnationProperties propName="nextId"/>;
+        document.form1.<quarantine:constants keyName="first"/>.value = ("<quarantine:pagnationProperties propName="nextId"/>" == "") ? "" : <quarantine:pagnationProperties propName="nextId"/>;
         document.form1.submit();
       }
 
       function mv_doPrev() {
-        document.form1.<quarantine:constants keyName="first"/>.value = <quarantine:pagnationProperties propName="prevId"/>;
+        document.form1.<quarantine:constants keyName="first"/>.value = ("<quarantine:pagnationProperties propName="prevId"/>" == "") ? "" : <quarantine:pagnationProperties propName="prevId"/>;
         document.form1.submit();
       }
 
