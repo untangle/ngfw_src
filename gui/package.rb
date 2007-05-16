@@ -5,15 +5,16 @@ gui = Package['untangle-client']
 
 class MiniInstallTarget < InstallTarget
   def to_s
-    "installgui"
+    'installgui'
   end
 end
 
-mini = MiniInstallTarget.new(Package['gui-temp'], [Package['untangle-client']], 'install')
+mini = MiniInstallTarget.new(Package['gui-temp'], [Package['untangle-client']],
+                             'install')
 
 ## Api
 deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [mvvm['api']]
-jt = JarTarget.buildTarget(gui, deps, 'api', 'gui/api')
+jt = JarTarget.buildTarget(gui, deps, 'api', "#{ALPINE_HOME}/gui/api")
 
 # XXX renaming because the package name is bad
 $InstallTarget.installJars(jt, gui.getWebappDir('webstart'), nil, true)
@@ -21,14 +22,14 @@ mini.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 
 ## Implementation
 deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [mvvm['api'], gui['api']]
-jt = JarTarget.buildTarget(gui, deps, 'impl', 'gui/impl')
+jt = JarTarget.buildTarget(gui, deps, 'impl', "#{ALPINE_HOME}/gui/impl")
 
 # XXX renaming because the package name is bad
 $InstallTarget.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 mini.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 
 ServletBuilder.new(gui, 'com.untangle.gui.webstart.jsp',
-                   'gui/servlets/webstart', [], [], [], [$BuildEnv.servletcommon],
+                   "#{ALPINE_HOME}/gui/servlets/webstart", [], [], [], [$BuildEnv.servletcommon],
                    ['gui.jnlp', 'gui-local.jnlp', 'gui-local-cd.jnlp', 'index.jsp'])
 
 $InstallTarget.installJars(Jars::Gui, gui.getWebappDir('webstart'), nil, true)
@@ -42,6 +43,6 @@ guiRuntimeJars += Jars::Log4j;
 guiRuntimeJars << Jars.downloadTarget('hibernate-client/hibernate-client.jar')
 $InstallTarget.installJars(guiRuntimeJars, gui.getWebappDir('webstart'), nil, true)
 
-ms = MoveSpec.new('gui/hier', FileList['gui/hier/**/*'], gui.distDirectory)
+ms = MoveSpec.new("#{ALPINE_HOME}/gui/hier", FileList["#{ALPINE_HOME}/gui/hier/**/*"], gui.distDirectory)
 cf = CopyFiles.new(gui, ms, 'hier', $BuildEnv.filterset)
 gui.registerTarget('hier', cf)
