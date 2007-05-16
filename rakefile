@@ -3,3 +3,30 @@
 ALPINE_HOME = "."
 
 require "#{ALPINE_HOME}/buildtools/alpine.rb"
+
+task :default => :devel
+task :all => :devel
+
+task :clean do
+  Kernel.system( "make -C downloads distclean" )
+  FileUtils.rm_rf($BuildEnv.devel) if File.exist?($BuildEnv.devel)
+  FileUtils.rm_rf($BuildEnv.staging) if File.exist?($BuildEnv.staging)
+  FileUtils.rm_rf("foo.dot") if File.exist?("foo.dot")
+  FileUtils.rm_rf(FileList['debian/*'].select { |f| File.directory?(f) })
+  ## Clear the stamp hashes
+  Rake::StampHash.instance.clear
+end
+
+task :build => [Package['mvvm'], Package['untangle-client'], Package['tran']]
+
+task :devel => [Package['install'], $InstallTarget]
+
+# See rake-util.rb, we check the arguments for "pkgs"
+task :install => Package['install'] do
+  # FIXME: hrm, we're taking init scripts from the staging area under
+  # debian/packagename/... and put it back under debian/ ????
+  FileList['./debian/**/etc/init.d/*'].each do |f|
+    FileUtils.cp(f, "./debian/#{File.basename(f)}.init")
+  end
+end
+
