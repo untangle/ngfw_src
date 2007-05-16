@@ -14,9 +14,12 @@ package com.untangle.mvvm.engine.addrbook;
 import java.util.List;
 import java.util.Map;
 import javax.naming.AuthenticationException;
+import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.ServiceUnavailableException;
 import javax.naming.directory.DirContext;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
 
 import com.untangle.mvvm.addrbook.NoSuchEmailException;
 import com.untangle.mvvm.addrbook.RepositorySettings;
@@ -142,7 +145,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter {
 
         try {
             if (m_logger.isDebugEnabled())
-                m_logger.debug("Trying AD authentication of uid " + uid + " (" + dn + ")");
+                m_logger.debug("Trying AD authentication of email " + email + " (" + dn + ")");
             DirContext ctx = createContext(
                                            getSettings().getLDAPHost(),
                                            getSettings().getLDAPPort(),
@@ -203,7 +206,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter {
             String searchStr = "(&(objectClass=" + getUserClassType() + ")(mail=" + email + "))";
             SearchResult result = queryFirstAsSuperuser(getSearchBase(), searchStr);
             if (result != null)
-                return result.getNameInNameSpace();
+                return result.getNameInNamespace();
             return null;
         }
         catch(NamingException ex) {
@@ -223,7 +226,7 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter {
                 ")(sAMAccountName=" + uid + "))";
             SearchResult result = queryFirstAsSuperuser(getSearchBase(), searchStr);
             if (result != null)
-                return result.getNameInNameSpace();
+                return result.getNameInNamespace();
             return null;
         }
         catch(NamingException ex) {
@@ -259,6 +262,8 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter {
                     throw convertToServiceUnavailableException(ex);
             }
         }
+        // Not reached, but the compiler doesn't unroll to be able to tell.
+        return result;
     }
 
 
