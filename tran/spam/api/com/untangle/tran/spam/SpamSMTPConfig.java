@@ -41,7 +41,7 @@ public class SpamSMTPConfig extends SpamProtoConfig
     private static final long serialVersionUID = 7520156745253589107L;
 
     /* settings */
-    private boolean throttle = true;
+    private boolean throttle = false;
     private int throttleSec = 2; // 2 secs
     private SMTPSpamMessageAction zMsgAction = SMTPSpamMessageAction.QUARANTINE;
     private SpamSMTPNotifyAction zNotifyAction = SpamSMTPNotifyAction.NEITHER;
