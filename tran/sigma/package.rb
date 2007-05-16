@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform( "sigma" )
+TransformBuilder.makeTransform('sigma')

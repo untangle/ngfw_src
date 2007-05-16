@@ -7,4 +7,4 @@ mail = Package['mail-casing']
 jt = [mail['localapi']]
 
 ServletBuilder.new(mail, 'com.untangle.tran.mail.quarantine.jsp',
-                   'tran/mail/servlets/quarantine', [], jt)
+                   "#{ALPINE_HOME}/tran/mail/servlets/quarantine", [], jt)

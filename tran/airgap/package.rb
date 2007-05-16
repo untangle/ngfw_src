@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform( "airgap" )
+TransformBuilder.makeTransform('airgap')

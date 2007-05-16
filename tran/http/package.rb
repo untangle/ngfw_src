@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeCasing("http")
+TransformBuilder.makeCasing('http')

@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform( "reporting" )
+TransformBuilder.makeTransform('reporting')

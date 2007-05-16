@@ -1,5 +1,5 @@
 # -*-ruby-*-
 
-mail = Package["mail-casing"]
+mail = Package['mail-casing']
 
-TransformBuilder.makeTransform( "spamassassin", [ mail["localapi"]], [ mail["gui"]], [], "spam"  )
+TransformBuilder.makeTransform('spamassassin', [mail['localapi']], [ mail['gui']], [], 'spam')

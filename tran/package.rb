@@ -1,31 +1,31 @@
 # -*-ruby-*-
 
-require 'tran/test/package.rb'
-require 'tran/reporting/package.rb'
-require 'tran/ftp/package.rb'
-require 'tran/http/package.rb'
-require 'tran/mail/package.rb'
-require 'tran/spyware/package.rb'
-require 'tran/nat/package.rb'
+require "#{ALPINE_HOME}/tran/test/package.rb"
+require "#{ALPINE_HOME}/tran/reporting/package.rb"
+require "#{ALPINE_HOME}/tran/ftp/package.rb"
+require "#{ALPINE_HOME}/tran/http/package.rb"
+require "#{ALPINE_HOME}/tran/mail/package.rb"
+require "#{ALPINE_HOME}/tran/spyware/package.rb"
+require "#{ALPINE_HOME}/tran/nat/package.rb"
 
-require 'tran/airgap/package.rb'
-require 'tran/firewall/package.rb'
-require 'tran/openvpn/package.rb'
-require 'tran/protofilter/package.rb'
-require 'tran/boxbackup/package.rb'
-require 'tran/sigma/package.rb'
-require 'tran/httpblocker/package.rb'
-require 'tran/ids/package.rb'
+require "#{ALPINE_HOME}/tran/airgap/package.rb"
+require "#{ALPINE_HOME}/tran/firewall/package.rb"
+require "#{ALPINE_HOME}/tran/openvpn/package.rb"
+require "#{ALPINE_HOME}/tran/protofilter/package.rb"
+require "#{ALPINE_HOME}/tran/boxbackup/package.rb"
+require "#{ALPINE_HOME}/tran/sigma/package.rb"
+require "#{ALPINE_HOME}/tran/httpblocker/package.rb"
+require "#{ALPINE_HOME}/tran/ids/package.rb"
 
 ## Base Transforms
-require 'tran/spam/package.rb'
-require 'tran/virus/package.rb'
+require "#{ALPINE_HOME}/tran/spam/package.rb"
+require "#{ALPINE_HOME}/tran/virus/package.rb"
 
 ## SPAM based transforms
-require 'tran/clamphish/package.rb'
-require 'tran/spamassassin/package.rb'
+require "#{ALPINE_HOME}/tran/clamphish/package.rb"
+require "#{ALPINE_HOME}/tran/spamassassin/package.rb"
 
 ## Virus based transforms
-require 'tran/clam/package.rb'
-require 'tran/hauri/package.rb'
-require 'tran/kav/package.rb'
+require "#{ALPINE_HOME}/tran/clam/package.rb"
+require "#{ALPINE_HOME}/tran/hauri/package.rb"
+require "#{ALPINE_HOME}/tran/kav/package.rb"

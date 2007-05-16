@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform("ids", [ Package["http-casing"]["localapi"]])
+TransformBuilder.makeTransform('ids', [ Package['http-casing']['localapi']])

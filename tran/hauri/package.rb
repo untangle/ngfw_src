@@ -3,13 +3,9 @@
 implDeps = []
 guiDeps = []
 
-%w(
-    mail-casing
-    ftp-casing
-    http-casing
-    ).each do |c|
-  implDeps << Package[c]["localapi"]
-  guiDeps << Package[c]["gui"]
+%w(mail-casing ftp-casing http-casing).each do |c|
+  implDeps << Package[c]['localapi']
+  guiDeps << Package[c]['gui']
 end
 
-TransformBuilder.makeTransform( "hauri", implDeps, guiDeps, [], "virus" )
+TransformBuilder.makeTransform('hauri', implDeps, guiDeps, [], 'virus')

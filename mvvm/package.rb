@@ -7,29 +7,29 @@ mvvm = Package['mvvm']
 jts = []
 
 ## Bootstrap
-jts << JarTarget.buildTarget(mvvm, Jars::Base, 'bootstrap', 'mvvm/bootstrap')
+jts << JarTarget.buildTarget(mvvm, Jars::Base, 'bootstrap', "#{ALPINE_HOME}/mvvm/bootstrap")
 
 ## API
-jts << (jt = JarTarget.buildTarget(mvvm, Jars::Base, 'api', ['mvvm/api', '../version']))
+jts << (jt = JarTarget.buildTarget(mvvm, Jars::Base, 'api', ["#{ALPINE_HOME}/mvvm/api", '../version']))
 $InstallTarget.installJars(jt, mvvm.getWebappDir('webstart'), nil, true)
 
 ## Local API
-jts << JarTarget.buildTarget(mvvm, Jars::Base + [ mvvm['api']], 'localapi', 'mvvm/localapi')
+jts << JarTarget.buildTarget(mvvm, Jars::Base + [ mvvm['api']], 'localapi', "#{ALPINE_HOME}/mvvm/localapi")
 
 ## Reporting
 deps  = Jars::Base + Jars::Jasper + Jars::JFreeChart + [ mvvm['api']]
-jts << JarTarget.buildTarget(mvvm, deps, 'reporting', 'mvvm/reporting')
+jts << JarTarget.buildTarget(mvvm, deps, 'reporting', "#{ALPINE_HOME}/mvvm/reporting")
 
 ## Implementation
 deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
   Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::Jasper + Jars::JFreeChart +
   [ mvvm['bootstrap'], mvvm['api'], mvvm['localapi'], mvvm['reporting'], jnetcap['impl'], jvector['impl']]
 
-jts << JarTarget.buildTarget(mvvm, deps, 'impl', 'mvvm/impl')
+jts << JarTarget.buildTarget(mvvm, deps, 'impl', "#{ALPINE_HOME}/mvvm/impl")
 
 # servlets
 ServletBuilder.new(mvvm, 'com.untangle.mvvm.invoker.jsp',
-                   'mvvm/servlets/http-invoker', [], [], [],
+                   "#{ALPINE_HOME}/mvvm/servlets/http-invoker", [], [], [],
                    [$BuildEnv.servletcommon])
 
 deps = %w( commons-httpclient-3.0/commons-httpclient-3.0.jar
@@ -37,10 +37,10 @@ deps = %w( commons-httpclient-3.0/commons-httpclient-3.0.jar
            commons-fileupload-1.1/commons-fileupload-1.1.jar
          ).map { |n| ThirdpartyJar.get("#{$BuildEnv.downloads}/#{n}") }
 ServletBuilder.new(mvvm, 'com.untangle.mvvm.store.jsp',
-                   'mvvm/servlets/onlinestore', deps)
+                   "#{ALPINE_HOME}/mvvm/servlets/onlinestore", deps)
 
 ServletBuilder.new(mvvm, 'com.untangle.mvvm.reports.jsp',
-                   'mvvm/servlets/reports')
+                   "#{ALPINE_HOME}/mvvm/servlets/reports")
 
 # wmi installer
 ServletBuilder.new(mvvm, "com.untangle.mvvm.user.servlet","mvvm/servlets/wmi", [])
@@ -49,7 +49,7 @@ ServletBuilder.new(mvvm, "com.untangle.mvvm.user.servlet","mvvm/servlets/wmi", [
 deps = FileList["#{$BuildEnv.downloads}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
 ms = [ MoveSpec.new("#{$BuildEnv.downloads}/Ajax/WebRoot/js", '**/*', 'AjaxTk')]
 ServletBuilder.new(mvvm, 'com.untangle.mvvm.root.jsp',
-                   'mvvm/servlets/ROOT', deps, [], ms)
+                   "#{ALPINE_HOME}/mvvm/servlets/ROOT", deps, [], ms)
 
 ajaxTkList =
   [
@@ -174,9 +174,9 @@ end
 $InstallTarget.registerDependency(bundledAjx)
 
 ServletBuilder.new(mvvm, 'com.untangle.mvvm.sessiondumper.jsp',
-                   'mvvm/servlets/session-dumper')
+                   "#{ALPINE_HOME}/mvvm/servlets/session-dumper")
 
-ms = MoveSpec.new('mvvm/hier', FileList['mvvm/hier/**/*'], mvvm.distDirectory)
+ms = MoveSpec.new("#{ALPINE_HOME}/mvvm/hier", FileList["#{ALPINE_HOME}/mvvm/hier/**/*"], mvvm.distDirectory)
 cf = CopyFiles.new(mvvm, ms, 'hier', $BuildEnv.filterset)
 mvvm.registerTarget('hier', cf)
 
@@ -190,8 +190,8 @@ $InstallTarget.installDirs("#{mvvm.distDirectory}/usr/share/metavize/toolbox")
 
 mvvm_cacerts = "#{mvvm.distDirectory}/usr/share/metavize/conf/cacerts"
 java_cacerts = "#{$BuildEnv.javahome}/jre/lib/security/cacerts"
-mv_ca = 'mvvm/resources/mv-ca.pem'
-ut_ca = 'mvvm/resources/ut-ca.pem'
+mv_ca = "#{ALPINE_HOME}/mvvm/resources/mv-ca.pem"
+ut_ca = "#{ALPINE_HOME}/mvvm/resources/ut-ca.pem"
 
 file mvvm_cacerts => [ java_cacerts, mv_ca, ut_ca ] do
   ensureDirectory(File.dirname(mvvm_cacerts))
@@ -226,4 +226,4 @@ deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
   Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::Junit + Jars::WBEM +
   [ mvvm['bootstrap'], mvvm['api'], mvvm['localapi'], mvvm['impl'], jnetcap['impl'], jvector['impl']]
 
-JarTarget.buildTarget(Package["unittest"], deps, 'mvvm', 'mvvm/unittest')
+JarTarget.buildTarget(Package["unittest"], deps, 'mvvm', "#{ALPINE_HOME}/mvvm/unittest")
