@@ -98,9 +98,9 @@ binary-arch: install
 #	@dh_fixperms
 	@dh_installdeb
 #	@dh_perl
-#	@dh_gencontrol
+if [[ -f debian/version ]] ; then dh_gencontrol -- -v"`cat debian/version`" ; else dh_gencontrol ; fi
 	@for i in $(PACKAGES) ; do \
-	  dh_gencontrol -p$$i -u-is -u-v"`cat debian/version`" ; \
+if [[ -f debian/version ]] ; then dh_gencontrol -- -v"`cat debian/version`" ; else dh_gencontrol ; fi
 	done
 	@dh_md5sums
 	@dh_builddeb --destdir=../ 2>&1 | egrep -v "(user-defined|ignoring)"
