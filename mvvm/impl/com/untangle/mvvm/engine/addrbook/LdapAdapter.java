@@ -451,11 +451,11 @@ abstract class LdapAdapter {
 
     /**
      * Perform the given query (only attempts once as
-     * the context was passed-in).
+     * the context was passed-in), and return the specified attributes.
      *
      * @param searchBase the base of the search
      * @param searchFilter the query string
-     * @param ctls the search controls
+     * @param ctls the search controls specifying which attributes to return
      * @param ctx the context to use for the query.
      *
      * @return all returned data

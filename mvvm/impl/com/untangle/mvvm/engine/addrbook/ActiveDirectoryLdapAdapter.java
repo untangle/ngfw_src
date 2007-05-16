@@ -100,15 +100,19 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter {
         throws ServiceUnavailableException {
 
 
-        //First, we need the "CN" for the user from uid.  Not sure why
-        //microsoft did things this way???
-        String cn = getCNFromUID(uid);
-        if(cn == null) {
-            return false;//throw new AuthenticationException("Unable to get CN from sAMAccountName");
+        //First, we need the "CN" for the user from uid.
+        //For 4.2.2 -- now we know that we have to use the exact DN
+        //we can't start the search again at the search base (we must specify
+        //the subdirectory exactly, which is easy since we looked it up).  jdi
+        String dn = getDNFromUID(uid);
+        if(dn == null) {
+            return false;//throw new AuthenticationException("Unable to get DN from sAMAccountName");
         }
 
         try {
-            String dn = "cn=" + cn + "," + getSearchBase();
+            if (m_logger.isDebugEnabled())
+                m_logger.debug("Trying AD authentication of uid " + uid + " (" + dn + ")");
+            
             DirContext ctx = createContext(
                                            getSettings().getLDAPHost(),
                                            getSettings().getLDAPPort(),
@@ -131,14 +135,14 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter {
     public boolean authenticateByEmail(String email, String pwd)
         throws ServiceUnavailableException, NoSuchEmailException {
 
-        String cn = getCNFromEmail(email);
-        if(cn == null) {
+        String dn = getDNFromEmail(email);
+        if(dn == null) {
             throw new NoSuchEmailException(email);
         }
 
         try {
-
-            String dn = "cn=" + cn + "," + getSearchBase();
+            if (m_logger.isDebugEnabled())
+                m_logger.debug("Trying AD authentication of uid " + uid + " (" + dn + ")");
             DirContext ctx = createContext(
                                            getSettings().getLDAPHost(),
                                            getSettings().getLDAPPort(),
@@ -189,51 +193,73 @@ class ActiveDirectoryLdapAdapter extends LdapAdapter {
     */
 
     /**
-     * Get the CN from email address.  Returns null
+     * Get the DN from email address.  Returns null
      * if none found.
      */
-    private String getCNFromEmail(String email)
+    private String getDNFromEmail(String email)
         throws ServiceUnavailableException {
 
         try {
             String searchStr = "(&(objectClass=" + getUserClassType() + ")(mail=" + email + "))";
-            List<Map<String, String[]>> result = queryAsSuperuser(
-                                                                  getSearchBase(),
-                                                                  searchStr,
-                                                                  createSimpleSearchControls("cn"));
-            if(result != null && result.size() > 0) {
-                return getFirstEntryOrNull(result.get(0).get("cn"));
-            }
+            SearchResult result = queryFirstAsSuperuser(getSearchBase(), searchStr);
+            if (result != null)
+                return result.getNameInNameSpace();
             return null;
         }
         catch(NamingException ex) {
-            throw new ServiceUnavailableException("Unable to get CN from email");
+            throw new ServiceUnavailableException("Unable to get DN from email");
         }
     }
 
     /**
-     * Get the CN attribute from the uid (which we map to "sAMAccountName").
+     * Get the Distinguished Name from the uid (which we map to "sAMAccountName").
      * Returns null if none found.
      */
-    private String getCNFromUID(String uid)
+    private String getDNFromUID(String uid)
         throws ServiceUnavailableException {
 
         try {
-            String searchStr = "(&(objectClass=" + getUserClassType() + ")(sAMAccountName=" + uid + "))";
-            List<Map<String, String[]>> result = queryAsSuperuser(
-                                                                  getSearchBase(),
-                                                                  searchStr,
-                                                                  createSimpleSearchControls("cn"));
-            if(result != null && result.size() > 0) {
-                return getFirstEntryOrNull(result.get(0).get("cn"));
-            }
+            String searchStr = "(&(objectClass=" + getUserClassType() +
+                ")(sAMAccountName=" + uid + "))";
+            SearchResult result = queryFirstAsSuperuser(getSearchBase(), searchStr);
+            if (result != null)
+                return result.getNameInNameSpace();
             return null;
         }
         catch(NamingException ex) {
-            throw new ServiceUnavailableException("Unable to get CN from uid");
+            throw new ServiceUnavailableException("Unable to get DN from uid");
         }
     }
 
+
+    // Unfortunately the existing query mechanism is focussed on attributes, but we need
+    // the first SearchResult itself, so that we can extract its DN.
+    private SearchResult queryFirstAsSuperuser(String searchBase, String searchFilter)
+        throws NamingException, ServiceUnavailableException
+    {
+        SearchResult result = null;
+        DirContext ctx = checkoutSuperuserContext();
+        if(ctx == null) {
+            throw new ServiceUnavailableException("Unable to obtain context");
+        }
+
+        for (int trynum = 0; trynum < 2; trynum++) {
+            try {
+                // We specify CN for search controls so that it returns something but not everything.
+                SearchControls ctls = createSimpleSearchControls("cn");
+                NamingEnumeration answer = ctx.search(searchBase, searchFilter, ctls);
+                if (answer.hasMoreElements())
+                    result = (SearchResult)answer.next();
+                returnSuperuserContext(ctx, false);
+                return result;
+            }
+            catch(NamingException ex) {
+                returnSuperuserContext(ctx, true);
+                if (trynum > 0)
+                    throw convertToServiceUnavailableException(ex);
+            }
+        }
+    }
 
 
 
