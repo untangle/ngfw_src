@@ -4,7 +4,7 @@ jnetcap = Package['jnetcap']
 mvvm    = Package['mvvm']
 
 ## jnetcap
-j = JarTarget.buildTarget(jnetcap, Jars::Base, 'impl', "#{ALPINE_HOME}jnetcap/impl" )
+j = JarTarget.buildTarget(jnetcap, Jars::Base, 'impl', "#{ALPINE_HOME}/jnetcap/impl" )
 $InstallTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib")
 
 headerClasses = [ 'com.untangle.jnetcap.Netcap',
