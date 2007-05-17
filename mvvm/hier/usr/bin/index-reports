@@ -258,7 +258,7 @@ EOF
 fi
 
 echo
-ruby -e "require 'date'; print (Date.parse('$(echo $midnight)') - 1).strftime('%A %B %e, %Y');" >>$main_index
+/bin/date -d''$midnight-1day'' +'%A %B %e, %Y' >> $main_index
 
 cat >> $main_index <<EOF
     </td><tr>
