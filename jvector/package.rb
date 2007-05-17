@@ -6,7 +6,7 @@ mvvm    = Package["mvvm"]
 
 ## jvector
 deps = Jars::Base + [jnetcap["impl"]]
-j = JarTarget.buildTarget(jvector, deps, "impl", "jvector/impl")
+j = JarTarget.buildTarget(jvector, deps, "impl", "#{ALPINE_HOME}/jvector/impl")
 $InstallTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib")
 
 headerClasses = [ "com.untangle.jvector.OutgoingSocketQueue",
@@ -23,13 +23,10 @@ headerClasses = [ "com.untangle.jvector.OutgoingSocketQueue",
 
 javah = JavahTarget.new(jvector, j, headerClasses)
 
-compilerEnv = CCompilerEnv.new( { "pkg"   => "#{CCompilerEnv::JVector}" })
-                                  
+compilerEnv = CCompilerEnv.new({ "pkg" => "#{CCompilerEnv::JVector}" })
 
-ArchiveTarget.buildTarget( jvector, [ Package["libmvutil"], Package["jmvutil"], javah ], compilerEnv, 
-                           [ "#{$BuildEnv.javahome}/include", "#{$BuildEnv.javahome}/include/linux"  ] )
+
+ArchiveTarget.buildTarget(jvector, [Package["libmvutil"], Package["jmvutil"], javah], compilerEnv,
+                          ["#{$BuildEnv.javahome}/include", "#{$BuildEnv.javahome}/include/linux"])
 
 stamptask $InstallTarget => jvector
-
-
-
