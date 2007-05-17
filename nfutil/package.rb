@@ -2,7 +2,7 @@
 
 nfutil = "#{$BuildEnv.staging}/nfutil"
 
-source = FileList['nfutil/src/*.c']
+source = FileList["#{ALPINE_HOME}/nfutil/src/*.c"]
 
 ## Make the binary dependent on all of the source files.
 source.each { |f| file nfutil => f }
