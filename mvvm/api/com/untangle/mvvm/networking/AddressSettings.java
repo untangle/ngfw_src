@@ -26,7 +26,13 @@ import com.untangle.mvvm.tran.Validatable;
 import com.untangle.mvvm.tran.ValidateException;
 import org.hibernate.annotations.Type;
 
-/** These are settings related to the hostname and the adddress that is used to connect to box */
+/**
+ * These are settings related to the hostname and the adddress that is
+ * used to connect to box.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 @Entity
 @Table(name="mvvm_address_settings", schema="settings")
 public class AddressSettings implements Serializable, Validatable
@@ -35,17 +41,33 @@ public class AddressSettings implements Serializable, Validatable
         "A public address is an ip address, optionally followed by a port.  (e.g. 1.2.3.4:445 or 1.2.3.4)";
 
     private Long id;
+    
+    /* boolean which can be used by the untangle to determine if the
+     * object returned by a user interface has been modified. */
     private boolean isClean = false;
 
-    /* This is an additional HTTPS port that the box should bind to */
+    /* An additional HTTPS port that the web server will bind to */
     private int httpsPort;
 
+    /* The hostname of the box */
     private HostName hostname;
+
+    /* True if the hostname is resolvable on the internet */
     private boolean isHostnamePublic;
 
     /* Settings related to having an external router address */
+    /* True if this untangle uses a public address */
     private boolean isPublicAddressEnabled;
+    
+    /* This is the address of an external router that has a redirect
+     * to this untangle.  Used when we are in bridge mode behind
+     * another box. */
     private IPaddr publicIPaddr;
+    
+    /* This is the port on the external router that is redirect to the
+     * untangle's httpsPort. <code>publicPort</code> is used in
+     * conjunction with <code>publicIPaddr</code>
+     */
     private int publicPort;
 
     public AddressSettings()
@@ -65,21 +87,25 @@ public class AddressSettings implements Serializable, Validatable
         this.id = id;
     }
 
-    /* Get the port to run HTTPs on in addition to port 443. */
+    /**
+     * Get the port to run HTTPs on in addition to port 443. */
     @Column(name="https_port")
     public int getHttpsPort()
     {
         return this.httpsPort;
     }
 
-    /* Set the port to run HTTPs on in addition to port 443. */
+    /**
+     * Set the port to run HTTPs on in addition to port 443. */
     public void setHttpsPort( int newValue )
     {
         if ( this.httpsPort != newValue ) this.isClean = false;
         this.httpsPort = newValue;
     }
 
-    /** The hostname for the box(this is the hostname that goes into certificates). */
+    /*
+     * Retrieve the hostname for the box (this is the hostname that
+     * goes into certificates). */
     @Column(name="hostname")
     @Type(type="com.untangle.mvvm.type.HostNameUserType")
     public HostName getHostName()
@@ -95,21 +121,27 @@ public class AddressSettings implements Serializable, Validatable
         this.hostname = newValue;
     }
 
-    /* Returns if the hostname for this box is publicly resolvable to this box */
+    /**
+     * Returns if the hostname for this box is publicly resolvable to
+     * this box */
     @Column(name="is_hostname_public")
     public boolean getIsHostNamePublic()
     {
         return this.isHostnamePublic;
     }
 
-    /* Set if the hostname for this box is publicly resolvable to this box */
+    /**
+     * Set if the hostname for this box is publicly resolvable to this
+     * box */
     public void setIsHostNamePublic( boolean newValue )
     {
         if ( newValue != this.isHostnamePublic ) this.isClean = false;
         this.isHostnamePublic = newValue;
     }
 
-    /* True if the public address should be used */
+    /**
+     * True if the public address should be used
+     */
     @Column(name="has_public_address")
     public boolean getIsPublicAddressEnabled()
     {
@@ -122,7 +154,12 @@ public class AddressSettings implements Serializable, Validatable
         this.isPublicAddressEnabled = newValue;
     }
 
-    /** @return the public url for the box, this is the address (may be hostname or ip address) */
+    /**
+     * Retrieve the public address for the box.
+     *
+     * @return the public url for the box, this is the address (may be
+     * hostname or ip address)
+     */
     @Transient
     public String getPublicAddress()
     {
@@ -133,8 +170,14 @@ public class AddressSettings implements Serializable, Validatable
         return this.publicIPaddr.toString() + ":" + this.publicPort;
     }
 
-    /* Set the public address as a string, this is a convenience method for the GUI,
-     * it sets the public ip address and port. */
+    /**
+     * Set the public address as a string, this is a convenience
+     * method for the GUI, it sets the public ip address and port.
+     * 
+     * @param newValue The hostname and port in a string for the
+     * public address and port of the box.  If the port is left off,
+     * this used the default https port.
+     */
     public void setPublicAddress( String newValue ) throws ParseException
     {
         try {
@@ -163,6 +206,9 @@ public class AddressSettings implements Serializable, Validatable
         }
     }
 
+    /**
+     * Retrieve the address portion of the public address.
+     */
     @Column(name="public_ip_addr")
     @Type(type="com.untangle.mvvm.type.IPaddrUserType")
     public IPaddr getPublicIPaddr()
@@ -170,12 +216,20 @@ public class AddressSettings implements Serializable, Validatable
         return this.publicIPaddr;
     }
 
+    /**
+     * Set the address portion of the public address.
+     *
+     * @param newValue the new address for the public address.
+     */
     public void setPublicIPaddr( IPaddr newValue )
     {
         if ( IPaddr.equals( this.publicIPaddr, newValue )) this.isClean = false;
         this.publicIPaddr = newValue;
     }
 
+    /**
+     * Retrieve the port component of the public address.
+     */
     @Column(name="public_port")
     public int getPublicPort()
     {
@@ -186,6 +240,11 @@ public class AddressSettings implements Serializable, Validatable
         return this.publicPort;
     }
 
+    /**
+     * Set the port component of the public address.
+     *
+     * @param newValue the new port for the public address.
+     */
     public void setPublicPort( int newValue )
     {
         if (( newValue <= 0 ) || ( newValue >= 0xFFFF )) newValue = NetworkUtil.DEF_HTTPS_PORT;
@@ -194,25 +253,38 @@ public class AddressSettings implements Serializable, Validatable
         this.publicPort = newValue;
     }
 
-    /* Return true if the current settings have a public address */
+    /**
+     * Return true if the current settings use a public address
+     */
     @Transient
     public boolean hasPublicAddress()
     {
         return (( this.publicIPaddr != null ) &&  !this.publicIPaddr.isEmpty());
     }
 
-
+    /**
+     * Return true iff the settings haven't been modified since the
+     * last time <code>isClean( true )</code> was called.
+     */
     @Transient
     public boolean isClean()
     {
         return this.isClean;
     }
 
+    /**
+     * Clear or set the isClean flag.
+     *
+     * @param newValue The new value for the isClean flag.
+     */
     public void isClean( boolean newValue )
     {
         this.isClean = newValue;
     }
 
+    /**
+     * Validate that the settings are free of errors.
+     */
     @Transient
     public void validate() throws ValidateException
     {
