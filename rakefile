@@ -22,7 +22,7 @@ task :build => [Package['mvvm'], Package['untangle-client'], Package['tran']]
 task :devel => [Package['install'], $InstallTarget]
 
 # See rake-util.rb, we check the arguments for "pkgs"
-task :install => Package['install'] do
+task :install => [Package['install'], $InstallTarget] do
   # FIXME: hrm, we're taking init scripts from the staging area under
   # debian/packagename/... and put it back under debian/ ????
   FileList['./debian/**/etc/init.d/*'].each do |f|
