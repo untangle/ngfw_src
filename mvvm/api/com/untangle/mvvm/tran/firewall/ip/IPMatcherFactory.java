@@ -22,10 +22,17 @@ import com.untangle.mvvm.tran.ParseException;
 
 import com.untangle.mvvm.tran.firewall.ParsingFactory;
 
+/**
+ * A factory for IP matchers.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public class IPMatcherFactory
 {
     private static final IPMatcherFactory INSTANCE = new IPMatcherFactory();
 
+    /** The parser used to translate strings into IntfDBMatchers. */
     private final ParsingFactory<IPDBMatcher> factory;
 
     private IPMatcherFactory()
@@ -56,35 +63,6 @@ public class IPMatcherFactory
     public final IPDBMatcher getAllPublicMatcher()
     {
         return IPAllPublicMatcher.getInstance();
-    }
-    
-    public final void setLocalAddresses( InetAddress primaryAddress, InetAddress ... externalAddressArray )
-    {
-        if (( externalAddressArray == null ) || ( externalAddressArray.length == 0 )) {
-            IPLocalMatcher.getInstance().setAddress( primaryAddress );
-            IPAllPublicMatcher.getInstance().setAddresses( primaryAddress );
-        } else {
-            /* Add the primary address, it may not be in the external address array since,
-             * it could be assigned by DHCP(it doesn't matter if it is in there twice, as this
-             * is a set) */
-            InetAddress addressArray[] = externalAddressArray;
-                
-            if ( primaryAddress != null ) {
-                addressArray = new InetAddress[externalAddressArray.length + 1];
-                addressArray[0] = primaryAddress;
-                for ( int c = 0 ; c < externalAddressArray.length ; c++ ) {
-                    addressArray[c+1] = externalAddressArray[c];
-                }
-            }
-            
-            IPLocalMatcher.getInstance().setAddress( primaryAddress );
-            IPAllPublicMatcher.getInstance().setAddresses( addressArray );
-        }
-    }
-
-    public final void setInternalNetworks( List<IPNetwork> networkList )
-    {
-        IPInternalMatcher.getInternalMatcher().setInternalNetworks( networkList );
     }
 
     public final IPDBMatcher getAllMatcher()
@@ -121,13 +99,57 @@ public class IPMatcherFactory
     {
         return IPSubnetMatcher.makeInstance( network, cidr );
     }
+    
+    /**
+     * Update all of the matchers that depend on the configuration of the network
+     * 
+     * @param primaryAddress The primary address of the external interface.
+     * @param externalAddressArray The array of addresses for the external interface
+     */
+    public final void setLocalAddresses( InetAddress primaryAddress, InetAddress ... externalAddressArray )
+    {
+        if (( externalAddressArray == null ) || ( externalAddressArray.length == 0 )) {
+            IPLocalMatcher.getInstance().setAddress( primaryAddress );
+            IPAllPublicMatcher.getInstance().setAddresses( primaryAddress );
+        } else {
+            /* Add the primary address, it may not be in the external address array since,
+             * it could be assigned by DHCP(it doesn't matter if it is in there twice, as this
+             * is a set) */
+            InetAddress addressArray[] = externalAddressArray;
+                
+            if ( primaryAddress != null ) {
+                addressArray = new InetAddress[externalAddressArray.length + 1];
+                addressArray[0] = primaryAddress;
+                for ( int c = 0 ; c < externalAddressArray.length ; c++ ) {
+                    addressArray[c+1] = externalAddressArray[c];
+                }
+            }
+            
+            IPLocalMatcher.getInstance().setAddress( primaryAddress );
+            IPAllPublicMatcher.getInstance().setAddresses( addressArray );
+        }
+    }
+
+    /**
+     * Update the internal network with a list of networks.
+     * 
+     * @param networkList The list of networks that are on the internal interface.
+     */    
+    public final void setInternalNetworks( List<IPNetwork> networkList )
+    {
+        IPInternalMatcher.getInternalMatcher().setInternalNetworks( networkList );
+    }
 
     public static final IPMatcherFactory getInstance()
     {
         return INSTANCE;
     }
 
-    /* Shorcut method */
+    /**
+     * Convert <param>value</param> to an IPDBMatcher.
+     *
+     * @param value The string to parse.
+     */
     public static final IPDBMatcher parse( String value ) throws ParseException
     {
         return INSTANCE.factory.parse( value );

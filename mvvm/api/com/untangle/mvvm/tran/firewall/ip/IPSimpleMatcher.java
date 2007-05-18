@@ -19,9 +19,18 @@ import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.Parser;
 import com.untangle.mvvm.tran.firewall.ParsingConstants;
 
+/**
+ * IPMatcher designed for simple cases (all or nothing).
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public final class IPSimpleMatcher extends IPDBMatcher
 {
+    /* An IP Matcher that matches everything */
     private static final IPDBMatcher ALL_MATCHER     = new IPSimpleMatcher( true );
+
+    /* An IP Matcher that never matches */
     private static final IPDBMatcher NOTHING_MATCHER = new IPSimpleMatcher( false );
     
     private final boolean isAll;
@@ -31,6 +40,12 @@ public final class IPSimpleMatcher extends IPDBMatcher
         this.isAll = isAll;
     }
 
+    /**
+     * Test if <param>address<param> matches this matcher.
+     *
+     * @param address The address to test.
+     * @return True if this is the all matcher, false otherwise.
+     */
     public boolean isMatch( InetAddress address )
     {
         return isAll;
@@ -47,18 +62,31 @@ public final class IPSimpleMatcher extends IPDBMatcher
         return ParsingConstants.MARKER_NOTHING;
     }
 
+    /**
+     * Retrieve the all matcher.
+     *
+     * @return A matcher that matches every IP.
+     */
     public static IPDBMatcher getAllMatcher()
     {
         return ALL_MATCHER;
     }
 
+    /**
+     * Retrieve the nil matcher.
+     *
+     * @return A matcher that never matches an IP.
+     */
     public static IPDBMatcher getNilMatcher()
     {
         return NOTHING_MATCHER;
     }
     
+    /* This is the parser for simple ip matchers */
     static final Parser<IPDBMatcher> PARSER = new Parser<IPDBMatcher>() 
     {
+        /* This should always be checked first because it has the most
+         * specific definition */
         public int priority()
         {
             return 0;

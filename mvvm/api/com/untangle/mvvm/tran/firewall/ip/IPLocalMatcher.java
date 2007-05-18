@@ -17,15 +17,35 @@ import com.untangle.mvvm.tran.IPaddr;
 
 import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.Parser;
-import com.untangle.mvvm.tran.firewall.ParsingConstants;
 
+/**
+ * An IPMatcher that matches the primary address of the external
+ * network space.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public final class IPLocalMatcher extends IPDBMatcher
 {
     private static final IPLocalMatcher INSTANCE = new IPLocalMatcher();
+
+    /* Possible database and user representations of for this value.
+     * This array should only been added to, items should never be
+     * removed.  If an item must be removed, then it will require a
+     * schema converter to update any values that may be in a
+     * database */
     private static final String MARKER_LOCAL[] = { "external address", "local", "edgeguard" };
-    
+
+    /* The matcher to use when testing for match, this is updated when the address changes. */
     private static IPDBMatcher matcher = IPSimpleMatcher.getNilMatcher();
 
+    /**
+     * Test if <param>address<param> matches this matcher.
+     *
+     * @param address The address to test.
+     * @return True if <param>address</param> is the primary address
+     * on the external interface.
+     */
     public boolean isMatch( InetAddress address )
     {
         return matcher.isMatch( address );
@@ -43,7 +63,11 @@ public final class IPLocalMatcher extends IPDBMatcher
         return MARKER_LOCAL[0];
     }
 
-    /* Set the addresses of the outside interface */
+    /**
+     * Update the primary external addresses.
+     *
+     * @param externalAddress The new external address.
+     */
     void setAddress( InetAddress externalAddress )
     {
         if ( externalAddress == null ) {
@@ -58,6 +82,8 @@ public final class IPLocalMatcher extends IPDBMatcher
         return INSTANCE;
     }
 
+    /**
+     * The parser for the local matcher */
     static final Parser<IPDBMatcher> PARSER = new Parser<IPDBMatcher>() 
     {
         public int priority()

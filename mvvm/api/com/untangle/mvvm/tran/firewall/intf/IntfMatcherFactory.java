@@ -17,10 +17,18 @@ import com.untangle.mvvm.tran.ParseException;
 
 import com.untangle.mvvm.tran.firewall.ParsingFactory;
 
+
+/**
+ * A factory for interface matchers.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public class IntfMatcherFactory
 {
     private static final IntfMatcherFactory INSTANCE = new IntfMatcherFactory();
 
+    /** The parser used to translate strings into IntfDBMatchers. */
     private final ParsingFactory<IntfDBMatcher> parser;
 
     private IntfMatcherFactory()
@@ -59,27 +67,53 @@ public class IntfMatcherFactory
     {
         return IntfSingleMatcher.getVpnMatcher();
     }
-
+    
+    /**
+     * Update the enumeration of IntfMatchers.
+     *
+     * @param intfEnum The new interface enumeration.
+     */
     public void updateEnumeration( IntfEnum intfEnum )
     {
         IntfMatcherEnumeration.getInstance().updateEnumeration( intfEnum );
     }
-    
+
+    /**
+     * Retrieve the enumeration of possible IntfMatchers.
+     *
+     * @return An array of valid IntfMatchers.
+     */    
     public IntfDBMatcher[] getEnumeration()
     {
         return IntfMatcherEnumeration.getInstance().getEnumeration();
     }
 
+    /**
+     * Retrieve the default IntfMatcher.
+     *
+     * @return The default IntfMatcher
+     */
     public IntfDBMatcher getDefault()
     {
         return IntfMatcherEnumeration.getInstance().getDefault();
     }
 
+    /**
+     * Retrieve an intf matcher that matches <param>intf</param>
+     *
+     * @param intf The interface to match.
+     */
     public IntfDBMatcher makeSingleMatcher( byte intf ) throws ParseException
     {
         return IntfSingleMatcher.makeInstance( intf );
     }
 
+    /**
+     * Retrieve an intf matcher that matches any of the interfaces in
+     * <param>intfArray</param>
+     *
+     * @param intfArray An array of interfaces to match.
+     */
     public IntfDBMatcher makeSetMatcher( byte ... intfArray ) throws ParseException
     {
         switch ( intfArray.length ) {
@@ -89,7 +123,12 @@ public class IntfMatcherFactory
         }
     }
 
-    /** Matches all but the interfaces listed */
+    /**
+     * Retrieve an intf matcher that doesn't match any of the
+     * interfaces in <param>intfArray</param>
+     *
+     * @param intfArray Array of interfaces that shouldn't match.
+     */
     public IntfDBMatcher makeInverseMatcher( byte ... intfArray ) throws ParseException
     {
         switch ( intfArray.length ) {
@@ -98,6 +137,11 @@ public class IntfMatcherFactory
         }
     }
 
+    /**
+     * Convert <param>value</param> to an IntfDBMatcher.
+     *
+     * @param value The string to parse.
+     */
     public static IntfDBMatcher parse( String value ) throws ParseException
     {
         return INSTANCE.parser.parse( value );

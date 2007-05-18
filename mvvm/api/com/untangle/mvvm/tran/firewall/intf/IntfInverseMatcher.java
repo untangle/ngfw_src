@@ -21,12 +21,24 @@ import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.Parser;
 import com.untangle.mvvm.tran.firewall.ParsingConstants;
 
+/**
+ * An IntfMatcher that matches the inverse of a bitset.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public final class IntfInverseMatcher extends IntfDBMatcher
 {
+    /* Cache of the created inverse interface matchers */
     static Map<ImmutableBitSet,IntfInverseMatcher> CACHE = new HashMap<ImmutableBitSet,IntfInverseMatcher>();
 
+    /* Set of bits that shouldn't match */
     private final ImmutableBitSet intfSet;
+
+    /* String representation for the database */
     private final String databaseRepresentation;
+
+    /* String representation for the user */
     private final String userRepresentation;
     
     private IntfInverseMatcher( ImmutableBitSet intfSet, String userRepresentation, 
@@ -37,9 +49,13 @@ public final class IntfInverseMatcher extends IntfDBMatcher
         this.userRepresentation = userRepresentation;
     }
 
+    /**
+     * Test if <param>intf<param> matches this matcher.
+     *
+     * @param intf Interface to test.
+     */
     public boolean isMatch( byte intf )
     {
-        /* This test has to come before the second test */
         /* This always matches true */
         if ( IntfConstants.UNKNOWN_INTF == intf || IntfConstants.LOOPBACK_INTF == intf ) return true;
 
@@ -59,23 +75,25 @@ public final class IntfInverseMatcher extends IntfDBMatcher
         return this.userRepresentation;
     }
 
-    /** !!! Why throw an exception, why not just ignore the ones that are not needed */
+    /**
+     * Create an Inverse Matcher.
+     * 
+     * @param intfArray array of interfaces that shouldn't match.
+     */
     public static IntfDBMatcher makeInstance( byte ... intfArray ) throws ParseException
     {
+        /** !!! Why throw an exception, why not just ignore the ones that are not needed */
         BitSet intfSet = new BitSet( IntfConstants.MAX_INTF );
         
         IntfMatcherUtil imu = IntfMatcherUtil.getInstance();
         
         /* The first pass is to just fill the bitset */
-        for ( byte intf : intfArray ) {
-            imu.intfToDatabase( intf );
-            intfSet.set( intf );
-        }
+        for ( byte intf : intfArray ) intfSet.set( intf );
 
-        
         String databaseRepresentation = "";
         String userRepresentation = "";
 
+        /* Second pass, build up the user and database string */
         for ( int intf = intfSet.nextSetBit( 0 ) ; intf >= 0 ; intf = intfSet.nextSetBit( intf + 1 )) {
             if ( databaseRepresentation.length() > 0 ) {
                 databaseRepresentation += ",";
@@ -85,14 +103,15 @@ public final class IntfInverseMatcher extends IntfDBMatcher
             userRepresentation += imu.intfToUser((byte)intf );
         }
         
-        /* Prepend the INVERSE mark */
+        /* Prepend the inverse mark */
         databaseRepresentation = ParsingConstants.MARKER_INVERSE + databaseRepresentation;
         userRepresentation = ParsingConstants.MARKER_INVERSE + userRepresentation;
         
         return makeInstance( intfSet, userRepresentation, databaseRepresentation );
     }
 
-    /* This is just for matching a list of interfaces */
+    /**
+     * Parsing class for an inverse matcher */
     static final Parser<IntfDBMatcher> PARSER = new Parser<IntfDBMatcher>() 
     {
         public int priority()
@@ -134,11 +153,18 @@ public final class IntfInverseMatcher extends IntfDBMatcher
     };
 
 
+    /**
+     * Create or retrieve the Interface matcher for this bit set.
+     * Only create a new bitset if there isn't one in the cache.
+     * 
+     * @param intfSet BitSet to use.
+     * @param user User string for this inverse interface matcher.
+     * @param database Database representation for this bitset.
+     */
     private static IntfDBMatcher makeInstance( BitSet intfSet, String user, String database )
     {
         ImmutableBitSet i = new ImmutableBitSet( intfSet );
         IntfInverseMatcher cache = CACHE.get( i );
-        // if ( cache == null ) System.out.println( "creating new set" );
         if ( cache == null ) CACHE.put( i, cache = new IntfInverseMatcher( i, user, database ));
 
         return cache;

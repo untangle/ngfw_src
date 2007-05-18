@@ -20,20 +20,32 @@ import com.untangle.mvvm.networking.IPNetwork;
 
 import com.untangle.mvvm.tran.IPaddr;
 
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.firewall.Parser;
-import com.untangle.mvvm.tran.firewall.ParsingConstants;
-
+/**
+ * An IPMatcher that matches all of the addresses assigned to the
+ * internal interface network space.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public final class IPInternalMatcher implements IPMatcher
 {
+    /* String representation for the internal matcher */
     private static final String MARKER_INTERNAL = "internal";
+
+    /* String representation for the external matcher */
     private static final String MARKER_EXTERNAL = "external";
     
+    /* The internal matcher */
     private static final IPInternalMatcher MATCHER_INTERNAL = new IPInternalMatcher( true );
+
+    /* The external matcher (This is just the inverse of the internal
+     * matcher */
     private static final IPInternalMatcher MATCHER_EXTERNAL = new IPInternalMatcher( false );
     
+    /* The matcher to use when testing for match, this is updated when the address changes. */
     private static IPMatcher matcher = IPSimpleMatcher.getNilMatcher();
 
+    /* True if this is the internal matcher, false if this is the external matcher */
     private final boolean isInternal;
 
     private IPInternalMatcher( boolean isInternal )
@@ -41,6 +53,12 @@ public final class IPInternalMatcher implements IPMatcher
         this.isInternal = isInternal;
     }
 
+    /**
+     * Test if <param>address<param> matches this matcher.
+     *
+     * @param address The address to test.
+     * @return True if <param>address</param> matches this matcher.
+     */
     public boolean isMatch( InetAddress address )
     {
         /* If internal and it is a match, it is true,        */
@@ -54,12 +72,18 @@ public final class IPInternalMatcher implements IPMatcher
         return toDatabaseString();
     }
 
-    /* This actually cannot be stored into a datbase, this is just for fun */
+    /* This actually cannot be stored into a datbase, it is not a DBMatcher */
     public String toDatabaseString()
     {
         return (( this.isInternal ) ? MARKER_INTERNAL : MARKER_EXTERNAL );
     }
     
+    /**
+     * Update the internal network with a single value.
+     * 
+     * @param internalNetwork Address of internal interface.
+     * @param internalSubnet subnet of the internal network.
+     */
     public synchronized void setInternalNetwork( InetAddress internalNetwork, InetAddress internalSubnet )
     {
         if (( internalNetwork == null ) || ( internalSubnet == null )) {
@@ -69,7 +93,11 @@ public final class IPInternalMatcher implements IPMatcher
         }
     }
 
-    
+    /**
+     * Update the internal network with a list of networks.
+     * 
+     * @param networkList The list of networks that are on the internal interface.
+     */    
     public synchronized void setInternalNetworks( List<IPNetwork> networkList )
     {
         switch ( networkList.size()) {
@@ -84,6 +112,9 @@ public final class IPInternalMatcher implements IPMatcher
         }
             
         default:
+            /* There presently isn't a generic way of matching or'ing several matchers
+             * together, right now this is hacked together with a simple matcher that
+             * just iterates a list */
             final List<IPMatcher> matcherList = new LinkedList<IPMatcher>();
             for ( IPNetwork network : networkList ) {
                 matcherList.add( IPSubnetMatcher.makeInstance( network.getNetwork(), network.getNetmask()));

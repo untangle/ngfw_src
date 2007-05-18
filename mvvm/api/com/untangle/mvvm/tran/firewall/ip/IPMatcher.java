@@ -13,8 +13,26 @@ package com.untangle.mvvm.tran.firewall.ip;
 
 import java.net.InetAddress;
 
+/**
+ * An interface to test for an address.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public interface IPMatcher
 {
+    /**
+     * Return true if <param>address</param> matches this matcher.
+     *
+     * @param address The address to test
+     * @return True if the <param>address</param> matches.
+     */
     public boolean isMatch( InetAddress address );
+
+    /**
+     * Retrieve the database representation of this address matcher.
+     *
+     * @return The database representation of this address matcher.
+     */
     public String toDatabaseString();
 }

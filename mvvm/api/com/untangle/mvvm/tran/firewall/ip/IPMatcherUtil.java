@@ -16,13 +16,25 @@ import java.net.UnknownHostException;
 
 import com.untangle.mvvm.tran.ParseException;
 
+
+/**
+ * A utility for parsing and dealing with IPv4 addresses.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 class IPMatcherUtil
 {
+    /* Number of bytes in an IPv4 address */
     static final int INADDRSZ = 4;
 
+    /* The token used to separate the parameters in a range matcher */
     static final String MARKER_RANGE  = "-";
+
+    /* The token used to separate the parameters in a subnet matcher */
     static final String MARKER_SUBNET = "/";
 
+    /* An array of the CIDR values */
     static final String CIDR_STRINGS[] = 
     {
         "0.0.0.0",         "128.0.0.0",       "192.0.0.0",       "224.0.0.0",
@@ -45,6 +57,12 @@ class IPMatcherUtil
     {
     }
 
+    /**
+     * Convert an IPv4 address to a long
+     *
+     * @param address The address to convert.
+     * @return The value of address as a long.
+     */
     long toLong( InetAddress address )
     {
         long val = 0;
@@ -58,6 +76,12 @@ class IPMatcherUtil
         return val;
     }
 
+    /**
+     * Convert a CIDR index to an InetAddress.
+     *
+     * @param cidr CIDR index to convert.
+     * @return the InetAddress that corresponds to <param>cidr</param>.
+     */
     InetAddress cidrToInetAddress( int cidr ) throws ParseException
     {
         if ( cidr < 0 || cidr > CIDR_CONVERTER.length ) {
@@ -67,11 +91,23 @@ class IPMatcherUtil
         return CIDR_CONVERTER[cidr];
     }
 
+    /**
+     * Convert a CIDR index to a long.
+     *
+     * @param cidr CIDR index to convert.
+     * @return the long that corresponds to <param>cidr</param>.
+     */    
     long cidrToLong( int cidr ) throws ParseException
     {
         return toLong( cidrToInetAddress( cidr ));
     }
 
+    /**
+     * Convert a CIDR index to a long.
+     *
+     * @param cidr CIDR index to convert.
+     * @return the long that corresponds to <param>cidr</param>.
+     */    
     long cidrStringToLong( String cidr ) throws ParseException
     {
         try {
@@ -81,7 +117,7 @@ class IPMatcherUtil
         }
     }
 
-    private int byteToInt ( byte val ) 
+    private int byteToInt( byte val )
     {
         int num = val;
         if ( num < 0 ) num = num & 0x7F + 0x80;

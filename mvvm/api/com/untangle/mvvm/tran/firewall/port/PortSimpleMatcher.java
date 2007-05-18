@@ -15,9 +15,16 @@ import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.Parser;
 import com.untangle.mvvm.tran.firewall.ParsingConstants;
 
+/**
+ * PortMatchers designed for simple cases (all, nothing or ping sessions).
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public final class PortSimpleMatcher
 {
-    private static final PortDBMatcher ALL_MATCHER     = new PortDBMatcher()
+    /* A Port Matcher that matches everything */
+    private static final PortDBMatcher ALL_MATCHER = new PortDBMatcher()
         {
             public boolean isMatch( int port )
             {
@@ -35,6 +42,7 @@ public final class PortSimpleMatcher
             }
         };
 
+    /* A Port Matcher that doesn't match anything */
     private static final PortDBMatcher NOTHING_MATCHER     = new PortDBMatcher()
         {
             public boolean isMatch( int port )
@@ -53,6 +61,7 @@ public final class PortSimpleMatcher
             }
         };
 
+    /* A matcher that matches ping sessions */
     private static final PortDBMatcher PING_MATCHER     = new PortDBMatcher()
         {
             public boolean isMatch( int port )
@@ -71,22 +80,37 @@ public final class PortSimpleMatcher
             }
         };
         
+    /**
+     * Retrieve the all matcher.
+     *
+     * @return A matcher that matches every port.
+     */
     public static PortDBMatcher getAllMatcher()
     {
         return ALL_MATCHER;
     }
 
+    /**
+     * Retrieve the nil matcher.
+     *
+     * @return A matcher that never matches a port.
+     */
     public static PortDBMatcher getNilMatcher()
     {
         return NOTHING_MATCHER;
     }
 
+    /**
+     * Retrieve the ping matcher.
+     *
+     * @return A matcher that matches ping sessions.
+     */
     public static PortDBMatcher getPingMatcher()
     {
         return PING_MATCHER;
     }
 
-    /* This is just for matching a list of interfaces */
+    /* This is the parser for simple port matchers */
     static final Parser<PortDBMatcher> PARSER = new Parser<PortDBMatcher>() 
     {
         public int priority()

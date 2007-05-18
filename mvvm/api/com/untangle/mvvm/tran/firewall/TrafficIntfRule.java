@@ -22,8 +22,7 @@ import com.untangle.mvvm.tran.firewall.protocol.ProtocolDBMatcher;
 import org.hibernate.annotations.Type;
 
 /**
- * Rule for matching sessions based on direction and IP addresses,
- * ports.
+ * Rule for matching sessions based on interfaces.
  *
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
@@ -54,7 +53,7 @@ public abstract class TrafficIntfRule extends TrafficRule
     }
 
     /**
-     * source IntfMatcher
+     * source IntfDBMatcher
      *
      * @return the source IP matcher.
      */

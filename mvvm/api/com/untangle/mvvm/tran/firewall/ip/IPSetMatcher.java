@@ -24,11 +24,18 @@ import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.Parser;
 import com.untangle.mvvm.tran.firewall.ParsingConstants;
 
+/**
+ * An IPMatcher that matches a list of discontinous addresses.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public final class IPSetMatcher extends IPDBMatcher
 {
-    private static final String MARKER_RANGE = "-";
-
+    /* The set of addresses that match */
     private final Set<InetAddress> addressSet;
+
+    /* The user/database representation of this matcher */
     private final String string;
 
     private IPSetMatcher( Set<InetAddress> addressSet, String string )
@@ -37,6 +44,12 @@ public final class IPSetMatcher extends IPDBMatcher
         this.string  = string;
     }
 
+    /**
+     * Test if <param>address<param> matches this matcher.
+     *
+     * @param address The address to test.
+     * @return True if <param>address</param> matches.
+     */
     public boolean isMatch( InetAddress address )
     {
         return ( this.addressSet.contains( address ));
@@ -52,6 +65,13 @@ public final class IPSetMatcher extends IPDBMatcher
         return this.string;
     }
 
+    /**
+     * Create a set matcher.
+     *
+     * @param addressArray The array of addresses that should match.
+     * @return A SetMatcher that matches IP address from
+     * <param>addressArray</param>.
+     */
     public static IPDBMatcher makeInstance( InetAddress ... addressArray )
     {
         Set<InetAddress> addressSet = new HashSet<InetAddress>();
@@ -64,6 +84,13 @@ public final class IPSetMatcher extends IPDBMatcher
         return makeInstance( addressSet );
     }
 
+    /**
+     * Create a set matcher.
+     *
+     * @param addressArray The array of addresses that should match.
+     * @return A RangeMatcher that matches IP address from
+     * <param>addressArray</param>.
+     */
     public static IPDBMatcher makeInstance( Set<InetAddress> addressSet ) 
     {
         IPMatcherUtil imu = IPMatcherUtil.getInstance();
@@ -80,13 +107,13 @@ public final class IPSetMatcher extends IPDBMatcher
             user += address.getHostAddress();
         }
 
-        /* XXX This should make a copy of the set */
+        /* Create a copy so it can't change from underneath it */
         addressSet = Collections.unmodifiableSet( new HashSet<InetAddress>( addressSet ));
     
         return new IPSetMatcher( addressSet, user );
     }
 
-    /* This is just for matching a list of interfaces */
+    /* This is the parser for the set matchers. */
     static final Parser<IPDBMatcher> PARSER = new Parser<IPDBMatcher>() 
     {
         public int priority()

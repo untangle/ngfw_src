@@ -27,7 +27,8 @@ import com.untangle.mvvm.tran.firewall.protocol.ProtocolDBMatcher;
 import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
 
 /**
- * Rule for matching based on IP addresses and subnets.
+ * Rule for matching sessions based on session protocol, address and
+ * port.
  *
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0

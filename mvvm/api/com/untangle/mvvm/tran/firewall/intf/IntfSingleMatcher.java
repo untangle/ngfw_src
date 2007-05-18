@@ -20,18 +20,36 @@ import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.Parser;
 import com.untangle.mvvm.tran.firewall.ParsingConstants;
 
+/**
+ * An IntfMatcher that matches a single interface.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public final class IntfSingleMatcher extends IntfDBMatcher
 {
-    /* Perhaps these should go into the factory ?? */
+    /* Interface matcher for the external interface */
     private static final IntfDBMatcher EXTERNAL_MATCHER;
+
+    /* Interface matcher for the internal interface */
     private static final IntfDBMatcher INTERNAL_MATCHER;
+
+    /* Interface matcher for the dmz interface */
     private static final IntfDBMatcher DMZ_MATCHER;
+
+    /* Interface matcher for the vpn interface */
     private static final IntfDBMatcher VPN_MATCHER;
 
+    /* Map of interfaces to their matcher */
     static Map<Byte,IntfSingleMatcher> CACHE = new HashMap<Byte,IntfSingleMatcher>();
 
+    /* The interface this matcher matches */
     private final byte intf;
+
+    /* Database representation of this interface matcher */
     private final String databaseRepresentation;
+
+    /* User representation of this interface matcher */
     private final String userRepresentation;
 
     private IntfSingleMatcher( byte intf, String userRepresentation, String databaseRepresentation )
@@ -41,6 +59,12 @@ public final class IntfSingleMatcher extends IntfDBMatcher
         this.userRepresentation = userRepresentation;
     }
 
+    /**
+     * Test if <param>intf<param> matches this matcher.
+     *
+     * @param intf Interface to test.
+     * @return True if the interface matches.
+     */
     public boolean isMatch( byte intf )
     {        
         /* These interfaces always match true */
@@ -61,21 +85,29 @@ public final class IntfSingleMatcher extends IntfDBMatcher
         return this.userRepresentation;
     }
 
+    /**
+     * Retrieve the External matcher */
     public static IntfDBMatcher getExternalMatcher()
     {
         return EXTERNAL_MATCHER;
     }
 
+    /**
+     * Retrieve the Internal matcher */
     public static IntfDBMatcher getInternalMatcher()
     {
         return INTERNAL_MATCHER;
     }
 
+    /**
+     * Retrieve the DMZ matcher */
     public static IntfDBMatcher getDmzMatcher()
     {
         return DMZ_MATCHER;
     }
 
+    /**
+     * Retrieve the VPN matcher */
     public static IntfDBMatcher getVpnMatcher()
     {
         return VPN_MATCHER;
@@ -94,7 +126,7 @@ public final class IntfSingleMatcher extends IntfDBMatcher
         return cache;
     }
 
-    /* This is just for matching a list of interfaces */
+    /* The parser for the single matcher */
     static final Parser<IntfDBMatcher> PARSER = new Parser<IntfDBMatcher>() 
     {
         public int priority()

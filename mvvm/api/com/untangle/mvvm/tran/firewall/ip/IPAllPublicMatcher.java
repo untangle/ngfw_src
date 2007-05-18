@@ -17,15 +17,35 @@ import com.untangle.mvvm.tran.IPaddr;
 
 import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.Parser;
-import com.untangle.mvvm.tran.firewall.ParsingConstants;
 
+/**
+ * An IPMatcher that matches all of the addresses assigned to the
+ * external network space.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public final class IPAllPublicMatcher extends IPDBMatcher
 {
     private static final IPAllPublicMatcher INSTANCE = new IPAllPublicMatcher();
+
+    /* Possible database and user representations of for this value.
+     * This array should only been added to, items should never be
+     * removed.  If an item must be removed, then it will require a
+     * schema converter to update any values that may be in a
+     * database */
     private static final String MARKER_ALL_PUBLIC[] = { "external address & aliases", "all external addresses" };
     
+    /* The matcher to use when testing for match, this is updated when the address changes. */
     private static IPDBMatcher matcher = IPSimpleMatcher.getNilMatcher();
 
+    /**
+     * Test if <param>address<param> matches this matcher.
+     *
+     * @param address The address to test.
+     * @return True if <param>address</param> matches one of the public
+     * addresses.
+     */
     public boolean isMatch( InetAddress address )
     {
         return matcher.isMatch( address );
@@ -41,7 +61,11 @@ public final class IPAllPublicMatcher extends IPDBMatcher
         return MARKER_ALL_PUBLIC[0];
     }
 
-    /* Set the addresses of the outside interface */
+    /**
+     * Update the set of external addresses.
+     *
+     * @param externalAddressArray The new array of external addresses
+     */
     void setAddresses( InetAddress ... externalAddressArray )
     {
         if (( externalAddressArray == null ) || ( externalAddressArray.length == 0 )) {
@@ -56,6 +80,8 @@ public final class IPAllPublicMatcher extends IPDBMatcher
         return INSTANCE;
     }
 
+    /**
+     * The parser for an external address matcher */
     static final Parser<IPDBMatcher> PARSER = new Parser<IPDBMatcher>() 
     {
         public int priority()
@@ -82,5 +108,4 @@ public final class IPAllPublicMatcher extends IPDBMatcher
             return INSTANCE;
         }
     };
-
 }

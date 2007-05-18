@@ -31,10 +31,16 @@ public abstract class TrafficDirectionRule extends TrafficRule
 {
     private static final long serialVersionUID = -153406452136543289L;
 
+    /* User string for both directions */
     private static final String DIRECTION_BOTH = "Inbound & Outbound";
+
+    /* User string for inbound traffic. */
     private static final String DIRECTION_IN   = "Inbound";
+
+    /* User string for outbout traffic. */
     private static final String DIRECTION_OUT  = "Outbound";
 
+    /* Enumeration of all of the possible user directions */
     private static final String[] DIRECTION_ENUMERATION
         = { DIRECTION_BOTH, DIRECTION_IN, DIRECTION_OUT };
 
@@ -91,7 +97,12 @@ public abstract class TrafficDirectionRule extends TrafficRule
         this.outbound = outbound;
     }
 
-    @Transient
+    /**
+     * Utility method for the user interface to retrieve the user
+     * string for the direction.
+     *
+     * @return the user string for the direction.
+     */
     public String getDirection()
     {
         if ( outbound && inbound ) {
@@ -108,6 +119,11 @@ public abstract class TrafficDirectionRule extends TrafficRule
         return DIRECTION_BOTH;
     }
 
+    /**
+     * Set the direction using the user string.
+     *
+     * @param direction User string for the direction.
+     */
     public void setDirection( String direction ) throws ParseException
     {
         if ( direction.equalsIgnoreCase( DIRECTION_BOTH )) {
@@ -124,12 +140,18 @@ public abstract class TrafficDirectionRule extends TrafficRule
         }
     }
 
+    /**
+     * Get all of the possible user string for direction matcher.
+     */
     @Transient
     public static String[] getDirectionEnumeration()
     {
         return DIRECTION_ENUMERATION;
     }
 
+    /**
+     * Get the user string for the default direction manager.
+     */
     @Transient
     public static String getDirectionDefault()
     {

@@ -19,7 +19,12 @@ import com.untangle.mvvm.IntfConstants;
 
 import com.untangle.mvvm.tran.ParseException;
 
-
+/**
+ * An enumeration of all of the IntfMatchers that should be available to the GUI.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public final class IntfMatcherEnumeration
 {
     private static IntfMatcherEnumeration INSTANCE = new IntfMatcherEnumeration();
@@ -32,9 +37,18 @@ public final class IntfMatcherEnumeration
     {
     }
 
+    /**
+     * Update the current enumeration.  Used when interfaces changes, such as when VPN or
+     * USB interfaces are created.  All, Internal and External are always available.
+     * If there is a DMZ interface, then DMZ and DMZ & External are created.  A single
+     * matcher for VPN is created when the VPN interface is registered.
+     *
+     * @param intfEnum An enumeration of all of the current interfaces.
+     */
+    /* XXX This must be extended when we support more than three interfaces */
     synchronized void updateEnumeration( IntfEnum intfEnum )
     {
-        /* XXX Probably should be equals */
+        /* If the cache is up to date, there is nothing to do */
         if ( this.intfEnumCache == intfEnum ) return;
 
         List<IntfDBMatcher> matchers = new LinkedList<IntfDBMatcher>();
@@ -47,7 +61,7 @@ public final class IntfMatcherEnumeration
 
             if ( intfEnum.getIntfName( IntfConstants.VPN_INTF ) != null ) {
                 matchers.add( IntfSingleMatcher.makeInstance( IntfConstants.VPN_INTF ));
-                /* XXX Possibly add VPN and Internal */
+                /* ??? Possibly add VPN and Internal */
             }
             
             if ( intfEnum.getIntfName( IntfConstants.DMZ_INTF ) != null ) {
@@ -56,7 +70,7 @@ public final class IntfMatcherEnumeration
                                                            IntfConstants.DMZ_INTF ));
             }            
         } catch ( ParseException e ) {
-            /* XXX Done this way because this may be executed from the GUI */
+            /* Use System.err because log4j shouldn't be used inside of API */
             System.err.println( "Unable to initialize the interface matcher enumeration" );
         }
             
@@ -67,11 +81,21 @@ public final class IntfMatcherEnumeration
         this.intfEnumCache = intfEnum;
     }
 
+    /**
+     * Retrieve the enumeration of possible IntfMatchers.
+     *
+     * @return An array of valid IntfMatchers.
+     */
     IntfDBMatcher[] getEnumeration()
     {
         return enumeration;
     }
 
+    /**
+     * Retrieve the default IntfMatcher.
+     *
+     * @return The default IntfMatcher
+     */
     IntfDBMatcher getDefault()
     {
         return enumeration[0];

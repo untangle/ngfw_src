@@ -15,8 +15,15 @@ import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.Parser;
 import com.untangle.mvvm.tran.firewall.ParsingConstants;
 
+/**
+ * PortMatchers designed for matching a single port.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public final class PortSingleMatcher extends PortDBMatcher
 {
+    /* The port to match on */
     private final int port;
 
     private PortSingleMatcher( int port )
@@ -24,6 +31,12 @@ public final class PortSingleMatcher extends PortDBMatcher
         this.port = port;
     }
 
+    /**
+     * Test if <param>port<param> matches this matcher.
+     *
+     * @param port The port to test.
+     * @return True if <param>port</param> is equal to this.port.
+     */
     public boolean isMatch( int port )
     {
         return ( this.port == port );
@@ -39,6 +52,12 @@ public final class PortSingleMatcher extends PortDBMatcher
         return String.valueOf( this.port );
     }
 
+    /**
+     * Create a matcher that matches a port.
+     * 
+     * @param port The port that should match.
+     * @return A new port matcher from matches on <param>port</param>.
+     */
     public static PortDBMatcher makeInstance( int port )
     {
         PortMatcherUtil pmu = PortMatcherUtil.getInstance();
@@ -46,7 +65,7 @@ public final class PortSingleMatcher extends PortDBMatcher
         return new PortSingleMatcher( port );
     }
 
-    /* This is just for matching a list of interfaces */
+    /* This is the parser for the single matcher. */
     static final Parser<PortDBMatcher> PARSER = new Parser<PortDBMatcher>() 
     {
         public int priority()

@@ -15,11 +15,23 @@ import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.Parser;
 import com.untangle.mvvm.tran.firewall.ParsingConstants;
 
-public final class PortRangeMatcher extends PortDBMatcher
-{
-    private static final String MARKER_RANGE = PortMatcherUtil.MARKER_RANGE;
+import static com.untangle.mvvm.tran.firewall.port.PortMatcherUtil.MARKER_RANGE;
 
-    private final int start, end;
+/**
+ * A PortMatcher that matches a range of ports.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
+public final class PortRangeMatcher extends PortDBMatcher
+{    
+    /* Start of the range that should match (inclusive) */
+    private final int start;
+
+    /* End of the range that should match (inclusive) */
+    private final int end;
+
+    /* Database representation of this port matcher */
     private final String string;
 
     private PortRangeMatcher( int start, int end, String string )
@@ -29,6 +41,12 @@ public final class PortRangeMatcher extends PortDBMatcher
         this.string  = string;
     }
 
+    /**
+     * Test if <param>port<param> matches this matcher.
+     *
+     * @param port The port to test.
+     * @return True if <param>port</param> is in this range.
+     */
     public boolean isMatch( int port )
     {
         return (( start <= port ) && ( port <= end ));
@@ -44,6 +62,14 @@ public final class PortRangeMatcher extends PortDBMatcher
         return this.string;
     }
 
+    /**
+     * Create a range matcher.
+     * 
+     * @param start The start of the range (inclusive)
+     * @param end The end of the range (inclusive)
+     * @return A new port matcher from matches from
+     * <param>start</param> to <param>end</param>
+     */
     public static PortDBMatcher makeInstance( int start, int end )
     {
         PortMatcherUtil pmu = PortMatcherUtil.getInstance();
@@ -67,7 +93,7 @@ public final class PortRangeMatcher extends PortDBMatcher
         return new PortRangeMatcher( start, end, user );
     }
 
-    /* This is just for matching a list of interfaces */
+    /* This is the parser for range matchers. */
     static final Parser<PortDBMatcher> PARSER = new Parser<PortDBMatcher>() 
     {
         public int priority()

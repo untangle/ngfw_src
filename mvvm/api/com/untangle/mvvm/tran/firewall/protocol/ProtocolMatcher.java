@@ -13,12 +13,34 @@ package com.untangle.mvvm.tran.firewall.protocol;
 
 import com.untangle.mvvm.tapi.Protocol;
 
+/**
+ * An interface to test for an address.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public interface ProtocolMatcher
 {
+    /**
+     * Return true if <param>protocol</param> matches this matcher.
+     *
+     * @param protocol The protocol to test
+     * @return True if the <param>protocol</param> matches.
+     */
     public boolean isMatch( Protocol protocol );
 
-    // This version useful for applying to IPSessionDesc
+    /**
+     * Return true if <param>protocol</param> matches this matcher.
+     *
+     * @param protocol The protocol to test
+     * @return True if the <param>protocol</param> matches.
+     */
     public boolean isMatch( short protocol );
 
+    /**
+     * Retrieve the database representation of this protocol matcher.
+     *
+     * @return The database representation of this protocol matcher.
+     */
     public String toDatabaseString();
 }

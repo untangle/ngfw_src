@@ -16,11 +16,21 @@ import java.io.Serializable;
 
 import com.untangle.mvvm.tran.ParseException;
 
+/**
+ * A class to hold a MAC address.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public final class MACAddress implements Serializable, Comparable
 {
-    static final int MACADDRSZ = 6;
-    static final String SAMPLE = "01:23:45:67:89:ab";
+    /* Number of hex digits in a MAC address */
+    private static final int MACADDRSZ = 6;
 
+    /* A sample MAC address  */
+    private static final String SAMPLE = "01:23:45:67:89:ab";
+
+    /* String representation of the MAC address */
     private final String mac;
 
     private MACAddress( String mac )
@@ -28,12 +38,17 @@ public final class MACAddress implements Serializable, Comparable
         this.mac = mac.toLowerCase();
     }
 
+    /**
+     * Parse a string and create a new MACAddress object.
+     *
+     * @param mac String value to parse.
+     */
     public static MACAddress parse( String mac ) throws ParseException
     {
         /* Trim any whitespace */
         mac = mac.trim();
 
-        /* Use five to guarantee it doesn't converted from x.x.x.x.x to { x, x, x, x.x } */
+        /* Use seven to guarantee it doesn't converted  x:x:x:x:x:x:x to { x, x, x, x, x, x:x } */
         String tmp[] = mac.split( ":", MACADDRSZ + 1 );
 
         if ( tmp.length != MACADDRSZ ) {
@@ -56,14 +71,17 @@ public final class MACAddress implements Serializable, Comparable
         return mac ;
     }
 
+    /**
+     * Retrieve a sample String for a MAC Address.
+     */
     public static String sample()
     {
         return SAMPLE;
     }
 
-    /* The value here is just the MAC which is a string, so pass these down to the string */
     public int hashCode()
     {
+        /* The value here is just the MAC which is a string, so pass these down to the string */
         /* String is always stored in lowercase so AA:00... would match aa:00 */
         return mac.hashCode();
     }
@@ -77,7 +95,8 @@ public final class MACAddress implements Serializable, Comparable
         return false;
     }
 
-    public int compareTo(Object o){
+    public int compareTo( Object o )
+    {
         return mac.compareToIgnoreCase(o.toString());
     }
 }

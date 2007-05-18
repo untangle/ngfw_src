@@ -18,18 +18,21 @@ import com.untangle.mvvm.tran.firewall.Parser;
 import com.untangle.mvvm.tran.firewall.ParsingConstants;
 
 /**
- * The class <code>ProtocolMatcher</code> represents a class for filtering on the Protocol of a
- * session.
+ * ProtocolMatcher designed for simple cases (all or nothing).
  *
- * @author <a href="mailto:rbscott@untangle.com">rbscott</a>
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
 public final class ProtocolSimpleMatcher extends ProtocolDBMatcher
 {
     // XXX private static final long serialVersionUID = 6026959848409522258L;
+    /* A protocol matcher that matches everything */
     private static final ProtocolDBMatcher MATCHER_ALL = new ProtocolSimpleMatcher( true );
+
+    /* A protocol matcher that never matches */
     private static final ProtocolDBMatcher MATCHER_NOTHING = new ProtocolSimpleMatcher( false );
 
+    /* true if this matches everyhthing */
     private final boolean isAll;
     
     private ProtocolSimpleMatcher( boolean isAll )
@@ -37,11 +40,23 @@ public final class ProtocolSimpleMatcher extends ProtocolDBMatcher
         this.isAll = isAll;
     }
 
+    /**
+     * Test if <param>protocol<param> matches this matcher.
+     *
+     * @param protocol The protocol to test.
+     * @return True if this is the all matcher, false otherwise.
+     */
     public boolean isMatch( Protocol protocol )
     {
         return this.isAll;
     }
 
+    /**
+     * Test if <param>protocol<param> matches this matcher.
+     *
+     * @param protocol The protocol to test.
+     * @return True if this is the all matcher, false otherwise.
+     */
     public boolean isMatch( short protocol )
     {
         return this.isAll;
@@ -58,16 +73,27 @@ public final class ProtocolSimpleMatcher extends ProtocolDBMatcher
         return name.toUpperCase();
     }
     
+    /**
+     * Retrieve the all matcher.
+     *
+     * @return A matcher that matches every protocol.
+     */
     public static ProtocolDBMatcher getAllMatcher()
     {
         return MATCHER_ALL;
     }
 
+    /**
+     * Retrieve the nil matcher.
+     *
+     * @return A matcher that never matches a protocol.
+     */
     public static ProtocolDBMatcher getNilMatcher()
     {
         return MATCHER_NOTHING;
     }
 
+    /* This is the parser for simple protocol matchers */
     static final Parser<ProtocolDBMatcher> PARSER = new Parser<ProtocolDBMatcher>() 
     {
         public int priority()

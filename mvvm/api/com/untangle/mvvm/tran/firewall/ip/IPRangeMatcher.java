@@ -18,11 +18,23 @@ import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.Parser;
 
+/**
+ * An IPMatcher that matches a range of addresses.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public final class IPRangeMatcher extends IPDBMatcher
 {
     private static final String MARKER_RANGE = IPMatcherUtil.MARKER_RANGE;
 
-    private final long start, end;
+    /* Start of the range, (inclusive) */
+    private final long start;
+
+    /* End of the range, (inclusive) */
+    private final long end;
+
+    /* Database/User representation of this matcher */
     private final String string;
 
     private IPRangeMatcher( long start, long end, String string )
@@ -32,6 +44,12 @@ public final class IPRangeMatcher extends IPDBMatcher
         this.string  = string;
     }
 
+    /**
+     * Test if <param>address<param> matches this matcher.
+     *
+     * @param address The address to test.
+     * @return True if <param>address</param> in this range.
+     */
     public boolean isMatch( InetAddress address )
     {
         long tmp = IPMatcherUtil.getInstance().toLong( address );
@@ -49,11 +67,27 @@ public final class IPRangeMatcher extends IPDBMatcher
         return this.string;
     }
 
-    public static IPDBMatcher makeRangeInstance( IPaddr network, IPaddr netmask )
+    /**
+     * Create a range matcher.
+     *
+     * @param start The start of the range.
+     * @param end The end of the range.
+     * @return A RangeMatcher that matches IP address from
+     * <param>start</param> to <param>end</param>, inclusive.
+     */
+    public static IPDBMatcher makeRangeInstance( IPaddr start, IPaddr end )
     {
-        return makeRangeInstance( network.getAddr(), netmask.getAddr());
+        return makeRangeInstance( start.getAddr(), end.getAddr());
     }
 
+    /**
+     * Create a range matcher.
+     *
+     * @param start The start of the range.
+     * @param end The end of the range.
+     * @return A RangeMatcher that matches IP address from
+     * <param>start</param> to <param>end</param>, inclusive.
+     */
     public static IPDBMatcher makeRangeInstance( InetAddress start, InetAddress end )
     {
         if ( start == null || end == null ) throw new NullPointerException( "Null address" );
@@ -65,7 +99,8 @@ public final class IPRangeMatcher extends IPDBMatcher
         return new IPRangeMatcher( imu.toLong( start ), imu.toLong( end ), user );
     }
 
-    /* This is just for matching a list of interfaces */
+    /**
+     * The parser for the range matcher */
     static final Parser<IPDBMatcher> PARSER = new Parser<IPDBMatcher>()
     {
         public int priority()

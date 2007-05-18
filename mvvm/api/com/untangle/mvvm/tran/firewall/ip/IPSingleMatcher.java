@@ -20,8 +20,15 @@ import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.Parser;
 import com.untangle.mvvm.tran.firewall.ParsingConstants;
 
+/**
+ * An IPMatcher that matches a single IP address.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public final class IPSingleMatcher extends IPDBMatcher
 {
+    /* The address that matches */
     private final InetAddress address;
 
     private IPSingleMatcher( InetAddress address )
@@ -29,6 +36,14 @@ public final class IPSingleMatcher extends IPDBMatcher
         this.address = address;
     }
 
+    /**
+     * Determine if <param>address</param> matches the address for
+     * this matcher.
+     *
+     * @param address The address to test.
+     * @return True if <param>address</param> matches the address for
+     * this matcher.
+     */
     public boolean isMatch( InetAddress address )
     {
         return this.address.equals( address );
@@ -44,18 +59,31 @@ public final class IPSingleMatcher extends IPDBMatcher
         return this.address.getHostAddress();
     }
 
+    /**
+     * Create a single matcher.
+     *
+     * @param address The address that should match.
+     * @return An IPMatcher that matches IP address <param>address</param>
+     */
     public static IPDBMatcher makeInstance( InetAddress address )
     {
         if ( address == null ) throw new NullPointerException( "Null address" );
         return new IPSingleMatcher( address );
     }
 
+    /**
+     * Create a single matcher, uses an IPaddr instead of an
+     * InetAddress.
+     *
+     * @param address The address that should match.
+     * @return An IPMatcher that matches IP address <param>address</param>
+     */
     public static IPDBMatcher makeInstance( IPaddr address )
     {
         return makeInstance( address.getAddr());
     }
 
-    /* This is just for matching a list of interfaces */
+    /* This is the parser for a single matcher */
     static final Parser<IPDBMatcher> PARSER = new Parser<IPDBMatcher>() 
     {
         public int priority()

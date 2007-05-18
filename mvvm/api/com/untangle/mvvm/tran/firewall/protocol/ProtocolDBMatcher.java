@@ -15,6 +15,14 @@ import java.io.Serializable;
 
 import com.untangle.mvvm.tapi.Protocol;
 
+/**
+ * An ProtocolDBMatcher that is capable of being saved to and loaded
+ * from the database.  Done as an abstract class so only classes in
+ * this package can implement Database Matchers.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public abstract class ProtocolDBMatcher implements ProtocolMatcher, Serializable
 {
     /** Package protected so that only classes in the package can add to the list

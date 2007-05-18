@@ -18,11 +18,24 @@ import com.untangle.mvvm.tran.IPaddr;
 import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.Parser;
 
+/**
+ * An IPMatcher that matches a single subnet.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public final class IPSubnetMatcher extends IPDBMatcher
 {
+    /* The marker that separates the network from the netmask */
     private static final String MARKER_SUBNET = "/";
 
-    private final long network, netmask;
+    /* The network represented as a long */
+    private final long network;
+
+    /* The netmask represented as a long */
+    private final long netmask;
+
+    /* The database string for this matcher */
     private final String string;
 
     private IPSubnetMatcher( long network, long netmask, String string )
@@ -32,6 +45,13 @@ public final class IPSubnetMatcher extends IPDBMatcher
         this.string  = string;
     }
 
+    /**
+     * Test if <param>address<param> matches this matcher.
+     *
+     * @param address The address to test.
+     * @return True if <param>address</param> matches is in the subnet
+     * this matcher describes.
+     */
     public boolean isMatch( InetAddress address )
     {
         long tmp = IPMatcherUtil.getInstance().toLong( address );
@@ -49,11 +69,27 @@ public final class IPSubnetMatcher extends IPDBMatcher
         return this.string;
     }
 
+    /**
+     * Create a new matcher that matches the subnet
+     * <param>network<param>/<param>netmask</param>
+     *
+     * @param network The network address to match.
+     * @param netmask The netmask/size of <param>network</param>.
+     * @return An IPMatcher that matches the specified subnet.
+     */
     public static IPDBMatcher makeInstance( IPaddr network, IPaddr netmask )
     {
         return makeInstance( network.getAddr(), netmask.getAddr());
     }
 
+    /**
+     * Create a new matcher that matches the subnet
+     * <param>network<param>/<param>netmask</param>.
+     *
+     * @param network The network address to match.
+     * @param netmask The netmask/size of <param>network</param>.
+     * @return An IPMatcher that matches the specified subnet.
+     */
     public static IPDBMatcher makeInstance( InetAddress network, InetAddress netmask )
     {
         if ( network == null || netmask == null ) throw new NullPointerException( "Null address" );
@@ -68,6 +104,14 @@ public final class IPSubnetMatcher extends IPDBMatcher
         return new IPSubnetMatcher( networkLong, netmaskLong, user );
     }
 
+    /**
+     * Create a new matcher that matches the subnet
+     * <param>network<param>/<param>cidr</param>.
+     *
+     * @param network The network address to match.
+     * @param cidr The netmask in CIDR notation.
+     * @return An IPMatcher that matches the specified subnet.
+     */
     public static IPDBMatcher makeInstance( InetAddress network, int cidr )
         throws ParseException
     {
@@ -78,7 +122,7 @@ public final class IPSubnetMatcher extends IPDBMatcher
         return new IPSubnetMatcher( imu.toLong( network ), imu.cidrToLong( cidr ), user );
     }
 
-    /* This is just for matching a list of interfaces */
+    /* The parser for an Subnet Matcher */
     static final Parser<IPDBMatcher> PARSER = new Parser<IPDBMatcher>()
     {
         public int priority()
