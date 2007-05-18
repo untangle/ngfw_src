@@ -8,4 +8,5 @@ guiDeps = []
   guiDeps << Package[c]['gui']
 end
 
-TransformBuilder.makeTransform('kav', implDeps, guiDeps, [], 'virus')
+TransformBuilder.makeTransform(ALPINE_HOME, 'kav', implDeps, guiDeps, [],
+                               'virus')

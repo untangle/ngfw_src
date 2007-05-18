@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform('boxbackup')
+TransformBuilder.makeTransform(ALPINE_HOME, 'boxbackup')

@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform('test')
+TransformBuilder.makeTransform(ALPINE_HOME, 'test')

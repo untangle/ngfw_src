@@ -1,6 +1,6 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform('openvpn')
+TransformBuilder.makeTransform(ALPINE_HOME, 'openvpn')
 
 openvpn = Package['openvpn-transform']
 

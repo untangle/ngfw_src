@@ -8,4 +8,4 @@ guiDeps = []
   guiDeps << Package[c]['gui']
 end
 
-TransformBuilder.makeBase('virus', implDeps, guiDeps)
+TransformBuilder.makeBase(ALPINE_HOME, 'virus', implDeps, guiDeps)

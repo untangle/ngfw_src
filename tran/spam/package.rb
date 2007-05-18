@@ -8,4 +8,4 @@ guiDeps = []
   guiDeps << Package[c]['gui']
 end
 
-TransformBuilder.makeBase('spam', implDeps, guiDeps)
+TransformBuilder.makeBase(ALPINE_HOME, 'spam', implDeps, guiDeps)

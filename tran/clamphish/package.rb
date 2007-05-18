@@ -5,7 +5,7 @@ http = Package['http-casing']
 spam = Package['spam-base']
 clamphish = Package['clamphish-transform']
 
-TransformBuilder.makeTransform('clamphish',
+TransformBuilder.makeTransform(ALPINE_HOME, 'clamphish',
                                [mail['localapi'], http['localapi']],
                                [mail['gui'], http['gui'] ], [],
                                ['spam', 'clam-base'])

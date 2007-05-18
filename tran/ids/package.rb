@@ -1,3 +1,4 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform('ids', [ Package['http-casing']['localapi']])
+TransformBuilder.makeTransform(ALPINE_HOME, 'ids',
+                               [Package['http-casing']['localapi']])

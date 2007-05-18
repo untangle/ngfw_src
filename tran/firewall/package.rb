@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform('firewall')
+TransformBuilder.makeTransform(ALPINE_HOME, 'firewall')

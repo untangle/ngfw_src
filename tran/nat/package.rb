@@ -1,3 +1,4 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform('nat', [Package['ftp-casing']['localapi']])
+TransformBuilder.makeTransform(ALPINE_HOME, 'nat',
+                               [Package['ftp-casing']['localapi']])

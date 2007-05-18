@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeCasing('ftp')
+TransformBuilder.makeCasing(ALPINE_HOME, 'ftp')
