@@ -1,0 +1,98 @@
+mvvm            optional    m
+metavize-client     optional    m
+untangle-client     optional    u
+libmvvm-thirdparty      optional        libm
+
+#
+# Untangle Casings
+#
+http-casing     optional    h
+ftp-casing      optional    f
+mail-casing     optional    m
+virus-base      optional    v
+spam-base       optional    s
+
+#
+# Untangle Transforms
+#
+test-transform      optional    t
+httpblocker-transform   optional    h
+nat-transform       optional    n
+firewall-transform  optional    f
+airgap-transform    optional    a
+sophos-transform    optional    s
+fprot-transform     optional    f
+hauri-transform     optional    h
+kav-transform       optional    k
+clam-transform      optional    c
+email-transform     optional    e
+protofilter-transform   optional    p
+spyware-transform   optional    s
+reporting-transform optional    r
+spamassassin-transform  optional    s
+ids-transform       optional    i
+clamphish-transform optional    c
+
+#
+# Untangle util packages
+#
+clamav-mv       optional    c
+dev-mv          optional    d
+catchall-mv     optional    c
+jre-mv          optional    j
+urlblacklist.com-mv optional    u
+fprot-mv        optional    f
+hauri-mv        optional    h
+sophos-mv       optional    s
+postgresql-mv       optional    p
+restore-mv      optional    r
+kiosk-mv        optional    k
+kernel-prod-mv      optional    k
+kernel-dev-mv       optional    k
+kernel-fake-mv      optional    k
+kav-mv          optional    k
+pump-mv         optional    p
+spamc-mv        optional    s
+iptables-mv     optional    i
+iptables-dev-mv     optional    i
+echod           optional    e
+echospam        optional    e
+
+#
+# Non Untangle packages
+#
+ntp         optional    n
+ntp-server      optional    n
+ntp-simple      optional    n
+dnsmasq         optional    d
+libclamav1      optional    libc
+libcurl3        optional    libc
+libdigest-hmac-perl optional    libd
+libdigest-sha1-perl optional    libd
+libgmp3         optional    libg
+libidn11        optional    libi
+libnet-dns-perl     optional    libn
+clamav          optional    c
+clamav-base     optional    c
+clamav-daemon       optional    c
+clamav-freshclam    optional    c
+spamassassin        optional    s
+spamc           optional    s
+libc6           optional    libc
+arj                     optional        a
+dcc-client              optional        d
+dcc-common              optional        d
+lha                     optional        l
+libcompress-zlib-perl   optional        libc
+libmail-spf-query-perl  optional        libm
+libmailtools-perl       optional        libm
+libnet-cidr-lite-perl   optional        libn
+libnet-daemon-perl      optional        libn
+libplrpc-perl           optional        libp
+libtimedate-perl        optional        libt
+python-gdbm             optional        p
+python2.3               optional        p
+python2.3-gdbm          optional        p
+pyzor                   optional        p
+unrar                   optional        u
+unzoo                   optional        u
