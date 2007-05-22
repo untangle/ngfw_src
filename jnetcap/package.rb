@@ -1,7 +1,7 @@
 # -*-ruby-*-
 
-jnetcap = Package['jnetcap']
-mvvm    = Package['mvvm']
+jnetcap = BuildEnv::ALPINE['jnetcap']
+mvvm    = BuildEnv::ALPINE['mvvm']
 
 ## jnetcap
 j = JarTarget.buildTarget(jnetcap, Jars::Base, 'impl', "#{ALPINE_HOME}/jnetcap/impl" )
@@ -21,7 +21,7 @@ compilerEnv = CCompilerEnv.new({'pkg' => "#{CCompilerEnv::JNetcap}" })
 
 
 ## jnetcap
-ArchiveTarget.buildTarget(jnetcap, [ Package['libmvutil'], Package['jmvutil'], javah ], compilerEnv,
-                          ["#{$BuildEnv.javahome}/include", "#{$BuildEnv.javahome}/include/linux"])
+ArchiveTarget.buildTarget(jnetcap, [ BuildEnv::ALPINE['libmvutil'], BuildEnv::ALPINE['jmvutil'], javah ], compilerEnv,
+                          ["#{BuildEnv::JAVA_HOME}/include", "#{BuildEnv::JAVA_HOME}/include/linux"])
 
 stamptask $InstallTarget => jnetcap

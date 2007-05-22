@@ -1,11 +1,11 @@
 # -*-ruby-*-
 
-libvector = Package['libvector']
+libvector = BuildEnv::ALPINE['libvector']
 
 compilerEnv = CCompilerEnv.new({ 'pkg' => "#{CCompilerEnv::Vector}",
                                  'version' => getVersion( libvector )})
 
 ## libvector
-ArchiveTarget.buildTarget(libvector, [Package['libmvutil']], compilerEnv)
+ArchiveTarget.buildTarget(libvector, [BuildEnv::ALPINE['libmvutil']], compilerEnv)
 
 stamptask $InstallTarget => libvector

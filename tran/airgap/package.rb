@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform(ALPINE_HOME, 'airgap')
+TransformBuilder.makeTransform(BuildEnv::ALPINE, 'airgap')

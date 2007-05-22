@@ -1,11 +1,11 @@
 # -*-ruby-*-
 
-mail = Package['mail-casing']
-http = Package['http-casing']
-spam = Package['spam-base']
-clamphish = Package['clamphish-transform']
+mail = BuildEnv::ALPINE['mail-casing']
+http = BuildEnv::ALPINE['http-casing']
+spam = BuildEnv::ALPINE['spam-base']
+clamphish = BuildEnv::ALPINE['clamphish-transform']
 
-TransformBuilder.makeTransform(ALPINE_HOME, 'clamphish',
+TransformBuilder.makeTransform(BuildEnv::ALPINE, 'clamphish',
                                [mail['localapi'], http['localapi']],
                                [mail['gui'], http['gui'] ], [],
                                ['spam', 'clam-base'])
@@ -13,5 +13,5 @@ TransformBuilder.makeTransform(ALPINE_HOME, 'clamphish',
 deps = [http['gui'], clamphish['gui'], spam['gui']]
 
 ServletBuilder.new(clamphish, 'com.untangle.tran.clamphish.jsp',
-                   "#{ALPINE_HOME}/tran/clamphish/servlets/idblocker", [], deps, [],
-                   [$BuildEnv.servletcommon])
+                   "#{ALPINE_HOME}/tran/clamphish/servlets/idblocker", [],
+                   deps, [], [BuildEnv::SERVLET_COMMON])

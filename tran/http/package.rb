@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeCasing(ALPINE_HOME, 'http')
+TransformBuilder.makeCasing(BuildEnv::ALPINE, 'http')

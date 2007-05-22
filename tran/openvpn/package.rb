@@ -1,11 +1,11 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform(ALPINE_HOME, 'openvpn')
+TransformBuilder.makeTransform(BuildEnv::ALPINE, 'openvpn')
 
-openvpn = Package['openvpn-transform']
+openvpn = BuildEnv::ALPINE['openvpn-transform']
 
 
-deps = Jars::Base + [Package['mvvm']['api']]
+deps = Jars::Base + [BuildEnv::ALPINE['mvvm']['api']]
 
 jt = [JarTarget.buildTarget(openvpn, deps, 'api', 'tran/openvpn/api')]
 

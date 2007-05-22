@@ -1,7 +1,7 @@
 # -*-ruby-*-
 
-mvvm = Package['mvvm']
-gui = Package['untangle-client']
+mvvm = BuildEnv::ALPINE['mvvm']
+gui = BuildEnv::ALPINE['untangle-client']
 
 class MiniInstallTarget < InstallTarget
   def to_s
@@ -9,7 +9,8 @@ class MiniInstallTarget < InstallTarget
   end
 end
 
-mini = MiniInstallTarget.new(Package['gui-temp'], [Package['untangle-client']],
+mini = MiniInstallTarget.new(BuildEnv::ALPINE['gui-temp'],
+                             [BuildEnv::ALPINE['untangle-client']],
                              'install')
 
 ## Api
@@ -29,7 +30,8 @@ $InstallTarget.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 mini.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 
 ServletBuilder.new(gui, 'com.untangle.gui.webstart.jsp',
-                   "#{ALPINE_HOME}/gui/servlets/webstart", [], [], [], [$BuildEnv.servletcommon],
+                   "#{ALPINE_HOME}/gui/servlets/webstart", [], [], [],
+                   [BuildEnv::SERVLET_COMMON],
                    ['gui.jnlp', 'gui-local.jnlp', 'gui-local-cd.jnlp', 'index.jsp'])
 
 $InstallTarget.installJars(Jars::Gui, gui.getWebappDir('webstart'), nil, true)
@@ -44,5 +46,5 @@ guiRuntimeJars << Jars.downloadTarget('hibernate-client/hibernate-client.jar')
 $InstallTarget.installJars(guiRuntimeJars, gui.getWebappDir('webstart'), nil, true)
 
 ms = MoveSpec.new("#{ALPINE_HOME}/gui/hier", FileList["#{ALPINE_HOME}/gui/hier/**/*"], gui.distDirectory)
-cf = CopyFiles.new(gui, ms, 'hier', $BuildEnv.filterset)
+cf = CopyFiles.new(gui, ms, 'hier', BuildEnv::ALPINE.filterset)
 gui.registerTarget('hier', cf)

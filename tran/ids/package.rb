@@ -1,4 +1,4 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform(ALPINE_HOME, 'ids',
-                               [Package['http-casing']['localapi']])
+TransformBuilder.makeTransform(BuildEnv::ALPINE, 'ids',
+                               [BuildEnv::ALPINE['http-casing']['localapi']])

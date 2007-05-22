@@ -1,8 +1,8 @@
 # -*-ruby-*-
 
-TransformBuilder.makeCasing(ALPINE_HOME, 'mail')
+TransformBuilder.makeCasing(BuildEnv::ALPINE, 'mail')
 
-mail = Package['mail-casing']
+mail = BuildEnv::ALPINE['mail-casing']
 
 jt = [mail['localapi']]
 

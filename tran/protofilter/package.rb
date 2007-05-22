@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform(ALPINE_HOME, 'protofilter')
+TransformBuilder.makeTransform(BuildEnv::ALPINE, 'protofilter')

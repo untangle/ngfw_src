@@ -1,32 +1,32 @@
 # -*-ruby-*-
 
-jvector = Package["jvector"]
-jnetcap = Package["jnetcap"]
-mvvm    = Package["mvvm"]
+jvector = BuildEnv::ALPINE['jvector']
+jnetcap = BuildEnv::ALPINE['jnetcap']
+mvvm    = BuildEnv::ALPINE['mvvm']
 
 ## jvector
-deps = Jars::Base + [jnetcap["impl"]]
-j = JarTarget.buildTarget(jvector, deps, "impl", "#{ALPINE_HOME}/jvector/impl")
+deps = Jars::Base + [jnetcap['impl']]
+j = JarTarget.buildTarget(jvector, deps, 'impl', "#{ALPINE_HOME}/jvector/impl")
 $InstallTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib")
 
-headerClasses = [ "com.untangle.jvector.OutgoingSocketQueue",
-                  "com.untangle.jvector.IncomingSocketQueue",
-                  "com.untangle.jvector.Relay",
-                  "com.untangle.jvector.Vector",
-                  "com.untangle.jvector.Sink",
-                  "com.untangle.jvector.Source",
-                  "com.untangle.jvector.TCPSink",
-                  "com.untangle.jvector.TCPSource",
-                  "com.untangle.jvector.UDPSource",
-                  "com.untangle.jvector.UDPSink",
-                  "com.untangle.jvector.Crumb" ]
+headerClasses = [ 'com.untangle.jvector.OutgoingSocketQueue',
+                  'com.untangle.jvector.IncomingSocketQueue',
+                  'com.untangle.jvector.Relay',
+                  'com.untangle.jvector.Vector',
+                  'com.untangle.jvector.Sink',
+                  'com.untangle.jvector.Source',
+                  'com.untangle.jvector.TCPSink',
+                  'com.untangle.jvector.TCPSource',
+                  'com.untangle.jvector.UDPSource',
+                  'com.untangle.jvector.UDPSink',
+                  'com.untangle.jvector.Crumb' ]
 
 javah = JavahTarget.new(jvector, j, headerClasses)
 
-compilerEnv = CCompilerEnv.new({ "pkg" => "#{CCompilerEnv::JVector}" })
+compilerEnv = CCompilerEnv.new({ 'pkg' => "#{CCompilerEnv::JVector}" })
 
 
-ArchiveTarget.buildTarget(jvector, [Package["libmvutil"], Package["jmvutil"], javah], compilerEnv,
-                          ["#{$BuildEnv.javahome}/include", "#{$BuildEnv.javahome}/include/linux"])
+ArchiveTarget.buildTarget(jvector, [BuildEnv::ALPINE['libmvutil'], BuildEnv::ALPINE['jmvutil'], javah],
+                          compilerEnv, ["#{BuildEnv::JAVA_HOME}/include", "#{BuildEnv::JAVA_HOME}/include/linux"])
 
 stamptask $InstallTarget => jvector

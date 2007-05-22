@@ -1,13 +1,13 @@
 # -*-ruby-*-
 
-http = Package['http-casing']
-spyware = Package['spyware-transform']
+http = BuildEnv::ALPINE['http-casing']
+spyware = BuildEnv::ALPINE['spyware-transform']
 
-TransformBuilder.makeTransform(ALPINE_HOME, 'spyware', [http["localapi"]],
+TransformBuilder.makeTransform(BuildEnv::ALPINE, 'spyware', [http["localapi"]],
                                [http["localapi"]])
 
 deps = [spyware['gui'], http['gui']]
 
 ServletBuilder.new(spyware, 'com.untangle.tran.spyware.jsp',
                    "#{ALPINE_HOME}/tran/spyware/servlets/spyware", [], deps,
-                   [], [$BuildEnv.servletcommon])
+                   [], [BuildEnv::SERVLET_COMMON])

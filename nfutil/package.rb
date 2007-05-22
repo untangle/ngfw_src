@@ -1,6 +1,6 @@
 # -*-ruby-*-
 
-nfutil = "#{$BuildEnv.staging}/nfutil"
+nfutil = "#{BuildEnv::ALPINE.staging}/nfutil"
 
 source = FileList["#{ALPINE_HOME}/nfutil/src/*.c"]
 
@@ -10,8 +10,9 @@ source.each { |f| file nfutil => f }
 file nfutil do
   compilerEnv = CCompilerEnv.new()
 
-  CBuilder.new(compilerEnv).makeBinary(source, nfutil, [], ['netfilter_queue'])
+  CBuilder.new(BuildEnv::ALPINE, compilerEnv).makeBinary(source, nfutil,
+                                                       [], ['netfilter_queue'])
 end
 
 $InstallTarget.registerDependency(nfutil)
-$InstallTarget.installFiles(nfutil, "#{Package['mvvm'].distDirectory}/usr/share/metavize/networking/")
+$InstallTarget.installFiles(nfutil, "#{BuildEnv::ALPINE['mvvm'].distDirectory}/usr/share/metavize/networking/")

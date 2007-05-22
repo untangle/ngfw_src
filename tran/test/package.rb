@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform(ALPINE_HOME, 'test')
+TransformBuilder.makeTransform(BuildEnv::ALPINE, 'test')

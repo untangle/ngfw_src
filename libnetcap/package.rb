@@ -1,12 +1,12 @@
 # -*-ruby-*-
 
-libnetcap = Package["libnetcap"]
+libnetcap = BuildEnv::ALPINE['libnetcap']
 
-compilerEnv = CCompilerEnv.new({ "pkg"   => "#{CCompilerEnv::Netcap}",
-                                 "version" => "#{getVersion(libnetcap)}" })
+compilerEnv = CCompilerEnv.new({ 'pkg'   => "#{CCompilerEnv::Netcap}",
+                                 'version' => "#{getVersion(libnetcap)}" })
 
 ## libnetcap
-ArchiveTarget.buildTarget(libnetcap, [ Package["libmvutil"]], compilerEnv,
-                          ["/usr/include/libxml2"])
+ArchiveTarget.buildTarget(libnetcap, [BuildEnv::ALPINE['libmvutil']],
+                          compilerEnv, ['/usr/include/libxml2'])
 
 stamptask $InstallTarget => libnetcap

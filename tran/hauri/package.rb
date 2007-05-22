@@ -4,9 +4,9 @@ implDeps = []
 guiDeps = []
 
 %w(mail-casing ftp-casing http-casing).each do |c|
-  implDeps << Package[c]['localapi']
-  guiDeps << Package[c]['gui']
+  implDeps << BuildEnv::ALPINE[c]['localapi']
+  guiDeps << BuildEnv::ALPINE[c]['gui']
 end
 
-TransformBuilder.makeTransform(ALPINE_HOME, 'hauri', implDeps, guiDeps, [],
-                               'virus')
+TransformBuilder.makeTransform(BuildEnv::ALPINE, 'hauri', implDeps, guiDeps,
+                               [], 'virus')

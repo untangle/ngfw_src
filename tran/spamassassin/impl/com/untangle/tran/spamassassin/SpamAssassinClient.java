@@ -42,6 +42,7 @@ public final class SpamAssassinClient implements Runnable {
     private final static String DGT = "(\\p{Digit})+"; // digits -> integer
     private final static String P_NMBR = DGT + "\\." + DGT; // pos number
     private final static String NMBR = "(-)?" + DGT + "\\." + DGT; // pos or neg number
+
     private final static String ALPHA = "(\\p{Alpha})+"; // alpha chars
     private final static String EX_CODE = ALPHA + "_" + ALPHA; // exit code
 

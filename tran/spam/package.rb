@@ -4,8 +4,8 @@ implDeps = []
 guiDeps = []
 
 %w(mail-casing).each do |c|
-  implDeps << Package[c]['localapi']
-  guiDeps << Package[c]['gui']
+  implDeps << BuildEnv::ALPINE[c]['localapi']
+  guiDeps << BuildEnv::ALPINE[c]['gui']
 end
 
-TransformBuilder.makeBase(ALPINE_HOME, 'spam', implDeps, guiDeps)
+TransformBuilder.makeBase(BuildEnv::ALPINE, 'spam', implDeps, guiDeps)
