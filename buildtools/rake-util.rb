@@ -5,6 +5,10 @@ require 'ftools'
 require 'set'
 require 'tempfile'
 
+def ensureDirectory(t)
+  mkdir_p t if !File.exist?(t)
+end
+
 ## This is overly complicated
 class DebugLevel
   include Comparable
@@ -108,6 +112,8 @@ class BuildEnv
 
     @mutex = Mutex.new
     @cache = {}
+
+    [@devel, @devel, @grabbag].each { |t| ensureDirectory(t) }
   end
 
   ALPINE = BuildEnv.new(ALPINE_HOME)
@@ -846,10 +852,6 @@ class JarTarget < Target
     CopyFiles.new(package, moveSpecs.flatten, "jar-#{suffix}", nil,
                   buildDirectory)
   end
-end
-
-def ensureDirectory(t)
-  mkdir_p t if !File.exist?(t)
 end
 
 def graphViz(filename)

@@ -29,14 +29,6 @@ require "#{ALPINE_HOME}/buildtools/transform.rb"
 
 $InstallTarget = InstallTarget.new(BuildEnv::ALPINE['install'], [BuildEnv::ALPINE['mvvm'], BuildEnv::ALPINE['untangle-client'], BuildEnv::ALPINE['tran']], 'install')
 
-task BuildEnv::ALPINE['mvvm'] => [:structure]
-
-task :structure do
-  [BuildEnv::ALPINE.devel, BuildEnv::ALPINE.devel, BuildEnv::ALPINE.grabbag].each do |t|
-    ensureDirectory(t)
-  end
-end
-
 ## Require all of the sub packages.
 ## Done manually because order matters.
 ## XXX Could create a new helper method that sets a prefix directory before
