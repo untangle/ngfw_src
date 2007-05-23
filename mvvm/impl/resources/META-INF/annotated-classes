@@ -3,6 +3,5 @@ com.untangle.mvvm.engine.MackageState
 com.untangle.mvvm.engine.TransformManagerState
 com.untangle.mvvm.engine.TransformPersistentState
 com.untangle.mvvm.engine.TransformStateChange
-com.untangle.mvvm.policy.UserPolicyRuleSet
 com.untangle.mvvm.shield.ShieldRejectionEvent
 com.untangle.mvvm.shield.ShieldStatisticEvent
