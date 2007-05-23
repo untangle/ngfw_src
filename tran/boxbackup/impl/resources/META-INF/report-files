@@ -1,3 +1,0 @@
-reports/BoxBackupDetail.jasper:BoxBackup--Backups:Backup Incidents
-com.untangle.tran.boxbackup.reports.BoxBackupSummarizer:summarizer:Summarizer
-reportTitlePrefix:parameter:none
