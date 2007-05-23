@@ -793,7 +793,7 @@ public class DirectoryRemoteADJPanel extends javax.swing.JPanel
         restrictIPJPanel3.setLayout(new java.awt.GridBagLayout());
 
         messageJLabel.setFont(new java.awt.Font("Dialog", 0, 12));
-        messageJLabel.setText("<html>The text below is for you to cut and paste from.</html>");
+        messageJLabel.setText("<html>Please cut and paste the address below into your browser.</html>");
         messageJLabel.setMaximumSize(null);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
