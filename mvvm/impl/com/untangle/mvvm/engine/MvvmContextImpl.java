@@ -37,6 +37,7 @@ import com.untangle.mvvm.logging.MvvmRepositorySelector;
 import com.untangle.mvvm.networking.NetworkManagerImpl;
 import com.untangle.mvvm.networking.RemoteNetworkManagerImpl;
 import com.untangle.mvvm.networking.ping.PingManagerImpl;
+import com.untangle.mvvm.policy.LocalPolicyManager;
 import com.untangle.mvvm.tapi.MPipeManager;
 import com.untangle.mvvm.toolbox.ToolboxManager;
 import com.untangle.mvvm.tran.TransformContext;
@@ -550,7 +551,7 @@ public class MvvmContextImpl extends MvvmContextBase
         // Fire up the policy manager.
         String pmClass = System.getProperty("mvvm.policy.manager");
         if (null == pmClass) {
-            pmClass = "com.untangle.mvvm.engine.CharonPolicyManager";
+            pmClass = "com.untangle.mvvm.policy.CharonPolicyManager";
         }
 
         LocalPolicyManager pm = null;

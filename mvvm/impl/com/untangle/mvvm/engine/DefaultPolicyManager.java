@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.mvvm.policy.LocalPolicyManager;
 import com.untangle.mvvm.policy.Policy;
 import com.untangle.mvvm.policy.PolicyConfiguration;
 import com.untangle.mvvm.policy.PolicyException;

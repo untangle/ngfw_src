@@ -11,26 +11,18 @@
 
 package com.untangle.mvvm.argon;
 
-import java.util.Properties;
-
-import java.io.File;
-import java.io.FileInputStream;
-
-import org.apache.log4j.Logger;
-
 import com.untangle.jnetcap.Netcap;
 import com.untangle.jnetcap.Shield;
 import com.untangle.jvector.Vector;
-
 import com.untangle.mvvm.ArgonException;
 import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.localapi.LocalShieldManager;
 import com.untangle.mvvm.localapi.LocalIntfManager;
-import com.untangle.mvvm.engine.LocalPolicyManager;
-import com.untangle.mvvm.shield.ShieldMonitor;
-
-import com.untangle.mvvm.networking.NetworkManagerImpl;
+import com.untangle.mvvm.localapi.LocalShieldManager;
 import com.untangle.mvvm.networking.NetworkException;
+import com.untangle.mvvm.networking.NetworkManagerImpl;
+import com.untangle.mvvm.policy.LocalPolicyManager;
+import com.untangle.mvvm.shield.ShieldMonitor;
+import org.apache.log4j.Logger;
 
 public class Argon
 {
@@ -69,7 +61,7 @@ public class Argon
     boolean isShieldEnabled = true;
     String shieldFile       = null;
     Shield shield;
-    
+
     /* Number of threads to donate to netcap */
     int numThreads        = 15;
 
@@ -85,7 +77,7 @@ public class Argon
 
     /* The NAT Checker */
     private final NatChecker natChecker = new NatChecker();
-    
+
     /* Singleton */
     private Argon()
     {
@@ -186,7 +178,7 @@ public class Argon
         if (( temp = System.getProperty( "argon.shield.cfg_file" )) != null ) {
             shieldFile = temp;
         }
-        
+
         if (( temp = System.getProperty( "argon.sessionlimit" )) != null ) {
             sessionThreadLimit  = Integer.parseInt( temp );
         }
@@ -235,7 +227,7 @@ public class Argon
         if ( isShieldEnabled ) {
             shield.registerEventListener( ShieldMonitor.getInstance());
         }
-        
+
         /* Initialize the shield configuration */
         LocalShieldManager lsm = MvvmContextFactory.context().localShieldManager();
         lsm.setIsShieldEnabled( isShieldEnabled );
@@ -265,7 +257,7 @@ public class Argon
     {
         logger.debug( "Shutting down" );
         ArgonManagerImpl argonManager = ArgonManagerImpl.getInstance();
-        
+
         argonManager.isShutdown();
         networkManager.isShutdown();
 

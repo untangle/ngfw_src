@@ -9,11 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
-
-import com.untangle.mvvm.policy.PolicyManager;
-import com.untangle.mvvm.policy.SystemPolicyRule;
-import com.untangle.mvvm.policy.UserPolicyRule;
+package com.untangle.mvvm.policy;
 
 public interface LocalPolicyManager extends PolicyManager
 {
