@@ -95,7 +95,7 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
         maintainRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Support", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
         sshButtonGroup.add(sshEnabledRadioButton);
         sshEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        sshEnabledRadioButton.setText("<html><b>Allow</b> secure remote support for troubleshooting and assistance purposes.</html>");
+        sshEnabledRadioButton.setText("<html><b>Allow</b> Untangle complete access to my Untangle Server. This will allow the Untangle Support team to monitor and change settings on your Untangle Server.</html>");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -119,7 +119,7 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
         maintainRemoteJPanel.add(jSeparator2, gridBagConstraints);
 
         reportJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
-        reportJCheckBox.setText("<html><b>Report</b> any unexpected problems to Untangle support.  An email will be sent to Untangle if an unexpected condition occurs.  No information about your network traffic will be transmitted.  (This is disabled by default)</html>");
+        reportJCheckBox.setText("<html><b>Send</b> Untangle data about my Untangle Server. This will send Untangle Support team status updates and an email if any unexpected problems occur, but will not allow Untangle to login to your Untangle Server. No personal information about your network traffic will be transmitted.</html>");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;

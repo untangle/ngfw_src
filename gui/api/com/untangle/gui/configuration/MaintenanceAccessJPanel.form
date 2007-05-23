@@ -48,7 +48,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Allow&lt;/b&gt; secure remote support for troubleshooting and assistance purposes.&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Allow&lt;/b&gt; Untangle complete access to my Untangle Server. This will allow the Untangle Support team to monitor and change settings on your Untangle Server.&lt;/html&gt;"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
@@ -95,7 +95,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Dialog" size="12" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Report&lt;/b&gt; any unexpected problems to Untangle support.  An email will be sent to Untangle if an unexpected condition occurs.  No information about your network traffic will be transmitted.  (This is disabled by default)&lt;/html&gt;"/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Send&lt;/b&gt; Untangle data about my Untangle Server. This will send Untangle Support team status updates and an email if any unexpected problems occur, but will not allow Untangle to login to your Untangle Server. No personal information about your network traffic will be transmitted.&lt;/html&gt;"/>
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
