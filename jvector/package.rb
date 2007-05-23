@@ -7,7 +7,8 @@ mvvm    = BuildEnv::ALPINE['mvvm']
 ## jvector
 deps = Jars::Base + [jnetcap['impl']]
 j = JarTarget.buildTarget(jvector, deps, 'impl', "#{ALPINE_HOME}/jvector/impl")
-$InstallTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib")
+$InstallTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib",
+                           nil, false, true)
 
 headerClasses = [ 'com.untangle.jvector.OutgoingSocketQueue',
                   'com.untangle.jvector.IncomingSocketQueue',

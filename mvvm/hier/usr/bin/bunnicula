@@ -70,7 +70,7 @@ createuser -U postgres -d -A untangle 2>/dev/null
 createdb -O postgres -U postgres mvvm 2>/dev/null
 createlang -U postgres plpgsql mvvm 2>/dev/null
 
-CLASSPATH="@MVVM_HOME@/conf:@MVVM_HOME@/lib/mvvm-bootstrap.jar"
+CLASSPATH="@MVVM_HOME@/conf:@MVVM_HOME@/lib/mvvm-bootstrap/"
 
 #
 # build environment tweeks

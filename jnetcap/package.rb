@@ -5,7 +5,8 @@ mvvm    = BuildEnv::ALPINE['mvvm']
 
 ## jnetcap
 j = JarTarget.buildTarget(jnetcap, Jars::Base, 'impl', "#{ALPINE_HOME}/jnetcap/impl" )
-$InstallTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib")
+$InstallTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib",
+                           nil, false, true)
 
 headerClasses = [ 'com.untangle.jnetcap.Netcap',
                   'com.untangle.jnetcap.IPTraffic',

@@ -6,7 +6,7 @@ JAVA_HOME=${JAVA_HOME:-/usr/lib/jvm/java-1.5.0-sun}
 
 # We need the whole MVVM since we can't boot hibernate without
 # it. Also MVPatternLayout is in bootstrap.jar.
-CLASSPATH="@MVVM_LIB@/mvvm-bootstrap.jar:@MVVM_LIB@/mvvm-impl.jar:@MVVM_LIB@/mvvm-api.jar:@MVVM_LIB@/mvvm-localapi.jar:@MVVM_HOME@/conf"
+CLASSPATH="@MVVM_LIB@/mvvm-bootstrap/:@MVVM_LIB@/mvvm-impl/:@MVVM_LIB@/mvvm-api/:@MVVM_LIB@/mvvm-localapi/:@MVVM_HOME@/conf"
 for f in @THIRDPARTY_MVVM_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
@@ -15,4 +15,4 @@ export CLASSPATH
 $JAVA_HOME/bin/java \
     -Dlog4j.configuration=file:@MVVM_HOME@/conf/log4j-reporter.xml \
     -Dbunnicula.home=@MVVM_HOME@ \
-    com.untangle.mvvm.engine.MailSenderImpl @MVVM_LIB@/mvvm-impl.jar "$@"
+    com.untangle.mvvm.engine.MailSenderImpl @MVVM_LIB@/mvvm-impl/ "$@"

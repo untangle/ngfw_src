@@ -406,7 +406,7 @@ class DefaultPolicyManager implements LocalPolicyManager
         }
     }
 
-    // LocalPolicyManager methods ----------------------------------------------
+    // LocalPolicyManager methods ---------------------------------------------
 
     // MVVM calls in here at boot time and whenever a new interface is
     // added or removed, passing all interfaces.  We automatically add

@@ -13,7 +13,7 @@ set -e
 
 JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
 
-CLASSPATH="@MVVM_LIB@/mvvm.jar"
+CLASSPATH="@MVVM_LIB@/mvvm/"
 for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done

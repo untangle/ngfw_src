@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.untangle.mvvm.logging.MvvmRepositorySelector;
 import org.apache.log4j.LogManager;
@@ -194,17 +196,23 @@ public class Main
     // XXX get rid of all these throws
     private void startMvvm() throws Exception
     {
+        List<URL> urls = new ArrayList();
         String bunniculaLib = System.getProperty("bunnicula.lib.dir");
-        URL mvvmImplJar = new URL("file://" + bunniculaLib + "/mvvm-impl.jar");
-        URL mvvmApiJar = new URL("file://" + bunniculaLib + "/mvvm-api.jar");
-        URL mvvmLocalApiJar = new URL("file://" + bunniculaLib + "/mvvm-localapi.jar");
-        URL mvvmReportingJar = new URL("file://" + bunniculaLib + "/mvvm-reporting.jar");
-        URL jVectorJar = new URL("file://" + bunniculaLib + "/jvector-impl.jar");
-        URL jNetcapJar = new URL("file://" + bunniculaLib + "/jnetcap-impl.jar");
-        URL[] urls = new URL[] { mvvmImplJar, mvvmApiJar, mvvmLocalApiJar,
-                                 mvvmReportingJar, jVectorJar, jNetcapJar };
+        urls.add(new URL("file://" + bunniculaLib + "/mvvm-impl/"));
+        urls.add(new URL("file://" + bunniculaLib + "/mvvm-api/"));
+        urls.add(new URL("file://" + bunniculaLib + "/mvvm-localapi/"));
+        urls.add(new URL("file://" + bunniculaLib + "/mvvm-reporting/"));
+        urls.add(new URL("file://" + bunniculaLib + "/jvector-impl/"));
+        urls.add(new URL("file://" + bunniculaLib + "/jnetcap-impl/"));
+
+        String charonFilename = bunniculaLib + "/charon-impl/";
+        if (new File(charonFilename).exists()) {
+            urls.add(new URL("file://" + charonFilename));
+        }
+
         String bunniculaToolbox = System.getProperty("bunnicula.toolbox.dir");
-        mcl = new MvvmClassLoader(urls, getClass().getClassLoader(),
+        mcl = new MvvmClassLoader(urls.toArray(new URL[urls.size()]),
+                                  getClass().getClassLoader(),
                                   new File(bunniculaToolbox));
 
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();

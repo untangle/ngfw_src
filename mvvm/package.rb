@@ -180,7 +180,8 @@ ms = MoveSpec.new("#{ALPINE_HOME}/mvvm/hier", FileList["#{ALPINE_HOME}/mvvm/hier
 cf = CopyFiles.new(mvvm, ms, 'hier', BuildEnv::ALPINE.filterset)
 mvvm.registerTarget('hier', cf)
 
-$InstallTarget.installJars(jts, "#{mvvm.distDirectory}/usr/share/metavize/lib")
+$InstallTarget.installJars(jts, "#{mvvm.distDirectory}/usr/share/metavize/lib",
+                           nil, false, true)
 
 $InstallTarget.installJars(Jars::Base, "#{mvvm.distDirectory}/usr/share/java/mvvm")
 
