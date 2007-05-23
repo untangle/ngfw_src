@@ -765,6 +765,8 @@ class JarTarget < Target
 
     suffix = nil unless registerTarget
     super(package,deps,suffix)
+
+    file jarFile => self
   end
 
   def javacDirectory
