@@ -25,8 +25,8 @@ task :devel => [BuildEnv::ALPINE['install'], $InstallTarget]
 task :install => [BuildEnv::ALPINE['install'], $InstallTarget] do
   # FIXME: hrm, we're taking init scripts from the staging area under
   # debian/packagename/... and put it back under debian/ ????
-  FileList['./debian/**/etc/init.d/*'].each do |f|
-    FileUtils.cp(f, "./debian/#{File.basename(f)}.init")
+  FileList["#{ALPINE_HOME}/debian/**/etc/init.d/*"].each do |f|
+    FileUtils.cp(f, "#{ALPINE_HOME}/debian/#{File.basename(f)}.init")
   end
 end
 
