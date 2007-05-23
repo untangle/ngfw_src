@@ -434,9 +434,10 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     private PolicyRule selectPolicy(IPSessionDesc sd)
     {
-        DefaultPolicyManager pmi = DefaultPolicyManager.policyManager();
-        UserPolicyRule[] userRules = pmi.userRules;
-        SystemPolicyRule[] sysRules = pmi.sysRules;
+        PolicyManagerPriv pmi = MvvmContextImpl.getInstance().policyManager();
+
+        UserPolicyRule[] userRules = pmi.getUserRules();
+        SystemPolicyRule[] sysRules = pmi.getSystemRules();
 
         for (UserPolicyRule upr : userRules) {
             if (upr.matches(sd)) {

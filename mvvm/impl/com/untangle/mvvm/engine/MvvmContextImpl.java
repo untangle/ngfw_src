@@ -76,7 +76,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private LoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
     private EventLogger eventLogger;
-    private DefaultPolicyManager policyManager;
+    private PolicyManagerPriv policyManager;
     private MPipeManagerImpl mPipeManager;
     private MailSenderImpl mailSender;
     private LogMailerImpl logMailer;
@@ -195,7 +195,7 @@ public class MvvmContextImpl extends MvvmContextBase
         return syslogManager;
     }
 
-    public DefaultPolicyManager policyManager()
+    public PolicyManagerPriv policyManager()
     {
         return policyManager;
     }
@@ -548,7 +548,19 @@ public class MvvmContextImpl extends MvvmContextBase
         repositorySelector.setLogMailer(logMailer);
 
         // Fire up the policy manager.
-        policyManager = DefaultPolicyManager.policyManager();
+        String pmClass = System.getProperty("mvvm.policy.manager");
+        if (null == pmClass) {
+            pmClass = "com.untangle.mvvm.engine.CharonPolicyManager";
+        }
+
+        PolicyManagerPriv pm = null;
+        try {
+            pm = (PolicyManagerPriv)Class.forName(pmClass).newInstance();
+        } catch (Exception exn) {
+            logger.info("could not load PolicyManager: " + pmClass);
+        }
+        policyManager = null == pm ? new DefaultPolicyManager() : pm;
+        logger.info("using PolicyManager: " + policyManager.getClass());
 
         toolboxManager = ToolboxManagerImpl.toolboxManager();
 

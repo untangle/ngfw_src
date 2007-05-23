@@ -12,8 +12,12 @@
 package com.untangle.mvvm.engine;
 
 import com.untangle.mvvm.policy.PolicyManager;
+import com.untangle.mvvm.policy.SystemPolicyRule;
+import com.untangle.mvvm.policy.UserPolicyRule;
 
 public interface PolicyManagerPriv extends PolicyManager
 {
-    void reconfigure( byte[] interfaces );
+    void reconfigure(byte[] interfaces);
+    UserPolicyRule[] getUserRules();
+    SystemPolicyRule[] getSystemRules();
 }

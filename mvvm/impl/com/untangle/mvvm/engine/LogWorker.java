@@ -93,7 +93,7 @@ class LogWorker implements Runnable
                     try {
                         persist();
                     } catch (Exception exn) { // never say die
-                        logger.error("something bad happened", exn);
+                        logger.error("fire on the poop deck", exn);
                     }
                 }
 

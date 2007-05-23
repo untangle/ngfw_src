@@ -11,7 +11,10 @@
 
 package com.untangle.mvvm.engine;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.policy.Policy;
@@ -35,11 +38,9 @@ class DefaultPolicyManager implements PolicyManagerPriv
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static DefaultPolicyManager POLICY_MANAGER = new DefaultPolicyManager();
-
     // package protected variables (used by PipelineFoundryImpl)
-    volatile UserPolicyRule[] userRules;
-    volatile SystemPolicyRule[] sysRules;
+    private volatile UserPolicyRule[] userRules;
+    private volatile SystemPolicyRule[] sysRules;
 
     private List<Policy> allPolicies; // Also contains default one
     private Policy defaultPolicy;
@@ -47,7 +48,9 @@ class DefaultPolicyManager implements PolicyManagerPriv
     private Object policyRuleLock = new Object();
     private UserPolicyRuleSet userRuleSet;
 
-    private DefaultPolicyManager() {
+    // constructor ------------------------------------------------------------
+
+    DefaultPolicyManager() {
         allPolicies = new ArrayList<Policy>();
 
         TransactionWork tw = new TransactionWork()
@@ -97,11 +100,6 @@ class DefaultPolicyManager implements PolicyManagerPriv
         MvvmContextFactory.context().runTransaction(tw);
 
         logger.info("Initialized PolicyManager");
-    }
-
-    static DefaultPolicyManager policyManager()
-    {
-        return POLICY_MANAGER;
     }
 
     private static final Policy[] POLICY_ARRAY_PROTO = new Policy[0];
@@ -407,7 +405,7 @@ class DefaultPolicyManager implements PolicyManagerPriv
         }
     }
 
-    // package protected methods ----------------------------------------------
+    // PolicyManagerPriv methods ----------------------------------------------
 
     // MVVM calls in here at boot time and whenever a new interface is
     // added or removed, passing all interfaces.  We automatically add
@@ -528,5 +526,15 @@ class DefaultPolicyManager implements PolicyManagerPriv
                 };
             MvvmContextFactory.context().runTransaction(tw);
         }
+    }
+
+    public UserPolicyRule[] getUserRules()
+    {
+        return userRules;
+    }
+
+    public SystemPolicyRule[] getSystemRules()
+    {
+        return sysRules;
     }
 }

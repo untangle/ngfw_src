@@ -66,7 +66,7 @@ public class TransactionRunner
                     Thread.currentThread().sleep(SLEEP_TIMES[i]);
                 } catch (InterruptedException e) { /* keep going */ }
             } catch (Exception exn) {
-                logger.error("something bad happened, not retrying", exn);
+                logger.error("fire on the poop deck, not retrying", exn);
                 if (null != tx) {
                     tx.rollback();
                 }
