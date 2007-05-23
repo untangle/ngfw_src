@@ -76,7 +76,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private LoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
     private EventLogger eventLogger;
-    private PolicyManagerImpl policyManager;
+    private DefaultPolicyManager policyManager;
     private MPipeManagerImpl mPipeManager;
     private MailSenderImpl mailSender;
     private LogMailerImpl logMailer;
@@ -195,7 +195,7 @@ public class MvvmContextImpl extends MvvmContextBase
         return syslogManager;
     }
 
-    public PolicyManagerImpl policyManager()
+    public DefaultPolicyManager policyManager()
     {
         return policyManager;
     }
@@ -548,7 +548,7 @@ public class MvvmContextImpl extends MvvmContextBase
         repositorySelector.setLogMailer(logMailer);
 
         // Fire up the policy manager.
-        policyManager = PolicyManagerImpl.policyManager();
+        policyManager = DefaultPolicyManager.policyManager();
 
         toolboxManager = ToolboxManagerImpl.toolboxManager();
 

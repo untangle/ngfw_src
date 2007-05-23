@@ -28,14 +28,14 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-class PolicyManagerImpl implements PolicyManagerPriv
+class DefaultPolicyManager implements PolicyManagerPriv
 {
     private static final String INITIAL_POLICY_NAME = "Default Rack";
     private static final String INITIAL_POLICY_NOTES = "The default rack";
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private static PolicyManagerImpl POLICY_MANAGER = new PolicyManagerImpl();
+    private static DefaultPolicyManager POLICY_MANAGER = new DefaultPolicyManager();
 
     // package protected variables (used by PipelineFoundryImpl)
     volatile UserPolicyRule[] userRules;
@@ -47,7 +47,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
     private Object policyRuleLock = new Object();
     private UserPolicyRuleSet userRuleSet;
 
-    private PolicyManagerImpl() {
+    private DefaultPolicyManager() {
         allPolicies = new ArrayList<Policy>();
 
         TransactionWork tw = new TransactionWork()
@@ -99,7 +99,7 @@ class PolicyManagerImpl implements PolicyManagerPriv
         logger.info("Initialized PolicyManager");
     }
 
-    static PolicyManagerImpl policyManager()
+    static DefaultPolicyManager policyManager()
     {
         return POLICY_MANAGER;
     }
