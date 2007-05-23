@@ -1,5 +1,0 @@
-#! /bin/sh
-
-mcli -t 30 register boxbackup-transform 2>/dev/null || true
-
-touch /usr/share/metavize/web/webstart/boxbackup-transform-client.mar > /dev/null 2>&1 
