@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-class DefaultPolicyManager implements PolicyManagerPriv
+class DefaultPolicyManager implements LocalPolicyManager
 {
     private static final String INITIAL_POLICY_NAME = "Default Rack";
     private static final String INITIAL_POLICY_NOTES = "The default rack";
@@ -405,7 +405,7 @@ class DefaultPolicyManager implements PolicyManagerPriv
         }
     }
 
-    // PolicyManagerPriv methods ----------------------------------------------
+    // LocalPolicyManager methods ----------------------------------------------
 
     // MVVM calls in here at boot time and whenever a new interface is
     // added or removed, passing all interfaces.  We automatically add

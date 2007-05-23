@@ -15,7 +15,7 @@ import com.untangle.mvvm.policy.PolicyManager;
 import com.untangle.mvvm.policy.SystemPolicyRule;
 import com.untangle.mvvm.policy.UserPolicyRule;
 
-public interface PolicyManagerPriv extends PolicyManager
+public interface LocalPolicyManager extends PolicyManager
 {
     void reconfigure(byte[] interfaces);
     UserPolicyRule[] getUserRules();

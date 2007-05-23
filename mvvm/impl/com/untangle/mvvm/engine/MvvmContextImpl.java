@@ -76,7 +76,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private LoggingManagerImpl loggingManager;
     private SyslogManagerImpl syslogManager;
     private EventLogger eventLogger;
-    private PolicyManagerPriv policyManager;
+    private LocalPolicyManager policyManager;
     private MPipeManagerImpl mPipeManager;
     private MailSenderImpl mailSender;
     private LogMailerImpl logMailer;
@@ -195,7 +195,7 @@ public class MvvmContextImpl extends MvvmContextBase
         return syslogManager;
     }
 
-    public PolicyManagerPriv policyManager()
+    public LocalPolicyManager policyManager()
     {
         return policyManager;
     }
@@ -553,9 +553,9 @@ public class MvvmContextImpl extends MvvmContextBase
             pmClass = "com.untangle.mvvm.engine.CharonPolicyManager";
         }
 
-        PolicyManagerPriv pm = null;
+        LocalPolicyManager pm = null;
         try {
-            pm = (PolicyManagerPriv)Class.forName(pmClass).newInstance();
+            pm = (LocalPolicyManager)Class.forName(pmClass).newInstance();
         } catch (Exception exn) {
             logger.info("could not load PolicyManager: " + pmClass);
         }

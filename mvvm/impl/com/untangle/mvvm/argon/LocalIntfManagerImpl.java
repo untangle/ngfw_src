@@ -30,7 +30,7 @@ import com.untangle.mvvm.ArgonException;
 import com.untangle.mvvm.IntfConstants;
 import com.untangle.mvvm.IntfEnum;
 
-import com.untangle.mvvm.engine.PolicyManagerPriv;
+import com.untangle.mvvm.engine.LocalPolicyManager;
 
 import com.untangle.mvvm.localapi.ArgonInterface;
 import com.untangle.mvvm.localapi.LocalIntfManager;
@@ -59,7 +59,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
 
     private ArgonInterfaceConverter intfConverter = null;
     
-    private final PolicyManagerPriv policyManager;
+    private final LocalPolicyManager policyManager;
     private final Logger logger = Logger.getLogger( this.getClass());
 
     /* Converter from all of the interface indexes to their display name(eg. external) */
@@ -236,7 +236,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
     }
 
     /* ----------------- Package ----------------- */
-    LocalIntfManagerImpl( PolicyManagerPriv policyManager )
+    LocalIntfManagerImpl( LocalPolicyManager policyManager )
     {
         this.policyManager = policyManager;
     }

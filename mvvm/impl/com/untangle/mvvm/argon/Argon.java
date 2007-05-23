@@ -26,7 +26,7 @@ import com.untangle.mvvm.ArgonException;
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.localapi.LocalShieldManager;
 import com.untangle.mvvm.localapi.LocalIntfManager;
-import com.untangle.mvvm.engine.PolicyManagerPriv;
+import com.untangle.mvvm.engine.LocalPolicyManager;
 import com.untangle.mvvm.shield.ShieldMonitor;
 
 import com.untangle.mvvm.networking.NetworkManagerImpl;
@@ -91,7 +91,7 @@ public class Argon
     {
     }
 
-    public void run( PolicyManagerPriv policyManager, NetworkManagerImpl networkManager )
+    public void run( LocalPolicyManager policyManager, NetworkManagerImpl networkManager )
     {
         this.networkManager = networkManager;
 
@@ -216,7 +216,7 @@ public class Argon
     /**
      * Initialize Netcap and any other supporting libraries.
      */
-    private void init( PolicyManagerPriv policyManager ) throws ArgonException
+    private void init( LocalPolicyManager policyManager ) throws ArgonException
     {
         Netcap.init( isShieldEnabled, netcapDebugLevel, jnetcapDebugLevel );
 
