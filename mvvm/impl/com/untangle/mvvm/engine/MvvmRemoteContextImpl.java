@@ -62,7 +62,7 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
 
     public PolicyManager policyManager()
     {
-        return context.policyManager();
+        return context.remotePolicyManager();
     }
 
     public AdminManager adminManager()

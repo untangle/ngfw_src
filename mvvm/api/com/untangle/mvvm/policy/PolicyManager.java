@@ -13,7 +13,6 @@ package com.untangle.mvvm.policy;
 
 import  java.util.List;
 
-
 public interface PolicyManager
 {
     /**
@@ -117,5 +116,4 @@ public interface PolicyManager
      * @exception PolicyException if there is some problem with the settings.
      */
     void setPolicyConfiguration(PolicyConfiguration pc) throws PolicyException;
-
 }

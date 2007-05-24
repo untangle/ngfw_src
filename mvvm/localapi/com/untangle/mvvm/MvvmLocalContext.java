@@ -22,7 +22,7 @@ import com.untangle.mvvm.logging.LoggingManager;
 import com.untangle.mvvm.logging.SyslogManager;
 import com.untangle.mvvm.networking.LocalNetworkManager;
 import com.untangle.mvvm.networking.ping.PingManager;
-import com.untangle.mvvm.policy.PolicyManager;
+import com.untangle.mvvm.policy.LocalPolicyManager;
 import com.untangle.mvvm.portal.LocalPortalManager;
 import com.untangle.mvvm.security.AdminManager;
 import com.untangle.mvvm.tapi.MPipeManager;
@@ -77,7 +77,7 @@ public interface MvvmLocalContext
      *
      * @return a <code>PolicyManager</code> value
      */
-    PolicyManager policyManager();
+    LocalPolicyManager policyManager();
 
     /**
      * Get the <code>AdminManager</code> singleton.

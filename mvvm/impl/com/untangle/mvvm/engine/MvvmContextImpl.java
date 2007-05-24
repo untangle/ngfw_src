@@ -38,6 +38,7 @@ import com.untangle.mvvm.networking.NetworkManagerImpl;
 import com.untangle.mvvm.networking.RemoteNetworkManagerImpl;
 import com.untangle.mvvm.networking.ping.PingManagerImpl;
 import com.untangle.mvvm.policy.LocalPolicyManager;
+import com.untangle.mvvm.policy.PolicyManager;
 import com.untangle.mvvm.tapi.MPipeManager;
 import com.untangle.mvvm.toolbox.ToolboxManager;
 import com.untangle.mvvm.tran.TransformContext;
@@ -78,6 +79,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private SyslogManagerImpl syslogManager;
     private EventLogger eventLogger;
     private LocalPolicyManager policyManager;
+    private PolicyManager remotePolicyManager;
     private MPipeManagerImpl mPipeManager;
     private MailSenderImpl mailSender;
     private LogMailerImpl logMailer;
@@ -199,6 +201,11 @@ public class MvvmContextImpl extends MvvmContextBase
     public LocalPolicyManager policyManager()
     {
         return policyManager;
+    }
+
+    public PolicyManager remotePolicyManager()
+    {
+        return remotePolicyManager;
     }
 
     public MailSenderImpl mailSender()
@@ -562,6 +569,7 @@ public class MvvmContextImpl extends MvvmContextBase
         }
         policyManager = null == pm ? new DefaultPolicyManager() : pm;
         logger.info("using PolicyManager: " + policyManager.getClass());
+        remotePolicyManager = new RemotePolicyManagerAdaptor(policyManager);
 
         toolboxManager = ToolboxManagerImpl.toolboxManager();
 

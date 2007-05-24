@@ -11,8 +11,69 @@
 
 package com.untangle.mvvm.policy;
 
-public interface LocalPolicyManager extends PolicyManager
+import java.util.List;
+
+public interface LocalPolicyManager
 {
+    /**
+     * @see PolicyManager#getPolicies()
+     */
+    Policy[] getPolicies();
+
+    /**
+     * @see PolicyManager#getDefaultPolicy()
+     */
+    Policy getDefaultPolicy();
+
+    /**
+     * @see PolicyManager#getPolicy()
+     */
+    Policy getPolicy(String name);
+
+    /**
+     * @see PolicyManager#addPolicy()
+     */
+    void addPolicy(String name, String notes) throws PolicyException;
+
+    /**
+     * @see PolicyManager#removePolicy()
+     */
+    void removePolicy(Policy policy) throws PolicyException;
+
+    void setPolicy(Policy rule, String name, String notes)
+        throws PolicyException;
+
+    /**
+     * @see PolicyManager#getSystemPolicyRules()
+     */
+    SystemPolicyRule[] getSystemPolicyRules();
+
+    /**
+     * @see PolicyManager#setSystemPolicyRule()
+     */
+    void setSystemPolicyRule(SystemPolicyRule rule, Policy p, boolean inbound,
+                             String description);
+
+    /**
+     * @see PolicyManager#getUserPolicyRules()
+     */
+    UserPolicyRule[] getUserPolicyRules();
+
+    /**
+     * @see PolicyManager#setUserPolicyRules()
+     */
+    void setUserPolicyRules(List rules);
+
+    /**
+     * @see PolicyManager#getPolicyConfiguration()
+     */
+    PolicyConfiguration getPolicyConfiguration();
+
+    /**
+     * @see PolicyManager#setPolicyConfiguration()
+     */
+    void setPolicyConfiguration(PolicyConfiguration pc) throws PolicyException;
+
     void reconfigure(byte[] interfaces);
     UserPolicyRule[] getUserRules();
     SystemPolicyRule[] getSystemRules();
