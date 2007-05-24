@@ -9,4 +9,4 @@ compilerEnv = CCompilerEnv.new({ 'pkg'   => "#{CCompilerEnv::Netcap}",
 ArchiveTarget.buildTarget(libnetcap, [BuildEnv::ALPINE['libmvutil']],
                           compilerEnv, ['/usr/include/libxml2'])
 
-stamptask $InstallTarget => libnetcap
+stamptask BuildEnv::ALPINE.installTarget => libnetcap

@@ -8,4 +8,4 @@ compilerEnv = CCompilerEnv.new({ 'pkg' => "#{CCompilerEnv::Mvutil}",
 ## libmvutil
 ArchiveTarget.buildTarget(libmvutil, [], compilerEnv)
 
-stamptask $InstallTarget => libmvutil
+stamptask BuildEnv::ALPINE.installTarget => libmvutil

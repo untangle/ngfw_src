@@ -14,5 +14,5 @@ file nfutil do
                                                        [], ['netfilter_queue'])
 end
 
-$InstallTarget.registerDependency(nfutil)
-$InstallTarget.installFiles(nfutil, "#{BuildEnv::ALPINE['mvvm'].distDirectory}/usr/share/metavize/networking/")
+BuildEnv::ALPINE.installTarget.registerDependency(nfutil)
+BuildEnv::ALPINE.installTarget.installFiles(nfutil, "#{BuildEnv::ALPINE['mvvm'].distDirectory}/usr/share/metavize/networking/")

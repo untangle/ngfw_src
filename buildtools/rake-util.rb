@@ -82,10 +82,10 @@ class BuildEnv
   DOWNLOADS = "#{ALPINE_HOME}/downloads/output"
   SERVLET_COMMON = "#{ALPINE_HOME}/servlet/common"
 
-  attr_reader :home, :prefix, :staging, :devel, :deb, :isDevel, :grabbag, :downloads, :servletcommon, :include
+  attr_reader :home, :prefix, :staging, :devel, :deb, :isDevel, :grabbag, :downloads, :servletcommon, :include, :installTarget
   attr_writer :prefix, :target, :isDevel
 
-  def initialize(home)
+  def initialize(home, name)
     @home = home
 
     ## Prefix is the value used in substitutions
@@ -114,9 +114,9 @@ class BuildEnv
     @cache = {}
 
     [@devel, @devel, @grabbag].each { |t| ensureDirectory(t) }
-  end
 
-  ALPINE = BuildEnv.new(ALPINE_HOME)
+    @installTarget = InstallTarget.new(self['install'], [], "#{name}-install")
+  end
 
   def [](name)
     @mutex.synchronize do
@@ -455,6 +455,11 @@ class InstallTarget < Target
   def to_s
     "install-target:#{@targetName}"
   end
+end
+
+BuildEnv::ALPINE = BuildEnv.new(ALPINE_HOME, 'alpine')
+%w(mvvm untangle-client tran).each do |d|
+  BuildEnv::ALPINE.installTarget.registerDependency(BuildEnv::ALPINE[d]);
 end
 
 class EmptyTarget < Target

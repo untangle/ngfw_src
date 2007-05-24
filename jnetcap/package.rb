@@ -5,7 +5,7 @@ mvvm    = BuildEnv::ALPINE['mvvm']
 
 ## jnetcap
 j = JarTarget.buildTarget(jnetcap, Jars::Base, 'impl', "#{ALPINE_HOME}/jnetcap/impl" )
-$InstallTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib",
+BuildEnv::ALPINE.installTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib",
                            nil, false, true)
 
 headerClasses = [ 'com.untangle.jnetcap.Netcap',
@@ -25,4 +25,4 @@ compilerEnv = CCompilerEnv.new({'pkg' => "#{CCompilerEnv::JNetcap}" })
 ArchiveTarget.buildTarget(jnetcap, [ BuildEnv::ALPINE['libmvutil'], BuildEnv::ALPINE['jmvutil'], javah ], compilerEnv,
                           ["#{BuildEnv::JAVA_HOME}/include", "#{BuildEnv::JAVA_HOME}/include/linux"])
 
-stamptask $InstallTarget => jnetcap
+stamptask BuildEnv::ALPINE.installTarget => jnetcap

@@ -19,10 +19,10 @@ end
 
 task :build => [BuildEnv::ALPINE['mvvm'], BuildEnv::ALPINE['untangle-client'], BuildEnv::ALPINE['tran']]
 
-task :devel => [BuildEnv::ALPINE['install'], $InstallTarget]
+task :devel => [BuildEnv::ALPINE['install'], BuildEnv::ALPINE.installTarget]
 
 # See rake-util.rb, we check the arguments for "pkgs"
-task :install => [BuildEnv::ALPINE['install'], $InstallTarget] do
+task :install => [BuildEnv::ALPINE['install'], BuildEnv::ALPINE.installTarget] do
   # FIXME: hrm, we're taking init scripts from the staging area under
   # debian/packagename/... and put it back under debian/ ????
   FileList["#{ALPINE_HOME}/debian/**/etc/init.d/*"].each do |f|

@@ -18,7 +18,7 @@ deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [mvvm['api']]
 jt = JarTarget.buildTarget(gui, deps, 'api', "#{ALPINE_HOME}/gui/api")
 
 # XXX renaming because the package name is bad
-$InstallTarget.installJars(jt, gui.getWebappDir('webstart'), nil, true)
+BuildEnv::ALPINE.installTarget.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 mini.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 
 ## Implementation
@@ -26,7 +26,7 @@ deps = Jars::Base + Jars::Gui + Jars::TomcatEmb + [mvvm['api'], gui['api']]
 jt = JarTarget.buildTarget(gui, deps, 'impl', "#{ALPINE_HOME}/gui/impl")
 
 # XXX renaming because the package name is bad
-$InstallTarget.installJars(jt, gui.getWebappDir('webstart'), nil, true)
+BuildEnv::ALPINE.installTarget.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 mini.installJars(jt, gui.getWebappDir('webstart'), nil, true)
 
 ServletBuilder.new(gui, 'com.untangle.gui.webstart.jsp',
@@ -34,7 +34,7 @@ ServletBuilder.new(gui, 'com.untangle.gui.webstart.jsp',
                    [BuildEnv::SERVLET_COMMON],
                    ['gui.jnlp', 'gui-local.jnlp', 'gui-local-cd.jnlp', 'index.jsp'])
 
-$InstallTarget.installJars(Jars::Gui, gui.getWebappDir('webstart'), nil, true)
+BuildEnv::ALPINE.installTarget.installJars(Jars::Gui, gui.getWebappDir('webstart'), nil, true)
 
 mini.installJars(Jars::Gui, gui.getWebappDir('webstart'), nil, true)
 
@@ -43,7 +43,7 @@ guiRuntimeJars = ['asm.jar', 'cglib-2.1.3.jar', 'commons-logging-1.0.4.jar' ].ma
 end
 guiRuntimeJars += Jars::Log4j;
 guiRuntimeJars << Jars.downloadTarget('hibernate-client/hibernate-client.jar')
-$InstallTarget.installJars(guiRuntimeJars, gui.getWebappDir('webstart'), nil, true)
+BuildEnv::ALPINE.installTarget.installJars(guiRuntimeJars, gui.getWebappDir('webstart'), nil, true)
 
 ms = MoveSpec.new("#{ALPINE_HOME}/gui/hier", FileList["#{ALPINE_HOME}/gui/hier/**/*"], gui.distDirectory)
 cf = CopyFiles.new(gui, ms, 'hier', BuildEnv::ALPINE.filterset)

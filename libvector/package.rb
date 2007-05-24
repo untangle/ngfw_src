@@ -8,4 +8,4 @@ compilerEnv = CCompilerEnv.new({ 'pkg' => "#{CCompilerEnv::Vector}",
 ## libvector
 ArchiveTarget.buildTarget(libvector, [BuildEnv::ALPINE['libmvutil']], compilerEnv)
 
-stamptask $InstallTarget => libvector
+stamptask BuildEnv::ALPINE.installTarget => libvector

@@ -7,7 +7,7 @@ mvvm    = BuildEnv::ALPINE['mvvm']
 ## jvector
 deps = Jars::Base + [jnetcap['impl']]
 j = JarTarget.buildTarget(jvector, deps, 'impl', "#{ALPINE_HOME}/jvector/impl")
-$InstallTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib",
+BuildEnv::ALPINE.installTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib",
                            nil, false, true)
 
 headerClasses = [ 'com.untangle.jvector.OutgoingSocketQueue',
@@ -30,4 +30,4 @@ compilerEnv = CCompilerEnv.new({ 'pkg' => "#{CCompilerEnv::JVector}" })
 ArchiveTarget.buildTarget(jvector, [BuildEnv::ALPINE['libmvutil'], BuildEnv::ALPINE['jmvutil'], javah],
                           compilerEnv, ["#{BuildEnv::JAVA_HOME}/include", "#{BuildEnv::JAVA_HOME}/include/linux"])
 
-stamptask $InstallTarget => jvector
+stamptask BuildEnv::ALPINE.installTarget => jvector

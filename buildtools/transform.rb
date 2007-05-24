@@ -54,7 +54,7 @@ class TransformBuilder
 
       localApiJar = JarTarget.buildTarget(transform, deps, 'localapi',
                                           ["#{home}/tran/#{name}/api", "#{home}/tran/#{name}/localapi"] + paths)
-      $InstallTarget.installJars(localApiJar, "#{transform.distDirectory}/usr/share/metavize/toolbox")
+      buildEnv.installTarget.installJars(localApiJar, "#{transform.distDirectory}/usr/share/metavize/toolbox")
     end
 
     ## Build the IMPL jar.
@@ -79,7 +79,7 @@ class TransformBuilder
 
     jt = JarTarget.buildTarget(transform, deps, "impl", directories)
 
-    $InstallTarget.installJars(jt, "#{transform.distDirectory}/usr/share/metavize/toolbox", nil, false, true)
+    buildEnv.installTarget.installJars(jt, "#{transform.distDirectory}/usr/share/metavize/toolbox", nil, false, true)
 
     ## Only create the GUI api if there are files for the GUI
     if (FileList["#{home}/tran/#{name}/gui/**/*.java"].length > 0)
@@ -94,7 +94,7 @@ class TransformBuilder
       jt = JarTarget.buildTarget(transform, deps, 'gui',
                                  ["#{home}/tran/#{name}/api", "#{home}/tran/#{name}/gui",
                                    "#{home}/tran/#{name}/fake"])
-      $InstallTarget.installJars(jt, "#{transform.distDirectory}/usr/share/metavize/web/webstart",
+      buildEnv.installTarget.installJars(jt, "#{transform.distDirectory}/usr/share/metavize/web/webstart",
                                  nil, true)
     end
 

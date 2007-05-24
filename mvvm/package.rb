@@ -11,7 +11,7 @@ jts << JarTarget.buildTarget(mvvm, Jars::Base, 'bootstrap', "#{ALPINE_HOME}/mvvm
 
 ## API
 jts << (jt = JarTarget.buildTarget(mvvm, Jars::Base, 'api', ["#{ALPINE_HOME}/mvvm/api", '../version']))
-$InstallTarget.installJars(jt, mvvm.getWebappDir('webstart'), nil, true)
+BuildEnv::ALPINE.installTarget.installJars(jt, mvvm.getWebappDir('webstart'), nil, true)
 
 ## Local API
 jts << JarTarget.buildTarget(mvvm, Jars::Base + [ mvvm['api']], 'localapi', "#{ALPINE_HOME}/mvvm/localapi")
@@ -171,7 +171,7 @@ file bundledAjx => ajaxTkList do
 
   Kernel.system('sed', '-i', '-e', '/\/\/if (AjxEnv.isGeckoBased)/,+1s/\/\///', bundledAjx);
 end
-$InstallTarget.registerDependency(bundledAjx)
+BuildEnv::ALPINE.installTarget.registerDependency(bundledAjx)
 
 ServletBuilder.new(mvvm, 'com.untangle.mvvm.sessiondumper.jsp',
                    "#{ALPINE_HOME}/mvvm/servlets/session-dumper")
@@ -180,14 +180,14 @@ ms = MoveSpec.new("#{ALPINE_HOME}/mvvm/hier", FileList["#{ALPINE_HOME}/mvvm/hier
 cf = CopyFiles.new(mvvm, ms, 'hier', BuildEnv::ALPINE.filterset)
 mvvm.registerTarget('hier', cf)
 
-$InstallTarget.installJars(jts, "#{mvvm.distDirectory}/usr/share/metavize/lib",
+BuildEnv::ALPINE.installTarget.installJars(jts, "#{mvvm.distDirectory}/usr/share/metavize/lib",
                            nil, false, true)
 
-$InstallTarget.installJars(Jars::Base, "#{mvvm.distDirectory}/usr/share/java/mvvm")
+BuildEnv::ALPINE.installTarget.installJars(Jars::Base, "#{mvvm.distDirectory}/usr/share/java/mvvm")
 
-$InstallTarget.installJars(Jars::Reporting, "#{mvvm.distDirectory}/usr/share/java/reports")
+BuildEnv::ALPINE.installTarget.installJars(Jars::Reporting, "#{mvvm.distDirectory}/usr/share/java/reports")
 
-$InstallTarget.installDirs("#{mvvm.distDirectory}/usr/share/metavize/toolbox")
+BuildEnv::ALPINE.installTarget.installDirs("#{mvvm.distDirectory}/usr/share/metavize/toolbox")
 
 mvvm_cacerts = "#{mvvm.distDirectory}/usr/share/metavize/conf/cacerts"
 java_cacerts = "#{BuildEnv::JAVA_HOME}/jre/lib/security/cacerts"
@@ -207,7 +207,7 @@ file mvvm_cacerts => [ java_cacerts, mv_ca, ut_ca ] do
 end
 
 if BuildEnv::ALPINE.isDevel
-  $InstallTarget.installFiles('debian/control', "#{mvvm.distDirectory}/tmp",
+  BuildEnv::ALPINE.installTarget.installFiles('debian/control', "#{mvvm.distDirectory}/tmp",
                               'pkg-list')
 
   activationKey = "#{mvvm.distDirectory}/usr/share/metavize/activation.key"
@@ -218,10 +218,10 @@ if BuildEnv::ALPINE.isDevel
     File.open( activationKey, "w" ) { |f| f.puts( "0000-0000-0000-0000" ) }
   end
 
-  $InstallTarget.registerDependency(activationKey)
+  BuildEnv::ALPINE.installTarget.registerDependency(activationKey)
 end
 
-$InstallTarget.registerDependency(mvvm_cacerts)
+BuildEnv::ALPINE.installTarget.registerDependency(mvvm_cacerts)
 
 deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
   Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::Junit + Jars::WBEM +

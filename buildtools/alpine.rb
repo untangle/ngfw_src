@@ -27,9 +27,6 @@ require "#{ALPINE_HOME}/buildtools/jars.rb"
 require "#{ALPINE_HOME}/buildtools/jasper.rb"
 require "#{ALPINE_HOME}/buildtools/transform.rb"
 
-
-$InstallTarget = InstallTarget.new(BuildEnv::ALPINE['install'], [BuildEnv::ALPINE['mvvm'], BuildEnv::ALPINE['untangle-client'], BuildEnv::ALPINE['tran']], 'install')
-
 ## Require all of the sub packages.
 ## Done manually because order matters.
 ## XXX Could create a new helper method that sets a prefix directory before
@@ -65,7 +62,7 @@ end
 
 BuildEnv::ALPINE['mvvm']['impl'].registerDependency(libalpine_so)
 
-$InstallTarget.installFiles(libalpine_so, "#{BuildEnv::ALPINE['libalpine'].distDirectory}/usr/lib/mvvm")
+BuildEnv::ALPINE.installTarget.installFiles(libalpine_so, "#{BuildEnv::ALPINE['libalpine'].distDirectory}/usr/lib/mvvm")
 
 # DO IT!
 #graphViz('foo.dot')

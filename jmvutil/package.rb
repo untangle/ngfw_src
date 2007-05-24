@@ -9,4 +9,4 @@ compilerEnv = CCompilerEnv.new({ 'pkg'   => "#{CCompilerEnv::JMvutil}",
 ArchiveTarget.buildTarget(jmvutil, [BuildEnv::ALPINE['libmvutil']], compilerEnv,
                           ["#{BuildEnv::JAVA_HOME}/include", "#{BuildEnv::JAVA_HOME}/include/linux"])
 
-stamptask $InstallTarget => jmvutil
+stamptask BuildEnv::ALPINE.installTarget => jmvutil
