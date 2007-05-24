@@ -25,7 +25,6 @@ import java.util.Properties;
 
 import com.untangle.jnetcap.InterfaceData;
 import com.untangle.jnetcap.Netcap;
-import com.untangle.mvvm.InterfaceAlias;
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.tran.HostName;
 import com.untangle.mvvm.tran.IPaddr;
@@ -35,7 +34,6 @@ import org.apache.log4j.Logger;
 
 import static com.untangle.mvvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
 import static com.untangle.mvvm.networking.NetworkManagerImpl.BUNNICULA_CONF;
-
 
 import static com.untangle.mvvm.networking.ShellFlags.FILE_RULE_CFG;
 import static com.untangle.mvvm.networking.ShellFlags.FILE_PROPERTIES;

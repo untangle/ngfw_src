@@ -39,6 +39,9 @@ import org.hibernate.annotations.Type;
 @Table(name="mvvm_ip_network", schema="settings")
 public class IPNetworkRule extends Rule
 {
+    private static final long serialVersionUID = -7352786448519039201L;
+
+    /** The IP Network for this rule */
     private IPNetwork ipNetwork;
 
     public IPNetworkRule() { }
@@ -59,25 +62,45 @@ public class IPNetworkRule extends Rule
         return this.ipNetwork;
     }
 
-    public void setIPNetwork( IPNetwork ipNetwork )
+    /**
+     * Set the IP Network associated with this rule.
+     * @param newValue The IPNetwork associated with this rule.
+     */
+    public void setIPNetwork( IPNetwork newValue )
     {
-        this.ipNetwork = ipNetwork;
+        this.ipNetwork = newValue;
     }
 
-    /** The following are convenience methods, an IPNetwork is immutable, so the
-     *  corresponding setters do not exist */
+    /* The following are convenience methods, an IPNetwork is
+     * immutable, so the corresponding setters do not exist */
+
+    /**
+     * Retrieve the network associated with this IP Network
+     *
+     * @return The network associated with this IP Network.
+     */
     @Transient
     public IPaddr getNetwork()
     {
         return this.ipNetwork.getNetwork();
     }
 
+    /**
+     * Retrieve the netmask associated with this IP Network
+     *
+     * @return The netmask associated with this IP Network.
+     */
     @Transient
     public IPaddr getNetmask()
     {
         return this.ipNetwork.getNetmask();
     }
 
+    /**
+     * True if <code>network</code> is a unicast address.
+     *
+     * @return  True iff <code>network</code> is a unicast address.
+     */
     @Transient
     public boolean isUnicast()
     {
@@ -90,17 +113,37 @@ public class IPNetworkRule extends Rule
         else return this.ipNetwork.toString();
     }
 
+    /**
+     * Parse a single IPNetwork and create a new
+     * <code>IPNetworkRule</code>.  An IPNetwork is formmatted as
+     * x.y.z.w / 0-32 or x.y.z.w / a.b.c.d.
+     * 
+     * @param value The value to parse.
+     * @return A new IP Network based on <code>value</code>.
+     * @exception ParseException If <code>value</code> isn't a
+     * properly formatted IPNetwork.
+     */
     public static IPNetworkRule parse( String value ) throws ParseException
     {
         return new IPNetworkRule( IPNetwork.parse( value ));
     }
 
-    public static List parseList( String value ) throws ParseException
+    /**
+     * Parse a list of IPNetworks and return a new list containing
+     * each of the values.
+     *
+     * @param value The list of IPNetworks each separated by a
+     * <code>ParsingConstants.MARKER_SEPERATOR</code>.
+     * @return A new list of IPNetworks corresponding the the values
+     * in <code>value</code>
+     * @exception ParseException if any of the values are not properly formatted.
+     */
+    public static List<IPNetworkRule> parseList( String value ) throws ParseException
     {
-        List networkList = new LinkedList();
+        List<IPNetworkRule> networkList = new LinkedList<IPNetworkRule>();
 
         /* empty list, null or throw parse exception */
-        if ( value == null ) throw new ParseException( "Null list" );
+        if ( value == null ) throw new ParseException( "null list" );
 
         value = value.trim();
 
@@ -110,11 +153,25 @@ public class IPNetworkRule extends Rule
         return networkList;
     }
 
+    /**
+     * Create a new IP Network Rule.
+     *
+     * @param network The network.
+     * @param netmask The netmask of this network.
+     * @return A new IP Network Rule for <code>network / netmask</code>
+     */
     public static IPNetworkRule makeInstance( InetAddress network, InetAddress netmask )
     {
         return new IPNetworkRule( IPNetwork.makeInstance( network, netmask ));
     }
 
+    /**
+     * Create a new IP Network Rule.
+     *
+     * @param network The network.
+     * @param netmask The netmask of this network.
+     * @return A new IP Network Rule for <code>network / netmask</code>
+     */
     public static IPNetworkRule makeInstance( IPaddr network, IPaddr netmask )
     {
         return new IPNetworkRule( IPNetwork.makeInstance( network, netmask ));

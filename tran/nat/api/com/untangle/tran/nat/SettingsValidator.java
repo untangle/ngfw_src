@@ -18,8 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.mvvm.InterfaceAlias;
-
 import com.untangle.mvvm.tran.AddressValidator;
 import com.untangle.mvvm.tran.ValidateException;
 
@@ -27,6 +25,7 @@ import com.untangle.mvvm.tran.firewall.MACAddress;
 
 import com.untangle.mvvm.networking.BasicNetworkSettings;
 import com.untangle.mvvm.networking.DhcpLeaseRule;
+import com.untangle.mvvm.networking.InterfaceAlias;
 import com.untangle.mvvm.networking.IPNetworkRule;
 import com.untangle.mvvm.networking.NetworkSpace;
 import com.untangle.mvvm.networking.RedirectRule;

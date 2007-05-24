@@ -25,7 +25,7 @@ import org.hibernate.annotations.Type;
 
 
 /**
- * Rule for storing DHCP leases.
+ * Rule for storing static and dynamic DHCP leases.
  *
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
@@ -34,11 +34,24 @@ import org.hibernate.annotations.Type;
 @Table(name="mvvm_dhcp_lease_rule", schema="settings")
 public class DhcpLeaseRule extends Rule
 {
+    /* The MAC address associated with this lease */
     private MACAddress macAddress;
+
+    /* The hostname (if any) used when the lease was requested */
     private String     hostname        = "";
+
+    /* The current address that is assigned to the host with
+     * <code>macAddress</code> */
     private IPNullAddr currentAddress  = IPNullAddr.getNullAddr();
+    
+    /* The desired address to be assigned to
+     * <code>macAddress</code> */
     private IPNullAddr staticAddress   = IPNullAddr.getNullAddr();
+
+    /* The time when the lease expires */
     private Date       endOfLease      = null;
+
+    /* presently unused */
     private boolean    resolvedByMac   = true;
 
     // Constructors
@@ -57,7 +70,7 @@ public class DhcpLeaseRule extends Rule
     }
 
     /**
-     * MAC address
+     * MAC address.
      *
      * @return the mac address.
      */
@@ -68,6 +81,11 @@ public class DhcpLeaseRule extends Rule
         return macAddress;
     }
 
+    /**
+     * Set the MAC address.
+     *
+     * @param macAddress The new MACAddress for this lease.
+     */
     public void setMacAddress( MACAddress macAddress )
     {
         this.macAddress = macAddress;
@@ -76,7 +94,7 @@ public class DhcpLeaseRule extends Rule
     /**
      * Host name
      *
-     * @return the desired/assigned host name for this machine.
+     * @return the the hostname this machine registered with.
      */
     public String getHostname()
     {
@@ -86,11 +104,21 @@ public class DhcpLeaseRule extends Rule
         return hostname;
     }
 
+    /**
+     * Set the hostname.
+     *
+     * @param hostname The the hostname this machine registered with.
+     */
     public void setHostname( String hostname )
     {
         this.hostname = hostname;
     }
 
+    /**
+     * Retrieve the address that is currently assigned to this machine.
+     *
+     * @return The current assigned address.
+     */
     @Transient
     public IPNullAddr getCurrentAddress()
     {
@@ -99,6 +127,11 @@ public class DhcpLeaseRule extends Rule
         return this.currentAddress;
     }
 
+    /**
+     * Set the address that is currently assigned to this machine.
+     *
+     * @param currentAddress The current assigned address.
+     */
     public void setCurrentAddress( IPNullAddr currentAddress )
     {
         this.currentAddress = currentAddress;
@@ -118,17 +151,32 @@ public class DhcpLeaseRule extends Rule
         return this.staticAddress;
     }
 
+    /**
+     * Set static IP address for this MAC address
+     *
+     * @param staticAddress The desired static address.
+     */
     public void setStaticAddress( IPNullAddr staticAddress )
     {
         this.staticAddress = staticAddress;
     }
 
+    /**
+     * Get the time when the lease expires.
+     *
+     * @return when the lease expires.
+     */
     @Transient
     public Date getEndOfLease()
     {
         return endOfLease;
     }
 
+    /**
+     * Set the time when the lease expires.
+     *
+     * @param endofLease When the lease expires.
+     */
     public void setEndOfLease( Date endOfLease )
     {
         this.endOfLease = endOfLease;
@@ -136,8 +184,10 @@ public class DhcpLeaseRule extends Rule
 
     /**
      * Resolve by MAC
+     * This is presently unused.
      *
      * @return true if the MAC address is used to resolve this rule.
+     * This is presently unused.
      */
     @Column(name="is_resolve_mac", nullable=false)
     public boolean getResolvedByMac()
@@ -145,6 +195,12 @@ public class DhcpLeaseRule extends Rule
         return resolvedByMac;
     }
 
+    /**
+     * Resolve by MAC.
+     * This is presently unused.
+     *
+     * @param resolvedByMac If the MAC address is used to resolve this rule.
+     */
     public void setResolvedByMac( boolean resolvedByMac )
     {
         this.resolvedByMac = resolvedByMac;

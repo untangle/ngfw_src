@@ -20,7 +20,10 @@ import com.untangle.mvvm.tran.ParseException;
 
 public final class SetupState implements Serializable
 {
+    /* Map from the unique identifier to a setup state */
     private static final Map<Integer,SetupState> TYPE_TO_SETUP = new HashMap<Integer,SetupState>();
+
+    /* Map from the setup state name to a setup state */
     private static final Map<String,SetupState>  NAME_TO_SETUP = new HashMap<String,SetupState>();
 
     /* The settings have been configured through the wizard */
@@ -35,25 +38,33 @@ public final class SetupState implements Serializable
     /* The user wants a simple interface */
     public static final SetupState BASIC = new SetupState( 3, "Basic" );
     
-    /* The user is ambitious, and wants to take full advantage of network spaces. */
+    /* The user is using advanced network settings. */
     public static final SetupState ADVANCED = new SetupState( 4, "Advanced" );
     
+    /* mask used to indicate that the settings need to be restored
+     * from the database */
     private static final int RESTORE_MASK = 0x40;
 
-    /* Basic settings are in the database, but haven't been written to the /etc/network interfaces yet */
+    /* Basic settings are in the database, but haven't been written to
+     * the /etc/network interfaces yet */
     static final SetupState BASIC_RESTORE  =
         new SetupState( BASIC.type | RESTORE_MASK, "Basic Restore" );
     
-    /* Advanced settings are in the database, but haven't been written to the /etc/network interfaces yet */
+    /* Advanced settings are in the database, but haven't been written
+     * to the /etc/network interfaces yet */
     static final SetupState ADVANCED_RESTORE  =
-        new SetupState( ADVANCED.type | RESTORE_MASK, "Advanved Restore" );
+        new SetupState( ADVANCED.type | RESTORE_MASK, "Advanced Restore" );
 
+    /* All of the possible setup states. */
     private static final SetupState ENUMERATION[] =
     {
         WIZARD, NETWORK_SHARING, UNCONFIGURED, BASIC, ADVANCED, BASIC_RESTORE, ADVANCED_RESTORE
     };
 
+    /* Unique identifier for this setup state */
     private final int type;
+
+    /* User representation for this setup state */
     private final String name;
 
     private SetupState( int type, String name )
@@ -62,16 +73,31 @@ public final class SetupState implements Serializable
         this.name  = name;
     }
 
+    /**
+     * Retrieve the unique identifier of this setup state.
+     *
+     * @return The unique identifier of this setup state.
+     */
     public int getType()
     {
         return this.type;
     }
 
+    /**
+     * Retrieve the user representation of this setup state.
+     *
+     * @return The user representation of this setup state.
+     */
     public String getName()
     {
         return this.name;
     }
 
+    /**
+     * Return true if the current state is in the restore state.
+     *
+     * @return True iff the network settings must be restored.
+     */
     boolean isRestore()
     {
         return ( this.type & RESTORE_MASK ) == RESTORE_MASK;
@@ -82,16 +108,34 @@ public final class SetupState implements Serializable
         return this.name;
     }
 
+    /**
+     * Get all of the possible setup states.
+     *
+     * @return An array of all of the possible setup states.
+     */
     public static SetupState[] getEnumeration()
     {
         return ENUMERATION;
     }
 
+    /**
+     * Get the default setup state.
+     *
+     * @return the default setup state.
+     */
     public static SetupState getDefault()
     {
         return ENUMERATION[0];
     }
 
+    /**
+     * Retrieve a setup state based on its type.
+     *
+     * @param type The type to retrieve.
+     * @return The <code>SetupState</code> corresponding to
+     * <code>type</code>
+     * @exception ParseException If <code>type</code> is not valid.
+     */
     public static SetupState getInstance( int type ) throws ParseException
     {
         SetupState instance = TYPE_TO_SETUP.get( type );
@@ -108,12 +152,11 @@ public final class SetupState implements Serializable
         return ( this.type == ss.type );
     }
 
-    /* have fun with that one(type should not be 0) */
+    @Override
     public int hashCode()
     {
         return ( this.type * 103423 ) %  104659;
     }
-
     
     static
     {

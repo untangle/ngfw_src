@@ -11,6 +11,12 @@
 
 package com.untangle.mvvm.networking;
 
+/**
+ * Combined settings for the DHCP and DNS servers.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public interface ServicesSettings extends DhcpServerSettings, DnsServerSettings
 {
 }

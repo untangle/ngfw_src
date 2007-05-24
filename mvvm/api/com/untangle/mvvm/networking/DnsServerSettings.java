@@ -16,27 +16,55 @@ import java.util.List;
 import com.untangle.mvvm.tran.HostName;
 import com.untangle.mvvm.tran.IPaddr;
 
+/**
+ * The settings for the DNS server running on the Untangle.
+ */
 public interface DnsServerSettings
 {
-    // !!!!! private static final long serialVersionUID = 4349679825783697834L;
     /**
-     * If DNS Masquerading is enabled.
+     * Retrieve the on/off switch for the DNS server.
+     *
+     * @return True iff the dns server is enabled.
      */
     public boolean getDnsEnabled();
 
-    public void setDnsEnabled( boolean b );
+    /**
+     * Set if the DNS server is enabled.
+     *
+     * @param newValue True iff the dns server is enabled.
+     */
+    public void setDnsEnabled( boolean newValue );
 
     /**
-     * Local Domain
+     * Get the local DNS domain, this is the domain for the internal
+     * private network.
+     *
+     * @return The local DNS domain.
      */
     public HostName getDnsLocalDomain();
 
-    public void setDnsLocalDomain( HostName s );
+    /**
+     * Set the local DNS domain, this is the domain for the internal
+     * private network.
+     *
+     * @param newValue The new local DNS domain.
+     */
+    public void setDnsLocalDomain( HostName newValue );
 
     /**
-     * List of the DNS Static Host rules.
+     * Set the additional list of dns entries that should resolve.
+     * The DNS server will serve entries for machines that register
+     * with DHCP (The Dynamic Host List) as well as the list of
+     * addresses that are in this list.
+     *
+     * @return The list of static DNS entries.
      */
     public List<DnsStaticHostRule> getDnsStaticHostList();
 
-    public void setDnsStaticHostList( List<DnsStaticHostRule> s );
+    /**
+     * Set the static list of DNS entries.
+     *
+     * @param newValue The new list of static DNS entries.
+     */
+    public void setDnsStaticHostList( List<DnsStaticHostRule> newValue );
 }

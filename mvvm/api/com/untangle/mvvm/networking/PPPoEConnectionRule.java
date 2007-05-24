@@ -36,24 +36,35 @@ import com.untangle.mvvm.tran.ValidateException;
 @Table(name="mvvm_pppoe_connection", schema="settings")
 public class PPPoEConnectionRule extends Rule implements Serializable, Validatable
 {
+    /* the username */
     private String username   = "pppoe";
+
+    /* the password */
     private String password   = "eoppp";
 
+    /* The value for the secret field, this is a string that is
+     * appended verbatim to the file connection-pppoe in
+     * /etc/ppp/peers. */
     private String secretField = "";
 
     /* Index of the argon interface to run PPPoE on */
     private byte argonIntf = IntfConstants.ARGON_UNKNOWN;
 
-    /** This is most likely going to not be used.  Set to true to
-     * automatically redial every minute, even if there is no traffic.
-     * This should be the default and I can't imagine anyone every
-     * turning it off. */
+    /**
+     * Presently unused.  Set to true to automatically redial every
+     * minute, even if there is no traffic.  This should be the
+     * default and I can't imagine anyone every turning it off. */
     private boolean keepalive = true;
 
     public PPPoEConnectionRule()
     {
     }
-        
+    
+    /**
+     * Get the username.
+     *
+     * @return The username.
+     */
     @Column(name="username")
     public String getUsername()
     {
@@ -61,12 +72,22 @@ public class PPPoEConnectionRule extends Rule implements Serializable, Validatab
         return this.username;
     }
     
+    /**
+     * Set the username.
+     *
+     * @param newValue The username.
+     */
     public void setUsername( String newValue )
     {
         newValue = ( null == newValue ) ? "" : newValue;
         this.username = newValue.trim();
     }
 
+    /**
+     * Get the password.
+     *
+     * @return The password.
+     */
     @Column(name="password")
     public String getPassword()
     {
@@ -74,12 +95,22 @@ public class PPPoEConnectionRule extends Rule implements Serializable, Validatab
         return this.password;
     }
 
+    /**
+     * Set the password.
+     *
+     * @param newValue The password.
+     */
     public void setPassword( String newValue )
     {
         newValue = ( null == newValue ) ? "" : newValue;
         this.password = newValue.trim();
     }
 
+    /**
+     * Get the secret field.
+     *
+     * @return The secret field for this connection.
+     */
     @Column(name="secret_field")
     public String getSecretField()
     {
@@ -87,29 +118,53 @@ public class PPPoEConnectionRule extends Rule implements Serializable, Validatab
         return this.secretField;
     }
 
+    /**
+     * Set the secret field.
+     *
+     * @param newValue The secret field for this connection.
+     */
     public void setSecretField( String newValue )
     {
         newValue = ( null == newValue ) ? "" : newValue;
         this.secretField = newValue.trim();
     }
 
+    /**
+     * The argon index of the interface to run PPPoE on.
+     *
+     * @return The argon index of the interface to run PPPoE on.
+     */
     @Column(name="intf")
     public byte getArgonIntf()
     {
         return this.argonIntf;
     }
 
+    /**
+     * Set the argon index of the interface to run PPPoE on.
+     *
+     * @param newValue The argon index of the interface to run PPPoE
+     * on.
+     */
     public void setArgonIntf( byte newValue )
     {
         this.argonIntf = newValue;
     }
 
+    /**
+     * Unused parameter.  Originally used to automatically redial.
+     * PPPoE appears to do this automatically anyway.     
+     */
     @Column(name="keepalive")
     public boolean getKeepalive()
     {
         return this.keepalive;
     }
 
+    /**
+     * Unused parameter.  Originally used to automatically redial.
+     * PPPoE appears to do this automatically anyway.     
+     */
     public void setKeepalive( boolean newValue )
     {
         this.keepalive = newValue;
@@ -120,6 +175,12 @@ public class PPPoEConnectionRule extends Rule implements Serializable, Validatab
         return "[" + this.argonIntf + "," + "," + this.keepalive + "," + this.username + "]";
     }
 
+    /**
+     * Validate these PPPoE setting are free of errors.
+     *
+     * @exception ValidationException Occurs if there is an error in
+     * these settings.
+     */
     public void validate() throws ValidateException
     {
         /* Nothing to validate if this connection is disabled. */

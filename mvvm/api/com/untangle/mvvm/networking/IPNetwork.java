@@ -21,13 +21,30 @@ import com.untangle.mvvm.tran.IPaddr;
 
 import com.untangle.mvvm.tran.ParseException;
 
+/**
+ * A single ip network.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public class IPNetwork implements Serializable
 {
+    private static final long serialVersionUID = 6448567182570161455L;
+
+    /* The separator between the network and the netmask */
     private static final String MARKER_NETMASK = "/";
+    
+    /* An empty IP network, use this to initialize IPNetwork when a
+     * default value is needed. */
     private static final IPNetwork EMPTY_IPNETWORK;
     
+    /* The network */
     private final IPaddr network;
+
+    /* The netmask */
     private final IPaddr netmask;
+
+    /* User/Database representation for this IPNetwork. */
     private final String user;
 
     /* XXX Perhaps this should be stored in CIDR notation */
@@ -38,16 +55,31 @@ public class IPNetwork implements Serializable
         this.user = user;
     }
 
+    /**
+     * Retrieve the network.
+     *
+     * @return The network.
+     */
     public IPaddr getNetwork()
     {
         return this.network;
     }
 
+    /**
+     * Retrieve the netmask for this network.
+     *
+     * @return The netmask.
+     */
     public IPaddr getNetmask()
     {
         return this.netmask;
     }
 
+    /**
+     * True if <code>network</code> is a unicast address.
+     *
+     * @return  True iff <code>network</code> is a unicast address.
+     */
     public boolean isUnicast()
     {
         return  NetworkUtil.getInstance().isUnicast( this );
@@ -86,6 +118,13 @@ public class IPNetwork implements Serializable
         return result;
     }
 
+    /**
+     * Parse a string and convert it to create the corresponding IPNetwork.
+     *
+     * @param value The string to parser.
+     * @return A IPNetwork that corresponds to <code>value</code>
+     * @exception ParseException If value doesn't represent an IPNetwork.
+     */
     public static IPNetwork parse( String value ) throws ParseException
     {
         value = value.trim();
@@ -107,17 +146,36 @@ public class IPNetwork implements Serializable
         }
     }
 
+    /**
+     * Create a new IP Network.
+     *
+     * @param network The network.
+     * @param netmask The netmask of this network.
+     * @return A new IP Network for <code>network / netmask</code>
+     */
     public static IPNetwork makeInstance( InetAddress network, InetAddress netmask )
     {
         return makeInstance( new IPaddr((Inet4Address)network), new IPaddr((Inet4Address)netmask));
     }
 
+    /**
+     * Create a new IP Network.
+     *
+     * @param network The network.
+     * @param netmask The netmask of this network.
+     * @return A new IP Network for <code>network / netmask</code>
+     */
     public static IPNetwork makeInstance( IPaddr network, IPaddr netmask )
     {
         String user = network + "/" + netmask;
         return new IPNetwork( network, netmask, user );
     }
 
+    /**
+     * Retrieve the empty network, this is useful to initialize values.
+     *
+     * @return an empty ip network.
+     */
     public static IPNetwork getEmptyNetwork()
     {
         return EMPTY_IPNETWORK;

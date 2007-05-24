@@ -32,7 +32,7 @@ import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 
 /**
- * Settings for the network spaces.
+ * Combined settings for the DHCP and DNS servers.
  *
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
@@ -41,22 +41,29 @@ import org.hibernate.annotations.Type;
 @Table(name="mvvm_network_services", schema="settings")
 public class ServicesSettingsImpl implements ServicesSettings, Serializable
 {
-
-    // !!! serialver
+    private static final long serialVersionUID = 7074952180633919139L;
 
     private Long id;
 
     /* Is dhcp enabled */
     private boolean dhcpEnabled = false;
+    
+    /* Start of the DHCP servers dynamic range */
     private IPaddr  dhcpStartAddress;
+
+    /* End of the DHCP servers dynamic range */
     private IPaddr  dhcpEndAddress;
+
+    /* Length of the default DHCP lease */
     private int     dhcpLeaseTime = 0;
 
-    /* Dhcp leasess */
+    /* List of DHCP leases */
     private List<DhcpLeaseRule> dhcpLeaseList = new LinkedList<DhcpLeaseRule>();
 
-    /* DNS Masquerading settings */
+    /* Is the DNS server enabled. */
     private boolean  dnsEnabled = false;
+    
+    /* The local domain for the DNS server */
     private HostName dnsLocalDomain = HostName.getEmptyHostName();
 
     /* DNS Static Hosts */
@@ -91,9 +98,9 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     }
 
     /**
-     * Get whether or not dhcp is enabled..
+     * Returns whether or not the DHCP server is enabled.
      *
-     * @return is DHCP enabled.
+     * @return True iff the DHCP server is enabled.
      */
     @Column(name="is_dhcp_enabled", nullable=false)
     public boolean getDhcpEnabled()
@@ -101,15 +108,21 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
         return dhcpEnabled;
     }
 
+    /**
+     * Set whether or not the DHCP server is enabled.
+     *
+     * @param newValue True iff the DHCP server is enabled.
+     */
     public void setDhcpEnabled( boolean b )
     {
         this.dhcpEnabled = b;
     }
 
     /**
-     * DHCP server start address.
+     * Retrieve the start of the range of addresses the DHCP server
+     * can distribute dynamically.
      *
-     * @return DHCP server start address.
+     * @return The start of the DHCP dynamic range.
      */
     @Column(name="dhcp_start_address")
     @Type(type="com.untangle.mvvm.type.IPaddrUserType")
@@ -119,6 +132,12 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
         return dhcpStartAddress;
     }
 
+    /**
+     * Set the start of the range of addresses the DHCP server
+     * can distribute dynamically.
+     *
+     * @param newValue The start of the DHCP dynamic range.
+     */
     public void setDhcpStartAddress( IPaddr address )
     {
         if ( address == null ) address = NetworkUtil.EMPTY_IPADDR;
@@ -126,9 +145,10 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     }
 
     /**
-     * DHCP server end address.
+     * Retrieve the end of the range of addresses the DHCP server
+     * can distribute dynamically.
      *
-     * @return DHCP server end address.
+     * @return The end of the DHCP dynamic range.
      */
     @Column(name="dhcp_end_address")
     @Type(type="com.untangle.mvvm.type.IPaddrUserType")
@@ -138,13 +158,26 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
         return dhcpEndAddress;
     }
 
+    /**
+     * Set the end of the range of addresses the DHCP server
+     * can distribute dynamically.
+     *
+     * @param newValue The end of the DHCP dynamic range.
+     */
     public void setDhcpEndAddress( IPaddr address )
     {
         if ( address == null ) address = NetworkUtil.EMPTY_IPADDR;
         this.dhcpEndAddress = address;
     }
 
-    /** Set the starting and end address of the dns server */
+    /**
+     * Set the range of addresses the DHCP server can distribute
+     * dynamically.  This should automatically swap start and end if
+     * necessary.
+     *
+     * @param start The start of the DHCP dynamic range.
+     * @param end The end of the DHCP dynamic range.
+     */
     public void setDhcpStartAndEndAddress( IPaddr start, IPaddr end )
     {
         if ( start == null ) {
@@ -165,9 +198,10 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     }
 
     /**
-     * Get the default DHCP lease time.
+     * Retrieve the number of seconds that a dynamic DHCP lease should
+     * be valid for.
      *
-     * @return default DHCP lease.
+     * @return The length of the lease in seconds.
      */
     @Column(name="dhcp_lease_time", nullable=false)
     public int getDhcpLeaseTime()
@@ -175,15 +209,23 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
         return this.dhcpLeaseTime;
     }
 
+
+    /**
+     * Set the number of seconds that a dynamic DHCP lease should be
+     * valid for.
+     *
+     * @param newValue The length of the lease in seconds.
+     */
     public void setDhcpLeaseTime( int time )
     {
         this.dhcpLeaseTime = time;
     }
 
     /**
-     * List of the dhcp leases.
+     * Retrieve the current list of DHCP leases.  This includes both
+     * static and dynamic leases.
      *
-     * @return the list of the dhcp leases.
+     * @return The current DHCP leases.
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -197,15 +239,23 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
         return dhcpLeaseList;
     }
 
+
+    /**
+     * Set the current list of DHCP leases.  Dynamic DHCP leases are
+     * not saved.
+     *
+     * @param newValue The new list of leases.
+     */
     public void setDhcpLeaseList( List<DhcpLeaseRule> newValue )
     {
         if ( newValue == null ) newValue = new LinkedList<DhcpLeaseRule>();
         dhcpLeaseList = newValue;
     }
 
-
     /**
-     * @return If DNS Masquerading is enabled.
+     * Retrieve the on/off switch for the DNS server.
+     *
+     * @return True iff the dns server is enabled.
      */
     @Column(name="dns_enabled", nullable=false)
     public boolean getDnsEnabled()
@@ -213,15 +263,22 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
         return dnsEnabled;
     }
 
+
+    /**
+     * Set if the DNS server is enabled.
+     *
+     * @param newValue True iff the dns server is enabled.
+     */
     public void setDnsEnabled( boolean newValue )
     {
         this.dnsEnabled = newValue;
     }
 
     /**
-     * Local Domain
+     * Get the local DNS domain, this is the domain for the internal
+     * private network.
      *
-     * @return the local domain
+     * @return The local DNS domain.
      */
     @Column(name="dns_local_domain")
     @Type(type="com.untangle.mvvm.type.HostNameUserType")
@@ -231,6 +288,12 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
         return dnsLocalDomain;
     }
 
+    /**
+     * Set the local DNS domain, this is the domain for the internal
+     * private network.
+     *
+     * @param newValue The new local DNS domain.
+     */
     public void setDnsLocalDomain( HostName newValue )
     {
         if ( newValue == null ) newValue = HostName.getEmptyHostName();
@@ -238,9 +301,12 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     }
 
     /**
-     * List of the DNS Static Host rules.
+     * Set the additional list of dns entries that should resolve.
+     * The DNS server will serve entries for machines that register
+     * with DHCP (The Dynamic Host List) as well as the list of
+     * addresses that are in this list.
      *
-     * @return the list of the DNS Static Host rules.
+     * @return The list of static DNS entries.
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -254,6 +320,11 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
         return dnsStaticHostList;
     }
 
+    /**
+     * Set the static list of DNS entries.
+     *
+     * @param newValue The new list of static DNS entries.
+     */
     public void setDnsStaticHostList( List<DnsStaticHostRule> newValue )
     {
         if ( newValue == null ) newValue = new LinkedList<DnsStaticHostRule>();

@@ -45,17 +45,34 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
 {
     private Long id;
 
+    /** The current setup state */
     private SetupState setupState = SetupState.BASIC;
+    
+    /* Whether or not network spaces are enabled */
     private boolean isEnabled = false;
+
+    /* Whether or not the box has gone through the setup wizard */
     private boolean hasCompletedSetup = true;
 
+    /* The list of interfaces */
     private List<Interface> interfaceList = new LinkedList<Interface>();
+    
+    /* The current list of network spaces. */
     private List<NetworkSpace> networkSpaceList = new LinkedList();
+    
+    /* The routing table */
     private List<Route> routingTable = new LinkedList<Route>();
+
+    /* The list of redirects */
     private List<RedirectRule> redirectList = new LinkedList<RedirectRule>();
 
+    /* Default Route for the untangle */
     private IPaddr defaultRoute = NetworkUtil.EMPTY_IPADDR;
+
+    /* Primary DNS server */
     private IPaddr dns1 = NetworkUtil.EMPTY_IPADDR;
+
+    /* Secondary DNS server */
     private IPaddr dns2 = NetworkUtil.EMPTY_IPADDR;
 
     /* This is a data class */
@@ -77,9 +94,9 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     }
 
     /**
-     * Get whether or not the settings are enabled..
+     * Retrieve whether or not the advanced settings are enabled.
      *
-     * @return is NAT is being used.
+     * @return True iff advanced settings are enabled.
      */
     @Column(name="is_enabled", nullable=false)
     public boolean getIsEnabled()
@@ -87,14 +104,21 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         return this.isEnabled;
     }
 
+    /**
+     * Set whether or not network spaces are enabled.
+     *
+     * @param newValue True iff network spaces are enabled.
+     */
     public void setIsEnabled( boolean newValue )
     {
         this.isEnabled = newValue;
     }
 
     /**
-     * The current setup state for this tranform.  (deprecated, unconfigured, basic, advanced).
-     * @return The current setup state for this transform.
+     * Retrieve the setup state of network spaces.
+     * (deprecated, unconfigured, basic, advanced).
+     *
+     * @return The current setup state.
      */
     @Column(name="setup_state")
     @Type(type="com.untangle.mvvm.networking.SetupStateUserType")
@@ -103,15 +127,21 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         return this.setupState;
     }
 
+    /**
+     * Retrieve whether or not the Untangle Platform has completed the
+     * setup wizard.
+     *
+     * @return True if the untangle has completed setup.
+     */
     public void setSetupState( SetupState newValue )
     {
         this.setupState = newValue;
     }
 
     /**
-     * The list of interfaces.
+     * Retrieve a list of interfaces
      *
-     * @return the list of interfaces
+     * @return A list of the interfaces.
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -126,16 +156,22 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         return this.interfaceList;
     }
 
+    /**
+     * Set the list of interfaces
+     *
+     * @param newValue A list of the interfaces.
+     */
     public void setInterfaceList( List<Interface> newValue )
     {
         if ( newValue == null ) newValue = new LinkedList();
         this.interfaceList = newValue;
     }
 
+
     /**
-     * The list of network spaces.
+     * Retrieve the list of network spaces for the box.
      *
-     * @return the list of network spaces
+     * @return The lists of network spaces.
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -150,6 +186,12 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         return this.networkSpaceList;
     }
 
+
+    /**
+     * Set The list of network spaces for the box.
+     *
+     * @param newValue The lists of network spaces.
+     */
     public void setNetworkSpaceList( List<NetworkSpace> newValue )
     {
         if ( newValue == null ) newValue = new LinkedList<NetworkSpace>();
@@ -157,9 +199,9 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     }
 
     /**
-     * The routing table.
+     * Retrieve the routing table for the box.
      *
-     * @return the routing table
+     * @return The routing table.
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -172,6 +214,11 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         return this.routingTable;
     }
 
+    /**
+     * Set the routing table for the box.
+     *
+     * @param newValue The routing table.
+     */
     public void setRoutingTable( List<Route> newValue )
     {
         if ( newValue == null ) newValue = new LinkedList<Route>();
@@ -179,9 +226,9 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     }
 
     /**
-     * Default route for the box.
+     * Get the IP address of the default route.
      *
-     * @return the default route for the box.
+     * @return The current default route for the untangle.
      */
     @Column(name="default_route")
     @Type(type="com.untangle.mvvm.type.IPaddrUserType")
@@ -191,6 +238,11 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         return this.defaultRoute;
     }
 
+    /**
+     * Set the IP address of the default route.
+     *
+     * @param newValue The new default route for the untangle.
+     */
     public void setDefaultRoute( IPaddr newValue )
     {
         if ( newValue == null || newValue.isEmpty()) newValue = NetworkUtil.EMPTY_IPADDR;
@@ -198,10 +250,12 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     }
 
     /**
-     * List of the redirect rules, and yes this has to be many-to-many since these are shared with
+     * Retrieve the list of redirects for the box.
+     *
+     * This has to be many-to-many since these are shared with
      * NatSettings.
      *
-     * @return the list of the redirect rules.
+     * @return Get the current list of redirects.
      */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
@@ -216,6 +270,11 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         return this.redirectList;
     }
 
+    /**
+     * Set the list of redirects for the box
+     *
+     * @param newValue The new list of redirects.
+     */
     public void setRedirectList( List<RedirectRule> newValue )
     {
         if ( newValue == null ) newValue = new LinkedList<RedirectRule>();
@@ -223,9 +282,10 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     }
 
     /**
-     * Address of the primary dns server
+     * Get IP address of the primary dns server, may be empty (dhcp is
+     * enabled)
      *
-     * @return Address of the primary dns server
+     * @return The primay DNS server.
      */
     @Column(name="dns_1")
     @Type(type="com.untangle.mvvm.type.IPaddrUserType")
@@ -235,6 +295,12 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         return this.dns1;
     }
 
+    /**
+     * Set IP address of the primary dns server, may be empty (dhcp is
+     * enabled)
+     *
+     * @param newValue The primay DNS server.
+     */
     public void setDns1( IPaddr newValue )
     {
         if ( newValue == null || newValue.isEmpty()) newValue = NetworkUtil.EMPTY_IPADDR;
@@ -242,9 +308,9 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     }
 
     /**
-     * Address of the secondary dns server
+     * IP address of the secondary DNS server, may be empty
      *
-     * @return Address of the secondary dns server
+     * @return The IP address of the secondary DNS server.
      */
     @Column(name="dns_2")
     @Type(type="com.untangle.mvvm.type.IPaddrUserType")
@@ -254,13 +320,23 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         return this.dns2;
     }
 
+
+    /**
+     * Set the IP address of the secondary DNS server, may be empty.
+     *
+     * @param newValue The IP address of the secondary DNS server.
+     */
     public void setDns2( IPaddr newValue )
     {
         if ( newValue == null || newValue.isEmpty()) newValue = NetworkUtil.EMPTY_IPADDR;
         this.dns2 = newValue;
     }
 
-    /* Return true if there is a secondary DNS entry */
+    /**
+     * Check if the secondary DNS entry is empty. 
+     *
+     * @return True iff the is a secondary DNS entry
+     */
     public boolean hasDns2()
     {
         return (( this.dns2 == null ) || this.dns2.isEmpty());
@@ -280,6 +356,12 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         return this.hasCompletedSetup;
     }
 
+    /**
+     * Set whether this Untangle Server has completed setup.
+     *
+     * @param newValue whether this Untangle Server has completed
+     * setup.
+     */
     public void setHasCompletedSetup( boolean newValue )
     {
         this.hasCompletedSetup = newValue;
@@ -319,6 +401,11 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
         return sb.toString();
     }
 
+    /**
+     * Validate that the settings are free of errors.
+     *
+     * @exception ValidateException If the settings contain errors.
+     */
     public void validate() throws ValidateException
     {
         NetworkUtil.getInstance().validate( this );

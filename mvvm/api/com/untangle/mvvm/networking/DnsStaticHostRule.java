@@ -30,7 +30,12 @@ import org.hibernate.annotations.Type;
 @Table(name="mvvm_dns_static_host_rule", schema="settings")
 public class DnsStaticHostRule extends Rule
 {
+    private static final long serialVersionUID = -9166468521319948021L;
+
+    /** The list of hostnames for this rule */
     private HostNameList hostNameList = HostNameList.getEmptyHostNameList();
+
+    /** The IP address that all of these hostnames resolves to */
     private IPaddr staticAddress = null;
 
     // Constructors
@@ -42,11 +47,12 @@ public class DnsStaticHostRule extends Rule
         this.staticAddress = staticAddress;
     }
 
-
     /**
-     * Host name list
+     * This is the list of hostnames that should resolve to
+     * <code>staticAddress</code>.
      *
-     * @return the host name list.
+     * @return The list of hostnames that resolve to
+     * <code>staticAddress</code>.
      */
     @Column(name="hostname_list")
     @Type(type="com.untangle.mvvm.type.HostNameListUserType")
@@ -58,15 +64,22 @@ public class DnsStaticHostRule extends Rule
         return hostNameList;
     }
 
+    /**
+     * Set the list of hostnames that should resolve to
+     * <code>staticAddress</code>.
+     *
+     * @param hostnameList The list of hostnames that resolve to
+     * <code>staticAddress</code>.
+     */
     public void setHostNameList( HostNameList hostNameList )
     {
         this.hostNameList = hostNameList;
     }
 
     /**
-     * Get static IP address
+     * Get the IP address of this entry.
      *
-     * @return desired static address.
+     * @return The IP address for this entry.
      */
     @Column(name="static_address")
     @Type(type="com.untangle.mvvm.type.IPaddrUserType")
@@ -75,6 +88,11 @@ public class DnsStaticHostRule extends Rule
         return this.staticAddress;
     }
 
+    /**
+     * Set the IP address of this entry.
+     *
+     * @param staticAddress The IP address for this entry.
+     */
     public void setStaticAddress( IPaddr staticAddress )
     {
         this.staticAddress = staticAddress;

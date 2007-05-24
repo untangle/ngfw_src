@@ -13,7 +13,14 @@ package com.untangle.mvvm.networking;
 
 import com.untangle.mvvm.MvvmException;
 
-public class NetworkException extends MvvmException {
+/**
+ * Exception for networking errors.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
+public class NetworkException extends MvvmException
+{
     public NetworkException() 
     { 
         super(); 

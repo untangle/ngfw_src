@@ -27,21 +27,45 @@ import com.untangle.mvvm.tran.ValidateException;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
 
+/**
+ * A number of utilities for working with IP addresses and network
+ * settings.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public class NetworkUtil
 {
     private static final NetworkUtil INSTANCE;
 
+    /** An empty IP address, 0.0.0.0 */
     public static final IPaddr  EMPTY_IPADDR;
+
+    /* Default address for the outside restricted outside network */
     public static final IPaddr  DEF_OUTSIDE_NETWORK;
+
+    /* Default address for the outside restricted outside netmask */
     public static final IPaddr  DEF_OUTSIDE_NETMASK;
+
+    /* Default local domain */
     public static final HostName LOCAL_DOMAIN_DEFAULT;
+
+    /* The address to use when a DHCP request fails */
     public static final IPaddr  BOGUS_DHCP_ADDRESS;
+
+    /* The netmask to use if a DHCP request fails */
     public static final IPaddr  BOGUS_DHCP_NETMASK;
 
+    /* Default start of the DHCP range */
     public static final IPaddr DEFAULT_DHCP_START;
+
+    /* Default end of the DHCP range. */
     public static final IPaddr DEFAULT_DHCP_END;
 
+    /* Default NAT address */
     public static final IPaddr DEFAULT_NAT_ADDRESS;
+
+    /* Default NAT netmask */
     public static final IPaddr DEFAULT_NAT_NETMASK;
 
     /* This is the address to use during setup */
@@ -50,24 +74,47 @@ public class NetworkUtil
     /* ??? which one */
     public static final HostName DEFAULT_HOSTNAME;
 
+    /* Default lease time for the DHCP server */
     public static int DEFAULT_LEASE_TIME_SEC = 4 * 60 * 60;
 
+    /* The default name for the primary space */
     public static final String DEFAULT_SPACE_NAME_PRIMARY = "public";
+
+    /* The default name for the NAT space. */
     public static final String DEFAULT_SPACE_NAME_NAT     = "private";
 
+    /* Default HTTPS port */
     public static final int    DEF_HTTPS_PORT = 443;
 
+    /* Default setting for allowing internal access via http */
     public static final boolean DEF_IS_INSIDE_INSECURE_EN = true;
+
+    /* Default setting for allowing external access via https */  
     public static final boolean DEF_IS_OUTSIDE_EN         = true;
+
+    /* Default setting for whether or not external access is restricted */
     public static final boolean DEF_IS_OUTSIDE_RESTRICTED = false;
+
+    /* Default setting for remote support */
     public static final boolean DEF_IS_SSH_EN             = false;
+
+    /* Default setting for sending exception reports */
     public static final boolean DEF_IS_EXCEPTION_REPORTING_EN = false;
+
+    /* Default setting for TCP Window scaling */
     public static final boolean DEF_IS_TCP_WIN_EN         = false;
 
+    /* Default setting for whether public administration is allowed */
     public static final boolean DEF_OUTSIDE_ADMINISTRATION = false;
+
+    /* Default setting for whether users can retrieve their quarantine
+     * from the internet. */
     public static final boolean DEF_OUTSIDE_QUARANTINE = true;
+    
+    /* Default setting for whether administrators can access reports from the internet. */
     public static final boolean DEF_OUTSIDE_REPORTING = false;
 
+    /* The list of private networks, this is defined by RFC 1918 */
     private static final String PRIVATE_NETWORK_STRINGS[] =
     {
         "192.168.0.0/16", "10.0.0.0/8", "172.16.0.0/12"
@@ -76,13 +123,17 @@ public class NetworkUtil
     /* ports 9500 -> 9650 are redirect ports, 10000 -> 60000 are reserved for NAT */
     public static final int INTERNAL_OPEN_HTTPS_PORT = 64157;
 
+    /* Exception message triggered when the user enters and invalid
+     * public address string. */
     private static final String PUBLIC_ADDRESS_EXCEPTION =
         "A public address is an ip address, optionally followed by a port.  (e.g. 1.2.3.4:445 or 1.2.3.4)";
 
     /* XXX This should be final, but there is a bug in javac that won't let it be. */
+    
+    /* A list of matchers that can be uesd to determine if an address
+     * is in the private network. */
     private List<IPMatcher> privateNetworkList;
 
-    /* Package protected so that NetworkUtilPriv can work */
     NetworkUtil()
     {
         List<IPMatcher> matchers = new LinkedList<IPMatcher>();
@@ -96,10 +147,19 @@ public class NetworkUtil
             }
         }
 
-        privateNetworkList = Collections.unmodifiableList( matchers );
+        this.privateNetworkList = Collections.unmodifiableList( matchers );
     }
 
-    /* Get all of the interfaces in a particular network space */
+    /**
+     * Get a list of the interfaces that belong to a particular
+     * network space.  This is useful when the
+     * <code>interface.getNetworkSpace()</code> has been updated, but
+     * the <code>networkSpace.getInterfaceList()</code> has not.
+     *
+     * @param settings The settings to get.
+     * @param space The network space to get all of the interfaces
+     * for.
+     */
     public List<Interface> getInterfaceList( NetworkSpacesSettings settings, NetworkSpace space )
     {
         List<Interface> list = new LinkedList<Interface>();
@@ -113,19 +173,35 @@ public class NetworkUtil
         return list;
     }
 
-    /* Check if the network is private */
+    /**
+     * Return true if <code>address/netmask</code> is in one of the
+     * private ranges from RFC 1918.
+     *
+     * @param address The network to test.
+     * @param netmaks The netmask of the network.
+     * @return True iff <code>address/netmask</code> is considered a
+     * private address.
+     */
     public boolean isPrivateNetwork( IPaddr address, IPaddr netmask )
     {
         if (( address == null ) || ( netmask == null )) return false;
 
         IPaddr base = address.and( netmask );
 
-        for ( IPMatcher matcher : privateNetworkList ) if ( matcher.isMatch( base.getAddr())) return true;
+        for ( IPMatcher matcher : this.privateNetworkList ) {
+            if ( matcher.isMatch( base.getAddr())) return true;
+        }
 
         return false;
     }
 
-    /* Validate that a network configuration is okay */
+    /**
+     * Validate that a network configuration doesn't have any errors.
+     *
+     * @param settings The settings to test.
+     * @exception ValidationException Occurs if there is an error in
+     * <code>settings</code>
+     */
     public void validate( NetworkSpacesSettings settings ) throws ValidateException
     {
         int index = 0;
@@ -178,6 +254,13 @@ public class NetworkUtil
         /* XXX !!!!!!!!!!! Check to see if the serviceSpace has a primary address */
     }
 
+    /**
+     * Validate that a network space doesn't have any errors.
+     *
+     * @param space The network space to test.
+     * @exception ValidationException Occurs if there is an error in
+     * <code>space</code>.
+     */
     public void validate( NetworkSpace space ) throws ValidateException
     {
         boolean isDhcpEnabled = space.getIsDhcpEnabled();
@@ -235,6 +318,13 @@ public class NetworkUtil
 
     }
 
+    /**
+     * Validate that a route doesn't have any errors.
+     *
+     * @param route The route to validate.
+     * @exception ValidationException Occurs if there is an error in
+     * <code>route</code>.
+     */
     public void validate( Route route ) throws ValidateException
     {
         IPNetwork network = route.getDestination();
@@ -244,12 +334,25 @@ public class NetworkUtil
         if ( route.getNextHop().isEmpty()) throw new ValidateException( "The next hop is empty" );
     }
 
-    /** Functions for IPNetworks */
+    /**
+     * Validate that a network doesn't have any errors.
+     *
+     * @param network The network to validate.
+     * @exception ValidationException Occurs if there is an error in
+     * <code>route</code>.
+     */
     public void validate( IPNetwork network ) throws ValidateException
     {
-        /* implement me */
+        /* implement me, test if the netmask is okay, etc. */
     }
 
+    /**
+     * Test if the IPNetwork has a unicast address.
+     * this is a bogus function that should be removed.
+     *
+     * @param network The network to check.
+     * @return True iff <code>network</code> is a unicast address.
+     */
     public boolean isUnicast( IPNetwork network )
     {
         byte[] address = network.getNetwork().getAddr().getAddress();
@@ -258,7 +361,12 @@ public class NetworkUtil
         return (( address[3] != 0 ) && ( address[3] != -127 ));
     }
 
-    /* This is a string that is parseable by the ip command */
+    /**
+     * Convert network to a string that is parseable by the 'ip' command.
+     * 
+     * @param network The network to convert.
+     * @return The string representation of <code>network</code>.
+     */
     public String toRouteString( IPNetwork network ) throws NetworkException
     {
         /* XXX This is kind of hokey and should be precalculated at creation time */
@@ -275,6 +383,14 @@ public class NetworkUtil
         }
     }
 
+    /**
+     * Create a string for <code>publicAddress:publicPort</code>.
+     * This will automatically remove port for 443, and stuff like that.
+     * 
+     * @param publicAddress The address part of the public address.
+     * @param publicPort The port part of the public address.
+     * @return The public address string.
+     */
     public String generatePublicAddress( IPaddr publicAddress, int publicPort )
     {
         if ( publicAddress == null || publicAddress.isEmpty()) return "";
@@ -284,15 +400,31 @@ public class NetworkUtil
         return publicAddress.toString() + ":" + publicPort;
     }
 
-    /* Convert an IP Network to an AddressRange, used in validation */
+    /**
+     * Convert an IP Network to an AddressRange, this is used for
+     * validation.
+     *
+     * @param network The network to convert.
+     * @return An <code>AddressRange</code> that contains all of the
+     * IP addresses in <code>network</code>.
+     */
     public AddressRange makeAddressRange( IPNetworkRule network )
     {
         return AddressRange.makeNetwork( network.getNetwork().getAddr(), network.getNetmask().getAddr());
     }
 
-    // Used by UI at wizard time to provide an initial value for public hostname checkbox.
+    /**
+     * Determine if a hostname is most likely resolvable by an
+     * external DNS server.
+     *
+     * @param hostName The hostname to test.
+     * @return True if <code>hostName</code> is most likely a
+     * publically resolvable address.
+     */
     public static boolean isHostnameLikelyPublic(String hostName)
     {
+        /* This is a pretty weak test, and should be updated to test
+         * for .com, etc */
         if (!hostName.contains("."))
             return false;
         if (hostName.endsWith(".domain"))

@@ -43,29 +43,54 @@ public class NetworkSpace extends Rule
     /* There should be at least one */
     private List<IPNetworkRule> networkList = new LinkedList();
 
+    /* The default MTU for a network space */
     public static final int DEFAULT_MTU = 1500;
+
+    /* The minimum MTU */
     public static final int MIN_MTU = 100;
+
+    /* The maximum MTU */
     public static final int MAX_MTU = 3000;
+
+    /* The default name for a network space */
     public static final String DEFAULT_SPACE_NAME = "space";
 
+    /* True if this is the primary network space.  The primary network
+     * space is the first network space.  The external interface is
+     * always in the primary network space. */
     private boolean isPrimary;
 
-    /* This is a special piece, it should stay the same for the life of a network space.  */
+    /* This is a special piece, it should stay the same for the life
+     * of a network space.  */
     private long businessPapers;
+    
+    /* True if DHCP is enabled for this network space. */
     private boolean isDhcpEnabled;
+
+    /* True if traffic is allowed to leave or enter this network space */
     private boolean isTrafficForwarded = true;
 
+    /* The MTU for all of the interfaces in this network space. */
     private int mtu = DEFAULT_MTU;
-
-    /* This is the address that traffic is NATd to */
+    
+    /* True if traffic should be NATd */
     private boolean isNatEnabled;
-    private IPaddr  natAddress;
 
     /* If non-null, NAT to whatever the primary address of this space is */
     private NetworkSpace natSpace;
 
+    /* The address to nat traffic to */
+    private IPaddr  natAddress;
+    
+    /* DMZ Host is a deprecated concept that is going away. */
+    /* True if there is a DMZ Host for this space.  DMZ Host is used
+     * to redirect all traffic to a specific address */
     private boolean isDmzHostEnabled = false;
+    
+    /* True to log all redirects from the DMZ Host */
     private boolean isDmzHostLoggingEnabled = false;
+    
+    /* The Host to redirect all traffic destined to this space */
     private IPaddr  dmzHost;
 
     /* The current status of the interface, only valid if DHCP is enabled */
@@ -119,9 +144,9 @@ public class NetworkSpace extends Rule
         return this.businessPapers;
     }
 
-    /* This should only be done once per the life of the network
-     * space.  It should remain the same throughout restarts, saves,
-     * etc. */
+    /* This should be set once per the life of the network space.  It
+     * should remain the same throughout restarts, saves, etc.
+     */
     public void setBusinessPapers( long newValue )
     {
         this.businessPapers = newValue;
@@ -144,6 +169,11 @@ public class NetworkSpace extends Rule
         return this.networkList;
     }
 
+    /**
+     * Set the list of networks for this space.
+     *
+     * @param networkList The list of networks for this space.
+     */
     public void setNetworkList( List<IPNetworkRule> networkList )
     {
         /* This make a copy of the list involved */
@@ -166,6 +196,12 @@ public class NetworkSpace extends Rule
         return isTrafficForwarded;
     }
 
+    /**
+     * Set whether or not traffic is allowed to leave this network space.
+     *
+     * @param isTrafficForwarded whether or not traffic is allowed to
+     * leave this network space.
+     */
     public void setIsTrafficForwarded( boolean isTrafficForwarded )
     {
         this.isTrafficForwarded = isTrafficForwarded;
@@ -181,6 +217,11 @@ public class NetworkSpace extends Rule
         return isDhcpEnabled;
     }
 
+    /**
+     * Set whether or not this network space uses DHCP.
+     *
+     * @param isDhcpEnabled True if DHCP should be enabled.
+     */
     public void setIsDhcpEnabled( boolean isDhcpEnabled )
     {
         this.isDhcpEnabled = isDhcpEnabled;
@@ -188,7 +229,8 @@ public class NetworkSpace extends Rule
 
     /**
      * Is this space running NAT.
-     * @return is nat running on this space.
+     *
+     * @return True if this space should do NAT.
      */
     @Column(name="is_nat_enabled", nullable=false)
     public boolean getIsNatEnabled()
@@ -196,6 +238,12 @@ public class NetworkSpace extends Rule
         return isNatEnabled;
     }
 
+    /**
+     * Set whether or not the traffic on this space is NATd.
+     *
+     * @param isNatEnabled True if the traffic on this space should be
+     * NATd.
+     */
     public void setIsNatEnabled( boolean isNatEnabled )
     {
         this.isNatEnabled = isNatEnabled;
@@ -204,7 +252,7 @@ public class NetworkSpace extends Rule
     /**
      * Address to NAT connections to if, NAT is enabled.
      *
-     * @return address to NAT connections to.
+     * @return The address to NAT connections to.
      */
     @Column(name="nat_address")
     @Type(type="com.untangle.mvvm.type.IPaddrUserType")
@@ -214,6 +262,11 @@ public class NetworkSpace extends Rule
         return this.natAddress;
     }
 
+    /**
+     * Address to NAT connections to if, NAT is enabled.
+     *
+     * @return The address to NAT connections to.
+     */
     public void setNatAddress( IPaddr address )
     {
         this.natAddress = address;
@@ -221,9 +274,13 @@ public class NetworkSpace extends Rule
 
     /** XXX Should this have cascade="all" because this is typically
      * inside of the NetworkSettings object, which also saves the list
-     * of network spaces.  The network space to NAT to.  If this is
-     * non-null, then NAT will use the primary address of the selected
-     * network space as the NAT address.  This cannot point to itself.
+     * of network spaces. 
+     */
+     
+    /** 
+     * The network space to NAT to.  If this is non-null, then NAT
+     * will use the primary address of the selected network space as
+     * the NAT address.  This cannot point to itself.
      *
      * @return The network space to nat traffic to.
      */
@@ -234,6 +291,13 @@ public class NetworkSpace extends Rule
         return this.natSpace;
     }
 
+    /** 
+     * Set the network space to NAT to.  If this is non-null, then NAT
+     * will use the primary address of the selected network space as
+     * the NAT address.  This cannot point to itself.
+     *
+     * @param newValue The network space to nat traffic to.
+     */
     public void setNatSpace( NetworkSpace newValue )
     {
         this.natSpace = newValue;
@@ -241,6 +305,7 @@ public class NetworkSpace extends Rule
 
     /**
      * Is the DMZ host enabled.
+     *
      * @return is this space using a DMZ host.
      */
     @Column(name="dmz_host_enabled", nullable=false)
@@ -249,6 +314,11 @@ public class NetworkSpace extends Rule
         return isDmzHostEnabled;
     }
 
+    /**
+     * Set if DMZ host enabled.
+     *
+     * @param isDmzHostEnabled True if is this space using a DMZ host.
+     */
     public void setIsDmzHostEnabled( boolean isDmzHostEnabled )
     {
         this.isDmzHostEnabled = isDmzHostEnabled;
@@ -257,7 +327,7 @@ public class NetworkSpace extends Rule
     /**
      * Address to send incoming requests to.
      *
-     * @return address to the address to send all requests to.
+     * @return The address to redirect all requests to.
      */
     @Column(name="dmz_host")
     @Type(type="com.untangle.mvvm.type.IPaddrUserType")
@@ -267,14 +337,20 @@ public class NetworkSpace extends Rule
         return this.dmzHost;
     }
 
+    /**
+     * Set the address to send incoming requests to.
+     *
+     * @param dmzHost The address to redirect all requests to.
+     */
     public void setDmzHost( IPaddr dmzHost )
     {
         this.dmzHost = dmzHost;
     }
 
     /**
-     * Is the DMZ host enabled.
-     * @return is this space using a DMZ host.
+     * Get whether to log redirects triggered by the DMZ Host rule.
+     *
+     * @return True if this space using a DMZ host.
      */
     @Column(name="dmz_host_logging", nullable=false)
     public boolean getIsDmzHostLoggingEnabled()
@@ -282,13 +358,19 @@ public class NetworkSpace extends Rule
         return isDmzHostLoggingEnabled;
     }
 
+    /**
+     * Set whether to log redirects triggered by the DMZ Host rule.
+     *
+     * @param newValue True if this space using a DMZ host.
+     */
     public void setIsDmzHostLoggingEnabled( boolean newValue )
     {
         this.isDmzHostLoggingEnabled = isDmzHostLoggingEnabled;
     }
 
     /**
-     * the mtu for this network space.
+     * Get the mtu for this network space.
+     *
      * @return the mtu for this network space.
      */
     @Column(nullable=false)
@@ -299,6 +381,11 @@ public class NetworkSpace extends Rule
         return this.mtu;
     }
 
+    /**
+     * Set the mtu for this network space.
+     *
+     * @param mtu The mtu for this network space.
+     */
     public void setMtu( int mtu )
     {
         if ( mtu <= MIN_MTU || mtu >= MAX_MTU ) mtu = DEFAULT_MTU;
@@ -306,8 +393,13 @@ public class NetworkSpace extends Rule
     }
 
     /* The following are not stored inside of the database */
-    /* Retrieve the address that a DHCP server assigned to this network space, null
-     * if dhcp is disabled. */
+
+    /**
+     * Retrieve the address that a DHCP server assigned to this
+     * network space, null if dhcp is disabled.
+     *
+     * @return The current DHCP status.
+     */
     @Transient
     public DhcpStatus getDhcpStatus()
     {
@@ -315,7 +407,13 @@ public class NetworkSpace extends Rule
         return this.dhcpStatus;
     }
 
-    /* Set the address a DHCP assigned to this network space */
+    
+    /**
+     * Set the address a DHCP assigned to this network space
+     *
+     * @param dhcpStatus The DHCP status associated with this network
+     * space.
+     */
     void setDhcpStatus( DhcpStatus dhcpStatus )
     {
         if ( dhcpStatus == null ) dhcpStatus = DhcpStatus.EMPTY_STATUS;

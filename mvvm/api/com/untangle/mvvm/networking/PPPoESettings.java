@@ -32,7 +32,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
 /**
- * Settings used for all of the PPPoE connections.
+ * Settings to hold the configuration for all of the PPPoE
+ * connections.
  *
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
@@ -66,17 +67,33 @@ public class PPPoESettings implements Serializable, Validatable
         this.id = id;
     }
 
+    /**
+     * Main controller to enable/disable of the PPPoE connections.
+     *
+     * @return True iff PPPoE connections can be enabled.
+     */
     @Column(name="live")
     public boolean getIsEnabled()
     {
         return this.isEnabled;
     }
 
+    /**
+     * Set the main controller to enable/disable of the PPPoE
+     * connections.
+     *
+     * @param newValue True iff PPPoE connections can be enabled.
+     */
     public void setIsEnabled( boolean newValue )
     {
         this.isEnabled = newValue;
     }
 
+    /**
+     * A list of the configurations for all of the PPPoE connections.
+     *
+     * @return List of configuration.
+     */
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
@@ -88,6 +105,12 @@ public class PPPoESettings implements Serializable, Validatable
         return this.connectionList;
     }
 
+    /**
+     * Set the list of the configurations for all of the PPPoE
+     * connections.
+     *
+     * @param newValue List of configuration.
+     */
     public void setConnectionList( List<PPPoEConnectionRule> newValue )
     {
         if ( newValue == null ) newValue = new LinkedList<PPPoEConnectionRule>();
@@ -95,6 +118,13 @@ public class PPPoESettings implements Serializable, Validatable
         this.connectionList = newValue;
     }
 
+
+    /**
+     * Validate these PPPoE setting are free of errors.
+     *
+     * @exception ValidationException Occurs if there is an error in
+     * these settings.  This also validates all of the connection.
+     */
     public void validate() throws ValidateException
     {
         /* Nothing to validate if the field is non-empty */

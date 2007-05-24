@@ -25,7 +25,6 @@ import java.util.Map;
 import com.untangle.jnetcap.InterfaceData;
 import com.untangle.jnetcap.Netcap;
 import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.InterfaceAlias;
 import com.untangle.mvvm.IntfConstants;
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.localapi.LocalIntfManager;

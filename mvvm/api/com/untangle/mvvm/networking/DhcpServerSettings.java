@@ -15,45 +15,99 @@ import java.util.List;
 
 import com.untangle.mvvm.tran.IPaddr;
 
+/**
+ * The settings for the DHCP server on the untangle.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public interface DhcpServerSettings
 {
-    // !!!!! private static final long serialVersionUID = 4349679825783697834L;
-
     /**
-     * Returns If DHCP is enabled.
+     * Returns whether or not the DHCP server is enabled.
+     *
+     * @return True iff the DHCP server is enabled.
      */
     public boolean getDhcpEnabled();
 
-    public void setDhcpEnabled( boolean b );
+    /**
+     * Set whether or not the DHCP server is enabled.
+     *
+     * @param newValue True iff the DHCP server is enabled.
+     */
+    public void setDhcpEnabled( boolean newValue );
 
     /**
-     * Get the start address of the range of addresses to server.
+     * Retrieve the start of the range of addresses the DHCP server
+     * can distribute dynamically.
+     *
+     * @return The start of the DHCP dynamic range.
      */
     public IPaddr getDhcpStartAddress();
 
+    /**
+     * Set the start of the range of addresses the DHCP server
+     * can distribute dynamically.
+     *
+     * @param newValue The start of the DHCP dynamic range.
+     */
     public void setDhcpStartAddress( IPaddr newValue );
 
     /**
-     * Get the end address of the range of addresses to server.
+     * Retrieve the end of the range of addresses the DHCP server
+     * can distribute dynamically.
+     *
+     * @return The end of the DHCP dynamic range.
      */
     public IPaddr getDhcpEndAddress();
 
+    /**
+     * Set the end of the range of addresses the DHCP server
+     * can distribute dynamically.
+     *
+     * @param newValue The end of the DHCP dynamic range.
+     */
     public void setDhcpEndAddress( IPaddr newValue );
 
-    /** Set the starting and end address of the dns server */
+    /**
+     * Set the range of addresses the DHCP server can distribute
+     * dynamically.  This should automatically swap start and end if
+     * necessary.
+     *
+     * @param start The start of the DHCP dynamic range.
+     * @param end The end of the DHCP dynamic range.
+     */
     public void setDhcpStartAndEndAddress( IPaddr start, IPaddr end );
 
     /**
-     * Get the default length of the DHCP lease in seconds.
+     * Retrieve the number of seconds that a dynamic DHCP lease should
+     * be valid for.
+     *
+     * @return The length of the lease in seconds.
      */
     public int getDhcpLeaseTime();
 
-    public void setDhcpLeaseTime( int time );
+    /**
+     * Set the number of seconds that a dynamic DHCP lease should be
+     * valid for.
+     *
+     * @param newValue The length of the lease in seconds.
+     */
+    public void setDhcpLeaseTime( int newValue );
 
     /**
-     * List of the dhcp leases.
+     * Retrieve the current list of DHCP leases.  This includes both
+     * static and dynamic leases.
+     *
+     * @return The current DHCP leases.
      */
     public List<DhcpLeaseRule> getDhcpLeaseList();
 
-    public void setDhcpLeaseList( List<DhcpLeaseRule> s );
+    /**
+     * Set the current list of DHCP leases.  Dynamic DHCP leases are
+     * not saved.
+     *
+     * @param newValue The new list of leases.
+     */
+    public void setDhcpLeaseList( List<DhcpLeaseRule> newValue );
 }

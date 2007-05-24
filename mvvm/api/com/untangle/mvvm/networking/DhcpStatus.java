@@ -18,20 +18,31 @@ import java.net.InetAddress;
 
 import com.untangle.mvvm.tran.IPaddr;
 
-/* Class for tracking the current configuration of a network space.
- * that was configured with DHCP.
- * Less useful than originally anticipated.  This really should just be an address
- * and a netmask 
+/**
+ * <code>DhcpStatus</code> contains the current state of an interface
+ * that is configured with DHCP.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
  */
 public class DhcpStatus implements Serializable
 {
     /* Just used in the case where there is no status */
     static final DhcpStatus EMPTY_STATUS = new DhcpStatus( null, null, null, null, null );
 
+    /* The address that is presently assigned to an interface */
     private final IPaddr address;
+
+    /* The current netmask of a dynamically configured interface */
     private final IPaddr netmask;
+
+    /* The default route for a dynamically configured interface */
     private final IPaddr defaultRoute;
+
+    /* Prmary DNS server retrieved from DHCP */
     private final IPaddr dns1;
+
+    /* Secondary DNS server retrieved from DHCP */
     private final IPaddr dns2;
 
     DhcpStatus( IPNetwork network )

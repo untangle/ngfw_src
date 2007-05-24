@@ -22,7 +22,7 @@ import javax.swing.table.*;
 import com.untangle.gui.transform.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.InterfaceAlias;
+import com.untangle.mvvm.networking.InterfaceAlias;
 import com.untangle.mvvm.networking.BasicNetworkSettings;
 import com.untangle.mvvm.tran.IPaddr;
 

@@ -35,12 +35,16 @@ import org.hibernate.annotations.Type;
 public class Route extends Rule
 {
     /**
+     * unused.
      * Presently the network space is only used to display routes that
-     * are immutable
+     * are immutable.
      */
     private NetworkSpace networkSpace = null;
 
+    /* The network for this route. */
     private IPNetwork destination;
+    
+    /* The next hop that should be used for this route */
     private IPaddr nextHop;
 
     public Route() { }
@@ -54,6 +58,9 @@ public class Route extends Rule
     }
 
     /**
+     * unused
+     * Get the network space associated with this route.
+     *
      * @return The network space this route belongs to, this will not
      * be supported until =RELEASE3.3=.
      */
@@ -64,13 +71,21 @@ public class Route extends Rule
         return this.networkSpace;
     }
 
+    /**
+     * unused
+     * Set the network space associated with this route.
+     *
+     * @param networkSpace The network space that should be 
+     * associated with this route.
+     */
     public void setNetworkSpace( NetworkSpace networkSpace )
     {
         this.networkSpace = networkSpace;
     }
 
     /**
-     * destination network that triggers this routing entry.
+     * Destination network that triggers this routing entry.
+     *
      * @return The destination network this route is related to.
      */
     @Type(type="com.untangle.mvvm.networking.IPNetworkUserType")
@@ -82,6 +97,12 @@ public class Route extends Rule
         return this.destination;
     }
 
+    /**
+     * Set the destination network that triggers this routing entry.
+     *
+     * @param newValue The destination network this route is related
+     * to.
+     */
     public void setDestination( IPNetwork newValue )
     {
         if ( newValue == null ) newValue = IPNetwork.getEmptyNetwork();
@@ -91,7 +112,8 @@ public class Route extends Rule
     /**
      * The IP address of the next router.
      *
-     * @return The IP address of the router that should accept the packets.
+     * @return The IP address of the router that can route traffic
+     * destined to <code>destination</code>.
      */
     @Column(name="next_hop")
     @Type(type="com.untangle.mvvm.type.IPaddrUserType")
@@ -101,6 +123,12 @@ public class Route extends Rule
         return this.nextHop;
     }
 
+    /**
+     * Set the IP address of the next router.
+     *
+     * @param newValue The IP address of the router that can route
+     * traffic destined to <code>destination</code>.
+     */
     public void setNextHop( IPaddr newValue )
     {
         if ( newValue == null ) newValue = NetworkUtil.EMPTY_IPADDR;

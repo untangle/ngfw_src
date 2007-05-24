@@ -10,7 +10,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.mvvm.networking;
 
 import java.io.Serializable;
 import java.net.InetAddress;

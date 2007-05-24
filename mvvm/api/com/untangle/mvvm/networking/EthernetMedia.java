@@ -18,9 +18,19 @@ import java.util.HashMap;
 
 import com.untangle.mvvm.tran.ParseException;
 
+/**
+ * The possible media for configuring an ethernet interface with
+ * mii-tool.
+ *
+ * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
+ * @version 1.0
+ */
 public class EthernetMedia implements Serializable, Comparable
 {
+    private static final long serialVersionUID = 8361270376411592639L;
+
     private static final String NAME_AUTO_NEGOTIATE = "Auto-Negotiate";
+
     /* These are the strings used by ethtool */
     private static final String SPEED_100   = "100";
     private static final String SPEED_10    = "10";
@@ -52,11 +62,16 @@ public class EthernetMedia implements Serializable, Comparable
         AUTO_NEGOTIATE, FULL_DUPLEX_100, HALF_DUPLEX_100, FULL_DUPLEX_10,HALF_DUPLEX_10
     };
 
+    /* Unique identifer for each media */
     private final int type;
+
+    /* User representation of this media */
     private final String name;
 
-    /* This is the media type that is used by ethtool */
+    /* 10 or 100 Mbps, this is the string for mii-tool. */
     private final String speed;
+
+    /* Full or half duplex, this is the string for mii-tool. */
     private final String duplex;
 
     private EthernetMedia( int type, String name, String speed, String duplex )
@@ -67,21 +82,41 @@ public class EthernetMedia implements Serializable, Comparable
         this.duplex = duplex;
     }
 
+    /**
+     * Retrieve the unique identifier for this media
+     *
+     * @return The unique identifier for this media.
+     */
     public int getType()
     {
         return this.type;
     }
 
+    /**
+     * Retrieve the user representation of this media.
+     *
+     * @return The user representation of this media.
+     */
     public String getName()
     {
         return this.name;
     }
-    
+
+    /**
+     * Retrieve the speed of this media.
+     *
+     * @return The speed of this media.
+     */    
     public String getSpeed()
     {
         return this.speed;
     }
 
+    /**
+     * Retrieve whether this interface is full or half duplex.
+     *
+     * @return Duplex or Half duplex.
+     */    
     public String getDuplex()
     {
         return this.duplex;
@@ -107,22 +142,42 @@ public class EthernetMedia implements Serializable, Comparable
             return 0;
     }
 
+    /**
+     * Returns whether or not this is the autonegotiation media.
+     *
+     * @return True iff this media is autonegotiation
+     */
     boolean isAuto()
     {
-        /* ,,, kind of janky, slightly paranoid */
         return ( this.name.equals( NAME_AUTO_NEGOTIATE ) || this.equals( AUTO_NEGOTIATE ));
     }
 
+    /**
+     * Retrieve the enumeration of possible media.
+     *
+     * @return All of the possible media.
+     */
     public static EthernetMedia[] getEnumeration()
     {
         return ENUMERATION;
     }
 
+    /**
+     * Retrieve the default media.
+     *
+     * @return The default media.
+     */
     public static EthernetMedia getDefault()
     {
         return ENUMERATION[0];
     }
 
+    /**
+     * Retrieve a type of media.
+     *
+     * @param type The unique identifier of the media.
+     * @return The media corresponding to <code>type</code>.
+     */ 
     public static EthernetMedia getInstance( int type ) throws ParseException
     {
         if ( type < 0 || type >= ENUMERATION.length ) {
