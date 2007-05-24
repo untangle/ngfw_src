@@ -343,7 +343,7 @@ class Target
     @dependencies = dependencies.uniq.delete_if { |d| d.kind_of? EmptyTarget }
 
     ## Register the target with the package
-    @package.registerTarget(targetname, self) if (!targetname.nil?)
+    @package.registerTarget(targetname, self) unless targetname.nil?
 
     ## Build dependencies to the other Targets
     @dependencies.each { |d| stamptask self => d }
@@ -715,6 +715,11 @@ class JavaCompilerTarget < Target
   attr_reader :isEmpty
 end
 
+# XXX we put this here for now
+task :downloads do
+  Kernel.system( "make -C #{ALPINE_HOME}/downloads" )
+end
+
 ## This is a precompiled third-party JAR
 class ThirdpartyJar < Target
   @@package = BuildEnv::ALPINE['thirdpartyjars']
@@ -722,6 +727,8 @@ class ThirdpartyJar < Target
   def initialize(path)
     @fullpath = "#{path}"
     super(@@package, [], path)
+
+    file path => :downloads
   end
 
   ## Retrieve a third party jar, returning the cached value if it else

@@ -10,6 +10,8 @@ class Jars
      [ jars ].flatten.uniq
   end
 
+  Kernel.system("make -C #{ALPINE_HOME}/downloads") unless $CleanBuild
+
   ## Named groups of jars
   Log4j      = [ Jars.downloadTarget('logging-log4j-1.2.14/dist/lib/log4j-1.2.14.jar') ]
   Hibernate   = %w( hibernate-3.2/hibernate3.jar

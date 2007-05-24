@@ -4,16 +4,16 @@
 ENV["JAVA_HOME"] = "/usr/lib/jvm/java-1.5.0-sun"
 
 $DevelBuild = true
+$CleanBuild = false
 ARGV.each do |arg|
   if arg =~ /install/
     $DevelBuild = false
   end
-end
 
-## Building downloads
-# FIXME: this can't quite be made a task without some hardcore
-# tinkering it seems
-Kernel.system( "make -C #{ALPINE_HOME}/downloads" )
+  if arg =~ /clean/
+    $CleanBuild = true
+  end
+end
 
 ## This is how you define where the stamp file will go
 module Rake
@@ -26,6 +26,7 @@ require "#{ALPINE_HOME}/buildtools/c-compiler.rb"
 require "#{ALPINE_HOME}/buildtools/jars.rb"
 require "#{ALPINE_HOME}/buildtools/jasper.rb"
 require "#{ALPINE_HOME}/buildtools/transform.rb"
+
 
 $InstallTarget = InstallTarget.new(BuildEnv::ALPINE['install'], [BuildEnv::ALPINE['mvvm'], BuildEnv::ALPINE['untangle-client'], BuildEnv::ALPINE['tran']], 'install')
 
