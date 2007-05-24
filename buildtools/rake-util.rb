@@ -715,11 +715,6 @@ class JavaCompilerTarget < Target
   attr_reader :isEmpty
 end
 
-# XXX we put this here for now
-task :downloads do
-  Kernel.system( "make -C #{ALPINE_HOME}/downloads" )
-end
-
 ## This is a precompiled third-party JAR
 class ThirdpartyJar < Target
   @@package = BuildEnv::ALPINE['thirdpartyjars']
@@ -727,8 +722,6 @@ class ThirdpartyJar < Target
   def initialize(path)
     @fullpath = "#{path}"
     super(@@package, [], path)
-
-    file path => :downloads
   end
 
   ## Retrieve a third party jar, returning the cached value if it else
