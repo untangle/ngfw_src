@@ -1,6 +1,6 @@
 TEMPLATE=MasterOfThreeChildren
 REPORT_NAME=PhishMaster
-REPORT_TITLE=Identity Theft Blocker - Summary
+REPORT_TITLE=Phish Blocker - Summary
 EXTRA_PARAM_1.name=spamVendor
 EXTRA_PARAM_1.type=java.lang.String
 EXTRA_PARAM_2.name=reportTitlePrefix

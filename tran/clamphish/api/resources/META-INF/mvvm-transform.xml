@@ -13,7 +13,7 @@ $Id$
 
 <mvvm-transform>
   <transform-desc name="clamphish-transform"
-                  display-name="Identity Theft Blocker"
+                  display-name="Phish Blocker"
                   classname="com.untangle.tran.clamphish.ClamPhishTransform"
                   gui-classname="com.untangle.tran.clamphish.gui.MTransformJPanel"
                   transform-base="spam-base"/>

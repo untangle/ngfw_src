@@ -62,7 +62,7 @@ public class ClamPhishTransform extends SpamImpl
         "[PHISH] $MIMEMessage:SUBJECT$";
     private static final String OUT_MOD_BODY_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$\r\n" +
-        "was determined by Untangle Identity Theft Blocker to be PHISH (a\r\n" +
+        "was determined by Untangle Phish Blocker to be PHISH (a\r\n" +
         "fraudulent email intended to steal information).  The kind of PHISH that was\r\n" +
         "found was $SPAMReport:FULL$";
 
@@ -71,7 +71,7 @@ public class ClamPhishTransform extends SpamImpl
 
     private static final String OUT_MOD_BODY_SMTP_TEMPLATE =
         "The attached message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
-        "was determined by Untangle Identity Theft Blocker to be PHISH (a\r\n" +
+        "was determined by Untangle Phish Blocker to be PHISH (a\r\n" +
         "fraudulent email intended to steal information).  The kind of PHISH that was\r\n" +
         "found was $SPAMReport:FULL$";
 
@@ -85,7 +85,7 @@ public class ClamPhishTransform extends SpamImpl
     private static final String OUT_NOTIFY_BODY_TEMPLATE =
         "On $MIMEHeader:DATE$ a message from $MIMEMessage:FROM$ ($SMTPTransaction:FROM$)\r\n" +
         "was received by $SMTPTransaction:TO$.  The message was determined\r\n" +
-        "by Untangle Identity Theft Blocker to be PHISH (a fraudulent\r\n" +
+        "by Untangle Phish Blocker to be PHISH (a fraudulent\r\n" +
         "email intended to steal information).  The kind of PHISH that was found was\r\n" +
         "$SPAMReport:FULL$";
 

@@ -27,7 +27,7 @@ public class PhishSummarizer extends BaseSummarizer {
         // XXX shouldn't have this constant here.
         String spamVendor = (String) extraParams.get("spamVendor");
 
-        logger.info("Identity Theft Blocker Vendor: " + spamVendor);
+        logger.info("Phish Blocker Vendor: " + spamVendor);
 
         long smtpScanned = 0l;
         long smtpMarked = 0l;
@@ -167,7 +167,7 @@ public class PhishSummarizer extends BaseSummarizer {
 
         addEntry("Web logged violations: Phish & Blocked", Util.trimNumber("",httpBlocked));
 
-        String tranName = "Identity Theft Blocker";
+        String tranName = "Phish Blocker";
 
         return summarizeEntries(tranName);
     }

@@ -17,7 +17,7 @@ ClamPhish tran = (ClamPhish)tctx.transform();
 UserWhitelistMode mode = tran.getUserWhitelistMode();
 ClamPhishBlockDetails bd = tran.getBlockDetails(nonce);
 
-String header = "Identity Theft Blocker";
+String header = "Phish Blocker";
 String host = null == bd ? "" : bd.getFormattedHost();
 String url = null == bd ? "" : bd.getFormattedUrl();
 %>
@@ -26,7 +26,7 @@ String url = null == bd ? "" : bd.getFormattedUrl();
   <head>
     <link href="/main.css" rel="stylesheet" type="text/css"/>
 
-<title><%=company%> Identity Theft Blocker Warning</title>
+<title><%=company%> Phish Blocker Warning</title>
 <script language="JavaScript">
 nonce = '<%=nonce%>';
 tid = '<%=tidStr%>';
@@ -101,7 +101,7 @@ url = '<%=null == bd ? "javascript:history.back()" : bd.getUrl()%>';
 <td><hr width="100%" size="1" color="#969696"/></td>
 </tr>
 <tr>
-<td><address><%=company%> Identity Theft Blocker</address></td>
+<td><address><%=company%> Phish Blocker</address></td>
 </tr>
 </tfoot>
 </table>

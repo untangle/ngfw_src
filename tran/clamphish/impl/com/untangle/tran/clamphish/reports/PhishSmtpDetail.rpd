@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=PhishSmtpDetail
-REPORT_TITLE=Identity Theft Blocker - Email (SMTP) Incidents
+REPORT_TITLE=Phish Blocker - Email (SMTP) Incidents
 
 EXTRA_PARAM_1.name=spamVendor
 EXTRA_PARAM_1.type=java.lang.String

@@ -1048,7 +1048,7 @@ Description: Spam Blocker
 Package: clamphish-transform
 Architecture: any
 Depends: mvvm, spam-base, clamav-mv, mail-casing, http-casing
-XB-Display-Name: Identity Theft Blocker
+XB-Display-Name: Phish Blocker
 XB-View-Position: 17
 XB-Is-Security: true
 XB-Org-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAIAAABKoV4MAAAABGdBTUEAANbY1E9YMgAAABl0
@@ -1170,8 +1170,8 @@ XB-Desc-Icon: iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEw
  DeWOUVGQk46vEDn3QiJzP5Tv3KHYlomQGTTF/tsucwQoIgfY0ME3uUu7PogA9qxsZpUgB1QR
  k2CFwI0uw5UGmqYjhJgEO3kPJb3c0CFdxgf60NxeIoGxv9v3NzTIj0BpAdTEYcMHgTVS/M8A
  nY2oOxX/HXgAAAAASUVORK5CYII=
-Description: Identity Theft Blocker
- The Identity Theft Blocker product.
+Description: Phish Blocker
+ The Phish Blocker product.
 
 Package: test-transform
 Architecture: any
