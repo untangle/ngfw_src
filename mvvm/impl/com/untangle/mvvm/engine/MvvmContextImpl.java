@@ -19,6 +19,7 @@ import java.util.StringTokenizer;
 
 import com.untangle.mvvm.BrandingManager;
 import com.untangle.mvvm.CronJob;
+import com.untangle.mvvm.LocalBrandingManager;
 import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.MvvmState;
 import com.untangle.mvvm.Period;
@@ -98,6 +99,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private RemoteAppServerManagerImpl remoteAppServerManager;
     private AddressBookImpl addressBookImpl;
     private BrandingManager brandingManager;
+    private LocalBrandingManager localBrandingManager;
     private LocalPhoneBookImpl localPhoneBookImpl;
     private RemotePhoneBookImpl remotePhoneBookImpl;
     private PortalManagerImpl portalManager;
@@ -141,6 +143,11 @@ public class MvvmContextImpl extends MvvmContextBase
     public BrandingManager brandingManager()
     {
         return brandingManager;
+    }
+
+    public LocalBrandingManager localBrandingManager()
+    {
+        return localBrandingManager;
     }
 
     public RemotePhoneBook remotePhoneBook()
@@ -587,7 +594,8 @@ public class MvvmContextImpl extends MvvmContextBase
         //Start AddressBookImpl
         addressBookImpl = AddressBookImpl.getInstance();
 
-        brandingManager = new BrandingManagerImpl();
+        localBrandingManager = new BrandingManagerImpl();
+        brandingManager = new RemoteBrandingManagerImpl(localBrandingManager);
 
         // Start the phonebook
         localPhoneBookImpl = LocalPhoneBookImpl.getInstance();

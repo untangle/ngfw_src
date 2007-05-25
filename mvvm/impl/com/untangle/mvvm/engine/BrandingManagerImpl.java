@@ -20,7 +20,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 
-import com.untangle.mvvm.BrandingManager;
+import com.untangle.mvvm.LocalBrandingManager;
 import com.untangle.mvvm.BrandingSettings;
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.util.TransactionWork;
@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-class BrandingManagerImpl implements BrandingManager
+class BrandingManagerImpl implements LocalBrandingManager
 {
     private static final File DEFAULT_LOGO;
     private static final File BRANDING_LOGO;
@@ -77,6 +77,11 @@ class BrandingManagerImpl implements BrandingManager
         this.settings = settings;
         setBrandingProperties(settings);
         setLogo(settings.getLogo());
+    }
+
+    public File getLogoFile()
+    {
+        return BRANDING_LOGO;
     }
 
     // private methods --------------------------------------------------------

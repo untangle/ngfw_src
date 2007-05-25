@@ -17,8 +17,10 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 import com.untangle.mvvm.ArgonException;
+import com.untangle.mvvm.BrandingSettings;
 import com.untangle.mvvm.IntfConstants;
 import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.NetworkManager;
 import com.untangle.mvvm.networking.internal.ServicesInternalSettings;
 import com.untangle.mvvm.tran.HostName;
@@ -301,7 +303,10 @@ class OpenVpnManager
     void writeClientConfigurationFiles( VpnSettings settings, VpnClientBase client )
         throws TransformException
     {
-        NetworkManager nm = MvvmContextFactory.context().networkManager();
+        MvvmLocalContext mvvm = MvvmContextFactory.context();
+        NetworkManager nm = mvvm.networkManager();
+
+        BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
 
         String publicAddress = nm.getPublicAddress();
         writeClientConfigurationFile( settings, client, UNIX_CLIENT_DEFAULTS, UNIX_EXTENSION );
@@ -318,7 +323,9 @@ class OpenVpnManager
                                              key, publicAddress,
                                              String.valueOf( client.getDistributeUsb()),
                                              String.valueOf( client.isUntanglePlatform()),
-                                             settings.getInternalSiteName());
+                                             settings.getInternalSiteName(),
+                                             bs.getCompanyName(),
+                                             bs.getCompanyUrl());
         } catch ( ScriptException e ) {
             if ( e.getCode() == Constants.USB_ERROR_CODE ) {
                 throw new UsbUnavailableException( "Unable to connect or write to USB device" );

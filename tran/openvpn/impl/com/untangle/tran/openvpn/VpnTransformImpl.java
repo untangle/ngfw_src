@@ -21,6 +21,7 @@ import com.untangle.mvvm.ArgonException;
 import com.untangle.mvvm.IntfConstants;
 import com.untangle.mvvm.MailSender;
 import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.logging.EventManager;
 import com.untangle.mvvm.tapi.AbstractTransform;
 import com.untangle.mvvm.tapi.Affinity;
@@ -308,7 +309,19 @@ public class VpnTransformImpl extends AbstractTransform
                 }
             }
 
-            MailSender mailSender = MvvmContextFactory.context().mailSender();
+            /* Add the file for the logo */
+            MvvmLocalContext mvvm = MvvmContextFactory.context();
+
+            File logo = mvvm.localBrandingManager().getLogoFile();
+
+            if ( logo.exists()) {
+                extraList.add( logo );
+                locationList.add( Constants.EMAIL_LOGO_IMAGE );
+            } else {
+                logger.warn( "The logo: " + logo + " doesn't exist." );
+            }
+
+            MailSender mailSender = mvvm.mailSender();
 
             /* Read in the contents of the file */
             FileReader fileReader = new FileReader( Constants.PACKAGES_DIR + "/mail-" +

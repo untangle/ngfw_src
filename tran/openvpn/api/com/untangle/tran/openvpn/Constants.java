@@ -20,6 +20,9 @@ public class Constants
     static final String SCRIPT_DIR     = BUNNICULA_BASE + "/openvpn";
     static final String DATA_DIR       = SCRIPT_DIR;
 
+    /* This is path name of the logo image inside of the email */
+    static final String EMAIL_LOGO_IMAGE = "images/logo.gif";
+
     /* Base configuration directory, all of the files should go into 
      * one of the sub directories */
     static final String CONF_DIR = BUNNICULA_CONF + "/openvpn";

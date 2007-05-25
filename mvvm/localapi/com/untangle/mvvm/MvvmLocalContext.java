@@ -136,6 +136,8 @@ public interface MvvmLocalContext
      */
     BrandingManager brandingManager();
 
+    LocalBrandingManager localBrandingManager();
+
     /**
      * Get the phonebook singleton
      * @return the singleton
