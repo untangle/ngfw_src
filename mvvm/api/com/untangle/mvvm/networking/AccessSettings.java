@@ -42,7 +42,7 @@ public class AccessSettings implements Serializable, Validatable
     private Long id;
 
     /** True iff remote untangle support is enabled */
-    private boolean isSshEnabled;
+    private boolean isSupportEnabled;
 
     /* True iff internal HTTP access is enabled */
     private boolean isInsideInsecureEnabled;
@@ -95,9 +95,9 @@ public class AccessSettings implements Serializable, Validatable
      * @return true iff remote untangle support is enabled.
      */
     @Column(name="allow_ssh")
-    public boolean getIsSshEnabled()
+    public boolean getIsSupportEnabled()
     {
-        return this.isSshEnabled;
+        return this.isSupportEnabled;
     }
 
 
@@ -106,10 +106,10 @@ public class AccessSettings implements Serializable, Validatable
      *
      * @param newValue true iff remote untangle support is enabled.
      */
-    public void setIsSshEnabled( boolean newValue )
+    public void setIsSupportEnabled( boolean newValue )
     {
-        if ( newValue != this.isSshEnabled ) this.isClean = false;
-        this.isSshEnabled = newValue;
+        if ( newValue != this.isSupportEnabled ) this.isClean = false;
+        this.isSupportEnabled = newValue;
     }
 
     /**

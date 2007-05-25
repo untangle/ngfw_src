@@ -21,7 +21,7 @@ import com.untangle.mvvm.tran.IPaddr;
  * the local server. */
 public class AccessSettingsInternal
 {
-    private final boolean isSshEnabled;
+    private final boolean isSupportEnabled;
 
     private final boolean isInsideInsecureEnabled;
     private final boolean isOutsideAccessEnabled;
@@ -36,7 +36,7 @@ public class AccessSettingsInternal
     
     private AccessSettingsInternal( AccessSettings settings )
     {
-        this.isSshEnabled = settings.getIsSshEnabled();
+        this.isSupportEnabled = settings.getIsSupportEnabled();
         this.isInsideInsecureEnabled = settings.getIsInsideInsecureEnabled();
         this.isOutsideAccessEnabled = settings.getIsOutsideAccessEnabled();
         this.isOutsideAccessRestricted = settings.getIsOutsideAccessRestricted();
@@ -48,10 +48,10 @@ public class AccessSettingsInternal
         this.isOutsideReportingEnabled = settings.getIsOutsideReportingEnabled();
     }
     
-    /* Get whether or not ssh is enabled. */
-    public boolean getIsSshEnabled()
+    /* Get whether or not support is enabled. */
+    public boolean getIsSupportEnabled()
     {
-        return this.isSshEnabled;
+        return this.isSupportEnabled;
     }
             
     /** True if insecure access from the inside is enabled. */
@@ -109,7 +109,7 @@ public class AccessSettingsInternal
     public AccessSettings toSettings()
     {
         AccessSettings settings = new AccessSettings();
-        settings.setIsSshEnabled( getIsSshEnabled());
+        settings.setIsSupportEnabled( getIsSupportEnabled());
         settings.setIsInsideInsecureEnabled( getIsInsideInsecureEnabled());
         settings.setIsOutsideAccessEnabled( getIsOutsideAccessEnabled());
         settings.setIsOutsideAccessRestricted( getIsOutsideAccessRestricted());

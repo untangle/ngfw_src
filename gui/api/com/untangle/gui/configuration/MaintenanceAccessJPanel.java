@@ -28,7 +28,7 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
 
     public MaintenanceAccessJPanel() {
         initComponents();
-        MConfigJDialog.setInitialFocusComponent(sshEnabledRadioButton);
+        MConfigJDialog.setInitialFocusComponent(supportJCheckBox);
     }
 
     // SETTINGS CHANGE NOTIFICATION /////////
@@ -40,8 +40,8 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
 
     public void doSave(MaintenanceCompoundSettings maintenanceCompoundSettings, boolean validateOnly) throws Exception {
 
-        // SSH ENABLED ////////
-        boolean isSshEnabled = sshEnabledRadioButton.isSelected();
+        // SUPPORT ENABLED ////////
+        boolean isSupportEnabled = supportJCheckBox.isSelected();
 
         // REPORTING ENABLED //////
         boolean isExceptionReportingEnabled = reportJCheckBox.isSelected();
@@ -50,7 +50,7 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
         if( !validateOnly ){
             AccessSettings accessSettings = maintenanceCompoundSettings.getAccessSettings();
             MiscSettings miscSettings = maintenanceCompoundSettings.getMiscSettings();
-            accessSettings.setIsSshEnabled( isSshEnabled );
+            accessSettings.setIsSupportEnabled( isSupportEnabled );
             miscSettings.setIsExceptionReportingEnabled( isExceptionReportingEnabled );
         }
     }
@@ -60,13 +60,10 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
         MiscSettings miscSettings = maintenanceCompoundSettings.getMiscSettings();
 
         // SSH ENABLED ///////
-        boolean isSshEnabled = accessSettings.getIsSshEnabled();
-        if( isSshEnabled )
-            sshEnabledRadioButton.setSelected(true);
-        else
-            sshDisabledRadioButton.setSelected(true);
-        Util.addSettingChangeListener(settingsChangedListener, this, sshEnabledRadioButton);
-        Util.addSettingChangeListener(settingsChangedListener, this, sshDisabledRadioButton);
+        boolean isSupportEnabled = accessSettings.getIsSupportEnabled();
+        supportJCheckBox.setSelected( isSupportEnabled );
+        Util.addSettingChangeListener(settingsChangedListener, this, supportJCheckBox);
+        Util.addSettingChangeListener(settingsChangedListener, this, supportJCheckBox);
 
         // REPORTING ENABLED ////
         boolean isExceptionReportingEnabled = miscSettings.getIsExceptionReportingEnabled();
@@ -78,12 +75,10 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
     private void initComponents() {//GEN-BEGIN:initComponents
         java.awt.GridBagConstraints gridBagConstraints;
 
-        sshButtonGroup = new javax.swing.ButtonGroup();
         maintainRemoteJPanel = new javax.swing.JPanel();
-        sshEnabledRadioButton = new javax.swing.JRadioButton();
-        sshDisabledRadioButton = new javax.swing.JRadioButton();
         jSeparator2 = new javax.swing.JSeparator();
         reportJCheckBox = new javax.swing.JCheckBox();
+        supportJCheckBox = new javax.swing.JCheckBox();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -92,25 +87,15 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
         setPreferredSize(new java.awt.Dimension(563, 180));
         maintainRemoteJPanel.setLayout(new java.awt.GridBagLayout());
 
-        maintainRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Support", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
-        sshButtonGroup.add(sshEnabledRadioButton);
-        sshEnabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        sshEnabledRadioButton.setText("<html><b>Allow</b> Untangle complete access to my Untangle Server. This will allow the Untangle Support team to monitor and change settings on your Untangle Server.</html>");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        maintainRemoteJPanel.add(sshEnabledRadioButton, gridBagConstraints);
+        maintainRemoteJPanel.setBorder(new javax.swing.border.TitledBorder(null, "Untangle Support", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 16)));
 
-        sshButtonGroup.add(sshDisabledRadioButton);
-        sshDisabledRadioButton.setFont(new java.awt.Font("Dialog", 0, 12));
-        sshDisabledRadioButton.setText("<html><b>Disallow</b> secure remote support.  (This is the default setting.)</html>");
+        supportJCheckBox.setFont(new java.awt.Font("Dialog", 0, 12));
+        supportJCheckBox.setText("<html><b>Allow</b> Untangle complete access to my Untangle Server. This will allow the Untangle Support team to monitor and change settings on your Untangle Server.</html>");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-        maintainRemoteJPanel.add(sshDisabledRadioButton, gridBagConstraints);
+        maintainRemoteJPanel.add(supportJCheckBox, gridBagConstraints);
 
         jSeparator2.setForeground(new java.awt.Color(200, 200, 200));
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -143,9 +128,7 @@ public class MaintenanceAccessJPanel extends javax.swing.JPanel
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JPanel maintainRemoteJPanel;
     private javax.swing.JCheckBox reportJCheckBox;
-    private javax.swing.ButtonGroup sshButtonGroup;
-    public javax.swing.JRadioButton sshDisabledRadioButton;
-    public javax.swing.JRadioButton sshEnabledRadioButton;
+    private javax.swing.JCheckBox supportJCheckBox;
     // End of variables declaration//GEN-END:variables
 
 

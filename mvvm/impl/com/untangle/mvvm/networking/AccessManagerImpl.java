@@ -176,7 +176,7 @@ class AccessManagerImpl implements LocalAccessManager
         }
         
         try {
-            if ( access.getIsSshEnabled()) {
+            if ( access.getIsSupportEnabled()) {
                 ScriptRunner.getInstance().exec( SSH_ENABLE_SCRIPT );
             } else {
                 ScriptRunner.getInstance().exec( SSH_DISABLE_SCRIPT );

@@ -487,7 +487,7 @@ class NetworkConfigurationLoader
         /* SSH is enabled if and only if this file exists */
         File sshd = new File( SSHD_PID_FILE );
 
-        access.setIsSshEnabled( sshd.exists());
+        access.setIsSupportEnabled( sshd.exists());
     }
 
     private boolean parseBooleanFlag( String nameValuePair, String name )
