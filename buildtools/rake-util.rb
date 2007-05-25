@@ -161,9 +161,11 @@ class JavaCompiler
   JarSignerCommand = "#{BuildEnv::JAVA_HOME}/bin/jarsigner"
   JavaCommand  = "#{BuildEnv::JAVA_HOME}/bin/java"
   JavahCommand = "#{BuildEnv::JAVA_HOME}/bin/javah"
+  KeyToolCommand = "#{BuildEnv::JAVA_HOME}/bin/keytool"
 
   def JavaCompiler.compile(dstdir, classpath, fileList)
-    ## ... could move the tempfile into an open block, it would be a little cleaner
+    ## ... could move the tempfile into an open block, it would be a
+    ## little cleaner
     files = Tempfile.new("file-list")
     begin
       fileList.each { |f| files.puts(f) }
@@ -203,15 +205,36 @@ class JavaCompiler
     dest
   end
 
-  def JavaCompiler.jarSigner(jar, keystore, aliaz, storepass)
+  def JavaCompiler.jarSigner(jar)
+    ks = ENV['HADES_KEYSTORE']
+    if ks.nil?
+      ks = "#{BuildEnv::ALPINE.staging}/keystore"
+      a = 'hermes'
+      pw = 'hermes'
+
+      unless File.exists?(ks)
+        JavaCompiler.selfSignedCert(ks, a, pw)
+      end
+    else
+      a = ENV['HADES_KEY_ALIAS']
+      pw = ENV['HADES_KEY_PASS']
+    end
+
     raise "JarSigner failed" unless
-      Kernel.system(JarSignerCommand, '-keystore', keystore, '-storepass', storepass, jar, aliaz)
+      Kernel.system(JarSignerCommand, '-keystore', ks, '-storepass', pw, jar, a)
+  end
+
+  def JavaCompiler.selfSignedCert(keystore, aliaz, passwd)
+    raise "KeyTool failed" unless
+      Kernel.system(KeyToolCommand, '-genkey', '-alias', aliaz,
+                    '-keypass', passwd, '-storepass', passwd,
+                    '-keystore', keystore, '-dname', 'cn=snakeoil')
   end
 
   def JavaCompiler.javah(jar, destination, classes)
     ensureDirectory destination
     raise "javah failed" unless
-      Kernel.system( JavahCommand, "-d", destination, "-classpath", jar, *classes )
+      Kernel.system(JavahCommand, "-d", destination, "-classpath", jar, *classes)
   end
 
   def JavaCompiler.run(classpath, classname, *args)
@@ -445,8 +468,7 @@ class InstallTarget < Target
 
       registerInstallTargets(is) do |f|
         if sign
-          JavaCompiler.jarSigner(f, "#{ALPINE_HOME}/gui/keystore", 'key',
-                                 'Boo4fiuzaiph7ahH')
+          JavaCompiler.jarSigner(f)
         end
       end
     end
