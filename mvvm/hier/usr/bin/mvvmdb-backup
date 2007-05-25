@@ -40,7 +40,7 @@ case $method in
         fi
 
         mkdir -p ${USB_MOUNT_POINT}
-        
+
         ## ignore errors
         umount ${USB_MOUNT_POINT} || true
         mount ${usb_device} ${USB_MOUNT_POINT}
@@ -53,8 +53,10 @@ esac
 
 datestamp=$(date '+%Y%m%d%H%M')
 
-(pg_dump -U postgres -n settings mvvm; pg_dump -U postgres -n events -s mvvm) \
-    | gzip > $outdir/mvvmdb-$datestamp.gz
+(pg_dump -U postgres -n settings mvvm;
+    echo "SET SESSION AUTHORIZATION 'postgres';";
+    pg_dump -U postgres -n events -s mvvm) \
+        | gzip > $outdir/mvvmdb-$datestamp.gz
 
 [ $? -eq 0 ] || exit 1
 
@@ -74,7 +76,7 @@ tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
         usr/share/metavize/conf/timezone \
         usr/share/metavize/conf/dirbackup.ldif
 
-[ $? -eq 0 ] || exit 1    
+[ $? -eq 0 ] || exit 1
 
 @PREFIX@/usr/bin/mkg installed > $outdir/installed-$datestamp
 
