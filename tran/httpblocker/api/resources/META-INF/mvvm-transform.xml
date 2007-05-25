@@ -13,7 +13,7 @@ $Id$
 
 <mvvm-transform>
   <transform-desc name="httpblocker-transform"
-                  display-name="Web Content Control"
+                  display-name="Web Filter"
                   classname="com.untangle.tran.httpblocker.HttpBlockerImpl"
                   gui-classname="com.untangle.tran.httpblocker.gui.MTransformJPanel"/>
   <parent>http-casing</parent>

@@ -15,8 +15,8 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * This singleton enumerates the interfaces present in the MVVM.  It is created
- * via a factory method in <code>NetworkingManager</code>.
+ * This singleton enumerates the interfaces present in the MVVM.  It
+ * is created via a factory method in <code>NetworkingManager</code>.
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0

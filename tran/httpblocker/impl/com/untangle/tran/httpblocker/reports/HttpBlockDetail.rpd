@@ -1,6 +1,6 @@
 TEMPLATE=Detail
 REPORT_NAME=LoggedDetail
-REPORT_TITLE=Web Content Control - Logged Violations (time)
+REPORT_TITLE=Web Filter - Logged Violations (time)
 
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String

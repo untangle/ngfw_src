@@ -27,7 +27,7 @@ String reason = null == bd ? "" : bd.getReason();
   <head>
     <link href="/main.css" rel="stylesheet" type="text/css"/>
 
-<title><%=company%> Web Content Control Warning</title>
+<title><%=company%> Web Filter Warning</title>
 <script language="JavaScript">
 nonce = '<%=nonce%>';
 tid = '<%=tidStr%>';
@@ -86,7 +86,7 @@ url = '<%=null == bd ? "javascript:history.back()" : bd.getUrl()%>';
 <td><hr width="100%" size="1" color="#969696"/></td>
 </tr>
 <tr>
-<td><address><%=company%> Web Content Control</address></td>
+<td><address><%=company%> Web Filter</address></td>
 </tr>
 </tfoot>
 </table>

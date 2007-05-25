@@ -76,7 +76,7 @@ public class HttpBlockerSummarizer extends BaseSummarizer {
         addEntry("&nbsp;&nbsp;&nbsp;Passed web visits", Util.trimNumber("",hitCount-logCount), Util.percentNumber(hitCount-logCount,hitCount));
 
         // XXXX
-        String tranName = "Web Content Control";
+        String tranName = "Web Filter";
 
         return summarizeEntries(tranName);
     }

@@ -1,6 +1,6 @@
 TEMPLATE=MasterOfFourChildren
 REPORT_NAME=HttpMaster
-REPORT_TITLE=Web Content Control - Summary
+REPORT_TITLE=Web Filter - Summary
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
 SUBREPORT_1=reports/HttpDomains.jasper
