@@ -8,8 +8,8 @@ fi
 
 component=$1
 
-PSQL="psql -U postgres --tuples-only --no-align mvvm"
+PSQL="psql -X -U postgres --tuples-only --no-align mvvm"
 
 script=@MVVM_SCHEMA@/$component/purgetran.sql
 
-psql -U postgres -f $script mvvm
+psql -X -U postgres -f $script mvvm

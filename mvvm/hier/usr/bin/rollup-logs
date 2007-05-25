@@ -18,11 +18,11 @@ EOF
 for day in `cat $daystoremove`; do
     echo "Purging event data for $day"
     for c in `cat @MVVM_SCHEMA@/*/partitioned-tables`; do
-        psql -U postgres -v day="$day" mvvm<<EOF
-          DROP TABLE ${c}_${day} ; 
+        psql -X -U postgres -v day="$day" mvvm<<EOF
+          DROP TABLE ${c}_${day} ;
 EOF
     done
-    psql -U postgres -v dayname="'$day'" mvvm <<EOF
+    psql -X -U postgres -v dayname="'$day'" mvvm <<EOF
       DELETE FROM events.event_data_days WHERE day_name = :dayname ;
 EOF
 done
@@ -31,14 +31,14 @@ rm $daystoremove
 # Also must purge the unpartitioned versions
 echo "Purging unpartitioned events"
 for c in `cat @MVVM_SCHEMA@/*/partitioned-tables`; do
-    psql -U postgres -v cutoff="$cutoff" mvvm <<EOF
+    psql -X -U postgres -v cutoff="$cutoff" mvvm <<EOF
       DELETE FROM $c WHERE time_stamp < (:cutoff)::timestamp ;
 EOF
 done
 
 echo "Purging derived events"
 for c in @MVVM_SCHEMA@/*/rollup.sql; do
-    psql -U postgres -v cutoff="$cutoff" -f $c mvvm
+    psql -X -U postgres -v cutoff="$cutoff" -f $c mvvm
 done
 
 # Then do reports
@@ -50,9 +50,9 @@ EOF
 for day in `cat $daystoremove`; do
     echo "Purging report data for $day"
     for c in @MVVM_SCHEMA@/*/report-remove-day.sql; do
-        psql -U postgres -v dayname="$day" -f $c mvvm
+        psql -X -U postgres -v dayname="$day" -f $c mvvm
     done
-    psql -U postgres -v dayname="'$day'" mvvm <<EOF
+    psql -X -U postgres -v dayname="'$day'" mvvm <<EOF
       delete from reports.report_data_days where day_name = :dayname ;
 EOF
 done
