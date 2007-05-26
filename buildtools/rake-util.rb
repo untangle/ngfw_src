@@ -6,7 +6,7 @@ require 'set'
 require 'tempfile'
 
 def ensureDirectory(t)
-  mkdir_p t if !File.exist?(t)
+  mkdir_p t unless File.exist?(t)
 end
 
 ## This is overly complicated
