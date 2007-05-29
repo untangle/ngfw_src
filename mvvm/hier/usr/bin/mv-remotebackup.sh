@@ -141,13 +141,13 @@ debug "Using Timeout - " $TIMEOUT
 
 
 # Create the backups into a directory we provide
-DUMP_DIR=`mktemp -d`
+DUMP_DIR=`mktemp -d -t mv-remotebackup.XXXXXXXXXX`
 createBackup $DUMP_DIR
 
 
 
 # Tar the contents of the temp directory
-TAR_FILE=`mktemp`
+TAR_FILE=`mktemp -t mv-remotebackup.XXXXXXXXXX`
 tarBackupFiles $TAR_FILE $DUMP_DIR
 
 debug "Gzipping $TAR_FILE"
@@ -163,7 +163,7 @@ rm -rf $DUMP_DIR
 
 
 
-HEADER_FILE=`mktemp`
+HEADER_FILE=`mktemp -t mv-remotebackup.XXXXXXXXXX`
 callCurl $TAR_FILE $HEADER_FILE
 CURL_RET=$?
 debug "CURL returned $CURL_RET"

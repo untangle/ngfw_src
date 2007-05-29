@@ -11,7 +11,7 @@ echo "Purging all report data older than $cutoff"
 
 # First do events
 echo "Purging partitioned events"
-daystoremove=`mktemp`
+daystoremove=`mktemp -t rollup-logs.XXXXXXXXXX`
 psql -U postgres -X -v cutoff="$cutoff" --pset tuples_only mvvm > $daystoremove <<EOF
   select day_name from events.event_data_days where day_begin < :cutoff ;
 EOF
@@ -43,7 +43,7 @@ done
 
 # Then do reports
 echo "Purging report data"
-daystoremove=`mktemp`
+daystoremove=`mktemp -t rollup-logs.XXXXXXXXXX`
 psql -U postgres -X -v cutoff="$cutoff" --pset tuples_only mvvm > $daystoremove <<EOF
   select day_name from reports.report_data_days where day_begin < :cutoff ;
 EOF

@@ -19,7 +19,7 @@
 # This script exists so a bunch of places don't releat this logic,
 # as we may want to add some meta information (i.e. some manifest)
 # to the single bundle later.
-# 
+#
 #==============================================================
 
 #================================================================
@@ -64,7 +64,7 @@ function createBackup() {
 #  echo "FOO" > mvvmdb-$datestamp.gz
 #  echo "MOO" > files-$datestamp.tar.gz
 #  echo "DOO" > installed-$datestamp
-#  popd > /dev/null 2>&1 
+#  popd > /dev/null 2>&1
   DUMP_EXIT=$?
   debug "Done creating backup with return code $DUMP_EXIT"
   return $DUMP_EXIT
@@ -75,7 +75,7 @@ function createBackup() {
 # 2 = dir with backups
 function tarBackupFiles() {
   debug "Taring files in $2 into tar $1"
-  pushd $2 > /dev/null 2>&1 
+  pushd $2 > /dev/null 2>&1
   tar -cf $1 .
   popd > /dev/null 2>&1
   TAR_EXIT=$?
@@ -101,7 +101,7 @@ fi
 debug "Outputting to file -" $OUT_FILE
 
 # Create the backups into a directory we provide
-DUMP_DIR=`mktemp -d`
+DUMP_DIR=`mktemp -d -t mv-backup-bundled.XXXXXXXXXX`
 createBackup $DUMP_DIR
 
 EXIT_CODE=$?
@@ -115,7 +115,7 @@ fi
 
 
 # Tar the contents of the temp directory
-TAR_FILE=`mktemp`
+TAR_FILE=`mktemp -t mv-backup-bundled.XXXXXXXXXX`
 tarBackupFiles $TAR_FILE $DUMP_DIR
 
 debug "Remove dump dir"

@@ -94,7 +94,7 @@ function doesEventTableExist()
         return 1
     fi
 }
-    
+
 
 REPORT_DIR=@MVVM_WEB@/reports
 
@@ -182,7 +182,7 @@ if [ $is_reporting_enabled == 'true' ]; then
         source $REPORT_DIR/current/settings.env
 
         # Build pre-joined reports tables
-        daystoadd=`mktemp`
+        daystoadd=`mktemp -t update-reports.XXXXXXXXXX`
         $PSQL -qt mvvm > $daystoadd <<EOF
           select day_name, day_begin from reports.daystoadd order by day_begin;
 EOF

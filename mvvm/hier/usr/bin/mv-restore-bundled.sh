@@ -23,7 +23,7 @@
 # 2 - Not a tar file
 # 3 - Missing content from file
 # 4 - Error from restore file
-# 
+#
 #==============================================================
 
 #================================================================
@@ -68,7 +68,7 @@ function doIt() {
 
 
 # Create a working directory
-    WORKING_DIR=`mktemp -d`
+    WORKING_DIR=`mktemp -d -t mv-restore-bundled.XXXXXXXXXX`
     debug "Working in directory $WORKING_DIR"
 
 # Copy our file to the working directory

@@ -27,7 +27,7 @@ DIRECTORY_BASE="@MVVM_WEB@/reports"
 DIRECTORY_PDF="${DIRECTORY_BASE}/current"
 DIRECTORY_IMAGES="${DIRECTORY_BASE}/current"
 DIRECTORY_TEMPLATES="@MVVM_HOME@/reporting/templates"
-DIRECTORY_PROPERTIES=`mktemp -d -p @PREFIX@/tmp`
+DIRECTORY_PROPERTIES=`mktemp -d -p @PREFIX@/tmp generate-pdf.XXXXXXXXXX`
 
 ## Template configuration
 TEMPLATE_COVERPAGE="CoverPage.xml"
