@@ -23,11 +23,11 @@ public class AdministrationOutsideAccessValve extends OutsideValve
 
     protected String outsideErrorMessage()
     {
-        return "Off-site Administration is disabled.";
+        return "off-site administration";
     }
 
     protected String httpErrorMessage()
     {
-        return "Standard Administration is disabled.";
+        return "standard administration";
     }
 }

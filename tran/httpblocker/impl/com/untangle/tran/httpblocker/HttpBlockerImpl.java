@@ -477,13 +477,13 @@ public class HttpBlockerImpl extends AbstractTransform implements HttpBlocker
                 /* Unified way to determine which parameter to check */
                 protected String outsideErrorMessage()
                 {
-                    return "Off-site access prohibited";
+                    return "off-site access";
                 }
 
                 /* Unified way to determine which parameter to check */
                 protected String httpErrorMessage()
                 {
-                    return "Standard access prohibited";
+                    return "standard access";
                 }
             };
 

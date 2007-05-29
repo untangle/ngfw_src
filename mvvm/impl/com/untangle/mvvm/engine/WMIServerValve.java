@@ -18,19 +18,19 @@ class WMIServerValve extends OutsideValve
     WMIServerValve()
     {
     }
-    
+
     protected boolean isOutsideAccessAllowed()
     {
         return false;
     }
-    
+
     protected String outsideErrorMessage()
     {
-        return "Off-site access to the WMI Installer is prohibited.";
+        return "off-site access to the WMI Installer";
     }
-    
+
     protected String httpErrorMessage()
     {
-        return "Standard access to the WMI Installer is disabled.";
+        return "standard access to the WMI Installer";
     }
 }

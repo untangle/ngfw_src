@@ -15,7 +15,7 @@ public class ReportingOutsideAccessValve extends OutsideValve
     public ReportingOutsideAccessValve()
     {
     }
-    
+
     protected boolean isOutsideAccessAllowed()
     {
         return getAccessSettings().getIsOutsideReportingEnabled();
@@ -23,11 +23,11 @@ public class ReportingOutsideAccessValve extends OutsideValve
 
     protected String outsideErrorMessage()
     {
-        return "Off-site access to reporting is disabled.";
+        return "off-site access to reporting";
     }
 
     protected String httpErrorMessage()
     {
-        return "Standard access to reporting is disabled.";
+        return "standard access to reporting";
     }
 }

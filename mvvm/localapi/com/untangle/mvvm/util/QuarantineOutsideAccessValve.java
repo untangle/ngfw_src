@@ -23,12 +23,12 @@ public class QuarantineOutsideAccessValve extends OutsideValve
 
     protected String outsideErrorMessage()
     {
-        return "Off-site access to quarantine is disabled.";
+        return "off-site access";
     }
 
     protected String httpErrorMessage()
     {
-        return "Standard access to quarantine is disabled.";
+        return "standard access";
     }
 
 }
