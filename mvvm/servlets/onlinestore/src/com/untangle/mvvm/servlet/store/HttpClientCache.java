@@ -57,6 +57,17 @@ class HttpClientCache
 
         HttpClient client = (HttpClient)s.getAttribute(HTTP_CLIENT);
 
+        if (null != client) {
+            MvvmLocalContext ctx = MvvmContextFactory.context();
+            String boxKey = ctx.getActivationKey();
+            for (org.apache.commons.httpclient.Cookie c : client.getState().getCookies()) {
+                if (c.getName().equals("boxkey") && !c.getValue().equals(boxKey)) {
+                    client = null;
+                    break;
+                }
+            }
+        }
+
         if (null == client) {
             synchronized (this) {
                 client = (HttpClient)s.getAttribute(HTTP_CLIENT);
