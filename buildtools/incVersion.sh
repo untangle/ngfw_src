@@ -14,6 +14,8 @@ echo -n "Setting version, setting distribution to \"$distribution\""
 
 if [[ -f ../VERSION ]] ; then
   versionFile=../VERSION
+elif [[ -f ./resources/VERSION ]] ; then # Hades
+  versionFile=./resources/VERSION
 else
   versionFile=../../VERSION
 fi
