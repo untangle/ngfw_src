@@ -3,6 +3,7 @@
 require 'net/smtp'
 
 DEFAULT_DISTRIBUTION = "mustang"
+DEFAULT_COMPONENT = "upstream"
 DEFAULT_MAIL_RECIPIENTS = [ "rbscott@untangle.com", "seb@untangle.com" ]
 
 REP = "/var/www/untangle"
@@ -49,6 +50,7 @@ class DebianUpload
   def to_s
     s = "#{@file}\n"
     s += "  distribution = #{@distribution}\n"
+    s += "  component = #{@component}\n"
     s += "  maintainer = #{@maintainer}\n"
     s += "  uploader = #{@uploader}\n"
     s += "  version = #{@version}\n"
@@ -120,7 +122,8 @@ class PackageUpload < DebianUpload
     super(file, move)
     @name = File.basename(@file).gsub(/_.*/, "")
     @distribution = DEFAULT_DISTRIBUTION
-    @command = "reprepro -V -b #{REP} --component upstream includedeb #{@distribution} #{@file}"
+    @component = DEFAULT_COMPONENT
+    @command = "reprepro -V -b #{REP} --component #{@component} includedeb #{@distribution} #{@file}"
     @emailRecipientsSuccess = DEFAULT_MAIL_RECIPIENTS
     @emailRecipientsFailure = DEFAULT_MAIL_RECIPIENTS
   end
@@ -152,10 +155,12 @@ class ChangeFileUpload < DebianUpload
       end
       
       if filesSection
-        @files << line.sub(/.* /,"#{INCOMING}/")
+        parts = line.split
+        @files << INCOMING + "/" + parts[-1]
+        @component = parts[2].split(/\//)[0] if not @component
       end
     }
-    @command = "reprepro -Vb #{REP} -C main include #{@distribution} #{@file}"
+    @command = "reprepro -Vb #{REP} include #{@distribution} #{@file}"
     @emailRecipientsSuccess = [ @uploader, @maintainer ].uniq
     @emailRecipientsFailure = @emailRecipientsSuccess + DEFAULT_MAIL_RECIPIENTS
     @emailRecipientsFailure.uniq!
