@@ -101,7 +101,7 @@ class DebianUpload
 
       email(@emailRecipientsSuccess,
             "Upload of #{@name} succeeded",
-            listFiles) if @@doEmailSuccess
+            to_s) if @@doEmailSuccess
 
     rescue UploadFailureByPolicy => e
       puts e.message
