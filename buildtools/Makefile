@@ -33,6 +33,7 @@ pkg: checkroot
 	svn revert debian/changelog
 
 release: checkroot
-	dput -c $(BUILDTOOLS_DIR)/dput.cf mephisto ../`basename $$(pwd)`_`cat debian/version`*.changes
+	# FIXME: come on now, let's be real !!!
+	if [[ `basename $$(pwd)` != "alpine" ]] ; then dput -c $(BUILDTOOLS_DIR)/dput.cf mephisto ../`basename $$(pwd)`_`cat debian/version`*.changes ; else dput -c $(BUILDTOOLS_DIR)/dput.cf mephisto ../mvvm_`cat debian/version`*.changes ; fi
 
 .PHONY: checkroot clean version source pkg release
