@@ -80,7 +80,7 @@ url = '<%=null == bd ? "javascript:history.back()" : bd.getUrl()%>';
 <tr>
 <td>
   <%
-  if (UserWhitelistMode.NONE != mode && null != bd.getWhitelistHost()) {
+  if (UserWhitelistMode.NONE != mode && null != bd && null != bd.getWhitelistHost()) {
   %>
       <input id="unblockNowButton" type="button" value="Unblock For Now"
       onclick="unblockSite(false)"/>
