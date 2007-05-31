@@ -112,5 +112,6 @@ exec $JAVA_HOME/bin/java \
     -Dbunnicula.home=@MVVM_HOME@ \
     -Dargon.shield.cfg_file=@MVVM_HOME@/conf/shield.cfg \
     -Djdbc.drivers=org.postgresql.Driver \
+    -Dcom.untangle.isDevel=@IS_DEVEL@ \
     ${JAVA_OPTS} $* \
     com.untangle.mvvm.engine.Main

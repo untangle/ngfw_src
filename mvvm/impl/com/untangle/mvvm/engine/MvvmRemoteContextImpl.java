@@ -165,6 +165,11 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
         return context.getActivationKey();
     }
 
+    public boolean isDevel()
+    {
+        return context.isDevel();
+    }
+
     public byte[] createBackup() throws IOException
     {
         return context.createBackup();

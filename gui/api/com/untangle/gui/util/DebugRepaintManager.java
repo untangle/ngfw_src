@@ -13,9 +13,14 @@
 package com.untangle.gui.util;
 
 import java.awt.Component;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+
 import javax.swing.JComponent;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
+
+import org.apache.log4j.Logger;
 
 public class DebugRepaintManager extends RepaintManager {
 
@@ -24,6 +29,8 @@ public class DebugRepaintManager extends RepaintManager {
         // No need for this to show up in the console for users.
         // System.err.println("[!!Running Debug Repaint Manager!!]");
     }
+
+    private final Logger logger = Logger.getLogger(getClass());
 
     public synchronized void addInvalidComponent(JComponent component){
         checkEDTRule(component);
@@ -78,10 +85,22 @@ class EDTRuleViolation extends Exception{
     }
 
     public void printStackTrace(){
-        System.err.println("");
-        System.err.println("[ EDT RULE VIOLATION ]");
-        super.printStackTrace();
-        System.err.println("[" + component.toString() + "]");
+        printStackTrace(System.err);
     }
 
+    public void printStackTrace(PrintStream s)
+    {
+        s.println("");
+        s.println("[ EDT RULE VIOLATION ]");
+        super.printStackTrace(s);
+        s.println("[" + component.toString() + "]");
+    }
+
+    public void printStackTrace(PrintWriter w)
+    {
+        w.println("");
+        w.println("[ EDT RULE VIOLATION ]");
+        super.printStackTrace(w);
+        w.println("[" + component.toString() + "]");
+    }
 }

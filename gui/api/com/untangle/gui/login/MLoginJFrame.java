@@ -18,6 +18,8 @@ import java.net.URL;
 import javax.security.auth.login.FailedLoginException;
 import javax.swing.*;
 
+import org.apache.log4j.Logger;
+
 import com.untangle.gui.main.MMainJFrame;
 import com.untangle.gui.util.*;
 import com.untangle.mvvm.*;
@@ -28,6 +30,8 @@ public class MLoginJFrame extends javax.swing.JFrame {
 
     private MMainJFrame mMainJFrame;
     private DropdownLoginTask dropdownLoginTask;
+
+    private final Logger logger = Logger.getLogger(getClass());
 
     public MLoginJFrame(final String[] args) {
 
@@ -540,16 +544,16 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     return;
                 }
                 catch(com.untangle.mvvm.client.InvocationTargetExpiredException e){
-                    System.out.println(e.getMessage());
+                    logger.debug(e.getMessage());
                 }
                 catch(com.untangle.mvvm.client.InvocationConnectionException e){
-                    System.out.println(e.getMessage());
+                    logger.debug(e.getMessage());
                 }
                 catch(MvvmConnectException e){
-                    System.out.println(e.getMessage());
+                    logger.debug(e.getMessage());
                 }
                 catch(Exception e){
-                    System.out.println(e.getMessage());
+                    logger.debug(e.getMessage());
                 }
                 finally{
                     if( retryLogin >= Util.LOGIN_RETRY_COUNT ){

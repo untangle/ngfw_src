@@ -65,6 +65,9 @@ public class MvvmContextImpl extends MvvmContextBase
     private static final String ACTIVATION_KEY_FILE;
     private static final String ARGON_FAKE_KEY;
 
+    /* true if running in a development environment */
+    private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel";
+
     private final Object startupWaitLock = new Object();
     private final Logger logger = Logger.getLogger(MvvmContextImpl.class);
     private final BackupManager backupManager;
@@ -478,6 +481,11 @@ public class MvvmContextImpl extends MvvmContextBase
         // webserver, which is what matters.
         File keyFile = new File(ACTIVATION_KEY_FILE);
         return keyFile.exists();
+    }
+
+    public boolean isDevel()
+    {
+        return Boolean.getBoolean(PROPERTY_IS_DEVEL);
     }
 
     public boolean activate(String key) {

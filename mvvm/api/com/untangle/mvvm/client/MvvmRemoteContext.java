@@ -190,6 +190,13 @@ public interface MvvmRemoteContext
     String getActivationKey();
 
     /**
+     * Return true if running in a development environment.
+     *
+     * @return a <code>boolean</code> true if in development.
+     */
+    boolean isDevel();
+
+    /**
      * Create a backup which the client can save to a local disk.  The
      * returned bytes are for a .tar.gz file, so it is a good idea to
      * either use a ".tar.gz" extension so basic validation can be

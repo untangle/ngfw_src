@@ -35,10 +35,7 @@ import java.net.*;
 import java.text.*;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListResourceBundle;
 import java.util.Map;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import javax.jnlp.*;
@@ -48,6 +45,8 @@ import javax.swing.event.CaretListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.JTextComponent;
+
+import org.apache.log4j.Logger;
 
 import com.untangle.gui.login.*;
 import com.untangle.gui.main.MMainJFrame;
@@ -71,29 +70,10 @@ import com.untangle.mvvm.tran.*;
 import com.untangle.mvvm.user.RemotePhoneBook;
 
 public class Util {
-
+    private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel";
     public static final String EXCEPTION_PORT_RANGE = "The port must be an integer number between 1 and 65535.";
 
-    private static final ResourceBundle ENVIRONMENT;
-
-    static {
-        ResourceBundle rb;
-
-        try {
-            InputStream is = Util.class.getClassLoader().getResourceAsStream("environment.properties");
-            rb = new PropertyResourceBundle(is);
-        } catch (IOException exn) {
-            System.out.println("could not initialize environment properties");
-            rb = new ListResourceBundle() {
-                    protected Object[][] getContents()
-                    {
-                        return new Object[0][0];
-                    }
-                };
-        }
-
-        ENVIRONMENT = rb;
-    }
+    private static final Logger logger = Logger.getLogger(Util.class);
 
     private Util(){}
 
@@ -101,7 +81,6 @@ public class Util {
         shutdownableMap = new HashMap<String,Shutdownable>();
         statsCache = new StatsCache();
         logDateFormat = new SimpleDateFormat("EEE, MMM d HH:mm:ss");
-        log = new Vector();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         iconOnState = new ImageIcon( classLoader.getResource("com/untangle/gui/transform/IconOnState28x28.png") );
         iconOffState = new ImageIcon( classLoader.getResource("com/untangle/gui/transform/IconOffState28x28.png") );
@@ -412,7 +391,6 @@ public class Util {
     public static PolicyStateMachine getPolicyStateMachine(){ return policyStateMachine; }
     ////////////////////////////////////////////
 
-
     // EXITING AND SHUTDOWN ///////////////////
     private static Map<String,Shutdownable> shutdownableMap;
     public static void exit(int i){
@@ -424,13 +402,16 @@ public class Util {
     private static void doShutdown(){
         Util.printMessage("Shutdown initiated by: " + Thread.currentThread().getName() );
         for( Map.Entry<String,Shutdownable> shutdownableEntry : shutdownableMap.entrySet() ){
-            System.err.println("Shutting down: " + shutdownableEntry.getKey());
+            logger.info("Shutting down: " + shutdownableEntry.getKey());
             shutdownableEntry.getValue().doShutdown();
         }
         shutdownableMap.clear();
     }
     ////////////////////////////////////////////
-
+    public static boolean isDevel() {
+        return Boolean.getBoolean(PROPERTY_IS_DEVEL);
+    }
+        
 
     // WINDOW PLACEMENT AND FORMATTING /////////
     public static GraphicsConfiguration getGraphicsConfiguration(){
@@ -478,13 +459,13 @@ public class Util {
         GraphicsConfiguration graphicsConfiguration = getGraphicsConfiguration();
         Insets screenInsets = Toolkit.getDefaultToolkit().getScreenInsets( graphicsConfiguration );
         int screenHeight = graphicsConfiguration.getBounds().height - screenInsets.top - screenInsets.bottom;
-        //System.err.println("Screen height: " + graphicsConfiguration.getBounds().height);
-        //System.err.println("Screen width: " + graphicsConfiguration.getBounds().width);
-        //System.err.println("Top insets: " + screenInsets.top);
-        //System.err.println("Bottom insets: " + screenInsets.bottom);
-        //System.err.println("Right insets: " + screenInsets.right);
-        //System.err.println("Left insets: " + screenInsets.left);
-        //  System.err.println("Determined screen height to be: " + screenHeight);
+        //logger.debug("Screen height: " + graphicsConfiguration.getBounds().height);
+        //logger.debug("Screen width: " + graphicsConfiguration.getBounds().width);
+        //logger.debug("Top insets: " + screenInsets.top);
+        //logger.debug("Bottom insets: " + screenInsets.bottom);
+        //logger.debug("Right insets: " + screenInsets.right);
+        //logger.debug("Left insets: " + screenInsets.left);
+        //  logger.debug("Determined screen height to be: " + screenHeight);
         if( screenHeight < attemptedMinHeight)
             return screenHeight;
         else
@@ -498,11 +479,11 @@ public class Util {
         int newWidth = currentWidth;
         int newHeight = currentHeight;
         /*
-          System.err.println("----------------------");
-          System.err.println("| Initial size: " + currentSize);
-          System.err.println("| Min size: " + minSize);
-          System.err.println("| Max size: " + maxSize);
-          System.err.println("----------------------");
+          logger.debug("----------------------");
+          logger.debug("| Initial size: " + currentSize);
+          logger.debug("| Min size: " + minSize);
+          logger.debug("| Max size: " + maxSize);
+          logger.debug("----------------------");
         */
         boolean resetSize = false;
         if(currentWidth < minSize.width){
@@ -677,15 +658,8 @@ public class Util {
     //////////////////////////////////////////////////////
 
     // EXCEPTION HANDLING AND MESSAGE PRINTING ////////////
-    private static final boolean PRINT_MESSAGES = true;
-    private static Vector log;
-
     public synchronized static void handleExceptionNoRestart(String output, Exception e){
-        printMessage(output);
-        if(PRINT_MESSAGES)
-            e.printStackTrace(System.err);
-        log.add(e.getMessage());
-        log.add(e.getStackTrace());
+        logger.debug(output,e);
     }
 
     public synchronized static void handleExceptionWithRestart(String output, Exception e) throws Exception {
@@ -693,8 +667,7 @@ public class Util {
 
         while( throwableRef != null){
             if( throwableRef instanceof InvocationConnectionException ){
-                System.err.println(output);
-                e.printStackTrace();
+                logger.info(output,e);
                 if( !Util.getShutdownInitiated() ){
                     Util.setShutdownInitiated(true);
                     doShutdown();
@@ -705,8 +678,7 @@ public class Util {
                 return;
             }
             else if( throwableRef instanceof InvocationTargetExpiredException ){
-                System.err.println(output);
-                e.printStackTrace();
+                logger.info(output,e);
                 if( !Util.getShutdownInitiated() ){
                     Util.setShutdownInitiated(true);
                     doShutdown();
@@ -717,8 +689,7 @@ public class Util {
                 return;
             }
             else if( throwableRef instanceof com.untangle.mvvm.client.LoginExpiredException ){
-                System.err.println(output);
-                e.printStackTrace();
+                logger.info(output,e);
                 if( !Util.getShutdownInitiated() ){
                     Util.setShutdownInitiated(true);
                     doShutdown();
@@ -731,8 +702,7 @@ public class Util {
             else if(    (throwableRef instanceof ConnectException)
                         || (throwableRef instanceof SocketException)
                         || (throwableRef instanceof SocketTimeoutException) ){
-                System.err.println(output);
-                e.printStackTrace();
+                logger.info(output,e);
                 if( !Util.getShutdownInitiated() ){
                     Util.setShutdownInitiated(true);
                     doShutdown();
@@ -762,8 +732,7 @@ public class Util {
 
 
     public static void printMessage(String message){
-        if(PRINT_MESSAGES)
-            System.err.println(message);
+        logger.info(message);
     }
     /////////////////////////////////////////////////
 
@@ -813,16 +782,6 @@ public class Util {
             return false;
         else
             return a.equals(b) && b.equals(a);
-    }
-
-    public static String getVersion()
-    {
-        return ENVIRONMENT.getString("version");
-    }
-
-    public static boolean isCdBuild()
-    {
-        return Boolean.parseBoolean(ENVIRONMENT.getString("cdbuild"));
     }
 
     ///////////////////////////////////////////

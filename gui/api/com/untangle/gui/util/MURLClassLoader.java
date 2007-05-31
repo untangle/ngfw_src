@@ -17,8 +17,12 @@ import java.util.List;
 
 import com.untangle.mvvm.tran.TransformDesc;
 
+import org.apache.log4j.Logger;
+
 public class MURLClassLoader extends URLClassLoader {
 
+    private final Logger logger = Logger.getLogger(getClass());
+    
     public MURLClassLoader(ClassLoader parent){
         super( new URL[0], parent );
     }
@@ -30,12 +34,12 @@ public class MURLClassLoader extends URLClassLoader {
             for (URL url : existingURLs)
                 if (url.equals(marURL))
                     return;
-            //System.out.println("Adding " + marURL + " to class path");
+            //logger.debug("Adding " + marURL + " to class path");
             addURL(marURL);
         } catch(Exception e){
-            //System.err.println("Couldn't do it:" + e.getMessage());
+            //logger.info("Couldn't do it:" + e.getMessage());
             e.printStackTrace();
-            //System.err.println("  |--> Couldn't add mar: " + marName);
+            //logger.info("  |--> Couldn't add mar: " + marName);
         }
     }
 
@@ -55,26 +59,26 @@ public class MURLClassLoader extends URLClassLoader {
     /*
       public synchronized void addNewSimpleURL(URL newURL){
       super.addURL(newURL);
-      System.err.println("  |--> Added: " + newURL);
+      logger.info("  |--> Added: " + newURL);
       }
 
       public Class loadClass(String className, boolean resolveClass){
       synchronized(this){
       Class returnClass = null;
-      System.err.println("@ loadClass( " + className + " , " + resolveClass + " ) ");
+      logger.info("@ loadClass( " + className + " , " + resolveClass + " ) ");
       try{
       returnClass = super.loadClass(className, resolveClass);
       }
       catch(Exception e){
-      System.err.println("  |--> Failed Load: " + className);
+      logger.info("  |--> Failed Load: " + className);
       e.printStackTrace();
       returnClass = null;
       }
 
       if(returnClass != null)
-      System.err.println("  |--> Loaded: " + className);
+      logger.info("  |--> Loaded: " + className);
       else
-      System.err.println("  |--> Failed Load: " + className);
+      logger.info("  |--> Failed Load: " + className);
 
       return returnClass;
       }
@@ -82,20 +86,20 @@ public class MURLClassLoader extends URLClassLoader {
 
       public URL getResource(String resourceName){
       URL returnURL = null;
-      System.err.println("@ getResource( " + resourceName + " )" + "  ContextClassLoader: " + Thread.currentThread().getContextClassLoader() );
+      logger.info("@ getResource( " + resourceName + " )" + "  ContextClassLoader: " + Thread.currentThread().getContextClassLoader() );
       try{
       returnURL = super.getResource(resourceName);
       }
       catch(Exception e){
-      System.err.println("  |--> Failed Load: " + resourceName);
+      logger.info("  |--> Failed Load: " + resourceName);
       returnURL = null;
       }
 
 
       if(returnURL != null)
-      System.err.println("  |--> Loaded: " + resourceName);
+      logger.info("  |--> Loaded: " + resourceName);
       else
-      System.err.println("  |--> Failed Load: " + resourceName);
+      logger.info("  |--> Failed Load: " + resourceName);
 
 
       return returnURL;
@@ -105,7 +109,7 @@ public class MURLClassLoader extends URLClassLoader {
     public synchronized Class loadClass(String className, TransformDesc transformDesc){
 
         Class returnClass = null;
-        //System.out.println("--> Trying to load class: " + className + " with mar: " + marName);
+        //logger.debug("--> Trying to load class: " + className + " with mar: " + marName);
         // try to load the class as normal
         try{
             returnClass = this.loadClass(className);
@@ -113,7 +117,7 @@ public class MURLClassLoader extends URLClassLoader {
             returnClass = null;
         }
         if(returnClass != null){
-            //System.err.println("  |--> Loaded Class from Parent: " + returnClass.getClassLoader() );
+            //logger.info("  |--> Loaded Class from Parent: " + returnClass.getClassLoader() );
             return returnClass;
         }
 
@@ -124,13 +128,13 @@ public class MURLClassLoader extends URLClassLoader {
 
             //URL[] availableURLs = Util.getClassLoader().getURLs();
             //for(int i=0; i<availableURLs.length; i++)
-            //    System.err.println( "  |--> Found: " + availableURLs[i].toString() );
+            //    logger.info( "  |--> Found: " + availableURLs[i].toString() );
             returnClass = this.loadClass(className);
             //if(returnClass != null)
-            //    System.err.println("  |--> Loaded Class from URL: " + className);
+            //    logger.info("  |--> Loaded Class from URL: " + className);
             //else
-            //    System.err.println("  |--> UNABLE TO LOAD: " + className);
-            //System.err.println("parent class loader: " + returnClass.getClassLoader() );
+            //    logger.info("  |--> UNABLE TO LOAD: " + className);
+            //logger.info("parent class loader: " + returnClass.getClassLoader() );
         }
         catch(Exception e){
             //e.printStackTrace();

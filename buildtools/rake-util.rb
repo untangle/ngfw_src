@@ -149,6 +149,7 @@ class BuildEnv
       /@ENDORSED_LIB@/ => "#{@prefix}/usr/share/java/endorsed",
       /@FAKE_PKG_LIST@/ => "#{@prefix}/tmp/pkg-list",
       /@ALPINE_LIB@/ => "#{@prefix}/usr/lib/mvvm",
+      /@IS_DEVEL@/ => "#{@isDevel}"
     }
   end
 end

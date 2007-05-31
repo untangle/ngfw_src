@@ -208,6 +208,13 @@ public interface MvvmLocalContext
     boolean isActivated();
 
     /**
+     * Return true if running in a development environment.
+     *
+     * @return a <code>boolean</code> true if in development.
+     */
+    boolean isDevel();
+
+    /**
      * Activates the Untangle Server using the given key.  Returns
      * true if the activation succeeds, false otherwise (if the key is
      * bogus).

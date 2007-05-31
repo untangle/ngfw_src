@@ -37,6 +37,7 @@ MackageDesc[] mds = mvvm.toolboxManager().installed();
   <security>
     <all-permissions/>
   </security>
+  
   <resources>
     <j2se version="1.5+" initial-heap-size="48m" max-heap-size="128m"/>
 
@@ -64,6 +65,8 @@ MackageDesc[] mds = mvvm.toolboxManager().installed();
         }
     }
     %>
+
+  <property name="com.untangle.isDevel" value="<%=mvvm.isDevel()%>"/>
 
   </resources>
   <application-desc main-class="com.untangle.gui.util.MLauncher">

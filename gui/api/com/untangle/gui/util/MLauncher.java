@@ -12,24 +12,37 @@
 package com.untangle.gui.util;
 
 import java.awt.*;
+import java.io.InputStream;
+import java.io.IOException;
 import java.net.*;
 import java.security.*;
+import java.util.Properties;
 import javax.swing.*;
+
+import org.apache.log4j.PropertyConfigurator;
 
 import com.untangle.gui.login.*;
 import com.untangle.mvvm.client.*;
 
+import org.apache.log4j.Logger;
 
 public class MLauncher {
+    private static final String LOG4J_DEFAULT_PROPERTIES = "com/untangle/gui/log4j.properties";
+    private static final String LOG4J_DEVEL_PROPERTIES   = "com/untangle/gui/log4j-devel.properties";
 
     private static boolean isActivated;
     private static boolean isRegistered;
+
+    private static final Logger logger = Logger.getLogger(MLauncher.class);
 
     public static void main(final String args[]) {
 
         // SET CLASS LOADER NORMAL WAYS
         final MURLClassLoader mUrlClassLoader = new MURLClassLoader( MLauncher.class.getClassLoader() );
         Thread.currentThread().setContextClassLoader(mUrlClassLoader);
+
+        // CONFIGURE LOGGING
+        configureLogging();
 
         // SET CLASS LOADER AGGRESSIVELY IN CASE SWING STARTED EARLY
         try{
@@ -38,9 +51,8 @@ public class MLauncher {
                 Thread.currentThread().setContextClassLoader(mUrlClassLoader);
             }});
         }
-        catch(Exception e){
-            System.err.println("Error setting class loader:");
-            e.printStackTrace();
+        catch(Exception e){            
+            logger.info("Error setting class loader:", e);
         }
 
         // PROPERTY CHANGE LISTENER WORKAROUND FOR ALTERNATE LOOK AND FEEL BUG
@@ -62,11 +74,9 @@ public class MLauncher {
             UIManager.getLookAndFeelDefaults().put("ClassLoader", mUrlClassLoader);
         }
         catch (Exception e) {
-            System.err.println("Error starting LAF:");
-            e.printStackTrace();
+            logger.info("Error starting LAF:",e);
         }
-
-
+            
         // SET CLASSLOADER
         Util.initialize();
         Util.setClassLoader( mUrlClassLoader );
@@ -77,8 +87,7 @@ public class MLauncher {
             Toolkit.getDefaultToolkit().setDynamicLayout(true);
         }
         catch(Exception e){
-            System.err.println("Error setting dynamic layout:");
-            e.printStackTrace();
+            logger.info("Error setting dynamic layout:", e);
         }
 
         // SHUTDOWN HOOK
@@ -133,6 +142,50 @@ public class MLauncher {
 
     }
 
+    static void configureLogging()
+    {
+        Properties props = new Properties();
+
+        /* defaults in case it can't parse the log4j.properties */
+        props.setProperty("log4j.appender.A1", "org.apache.log4j.ConsoleAppender");
+        props.setProperty("log4j.appender.A1.layout","org.apache.log4j.PatternLayout");
+        props.setProperty("log4j.appender.A1.layout.ConversionPattern",
+                          "%d{HH:mm:ss,SSS} (%t) %-5p [%c] - %m%n");
+        props.setProperty("log4j.rootLogger=WARN","A1");
+        
+        try {
+            InputStream is = MLauncher.class.getClassLoader().
+                getResourceAsStream(LOG4J_DEFAULT_PROPERTIES);
+
+            if (is != null) {
+                props.load(is);
+            } else {
+                System.err.println("Unable to load default log4j properties");
+            }
+
+        } catch ( IOException e ) {
+            System.err.println("Unable to load default logging properties.");
+            System.err.println("Using defaults." );            
+        }
+
+        try {
+            if ( Util.isDevel()) {
+                System.out.println("enabling debug.");
+
+                InputStream is = MLauncher.class.getClassLoader().
+                    getResourceAsStream(LOG4J_DEVEL_PROPERTIES);
+                if (is != null) {
+                    props.load(is);
+                } else {
+                    System.err.println("Unable to load development log4j properties.");
+                }
+            }
+        } catch ( IOException e ) {
+            System.err.println("Unable to load development log4j properties.");
+        }
+
+        PropertyConfigurator.configure(props);
+    }
 
     static private class ShutdownHookThread extends Thread {
         public ShutdownHookThread(){
@@ -154,14 +207,14 @@ public class MLauncher {
         public void run(){
             try{
                 while(true){
-                    System.out.println("LAF name: " + UIManager.getLookAndFeel().getName());
-                    System.out.println("LAF ClassLoader: " + UIManager.getLookAndFeelDefaults().get("ClassLoader"));
+                    logger.debug("LAF name: " + UIManager.getLookAndFeel().getName());
+                    logger.debug("LAF ClassLoader: " + UIManager.getLookAndFeelDefaults().get("ClassLoader"));
                     EventQueue eq = Toolkit.getDefaultToolkit().getSystemEventQueue();
                     eq.invokeAndWait( new Runnable(){ public void run(){
-                        System.out.println("EDT name: " + Thread.currentThread().getName());
-                        System.out.println("EDT ClassLoader: " + Thread.currentThread().getContextClassLoader());
+                        logger.debug("EDT name: " + Thread.currentThread().getName());
+                        logger.debug("EDT ClassLoader: " + Thread.currentThread().getContextClassLoader());
                     }});
-                    System.out.println("-----------------" );
+                    logger.debug("-----------------" );
                     sleep(5000l);
                 }
             }
@@ -180,8 +233,7 @@ public class MLauncher {
                 if( (Util.getLookAndFeel() != null) && !(Util.getLookAndFeel().equals(evt.getNewValue())) )
                     try{ UIManager.setLookAndFeel(Util.getLookAndFeel()); }
                     catch(Exception e){
-                        System.out.println("Error resetting LAF");
-                        e.printStackTrace();
+                        logger.info("Error resetting LAF",e);
                     }
             }
         }
