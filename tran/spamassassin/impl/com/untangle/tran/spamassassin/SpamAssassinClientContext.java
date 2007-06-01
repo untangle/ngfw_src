@@ -21,6 +21,7 @@ public final class SpamAssassinClientContext {
     private InputSettings iSettings;
 
     private volatile SpamReport spamReport;
+    private boolean done = false;
 
     public SpamAssassinClientContext(File msgFile, String host, int port, float threshold) {
         iSettings = new InputSettings(msgFile, host, port, threshold);
@@ -50,6 +51,16 @@ public final class SpamAssassinClientContext {
 
     public SpamReport getResult() {
         return spamReport;
+    }
+
+    public boolean isDone()
+    {
+        return done;
+    }
+
+    public void setDone(boolean done)
+    {
+        this.done = done;
     }
 
     class InputSettings {

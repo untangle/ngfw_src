@@ -107,7 +107,7 @@ public final class SpamAssassinClient implements Runnable {
 
                 // retry when no result yet and time remains before timeout
                 long elapsedTime = System.currentTimeMillis() - startTime;
-                while (null == cContext.getResult() && elapsedTime < timeout) {
+                while (!cContext.isDone() && elapsedTime < timeout) {
                     this.wait(timeout - elapsedTime);
                     elapsedTime = System.currentTimeMillis() - startTime;
                 }
@@ -341,6 +341,7 @@ public final class SpamAssassinClient implements Runnable {
 
     private void cleanExit() {
         synchronized (this) {
+            cContext.setDone(true);
             this.notifyAll(); // notify waiting thread and finish run()
             return;
         }
