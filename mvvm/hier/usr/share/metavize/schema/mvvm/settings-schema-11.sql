@@ -1,4 +1,4 @@
--- settings schema for release-4.2.3
+-- settings schema for release-5.0
 
 CREATE SCHEMA settings;
 
@@ -31,6 +31,16 @@ CREATE TABLE settings.upgrade_settings (
     auto_upgrade bool NOT NULL,
     period int8 NOT NULL,
     PRIMARY KEY (upgrade_settings_id));
+
+-- com.untangle.mvvm.BrandingSettings
+CREATE TABLE settings.mvvm_branding_settings (
+    settings_id int8 NOT NULL,
+    company_name text,
+    company_url text,
+    logo bytea,
+    contact_name text,
+    contact_email text,
+    PRIMARY KEY (settings_id));
 
 -- com.untangle.mvvm.MailSettings
 CREATE TABLE settings.mail_settings (

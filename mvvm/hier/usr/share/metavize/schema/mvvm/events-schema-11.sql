@@ -1,4 +1,4 @@
--- events schema for release-4.2.3
+-- events schema for release-5.0
 
 CREATE SCHEMA events;
 
