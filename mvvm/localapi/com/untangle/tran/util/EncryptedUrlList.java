@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -131,7 +132,12 @@ public class EncryptedUrlList extends UrlList
 
     protected boolean matches(String str, String pat)
     {
-        return str.matches(pat);
+        try {
+            return str.matches(pat);
+        } catch (PatternSyntaxException exn) {
+            logger.warn("bad pattern", exn);
+            return false;
+        }
     }
 
     // private methods --------------------------------------------------------
