@@ -17,12 +17,19 @@ import com.untangle.mvvm.tran.ValidateException;
 
 public interface RemotePhoneBook
 {
-    /* retrieve the WMI settings */
+    /**
+     * Get the WMI settings
+     *
+     * @return The new settings.
+     */
     public WMISettings getWMISettings();
 
-    /* set the WMI settings */
+    /**
+     * Set the WMI settings
+     *
+     * @param settings The new settings.
+     * @exception ValidateException if <code>settings</code> is not valid.
+     */
     public void setWMISettings( WMISettings settings ) throws ValidateException;
-
-    public void wmi( String args[] ) throws Exception;
 }
 

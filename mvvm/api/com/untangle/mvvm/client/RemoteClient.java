@@ -218,10 +218,6 @@ public class RemoteClient
             shieldReconfigure();
         } else if (args[0].equalsIgnoreCase("updateAddress")) {
             updateAddress();
-        } else if (false && args[0].equalsIgnoreCase("pppoe")) { /* For debugging/development */
-            pppoe(args);
-        } else if (false && args[0].equalsIgnoreCase("wmi")) { /* For debugging/development */
-            wmi(args);
         } else if (args[0].equalsIgnoreCase("gc")) {
             doFullGC();
         } else if (args[0].equalsIgnoreCase("messageQueue")) {
@@ -951,17 +947,6 @@ public class RemoteClient
     {
         mc.networkManager().updateAddress();
     }
-
-    private static void pppoe( String args[] ) throws Exception
-    {
-        mc.networkManager().pppoe( args );
-    }
-
-    private static void wmi( String args[] ) throws Exception
-    {
-        mc.phoneBook().wmi( args );
-    }
-
 
     // helper functions -------------------------------------------------------
 

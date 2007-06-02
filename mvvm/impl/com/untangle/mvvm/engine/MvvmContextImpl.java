@@ -45,9 +45,8 @@ import com.untangle.mvvm.toolbox.ToolboxManager;
 import com.untangle.mvvm.tran.TransformContext;
 import com.untangle.mvvm.tran.TransformManager;
 import com.untangle.mvvm.user.LocalPhoneBook;
-import com.untangle.mvvm.user.LocalPhoneBookImpl;
+import com.untangle.mvvm.user.PhoneBookFactory;
 import com.untangle.mvvm.user.RemotePhoneBook;
-import com.untangle.mvvm.user.RemotePhoneBookImpl;
 import com.untangle.mvvm.util.TransactionRunner;
 import com.untangle.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
@@ -103,8 +102,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private AddressBookImpl addressBookImpl;
     private BrandingManager brandingManager;
     private LocalBrandingManager localBrandingManager;
-    private LocalPhoneBookImpl localPhoneBookImpl;
-    private RemotePhoneBookImpl remotePhoneBookImpl;
+    private PhoneBookFactory phoneBookFactory;
     private PortalManagerImpl portalManager;
     private RemotePortalManagerImpl remotePortalManager;
     private TomcatManager tomcatManager;
@@ -155,12 +153,12 @@ public class MvvmContextImpl extends MvvmContextBase
 
     public RemotePhoneBook remotePhoneBook()
     {
-        return remotePhoneBookImpl;
+        return phoneBookFactory.getRemote();
     }
 
     public LocalPhoneBook localPhoneBook()
     {
-        return localPhoneBookImpl;
+        return phoneBookFactory.getLocal();
     }
 
     public PortalManagerImpl portalManager()
@@ -604,10 +602,8 @@ public class MvvmContextImpl extends MvvmContextBase
 
         localBrandingManager = new BrandingManagerImpl();
         brandingManager = new RemoteBrandingManagerImpl(localBrandingManager);
-
-        // Start the phonebook
-        localPhoneBookImpl = LocalPhoneBookImpl.getInstance();
-        remotePhoneBookImpl = new RemotePhoneBookImpl(localPhoneBookImpl);
+        
+        phoneBookFactory = PhoneBookFactory.makeInstance();
 
         portalManager = new PortalManagerImpl(this);
         remotePortalManager = new RemotePortalManagerImpl(portalManager);
@@ -654,7 +650,7 @@ public class MvvmContextImpl extends MvvmContextBase
         }
 
         /* initalize everything and start it up */
-        localPhoneBookImpl.init();
+        phoneBookFactory.init();
 
         httpInvoker = HttpInvokerImpl.invoker();
 
@@ -728,8 +724,8 @@ public class MvvmContextImpl extends MvvmContextBase
 
         // destroy the phonebook:
         try {
-            if (localPhoneBookImpl != null)
-                localPhoneBookImpl.destroy();
+            if (phoneBookFactory != null)
+                phoneBookFactory.destroy();
         } catch (Exception exn) {
             logger.warn("could not destroy LocalPhoneBook", exn);
         }

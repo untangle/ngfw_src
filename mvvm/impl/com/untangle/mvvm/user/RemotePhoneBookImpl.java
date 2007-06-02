@@ -15,9 +15,9 @@ import com.untangle.mvvm.tran.ValidateException;
 
 public class RemotePhoneBookImpl implements RemotePhoneBook
 {
-    private final LocalPhoneBookImpl local;
+    private final LocalPhoneBook local;
     
-    public RemotePhoneBookImpl( LocalPhoneBookImpl local )
+    public RemotePhoneBookImpl( LocalPhoneBook local )
     {
         this.local = local;
     }
@@ -32,10 +32,5 @@ public class RemotePhoneBookImpl implements RemotePhoneBook
     public void setWMISettings( WMISettings settings ) throws ValidateException
     {
         local.setWMISettings( settings );
-    }
-
-    public void wmi( String args[] ) throws Exception
-    {
-        local.wmi( args );
     }
 }
