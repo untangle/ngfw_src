@@ -710,7 +710,37 @@ function runCustomRulesScript()
     else
         ${LOG_DEBUG} "Custom rules script is disabled"
     fi
+}
 
+getLicenseKey() {
+  # the wizard has not run yet, exit right away
+  [[ ! -f $ACTIVATION_KEY_FILE ]] && return
+
+  # if the activation temp file isn't there, but the activation one
+  # is, it means we already have a valid key, so we don't want to
+  # proceed any further.
+  #
+  # Copyright TeamJanky 2007: the double test is to avoid a possible
+  # race condition where we pass 1), but the other backgrounded curl
+  # completes before 2), and then when we reach 3) our temp file has
+  # already been deleted and we're left in the cold...
+  [[ -f $ACTIVATION_KEY_FILE_TMP ]] || return
+  killall curl
+  [[ -f $ACTIVATION_KEY_FILE_TMP ]] || return
+
+  KEY=`cat $ACTIVATION_KEY_FILE_TMP`
+
+  # for CD downloads, the temp key is only 0s, so we need to ask the 
+  # server for a brand new one; that's done by not supplying any value
+  # to the CGI variable
+  [[ $KEY = $FAKE_KEY ]] && KEY="" 
+
+  if curl -m 10 --insecure --fail -o $TMP_ARCHIVE `printf ${ACTIVATION_URL_TEMPLATE} "$KEY" $(/usr/bin/mvip)`; then
+    rm -f $ACTIVATION_KEY_FILE_TMP
+    tar -C / -xf $TMP_ARCHIVE
+    @PREFIX@/usr/bin/mvactivate
+    @PREFIX@/usr/bin/mvregister # trigger root passwd generation
+  fi
 }
 
 ###############################################################
@@ -755,5 +785,7 @@ interceptRules
 setupMode
 
 runCustomRulesScript
+
+getLicenseKey
 
 true

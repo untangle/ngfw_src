@@ -110,7 +110,8 @@ getLicenseKey() {
   # completes before 2), and then when we reach 3) our temp file has
   # already been deleted and we're left in the cold...
   [[ -f $ACTIVATION_KEY_FILE_TMP ]] || return
-  killall curl
+  ## Let the other curl take precedence
+  ps aux | grep -q '[c]url' && return
   [[ -f $ACTIVATION_KEY_FILE_TMP ]] || return
 
   KEY=`cat $ACTIVATION_KEY_FILE_TMP`
@@ -121,8 +122,8 @@ getLicenseKey() {
   [[ $KEY = $FAKE_KEY ]] && KEY="" 
 
   if curl --insecure --fail -o $TMP_ARCHIVE `printf ${ACTIVATION_URL_TEMPLATE} "$KEY" $(/usr/bin/mvip)`; then
-    tar -C / -xf $TMP_ARCHIVE
     rm -f $ACTIVATION_KEY_FILE_TMP
+    tar -C / -xf $TMP_ARCHIVE
     @PREFIX@/usr/bin/mvactivate
     @PREFIX@/usr/bin/mvregister # trigger root passwd generation
   fi
