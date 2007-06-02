@@ -20,8 +20,6 @@ class DefaultPhoneBookImpl implements LocalPhoneBook
 {
     private final MVLogger logger = new MVLogger( getClass());
 
-    private final WMISettings settings = new WMISettings();
-
     DefaultPhoneBookImpl()
     {
     }
@@ -32,7 +30,7 @@ class DefaultPhoneBookImpl implements LocalPhoneBook
     public WMISettings getWMISettings()
     {
         logger.warn( "using invalid WMI settings" );
-        return this.settings;
+        return new WMISettings();
     }
 
     /* set the WMI settings */

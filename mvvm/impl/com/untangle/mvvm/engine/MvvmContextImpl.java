@@ -23,12 +23,13 @@ import com.untangle.mvvm.LocalBrandingManager;
 import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.MvvmState;
 import com.untangle.mvvm.Period;
+import com.untangle.mvvm.addrbook.AddressBook;
 import com.untangle.mvvm.api.RemoteIntfManager;
 import com.untangle.mvvm.api.RemoteShieldManager;
 import com.untangle.mvvm.argon.Argon;
 import com.untangle.mvvm.argon.ArgonManagerImpl;
 import com.untangle.mvvm.client.MvvmRemoteContext;
-import com.untangle.mvvm.engine.addrbook.AddressBookImpl;
+import com.untangle.mvvm.engine.addrbook.AddressBookFactory;
 import com.untangle.mvvm.localapi.LocalIntfManager;
 import com.untangle.mvvm.localapi.LocalShieldManager;
 import com.untangle.mvvm.logging.EventLogger;
@@ -99,7 +100,7 @@ public class MvvmContextImpl extends MvvmContextBase
     private CronManager cronManager;
     private AppServerManagerImpl appServerManager;
     private RemoteAppServerManagerImpl remoteAppServerManager;
-    private AddressBookImpl addressBookImpl;
+    private AddressBookFactory addressBookFactory;
     private BrandingManager brandingManager;
     private LocalBrandingManager localBrandingManager;
     private PhoneBookFactory phoneBookFactory;
@@ -136,9 +137,9 @@ public class MvvmContextImpl extends MvvmContextBase
 
     // singletons -------------------------------------------------------------
 
-    public AddressBookImpl appAddressBook()
+    public AddressBook appAddressBook()
     {
-        return addressBookImpl;
+        return addressBookFactory.getAddressBook();
     }
 
     public BrandingManager brandingManager()
@@ -598,7 +599,7 @@ public class MvvmContextImpl extends MvvmContextBase
         pingManager = PingManagerImpl.getInstance();
 
         //Start AddressBookImpl
-        addressBookImpl = AddressBookImpl.getInstance();
+        addressBookFactory = AddressBookFactory.makeInstance();
 
         localBrandingManager = new BrandingManagerImpl();
         brandingManager = new RemoteBrandingManagerImpl(localBrandingManager);
@@ -731,7 +732,7 @@ public class MvvmContextImpl extends MvvmContextBase
         }
 
         // XXX destroy needed
-        addressBookImpl = null;
+        addressBookFactory = null;
 
         // XXX destroy methods for:
         // - pipelineFoundry
