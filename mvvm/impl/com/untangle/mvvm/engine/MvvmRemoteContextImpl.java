@@ -117,7 +117,7 @@ class MvvmRemoteContextImpl implements MvvmRemoteContext
 
     public AddressBook appAddressBook()
     {
-        return context.appAddressBook();
+        return context.appRemoteAddressBook();
     }
 
     public BrandingManager brandingManager()

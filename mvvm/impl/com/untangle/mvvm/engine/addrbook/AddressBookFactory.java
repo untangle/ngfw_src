@@ -27,6 +27,9 @@ public class AddressBookFactory
 
     /** The premium address book */
     private AddressBook premium = null;
+
+    /** remote address book */
+    private AddressBook remote = new RemoteAddressBookImpl(limited);
     
     private AddressBookFactory()
     {
@@ -35,6 +38,11 @@ public class AddressBookFactory
     public AddressBook getAddressBook()
     {
         return ( this.premium == null ) ? this.limited : this.premium;
+    }
+
+    public AddressBook getRemoteAddressBook()
+    {
+        return this.remote;
     }
 
     /* Retest for the premium class */
@@ -51,9 +59,11 @@ public class AddressBookFactory
         }
         try {
             this.premium = (PremiumAddressBook)Class.forName( className ).newInstance();
+            this.remote = new RemoteAddressBookImpl( this.premium );
         } catch ( Exception e ) {
             logger.info( "Could not load premium AddressBook: " + className, e );
             this.premium = null;
+            this.remote = new RemoteAddressBookImpl( this.limited );
         }
     }
 

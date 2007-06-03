@@ -11,19 +11,14 @@
 
 package com.untangle.mvvm.engine.addrbook;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 import javax.naming.ServiceUnavailableException;
 
-import org.apache.log4j.Logger;
-
 import com.untangle.mvvm.addrbook.AddressBook;
-import com.untangle.mvvm.addrbook.AddressBookConfiguration;
 import com.untangle.mvvm.addrbook.AddressBookSettings;
 import com.untangle.mvvm.addrbook.NoSuchEmailException;
-import com.untangle.mvvm.addrbook.RepositorySettings;
 import com.untangle.mvvm.addrbook.RepositoryType;
 import com.untangle.mvvm.addrbook.UserEntry;
 
@@ -32,32 +27,26 @@ import com.untangle.mvvm.addrbook.UserEntry;
  * should only be used by classes in "engine" (the parent package).
  *
  */
-public class DefaultAddressBookImpl implements AddressBook {
+public class RemoteAddressBookImpl implements AddressBook {
 
-    private static final ABStatus status = new ABStatus();
+    private final AddressBook addressBook;
 
-    private final Logger m_logger =
-        Logger.getLogger(getClass());
-
-    DefaultAddressBookImpl() {
+    RemoteAddressBookImpl(AddressBook addressBook) {
+        this.addressBook = addressBook;
     }
 
     //====================================================
     // See doc on com.untangle.mvvm.addrbook.AddressBook
     //====================================================
     public AddressBookSettings getAddressBookSettings() {
-        m_logger.info("getting invalid settings");
-        AddressBookSettings m_settings = new AddressBookSettings();
-        m_settings.setAddressBookConfiguration(AddressBookConfiguration.NOT_CONFIGURED);
-        m_settings.setADRepositorySettings(new RepositorySettings());
-        return m_settings;
+        return this.addressBook.getAddressBookSettings();
     }
 
     //====================================================
     // See doc on com.untangle.mvvm.addrbook.AddressBook
     //====================================================
     public void setAddressBookSettings(final AddressBookSettings newSettings) {
-        m_logger.info("ignoring save settings");
+        this.addressBook.setAddressBookSettings(newSettings);
     }
 
 
@@ -66,20 +55,11 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public boolean authenticate(String uid, String pwd)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring authenticate.");
-        return false;
-    }
-
-    private static class ABStatus implements AddressBook.Status {
-        public boolean isLocalWorking() { return false; }
-        public boolean isADWorking() { return false; }
-        public String localDetail() { return "unconfigured"; }
-        public String adDetail() { return "unconfigured"; }
+        return this.addressBook.authenticate(uid,pwd);
     }
         
     public Status getStatus() {
-        m_logger.info("ignoring get status.");
-        return this.status;
+        return this.addressBook.getStatus();
     }
 
 
@@ -88,9 +68,7 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public boolean authenticateByEmail(String email, String pwd)
         throws ServiceUnavailableException, NoSuchEmailException {
-        
-        m_logger.info("ignoring authenticate by email.");
-        return false;
+        return this.addressBook.authenticateByEmail(email,pwd);
     }
 
 
@@ -100,8 +78,7 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public RepositoryType containsEmail(String address, RepositoryType searchIn)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring contains email.");
-        return RepositoryType.NONE;
+        return this.addressBook.containsEmail(address,searchIn);
     }
 
 
@@ -111,8 +88,7 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public RepositoryType containsEmail(String address)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring contains email.");
-        return RepositoryType.NONE;
+        return this.addressBook.containsEmail(address);
     }
 
     //====================================================
@@ -120,8 +96,7 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public RepositoryType containsUid(String uid)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring contains uid.");
-        return RepositoryType.NONE;
+        return this.addressBook.containsUid(uid);
     }
 
 
@@ -131,8 +106,7 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public RepositoryType containsUid(String uid, RepositoryType searchIn)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring contains uid.");
-        return RepositoryType.NONE;
+        return this.addressBook.containsUid(uid,searchIn);
     }
 
 
@@ -141,8 +115,7 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public List<UserEntry> getLocalUserEntries()
         throws ServiceUnavailableException {
-        m_logger.info("ignoring contains getLocalUserEntries.");
-        return new ArrayList<UserEntry>();
+        return this.addressBook.getLocalUserEntries();
     }
 
 
@@ -151,7 +124,7 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public void setLocalUserEntries(List<UserEntry> userEntries)
         throws ServiceUnavailableException, NameNotFoundException, NameAlreadyBoundException {
-        m_logger.info("ignoring contains setLocalUserEntries.");
+        this.addressBook.setLocalUserEntries(userEntries);
     }
 
 
@@ -160,8 +133,7 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public List<UserEntry> getUserEntries()
         throws ServiceUnavailableException {
-        m_logger.info("ignoring getUserEntries");
-        return new ArrayList<UserEntry>();
+        return this.addressBook.getUserEntries();
     }
 
 
@@ -171,10 +143,8 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public List<UserEntry> getUserEntries(RepositoryType searchIn)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring getUserEntries");
-        return new ArrayList<UserEntry>();
+        return this.addressBook.getUserEntries(searchIn);
     }
-
 
 
     //====================================================
@@ -182,8 +152,7 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public UserEntry getEntry(String uid)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring getEntry");
-        return null;
+        return this.addressBook.getEntry(uid);
     }
 
 
@@ -193,8 +162,7 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public UserEntry getEntry(String uid, RepositoryType searchIn)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring getEntry");
-        return null;
+        return this.addressBook.getEntry(uid,searchIn);
     }
 
     //====================================================
@@ -202,8 +170,7 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public UserEntry getEntryByEmail(String email)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring getEntryByEmail");
-        return null;
+        return this.addressBook.getEntryByEmail(email);
     }
 
 
@@ -213,8 +180,7 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public UserEntry getEntryByEmail(String email, RepositoryType searchIn)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring getEntryByEmail");
-        return null;
+        return this.addressBook.getEntryByEmail(email,searchIn);
     }
 
 
@@ -224,7 +190,7 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public void createLocalEntry(UserEntry newEntry, String password)
         throws NameAlreadyBoundException, ServiceUnavailableException {
-        m_logger.info("ignoring createLocalEntry");
+        this.addressBook.createLocalEntry(newEntry,password);
     }
 
 
@@ -234,8 +200,7 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public boolean deleteLocalEntry(String entryUid)
         throws ServiceUnavailableException {
-        m_logger.info("ignoring deleteLocalEntry");
-        return false;
+        return this.addressBook.deleteLocalEntry(entryUid);
     }
 
 
@@ -245,7 +210,7 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public void updateLocalEntry(UserEntry changedEntry)
         throws ServiceUnavailableException, NameNotFoundException {
-        m_logger.info("ignoring updateLocalEntry");
+        this.addressBook.updateLocalEntry(changedEntry);
     }
 
 
@@ -255,7 +220,7 @@ public class DefaultAddressBookImpl implements AddressBook {
     //====================================================
     public void updateLocalPassword(String uid, String newPassword)
         throws ServiceUnavailableException, NameNotFoundException {
-        m_logger.info("ignoring updateLocalPassword");
+        this.addressBook.updateLocalPassword(uid,newPassword);
     }
 }
 

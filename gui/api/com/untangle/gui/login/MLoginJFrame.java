@@ -544,16 +544,16 @@ public class MLoginJFrame extends javax.swing.JFrame {
                     return;
                 }
                 catch(com.untangle.mvvm.client.InvocationTargetExpiredException e){
-                    logger.debug(e.getMessage());
+                    logger.debug("login exception", e);
                 }
                 catch(com.untangle.mvvm.client.InvocationConnectionException e){
-                    logger.debug(e.getMessage());
+                    logger.debug("login exception", e);
                 }
                 catch(MvvmConnectException e){
-                    logger.debug(e.getMessage());
+                    logger.debug("login exception", e);
                 }
                 catch(Exception e){
-                    logger.debug(e.getMessage());
+                    logger.debug("login exception", e);
                 }
                 finally{
                     if( retryLogin >= Util.LOGIN_RETRY_COUNT ){

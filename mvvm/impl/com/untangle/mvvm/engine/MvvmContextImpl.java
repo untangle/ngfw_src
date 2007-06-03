@@ -142,6 +142,11 @@ public class MvvmContextImpl extends MvvmContextBase
         return addressBookFactory.getAddressBook();
     }
 
+    public AddressBook appRemoteAddressBook()
+    {
+        return addressBookFactory.getRemoteAddressBook();
+    }
+
     public BrandingManager brandingManager()
     {
         return brandingManager;
