@@ -2,7 +2,7 @@ Source: mvvm
 Section: net
 Priority: optional
 Maintainer: Sebastien Delafond <seb@untangle.com>
-Build-Depends: debhelper (>> 3.0.0), unzip, build-essential, sun-java5-jdk, libxml2-dev, iptables-dev (>= 1.2.11-10-mv1), libnfnetlink-dev, libnetfilter-queue-dev, libsysfs-dev, dput, rake (>= 0.7.0-build1)
+Build-Depends: debhelper (>> 3.0.0), unzip, build-essential, sun-java5-jdk, libxml2-dev, iptables-dev (>= 1.2.11-10-mv1), libnfnetlink-dev, libnetfilter-queue-dev, libsysfs-dev, dput, rake (>= 0.7.0-1build1)
 Standards-Version: 3.7.2
 
 Package: libalpine
