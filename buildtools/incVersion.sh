@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # usage...
-[[ ! $# -eq 1 ]] && echo "Usage: $0 distribution" && exit 1
+[ ! $# -eq 1 ] && echo "Usage: $0 distribution" && exit 1
 
 # CL args
 distribution=${1}
@@ -12,9 +12,9 @@ esac
 
 echo -n "Setting version, setting distribution to \"$distribution\""
 
-if [[ -f ../VERSION ]] ; then
+if [ -f ../VERSION ] ; then
   versionFile=../VERSION
-elif [[ -f ./resources/VERSION ]] ; then # Hades
+elif [ -f ./resources/VERSION ] ; then # Hades
   versionFile=./resources/VERSION
 else
   versionFile=../../VERSION
@@ -32,11 +32,11 @@ baseVersion=`cat $versionFile`~svn${timestamp}r${revision}
 
 previousUpstreamVersion=`dpkg-parsechangelog | awk '/Version: / { gsub(/-.*/, "", $2) ; print $2 }'`
 
-if [[ -f KEEP-UPSTREAM-VERSION ]] ; then
+if [ -f KEEP-UPSTREAM-VERSION ] ; then
   baseVersion=${previousUpstreamVersion}+${baseVersion}
 fi
 
-if [[ -z "$hasLocalChanges" ]] ; then
+if [ -z "$hasLocalChanges" ] ; then
   upstreamVersion=$baseVersion
 else
   upstreamVersion=${baseVersion}+$USER`date +"%Y%m%dT%H%M%S"`
