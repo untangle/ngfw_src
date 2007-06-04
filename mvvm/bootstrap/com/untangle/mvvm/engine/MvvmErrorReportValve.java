@@ -93,7 +93,7 @@ public class MvvmErrorReportValve extends ErrorReportValve
         w.write("          <tr>\n");
         w.write("            <td style=\"vertical-align: top; font-family: helvetica,arial,sans-serif; width: 400px;\">\n");
         w.write("              <div style=\"text-align: center;\">\n");
-        w.write("                <img alt=\"\" src=\"/images/Logo150x96.gif\"\n");
+        w.write("                <img alt=\"\" src=\"/images/BrandingLogo.gif\"\n");
         w.write("                     style=\"border: 0px solid ; width: 150px; height: 96px;\" align=\"top\"\n");
         w.write("                     hspace=\"0\" vspace=\"0\"/>\n");
         w.write("                <br/>\n");
