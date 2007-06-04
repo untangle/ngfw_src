@@ -3,6 +3,7 @@
 <%
     BrandingSettings bs = MvvmContextFactory.context().brandingManager().getBrandingSettings();
     String company = bs.getCompanyName();
+	String companyUrl = bs.getCompanyUrl();
 
     // ENUMERATE THE ARCHIVE REPORT DIRECTORIES
     // note that these directory names are in form of 'YYYY-MM-DD'

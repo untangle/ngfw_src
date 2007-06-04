@@ -5,6 +5,7 @@ MvvmLocalContext mvvm = MvvmContextFactory.context();
 
 BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
 String company = bs.getCompanyName();
+String companyUrl = bs.getCompanyUrl();
 
 ReportingManager reportingManager = mvvm.reportingManager();
 
