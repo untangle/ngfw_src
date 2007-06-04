@@ -92,12 +92,6 @@ class DebianUpload
         output = "Something went wrong when adding #{@name}, leaving it in incoming/\n\n" + output
         raise UploadFailureByPolicy.new(output)
       end
-      
-      if @move
-        @files.each { |file|
-          File.rename(file, "#{PROCESSED}/#{File.basename(file)}")
-        }
-      end
 
       email(@emailRecipientsSuccess,
             "Upload of #{@name} succeeded",
@@ -107,12 +101,18 @@ class DebianUpload
       puts e.message
       email(@emailRecipientsFailure,
             "Upload of #{@name} failed",
-            e.message) if @@doEmailFailure
+            e.message) if @@doEmailFailure      
     rescue Exception => e
       puts e.message + "\n" + e.backtrace.join("\n")
       email(@emailRecipientsFailure,
             "Upload of #{@name} failed",
             e.message + "\n" + e.backtrace.join("\n")) if @@doEmailFailure
+    ensure
+      if @move
+        @files.each { |file|
+          File.rename(file, "#{PROCESSED}/#{File.basename(file)}")
+        }
+      end
     end
   end
 end
@@ -167,6 +167,7 @@ class ChangeFileUpload < DebianUpload
   end
 end
 
+# if we operate on another directory, don't move files
 if ARGV.length == 1
   INCOMING = ARGV[0]
   move = false
