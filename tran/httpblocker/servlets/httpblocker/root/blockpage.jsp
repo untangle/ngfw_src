@@ -23,83 +23,56 @@ String url = null == bd ? "" : bd.getFormattedUrl();
 String reason = null == bd ? "" : bd.getReason();
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-  <head>
-    <link href="/main.css" rel="stylesheet" type="text/css"/>
-
-<title><%=company%> Web Filter Warning</title>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=company%> | Web Filter Warning</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<style type="text/css">
+/* <![CDATA[ */
+@import url(/images/base.css);
+/* ]]> */
+</style>
 <script language="JavaScript">
+// <![CDATA[
 nonce = '<%=nonce%>';
 tid = '<%=tidStr%>';
 url = '<%=null == bd ? "javascript:history.back()" : bd.getUrl()%>';
+// ]]>
 </script>
+</head>
+<body>
+<div id="main">    
+<!-- Box Start -->
+ <div class="main-top-left"></div><div class="main-top-right"></div><div class="main-mid-left"><div class="main-mid-right"><div class="main-mid">
+ <!-- Content Start -->
+	
+	
+	<div class="page_head">
+		<a href="<%=companyUrl%>"><img src="/images/BrandingLogo.gif" border="0" alt="<%=company%>" /></a> 
+		<div><%=header%></div>
+	</div>
 
-  </head>
+    <hr />
 
-  <body style="margin: 20px 20px 20px 20px">
-    <table cellspacing="0" cellpadding="0" border="0" align="center" width="100%">
-      <tbody>
-        <tr>
-          <td id="table_main_top_left"><img src="/images/background/spacer.gif" alt=" " height="23" width="23"/></td>
-          <td id="table_main_top" width="100%"><img src="/images/background/spacer.gif" alt=" " height="1" width="1"/></td>
-          <td id="table_main_top_right"> <img src="/images/background/spacer.gif" alt=" " height="23" width="23"/></td>
-        </tr>
-        <tr>
-          <td id="table_main_left"><img src="/images/background/spacer.gif" alt=" " height="1" width="1"/></td>
-          <td id="table_main_center">
+	
+<center>
+<div style="padding: 10px 0; margin: 0 auto; width: 500px;">
+This web page was blocked because it is considered inappropriate.<br /><br />
+<p><b>Host:</b> <%=host%></p>
+<p><b>URL:</b> <%=url%></p>
+<p><b>Reason:</b> <%=reason%></p>
+<p>Please contact <%=contact%>.</p>
+</div>
+</center>
 
-<table>
-<tbody>
-<tr>
-  <td colspan=1 width="154px">
-<a href="<%=companyUrl%>"><img src="/images/BrandingLogo.gif" border="0" alt="<%=company%>" width="150" height="96"/></a>
-  </td>
-  <td style="padding: 0px 0px 0px 10px" class="page_header_title" align="left" valign="middle">
-    <%=header%>
-  </td>
-</tr>
-</tbody>
-</table>
-<table width="100%">
-<tbody>
-<tr>
-<td><hr width="100%" size="1" color="#969696"/></td>
-</tr>
-<tr>
-<td>This web page was blocked because it is considered inappropriate.</td>
-</tr>
-<tr>
-<td><p><b>Host:</b> <%=host%></p></td>
-</tr>
-<tr>
-<td><p><b>URL:</b> <%=url%></p></td>
-</tr>
-<tr>
-<td><p><b>Reason:</b> <%=reason%></p></td>
-</tr>
-<tr>
-<td>Please contact <%=contact%>.</td>
-</tr>
-</tbody>
-<tfoot>
-<tr>
-<td><hr width="100%" size="1" color="#969696"/></td>
-</tr>
-<tr>
-<td><address><%=company%> Web Filter</address></td>
-</tr>
-</tfoot>
-</table>
+	<br />
+	<address><%=company%> Web Filter</address>
+	<hr />
 
-          </td>
-          <td id="table_main_right"><img src="/images/background/spacer.gif" alt=" " height="1" width="1"/></td>
-        </tr>
-        <tr>
-          <td id="table_main_bottom_left"><img src="/images/background/spacer.gif" alt=" " height="23" width="23"/></td>
-          <td id="table_main_bottom"><img src="/images/background/spacer.gif" alt=" " height="1" width="1"/></td>
-          <td id="table_main_bottom_right"> <img src="/images/background/spacer.gif" alt=" " height="23" width="23"/></td>
-        </tr>
-      </tbody>
-    </table>
-  </body>
+ <!-- Content End -->
+ </div></div></div><div class="main-bot-left"></div><div class="main-bot-right"></div>
+ <!-- Box End -->
+</div>	
+</body>
 </html>
