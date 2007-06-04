@@ -1,6 +1,6 @@
 #!/bin/sh
 
-for PKG_NAME in rbot-mv ssh ; do
+for PKG_NAME in untangle-support-agent ssh ; do
   INIT_SCRIPT="/etc/init.d/${PKG_NAME}"
 
   # Stop the daemon

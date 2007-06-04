@@ -1,8 +1,8 @@
 #!/bin/sh
 
-apt-get install --yes rbot-mv
+apt-get install --yes untangle-support-agent
 
-for PKG_NAME in rbot-mv ssh ; do
+for PKG_NAME in untangle-support-agent ssh ; do
   INIT_SCRIPT="/etc/init.d/${PKG_NAME}"
 
   # Start the daemon

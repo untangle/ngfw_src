@@ -180,7 +180,7 @@ restartServiceIfNeeded() {
       isServiceRunning freshclam && return
       dpkg -l clamav-freshclam | grep -q -E '^ii' && needToRun=yes
       ;;
-    rbot-mv)
+    untangle-support-agent)
       pidFile="/var/run/rbot.pid"
       # this is a bit janky, need something better...
       isServiceRunning ruby && return
@@ -297,7 +297,7 @@ while true; do
             restartServiceIfNeeded clamav-daemon
             restartServiceIfNeeded spamassassin
             restartServiceIfNeeded slapd
-            restartServiceIfNeeded rbot-mv
+            restartServiceIfNeeded untangle-support-agent
         fi
     done
 
