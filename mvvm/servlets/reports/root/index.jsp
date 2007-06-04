@@ -13,213 +13,71 @@ boolean reportsAvailable = reportingManager.isReportsAvailable();
 if (!reportsAvailable) {
 %>
 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=company%> Reports</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<style type="text/css">
+/* <![CDATA[ */
+@import url(/images/base.css);
+/* ]]> */
+</style>
+</head>
+<body>
+<div id="main">    
+ <!-- Box Start -->
+ <div class="main-top-left"></div><div class="main-top-right"></div><div class="main-mid-left"><div class="main-mid-right"><div class="main-mid">
+ <!-- Content Start -->
+	
+	
+	<div class="page_head">
+		<a href="http://%%COMPANY_URI%%"><img src="/images/BrandingLogo.gif" alt="<%=company%> Logo" /></a> <div><%=company%> Reports</div>
+	</div>
+	
+	
+	
+    <hr />
+	
+	
+	
+	<center>
+	<div style="padding: 10px 0; margin: 0 auto; width: 440px; text-align: left;">
 
-  <!-- HEADING -->
-  <head>
-    <title><%=company%> Reports</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
-    <style type="text/css">
-    <!--
-body {
-     margin: 15px;
-     background: #FFFFFF url(./images/background_body.gif) repeat-x top left;
-     text-align: center;
-}
-
-table {
-    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
-    text-align: left;
-    color: #606060;
-}
-
-input {
-    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
-    text-align: left;
-    color: #606060;
-}
-
-form {
-    margin: 0px;
-}
-
-a:link, a:visited {
-    font: normal normal normal 10pt/14pt Arial,Sans-Serif;
-    color: #1997FE;
-    text-decoration: none;
-}
-
-a:hover {
-    color: #1997FE;
-    text-decoration: underline;
-}
-
-.page_header_title {
-    font: bold normal normal 25pt Arial,Sans-Serif;
-    color: #777777;
-}
-
-h1 {
-    font: normal normal bold 11pt Arial,Sans-Serif;
-    color: #999999;
-    letter-spacing: 1px;
-    margin: 0px;
-    padding: 0px;
-}
-
-h2 {
-    font: normal normal bold 10pt Arial,Sans-Serif;
-    color: #999999;
-    letter-spacing: 1px;
-    margin: 0px;
-    padding: 0px;
-}
-
-h3 {
-    font: normal normal bold 11pt Arial,Sans-Serif;
-    color: #606060;
-    letter-spacing: 1px;
-    margin: 0px;
-    padding: 0px;
-}
-
-h4 {
-    font: normal normal bold 14pt Arial,Sans-Serif;
-    color: #0044D7;
-    letter-spacing: 1px;
-    margin: 0px;
-    padding: 0px;
-}
-
-/* the following pertain to the main content (i.e. the main 'metal-brushed') table */
-#table_main_center {
-    background: url(./images/background_table_main_center.gif) repeat-y;
-}
-
-#table_main_top {
-    background: url(./images/background_table_main_top.gif) repeat-x;
-}
-
-#table_main_top_left {
-    background: url(./images/rounded_corner_main_top_left.gif) no-repeat;
-}
-
-#table_main_top_right {
-    background: url(./images/rounded_corner_main_top_right.gif) no-repeat;
-}
-
-#table_main_right {
-    background: url(./images/background_table_main_right.gif) repeat-y;
-}
-
-#table_main_bottom {
-    background: url(./images/background_table_main_bottom.gif) repeat-x;
-}
-
-#table_main_bottom_left {
-    background: url(./images/rounded_corner_main_bottom_left.gif) no-repeat;
-}
-
-#table_main_bottom_right {
-    background: url(./images/rounded_corner_main_bottom_right.gif) no-repeat;
-}
-
-#table_main_left {
-    background: url(./images/background_table_main_left.gif) repeat-y;
-}
-    -->
-   </style>
-  </head>
-
-
-<BODY>
-
-
-    <center>
-      <table border="0" cellpadding="0" cellspacing="0" width="904">
-
-        <!-- TOP THIRD -->
-        <tr>
-          <td id="table_main_top_left">
-            <img src="./images/spacer.gif" alt=" " width="23" height="23"/><br/>
-          </td>
-          <td width="100%" id="table_main_top">
-            <img src="./images/spacer.gif" alt=" " width="1" height="1"/><br/>
-          </td>
-          <td id="table_main_top_right">
-            <img src="./images/spacer.gif" alt=" " width="23" height="23"/><br/>
-          </td>
-        </tr>
-        <!-- END TOP THIRD -->
-
-        <!-- MIDDLE THIRD -->
-        <tr>
-          <td id="table_main_left">
-            <img src="./images/spacer.gif" alt=" " width="1" height="1"/>
-          </td>
-          <td id="table_main_center">
-            <table>
-              <tr>
-              <td valign="middle">
-                <img src="./images/BrandingLogo.gif" alt="<%=company%>" width="150" height="96"/>
-              </td>
-              <td style="padding: 0px 0px 0px 10px" valign="middle">
-                <span class="page_header_title"><%=company%> Reports</span>
-              </td>
-              </tr>
-            </table>
-          </td>
-          <td id="table_main_right">
-            <img src="./images/spacer.gif" alt=" " width="1" height="1"/>
-          </td>
-        </tr>
-        <!-- END MIDDLE THIRD -->
-
-    <tr>
-    <td id="table_main_left"></td>
-    <td id="table_main_center">
-        <center>
-        <b><i>
-        No reports are available.<br/>
-        <br/>
+ 
+        <b><i>No reports are available.</i></b>
+		<br /><br />
 
         <% if(!reportingEnabled){ %>
-            <%=company%> Reports is not installed into your rack or it is not turned on.<br/>
+            <%=company%> Reports is not installed into your rack or it is not turned on.<br />
             Reports are only generated when <%=company%> Reports is installed and turned on.
         <% } else{ %>
-            When daily, weekly, and/or monthly Reports are scheduled,<br/>
-            please check back the morning after the scheduled day<br/>
-            for daily, weekly, and/or monthly Reports.<br/>
+            When daily, weekly, and/or monthly Reports are scheduled,
+            please check back the morning after the scheduled day
+            for daily, weekly, and/or monthly Reports.<br />
             <br/>
-            When scheduled, <%=company%> Reports automatically generates<br/>
+            When scheduled, <%=company%> Reports automatically generates
             the requested Reports during the preceeding night.
         <% } %>
 
-        </i></b>
-        </center>
-    </td>
-    <td id="table_main_right"></td>
-    </tr>
+   
+		
+	</div>
+	</center>
 
-        <!-- BOTTOM THIRD -->
-        <tr>
-          <td id="table_main_bottom_left">
-            <img src="./images/spacer.gif" alt=" " width="23" height="23"/><br/>
-          </td>
-          <td id="table_main_bottom">
-            <img src="./images/spacer.gif" alt=" " width="1" height="1"/><br/>
-          </td>
-          <td id="table_main_bottom_right">
-            <img src="./images/spacer.gif" alt=" " width="23" height="23"/><br/>
-          </td>
-        </tr>
-        <!-- END BOTTOM THIRD -->
+	
+	
+	<hr />
 
-      </table>
-    </center>
+	
+ <!-- Content End -->
+ </div></div></div><div class="main-bot-left"></div><div class="main-bot-right"></div>
+ <!-- Box End -->
+</div>	
 
-</BODY>
-</HTML>
+</body>
+</html>
 
 <%
     } else {
@@ -249,3 +107,4 @@ to a new location.</u></p>
 <%
 }
 %>
+
