@@ -50,7 +50,7 @@ public class MMainJFrame extends javax.swing.JFrame {
         Util.setMMainJFrame(this);
 
         // INIT GUI
-        mainLeftBackground = new ImageIcon(getClass().getResource("/com/untangle/gui/main/MainBackgroundLeft_202x100.png"));
+        mainLeftBackground = new ImageIcon(getClass().getResource("/com/untangle/gui/main/MainBackgroundLeft_222x100.png"));
         mainRightBackground = new ImageIcon(getClass().getResource("/com/untangle/gui/main/MainBackgroundRight_1398x100.png"));
         initComponents();
 
@@ -217,9 +217,10 @@ public class MMainJFrame extends javax.swing.JFrame {
         controlsJPanel.setLayout(new java.awt.GridBagLayout());
 
         controlsJPanel.setFocusable(false);
-        controlsJPanel.setMinimumSize(new java.awt.Dimension(200, 427));
+        controlsJPanel.setMaximumSize(new java.awt.Dimension(220, 2147483647));
+        controlsJPanel.setMinimumSize(new java.awt.Dimension(220, 427));
         controlsJPanel.setOpaque(false);
-        controlsJPanel.setPreferredSize(new java.awt.Dimension(200, 410));
+        controlsJPanel.setPreferredSize(new java.awt.Dimension(220, 410));
         untangleJButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/untangle/gui/main/Logo150x96.png")));
         untangleJButton.setBorderPainted(false);
         untangleJButton.setContentAreaFilled(false);

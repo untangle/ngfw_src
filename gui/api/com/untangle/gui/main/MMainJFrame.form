@@ -31,12 +31,15 @@
     <Container class="javax.swing.JPanel" name="controlsJPanel">
       <Properties>
         <Property name="focusable" type="boolean" value="false"/>
+        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[220, 2147483647]"/>
+        </Property>
         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[200, 427]"/>
+          <Dimension value="[220, 427]"/>
         </Property>
         <Property name="opaque" type="boolean" value="false"/>
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[200, 410]"/>
+          <Dimension value="[220, 410]"/>
         </Property>
       </Properties>
       <Constraints>
