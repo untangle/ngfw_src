@@ -26,7 +26,7 @@ String companyUrl = bs.getCompanyUrl();
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <style type="text/css">
 /* <![CDATA[ */
-@import url(styles/style.css);
+@import url(/images/base.css);
 /* ]]> */
 </style>
 </head>
@@ -37,7 +37,7 @@ String companyUrl = bs.getCompanyUrl();
  <!-- Content Start -->
 	
 	<div class="page_head">
-		<a href="<%=companyUrl%>"><img src="images/BrandingLogo.gif" border="0" alt="<%=company%>" /></a> 
+		<a href="<%=companyUrl%>"><img src="/images/BrandingLogo.gif" border="0" alt="<%=company%>" /></a> 
 		<div>Request Quarantine Digest Email</div>
 	</div>
 
