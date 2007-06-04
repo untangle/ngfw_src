@@ -1280,11 +1280,11 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
             }
             catch(Exception f){
-                Util.handleExceptionNoRestart("error launching browser for Store settings", f);
+                Util.handleExceptionNoRestart("error launching browser for Library settings", f);
                 MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
-                                          "A problem occurred while trying to access Store."
+                                          "A problem occurred while trying to access Library."
                                           + "<br>Please contact Untangle Support.",
-                                          "Untangle Store Warning", "");
+                                          "Untangle Library Warning", "");
             }
         }
     }
@@ -1885,11 +1885,11 @@ public class PolicyStateMachine implements ActionListener, Shutdownable {
                 ((BasicService) ServiceManager.lookup("javax.jnlp.BasicService")).showDocument(newURL);
             }
             catch(Exception f){
-                Util.handleExceptionNoRestart("error launching browser for Store", f);
+                Util.handleExceptionNoRestart("error launching browser for Library", f);
                 MOneButtonJDialog.factory(Util.getMMainJFrame(), "",
-                                          "A problem occurred while trying to access Store."
+                                          "A problem occurred while trying to access the Library."
                                           + "<br>Please contact Untangle Support.",
-                                          "Untangle Store Warning", "");
+                                          "Untangle Library Warning", "");
             }
         }
     }

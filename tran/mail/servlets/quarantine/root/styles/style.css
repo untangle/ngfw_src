@@ -1,18 +1,3 @@
-/* Note the magic trick below to center the table */
-/*
-table.outertable {
-  background: #FFFFFF;
-  padding: 0;
-  margin: 0;
-  width: 96%;
-  height: 95%;
-  margin-left: 2%;
-  margin-right: 2%;
-  margin-top: 1%;
-  margin-bottom: 4%;
-}
-*/
-
 .logoTable {
   padding-left: 15; 
   padding-top: 15;
@@ -207,134 +192,121 @@ table.inbox tfoot th:after {
   height: 100%;
   vertical-align: bottom;
 }
-
 body {
-     margin: 15px;
-     background: #FFFFFF url(../images/background_body.gif) repeat-x top left;
-     text-align: center;
-}  
-
-table {
-    font: normal normal normal 10pt/14pt Arial, Sans-Serif;
+	margin: 0;
+	padding: 20px;
+	background: #fff url(../images/background_body.gif) repeat-x top left;
+	text-align: center;
+}
+table, div, span {
+    font: 10pt/14pt Arial,Sans-Serif;
     text-align: left;
     color: #606060;
 }
-
 input {
-    font: normal normal normal 10pt/14pt Arial, Sans-Serif;
+    font: 10pt/14pt Arial,Sans-Serif;
     text-align: left;
     color: #606060;
 }
-
 form {
-    margin: 0px;
+    margin: 0;
 }
-
-/* define link color override */
-a:link {
-    font: normal normal normal 10pt/14pt Arial, Sans-Serif;
-    color: #1997FE ! important;
+a:link, a:visited {
+    font: 10pt/14pt Arial,Sans-Serif;
+    color: #1997FE;
     text-decoration: none;
 }
-
-/* define visited color override */
-a:visited {
-    font: normal normal normal 10pt/14pt Arial, Sans-Serif;
-    color: #1997FE ! important;
-    text-decoration: none;
-}
-
-/* define hover color override */
 a:hover {
-    color: #1997FE ! important;
+    color: #1997FE;
     text-decoration: underline;
 }
-
-.page_header_title {
-    font: bold normal normal 25pt Arial, Sans-Serif;
-    color: #777777;
-}
-
-.page_sub_title {
-    font: bold normal normal 17pt Arial, Sans-Serif;
-    color: #777777;
-}
-
-.page_header_alternate {
-    font: normal normal normal 20pt Arial, Sans-Serif;
-    color: #777777;
-}
-
 h1 {
-    font: normal normal bold 11pt Arial, Sans-Serif;
-    color: #999999;
+    font: normal 11pt Arial,Sans-Serif;
+    color: #999;
     letter-spacing: 1px;
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
 }
-
 h2 {
-    font: normal normal bold 10pt Arial, Sans-Serif;
-    color: #999999;
+    font: normal 10pt Arial,Sans-Serif;
+    color: #999;
     letter-spacing: 1px;
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
 }
-
 h3 {
-    font: normal normal bold 11pt Arial, Sans-Serif;
+    font: normal 11pt Arial,Sans-Serif;
     color: #606060;
     letter-spacing: 1px;
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
 }
-
 h4 {
-    font: normal normal bold 14pt Arial, Sans-Serif;
+    font: normal 14pt Arial,Sans-Serif;
     color: #0044D7;
     letter-spacing: 1px;
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
 }
-
-/* the following pertain to the main content (i.e. the main 'metal-brushed') table */
-#table_main_center {
-    background: url(../images/background_table_main_center.gif) repeat;
+img {
+	border: 0;
 }
-
-#table_main_top {
-    background: url(../images/background_table_main_top.gif) repeat-x;
-}
-
-#table_main_top_left {
-    background: url(../images/rounded_corner_main_top_left.gif) no-repeat;
-}
-
-#table_main_top_right {
-    background: url(../images/rounded_corner_main_top_right.gif) no-repeat;
-}
-
-#table_main_right {
-    background: url(../images/background_table_main_right.gif) repeat-y;
-}
-
-#table_main_bottom {
-    background: url(../images/background_table_main_bottom.gif) repeat-x;
-}
-
-#table_main_bottom_left {
-    background: url(../images/rounded_corner_main_bottom_left.gif) no-repeat;
-}
-
-#table_main_bottom_right {
-    background: url(../images/rounded_corner_main_bottom_right.gif) no-repeat;
-}
-
-#table_main_left {
-    background: url(../images/background_table_main_left.gif) repeat-y;
-}
-
 hr {
-     color: "#969696";
-     background-color: "#969696";
+	height: 1px;
+	color: #969696;
+	background-color: #969696;
+	margin: 0; padding: 0;
+}
+.main-top-left, .main-top-right, .main-bot-left, .main-bot-right {
+    background-image: url(../images/bg_main_top_bot.gif);
+    height: 23px;
+}
+.main-top-left, .main-bot-left {
+    margin-right: 23px;
+}
+.main-top-right, .main-bot-right {
+    margin: -23px 0 0 23px;
+}
+.main-bot-left    {
+    background-position: 0 -23px;
+}
+.main-bot-right {
+    background-position: 100% -23px;
+}
+.main-mid {
+    margin: 0 23px;
+    padding: 0 2px;
+	text-align: left;
+    background: #fff url(../images/bg_main_mid.gif);
+}
+.main-mid-left, .main-mid-right {
+    background: url(../images/bg_main_left_right.gif) 0 0 repeat-y;
+}
+.main-top-right, .main-mid-right {
+    background-position: 100% 0;
+}
+.page_head {
+	height: 110px;
+	overflow: hidden;
+}
+.page_head a {
+	float: left;
+	clear: none;
+}
+.page_head div {
+	float: left;
+	clear: none;
+	vertical-align: middle;
+    font: bold 25pt Arial,Sans-Serif;
+    color: #777;
+	line-height: 100px;
+	margin-left: 14px;
+}
+.page_sub_title {
+    font: bold 17pt Arial,Sans-Serif;
+    color: #777;
+}
+.page_sub_text {
+    font: bold 14pt Arial,Sans-Serif;
+    color: #777;
 }

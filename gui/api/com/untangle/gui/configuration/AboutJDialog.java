@@ -30,6 +30,7 @@ public class AboutJDialog extends MConfigJDialog {
     private static final String NAME_LICENSE_INFO      = "License Agreement";
     private static final String NAME_REGISTRATION_INFO = "Registration";
     private static final String NAME_TIMEZONE_PANEL    = "Timezone";
+    private static final String NAME_BRANDING_PANEL    = "Branding";
 
 
     public AboutJDialog(Frame parentFrame) {
@@ -46,7 +47,7 @@ public class AboutJDialog extends MConfigJDialog {
         aboutAboutJEditorPane.setContainingJScrollPane(aboutAboutJScrollPane);
         addRefreshable(NAME_ABOUT_INFO, aboutAboutJEditorPane);
 
-        // LISCENSE ////////////
+        // LICENSE ////////////
         AboutLicenseJEditorPane aboutLicenseJEditorPane = new AboutLicenseJEditorPane();
         JScrollPane aboutLicenseJScrollPane = addScrollableTab(null, NAME_LICENSE_INFO, null, aboutLicenseJEditorPane, false, true);
         aboutLicenseJEditorPane.setContainingJScrollPane(aboutLicenseJScrollPane);
@@ -59,13 +60,19 @@ public class AboutJDialog extends MConfigJDialog {
         addRefreshable(NAME_REGISTRATION_INFO, aboutRegistrationJPanel);
         aboutRegistrationJPanel.setSettingsChangedListener(this);
 
-
         // TIME ZONE //////
         AboutTimezoneJPanel timezoneJPanel = new AboutTimezoneJPanel();
         addScrollableTab(null, NAME_TIMEZONE_PANEL, null, timezoneJPanel, false, true);
         addSavable(NAME_TIMEZONE_PANEL, timezoneJPanel);
         addRefreshable(NAME_TIMEZONE_PANEL, timezoneJPanel);
         timezoneJPanel.setSettingsChangedListener(this);
+                
+        // BRANDING //////
+        AboutBrandingJPanel brandingJPanel = new AboutBrandingJPanel();
+        addScrollableTab(null, NAME_BRANDING_PANEL, null, brandingJPanel, false, true);
+        addSavable(NAME_BRANDING_PANEL, brandingJPanel);
+        addRefreshable(NAME_BRANDING_PANEL, brandingJPanel);
+        brandingJPanel.setSettingsChangedListener(this);        
     }
 
     private class AboutLicenseJEditorPane extends JEditorPane

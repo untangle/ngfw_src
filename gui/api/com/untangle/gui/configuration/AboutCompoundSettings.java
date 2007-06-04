@@ -19,6 +19,8 @@ import com.untangle.gui.transform.CompoundSettings;
 import com.untangle.gui.util.Util;
 import com.untangle.mvvm.security.RegistrationInfo;
 import com.untangle.mvvm.toolbox.MackageDesc;
+import com.untangle.mvvm.BrandingManager;
+import com.untangle.mvvm.BrandingSettings;
 
 public class AboutCompoundSettings implements CompoundSettings {
 
@@ -46,9 +48,15 @@ public class AboutCompoundSettings implements CompoundSettings {
     public void setTimeZone(TimeZone tzIn){ timeZone = tzIn; };
     public Date getDate(){ return date; }
 
+    // BRANDING //
+    private BrandingSettings brandingSettings;
+    public BrandingSettings getBrandingSettings(){ return brandingSettings; }
+    public void setBrandingSettings(BrandingSettings bsIn){ brandingSettings = bsIn; }
+    
     public void save() throws Exception {
         Util.getAdminManager().setRegistrationInfo(registrationInfo);
         Util.getAdminManager().setTimeZone(timeZone);
+        Util.getBrandingManager().setBrandingSettings(brandingSettings);        
     }
 
     public void refresh() throws Exception {
@@ -65,6 +73,7 @@ public class AboutCompoundSettings implements CompoundSettings {
         licenseURL = Util.getClassLoader().getResource("License.txt");
         timeZone = Util.getAdminManager().getTimeZone();
         date = Util.getAdminManager().getDate();
+        brandingSettings = Util.getBrandingManager().getBrandingSettings();
     }
 
     public void validate() throws Exception {

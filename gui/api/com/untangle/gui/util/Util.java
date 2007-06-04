@@ -69,6 +69,7 @@ import com.untangle.mvvm.toolbox.ToolboxManager;
 import com.untangle.mvvm.tran.*;
 import com.untangle.mvvm.user.RemotePhoneBook;
 
+
 public class Util {
     private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel";
     public static final String EXCEPTION_PORT_RANGE = "The port must be an integer number between 1 and 65535.";
@@ -151,6 +152,7 @@ public class Util {
     private static RemotePortalManager remotePortalManager;
     private static RemoteIntfManager remoteIntfManager;
     private static PingManager pingManager;
+    private static BrandingManager brandingManager;
 
     public static void setMvvmContext(MvvmRemoteContext mvvmContextX){
         mvvmContext = mvvmContextX;
@@ -167,6 +169,7 @@ public class Util {
             remotePortalManager = mvvmContext.portalManager();
             remoteIntfManager = mvvmContext.intfManager();
             pingManager = mvvmContext.pingManager();
+            brandingManager = mvvmContext.brandingManager();
         }
         else{
             toolboxManager = null;
@@ -181,6 +184,7 @@ public class Util {
             remotePortalManager = null;
             remoteIntfManager = null;
             pingManager = null;
+            brandingManager = null;
         }
     }
 
@@ -198,6 +202,7 @@ public class Util {
     public static RemotePhoneBook getPhoneBook(){ return phoneBook; }
     public static RemotePortalManager getRemotePortalManager(){ return remotePortalManager; }
     public static PingManager getPingManager(){ return pingManager; }
+    public static BrandingManager getBrandingManager(){ return brandingManager; }
     ///////////////////////////////////
 
 

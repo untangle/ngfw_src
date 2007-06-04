@@ -23,21 +23,17 @@ String url = null == bd ? "" : bd.getFormattedUrl();
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-  <head>
-    <link href="/main.css" rel="stylesheet" type="text/css"/>
-
+<head>
+<link href="/main.css" rel="stylesheet" type="text/css"/>
 <title><%=company%> Phish Blocker Warning</title>
-<script language="JavaScript">
+<script type="text/javascript">
 nonce = '<%=nonce%>';
 tid = '<%=tidStr%>';
 url = '<%=null == bd ? "javascript:history.back()" : bd.getUrl()%>';
 </script>
-
 <script type="text/javascript" src="blockpage.js"></script>
-
 </head>
-
-  <body style="margin: 20px 20px 20px 20px">
+<body style="margin: 20px 20px 20px 20px">
     <table cellspacing="0" cellpadding="0" border="0" align="center" width="100%">
       <tbody>
         <tr>
