@@ -33,7 +33,7 @@ if (!reportsAvailable) {
 	
 	
 	<div class="page_head">
-		<a href="http://%%COMPANY_URI%%"><img src="/images/BrandingLogo.gif" alt="<%=company%> Logo" /></a> <div><%=company%> Reports</div>
+		<a href="http://<%companyUrl%%"><img src="/images/BrandingLogo.gif" alt="<%=company%> Logo" /></a> <div><%=company%> Reports</div>
 	</div>
 	
 	
@@ -56,7 +56,7 @@ if (!reportsAvailable) {
             When daily, weekly, and/or monthly Reports are scheduled,
             please check back the morning after the scheduled day
             for daily, weekly, and/or monthly Reports.<br />
-            <br/>
+            <br />
             When scheduled, <%=company%> Reports automatically generates
             the requested Reports during the preceeding night.
         <% } %>

@@ -76,7 +76,7 @@
 	
 	
 	<div class="page_head">
-		<a href="http://%%COMPANY_URI%%"><img src="/images/BrandingLogo.gif" alt="<%=company%> Logo" /></a> <div><%=company%> Reports</div>
+		<a href="http://<%companyUrl%>"><img src="/images/BrandingLogo.gif" alt="<%=company%> Logo" /></a> <div><%=company%> Reports</div>
 	</div>
 	
 	
