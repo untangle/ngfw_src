@@ -9,6 +9,7 @@ DEFAULT_MAIL_RECIPIENTS = [ "rbscott@untangle.com", "seb@untangle.com" ]
 REP = "/var/www/untangle"
 INCOMING = "#{REP}/incoming"
 PROCESSED = "#{REP}/processed"
+FAILED = "#{PROCESSED}/failed"
 
 def email(recipients, subject, body)
   recipientsString = recipients.join(',')
@@ -69,19 +70,21 @@ class DebianUpload
   end
 
   def addToRepository
+    destination = FAILED
+
     begin
       # first do a few policy checks
-      if @distribution == "testing" and not @uploader =~ /(seb|rbscott)/
+      if @distribution == "testing" and not @uploader =~ /(seb|rbscott)/i
         output = "#{@name} was intended for testing, but you can't upload there."
         raise UploadFailureByPolicy.new(output)
       end
 
-      if @uploader =~ /root/
+      if @uploader =~ /root/i
         output = "#{@name} was built by root, not processing"
         raise UploadFailureByPolicy.new(output)
       end
 
-      if @distribution == "daily-dogfood" and not @uploader =~ /buildbot/
+      if @distribution == "daily-dogfood" and not @uploader =~ /buildbot/i
         output = "#{@name} was intended for daily-dogfood, but was not built by buildbot: not processing."
         raise UploadFailureByPolicy.new(output)
       end
@@ -92,6 +95,8 @@ class DebianUpload
         output = "Something went wrong when adding #{@name}\n\n" + output
         raise UploadFailureByPolicy.new(output)
       end
+
+      destination = PROCESSED
 
       email(@emailRecipientsSuccess,
             "Upload of #{@name} succeeded",
@@ -110,7 +115,7 @@ class DebianUpload
     ensure
       if @move
         @files.each { |file|
-          File.rename(file, "#{PROCESSED}/#{File.basename(file)}")
+          File.rename(file, "#{destination}/#{File.basename(file)}")
         }
       end
     end
