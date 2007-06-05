@@ -103,6 +103,7 @@ public abstract class TrafficDirectionRule extends TrafficRule
      *
      * @return the user string for the direction.
      */
+    @Transient
     public String getDirection()
     {
         if ( outbound && inbound ) {
