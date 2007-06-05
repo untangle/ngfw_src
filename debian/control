@@ -1316,7 +1316,7 @@ Description: Test
 
 Package: openvpn-transform
 Architecture: any
-Depends: mvvm, openvpn, nsis (>= 2.06-6), nsis-mv, sysutils, zip, openssl
+Depends: mvvm, openvpn, nsis (>= 2.06-6), untangle-nsis, sysutils, zip, openssl
 XB-Display-Name: OpenVPN
 XB-View-Position: 1003
 XB-Is-Core: true
