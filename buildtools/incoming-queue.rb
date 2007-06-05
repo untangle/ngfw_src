@@ -89,7 +89,7 @@ class DebianUpload
       # then try to actually add the package
       output = `#{@command} 2>&1`
       if $? != 0
-        output = "Something went wrong when adding #{@name}, leaving it in incoming/\n\n" + output
+        output = "Something went wrong when adding #{@name}\n\n" + output
         raise UploadFailureByPolicy.new(output)
       end
 
