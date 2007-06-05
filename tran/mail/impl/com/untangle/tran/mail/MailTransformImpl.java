@@ -170,8 +170,7 @@ public class MailTransformImpl extends AbstractTransform
             {
                 public boolean doWork(Session s)
                 {
-                    s.merge(settings);
-                    MailTransformImpl.this.settings = settings;
+                    MailTransformImpl.this.settings = (MailTransformSettings)s.merge(settings);
                     return true;
                 }
 

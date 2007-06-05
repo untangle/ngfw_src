@@ -75,8 +75,20 @@ public class FirewallImpl extends AbstractTransform implements Firewall
 
     public FirewallSettings getFirewallSettings()
     {
-        if( settings == null )
-            logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+        if(settings == null) {
+            logger.error("Settings not yet initialized. State: "
+                         + getTransformContext().getRunState());
+        } else {
+            List<FirewallRule> l = settings.getFirewallRuleList();
+            for (Iterator<FirewallRule> i = l.iterator(); i.hasNext(); ) {
+                FirewallRule r = i.next();
+                if (null == i) {
+                    logger.warn("Removing null from list");
+                    i.remove();
+                }
+            }
+        }
+
         return settings;
     }
 
@@ -86,8 +98,7 @@ public class FirewallImpl extends AbstractTransform implements Firewall
             {
                 public boolean doWork(Session s)
                 {
-                    s.merge(settings);
-                    FirewallImpl.this.settings = settings;
+                    FirewallImpl.this.settings = (FirewallSettings)s.merge(settings);
                     return true;
                 }
 

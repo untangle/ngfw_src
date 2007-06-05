@@ -13,6 +13,7 @@ package com.untangle.tran.mail.papi.quarantine;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,6 +27,7 @@ import javax.persistence.Table;
 
 import com.untangle.tran.mail.papi.EmailAddressPairRule;
 import com.untangle.tran.mail.papi.EmailAddressRule;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 
@@ -35,7 +37,6 @@ import org.hibernate.annotations.IndexColumn;
 @Entity
 @Table(name="tr_mail_quarantine_settings", schema="settings")
 public class QuarantineSettings implements Serializable {
-
     private static final long serialVersionUID = -4387806670497574999L;
 
     public static final long HOUR = 1000L*60L*60L; // millisecs per hour
@@ -51,18 +52,8 @@ public class QuarantineSettings implements Serializable {
     private long m_maxQuarantineSz;
     private List<EmailAddressPairRule> m_addressRemaps;
     private List<EmailAddressRule> m_allowedAddressPatterns;
-    /*
-      private EmailAddressPair workaround1 = new EmailAddressPair("x", "X");
-      private EmailAddressRule workaround2 = new EmailAddressRule("x");
 
-
-      public void workaround(EmailAddressRule w,
-      EmailAddressPair p) {
-      if(p != null) {
-      p.getAddress1();
-      }
-      }
-    */
+    private final Logger logger = Logger.getLogger(getClass());
 
     @Id
     @Column(name="settings_id")
@@ -91,16 +82,18 @@ public class QuarantineSettings implements Serializable {
     @JoinColumn(name="settings_id", nullable=false)
     @IndexColumn(name="position")
     public List<EmailAddressRule> getAllowedAddressPatterns() {
-        if(m_allowedAddressPatterns == null) {
+        if (m_allowedAddressPatterns == null) {
             setAllowedAddressPatterns(null);
         }
+        eliminateNulls(m_allowedAddressPatterns);
         return m_allowedAddressPatterns;
     }
 
     public void setAllowedAddressPatterns(List<EmailAddressRule> patterns) {
-        if(patterns == null) {
+        if (patterns == null) {
             patterns = new ArrayList<EmailAddressRule>();
         }
+        eliminateNulls(patterns);
         m_allowedAddressPatterns = patterns;
     }
 
@@ -132,6 +125,7 @@ public class QuarantineSettings implements Serializable {
         if(m_addressRemaps == null) {
             setAddressRemaps(null);
         }
+        eliminateNulls(m_addressRemaps);
         return m_addressRemaps;
     }
 
@@ -149,6 +143,7 @@ public class QuarantineSettings implements Serializable {
         if(remaps == null) {
             remaps = new ArrayList<EmailAddressPairRule>();
         }
+        eliminateNulls(remaps);
         m_addressRemaps = remaps;
     }
 
@@ -251,5 +246,18 @@ public class QuarantineSettings implements Serializable {
      */
     public void setMaxIdleInbox(long max) {
         m_maxMailIntern = max;
+    }
+
+    private void eliminateNulls(List l)
+    {
+        for (Iterator i = l.iterator(); i.hasNext(); ) {
+            Object o = i.next();
+            if (null == o) {
+                Exception exn = new Exception("null in list");
+                exn.fillInStackTrace();
+                logger.warn("null removed from list", exn);
+                i.remove();
+            }
+        }
     }
 }
