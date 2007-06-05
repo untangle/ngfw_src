@@ -14,7 +14,7 @@
 
 #=============================================================
 # Script which takes the output of "mv-backup-bundled" and
-# restores it to a system.  This is a wrapper around "restore-mv"
+# restores it to a system.  This is a wrapper around "untangle-restore"
 # which deals with single .tar.gz files rather than the three
 # files from the "old-style" backups.
 #
@@ -135,16 +135,16 @@ function doIt() {
         exit 3
     fi
 
-# Invoke restore-mv ("Usage: $0 dumpfile tarfile instfile")
+# Invoke untangle-restore ("Usage: $0 dumpfile tarfile instfile")
 
-    restore-mv $WORKING_DIR/$DB_FILE $WORKING_DIR/$FILES_FILE $WORKING_DIR/$INSTALLED_FILE
+    untangle-restore $WORKING_DIR/$DB_FILE $WORKING_DIR/$FILES_FILE $WORKING_DIR/$INSTALLED_FILE
 
     EXIT_VAL=$?
 
     rm -rf $WORKING_DIR
 
     if [ $EXIT_VAL != 0 ]; then
-        err "Error $EXIT_VAL returned from restore-mv"
+        err "Error $EXIT_VAL returned from untangle-restore"
         exit 4
     fi
 
