@@ -1419,7 +1419,7 @@ Description: OpenVPN
 
 Package: ids-transform
 Architecture: any
-Depends: mvvm, http-casing, snort-rules-current
+Depends: mvvm, http-casing, untangle-snort-rules
 XB-Display-Name: Intrusion Prevention
 XB-View-Position: 75
 XB-Is-Security: true
