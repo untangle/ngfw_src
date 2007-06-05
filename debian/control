@@ -2,7 +2,7 @@ Source: mvvm
 Section: net
 Priority: optional
 Maintainer: Sebastien Delafond <seb@untangle.com>
-Build-Depends: debhelper (>> 3.0.0), unzip, build-essential, sun-java5-jdk, libxml2-dev, iptables-dev (>= 1.2.11-10-mv1), libnfnetlink-dev, libnetfilter-queue-dev, libsysfs-dev, dput, rake (>= 0.7.0-1build1)
+Build-Depends: debhelper (>> 3.0.0), unzip, build-essential, sun-java5-jdk, libxml2-dev, iptables-dev (>= 1.2.11-10-mv1), untangle-libnfnetlink-dev, libnetfilter-queue-dev, libsysfs-dev, dput, rake (>= 0.7.0-1build1)
 Standards-Version: 3.7.2
 
 Package: libalpine
@@ -1702,7 +1702,7 @@ Description: Untangle Server Thirdparty Libraries
 
 Package: mvvm
 Architecture: any
-Depends: untangle-client-windows-jre, libalpine, libmvvm-thirdparty, sudo, iptables (>= 1.3.3-mv1), untangle-restore-tools, libxml2, kernel-mv, untangle-dhclient-config, ntp-simple, snmpd, snmp, sg3-utils, ddclient, slapd, ldap-utils, libnfnetlink0, libnetfilter-queue0, db4.2-util, untangle-ujac2pdf, at, ebtables, atop, mime-support, nsis, nsis-mv, dnsmasq, pppoe, bridge-utils, libsysfs1, iputils-ping, curl
+Depends: untangle-client-windows-jre, libalpine, libmvvm-thirdparty, sudo, iptables (>= 1.3.3-mv1), untangle-restore-tools, libxml2, kernel-mv, untangle-dhclient-config, ntp-simple, snmpd, snmp, sg3-utils, ddclient, slapd, ldap-utils, untangle-libnfnetlink0, libnetfilter-queue0, db4.2-util, untangle-ujac2pdf, at, ebtables, atop, mime-support, nsis, nsis-mv, dnsmasq, pppoe, bridge-utils, libsysfs1, iputils-ping, curl
 Pre-Depends: untangle-postgresql-config
 Conflicts: xenon, xenon-dbg, dlocate, slocate
 XB-Display-Name: Untangle Server
