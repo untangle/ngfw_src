@@ -10,6 +10,7 @@ checkroot:
 clean: checkroot
 	svn revert debian/changelog
 	fakeroot debian/rules clean
+	rm -f debian/version
 
 version: checkroot
 	svn revert debian/changelog
