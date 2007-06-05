@@ -238,7 +238,7 @@ Description: Spyware Blocker
 
 Package: httpblocker-transform
 Architecture: any
-Depends: mvvm, http-casing, urlblacklist.com-mv
+Depends: mvvm, http-casing, untangle-urlblacklist.com
 XB-Display-Name: Web Filter
 XB-View-Position: 30
 XB-Is-Security: true
