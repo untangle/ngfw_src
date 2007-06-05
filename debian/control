@@ -933,7 +933,7 @@ Description: Firewall
 
 Package: spamassassin-transform
 Architecture: any
-Depends: mvvm, spam-base, spamc-mv, mail-casing
+Depends: mvvm, spam-base, mail-casing
 XB-Display-Name: Spam Blocker
 XB-View-Position: 15
 XB-Is-Security: true
@@ -1616,7 +1616,7 @@ Description: Virus Blocker Base
 
 Package: spam-base
 Architecture: any
-Depends: mvvm
+Depends: mvvm, untangle-spamassassin-update
 XB-Display-Name: Spam Blocker Base
 Description: Spam Blocker Base
  The Spam Blocker Base.
