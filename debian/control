@@ -335,7 +335,7 @@ Description: Web Filter
 
 Package: hauri-transform
 Architecture: any
-Depends: mvvm, virus-base, hauri-mv, http-casing, ftp-casing, mail-casing
+Depends: mvvm, virus-base, untangle-hauri, http-casing, ftp-casing, mail-casing
 XB-Display-Name: Dual Virus Blocker
 XB-View-Position: 60
 XB-Is-Security: true
