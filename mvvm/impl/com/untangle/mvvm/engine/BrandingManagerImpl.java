@@ -20,8 +20,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 
-import com.untangle.mvvm.LocalBrandingManager;
 import com.untangle.mvvm.BrandingSettings;
+import com.untangle.mvvm.LocalBrandingManager;
 import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.util.TransactionWork;
 import org.apache.log4j.Logger;
@@ -153,7 +153,7 @@ class BrandingManagerImpl implements LocalBrandingManager
     static {
         String wd = System.getProperty("bunnicula.web.dir");
         File id = new File(wd, "ROOT/images");
-        DEFAULT_LOGO = new File(id, "Logo32x32.gif");
+        DEFAULT_LOGO = new File(id, "Logo150x96.gif");
         BRANDING_LOGO = new File(id, "BrandingLogo.gif");
         wd = System.getProperty("bunnicula.conf.dir");
         id = new File(wd);
