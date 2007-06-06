@@ -46,7 +46,7 @@ response.setStatus( HttpServletResponse.SC_FORBIDDEN );
 	
 	
 	<div class="page_head">
-		<a href="http://<%=companyUrl%>"><img src="/images/BrandingLogo.gif" alt="<%=company%> Logo" /></a> <div> OpenVPN<br />Client Download Utility</div>
+		<a href="<%=companyUrl%>"><img src="/images/BrandingLogo.gif" alt="<%=company%> Logo" /></a> <div> OpenVPN<br />Client Download Utility</div>
 	</div>
 	
 	
