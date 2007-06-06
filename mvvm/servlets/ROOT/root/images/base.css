@@ -1,16 +1,16 @@
 body {
 	margin: 0;
 	padding: 20px;
-	background: #fff url(background_body.gif) repeat-x top left;
+	background: #fff url(/images/background_body.gif) repeat-x top left;
 	text-align: center;
 }
 table, div, span {
-    font: 10pt/14pt Arial,Sans-Serif;
+    font: 10pt/14pt arial,sans-serif;
     text-align: left;
     color: #606060;
 }
 input {
-    font: 10pt/14pt Arial,Sans-Serif;
+    font: 10pt/14pt arial,sans-serif;
     text-align: left;
     color: #606060;
 }
@@ -18,7 +18,7 @@ form {
     margin: 0;
 }
 a:link, a:visited {
-    font: 10pt/14pt Arial,Sans-Serif;
+    font: 10pt/14pt arial,sans-serif;
     color: #1997FE;
     text-decoration: none;
 }
@@ -27,28 +27,28 @@ a:hover {
     text-decoration: underline;
 }
 h1 {
-    font: normal 11pt Arial,Sans-Serif;
+    font: normal 11pt arial,sans-serif;
     color: #999;
     letter-spacing: 1px;
     margin: 0;
     padding: 0;
 }
 h2 {
-    font: normal 10pt Arial,Sans-Serif;
+    font: normal 10pt arial,sans-serif;
     color: #999;
     letter-spacing: 1px;
     margin: 0;
     padding: 0;
 }
 h3 {
-    font: normal 11pt Arial,Sans-Serif;
+    font: normal 11pt arial,sans-serif;
     color: #606060;
     letter-spacing: 1px;
     margin: 0;
     padding: 0;
 }
 h4 {
-    font: normal 14pt Arial,Sans-Serif;
+    font: normal 14pt arial,sans-serif;
     color: #0044D7;
     letter-spacing: 1px;
     margin: 0;
@@ -62,9 +62,10 @@ hr {
 	color: #969696;
 	background-color: #969696;
 	margin: 0; padding: 0;
+	clear: both;
 }
 .main-top-left, .main-top-right, .main-bot-left, .main-bot-right {
-    background-image: url(bg_main_top_bot.gif);
+    background-image: url(/images/bg_main_top_bot.gif);
     height: 23px;
 }
 .main-top-left, .main-bot-left {
@@ -83,17 +84,17 @@ hr {
     margin: 0 23px;
     padding: 0 2px;
 	text-align: left;
-    background: #fff url(bg_main_mid.gif);
+    background: #fff url(/images/bg_main_mid.gif);
+	overflow: hidden;
 }
 .main-mid-left, .main-mid-right {
-    background: url(bg_main_left_right.gif) 0 0 repeat-y;
+    background: url(/images/bg_main_left_right.gif) 0 0 repeat-y;
 }
 .main-top-right, .main-mid-right {
     background-position: 100% 0;
 }
 .page_head {
 	height: 110px;
-	overflow: hidden;
 }
 .page_head a {
 	float: left;
@@ -101,18 +102,18 @@ hr {
 }
 .page_head div {
 	float: left;
-	clear: none;
+	clear: right;
 	vertical-align: middle;
-    font: bold 25pt Arial,Sans-Serif;
-    color: #777;
-	line-height: 100px;
+	font: bold 25pt arial,sans-serif;
+	color: #777;
+	padding: 30px 0;
 	margin-left: 14px;
 }
 .page_sub_title {
-    font: bold 17pt Arial,Sans-Serif;
+    font: bold 17pt arial,sans-serif;
     color: #777;
 }
 .page_sub_text {
-    font: bold 14pt Arial,Sans-Serif;
+    font: bold 14pt arial,sans-serif;
     color: #777;
 }
