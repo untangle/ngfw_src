@@ -131,7 +131,7 @@ class DirectoryLocalTableModel extends MSortedTableModel<DirectoryCompoundSettin
         }
 
         // SAVE SETTINGS /////////////
-        if( !validateOnly ){
+        if( !validateOnly ){            
             directoryCompoundSettings.setLocalUserList(allRows);
         }
 

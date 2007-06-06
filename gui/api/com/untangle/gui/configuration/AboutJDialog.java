@@ -48,11 +48,13 @@ public class AboutJDialog extends MConfigJDialog {
         addRefreshable(NAME_ABOUT_INFO, aboutAboutJEditorPane);
 
         // LICENSE ////////////
+        /*
         AboutLicenseJEditorPane aboutLicenseJEditorPane = new AboutLicenseJEditorPane();
         JScrollPane aboutLicenseJScrollPane = addScrollableTab(null, NAME_LICENSE_INFO, null, aboutLicenseJEditorPane, false, true);
         aboutLicenseJEditorPane.setContainingJScrollPane(aboutLicenseJScrollPane);
         addRefreshable(NAME_LICENSE_INFO, aboutLicenseJEditorPane);
-
+        */
+        
         // REGISTRATION //////////
         AboutRegistrationJPanel aboutRegistrationJPanel = new AboutRegistrationJPanel();
         addScrollableTab(null, NAME_REGISTRATION_INFO, null, aboutRegistrationJPanel, false, true);
@@ -75,6 +77,7 @@ public class AboutJDialog extends MConfigJDialog {
         brandingJPanel.setSettingsChangedListener(this);        
     }
 
+/*
     private class AboutLicenseJEditorPane extends JEditorPane
         implements Refreshable<AboutCompoundSettings> {
         private JScrollPane containingJScrollPane;
@@ -96,7 +99,7 @@ public class AboutJDialog extends MConfigJDialog {
             containingJScrollPane.getVerticalScrollBar().setValue(0);
         }
     }
-
+*/
     private class AboutAboutJEditorPane extends JEditorPane
         implements Refreshable<AboutCompoundSettings> {
         private JScrollPane containingJScrollPane;

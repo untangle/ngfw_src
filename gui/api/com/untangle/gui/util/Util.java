@@ -292,7 +292,14 @@ public class Util {
     // CD //////////////////////
     private static boolean IS_CD = false;
     public static boolean getIsCD(){ return IS_CD; }
-    public static void setIsCD(boolean isCD){ IS_CD = isCD; }
+    public static void setIsCD(boolean isCD){ IS_CD = isCD; }    
+    //////////////////////////////
+
+
+    // PREMIUM //////////////////////
+    private static boolean IS_PREMIUM = false;
+    public static boolean getIsPremium(){ return IS_PREMIUM; }
+    public static void setIsPremium(boolean isPremium){ IS_PREMIUM = isPremium; }
     //////////////////////////////
 
 

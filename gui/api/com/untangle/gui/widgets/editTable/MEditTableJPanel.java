@@ -26,7 +26,7 @@ import com.untangle.gui.widgets.dialogs.*;
 
 public class MEditTableJPanel extends javax.swing.JPanel
     implements ListSelectionListener, TableModelListener, ComponentListener,
-               Savable<Object>, Refreshable<Object> {
+               Savable<Object>, Refreshable<Object>, Changeable {
 
     private JLabel messageJLabel;
     private MTransformJPanel mTransformJPanel;

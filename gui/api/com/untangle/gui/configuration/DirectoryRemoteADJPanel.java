@@ -28,7 +28,7 @@ import com.untangle.mvvm.tran.*;
 import com.untangle.mvvm.user.WMISettings;
 
 public class DirectoryRemoteADJPanel extends javax.swing.JPanel
-    implements Savable<DirectoryCompoundSettings>, Refreshable<DirectoryCompoundSettings> {
+    implements Savable<DirectoryCompoundSettings>, Refreshable<DirectoryCompoundSettings>, Changeable {
 
     private static final String EXCEPTION_PASSWORD_MISSING = "A \"Password\" must be specified if a \"Login\" is specified.";
     private static final String EXCEPTION_LOGIN_MISSING    = "A \"Login\" must be specified if a \"Password\" is specified.";

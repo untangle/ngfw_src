@@ -22,6 +22,8 @@ import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.policy.*;
 
+import com.untangle.gui.widgets.premium.*;
+
 
 
 public class PolicyJDialog extends MConfigJDialog {
@@ -61,12 +63,19 @@ public class PolicyJDialog extends MConfigJDialog {
         addRefreshable(NAME_USER_POLICIES, policyCustomJPanel);
         policyCustomJPanel.setSettingsChangedListener(this);
 
-        // AVAILABLE RACKS ////// (THIS MUST BE LAST BECAUSE IT VALIDATES SETTINGS)
-        PolicyAvailableJPanel policyAvailableJPanel = new PolicyAvailableJPanel();
-        addTab(NAME_AVAILABLE_POLICIES, null, policyAvailableJPanel);
-        addSavable(NAME_AVAILABLE_POLICIES, policyAvailableJPanel);
-        addRefreshable(NAME_AVAILABLE_POLICIES, policyAvailableJPanel);
-        policyAvailableJPanel.setSettingsChangedListener(this);
+        
+        if (Util.getIsPremium()) {
+            // AVAILABLE RACKS ////// (THIS MUST BE LAST BECAUSE IT VALIDATES SETTINGS)
+            PolicyAvailableJPanel policyAvailableJPanel = new PolicyAvailableJPanel();
+            addTab(NAME_AVAILABLE_POLICIES, null, policyAvailableJPanel);
+            addSavable(NAME_AVAILABLE_POLICIES, policyAvailableJPanel);
+            addRefreshable(NAME_AVAILABLE_POLICIES, policyAvailableJPanel);
+            policyAvailableJPanel.setSettingsChangedListener(this);
+        }
+        else {
+            PremiumJPanel policyPremiumJPanel = new PremiumJPanel();            
+            addTab(NAME_AVAILABLE_POLICIES, null, policyPremiumJPanel);
+        }
     }
 
     protected void saveAll() throws Exception{

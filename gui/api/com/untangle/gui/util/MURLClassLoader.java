@@ -145,6 +145,36 @@ public class MURLClassLoader extends URLClassLoader {
     }
 
 
+    public synchronized Class loadClass(String className, String jarName){
+
+        Class returnClass = null;
+        //logger.debug("--> Trying to load class: " + className + " with mar: " + marName);
+        // try to load the class as normal
+        try{
+            returnClass = this.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            returnClass = null;
+        }
+        if(returnClass != null){
+            //logger.info("  |--> Loaded Class from Parent: " + returnClass.getClassLoader() );
+            return returnClass;
+        }
+
+
+        // try to dynamically load the class
+        try{
+            this.addMarIfNeeded(jarName);
+            returnClass = this.loadClass(className);
+            
+        }
+        catch(Exception e){
+            //e.printStackTrace();
+            returnClass = null;
+        }
+
+        return returnClass;
+    }    
+
 
 
 }
