@@ -134,12 +134,13 @@ public class RBLChecker {
                 // to test the emails that this server will try to send
                 // -> functionality requested by dmorris
                 logger.debug(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist but ignoring this time");
-                this.m_spamImpl.logRBL(new SpamSMTPRBLEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), true));
+                
+                tsr.attach(new SpamSMTPRBLEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), true));
                 rblCnt = 0;
                 isBlacklisted = false;
             } else {
                 logger.debug(cContext.getHostname() + " confirmed that " + ipAddr + " is on its blacklist");
-                this.m_spamImpl.logRBL(new SpamSMTPRBLEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), false));
+                tsr.attach(new SpamSMTPRBLEvent(tsr.pipelineEndpoints(), cContext.getHostname(), tsr.clientAddr(), false));
 
                 /* Indicate that there was a block event */
                 this.m_spamImpl.incrementBlockCounter();

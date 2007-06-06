@@ -86,44 +86,48 @@ class EventHandler extends AbstractEventHandler
             }
         }
 
-        if ( reject ) {
+        boolean log = ( rule != null && rule.getLog()) ? true : false;
+        
+        if ( reject ) {            
             if (logger.isDebugEnabled()) {
                 logger.debug( "Rejecting session: " + request );
             }
-
+            
             if ( rejectSilently ) {
-                request.rejectSilently();
+                /* use finalization only if logging */
+                request.rejectSilently( log );
             } else {
                 if ( protocol == Protocol.UDP ) {
-                    request.rejectReturnUnreachable( IPNewSessionRequest.PORT_UNREACHABLE );
+                    request.rejectReturnUnreachable( IPNewSessionRequest.PORT_UNREACHABLE, log );
                 } else {
-                    ((TCPNewSessionRequest)request).rejectReturnRst();
+                    ((TCPNewSessionRequest)request).rejectReturnRst( log );
                 }
             }
-
+            
             /* Increment the block counter */
             transform.incrementCount( BLOCK_COUNTER ); // BLOCK COUNTER
-
+            
             /* If necessary log the event */
-            if ( rule != null && rule.getLog()) {
-                transform.log(new FirewallEvent(request.pipelineEndpoints(), rule, reject, ruleIndex));
+            if ( log ) {
+                request.attach(new FirewallEvent(request.pipelineEndpoints(), rule, reject, ruleIndex));
             }
-
+            
         } else {
             if (logger.isDebugEnabled()) {
                 logger.debug( "Releasing session: " + request );
             }
-            request.release( true );
-
+            
+            /* only finalize if logging */
+            request.release( log );
+            
             /* Increment the pass counter */
             transform.incrementCount( PASS_COUNTER ); // PASS COUNTER
-
+            
             /* If necessary log the event */
-            if ( rule != null && rule.getLog()) {
+            if ( log ) {
                 request.attach(new FirewallEvent(request.pipelineEndpoints(), rule, reject, ruleIndex));
             }
         }
-
 
         /* Track the statistics */
         transform.statisticManager.incrRequest( protocol, request, reject, rule == null );

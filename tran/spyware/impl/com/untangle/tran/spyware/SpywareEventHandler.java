@@ -140,20 +140,15 @@ public class SpywareEventHandler extends AbstractEventHandler
                 logger.info("Protocol      : UDP");
             logger.info("----------------------------------------------------------");
         }
-
-        if (release)
-            ipr.attach(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
-        else {
-            transform.statisticManager.incrSubnetAccess(); // logged subnet access
-            transform.log(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
-        }
+        
+        ipr.attach(new SpywareAccessEvent(ipr.pipelineEndpoints(), ir.getName(), ir.getIpMaddr(), ir.isLive()));
 
         if (ir.isLive()) {
             transform.incrementCount(Spyware.BLOCK); //XXX logged but not blocked (count as blocked anyway)???
             if (ipr instanceof TCPNewSessionRequest)
-                ((TCPNewSessionRequest)ipr).rejectReturnRst();
+                ((TCPNewSessionRequest)ipr).rejectReturnRst(true);
             if (ipr instanceof UDPNewSessionRequest)
-                ipr.rejectReturnUnreachable(IPNewSessionRequest.PROHIBITED);
+                ipr.rejectReturnUnreachable(IPNewSessionRequest.PROHIBITED,true);
             return;
         }
 

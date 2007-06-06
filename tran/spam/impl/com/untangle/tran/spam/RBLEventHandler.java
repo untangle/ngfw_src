@@ -13,6 +13,7 @@ package com.untangle.tran.spam;
 
 import com.untangle.mvvm.tapi.AbstractEventHandler;
 import com.untangle.mvvm.tapi.MPipeException;
+import com.untangle.mvvm.tapi.Session;
 import com.untangle.mvvm.tapi.TCPNewSessionRequest;
 
 import com.untangle.mvvm.tapi.event.TCPNewSessionRequestEvent;
@@ -34,6 +35,17 @@ class RBLEventHandler extends AbstractEventHandler
     }
 
     @Override
+    public void handleTCPComplete(TCPSessionEvent event)
+        throws MPipeException
+    {
+        Session s = event.session();
+        SpamSMTPRBLEvent rblEvent = (SpamSMTPRBLEvent)s.attachment();
+        if (null != rblEvent) {
+            m_spamImpl.logRBL(rblEvent);
+        }
+    }
+
+    @Override
     public void handleTCPNewSessionRequest(TCPNewSessionRequestEvent event)
         throws MPipeException
     {
@@ -51,13 +63,14 @@ class RBLEventHandler extends AbstractEventHandler
             RBLChecker rblChecker = new RBLChecker(spamSettings.getSpamRBLList(),m_spamImpl);
             if (true == rblChecker.check(tsr, spamConfig.getThrottleSec())) {
                 m_logger.debug("DNSBL hit confirmed, rejecting connection from: " + tsr.clientAddr());
-                tsr.rejectReturnRst();
+                /* get finalization in order to log rejection */
+                tsr.rejectReturnRst(true);
                 /* don't reject and release */
                 releaseSession = false;
             }
         }
 
-        /* release, doesn't need finalization */
-        if (releaseSession) tsr.release(false);
+        /* release, only needs finalization if the attachment is non-null */
+        if (releaseSession) tsr.release(tsr.attachment() != null);
     }
 }

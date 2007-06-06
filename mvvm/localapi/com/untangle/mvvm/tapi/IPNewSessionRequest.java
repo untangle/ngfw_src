@@ -70,6 +70,9 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints
     // May only be called before session is established (from UDPNewSessionRequestEvent handler)
     void rejectSilently();
 
+    // May only be called before session is established (from UDPNewSessionRequestEvent handler)
+    void rejectSilently(boolean needsFinalization);
+
     // Codes for rejectReturnUnreachable()
     static final byte NET_UNREACHABLE = 0;
     static final byte HOST_UNREACHABLE = 1;
@@ -82,7 +85,10 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints
     static final byte PROHIBITED = 13;
 
     // May only be called before session is established (from UDPNewSessionRequestEvent handler)
-    void rejectReturnUnreachable( byte code );
+    void rejectReturnUnreachable(byte code);
+
+    // May only be called before session is established (from UDPNewSessionRequestEvent handler)
+    void rejectReturnUnreachable(byte code, boolean needsFinalization);
 
     /**
      * <code>release</code> notifies the TAPI that this session may continue with the current settings

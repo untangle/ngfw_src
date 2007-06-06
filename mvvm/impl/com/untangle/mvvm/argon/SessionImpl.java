@@ -113,12 +113,6 @@ public abstract class SessionImpl implements Session
         }
     }
 
-    /* XXX This may no longer be necessary */
-    public SessionImpl( NewSessionRequest request )
-    {
-        this( request, true );
-    }
-
     public SessionGlobalState sessionGlobalState()
     {
         return sessionGlobalState;

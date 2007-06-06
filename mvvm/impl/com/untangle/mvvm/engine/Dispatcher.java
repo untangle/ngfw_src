@@ -311,8 +311,17 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
             switch (treq.state()) {
             case com.untangle.mvvm.argon.IPNewSessionRequest.REJECTED:
             case com.untangle.mvvm.argon.IPNewSessionRequest.REJECTED_SILENT:
-                logger.debug("rejecting");
-                return null;
+                if (treq.needsFinalization()) {
+                    logger.debug("rejecting (with finalization)");
+                } else {
+                    logger.debug("rejecting");
+                    return null;
+                }
+
+                /* XX Otherwise fall through and create a "fake" session that
+                 * exists just to modify the session or to get the raze() call
+                 * from Argon when the session is razed. */
+                break;
             case com.untangle.mvvm.argon.IPNewSessionRequest.RELEASED:
                 boolean needsFinalization = treq.needsFinalization();
                 boolean modified = treq.modified();

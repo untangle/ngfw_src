@@ -25,8 +25,13 @@ class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNew
         return ((com.untangle.mvvm.argon.TCPNewSessionRequest)pRequest).acked();
     }
 
-    public void rejectReturnRst() {
+    public void rejectReturnRst(boolean needsFinalization) {
         ((com.untangle.mvvm.argon.TCPNewSessionRequest)pRequest).rejectReturnRst();
+        this.needsFinalization = needsFinalization;
+    }
+
+    public void rejectReturnRst() {
+        rejectReturnRst(false);
     }
 
 }

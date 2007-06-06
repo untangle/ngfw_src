@@ -520,6 +520,9 @@ abstract class ArgonHook implements Runnable
             /* fallthrough */
         case IPNewSessionRequest.REJECTED_SILENT:
             state = request.state();
+
+            /* Done if the session wants to be notified of complete */
+            if ( session != null ) sessionList.add( session );
             break;
 
         default:
@@ -571,7 +574,7 @@ abstract class ArgonHook implements Runnable
         for ( ListIterator<Session> iter = sessionList.listIterator( size ) ; iter.hasPrevious(); ) {
             SessionImpl session = (SessionImpl)iter.previous();
 
-            if ( !session.isVectored ) {
+            if ( !session.isVectored()) {
                 logger.debug( "vectorReset: skipping non-vectored session" );
                 continue;
             }

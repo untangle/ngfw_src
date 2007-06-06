@@ -29,4 +29,12 @@ public interface TCPNewSessionRequest extends IPNewSessionRequest {
      * Note that if <code>acked</code> is true, then a simple close is done instead.
      */
     void rejectReturnRst();
+
+    /**
+     * <code>rejectReturnRst</code> rejects the new connection and sends a RST to the client.
+     * Note that if <code>acked</code> is true, then a simple close is done instead.
+     *
+     * @param needsFinalization Set to true if this wants finalization.
+     */
+    void rejectReturnRst(boolean needsFinalization);
 }

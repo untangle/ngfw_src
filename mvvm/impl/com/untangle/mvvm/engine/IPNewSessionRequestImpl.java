@@ -124,9 +124,15 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
         modified = true;
     }
 
-    public void rejectSilently()
+    public void rejectSilently(boolean needsFinalization)
     {
         pRequest.rejectSilently();
+        this.needsFinalization = needsFinalization;
+    }
+
+    public void rejectSilently()
+    {
+        rejectSilently(false);
     }
 
     public void endpoint()
@@ -134,9 +140,15 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
         pRequest.endpoint();
     }
 
-    public void rejectReturnUnreachable(byte code)
+    public void rejectReturnUnreachable(byte code, boolean needsFinalization)
     {
         pRequest.rejectReturnUnreachable(code);
+        this.needsFinalization = needsFinalization;
+    }
+
+    public void rejectReturnUnreachable(byte code)
+    {
+        rejectReturnUnreachable(code, false);
     }
 
     public void release(boolean needsFinalization)
