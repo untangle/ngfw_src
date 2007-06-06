@@ -89,20 +89,20 @@ if (!reportsAvailable) {
 %>
 
 <html><head><title><%=company%> Reports</title>
-<STYLE><!---
+<style><!---
 H1{font-family : sans-serif,Arial,Tahoma;color : white;
   background-color : #0086b2;}
 BODY{font-family : sans-serif,Arial,Tahoma;color : black;
   background-color : white;}
 B{color : white;background-color : #0086b2;} HR{color : #0086b2;}
---></STYLE> </head><body>
+--></style></head><body>
 <h1><%=company%> Reports - HTTP Status 302 - Moved Temporarily</h1>
-<HR size="1" noshade><p><b>type</b> Status report</p>
+<hr size="1" noshade><p><b>type</b> Status report</p>
 <p><b>message</b> <u>Moved Temporarily</u></p>
 <p><b>description</b>
 <u>The requested resource (Moved Temporarily) has moved temporarily
 to a new location.</u></p>
-<HR size="1" noshade>
+<hr size="1" noshade>
 </body></html>
 
 <%
