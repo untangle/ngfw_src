@@ -34,7 +34,7 @@ if (!reportsAvailable) {
 	
 	
 	<div class="page_head">
-		<a href="http://<%=companyUrl%>"><img src="/images/BrandingLogo.gif" alt="<%=company%> Logo" /></a> <div><%=company%> Reports</div>
+		<a href="<%=companyUrl%>"><img src="/images/BrandingLogo.gif" alt="<%=company%> Logo" /></a> <div><%=company%> Reports</div>
 	</div>
 	
 	
@@ -81,11 +81,10 @@ if (!reportsAvailable) {
 </html>
 
 <%
-    } else {
-            // We can redirect them. If it fails (shouldn't with any modern
-            // browser), serve them the following backup page.
-            response.sendRedirect("./current");
-
+} else {
+   // We can redirect them. If it fails (shouldn't with any modern
+   // browser), serve them the following backup page.
+   response.sendRedirect("./current");
 %>
 
 <html><head><title><%=company%> Reports</title>
