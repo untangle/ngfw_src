@@ -9,7 +9,7 @@ String companyUrl = bs.getCompanyUrl();
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>OpenVPN</title>
+<title><%=company%> | AD Download Utility</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <style type="text/css">
 /* <![CDATA[ */
@@ -25,7 +25,7 @@ String companyUrl = bs.getCompanyUrl();
 	
 	
 	<div class="page_head">
-        <a href="<%=companyUrl%>"><img src="images/BrandingLogo.gif" border="0" alt="<%=company%> logo"/></a> <div>Active Directory Lookup Server<br />Download Utility</div>
+        <a href="<%=companyUrl%>"><img src="/images/BrandingLogo.gif" border="0" alt="<%=company%> logo"/></a> <div>Active Directory Lookup Server<br />Download Utility</div>
 	</div>
 	
 	

@@ -140,7 +140,7 @@ String companyUrl = bs.getCompanyUrl();
             <tr>
               <td valign="middle" width="150">
                 <a href="<%=companyUrl%>">
-                  <img src="images/BrandingLogo.gif" border="0" alt="<%=company%>"/>
+                  <img src="/images/BrandingLogo.gif" border="0" alt="<%=company%>" />
                 </a>
               </td>
 
@@ -403,7 +403,7 @@ String companyUrl = bs.getCompanyUrl();
         </center>
 
         <br/>
-    <center>Powered by Untangle&trade; Server</center>
+    <address>Powered by Untangle&trade; Server</address>
 
           <hr size="1" width="100%"/>
         </td>
