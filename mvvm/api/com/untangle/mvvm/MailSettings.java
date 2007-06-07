@@ -22,6 +22,7 @@ import javax.persistence.Table;
  * MVVM mail settings.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 @Entity
@@ -30,27 +31,20 @@ public class MailSettings implements Serializable
 {
     private static final long serialVersionUID = 6722526215093951941L;
 
-    private Long    id;
+    private Long id;
 
     // Specific settings for reports
-    private String  reportEmail;
-    private String  fromAddress;
-
-    // Specific settings for notifications
-    // private String  notificationFromAddress;
-
-    // Specific settings for alerts
-    // private String  alertEmail;
-    // private String  alertFromAddress;
+    private String reportEmail;
+    private String fromAddress;
 
     // Common settings follow
     private boolean useMxRecords = true;
-    private String  smtpHost;
-    private int     smtpPort = 25;
+    private String smtpHost;
+    private int smtpPort = 25;
     private boolean useTls = false;
-    private String  authUser;
-    private String  authPass;
-    private String  localHostName;
+    private String authUser;
+    private String authPass;
+    private String localHostName;
 
     @Id
     @Column(name="mail_settings_id")
@@ -66,14 +60,17 @@ public class MailSettings implements Serializable
     }
 
     /**
-     * The comma-separated email address(es) to send reports to.
+     * The report recipient email addresses.
+     *
+     * @return comma-separated report recipient email addresses.
      */
     @Column(name="report_email")
     public String getReportEmail()
     {
-        if (reportEmail == null) {
-            reportEmail = new String();
+        if (null == reportEmail) {
+            reportEmail = "";
         }
+
         return reportEmail;
     }
 
@@ -83,10 +80,11 @@ public class MailSettings implements Serializable
     }
 
     /**
-     * Specifies if we should use MX records or the outgoing mail
-     * server to send emails.
+     * Specifies if we should send emails using MX records or the
+     * outgoing mail server.
      *
-     * @return true if should use MX records
+     * @return true to use MX records, false to use outgoing mail
+     * server.
      */
     @Column(name="use_mx_records", nullable=false)
     public boolean isUseMxRecords()
@@ -100,18 +98,19 @@ public class MailSettings implements Serializable
     }
 
     /**
-     * The SMTP mail host to use to send internal report and error
-     * emails.  This can be a host name or an IP address.
+     * The SMTP mail host used to send internal reports and error
+     * emails.
      *
-     * @return a <code>String</code> value
+     * @return host name or ip address of SMTP server.
      */
     @Column(name="smtp_host")
     public String getSmtpHost()
     {
-        if( smtpHost == null )
+        if (null == smtpHost) {
             return "";
-        else
+        } else {
             return smtpHost;
+        }
     }
 
     public void setSmtpHost(String smtpHost)
@@ -139,7 +138,7 @@ public class MailSettings implements Serializable
     /**
      * Specifies if we should use TLS if the mail server supports it.
      *
-     * @return true if should use TLS when availaable
+     * @return true if should use TLS when availaable.
      */
     @Column(name="use_tls", nullable=false)
     public boolean isUseTls()
@@ -153,9 +152,10 @@ public class MailSettings implements Serializable
     }
 
     /**
-     * The From address for mail coming from the Untangle Platform.
+     * The <code>From</code> address for mail sent by the Untangle
+     * Platform.
      *
-     * @return a <code>String</code> value
+     * @return <code>From</code> email address
      */
     @Column(name="from_address")
     public String getFromAddress()
@@ -169,10 +169,10 @@ public class MailSettings implements Serializable
     }
 
     /**
-     * The User to use for SMTP Auth.  If null or if the pass is null,
-     * don't use SMTP auth.
+     * User for SMTP auth. If <code>user</code> or <code>pass</code>
+     * is null, don't use SMTP auth.
      *
-     * @return a <code>String</code> giving the user name for SMTP Auth
+     * @return user name for SMTP auth.
      */
     @Column(name="auth_user")
     public String getAuthUser()
@@ -203,10 +203,10 @@ public class MailSettings implements Serializable
     }
 
     /**
-     * The Local host name to use for sending (SMTP HELO).  If null,
-     * use the actual local host name (currently always mv-edgeguard).
+     * The Local host name for sending (SMTP HELO).  If null, use the
+     * actual local host name.
      *
-     * @return a <code>String</code> giving the local host name for HELO
+     * @return the local host name for HELO.
      */
     @Column(name="local_host_name")
     public String getLocalHostName()
