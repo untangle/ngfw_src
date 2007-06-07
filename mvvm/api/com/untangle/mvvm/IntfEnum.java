@@ -56,7 +56,7 @@ public class IntfEnum implements Serializable
         return INTF_NONE_NUM;
     }
 
-    // Enumerations --------------------------------------------------------------
+    // Enumerations -----------------------------------------------------------
 
     public byte[] getIntfNums()
     {
@@ -77,9 +77,6 @@ public class IntfEnum implements Serializable
         }
         return result;
     }
-
-        
-    // Internal methods ---------------------------------------------------------
 
     // Object methods ---------------------------------------------------------
 

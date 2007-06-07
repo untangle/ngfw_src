@@ -19,6 +19,17 @@ package com.untangle.mvvm;
  */
 public interface BrandingManager
 {
+    /**
+     * Get the settings.
+     *
+     * @return the settings.
+     */
     BrandingSettings getBrandingSettings();
+
+    /**
+     * Set the settings.
+     *
+     * @param bs the settings.
+     */
     void setBrandingSettings(BrandingSettings bs);
 }

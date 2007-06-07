@@ -50,6 +50,11 @@ public class BrandingSettings implements Serializable
         this.id = id;
     }
 
+    /**
+     * Get the vendor name.
+     *
+     * @return vendor name.
+     */
     @Column(name="company_name")
     public String getCompanyName()
     {
@@ -61,6 +66,11 @@ public class BrandingSettings implements Serializable
         this.companyName = companyName;
     }
 
+    /**
+     * Get the vendor URL.
+     *
+     * @return vendor url
+     */
     @Column(name="company_url")
     public String getCompanyUrl()
     {
@@ -73,10 +83,10 @@ public class BrandingSettings implements Serializable
     }
 
     /**
-     * The company logo to use, null means use the default untangle
+     * The vendor logo to use, null means use the default Untangle
      * logo.
      *
-     * @return a <code>byte[]</code> value
+     * @return GIF image bytes, null if Untangle logo.
      */
     public byte[] getLogo()
     {
@@ -88,6 +98,11 @@ public class BrandingSettings implements Serializable
         this.logo = logo;
     }
 
+    /**
+     * Get the vendor contact name.
+     *
+     * @return vendor contact name.
+     */
     @Column(name="contact_name")
     public String getContactName()
     {
@@ -99,6 +114,11 @@ public class BrandingSettings implements Serializable
         this.contactName = contactName;
     }
 
+    /**
+     * Get the vendor contact email.
+     *
+     * @return vendor contact email.
+     */
     @Column(name="contact_email")
     public String getContactEmail()
     {

@@ -75,12 +75,6 @@ class TransformContextImpl implements TransformContext
     {
         MvvmContextImpl mctx = MvvmContextImpl.getInstance();
 
-        SchemaUtil schemaUtil = mctx.schemaUtil();
-        if (null != tDesc.getTransformBase()) {
-            schemaUtil.initSchema("settings", tDesc.getTransformBase());
-        }
-        schemaUtil.initSchema("settings", tDesc.getName());
-
         transformManager = mctx.transformManager();
         toolboxManager = mctx.toolboxManager();
 
