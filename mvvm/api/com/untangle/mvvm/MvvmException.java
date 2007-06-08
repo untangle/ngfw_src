@@ -11,24 +11,31 @@
 
 package com.untangle.mvvm;
 
+/**
+ * Base exception class for MVVM.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class MvvmException extends Exception {
-    public MvvmException() 
-    { 
-        super(); 
+
+    public MvvmException()
+    {
+        super();
     }
 
-    public MvvmException(String message) 
-    { 
-        super(message); 
+    public MvvmException(String message)
+    {
+        super(message);
     }
 
-    public MvvmException(String message, Throwable cause) 
-    { 
-        super(message, cause); 
+    public MvvmException(String message, Throwable cause)
+    {
+        super(message, cause);
     }
 
-    public MvvmException(Throwable cause) 
-    { 
-        super(cause); 
+    public MvvmException(Throwable cause)
+    {
+        super(cause);
     }
 }

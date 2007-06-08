@@ -13,7 +13,19 @@ package com.untangle.mvvm;
 
 import java.util.List;
 
+/**
+ * An interface for receiving messages.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ * @see com.untangle.mvvm.client.MessageClient
+ */
 public interface MessageQueue<M extends Message>
 {
+    /**
+     * Get the undelivered messages for this queue.
+     *
+     * @return outstanding messages.
+     */
     List<M> getMessages();
 }

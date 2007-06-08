@@ -13,6 +13,13 @@ package com.untangle.mvvm;
 
 import java.io.Serializable;
 
+/**
+ * Marker class for messages.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ * @see MessageQueue
+ */
 public class Message implements Serializable
 {
 }
