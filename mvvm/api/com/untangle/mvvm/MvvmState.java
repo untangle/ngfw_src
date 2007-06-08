@@ -16,6 +16,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Run state of the system.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class MvvmState implements Serializable
 {
     private static final long serialVersionUID = -101624240450519097L;

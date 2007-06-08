@@ -20,7 +20,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * Period for tasks at a particular time on a set of days.
+ * Time specification for scheduling tasks.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
@@ -48,6 +48,13 @@ public class Period implements Serializable
 
     public Period() { }
 
+    /**
+     * Create new Period set to particular time.
+     *
+     * @param hour hour of the day, in 24 hour time.
+     * @param minute minute of the hour.
+     * @param allDays true if scheduled daily.
+     */
     public Period(int hour, int minute, boolean allDays)
     {
         this.hour = hour;
@@ -74,7 +81,8 @@ public class Period implements Serializable
             c.add(Calendar.DAY_OF_WEEK, 1);
         }
 
-        if (c.get(Calendar.HOUR_OF_DAY) == hour && c.get(Calendar.MINUTE) >= minute) {
+        if (c.get(Calendar.HOUR_OF_DAY) == hour
+            && c.get(Calendar.MINUTE) >= minute) {
             c.add(Calendar.DAY_OF_WEEK, 1);
         }
 
@@ -93,10 +101,10 @@ public class Period implements Serializable
     }
 
     /**
-     * True if it includes the day, as defined by Calendar.
+     * Tests if Period includes a particular day.
      *
-     * @param day as defined by Calendar statics.
-     * @return true if the day is set.
+     * @param day as defined by {@link java.util.Calendar} statics.
+     * @return true if the day is int the period, false otherwise.
      */
     public boolean includesDay(int day)
     {
@@ -166,7 +174,7 @@ public class Period implements Serializable
     }
 
     /**
-     * Happen on Sunday.
+     * Includes Sunday.
      *
      * @return true if it happens on Sunday.
      */
@@ -182,7 +190,7 @@ public class Period implements Serializable
     }
 
     /**
-     * Happen on Monday.
+     * Includes Monday.
      *
      * @return true if it happens on Monday.
      */
@@ -198,7 +206,7 @@ public class Period implements Serializable
     }
 
     /**
-     * Happen on Tuesday.
+     * Includes Tuesday.
      *
      * @return true if it happens on Tuesday.
      */
@@ -214,7 +222,7 @@ public class Period implements Serializable
     }
 
     /**
-     * Happen on Wednesday.
+     * Includes Wednesday.
      *
      * @return true if it happens on Wednesday.
      */
@@ -230,7 +238,7 @@ public class Period implements Serializable
     }
 
     /**
-     * Happen on Thursday.
+     * Includes Thursday.
      *
      * @return true if it happens on Thursday.
      */
@@ -246,7 +254,7 @@ public class Period implements Serializable
     }
 
     /**
-     * Happen on Friday.
+     * Includes Friday.
      *
      * @return true if it happens on Friday.
      */
@@ -262,7 +270,7 @@ public class Period implements Serializable
     }
 
     /**
-     * Happen on Saturday.
+     * Includes Saturday.
      *
      * @return true if it happens on Saturday.
      */
