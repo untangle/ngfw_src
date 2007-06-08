@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.mvvm.api.IPSessionDesc;
+import com.untangle.mvvm.tran.IPSessionDesc;
 import com.untangle.mvvm.argon.ArgonAgent;
 import com.untangle.mvvm.argon.PipelineDesc;
 import com.untangle.mvvm.argon.SessionEndpoints;

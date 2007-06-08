@@ -108,11 +108,11 @@ public abstract class VirusTransformImpl extends AbstractTransform
     private final SessionMatcher VIRUS_SESSION_MATCHER = new SessionMatcher() {
             /* Kill all sessions on ports 20, 21 and 80 */
             public boolean isMatch(Policy sessionPolicy,
-                                   com.untangle.mvvm.api.IPSessionDesc client,
-                                   com.untangle.mvvm.api.IPSessionDesc server)
+                                   com.untangle.mvvm.tran.IPSessionDesc client,
+                                   com.untangle.mvvm.tran.IPSessionDesc server)
             {
                 /* Don't kill any UDP Sessions */
-                if (client.protocol() == com.untangle.mvvm.api.IPSessionDesc.PROTO_UDP) {
+                if (client.protocol() == com.untangle.mvvm.tran.IPSessionDesc.PROTO_UDP) {
                     return false;
                 }
 

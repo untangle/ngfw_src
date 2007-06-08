@@ -14,7 +14,7 @@ package com.untangle.mvvm.localapi;
 import java.util.List;
 
 import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.api.RemoteShieldManager;
+import com.untangle.mvvm.tran.RemoteShieldManager;
 import com.untangle.mvvm.shield.ShieldNodeSettings;
 
 public interface LocalShieldManager extends RemoteShieldManager

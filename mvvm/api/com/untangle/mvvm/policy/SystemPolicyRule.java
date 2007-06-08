@@ -17,7 +17,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.api.IPSessionDesc;
+import com.untangle.mvvm.tran.IPSessionDesc;
 
 /**
  * System Policy Rules.  These are the "fallback" matchers in the

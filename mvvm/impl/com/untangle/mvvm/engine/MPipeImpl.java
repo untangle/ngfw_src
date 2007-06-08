@@ -11,15 +11,20 @@
 
 package com.untangle.mvvm.engine;
 
-import java.util.*;
-
 import com.untangle.mvvm.argon.ArgonAgent;
 import com.untangle.mvvm.argon.ArgonAgentImpl;
-import com.untangle.mvvm.tapi.*;
+import com.untangle.mvvm.tapi.IPSessionDesc;
+import com.untangle.mvvm.tapi.MPipe;
+import com.untangle.mvvm.tapi.MPipeException;
+import com.untangle.mvvm.tapi.PipeSpec;
+import com.untangle.mvvm.tapi.Session;
+import com.untangle.mvvm.tapi.TCPSession;
+import com.untangle.mvvm.tapi.UDPSession;
 import com.untangle.mvvm.tapi.event.SessionEventListener;
-import com.untangle.mvvm.tran.*;
+import com.untangle.mvvm.tran.Transform;
+import com.untangle.mvvm.tran.TransformDesc;
 import com.untangle.mvvm.util.MetaEnv;
-import org.apache.log4j.*;
+import org.apache.log4j.Logger;
 
 /**
  * MPipeImpl is the implementation of a single MetaPipe.
@@ -190,11 +195,10 @@ class MPipeImpl implements MPipe {
     */
 
     /**
-     * A utiliity function to make sure the state is ok for issueing new requests, etc.
-     *
+     * A utiliity function to make sure the state is ok for issueing
+     * new requests, etc.
      */
-    private void checkOk()
-        throws MPipeException
+    private void checkOk() throws MPipeException
     {
         if (!isRunning())
             throw new MPipeException(this, "Attempt to use a MPipe that is not running");

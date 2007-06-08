@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.*;
 
-import com.untangle.mvvm.api.SessionEndpoints;
+import com.untangle.mvvm.tran.SessionEndpoints;
 import com.untangle.mvvm.tran.ParseException;
 import org.apache.log4j.Logger;
 

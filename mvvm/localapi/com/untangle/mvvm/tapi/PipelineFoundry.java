@@ -13,7 +13,7 @@ package com.untangle.mvvm.tapi;
 
 import java.net.InetSocketAddress;
 
-import com.untangle.mvvm.api.IPSessionDesc;
+import com.untangle.mvvm.tran.IPSessionDesc;
 import com.untangle.mvvm.policy.Policy;
 import com.untangle.mvvm.tran.PipelineEndpoints;
 

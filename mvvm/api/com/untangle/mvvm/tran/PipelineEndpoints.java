@@ -20,8 +20,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.api.IPSessionDesc;
-import com.untangle.mvvm.api.SessionEndpoints;
+import com.untangle.mvvm.tran.IPSessionDesc;
+import com.untangle.mvvm.tran.SessionEndpoints;
 import com.untangle.mvvm.logging.LogEvent;
 import com.untangle.mvvm.logging.SyslogBuilder;
 import com.untangle.mvvm.policy.Policy;

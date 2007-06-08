@@ -177,8 +177,8 @@ public class ArgonAgentImpl implements ArgonAgent {
         }
         /**
          * Tells if the session matches */
-        public boolean isMatch( Policy policy, com.untangle.mvvm.api.IPSessionDesc clientSide, 
-                                com.untangle.mvvm.api.IPSessionDesc serverSide )
+        public boolean isMatch( Policy policy, com.untangle.mvvm.tran.IPSessionDesc clientSide, 
+                                com.untangle.mvvm.tran.IPSessionDesc serverSide )
         {
             Integer id = clientSide.id();
 

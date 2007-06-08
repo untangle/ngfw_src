@@ -11,7 +11,7 @@
 
 package com.untangle.mvvm.localapi;
 
-import com.untangle.mvvm.api.IPSessionDesc;
+import com.untangle.mvvm.tran.IPSessionDesc;
 
 import com.untangle.mvvm.policy.Policy;
 

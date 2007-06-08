@@ -20,7 +20,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.api.IPSessionDesc;
+import com.untangle.mvvm.tran.IPSessionDesc;
 import com.untangle.mvvm.tran.ParseException;
 import com.untangle.mvvm.tran.firewall.intf.IntfMatcher;
 import com.untangle.mvvm.tran.firewall.intf.IntfMatcherFactory;

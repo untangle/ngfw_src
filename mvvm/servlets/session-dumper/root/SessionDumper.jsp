@@ -70,7 +70,7 @@
       }
 %>
 <%
-      IPSessionDesc[] sdescs = tctx.liveSessionDescs();
+      com.untangle.mvvm.tapi.IPSessionDesc[] sdescs = tctx.liveSessionDescs();
       sdescs = SessionUtil.sortDescs(sdescs);
       if (sdescs == null)
          continue;
@@ -91,12 +91,12 @@
          <TH>T->C B
 <%
       for (int j = 0; j < sdescs.length; j++) {
-          IPSessionDesc sd = (IPSessionDesc) sdescs[j];
+          com.untangle.mvvm.tapi.IPSessionDesc sd = (com.untangle.mvvm.tapi.IPSessionDesc) sdescs[j];
           SessionStats stats = sd.stats();
           char proto = 'N';
-          if (sd instanceof UDPSessionDesc)
+          if (sd instanceof com.untangle.mvvm.tapi.UDPSessionDesc)
              proto = 'U';
-          else if (sd instanceof TCPSessionDesc)
+          else if (sd instanceof com.untangle.mvvm.tapi.TCPSessionDesc)
              proto = 'T';
 %>
           <TR>

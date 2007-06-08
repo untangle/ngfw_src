@@ -11,7 +11,7 @@
 
 package com.untangle.mvvm.argon;
 
-public interface SessionDesc extends com.untangle.mvvm.api.SessionDesc
+public interface SessionDesc extends com.untangle.mvvm.tran.SessionDesc
 {
 }
 

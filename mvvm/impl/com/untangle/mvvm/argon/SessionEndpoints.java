@@ -13,6 +13,6 @@ package com.untangle.mvvm.argon;
 
 import java.net.InetAddress;
 
-public interface SessionEndpoints extends com.untangle.mvvm.api.SessionEndpoints
+public interface SessionEndpoints extends com.untangle.mvvm.tran.SessionEndpoints
 {
 }

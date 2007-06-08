@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.untangle.mvvm.api.SessionEndpoints;
+import com.untangle.mvvm.tran.SessionEndpoints;
 import com.untangle.mvvm.tapi.Protocol;
 import com.untangle.mvvm.tran.PortRange;
 import com.untangle.mvvm.tran.firewall.ip.IPMatcher;

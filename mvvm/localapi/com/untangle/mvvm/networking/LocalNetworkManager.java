@@ -14,7 +14,7 @@ package com.untangle.mvvm.networking;
 import java.net.InetAddress;
 
 import com.untangle.mvvm.NetworkManager;
-import com.untangle.mvvm.api.IPSessionDesc;
+import com.untangle.mvvm.tran.IPSessionDesc;
 
 import com.untangle.mvvm.networking.internal.AccessSettingsInternal;
 import com.untangle.mvvm.networking.internal.AddressSettingsInternal;

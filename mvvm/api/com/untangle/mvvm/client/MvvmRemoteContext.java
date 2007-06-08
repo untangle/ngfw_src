@@ -19,14 +19,14 @@ import com.untangle.mvvm.NetworkManager;
 import com.untangle.mvvm.RemoteAppServerManager;
 import com.untangle.mvvm.ReportingManager;
 import com.untangle.mvvm.addrbook.AddressBook;
-import com.untangle.mvvm.api.RemoteIntfManager;
-import com.untangle.mvvm.api.RemoteShieldManager;
 import com.untangle.mvvm.logging.LoggingManager;
 import com.untangle.mvvm.networking.ping.PingManager;
 import com.untangle.mvvm.policy.PolicyManager;
 import com.untangle.mvvm.portal.RemotePortalManager;
 import com.untangle.mvvm.security.AdminManager;
 import com.untangle.mvvm.toolbox.ToolboxManager;
+import com.untangle.mvvm.tran.RemoteIntfManager;
+import com.untangle.mvvm.tran.RemoteShieldManager;
 import com.untangle.mvvm.tran.TransformManager;
 import com.untangle.mvvm.user.RemotePhoneBook;
 

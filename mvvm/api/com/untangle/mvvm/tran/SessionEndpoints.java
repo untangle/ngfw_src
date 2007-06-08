@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.api;
+package com.untangle.mvvm.tran;
 
 import java.net.InetAddress;
 
@@ -24,7 +24,7 @@ public interface SessionEndpoints
      * @return a <code>short</code> giving one of the protocols (right now always TCP or UDP)
      */
     short protocol();
-    
+
     /**
      * Returns an argon interface for the client.</p>
      *
@@ -55,7 +55,7 @@ public interface SessionEndpoints
 
     // We provide these here, confident that nothing other than UDP or TCP
     // will be a session, others will be stateless.  (Or this will just be 0)
-    
+
     /**
      * Gets the client port for this session.</p>
      * @return the client port.

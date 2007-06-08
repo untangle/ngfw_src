@@ -118,7 +118,7 @@ public abstract class PipeSpec
 
     // public methods ---------------------------------------------------------
 
-    public boolean matches(PolicyRule pr, com.untangle.mvvm.api.IPSessionDesc sd)
+    public boolean matches(PolicyRule pr, com.untangle.mvvm.tran.IPSessionDesc sd)
     {
         Policy tp = transform.getTid().getPolicy();
         Policy p = null == pr ? null : pr.getPolicy();

@@ -58,7 +58,7 @@ import com.untangle.gui.transform.SettingsChangedListener;
 import com.untangle.gui.widgets.editTable.*;
 import com.untangle.mvvm.*;
 import com.untangle.mvvm.addrbook.*;
-import com.untangle.mvvm.api.RemoteIntfManager;
+import com.untangle.mvvm.tran.RemoteIntfManager;
 import com.untangle.mvvm.client.*;
 import com.untangle.mvvm.logging.*;
 import com.untangle.mvvm.networking.ping.PingManager;

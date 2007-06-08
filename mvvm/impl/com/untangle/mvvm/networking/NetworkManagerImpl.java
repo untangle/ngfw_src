@@ -29,7 +29,7 @@ import com.untangle.mvvm.MvvmContextFactory;
 import com.untangle.mvvm.MvvmLocalContext;
 import com.untangle.mvvm.NetworkManager;
 import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.api.IPSessionDesc;
+import com.untangle.mvvm.tran.IPSessionDesc;
 import com.untangle.mvvm.networking.internal.AccessSettingsInternal;
 import com.untangle.mvvm.networking.internal.AddressSettingsInternal;
 import com.untangle.mvvm.networking.internal.InterfaceInternal;

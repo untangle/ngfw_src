@@ -13,7 +13,7 @@ package com.untangle.mvvm.tapi;
 
 import java.net.InetAddress;
 import com.untangle.mvvm.tran.PipelineEndpoints;
-import com.untangle.mvvm.api.SessionEndpoints;
+import com.untangle.mvvm.tran.SessionEndpoints;
 
 public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints {
 

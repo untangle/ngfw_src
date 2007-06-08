@@ -11,8 +11,8 @@
 
 package com.untangle.mvvm.localapi;
 
-import com.untangle.mvvm.api.IPSessionDesc;
-import com.untangle.mvvm.api.SessionEndpoints;
+import com.untangle.mvvm.tran.IPSessionDesc;
+import com.untangle.mvvm.tran.SessionEndpoints;
 import com.untangle.mvvm.policy.Policy;
 
 public class SessionMatcherFactory

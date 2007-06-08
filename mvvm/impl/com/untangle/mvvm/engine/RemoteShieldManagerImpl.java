@@ -17,7 +17,7 @@ import java.net.InetAddress;
 
 import java.util.List;
 
-import com.untangle.mvvm.api.RemoteShieldManager;
+import com.untangle.mvvm.tran.RemoteShieldManager;
 import com.untangle.mvvm.localapi.LocalShieldManager;
 
 /* Wrapper class for a local shield manager */

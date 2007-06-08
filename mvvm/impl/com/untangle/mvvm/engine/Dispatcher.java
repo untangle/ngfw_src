@@ -11,26 +11,48 @@
 
 package com.untangle.mvvm.engine;
 
-import java.io.*;
-import java.nio.channels.*;
-import java.util.*;
+import java.nio.channels.Selector;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.untangle.mvvm.argon.ArgonAgent;
-import com.untangle.mvvm.tapi.*;
-import com.untangle.mvvm.tapi.event.*;
-import com.untangle.mvvm.tran.*;
-import com.untangle.mvvm.util.*;
+import com.untangle.mvvm.tapi.IPSession;
+import com.untangle.mvvm.tapi.IPSessionDesc;
+import com.untangle.mvvm.tapi.MPipeException;
+import com.untangle.mvvm.tapi.SessionStats;
+import com.untangle.mvvm.tapi.TCPSession;
+import com.untangle.mvvm.tapi.UDPSession;
+import com.untangle.mvvm.tapi.event.IPDataResult;
+import com.untangle.mvvm.tapi.event.IPSessionEvent;
+import com.untangle.mvvm.tapi.event.SessionEventListener;
+import com.untangle.mvvm.tapi.event.TCPChunkEvent;
+import com.untangle.mvvm.tapi.event.TCPNewSessionRequestEvent;
+import com.untangle.mvvm.tapi.event.TCPSessionEvent;
+import com.untangle.mvvm.tapi.event.UDPErrorEvent;
+import com.untangle.mvvm.tapi.event.UDPNewSessionRequestEvent;
+import com.untangle.mvvm.tapi.event.UDPPacketEvent;
+import com.untangle.mvvm.tapi.event.UDPSessionEvent;
+import com.untangle.mvvm.tran.MutateTStats;
+import com.untangle.mvvm.tran.Transform;
+import com.untangle.mvvm.tran.TransformContext;
+import com.untangle.mvvm.tran.TransformDesc;
+import com.untangle.mvvm.util.MetaEnv;
+import com.untangle.mvvm.util.SessionUtil;
 import gnu.trove.TIntArrayList;
-import org.apache.log4j.*;
-
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 
 /**
  * One dispatcher per MPipe.  The dispatcher is the reading quarter of
  * the bottom half (writing is in the MPipeImpl class), containing the
  * main event loop and all threads.
  *
- * @author <a href="mailto:jdi@untangle.com"></a>
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
 class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
@@ -232,8 +254,7 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
     }
 
     // Called by the new session handler thread.
-    void addSession(UDPSession sess)
-        throws InterruptedException
+    void addSession(UDPSession sess) throws InterruptedException
     {
         MutateTStats.addUDPSession(mPipe);
         // liveSessions.add(new WeakReference(ss));
@@ -527,30 +548,31 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
      *
      * @exception MPipeException if an error occurs
      */
-    void start()
-        throws MPipeException
+    void start() throws MPipeException
     {
         // if (mainThread != null && !mainThread.isAlive())
         // mainThread.start();
     }
 
     /**
-     * Describe <code>destroy</code> method here.
-     * Called from MPipeImpl.  Stop is only called to disconnect us from a live MPipe.
-     * Once stopped we cannot be restarted.
-     * This function is idempotent for safety.
+     * Called from MPipeImpl.  Stop is only called to disconnect us
+     * from a live MPipe.  Once stopped we cannot be restarted.  This
+     * function is idempotent for safety.
      *
-     * When used in drain mode, this function will not return until all sessions have naturally
-     * finished.  When not in drain mode, all existing sessions are forcibly terminated (by closing
-     * connection to MPipe == close server & client sockets outside of VP).
-     * In both modes, when this function returns we guarantee:
-     *   No sessions are alive.  No DEM threads are alive.  No session threads, new session threads, or
-     *   any of the three main threads are alive.
+     * When used in drain mode, this function will not return until
+     * all sessions have naturally finished.  When not in drain mode,
+     * all existing sessions are forcibly terminated (by closing
+     * connection to MPipe == close server & client sockets outside of
+     * VP).  In both modes, when this function returns we guarantee:
+     * No sessions are alive.  No DEM threads are alive.  No session
+     * threads, new session threads, or any of the three main threads
+     * are alive.
      *
-     * @param drainMode a <code>boolean</code> true if we should switch into drain-then-exit mode, false if we should immediately exit.
+     * @param drainMode a <code>boolean</code> true if we should
+     * switch into drain-then-exit mode, false if we should
+     * immediately exit.
      */
-    void destroy(boolean drainMode)
-        throws InterruptedException
+    void destroy(boolean drainMode) throws InterruptedException
     {
         logger.info("destroy called");
         if (mainThread != null) {
@@ -697,7 +719,8 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
         return idlist.toNativeArray();
     }
 
-    private static final IPSessionDesc[] SESSION_DESC_ARRAY_PROTO = new IPSessionDesc[0];
+    private static final IPSessionDesc[] SESSION_DESC_ARRAY_PROTO
+        = new IPSessionDesc[0];
 
     IPSessionDesc[] liveSessionDescs()
     {
@@ -710,7 +733,8 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
         return (IPSessionDesc[])l.toArray(SESSION_DESC_ARRAY_PROTO);
     }
 
-    // This one is used to dump to our own log, including internal session state.
+    // This one is used to dump to our own log, including internal
+    // session state.
     void dumpSessions()
     {
         System.out.println("Live session dump for " + transform.getTransformDesc().getName());

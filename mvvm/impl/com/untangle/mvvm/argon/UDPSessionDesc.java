@@ -11,6 +11,6 @@
 
 package com.untangle.mvvm.argon;
 
-public interface UDPSessionDesc extends com.untangle.mvvm.api.UDPSessionDesc, IPSessionDesc
+public interface UDPSessionDesc extends com.untangle.mvvm.tran.UDPSessionDesc, IPSessionDesc
 {
 }

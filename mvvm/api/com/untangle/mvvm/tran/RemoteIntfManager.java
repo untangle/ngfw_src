@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.api;
+package com.untangle.mvvm.tran;
 
 import com.untangle.mvvm.IntfEnum;
 

@@ -15,7 +15,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.api.IPSessionDesc;
+import com.untangle.mvvm.tran.IPSessionDesc;
 import com.untangle.mvvm.logging.PipelineEvent;
 import com.untangle.mvvm.logging.SyslogBuilder;
 

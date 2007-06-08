@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.api;
+package com.untangle.mvvm.tran;
 
 public interface SessionDesc
 {
@@ -37,7 +37,7 @@ public interface SessionDesc
      * Number of bytes received from the server.
      */
     long s2tBytes();
-    
+
     /**
      * Number of bytes transmitted to the client.
      */
@@ -57,7 +57,7 @@ public interface SessionDesc
      * Number of chunks received from the server.
      */
     long s2tChunks();
-    
+
     /**
      * Number of chunks transmitted to the client.
      */

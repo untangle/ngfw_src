@@ -11,6 +11,7 @@
 
 package com.untangle.mvvm.argon;
 
-public interface TCPSessionDesc extends com.untangle.mvvm.api.TCPSessionDesc, IPSessionDesc
+public interface TCPSessionDesc
+    extends com.untangle.mvvm.tran.TCPSessionDesc, IPSessionDesc
 {
 }

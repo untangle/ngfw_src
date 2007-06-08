@@ -13,7 +13,7 @@ package com.untangle.mvvm.engine;
 
 import com.untangle.mvvm.IntfEnum;
 
-import com.untangle.mvvm.api.RemoteIntfManager;
+import com.untangle.mvvm.tran.RemoteIntfManager;
 import com.untangle.mvvm.localapi.LocalIntfManager;
 
 /** Passthru class for access to the api function inside of the interface manager */

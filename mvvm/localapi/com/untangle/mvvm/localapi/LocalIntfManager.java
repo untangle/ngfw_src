@@ -15,7 +15,7 @@ import java.util.List;
 
 import com.untangle.mvvm.ArgonException;
 
-import com.untangle.mvvm.api.RemoteIntfManager;
+import com.untangle.mvvm.tran.RemoteIntfManager;
 import com.untangle.mvvm.localapi.ArgonInterface;
 
 public interface LocalIntfManager extends RemoteIntfManager

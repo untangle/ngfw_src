@@ -12,9 +12,9 @@
 package com.untangle.mvvm.tapi;
 
 import java.net.InetAddress;
-import com.untangle.mvvm.api.SessionEndpoints;
+import com.untangle.mvvm.tran.SessionEndpoints;
 
-public interface IPSessionDesc extends com.untangle.mvvm.api.IPSessionDesc, SessionDesc, SessionEndpoints
+public interface IPSessionDesc extends com.untangle.mvvm.tran.IPSessionDesc, SessionDesc, SessionEndpoints
 {
     /**
      * Sessions are inbound when the inbound side of the policy is selected.  This is decided

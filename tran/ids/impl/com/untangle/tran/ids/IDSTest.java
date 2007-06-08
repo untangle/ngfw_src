@@ -17,7 +17,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.*;
 
-import com.untangle.mvvm.api.SessionEndpoints;
+import com.untangle.mvvm.tran.SessionEndpoints;
 import com.untangle.mvvm.tapi.*;
 import com.untangle.mvvm.tapi.event.*;
 import com.untangle.mvvm.tran.ParseException;

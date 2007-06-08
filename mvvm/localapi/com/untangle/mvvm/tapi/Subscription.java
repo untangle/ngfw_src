@@ -12,8 +12,8 @@
 package com.untangle.mvvm.tapi;
 
 
-import com.untangle.mvvm.api.IPSessionDesc;
-import com.untangle.mvvm.api.SessionEndpoints;
+import com.untangle.mvvm.tran.IPSessionDesc;
+import com.untangle.mvvm.tran.SessionEndpoints;
 
 import com.untangle.mvvm.tran.IPMaddr;
 import com.untangle.mvvm.tran.PortRange;
