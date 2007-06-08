@@ -11,16 +11,23 @@
 
 package com.untangle.mvvm;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * @author  Dirk Morris
+ * Provides access to the MVVM version.
+ *
+ * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
+ * @version 1.0
  */
 public class Version {
+    /**
+     * Get the public version number.
+     *
+     * @return the version string.
+     */
     public static String getVersion()
     {
         String line;
