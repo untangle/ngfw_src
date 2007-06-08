@@ -11,13 +11,31 @@
 
 package com.untangle.mvvm.client;
 
-public class InvocationConnectionException extends InvocationException {
-    public InvocationConnectionException() { super(); }
-    public InvocationConnectionException(String message) { super(message); }
+/**
+ * Signals problem connecting to server.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
+public class InvocationConnectionException extends InvocationException
+{
+    public InvocationConnectionException()
+    {
+        super();
+    }
+
+    public InvocationConnectionException(String message)
+    {
+        super(message);
+    }
+
     public InvocationConnectionException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
-    public InvocationConnectionException(Throwable cause) { super(cause); }
+    public InvocationConnectionException(Throwable cause)
+    {
+        super(cause);
+    }
 }

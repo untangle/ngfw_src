@@ -11,13 +11,31 @@
 
 package com.untangle.mvvm.client;
 
-public class InvocationTargetExpiredException extends InvocationException {
-    public InvocationTargetExpiredException() { super(); }
-    public InvocationTargetExpiredException(String message) { super(message); }
+/**
+ * Signals that remote target no longer exists.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
+public class InvocationTargetExpiredException extends InvocationException
+{
+    public InvocationTargetExpiredException()
+    {
+        super();
+    }
+
+    public InvocationTargetExpiredException(String message)
+    {
+        super(message);
+    }
+
     public InvocationTargetExpiredException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
-    public InvocationTargetExpiredException(Throwable cause) { super(cause); }
+    public InvocationTargetExpiredException(Throwable cause)
+    {
+        super(cause);
+    }
 }

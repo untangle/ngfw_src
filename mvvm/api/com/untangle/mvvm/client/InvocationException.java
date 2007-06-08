@@ -11,13 +11,31 @@
 
 package com.untangle.mvvm.client;
 
-public class InvocationException extends RuntimeException {
-    public InvocationException() { super(); }
-    public InvocationException(String message) { super(message); }
+/**
+ * Signals problem making RPC call.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
+public class InvocationException extends RuntimeException
+{
+    public InvocationException()
+    {
+        super();
+    }
+
+    public InvocationException(String message)
+    {
+        super(message);
+    }
+
     public InvocationException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
-    public InvocationException(Throwable cause) { super(cause); }
+    public InvocationException(Throwable cause)
+    {
+        super(cause);
+    }
 }
