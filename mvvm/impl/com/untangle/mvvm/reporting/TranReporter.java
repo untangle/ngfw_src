@@ -11,26 +11,48 @@
 
 package com.untangle.mvvm.reporting;
 
-import java.io.*;
-import java.net.*;
-import java.sql.*;
-import java.util.*;
-import java.util.jar.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 
-import com.untangle.mvvm.api.MvvmTransformHandler;
-import com.untangle.mvvm.reporting.summary.*;
-import com.untangle.mvvm.security.Tid;
 import com.untangle.mvvm.tran.Scanner;
 import com.untangle.mvvm.tran.TransformContext;
-import net.sf.jasperreports.engine.*;
-import net.sf.jasperreports.engine.export.*;
+import net.sf.jasperreports.engine.JRDefaultScriptlet;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRScriptletException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.export.JRHtmlExporter;
+import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 import org.apache.log4j.Logger;
-import org.jfree.chart.*;
-import org.xml.sax.*;
-import org.xml.sax.helpers.XMLReaderFactory;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
 
-public class TranReporter {
-
+/**
+ * Runs reports.
+ *
+ * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
+ * @version 1.0
+ */
+public class TranReporter
+{
     public static final float CHART_QUALITY_JPEG = .9f;  // for JPEG
     public static final int CHART_COMPRESSION_PNG = 0;  // for PNG
     public static final int CHART_WIDTH = 600;
@@ -78,8 +100,9 @@ public class TranReporter {
         // Need to do the parameters & scanners first.
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         for (String line = br.readLine(); null != line; line = br.readLine()) {
-            if (line.startsWith("#"))
+            if (line.startsWith("#")) {
                 continue;
+            }
             StringTokenizer tok = new StringTokenizer(line, ":");
             if (!tok.hasMoreTokens()) { continue; }
             String resourceOrClassname = tok.nextToken();
@@ -95,7 +118,8 @@ public class TranReporter {
             }
             else if (type.equalsIgnoreCase("scanner")) {
                 try {
-                    Class scannerClass = getClass().getClassLoader().loadClass(resourceOrClassname);
+                    Class scannerClass = getClass().getClassLoader()
+                        .loadClass(resourceOrClassname);
                     scanner = (Scanner) scannerClass.newInstance();
                 } catch (Exception x) {
                     logger.warn("No such class: " + resourceOrClassname);
@@ -311,7 +335,10 @@ public class TranReporter {
     ////////////////////////////////////////////////////
 
     // Used for both general and specific transforms.
-    private void processReportSummarizer(ReportSummarizer reportSummarizer, Connection conn, String fileName, Timestamp startTime, Timestamp endTime)
+    private void processReportSummarizer(ReportSummarizer reportSummarizer,
+                                         Connection conn, String fileName,
+                                         Timestamp startTime,
+                                         Timestamp endTime)
         throws IOException
     {
         String result = reportSummarizer.getSummaryHtml(conn, startTime, endTime, extraParams);
@@ -347,7 +374,9 @@ public class TranReporter {
         return (String[]) uNameList.toArray(new String[uNameList.size()]);
     }
 
-    private String[] getHostNames(Connection conn, Timestamp startTime, Timestamp endTime) throws Exception
+    private String[] getHostNames(Connection conn, Timestamp startTime,
+                                  Timestamp endTime)
+        throws Exception
     {
         ArrayList<String> hNameList = new ArrayList();
         String sql = "SELECT DISTINCT hname FROM reports.sessions WHERE time_stamp >= ? AND time_stamp < ? AND client_intf=1";
@@ -374,7 +403,10 @@ public class TranReporter {
         return (String[]) hNameList.toArray(new String[hNameList.size()]);
     }
 
-    private void processUserReports(String resource, Connection conn, String[] userNames, String baseTag, String periodTag, Timestamp startTime, Timestamp endTime)
+    private void processUserReports(String resource, Connection conn,
+                                    String[] userNames, String baseTag,
+                                    String periodTag, Timestamp startTime,
+                                    Timestamp endTime)
         throws Exception
     {
         logger.debug("From: " + startTime + " To: " + endTime);
@@ -454,7 +486,9 @@ public class TranReporter {
         }
     }
 
-    private void processReport(String resource, Connection conn, String base, String imagesDir, Timestamp startTime, Timestamp endTime)
+    private void processReport(String resource, Connection conn, String base,
+                               String imagesDir, Timestamp startTime,
+                               Timestamp endTime)
         throws Exception
     {
         logger.debug("From: " + startTime + " To: " + endTime);
@@ -518,8 +552,11 @@ public class TranReporter {
         // Was: JasperExportManager.exportReportToHtmlFile(print, htmlFile);
     }
 
-    private void processReportGraph(ReportGraph reportGraph, Connection conn, String fileName, int type, Timestamp startTime, Timestamp endTime)
-        throws IOException, JRScriptletException, SQLException, ClassNotFoundException
+    private void processReportGraph(ReportGraph reportGraph, Connection conn,
+                                    String fileName, int type,
+                                    Timestamp startTime, Timestamp endTime)
+        throws IOException, JRScriptletException, SQLException,
+               ClassNotFoundException
     {
         Map<String,Object> params = new HashMap<String,Object>();
         params.put(ReportGraph.PARAM_REPORT_START_DATE, startTime);
@@ -529,7 +566,9 @@ public class TranReporter {
         JFreeChart jFreeChart = reportGraph.doInternal(conn, scriptlet);
         logger.debug("Exporting report to: " + fileName);
         //ChartUtilities.saveChartAsJPEG(new File(fileName), CHART_QUALITY, jFreeChart, CHART_WIDTH, CHART_HEIGHT);
-        ChartUtilities.saveChartAsPNG(new File(fileName), jFreeChart, CHART_WIDTH, CHART_HEIGHT, null, false, CHART_COMPRESSION_PNG);
+        ChartUtilities.saveChartAsPNG(new File(fileName), jFreeChart,
+                                      CHART_WIDTH, CHART_HEIGHT, null, false,
+                                      CHART_COMPRESSION_PNG);
     }
 
     private class FakeScriptlet extends JRDefaultScriptlet
@@ -540,7 +579,8 @@ public class TranReporter {
             ourParams = params;
         }
 
-        public Object getParameterValue(String paramName) throws JRScriptletException
+        public Object getParameterValue(String paramName)
+            throws JRScriptletException
         {
             Object found = null;
             if (ourParams != null) {
