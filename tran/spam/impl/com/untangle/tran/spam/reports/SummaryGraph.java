@@ -202,6 +202,46 @@ public class SummaryGraph extends DayByMinuteTimeSeriesGraph
         }
         try { stmt.close(); } catch (SQLException x) { }
 
+        sql = "SELECT trunc_ts, SUM(spam_ct), SUM(clean_ct)"
+            + "  FROM (SELECT date_trunc('minute', time_stamp) AS trunc_ts,"
+            + "          COUNT(CASE skipped WHEN false THEN 1 ELSE null END) AS spam_ct,"
+            + "          COUNT(CASE skipped WHEN true THEN 0 ELSE null END) AS clean_ct"
+            + "        FROM tr_spam_smtp_rbl_evt"
+            + "        WHERE time_stamp >= ? AND time_stamp < ? "
+            + "        GROUP BY trunc_ts"
+            + "        ORDER BY trunc_ts) AS foo"
+            + "  GROUP BY trunc_ts";
+
+        bindIdx = 1;
+        stmt = con.prepareStatement(sql);
+        stmt.setTimestamp(bindIdx++, startTimestamp);
+        stmt.setTimestamp(bindIdx++, endTimestamp);
+
+        rs = stmt.executeQuery();
+        totalQueryTime = System.currentTimeMillis() - totalQueryTime;
+        totalProcessTime = System.currentTimeMillis();
+
+        // PROCESS EACH ROW
+        while (rs.next()) {
+            // GET RESULTS
+            eventDate = rs.getTimestamp(1);
+            //countA = rs.getLong(2) + rs.getLong(3);
+            countB = rs.getLong(2);
+            countC = rs.getLong(3);
+
+            // ALLOCATE COUNT TO EACH MINUTE WE WERE ALIVE EQUALLY
+            eventStart = (eventDate.getTime() / MINUTE_INTERVAL) * MINUTE_INTERVAL;
+            realStart = eventStart < startMinuteInMillis ? (long) 0 : eventStart - startMinuteInMillis;
+            startInterval = (int)(realStart / MINUTE_INTERVAL)/MINUTES_PER_BUCKET;
+            bucket = startInterval%BUCKETS;
+
+            // COMPUTE COUNTS IN INTERVALS
+            //countsA[bucket] += countA;
+            countsB[bucket] += countB;
+            countsC[bucket] += countC;
+        }
+        try { stmt.close(); } catch (SQLException x) { }
+
         // POST PROCESS: PRODUCE UNITS OF email/min, AVERAGED PER DAY, FROM emails PER BUCKET
         //double averageACount;
         double averageBCount;
