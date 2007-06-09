@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ $# -eq 0 ]; then
-    echo "usage: $0 [ mvvm | transform ]"
+    echo "usage: $0 [ uvm | node ]"
     exit 1
 fi
 
@@ -9,24 +9,24 @@ JAVA_HOME=${JAVA_HOME:-/usr/lib/jvm/java-1.5.0-sun}
 
 export JAVA_HOME
 
-mvvm_lib=../output/usr/share/metavize/lib
-third_lib=../output/usr/share/java/mvvm
-toolbox=../output/usr/share/metavize/toolbox
+uvm_lib=../output/usr/share/untangle/lib
+third_lib=../output/usr/share/java/uvm
+toolbox=../output/usr/share/untangle/toolbox
 
-for j in $mvvm_lib/*jar $third_lib/*jar $toolbox/*mar; do
+for j in $uvm_lib/*jar $third_lib/*jar $toolbox/*mar; do
     CLASSPATH="$j:$CLASSPATH"
 done
 
-mvvm_hbms=$(find ../mvvm/output/gensrc -name '*hbm.xml')
+uvm_hbms=$(find ../uvm/output/gensrc -name '*hbm.xml')
 
 for c in $@; do
-    if [ $c != "mvvm" ]; then
-        tran_hbms="$tran_hbms $(find ../tran/output/gensrc/$c -name '*hbm.xml')"
+    if [ $c != "uvm" ]; then
+        node_hbms="node_hbms $(find ../output/gensrc/$c -name '*hbm.xml')"
     fi
 done
 
-hibernate_props=../output/usr/share/metavize/conf/hibernate.properties
+hibernate_props=../output/usr/share/untangle/conf/hibernate.properties
 
 $JAVA_HOME/bin/java -cp "$CLASSPATH" \
     org.hibernate.tool.hbm2ddl.SchemaExport \
-    --properties="$hibernate_props" --text $mvvm_hbms $tran_hbms
+    --properties="$hibernate_props" --text $uvm_hbms $node_hbms

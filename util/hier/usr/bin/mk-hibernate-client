@@ -3,9 +3,9 @@
 unpacked=$(mktemp -d)
 closure=$(mktemp)
 
-(cd $unpacked && jar xf @THIRDPARTY_MVVM_LIB@/hibernate3.jar)
+(cd $unpacked && jar xf @THIRDPARTY_UVM_LIB@/hibernate3.jar)
 
-cat @MVVM_HOME@/buildutils/hibernate-client.list \
+cat @UVM_HOME@/buildutils/hibernate-client.list \
     | xargs @USR_BIN@/closure -cp $unpacked compute-closure \
     | grep hibernate \
     | sed -e 's|\.|/|g' -e 's/^\(.*\)$/\1.class/' \

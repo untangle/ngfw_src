@@ -180,16 +180,16 @@ ms = MoveSpec.new("#{SRC_HOME}/uvm/hier", FileList["#{SRC_HOME}/uvm/hier/**/*"],
 cf = CopyFiles.new(uvm, ms, 'hier', BuildEnv::SRC.filterset)
 uvm.registerTarget('hier', cf)
 
-BuildEnv::SRC.installTarget.installJars(jts, "#{uvm.distDirectory}/usr/share/metavize/lib",
+BuildEnv::SRC.installTarget.installJars(jts, "#{uvm.distDirectory}/usr/share/untangle/lib",
                            nil, false, true)
 
 BuildEnv::SRC.installTarget.installJars(Jars::Base, "#{uvm.distDirectory}/usr/share/java/uvm")
 
 BuildEnv::SRC.installTarget.installJars(Jars::Reporting, "#{uvm.distDirectory}/usr/share/java/reports")
 
-BuildEnv::SRC.installTarget.installDirs("#{uvm.distDirectory}/usr/share/metavize/toolbox")
+BuildEnv::SRC.installTarget.installDirs("#{uvm.distDirectory}/usr/share/untangle/toolbox")
 
-uvm_cacerts = "#{uvm.distDirectory}/usr/share/metavize/conf/cacerts"
+uvm_cacerts = "#{uvm.distDirectory}/usr/share/untangle/conf/cacerts"
 java_cacerts = "#{BuildEnv::JAVA_HOME}/jre/lib/security/cacerts"
 mv_ca = "#{SRC_HOME}/uvm/resources/mv-ca.pem"
 ut_ca = "#{SRC_HOME}/uvm/resources/ut-ca.pem"
@@ -210,7 +210,7 @@ if BuildEnv::SRC.isDevel
   BuildEnv::SRC.installTarget.installFiles('debian/control', "#{uvm.distDirectory}/tmp",
                               'pkg-list')
 
-  activationKey = "#{uvm.distDirectory}/usr/share/metavize/activation.key"
+  activationKey = "#{uvm.distDirectory}/usr/share/untangle/activation.key"
 
   ## Insert the activation key if necessary.  Done here to not include
   ## The file inside of packages

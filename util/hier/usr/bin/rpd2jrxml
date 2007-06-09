@@ -9,8 +9,8 @@ JAVA_HOME=${JAVA_HOME:-/usr/lib/jvm/java-1.5.0-sun}
 
 export JAVA_HOME
 
-third_lib=../output/usr/share/java/mvvm
-template_dir=../mvvm/resources/reports
+third_lib=../output/usr/share/java/uvm
+template_dir=../uvm/resources/reports
 
 for j in $third_lib/*jar; do
     CLASSPATH="$j:$CLASSPATH"

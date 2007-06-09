@@ -1,11 +1,11 @@
 # -*-ruby-*-
 
 jnetcap = BuildEnv::SRC['jnetcap']
-mvvm    = BuildEnv::SRC['mvvm']
+uvm    = BuildEnv::SRC['uvm']
 
 ## jnetcap
 j = JarTarget.buildTarget(jnetcap, Jars::Base, 'impl', "#{SRC_HOME}/jnetcap/impl" )
-BuildEnv::SRC.installTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib",
+BuildEnv::SRC.installTarget.installJars(j, "#{uvm.distDirectory}/usr/share/untangle/lib",
                            nil, false, true)
 
 headerClasses = [ 'com.untangle.jnetcap.Netcap',

@@ -2,12 +2,12 @@
 
 jvector = BuildEnv::SRC['jvector']
 jnetcap = BuildEnv::SRC['jnetcap']
-mvvm    = BuildEnv::SRC['mvvm']
+uvm    = BuildEnv::SRC['uvm']
 
 ## jvector
 deps = Jars::Base + [jnetcap['impl']]
 j = JarTarget.buildTarget(jvector, deps, 'impl', "#{SRC_HOME}/jvector/impl")
-BuildEnv::SRC.installTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib",
+BuildEnv::SRC.installTarget.installJars(j, "#{uvm.distDirectory}/usr/share/untangle/lib",
                            nil, false, true)
 
 headerClasses = [ 'com.untangle.jvector.OutgoingSocketQueue',

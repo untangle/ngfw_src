@@ -4,6 +4,6 @@ JAVA_HOME=${JAVA_HOME:-/usr/lib/jvm/java-1.5.0-sun}
 
 export JAVA_HOME
 
-CLASSPATH="@THIRDPARTY_MVVM_LIB@/bcel-5.2.jar:@MVVM_LIB@/buildutil-impl.jar"
+CLASSPATH="@THIRDPARTY_UVM_LIB@/bcel-5.2.jar:@UVM_LIB@/buildutil-impl.jar"
 
 $JAVA_HOME/bin/java -cp "$CLASSPATH" com.untangle.buildutil.Closure $@
