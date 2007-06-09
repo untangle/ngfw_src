@@ -10,7 +10,7 @@
  */
 
 
-package com.untangle.node.nat.gui;
+package com.untangle.node.router.gui;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -30,7 +30,7 @@ import com.untangle.uvm.client.UvmRemoteContextFactory;
 import com.untangle.uvm.networking.*;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
-import com.untangle.node.nat.*;
+import com.untangle.node.router.*;
 
 public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPanel {
 
@@ -58,8 +58,8 @@ public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPan
 
     private boolean baseGuiBuilt = false;
 
-    private static Nat natNode;
-    public static Nat getNatNode(){ return natNode; }
+    private static Router routerNode;
+    public static Router getRouterNode(){ return routerNode; }
     private SetupState currentSetupState;
     private SetupState previousSetupState;
 
@@ -101,7 +101,7 @@ public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPan
             // ADD BASIC STUFF IF WE WERENT PREVIOUSLY BASIC
             if(!SetupState.BASIC.equals(previousSetupState)){
                 // NAT ///////////////
-                NatJPanel natJPanel = new NatJPanel(this);
+                RouterJPanel natJPanel = new RouterJPanel(this);
                 addScrollableTab(0, null, NAME_NAT, null, natJPanel, false, true);
                 addSavable(NAME_NAT, natJPanel);
                 addRefreshable(NAME_NAT, natJPanel);
@@ -273,7 +273,7 @@ public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPan
         /* Load the current networking configuration, this is used in validation, this is here
          * because it is a remote call. [RBS, per recommendation of inieves] */
         BasicNetworkSettings basicNetworkSettings = Util.getNetworkManager().getBasicSettings();
-        ((NatCommonSettings)settings).setNetworkSettings(basicNetworkSettings);
+        ((RouterCommonSettings)settings).setNetworkSettings(basicNetworkSettings);
 
         UvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
         super.saveAll();
@@ -285,10 +285,10 @@ public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPan
         host = basicNetworkSettings.host();
         dhcpEnabled = basicNetworkSettings.isDhcpEnabled();
         super.refreshAll();
-        ipDBMatcherList = ((NatCommonSettings)settings).getLocalMatcherList();
+        ipDBMatcherList = ((RouterCommonSettings)settings).getLocalMatcherList();
         previousSetupState = currentSetupState;
-        currentSetupState = ((NatCommonSettings)settings).getSetupState();
-        natNode = (Nat) mNodeJPanel.getNode();
+        currentSetupState = ((RouterCommonSettings)settings).getSetupState();
+        routerNode = (Router) mNodeJPanel.getNode();
         if(SetupState.ADVANCED.equals( currentSetupState )){
             networkSpaceList = ((NetworkSpacesSettings)settings).getNetworkSpaceList();
         }

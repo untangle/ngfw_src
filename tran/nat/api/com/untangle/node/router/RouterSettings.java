@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 /**
- * Settings for the Nat node in simple mode.
+ * Settings for the Router node in simple mode.
  */
-public interface NatSettings extends NatBasicSettings
+public interface RouterSettings extends RouterBasicSettings
 {
 }

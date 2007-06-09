@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -26,12 +26,12 @@ import com.untangle.node.token.TokenException;
 import com.untangle.node.token.TokenResult;
 import org.apache.log4j.Logger;
 
-class NatFtpHandler extends FtpStateMachine
+class RouterFtpHandler extends FtpStateMachine
 {
     private final Logger logger = Logger.getLogger( this.getClass());
-    private final NatImpl node;
-    private final NatSessionManager sessionManager;
-    private NatSessionData sessionData;
+    private final RouterImpl node;
+    private final RouterSessionManager sessionManager;
+    private RouterSessionData sessionData;
 
     private boolean receivedPortCommand                = false;
     private SessionRedirect portCommandSessionRedirect = null;
@@ -42,7 +42,7 @@ class NatFtpHandler extends FtpStateMachine
     private static final TokenResult ERROR_REPLY = new TokenResult( new Token[] { FtpReply.makeReply( 500, "Syntax error, command unrecognized") }, null );
     private static final TokenResult SYNTAX_REPLY = new TokenResult( new Token[] { FtpReply.makeReply( 501, "Syntax error in parameters or arguments") }, null );
 
-    NatFtpHandler( TCPSession session, NatImpl node )
+    RouterFtpHandler( TCPSession session, RouterImpl node )
     {
         super(session);
 

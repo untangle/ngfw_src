@@ -1,2 +1,2 @@
-com.untangle.node.nat.NatSettingsImpl
-com.untangle.node.nat.RedirectEvent
+com.untangle.node.router.RouterSettingsImpl
+com.untangle.node.router.RedirectEvent

@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import com.untangle.uvm.node.Node;
 
-class NatConstants
+class RouterConstants
 {
     static final int BLOCK_COUNTER = Node.GENERIC_0_COUNTER;
     static final int NAT_COUNTER   = Node.GENERIC_1_COUNTER;

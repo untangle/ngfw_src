@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat.reports;
+package com.untangle.node.router.reports;
 
 import java.sql.*;
 
@@ -17,11 +17,11 @@ import com.untangle.uvm.reporting.BaseSummarizer;
 import com.untangle.uvm.reporting.Util;
 import org.apache.log4j.Logger;
 
-public class NatSummarizer extends BaseSummarizer {
+public class RouterSummarizer extends BaseSummarizer {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public NatSummarizer() { }
+    public RouterSummarizer() { }
 
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {

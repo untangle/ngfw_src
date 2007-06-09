@@ -10,7 +10,7 @@
  */
 
 
-package com.untangle.node.nat.gui;
+package com.untangle.node.router.gui;
 
 import java.awt.Insets;
 import java.util.*;
@@ -24,7 +24,7 @@ import com.untangle.gui.widgets.editTable.*;
 import com.untangle.uvm.*;
 import com.untangle.uvm.networking.*;
 import com.untangle.uvm.node.*;
-import com.untangle.node.nat.*;
+import com.untangle.node.router.*;
 
 public class SpaceListJPanel extends MEditTableJPanel {
 

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,7 +21,7 @@ import com.untangle.uvm.logging.SyslogBuilder;
 import com.untangle.uvm.logging.SyslogPriority;
 
 /**
- * Log event for a Nat statistics.
+ * Log event for a Router statistics.
  *
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
@@ -29,7 +29,7 @@ import com.untangle.uvm.logging.SyslogPriority;
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
     @Table(name="tr_nat_statistic_evt", schema="events")
-    public class NatStatisticEvent extends StatisticEvent
+    public class RouterStatisticEvent extends StatisticEvent
     {
         /* Number of outbound nat sessions */
         private int natSessions           = 0;
@@ -42,9 +42,9 @@ import com.untangle.uvm.logging.SyslogPriority;
         private int dmzSessions           = 0;
 
         // Constructors
-        public NatStatisticEvent() {}
+        public RouterStatisticEvent() {}
 
-        public NatStatisticEvent( int natSessions, int tcpIncomingRedirects, int tcpOutgoingRedirects,
+        public RouterStatisticEvent( int natSessions, int tcpIncomingRedirects, int tcpOutgoingRedirects,
                                   int udpIncomingRedirects,  int udpOutgoingRedirects,
                                   int icmpIncomingRedirects, int icmpOutgoingRedirects,
                                   int dmzSessions )
@@ -65,17 +65,17 @@ import com.untangle.uvm.logging.SyslogPriority;
          * @return Number of natted connections since the last log event
          */
         @Column(name="nat_sessions", nullable=false)
-        public int getNatSessions()
+        public int getRouterSessions()
         {
             return natSessions;
         }
 
-        public void setNatSessions( int natSessions )
+        public void setRouterSessions( int natSessions )
         {
             this.natSessions = natSessions;
         }
 
-        public void incrNatSessions()
+        public void incrRouterSessions()
         {
             this.natSessions++;
         }

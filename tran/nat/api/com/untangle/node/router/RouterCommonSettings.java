@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import java.io.Serializable;
 
@@ -26,7 +26,7 @@ import com.untangle.uvm.node.HostName;
 import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 
-public interface NatCommonSettings extends ServicesSettings, Validatable
+public interface RouterCommonSettings extends ServicesSettings, Validatable
 {
     // !!!!! private static final long serialVersionUID = 4349679825783697834L;
 

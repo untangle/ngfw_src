@@ -9,26 +9,26 @@
  * $Id$
  */
 
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import com.untangle.uvm.node.IPaddr;
 
-public interface NatBasicSettings extends NatCommonSettings
+public interface RouterBasicSettings extends RouterCommonSettings
 {
     /** Get whether or not nat is enabled. */
-    public boolean getNatEnabled();
+    public boolean getRouterEnabled();
 
-    public void setNatEnabled( boolean newValue );
+    public void setRouterEnabled( boolean newValue );
 
     /** Get the base of the internal address. */
-    public IPaddr getNatInternalAddress();
+    public IPaddr getRouterInternalAddress();
 
-    public void setNatInternalAddress( IPaddr newValue );
+    public void setRouterInternalAddress( IPaddr newValue );
 
     /** Get the subnet of the internal addresses. */
-    public IPaddr getNatInternalSubnet();
+    public IPaddr getRouterInternalSubnet();
 
-    public void setNatInternalSubnet( IPaddr newValue );
+    public void setRouterInternalSubnet( IPaddr newValue );
 
     /**  Get whether or not DMZ is being used. */
     public boolean getDmzEnabled();

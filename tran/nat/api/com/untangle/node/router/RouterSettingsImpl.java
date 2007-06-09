@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -44,14 +44,14 @@ import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 
 /**
- * Settings for the Nat node.
+ * Settings for the Router node.
  *
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
 @Entity
 @Table(name="tr_nat_settings", schema="settings")
-public class NatSettingsImpl implements Validatable, NatSettings, Serializable
+public class RouterSettingsImpl implements Validatable, RouterSettings, Serializable
 {
     private static final long serialVersionUID = 4691775205493112137L;
 
@@ -60,7 +60,7 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
 
     private SetupState setupState = SetupState.BASIC;
 
-    /* Nat Settings */
+    /* Router Settings */
     private boolean natEnabled = false;
     private IPaddr  natInternalAddress;
     private IPaddr  natInternalSubnet;
@@ -95,19 +95,19 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
 
     private final List localMatcherList;
 
-    private NatSettingsImpl()
+    private RouterSettingsImpl()
     {
-        this.localMatcherList = NatUtil.getInstance()
+        this.localMatcherList = RouterUtil.getInstance()
             .getEmptyLocalMatcherList();
     }
 
-    public NatSettingsImpl(Tid tid, SetupState setupState,
+    public RouterSettingsImpl(Tid tid, SetupState setupState,
                            List localMatcherList)
     {
         this.tid = tid;
         this.setupState = setupState;
         if ( localMatcherList == null ) {
-            localMatcherList = NatUtil.getInstance().getEmptyLocalMatcherList();
+            localMatcherList = RouterUtil.getInstance().getEmptyLocalMatcherList();
         }
         this.localMatcherList = Collections.unmodifiableList(localMatcherList);
     }
@@ -171,12 +171,12 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
      * @return is NAT is being used.
      */
     @Column(name="nat_enabled", nullable=false)
-    public boolean getNatEnabled()
+    public boolean getRouterEnabled()
     {
         return natEnabled;
     }
 
-    public void setNatEnabled( boolean enabled )
+    public void setRouterEnabled( boolean enabled )
     {
         natEnabled = enabled;
     }
@@ -188,7 +188,7 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
      */
     @Column(name="nat_internal_addr")
     @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getNatInternalAddress()
+    public IPaddr getRouterInternalAddress()
     {
         if (this.natInternalAddress == null) {
             this.natInternalAddress = NetworkUtil.EMPTY_IPADDR;
@@ -196,7 +196,7 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
         return natInternalAddress;
     }
 
-    public void setNatInternalAddress( IPaddr addr )
+    public void setRouterInternalAddress( IPaddr addr )
     {
         if ( addr == null ) addr = NetworkUtil.EMPTY_IPADDR;
         natInternalAddress = addr;
@@ -209,7 +209,7 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
      */
     @Column(name="nat_internal_subnet")
     @Type(type="com.untangle.uvm.type.IPaddrUserType")
-    public IPaddr getNatInternalSubnet()
+    public IPaddr getRouterInternalSubnet()
     {
         if (this.natInternalSubnet == null) {
             this.natInternalSubnet = NetworkUtil.EMPTY_IPADDR;
@@ -217,7 +217,7 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
         return natInternalSubnet;
     }
 
-    public void setNatInternalSubnet( IPaddr addr )
+    public void setRouterInternalSubnet( IPaddr addr )
     {
         if ( addr == null ) addr = NetworkUtil.EMPTY_IPADDR;
         this.natInternalSubnet = addr;
@@ -297,24 +297,24 @@ public class NatSettingsImpl implements Validatable, NatSettings, Serializable
     @Transient
     public List getGlobalRedirectList()
     {
-        return NatUtil.getInstance().getGlobalRedirectList( getRedirectList());
+        return RouterUtil.getInstance().getGlobalRedirectList( getRedirectList());
     }
 
     public void setGlobalRedirectList( List newValue )
     {
-        setRedirectList(NatUtil.getInstance().setGlobalRedirectList(getRedirectList(), newValue));
+        setRedirectList(RouterUtil.getInstance().setGlobalRedirectList(getRedirectList(), newValue));
     }
 
     /* All of the local redirects go at the bottom of the list */
     @Transient
     public List getLocalRedirectList()
     {
-        return NatUtil.getInstance().getLocalRedirectList( getRedirectList());
+        return RouterUtil.getInstance().getLocalRedirectList( getRedirectList());
     }
 
     public void setLocalRedirectList( List newValue )
     {
-        setRedirectList(NatUtil.getInstance().setLocalRedirectList(getRedirectList(), newValue));
+        setRedirectList(RouterUtil.getInstance().setLocalRedirectList(getRedirectList(), newValue));
     }
 
     /**

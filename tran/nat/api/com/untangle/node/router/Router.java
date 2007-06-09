@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 
 import com.untangle.uvm.logging.EventManager;
@@ -17,10 +17,10 @@ import com.untangle.uvm.node.Node;
 
 import com.untangle.uvm.networking.SetupState;
 
-public interface Nat extends Node
+public interface Router extends Node
 {
-    public NatCommonSettings getNatSettings();
-    public void setNatSettings( NatCommonSettings settings ) throws Exception;
+    public RouterCommonSettings getRouterSettings();
+    public void setRouterSettings( RouterCommonSettings settings ) throws Exception;
 
     public SetupState getSetupState();
 

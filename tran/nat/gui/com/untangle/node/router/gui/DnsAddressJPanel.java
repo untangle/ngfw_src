@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat.gui;
+package com.untangle.node.router.gui;
 
 
 import java.util.*;
@@ -23,7 +23,7 @@ import com.untangle.gui.widgets.editTable.*;
 import com.untangle.uvm.networking.DnsStaticHostRule;
 import com.untangle.uvm.node.*;
 import com.untangle.uvm.node.firewall.*;
-import com.untangle.node.nat.*;
+import com.untangle.node.router.*;
 
 public class DnsAddressJPanel extends MEditTableJPanel{
 
@@ -74,7 +74,7 @@ public class DnsAddressJPanel extends MEditTableJPanel{
         }
 
         public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-            NatCommonSettings natSettings = (NatCommonSettings) settings;
+            RouterCommonSettings routerSettings = (RouterCommonSettings) settings;
             List elemList = new ArrayList(tableVector.size());
             DnsStaticHostRule newElem = null;
             int rowIndex = 0;
@@ -93,14 +93,14 @@ public class DnsAddressJPanel extends MEditTableJPanel{
 
             // SAVE SETTINGS ////////
             if( !validateOnly ){
-                natSettings.setDnsStaticHostList( elemList );
+                routerSettings.setDnsStaticHostList( elemList );
             }
         }
 
 
         public Vector<Vector> generateRows(Object settings) {
-            NatCommonSettings natSettings = (NatCommonSettings) settings;
-            List<DnsStaticHostRule> dnsStaticHostList = (List<DnsStaticHostRule>) natSettings.getDnsStaticHostList();
+            RouterCommonSettings routerSettings = (RouterCommonSettings) settings;
+            List<DnsStaticHostRule> dnsStaticHostList = (List<DnsStaticHostRule>) routerSettings.getDnsStaticHostList();
             Vector<Vector> allRows = new Vector<Vector>(dnsStaticHostList.size());
             Vector tempRow = null;
             int rowIndex = 0;

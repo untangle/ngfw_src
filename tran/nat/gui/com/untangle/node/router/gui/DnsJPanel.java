@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat.gui;
+package com.untangle.node.router.gui;
 
 
 import java.awt.*;
@@ -17,7 +17,7 @@ import java.awt.*;
 import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
 import com.untangle.uvm.node.*;
-import com.untangle.node.nat.*;
+import com.untangle.node.router.*;
 
 
 public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
@@ -58,10 +58,10 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Re
 
         // SAVE SETTINGS  ////////////////////////////////////
         if( !validateOnly ){
-            NatCommonSettings natSettings = (NatCommonSettings) settings;
-            natSettings.setDnsEnabled( dnsEnabled );
+            RouterCommonSettings routerSettings = (RouterCommonSettings) settings;
+            routerSettings.setDnsEnabled( dnsEnabled );
             if( dnsEnabled ){
-                natSettings.setDnsLocalDomain( dnsLocalDomain );
+                routerSettings.setDnsLocalDomain( dnsLocalDomain );
             }
         }
 
@@ -71,10 +71,10 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Re
     String dnsLocalDomainCurrent;
 
     public void doRefresh(Object settings) {
-        NatCommonSettings natSettings = (NatCommonSettings) settings;
+        RouterCommonSettings routerSettings = (RouterCommonSettings) settings;
 
         // ENABLED ///////////
-        dnsEnabledCurrent = natSettings.getDnsEnabled();
+        dnsEnabledCurrent = routerSettings.getDnsEnabled();
         setDnsEnabledDependency( dnsEnabledCurrent );
         if( dnsEnabledCurrent )
             dnsMasqEnabledJRadioButton.setSelected(true);
@@ -82,7 +82,7 @@ public class DnsJPanel extends javax.swing.JPanel implements Savable<Object>, Re
             dnsMasqDisabledJRadioButton.setSelected(true);
 
         // LOCAL DOMAIN /////
-        dnsLocalDomainCurrent = natSettings.getDnsLocalDomain().toString();
+        dnsLocalDomainCurrent = routerSettings.getDnsLocalDomain().toString();
         suffixJTextField.setText( dnsLocalDomainCurrent );
     }
 

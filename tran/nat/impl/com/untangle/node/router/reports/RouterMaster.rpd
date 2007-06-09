@@ -3,5 +3,5 @@ REPORT_NAME=NatMaster
 REPORT_TITLE=Router - Summary
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
-SUBREPORT_1=reports/NatDmzSummary.jasper
-SUBREPORT_2=reports/NatRedirectSummary.jasper
+SUBREPORT_1=reports/RouterDmzSummary.jasper
+SUBREPORT_2=reports/RouterRedirectSummary.jasper

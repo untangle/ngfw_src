@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat.gui;
+package com.untangle.node.router.gui;
 
 
 import java.util.*;
@@ -23,7 +23,7 @@ import com.untangle.gui.widgets.editTable.*;
 import com.untangle.uvm.networking.DhcpLeaseRule;
 import com.untangle.uvm.node.*;
 import com.untangle.uvm.node.firewall.*;
-import com.untangle.node.nat.*;
+import com.untangle.node.router.*;
 
 public class DhcpAddressJPanel extends MEditTableJPanel{
 
@@ -84,7 +84,7 @@ public class DhcpAddressJPanel extends MEditTableJPanel{
 
 
         public void generateSettings(Object settings, Vector<Vector> tableVector, boolean validateOnly) throws Exception {
-            NatCommonSettings natSettings = (NatCommonSettings) settings;
+            RouterCommonSettings routerSettings = (RouterCommonSettings) settings;
             List elemList = new ArrayList(tableVector.size());
             DhcpLeaseRule newElem = null;
             int rowIndex = 0;
@@ -103,15 +103,15 @@ public class DhcpAddressJPanel extends MEditTableJPanel{
 
             // SAVE SETTINGS ////////
             if( !validateOnly ){
-                natSettings.setDhcpLeaseList(elemList);
+                routerSettings.setDhcpLeaseList(elemList);
             }
         }
 
 
 
         public Vector<Vector> generateRows(Object settings) {
-            NatCommonSettings natSettings = (NatCommonSettings) settings;
-            List<DhcpLeaseRule> dhcpLeaseList = (List<DhcpLeaseRule>) natSettings.getDhcpLeaseList();
+            RouterCommonSettings routerSettings = (RouterCommonSettings) settings;
+            List<DhcpLeaseRule> dhcpLeaseList = (List<DhcpLeaseRule>) routerSettings.getDhcpLeaseList();
             Vector<Vector> allRows = new Vector<Vector>(dhcpLeaseList.size());
             Vector tempRow = null;
             int rowIndex = 0;

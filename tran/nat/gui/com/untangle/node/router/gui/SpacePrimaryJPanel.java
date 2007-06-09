@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat.gui;
+package com.untangle.node.router.gui;
 
 import java.awt.Color;
 import java.util.List;
@@ -19,7 +19,7 @@ import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
 import com.untangle.uvm.networking.*;
 import com.untangle.uvm.node.*;
-import com.untangle.node.nat.*;
+import com.untangle.node.router.*;
 
 
 public class SpacePrimaryJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {

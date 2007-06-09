@@ -9,24 +9,24 @@
  * $Id$
  */
 
-package com.untangle.node.nat.gui;
+package com.untangle.node.router.gui;
 
 import java.awt.*;
 
 import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
 import com.untangle.uvm.node.IPaddr;
-import com.untangle.node.nat.*;
+import com.untangle.node.router.*;
 
 
-public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
+public class RouterJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
 
     private static final String EXCEPTION_INTERNAL_ADDRESS = "The Internal IP address must be a valid IP address.";
     private static final String EXCEPTION_INTERNAL_SUBNET = "The Internal Subnet must be a valid IP address.";
 
     private MNodeControlsJPanel mNodeControlsJPanel;
 
-    public NatJPanel(MNodeControlsJPanel mNodeControlsJPanel) {
+    public RouterJPanel(MNodeControlsJPanel mNodeControlsJPanel) {
         this.mNodeControlsJPanel = mNodeControlsJPanel;
         initComponents();
         Util.addPanelFocus(this, natEnabledJRadioButton);
@@ -74,11 +74,11 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
 
         // SAVE THE VALUES ////////////////////////////////////
         if( !validateOnly ){
-            NatBasicSettings natSettings = (NatBasicSettings) settings;
-            natSettings.setNatEnabled( natEnabled );
+            RouterBasicSettings routerSettings = (RouterBasicSettings) settings;
+            routerSettings.setRouterEnabled( natEnabled );
             if( natEnabled ){
-                natSettings.setNatInternalAddress( natInternalAddress );
-                natSettings.setNatInternalSubnet( natInternalSubnet );
+                routerSettings.setRouterInternalAddress( natInternalAddress );
+                routerSettings.setRouterInternalSubnet( natInternalSubnet );
             }
         }
 
@@ -92,28 +92,28 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
     boolean isDhcpEnabledCurrent;
 
     public void doRefresh(Object settings) {
-        NatBasicSettings natSettings = (NatBasicSettings) settings;
+        RouterBasicSettings routerSettings = (RouterBasicSettings) settings;
 
         // ENABLED ///////////
-        natEnabledCurrent = natSettings.getNatEnabled();
-        this.setNatEnabledDependency(natEnabledCurrent);
+        natEnabledCurrent = routerSettings.getRouterEnabled();
+        this.setRouterEnabledDependency(natEnabledCurrent);
         if( natEnabledCurrent )
             natEnabledJRadioButton.setSelected(true);
         else
             natDisabledJRadioButton.setSelected(true);
 
         // INTERNAL ADDRESS //////
-        natInternalAddressCurrent = natSettings.getNatInternalAddress().toString();
+        natInternalAddressCurrent = routerSettings.getRouterInternalAddress().toString();
         internalAddressIPaddrJTextField.setText( natInternalAddressCurrent );
         internalAddressIPaddrJTextField.setBackground( Color.WHITE );
 
         // INTERNAL SUBNET ///////
-        natInternalSubnetCurrent  = natSettings.getNatInternalSubnet().toString();
+        natInternalSubnetCurrent  = routerSettings.getRouterInternalSubnet().toString();
         internalSubnetIPaddrJTextField.setText( natInternalSubnetCurrent );
         internalSubnetIPaddrJTextField.setBackground( Color.WHITE );
 
         // INTERNAL NETWORK ///////
-        natInternalNetworkCurrent = IPaddr.and(natSettings.getNatInternalAddress(), natSettings.getNatInternalSubnet()).toString();
+        natInternalNetworkCurrent = IPaddr.and(routerSettings.getRouterInternalAddress(), routerSettings.getRouterInternalSubnet()).toString();
         internalNetworkJLabel.setText( natInternalNetworkCurrent );
 
         // EXTERNAL ADDRESS ///////
@@ -424,18 +424,18 @@ public class NatJPanel extends javax.swing.JPanel implements Savable<Object>, Re
     }//GEN-LAST:event_internalAddressIPaddrJTextFieldCaretUpdate
 
     private void natDisabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_natDisabledJRadioButtonActionPerformed
-        this.setNatEnabledDependency(false);
+        this.setRouterEnabledDependency(false);
         if( natEnabledCurrent && (settingsChangedListener != null) )
             settingsChangedListener.settingsChanged(this);
     }//GEN-LAST:event_natDisabledJRadioButtonActionPerformed
 
     private void natEnabledJRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_natEnabledJRadioButtonActionPerformed
-        this.setNatEnabledDependency(true);
+        this.setRouterEnabledDependency(true);
         if( !natEnabledCurrent && (settingsChangedListener != null) )
             settingsChangedListener.settingsChanged(this);
     }//GEN-LAST:event_natEnabledJRadioButtonActionPerformed
 
-    private void setNatEnabledDependency(boolean enabled){
+    private void setRouterEnabledDependency(boolean enabled){
         internalAddressIPaddrJTextField.setEnabled( enabled );
         internalAddressJLabel.setEnabled( enabled );
         internalSubnetIPaddrJTextField.setEnabled( enabled );

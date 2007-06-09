@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import java.io.Serializable;
 import javax.persistence.Column;

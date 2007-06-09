@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.SimpleEventFilter;
 
-public class NatRedirectFilter implements SimpleEventFilter<LogEvent>
+public class RouterRedirectFilter implements SimpleEventFilter<LogEvent>
 {
     private static final RepositoryDesc REPO_DESC = new RepositoryDesc("NAT Redirect Events");
 

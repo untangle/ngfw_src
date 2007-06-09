@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat.gui;
+package com.untangle.node.router.gui;
 
 import java.awt.Window;
 import javax.swing.*;
@@ -19,7 +19,7 @@ import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.dialogs.*;
 import com.untangle.uvm.client.UvmRemoteContextFactory;
 import com.untangle.uvm.networking.*;
-import com.untangle.node.nat.*;
+import com.untangle.node.router.*;
 
 public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Object> {
 
@@ -31,7 +31,7 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
     }
 
     public void doRefresh(Object settings){
-        SetupState setupState = ((NatCommonSettings)settings).getSetupState();
+        SetupState setupState = ((RouterCommonSettings)settings).getSetupState();
         if( SetupState.ADVANCED.equals(setupState) ){
             statusJLabel.setText("Advanced (Net Spaces & Routing)");
             advancedJButton.setEnabled(false);
@@ -209,7 +209,7 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
                                                                      + "<b>Your GUI may be logged out.</b>", "Router Warning", "Router Warning");
         proceedJDialog.setVisible(true);
         if( proceedJDialog.isProceeding() )
-            new NatModeResetThread(false);
+            new RouterModeResetThread(false);
         standardJButton.setEnabled(true);
     }//GEN-LAST:event_standardJButtonActionPerformed
 
@@ -223,15 +223,15 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
                                                                      + "without losing your converted settings.</b>", "Router Warning", "Router Warning");
         proceedJDialog.setVisible(true);
         if( proceedJDialog.isProceeding() )
-            new NatModeResetThread(true);
+            new RouterModeResetThread(true);
         advancedJButton.setEnabled(true);
     }//GEN-LAST:event_advancedJButtonActionPerformed
 
 
-    private class NatModeResetThread extends Thread{
+    private class RouterModeResetThread extends Thread{
         private boolean isAdvanced;
         private MProgressJDialog progressJDialog;
-        public NatModeResetThread(boolean isAdvanced){
+        public RouterModeResetThread(boolean isAdvanced){
             setDaemon(true);
             this.isAdvanced = isAdvanced;
             mNodeControlsJPanel.getInfiniteProgressJComponent().start("Reconfiguring...");
@@ -250,13 +250,13 @@ public class AdvancedJPanel extends javax.swing.JPanel implements Refreshable<Ob
             */
 
             try{
-                Nat natNode = com.untangle.node.nat.gui.MNodeControlsJPanel.getNatNode();
+                Router routerNode = com.untangle.node.router.gui.MNodeControlsJPanel.getRouterNode();
                 int previousTimeout = UvmRemoteContextFactory.factory().getTimeout();
                 UvmRemoteContextFactory.factory().setTimeout(Util.RECONFIGURE_NETWORK_TIMEOUT_MILLIS);
                 if( isAdvanced )
-                    natNode.switchToAdvanced();
+                    routerNode.switchToAdvanced();
                 else
-                    natNode.resetBasic();
+                    routerNode.resetBasic();
                 UvmRemoteContextFactory.factory().setTimeout(previousTimeout);
             }
             catch(Exception e){

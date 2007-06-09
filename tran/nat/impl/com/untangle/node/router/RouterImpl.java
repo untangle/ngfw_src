@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import java.net.InetAddress;
 import java.util.LinkedList;
@@ -53,12 +53,12 @@ import com.untangle.uvm.util.DataSaver;
 import com.untangle.node.token.TokenAdaptor;
 import org.apache.log4j.Logger;
 
-public class NatImpl extends AbstractNode implements Nat
+public class RouterImpl extends AbstractNode implements Nat
 {
-    private final NatEventHandler handler;
-    private final NatSessionManager sessionManager;
+    private final RouterEventHandler handler;
+    private final RouterSessionManager sessionManager;
     private final SettingsManager settingsManager;
-    final NatStatisticManager statisticManager;
+    final RouterStatisticManager statisticManager;
     private final DhcpMonitor dhcpMonitor;
     /* Done with an inner class so the GUI doesn't freak out about not
      * having the NetworkSettingsListener class */
@@ -78,13 +78,13 @@ public class NatImpl extends AbstractNode implements Nat
      * spaces are not turned on at startup. */
     private boolean isUpgrade = false;
 
-    private final Logger logger = Logger.getLogger( NatImpl.class );
+    private final Logger logger = Logger.getLogger( RouterImpl.class );
 
-    public NatImpl()
+    public RouterImpl()
     {
-        this.handler          = new NatEventHandler(this);
-        this.sessionManager   = new NatSessionManager(this);
-        this.statisticManager = new NatStatisticManager(getNodeContext());
+        this.handler          = new RouterEventHandler(this);
+        this.sessionManager   = new RouterSessionManager(this);
+        this.statisticManager = new RouterStatisticManager(getNodeContext());
         this.settingsManager  = new SettingsManager();
         this.dhcpMonitor      = new DhcpMonitor( this, UvmContextFactory.context());
         this.listener         = new SettingsListener();
@@ -98,7 +98,7 @@ public class NatImpl extends AbstractNode implements Nat
 
         /* This subscription has to evaluate after NAT */
         natFtpPipeSpec = new SoloPipeSpec
-            ("nat-ftp", this, new TokenAdaptor(this, new NatFtpFactory(this)),
+            ("nat-ftp", this, new TokenAdaptor(this, new RouterFtpFactory(this)),
              Fitting.FTP_TOKENS, Affinity.SERVER, 0);
 
         pipeSpecs = new SoloPipeSpec[] { natPipeSpec, natFtpPipeSpec };
@@ -106,11 +106,11 @@ public class NatImpl extends AbstractNode implements Nat
         NodeContext tctx = getNodeContext();
         eventLogger = EventLoggerFactory.factory().getEventLogger(tctx);
 
-        SimpleEventFilter ef = new NatRedirectFilter();
+        SimpleEventFilter ef = new RouterRedirectFilter();
         eventLogger.addSimpleEventFilter(ef);
     }
 
-    public NatCommonSettings getNatSettings()
+    public RouterCommonSettings getRouterSettings()
     {
         /* Get the settings from Network Spaces (The only state in the node is the setup state) */
         LocalNetworkManager nm = getNetworkManager();
@@ -122,13 +122,13 @@ public class NatImpl extends AbstractNode implements Nat
         ServicesInternalSettings servicesInternal = nm.getServicesInternalSettings();
 
         if ( state.equals( SetupState.BASIC )) {
-            NatCommonSettings common = settingsManager.
+            RouterCommonSettings common = settingsManager.
                 toBasicSettings( this.getTid(), networkInternal, servicesInternal );
 
             nm.updateLeases( common );
             return common;
         } else if ( state.equals( SetupState.ADVANCED )) {
-            NatCommonSettings common =
+            RouterCommonSettings common =
                 settingsManager.toAdvancedSettings( network, networkInternal, servicesInternal );
 
             nm.updateLeases( common );
@@ -140,7 +140,7 @@ public class NatImpl extends AbstractNode implements Nat
         return settingsManager.toBasicSettings( this.getTid(), networkInternal, servicesInternal );
     }
 
-    public void setNatSettings( NatCommonSettings settings ) throws Exception
+    public void setRouterSettings( RouterCommonSettings settings ) throws Exception
     {
         /* Remove all of the non-static addresses before saving */
 
@@ -164,10 +164,10 @@ public class NatImpl extends AbstractNode implements Nat
             SetupState state = settings.getSetupState();
             if ( state.equals( SetupState.BASIC )) {
                 newNetworkSettings = this.settingsManager.
-                    toNetworkSettings( networkSettings, (NatBasicSettings)settings );
+                    toNetworkSettings( networkSettings, (RouterBasicSettings)settings );
             } else if ( state.equals( SetupState.ADVANCED )) {
                 newNetworkSettings = this.settingsManager.
-                    toNetworkSettings( networkSettings, (NatAdvancedSettings)settings );
+                    toNetworkSettings( networkSettings, (RouterAdvancedSettings)settings );
             } else {
                 throw new Exception( "Illegal setup state: " + state );
             }
@@ -244,17 +244,17 @@ public class NatImpl extends AbstractNode implements Nat
 
     // package protected methods ----------------------------------------------
 
-    NatEventHandler getHandler()
+    RouterEventHandler getHandler()
     {
         return handler;
     }
 
-    MPipe getNatMPipe()
+    MPipe getRouterMPipe()
     {
         return natPipeSpec.getMPipe();
     }
 
-    MPipe getNatFtpPipeSpec()
+    MPipe getRouterFtpPipeSpec()
     {
         return natFtpPipeSpec.getMPipe();
     }
@@ -271,7 +271,7 @@ public class NatImpl extends AbstractNode implements Nat
     {
         logger.info("Initializing Settings...");
 
-        NatBasicSettings settings = settingsManager.getDefaultSettings( this.getTid());
+        RouterBasicSettings settings = settingsManager.getDefaultSettings( this.getTid());
 
         /* Disable everything */
 
@@ -279,11 +279,11 @@ public class NatImpl extends AbstractNode implements Nat
         dhcpMonitor.stop();
 
         try {
-            setNatSettings( settings );
+            setRouterSettings( settings );
             // Handler doesn't need to be deconfigured at initialization.
             // handler.deconfigure();
         } catch( Exception e ) {
-            logger.error( "Unable to set Nat Settings", e );
+            logger.error( "Unable to set Router Settings", e );
         }
 
         /* Stop the statistics manager */
@@ -301,10 +301,10 @@ public class NatImpl extends AbstractNode implements Nat
         UvmContextFactory.context().localPhoneBook().registerAssistant( this.assistant );
 
         /* Check if the settings have been upgraded yet */
-        DataLoader<NatSettingsImpl> natLoader = new DataLoader<NatSettingsImpl>( "NatSettingsImpl",
+        DataLoader<RouterSettingsImpl> natLoader = new DataLoader<RouterSettingsImpl>( "RouterSettingsImpl",
                                                                                  getNodeContext());
 
-        NatSettingsImpl settings = natLoader.loadData();
+        RouterSettingsImpl settings = natLoader.loadData();
 
         if ( settings == null ) {
 
@@ -317,7 +317,7 @@ public class NatImpl extends AbstractNode implements Nat
 
                 /* Save the new Settings */
                 try {
-                    setNatSettings( settings );
+                    setRouterSettings( settings );
                 } catch ( Exception e ) {
                     logger.error( "Unable to set upgrade nat settings", e );
                 }
@@ -338,7 +338,7 @@ public class NatImpl extends AbstractNode implements Nat
             if ( this.isUpgrade ) {
                 /* Change to basic mode */
                 settings.setSetupState( SetupState.BASIC );
-                DataSaver<NatSettingsImpl> dataSaver = new DataSaver<NatSettingsImpl>( getNodeContext());
+                DataSaver<RouterSettingsImpl> dataSaver = new DataSaver<RouterSettingsImpl>( getNodeContext());
                 dataSaver.saveData( settings );
             }
         }
@@ -458,10 +458,10 @@ public class NatImpl extends AbstractNode implements Nat
     }
 
 
-    private void updateToCurrent( NatSettings settings )
+    private void updateToCurrent( RouterSettings settings )
     {
         if (settings == null) {
-            logger.error("NULL Nat Settings");
+            logger.error("NULL Router Settings");
         } else {
             logger.info( "Update Settings Complete" );
         }
@@ -482,12 +482,12 @@ public class NatImpl extends AbstractNode implements Nat
 
     public Object getSettings()
     {
-        return getNatSettings();
+        return getRouterSettings();
     }
 
     public void setSettings(Object settings) throws Exception
     {
-        setNatSettings((NatCommonSettings)settings);
+        setRouterSettings((RouterCommonSettings)settings);
     }
 
     private void configureDhcpMonitor( boolean isDhcpEnabled )
@@ -508,15 +508,15 @@ public class NatImpl extends AbstractNode implements Nat
 
             /* Get the default settings, save them, and indicate
              * to turn on network spaces at startup. */
-            NatBasicSettings defaultSettings =
+            RouterBasicSettings defaultSettings =
                 this.settingsManager.getDefaultSettings( this.getTid());
 
-            defaultSettings.setNatInternalAddress( NatUtil.SETUP_INTERNAL_ADDRESS );
-            defaultSettings.setNatInternalSubnet( NatUtil.SETUP_INTERNAL_SUBNET );
-            defaultSettings.setDhcpStartAndEndAddress( NatUtil.SETUP_DHCP_START, NatUtil.SETUP_DHCP_END );
+            defaultSettings.setRouterInternalAddress( RouterUtil.SETUP_INTERNAL_ADDRESS );
+            defaultSettings.setRouterInternalSubnet( RouterUtil.SETUP_INTERNAL_SUBNET );
+            defaultSettings.setDhcpStartAndEndAddress( RouterUtil.SETUP_DHCP_START, RouterUtil.SETUP_DHCP_END );
 
             NetworkSpacesSettings newNetworkSettings = this.settingsManager.
-                toNetworkSettings( networkSettings, (NatBasicSettings)defaultSettings );
+                toNetworkSettings( networkSettings, (RouterBasicSettings)defaultSettings );
 
             newNetworkSettings.setHasCompletedSetup( false );
 
@@ -601,7 +601,7 @@ public class NatImpl extends AbstractNode implements Nat
         return getNetworkManager().getServicesInternalSettings();
     }
 
-    NatSessionManager getSessionManager()
+    RouterSessionManager getSessionManager()
     {
         return sessionManager;
     }

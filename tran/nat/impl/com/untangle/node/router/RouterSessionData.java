@@ -8,14 +8,14 @@
  *
  * $Id$
  */
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import java.net.InetAddress;
 
 import java.util.List;
 import java.util.LinkedList;
 
-class NatSessionData
+class RouterSessionData
 {
     private final InetAddress originalClientAddr;
     private final int         originalClientPort;
@@ -31,7 +31,7 @@ class NatSessionData
 
     private final List<SessionRedirect> redirectList = new LinkedList<SessionRedirect>();
     
-    protected NatSessionData( InetAddress oClientAddr, int oClientPort, 
+    protected RouterSessionData( InetAddress oClientAddr, int oClientPort, 
                               InetAddress mClientAddr, int mClientPort,
                               InetAddress oServerAddr, int oServerPort,
                               InetAddress mServerAddr, int mServerPort )
@@ -113,7 +113,7 @@ class NatSessionData
 
     public String toString()
     {
-        return "NatSessionData| [" + 
+        return "RouterSessionData| [" + 
             originalClientAddr + ":" + originalClientPort + " -> " + 
             originalServerAddr + ":" + originalServerPort + "] -> [" + 
             modifiedClientAddr + ":" + modifiedClientPort + " -> " + 

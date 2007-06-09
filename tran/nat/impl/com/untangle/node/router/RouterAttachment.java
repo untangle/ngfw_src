@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import com.untangle.uvm.logging.LogEvent;
 
-class NatAttachment
+class RouterAttachment
 {    
     /* True if this session uses a port that must be released */
     /* Port to release, 0, if a port should not be released */
@@ -25,7 +25,7 @@ class NatAttachment
      * manager.  (Presently the session manager only manages ftp sessions) */
     private boolean isManagedSession = false;
     
-    NatAttachment()
+    RouterAttachment()
     {
     }
 

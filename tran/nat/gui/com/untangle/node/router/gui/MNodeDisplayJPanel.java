@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat.gui;
+package com.untangle.node.router.gui;
 
 import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.MPipelineJPanel;

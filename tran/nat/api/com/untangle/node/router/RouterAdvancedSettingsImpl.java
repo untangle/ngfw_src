@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -33,7 +33,7 @@ import com.untangle.uvm.node.IPaddr;
 import com.untangle.uvm.node.ValidateException;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 
-public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializable
+public class RouterAdvancedSettingsImpl implements RouterAdvancedSettings, Serializable
 {
     private static final long serialVersionUID = -5344795278019860714L;
     private final NetworkSpacesSettings networkSpacesSettings;
@@ -47,7 +47,7 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
     private boolean isEnabled;
 
     /* Use with caution */
-    NatAdvancedSettingsImpl()
+    RouterAdvancedSettingsImpl()
     {
         networkSpacesSettings = new NetworkSpacesSettingsImpl();
 
@@ -55,16 +55,16 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
         servicesSettings = new ServicesSettingsImpl();
 
         /* As null, this object will not be able to generate a complete getLocalMatcherList */
-        this.localMatcherList = NatUtil.getInstance().getEmptyLocalMatcherList();
+        this.localMatcherList = RouterUtil.getInstance().getEmptyLocalMatcherList();
     }
 
-    NatAdvancedSettingsImpl( NetworkSpacesSettings networkSpaces, ServicesSettings services,
+    RouterAdvancedSettingsImpl( NetworkSpacesSettings networkSpaces, ServicesSettings services,
                              List<IPDBMatcher> localMatcherList )
     {
         this.networkSpacesSettings = networkSpaces;
         this.servicesSettings = services;
 
-        if ( localMatcherList == null ) localMatcherList = NatUtil.getInstance().getEmptyLocalMatcherList();
+        if ( localMatcherList == null ) localMatcherList = RouterUtil.getInstance().getEmptyLocalMatcherList();
         this.localMatcherList = Collections.unmodifiableList( localMatcherList );
     }
 
@@ -131,23 +131,23 @@ public class NatAdvancedSettingsImpl implements NatAdvancedSettings, Serializabl
 
     public List<RedirectRule> getGlobalRedirectList()
     {
-        return NatUtil.getInstance().getGlobalRedirectList( getRedirectList());
+        return RouterUtil.getInstance().getGlobalRedirectList( getRedirectList());
     }
 
     public void setGlobalRedirectList( List<RedirectRule> newValue )
     {
-        setRedirectList( NatUtil.getInstance().setGlobalRedirectList( getRedirectList(), newValue ));
+        setRedirectList( RouterUtil.getInstance().setGlobalRedirectList( getRedirectList(), newValue ));
     }
 
     /* All of the local redirects go at the bottom of the list */
     public List<RedirectRule> getLocalRedirectList()
     {
-        return NatUtil.getInstance().getLocalRedirectList( getRedirectList());
+        return RouterUtil.getInstance().getLocalRedirectList( getRedirectList());
     }
 
     public void setLocalRedirectList( List<RedirectRule> newValue )
     {
-        setRedirectList( NatUtil.getInstance().setLocalRedirectList( getRedirectList(), newValue ));
+        setRedirectList( RouterUtil.getInstance().setLocalRedirectList( getRedirectList(), newValue ));
     }
 
     /**

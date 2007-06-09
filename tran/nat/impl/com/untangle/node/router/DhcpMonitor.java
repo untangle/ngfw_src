@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -75,11 +75,11 @@ class DhcpMonitor implements Runnable
     private final Map<InetAddress,DhcpLease> currentLeaseMap = new ConcurrentHashMap<InetAddress,DhcpLease>();
 
     private final Logger logger = Logger.getLogger( this.getClass());
-    private final NatImpl node;
+    private final RouterImpl node;
     private final UvmLocalContext localContext;
 
 
-    DhcpMonitor( NatImpl node, UvmLocalContext localContext )
+    DhcpMonitor( RouterImpl node, UvmLocalContext localContext )
     {
         this.node = node;
         this.localContext = localContext;

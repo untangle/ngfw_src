@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.node.nat.gui;
+package com.untangle.node.router.gui;
 
 import java.awt.Insets;
 import java.util.*;
@@ -24,11 +24,11 @@ import com.untangle.uvm.node.*;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
-import com.untangle.node.nat.*;
+import com.untangle.node.router.*;
 
 public class RedirectVirtualJPanel extends MEditTableJPanel {
 
-    public RedirectVirtualJPanel(com.untangle.node.nat.gui.MNodeControlsJPanel mNodeControlsJPanel) {
+    public RedirectVirtualJPanel(com.untangle.node.router.gui.MNodeControlsJPanel mNodeControlsJPanel) {
         super(true, true);
         super.setFillJButtonEnabled( true );
         super.setInsets(new Insets(4, 4, 2, 2));
@@ -60,9 +60,9 @@ public class RedirectVirtualJPanel extends MEditTableJPanel {
         private final int C10_MW = Util.chooseMax(T_TW - (C0_MW + C1_MW + C2_MW + C3_MW + C4_MW + C5_MW + C6_MW + C7_MW + C8_MW + C9_MW), 120); /* description */
 
         private ComboBoxModel protocolModel = super.generateComboBoxModel( ProtocolMatcherFactory.getProtocolEnumeration(), ProtocolMatcherFactory.getProtocolDefault() );
-        private com.untangle.node.nat.gui.MNodeControlsJPanel mNodeControlsJPanel;
+        private com.untangle.node.router.gui.MNodeControlsJPanel mNodeControlsJPanel;
 
-        public RedirectVirtualTableModel(com.untangle.node.nat.gui.MNodeControlsJPanel mNodeControlsJPanel){
+        public RedirectVirtualTableModel(com.untangle.node.router.gui.MNodeControlsJPanel mNodeControlsJPanel){
             this.mNodeControlsJPanel = mNodeControlsJPanel;
         }
 
@@ -122,15 +122,15 @@ public class RedirectVirtualJPanel extends MEditTableJPanel {
 
             // SAVE SETTINGS ////////////
             if( !validateOnly ){
-                NatCommonSettings natSettings = (NatCommonSettings) settings;
-                natSettings.setLocalRedirectList( elemList );
+                RouterCommonSettings routerSettings = (RouterCommonSettings) settings;
+                routerSettings.setLocalRedirectList( elemList );
             }
         }
 
 
         public Vector<Vector> generateRows(Object settings) {
-            NatCommonSettings natSettings = (NatCommonSettings) settings;
-            List<RedirectRule> redirectList = (List<RedirectRule>) natSettings.getLocalRedirectList();
+            RouterCommonSettings routerSettings = (RouterCommonSettings) settings;
+            List<RedirectRule> redirectList = (List<RedirectRule>) routerSettings.getLocalRedirectList();
             Vector<Vector> allRows = new Vector<Vector>(redirectList.size());
             Vector tempRow = null;
             int rowIndex = 0;

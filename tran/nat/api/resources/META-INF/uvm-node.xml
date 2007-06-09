@@ -14,8 +14,8 @@ $Id$
 <uvm-node>
   <node-desc name="nat-node"
                   display-name="Router"
-                  classname="com.untangle.node.nat.NatImpl"
-                  gui-classname="com.untangle.node.nat.gui.MNodeJPanel"
+                  classname="com.untangle.node.router.RouterImpl"
+                  gui-classname="com.untangle.node.router.gui.MNodeJPanel"
                   single-instance="true"/>
   <parent>ftp-casing</parent>
 </uvm-node>

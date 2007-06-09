@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat.gui;
+package com.untangle.node.router.gui;
 
 
 import java.awt.*;
@@ -17,7 +17,7 @@ import java.awt.*;
 import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
 import com.untangle.uvm.node.IPaddr;
-import com.untangle.node.nat.*;
+import com.untangle.node.router.*;
 
 
 public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
@@ -62,11 +62,11 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
 
         // SAVE THE VALUES ////////////////////////////////////
         if( !validateOnly ){
-            NatBasicSettings natSettings = (NatBasicSettings) settings;
-            natSettings.setDmzEnabled( dmzEnabled );
+            RouterBasicSettings routerSettings = (RouterBasicSettings) settings;
+            routerSettings.setDmzEnabled( dmzEnabled );
             if(dmzEnabled){
-                natSettings.setDmzAddress( dmzTargetAddress );
-                natSettings.setDmzLoggingEnabled( dmzLoggingEnabled );
+                routerSettings.setDmzAddress( dmzTargetAddress );
+                routerSettings.setDmzLoggingEnabled( dmzLoggingEnabled );
             }
         }
 
@@ -78,10 +78,10 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
 
     public void doRefresh(Object settings) {
 
-        NatBasicSettings natSettings = (NatBasicSettings) settings;
+        RouterBasicSettings routerSettings = (RouterBasicSettings) settings;
 
         // ENABLED ///////////
-        dmzEnabledCurrent = natSettings.getDmzEnabled();
+        dmzEnabledCurrent = routerSettings.getDmzEnabled();
         this.setDmzEnabledDependency(dmzEnabledCurrent);
         if( dmzEnabledCurrent )
             dmzEnabledJRadioButton.setSelected(true);
@@ -89,12 +89,12 @@ public class DmzJPanel extends javax.swing.JPanel implements Savable<Object>, Re
             dmzDisabledJRadioButton.setSelected(true);
 
         // TARGET ADDRESS //////
-        dmzTargetAddressCurrent = natSettings.getDmzAddress().toString();
+        dmzTargetAddressCurrent = routerSettings.getDmzAddress().toString();
         targetAddressIPaddrJTextField.setText( dmzTargetAddressCurrent );
         targetAddressIPaddrJTextField.setBackground( Color.WHITE );
 
         // LOGGING ///////////
-        dmzLoggingEnabledCurrent = natSettings.getDmzLoggingEnabled();
+        dmzLoggingEnabledCurrent = routerSettings.getDmzLoggingEnabled();
         if( dmzLoggingEnabledCurrent )
             dmzLogEnabledJRadioButton.setSelected(true);
         else

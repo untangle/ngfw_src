@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import com.untangle.uvm.networking.NetworkSpacesSettings;
 
-public interface NatAdvancedSettings extends NatCommonSettings, NetworkSpacesSettings
+public interface RouterAdvancedSettings extends RouterCommonSettings, NetworkSpacesSettings
 {
 }

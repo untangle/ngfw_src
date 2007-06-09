@@ -9,21 +9,21 @@
  * $Id$
  */
 
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 
 /* Just used to indicate that the outside interface is not configured, it happens in one very well defined
  * case, hence it doesn't need a message 
  */
-class NatUnconfiguredException extends Exception {
-    private static NatUnconfiguredException INSTANCE = new NatUnconfiguredException();
+class RouterUnconfiguredException extends Exception {
+    private static RouterUnconfiguredException INSTANCE = new RouterUnconfiguredException();
     
-    NatUnconfiguredException()
+    RouterUnconfiguredException()
     {
         super();
     }
 
-    static NatUnconfiguredException getInstance() {
+    static RouterUnconfiguredException getInstance() {
         return INSTANCE;
     }
 }

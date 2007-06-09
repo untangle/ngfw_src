@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import com.untangle.uvm.logging.EventLoggerFactory;
 import com.untangle.uvm.logging.StatisticEvent;
@@ -19,16 +19,16 @@ import com.untangle.uvm.node.NodeContext;
 import com.untangle.uvm.node.firewall.intf.IntfMatcher;
 import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 
-class NatStatisticManager extends StatisticManager
+class RouterStatisticManager extends StatisticManager
 {
     /* Interface matcher to determine if the sessions is incoming or outgoing */
     /* !!! This is not legit */
     final IntfMatcher matcherIncoming = IntfMatcherFactory.getInstance().getInternalMatcher();
     final IntfMatcher matcherOutgoing = IntfMatcherFactory.getInstance().getExternalMatcher();
 
-    private NatStatisticEvent statisticEvent = new NatStatisticEvent();
+    private RouterStatisticEvent statisticEvent = new RouterStatisticEvent();
 
-    NatStatisticManager(NodeContext tctx)
+    RouterStatisticManager(NodeContext tctx)
     {
         super(EventLoggerFactory.factory().getEventLogger(tctx));
     }
@@ -40,12 +40,12 @@ class NatStatisticManager extends StatisticManager
 
     protected StatisticEvent getNewStatisticEvent()
     {
-        return ( this.statisticEvent = new NatStatisticEvent());
+        return ( this.statisticEvent = new RouterStatisticEvent());
     }
 
-    void incrNatSessions()
+    void incrRouterSessions()
     {
-        this.statisticEvent.incrNatSessions();
+        this.statisticEvent.incrRouterSessions();
     }
 
     void incrRedirect( Protocol protocol, IPNewSessionRequest request )

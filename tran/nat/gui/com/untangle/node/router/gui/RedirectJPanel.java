@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.node.nat.gui;
+package com.untangle.node.router.gui;
 
 import java.awt.Insets;
 import java.util.*;
@@ -27,7 +27,7 @@ import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
 import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
-import com.untangle.node.nat.*;
+import com.untangle.node.router.*;
 
 public class RedirectJPanel extends MEditTableJPanel {
 
@@ -141,15 +141,15 @@ public class RedirectJPanel extends MEditTableJPanel {
 
             // SAVE SETTINGS ////////////
             if( !validateOnly ){
-                NatCommonSettings natSettings = (NatCommonSettings) settings;
-                natSettings.setGlobalRedirectList( elemList );
+                RouterCommonSettings routerSettings = (RouterCommonSettings) settings;
+                routerSettings.setGlobalRedirectList( elemList );
             }
         }
 
 
         public Vector<Vector> generateRows(Object settings) {
-            NatCommonSettings natSettings = (NatCommonSettings) settings;
-            List<RedirectRule> redirectList = (List<RedirectRule>) natSettings.getGlobalRedirectList();
+            RouterCommonSettings routerSettings = (RouterCommonSettings) settings;
+            List<RedirectRule> redirectList = (List<RedirectRule>) routerSettings.getGlobalRedirectList();
             Vector<Vector> allRows = new Vector<Vector>(redirectList.size());
             Vector tempRow = null;
             int rowIndex = 0;

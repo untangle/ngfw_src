@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,9 +29,9 @@ import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
 import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
 
-class NatUtil
+class RouterUtil
 {
-    static final NatUtil INSTANCE = new NatUtil();
+    static final RouterUtil INSTANCE = new RouterUtil();
 
     static final IPaddr DEFAULT_NAT_ADDRESS = NetworkUtil.DEFAULT_NAT_ADDRESS;
     static final IPaddr DEFAULT_NAT_NETMASK = NetworkUtil.DEFAULT_NAT_NETMASK;
@@ -54,7 +54,7 @@ class NatUtil
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
-    private NatUtil()
+    private RouterUtil()
     {
     }
 
@@ -140,7 +140,7 @@ class NatUtil
         return LOCAL_MATCHER_LIST;
     }
 
-    public static NatUtil getInstance()
+    public static RouterUtil getInstance()
     {
         return INSTANCE;
     }

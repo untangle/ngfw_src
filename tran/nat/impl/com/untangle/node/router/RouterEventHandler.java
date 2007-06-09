@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import java.net.InetAddress;
 import java.net.Inet4Address;
@@ -65,13 +65,13 @@ import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 
 import org.apache.log4j.Logger;
 
-import static com.untangle.node.nat.NatConstants.*;
+import static com.untangle.node.router.RouterConstants.*;
 
-class NatEventHandler extends AbstractEventHandler
+class RouterEventHandler extends AbstractEventHandler
 {
-    private final Logger logger = Logger.getLogger(NatEventHandler.class);
+    private final Logger logger = Logger.getLogger(RouterEventHandler.class);
     
-    private static final String PROPERTY_BASE = "com.untangle.node.nat.";
+    private static final String PROPERTY_BASE = "com.untangle.node.router.";
     private static final String PROPERTY_TCP_PORT_START = PROPERTY_BASE + "tcp-port-start";
     private static final String PROPERTY_TCP_PORT_END   = PROPERTY_BASE + "tcp-port-end";
     private static final String PROPERTY_UDP_PORT_START = PROPERTY_BASE + "udp-port-start";
@@ -111,12 +111,12 @@ class NatEventHandler extends AbstractEventHandler
     /* Tracks the open ICMP identifiers, Not exactly a port, but same kind of thing */
     private final PortList icmpPidList;
 
-    /* Nat Node */
-    private final NatImpl node;
+    /* Router Node */
+    private final RouterImpl node;
 
 
     /* Setup  */
-    NatEventHandler( NatImpl node )
+    RouterEventHandler( RouterImpl node )
     {
         super(node);
 
@@ -154,7 +154,7 @@ class NatEventHandler extends AbstractEventHandler
         InetAddress serverAddr = request.serverAddr();
         int         serverPort = request.serverPort();
 
-        NatAttachment attachment = new NatAttachment();
+        RouterAttachment attachment = new RouterAttachment();
 
         request.attach( attachment );
         
@@ -170,7 +170,7 @@ class NatEventHandler extends AbstractEventHandler
         try {
             if (logger.isInfoEnabled()) logger.info( "Testing <" + request + ">" );
                 
-            if ( handleNat( request, protocol )      ||
+            if ( handleRouter( request, protocol )      ||
                  handleRedirect( request, protocol ) ||
                  handleDmzHost( request,  protocol )) {
 
@@ -201,7 +201,7 @@ class NatEventHandler extends AbstractEventHandler
                 request.rejectSilently();
                 return;
             }
-        } catch ( NatUnconfiguredException e ) {
+        } catch ( RouterUnconfiguredException e ) {
             logger.warn( "Outside network is presently not configured, rejecting session silently" );
             request.rejectSilently();
             return;
@@ -216,7 +216,7 @@ class NatEventHandler extends AbstractEventHandler
         throws MPipeException
     {
         IPSession s = event.session();
-        NatAttachment na = (NatAttachment)s.attachment();
+        RouterAttachment na = (RouterAttachment)s.attachment();
         if (na != null) {
             LogEvent eventToLog = na.eventToLog();
             if (eventToLog != null) {
@@ -231,7 +231,7 @@ class NatEventHandler extends AbstractEventHandler
         throws MPipeException
     {
         IPSession s = event.session();
-        NatAttachment na = (NatAttachment)s.attachment();
+        RouterAttachment na = (RouterAttachment)s.attachment();
         if (na != null) {
             LogEvent eventToLog = na.eventToLog();
             if (eventToLog != null) {
@@ -254,12 +254,12 @@ class NatEventHandler extends AbstractEventHandler
         UDPSession udpsession = (UDPSession)event.ipsession();
 
         if ( udpsession.isPing()) {
-            NatAttachment attachment = (NatAttachment)udpsession.attachment();
+            RouterAttachment attachment = (RouterAttachment)udpsession.attachment();
             int pid = udpsession.icmpId();
             int releasePid;
 
             if ( attachment == null ) {
-                logger.error( "null attachment on Natd session" );
+                logger.error( "null attachment on Routerd session" );
                 return;
             }
 
@@ -319,7 +319,7 @@ class NatEventHandler extends AbstractEventHandler
             }
 
             
-            if ( space.getIsNatEnabled()) {
+            if ( space.getIsRouterEnabled()) {
                 /* Create a NAT matcher for this space */
                 for ( IPNetwork networkRule : (List<IPNetwork>)space.getNetworkList()) {
                     natMatchers.add( NatMatcher.makeNatMatcher( networkRule, space ));
@@ -370,12 +370,12 @@ class NatEventHandler extends AbstractEventHandler
     /**
      * Determine if a session is natted, and if necessary, rewrite its session information.
      */
-    private boolean handleNat( IPNewSessionRequest request, Protocol protocol )
-        throws MPipeException, NatUnconfiguredException
+    private boolean handleRouter( IPNewSessionRequest request, Protocol protocol )
+        throws MPipeException, RouterUnconfiguredException
     {
         int port;
         
-        boolean isNat = false;
+        boolean isRouter = false;
         NatMatcher natMatcher = null;
         
         for ( NatMatcher matcher : natMatchers ) {
@@ -396,12 +396,12 @@ class NatEventHandler extends AbstractEventHandler
             /* All redirecting occurs here */
 
             /* !!!!!!! Need to be able to grab the new address, and have that update with DHCP */
-            InetAddress localAddr = natMatcher.getNatAddress();
+            InetAddress localAddr = natMatcher.getRouterAddress();
 
             // Unfortunately, as of 5/02/05, this can sometimes be null, probably due to
             // initialization order, the sleeping involved, etc.  For now, just make sure
             // not to ever change the client addr to null, which causes awful things to happen.  jdi XXX
-            if (localAddr == null) throw NatUnconfiguredException.getInstance();
+            if (localAddr == null) throw RouterUnconfiguredException.getInstance();
 
             /* Update the client address */
             request.clientAddr( localAddr );
@@ -426,13 +426,13 @@ class NatEventHandler extends AbstractEventHandler
                 }
             }
 
-            ((NatAttachment)request.attachment()).releasePort( port );
+            ((RouterAttachment)request.attachment()).releasePort( port );
 
             /* Increment the NAT counter */
             node.incrementCount( NAT_COUNTER ); // NAT COUNTER
 
             /* Log the stat */
-            node.statisticManager.incrNatSessions();
+            node.statisticManager.incrRouterSessions();
 
             return true;
         }
@@ -465,7 +465,7 @@ class NatEventHandler extends AbstractEventHandler
 
                 /* log the event if necessary */
                 if ( matcher.getIsLoggingEnabled()) {
-                    NatAttachment attachment = (NatAttachment)request.attachment();
+                    RouterAttachment attachment = (RouterAttachment)request.attachment();
                     if ( attachment == null ) {
                         logger.error( "null attachment to a NAT session" );
                     } else {
@@ -500,7 +500,7 @@ class NatEventHandler extends AbstractEventHandler
                 matcher.redirect( request );
 
                 if ( matcher.getIsLoggingEnabled()) {
-                    NatAttachment attachment = (NatAttachment)request.attachment();
+                    RouterAttachment attachment = (RouterAttachment)request.attachment();
                     
                     if ( attachment == null ) {
                         logger.error( "null attachment to a NAT session" );
@@ -526,7 +526,7 @@ class NatEventHandler extends AbstractEventHandler
 
     /**
      * Release a port
-     * Utility function for NatSessionManager.
+     * Utility function for RouterSessionManager.
      */
     void releasePort( Protocol protocol, int port )
     {
@@ -550,10 +550,10 @@ class NatEventHandler extends AbstractEventHandler
             }
         }
 
-        if ( space.getIsNatEnabled()) {
+        if ( space.getIsRouterEnabled()) {
             /* Block traffic from entering this network space unfiltered */
             try {
-                unmodified.add( RequestIntfMatcher.makeNatInstance( space ));
+                unmodified.add( RequestIntfMatcher.makeRouterInstance( space ));
             } catch ( NodeException e ) { 
                 logger.error( "Unable to create a traffic passer for [" + space + "]", e );
             }
@@ -589,10 +589,10 @@ class NatEventHandler extends AbstractEventHandler
      */
     private void cleanupSession( Protocol protocol, IPSession session )
     {
-        NatAttachment attachment = (NatAttachment)session.attachment();
+        RouterAttachment attachment = (RouterAttachment)session.attachment();
 
         if ( attachment == null ) {
-            logger.error( "null attachment on Natd session" );
+            logger.error( "null attachment on Routerd session" );
             return;
         }
 
@@ -712,7 +712,7 @@ class RequestIntfMatcher
         return new RequestIntfMatcher( clientIntfMatcher, serverIntfMatcher );
     }
 
-    static RequestIntfMatcher makeNatInstance( NetworkSpaceInternal space ) throws NodeException
+    static RequestIntfMatcher makeRouterInstance( NetworkSpaceInternal space ) throws NodeException
     {
         List<InterfaceInternal> interfaceList = space.getInterfaceList();
         IntfMatcherFactory imf = IntfMatcherFactory.getInstance();
@@ -773,13 +773,13 @@ class NatMatcher
         return this.space;
     }
 
-    InetAddress getNatAddress()
+    InetAddress getRouterAddress()
     {
         /* !!!!! This has to be updated, eg for DHCP on the NATd address */
         return this.natAddress;
     }
 
-    void setNatAddress( InetAddress newValue )
+    void setRouterAddress( InetAddress newValue )
     {
         this.natAddress = newValue;
     }
@@ -853,7 +853,7 @@ class NatMatcher
                                                        pmf.getAllMatcher(), pmf.getAllMatcher(),
                                                        false, null, -1 );
 
-        InetAddress natAddress = space.getNatAddress().getAddr();
+        InetAddress natAddress = space.getRouterAddress().getAddr();
 
         /* build the interface redirect for nat traffic that is coming back (eg for FTP */
         /* This just redirects it to the first interface in the nat space, this way it gets through */

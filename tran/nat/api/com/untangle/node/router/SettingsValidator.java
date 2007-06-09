@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import java.net.InetAddress;
 
@@ -42,17 +42,17 @@ class SettingsValidator
     }
 
     /* Validation method */
-    void validate( NatSettings natSettings ) throws ValidateException
+    void validate( RouterSettings routerSettings ) throws ValidateException
     {
         boolean isStartAddressValid = true;
         boolean isEndAddressValid   = true;
         
         /* Update PING redirects */
-        for ( RedirectRule rule : natSettings.getRedirectList()) rule.fixPing();
+        for ( RedirectRule rule : routerSettings.getRedirectList()) rule.fixPing();
 
-        boolean natEnabled = natSettings.getNatEnabled();
-        IPaddr  natInternalAddress = natSettings.getNatInternalAddress();
-        IPaddr  natInternalSubnet = natSettings.getNatInternalSubnet();
+        boolean natEnabled = routerSettings.getRouterEnabled();
+        IPaddr  natInternalAddress = routerSettings.getRouterInternalAddress();
+        IPaddr  natInternalSubnet = routerSettings.getRouterInternalSubnet();
 
         AddressValidator av = AddressValidator.getInstance();
 
@@ -70,8 +70,8 @@ class SettingsValidator
             }
         }
         
-        if ( natSettings.getDmzEnabled()) {
-            IPaddr dmzAddress = natSettings.getDmzAddress();
+        if ( routerSettings.getDmzEnabled()) {
+            IPaddr dmzAddress = routerSettings.getDmzAddress();
             if ( dmzAddress == null || dmzAddress.isEmpty()) {
                 throw new ValidateException( "Enabling DMZ requires a target IP address" );
             }
@@ -88,35 +88,35 @@ class SettingsValidator
 
         List<InterfaceAlias> aliasList = new LinkedList<InterfaceAlias>();
 
-        if ( natSettings.getNatEnabled()) {
-            aliasList.add( new InterfaceAlias( natSettings.getNatInternalAddress(), 
-                                               natSettings.getNatInternalSubnet()));
+        if ( routerSettings.getRouterEnabled()) {
+            aliasList.add( new InterfaceAlias( routerSettings.getRouterInternalAddress(), 
+                                               routerSettings.getRouterInternalSubnet()));
         } else {
-            BasicNetworkSettings networkSettings = natSettings.getNetworkSettings();
+            BasicNetworkSettings networkSettings = routerSettings.getNetworkSettings();
             if ( networkSettings != null ) {
                 aliasList.add( new InterfaceAlias( networkSettings.host(), networkSettings.netmask()));
                 aliasList.addAll( networkSettings.getAliasList());
             }
         }
 
-        validateDhcpSettings( natSettings, aliasList );
+        validateDhcpSettings( routerSettings, aliasList );
     }
 
     /* Validation method */
-    void validate( NatAdvancedSettingsImpl natSettings ) throws ValidateException
+    void validate( RouterAdvancedSettingsImpl routerSettings ) throws ValidateException
     {
         List<InterfaceAlias> aliasList = new LinkedList<InterfaceAlias>();
 
         /* XXX The service space is either the first space, or the first space with NAT enabled.
          * this functionality is repeated inside of NetworkSpacesInternalSettings XXX */
-        List<NetworkSpace> networkSpaceList = natSettings.getNetworkSpaceList();
+        List<NetworkSpace> networkSpaceList = routerSettings.getNetworkSpaceList();
 
-        BasicNetworkSettings networkSettings = natSettings.getNetworkSettings();
+        BasicNetworkSettings networkSettings = routerSettings.getNetworkSettings();
         
         int index = 0;
         int c = 0;
         for ( NetworkSpace space : networkSpaceList ) {
-            if ( space.isLive() && space.getIsNatEnabled()) {
+            if ( space.isLive() && space.getIsRouterEnabled()) {
                 index = c;
                 break;
             }
@@ -135,14 +135,14 @@ class SettingsValidator
             }
         }
 
-        validateDhcpSettings( natSettings, aliasList );
+        validateDhcpSettings( routerSettings, aliasList );
     }
 
-    private void validateDhcpSettings( NatCommonSettings natSettings, List<InterfaceAlias> aliasList )
+    private void validateDhcpSettings( RouterCommonSettings routerSettings, List<InterfaceAlias> aliasList )
         throws ValidateException
     {
         /* No need to validate the DHCP settings, they are not enabled */
-        if ( !natSettings.getDhcpEnabled()) return;
+        if ( !routerSettings.getDhcpEnabled()) return;
 
         boolean hasNetwork = true;
 
@@ -157,17 +157,17 @@ class SettingsValidator
             }
         }
         
-        if ( !isInNetwork( natSettings.getDhcpStartAddress(), aliasList )) {
+        if ( !isInNetwork( routerSettings.getDhcpStartAddress(), aliasList )) {
             throw new ValidateException( "\"IP Address Range Start\" in the DHCP panel must " + 
                                          "be in the network: " + networkString );
         }
             
-        if ( !isInNetwork( natSettings.getDhcpEndAddress(), aliasList )) {
+        if ( !isInNetwork( routerSettings.getDhcpEndAddress(), aliasList )) {
             throw new ValidateException( "\"IP Address Range End\" in the DHCP panel must "+
                                          "be in the network: " + networkString );
         }
             
-        for ( DhcpLeaseRule rule : natSettings.getDhcpLeaseList()) {
+        for ( DhcpLeaseRule rule : routerSettings.getDhcpLeaseList()) {
             IPaddr address = rule.getStaticAddress();
             if ( address.getAddr() == null ) continue;
             
@@ -183,7 +183,7 @@ class SettingsValidator
         Map ipAddressSet = new HashMap();
         
         Integer c = 1;
-        for ( DhcpLeaseRule rule : natSettings.getDhcpLeaseList()) {
+        for ( DhcpLeaseRule rule : routerSettings.getDhcpLeaseList()) {
             MACAddress macAddress = rule.getMacAddress();
             IPaddr ipAddress = rule.getStaticAddress();
             

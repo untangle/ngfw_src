@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat.reports;
+package com.untangle.node.router.reports;
 
 import com.untangle.uvm.reporting.*;
 

@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import java.net.InetAddress;
 import java.util.Iterator;
@@ -22,17 +22,17 @@ import com.untangle.uvm.tapi.Protocol;
 import com.untangle.uvm.tapi.TCPSession;
 import org.apache.log4j.Logger;
 
-class NatSessionManager
+class RouterSessionManager
 {
-    Map<Integer,NatSessionData> map = new ConcurrentHashMap<Integer,NatSessionData>();
+    Map<Integer,RouterSessionData> map = new ConcurrentHashMap<Integer,RouterSessionData>();
 
     Map<SessionRedirectKey,SessionRedirect> redirectMap =
         new ConcurrentHashMap<SessionRedirectKey,SessionRedirect>();
 
     private final Logger logger = Logger.getLogger( this.getClass());
-    NatImpl node;
+    RouterImpl node;
 
-    NatSessionManager( NatImpl node )
+    RouterSessionManager( RouterImpl node )
     {
         this.node = node;
     }
@@ -41,8 +41,8 @@ class NatSessionManager
                           InetAddress clientAddr, int clientPort,
                           InetAddress serverAddr, int serverPort )
     {
-        NatSessionData data =
-            new NatSessionData( clientAddr, clientPort,
+        RouterSessionData data =
+            new RouterSessionData( clientAddr, clientPort,
                                 request.clientAddr(), request.clientPort(),
                                 serverAddr, serverPort,
                                 request.serverAddr(), request.serverPort());
@@ -52,7 +52,7 @@ class NatSessionManager
         }
 
         /* Insert the data into the map */
-        NatSessionData tmp;
+        RouterSessionData tmp;
         if (( tmp = map.put( request.id(), data )) != null ) {
             logger.error( "Duplicate session key: " + tmp );
         }
@@ -60,7 +60,7 @@ class NatSessionManager
 
     void releaseSession( IPSession session, Protocol protocol )
     {
-        NatSessionData sessionData;
+        RouterSessionData sessionData;
         if (logger.isDebugEnabled()) {
             logger.debug( "Releasing session: " + session.id());
         }
@@ -88,7 +88,7 @@ class NatSessionManager
         }
     }
 
-    NatSessionData getSessionData( TCPSession session )
+    RouterSessionData getSessionData( TCPSession session )
     {
         return map.get( session.id());
     }
@@ -96,7 +96,7 @@ class NatSessionManager
     /**
      * Request to redirect a session.
      */
-    void registerSessionRedirect( NatSessionData data, SessionRedirectKey key, SessionRedirect redirect )
+    void registerSessionRedirect( RouterSessionData data, SessionRedirectKey key, SessionRedirect redirect )
     {
         /* Add the redirect to the list monitored by this session */
         data.addRedirect( redirect );
@@ -235,17 +235,17 @@ class SessionRedirect
     }
 
     /* XXX I think this function is no longer used */
-    synchronized void redirect( IPNewSessionRequest request, NatImpl node ) throws MPipeException
+    synchronized void redirect( IPNewSessionRequest request, RouterImpl node ) throws MPipeException
     {
-        NatAttachment attachment = (NatAttachment)request.attachment();
+        RouterAttachment attachment = (RouterAttachment)request.attachment();
 
-        if ( isExpired ) throw new MPipeException( node.getNatMPipe(), "Expired redirect" );
+        if ( isExpired ) throw new MPipeException( node.getRouterMPipe(), "Expired redirect" );
 
         /* Have to take this off the list, if it is reserved */
         if ( reservedPort > 0 ) {
             if ( attachment.releasePort() != 0 ) {
                 /* This will be cleaned up when the session is cleaned up */
-                throw new MPipeException( node.getNatMPipe(), "Session is already using a NAT port" );
+                throw new MPipeException( node.getRouterMPipe(), "Session is already using a NAT port" );
             }
         }
 
@@ -281,7 +281,7 @@ class SessionRedirect
         return "SessionRedirect| " + clientAddr + ":" + clientPort + "/" + serverAddr + ":" + serverPort;
     }
 
-    synchronized void cleanup( NatImpl node )
+    synchronized void cleanup( RouterImpl node )
     {
         if ( reservedPort > 0 ) {
             node.getHandler().releasePort( key.protocol, reservedPort );

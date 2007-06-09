@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.node.nat.gui;
+package com.untangle.node.router.gui;
 
 import java.awt.*;
 
 import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
 import com.untangle.uvm.node.IPaddr;
-import com.untangle.node.nat.*;
+import com.untangle.node.router.*;
 
 
 public class DhcpGeneralJPanel extends javax.swing.JPanel implements Savable<Object>, Refreshable<Object> {
@@ -72,10 +72,10 @@ public class DhcpGeneralJPanel extends javax.swing.JPanel implements Savable<Obj
 
         // SAVE SETTINGS ////////////////////////////////////
         if( !validateOnly ){
-            NatCommonSettings natSettings = (NatCommonSettings) settings;
-            natSettings.setDhcpEnabled( dhcpIsEnabled );
+            RouterCommonSettings routerSettings = (RouterCommonSettings) settings;
+            routerSettings.setDhcpEnabled( dhcpIsEnabled );
             if(dhcpIsEnabled){
-                natSettings.setDhcpStartAndEndAddress(dhcpStartAddress, dhcpEndAddress);
+                routerSettings.setDhcpStartAndEndAddress(dhcpStartAddress, dhcpEndAddress);
             }
         }
 
@@ -86,10 +86,10 @@ public class DhcpGeneralJPanel extends javax.swing.JPanel implements Savable<Obj
     String dhcpEndAddressCurrent;
 
     public void doRefresh(Object settings) {
-        NatCommonSettings natSettings = (NatCommonSettings) settings;
+        RouterCommonSettings routerSettings = (RouterCommonSettings) settings;
 
         // DHCP ENABLED ///////////
-        dhcpIsEnabledCurrent = natSettings.getDhcpEnabled();
+        dhcpIsEnabledCurrent = routerSettings.getDhcpEnabled();
         this.setDhcpEnabledDependency(dhcpIsEnabledCurrent);
         if( dhcpIsEnabledCurrent )
             dhcpEnabledJRadioButton.setSelected(true);
@@ -97,12 +97,12 @@ public class DhcpGeneralJPanel extends javax.swing.JPanel implements Savable<Obj
             dhcpDisabledJRadioButton.setSelected(true);
 
         // DYNAMIC RANGE START //////
-        dhcpStartAddressCurrent = natSettings.getDhcpStartAddress().toString();
+        dhcpStartAddressCurrent = routerSettings.getDhcpStartAddress().toString();
         startAddressIPaddrJTextField.setText( dhcpStartAddressCurrent );
         startAddressIPaddrJTextField.setBackground( Color.WHITE );
 
         // DYNAMIC RANGE END //////
-        dhcpEndAddressCurrent = natSettings.getDhcpEndAddress().toString();
+        dhcpEndAddressCurrent = routerSettings.getDhcpEndAddress().toString();
         endAddressIPaddrJTextField.setText( dhcpEndAddressCurrent );
         endAddressIPaddrJTextField.setBackground( Color.WHITE );
     }

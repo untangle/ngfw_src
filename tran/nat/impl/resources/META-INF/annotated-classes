@@ -1,4 +1,4 @@
-com.untangle.node.nat.DhcpAbsoluteEvent
-com.untangle.node.nat.DhcpAbsoluteLease
-com.untangle.node.nat.NatStatisticEvent
-com.untangle.node.nat.DhcpLeaseEvent
+com.untangle.node.router.DhcpAbsoluteEvent
+com.untangle.node.router.DhcpAbsoluteLease
+com.untangle.node.router.RouterStatisticEvent
+com.untangle.node.router.DhcpLeaseEvent

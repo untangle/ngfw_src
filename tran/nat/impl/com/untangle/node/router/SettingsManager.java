@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import java.util.Arrays;
 import java.util.List;
@@ -72,7 +72,7 @@ class SettingsManager
     /* The network settings are the current settings.  The NetworkingManager always
      * returns a copy, so it is safe to mess around with this object */
     NetworkSpacesSettings toNetworkSettings( NetworkSpacesSettings networkSettings, 
-                                             NatBasicSettings natSettings )
+                                             RouterBasicSettings routerSettings )
     {
         ((NetworkSpacesSettingsImpl)networkSettings).setSetupState( SetupState.BASIC );        
         List<NetworkSpace> networkSpaceList = networkSettings.getNetworkSpaceList();
@@ -87,18 +87,18 @@ class SettingsManager
         natSpace = new NetworkSpace();
         natSpace.setName( NetworkUtil.DEFAULT_SPACE_NAME_NAT );
         
-        boolean isNatEnabled = natSettings.getNatEnabled();
-        natSpace.setLive( isNatEnabled );
+        boolean isRouterEnabled = routerSettings.getRouterEnabled();
+        natSpace.setLive( isRouterEnabled );
         List<IPNetworkRule> networkList = new LinkedList<IPNetworkRule>();
             
-        networkList.add( IPNetworkRule.makeInstance( natSettings.getNatInternalAddress(),
-                                                     natSettings.getNatInternalSubnet()));
+        networkList.add( IPNetworkRule.makeInstance( routerSettings.getRouterInternalAddress(),
+                                                     routerSettings.getRouterInternalSubnet()));
         natSpace.setNetworkList( networkList );
         natSpace.setIsDhcpEnabled( false );
         natSpace.setIsTrafficForwarded( true );
-        natSpace.setIsNatEnabled( true );
-        natSpace.setNatSpace( primary );
-        natSpace.setNatAddress( null );
+        natSpace.setIsRouterEnabled( true );
+        natSpace.setRouterSpace( primary );
+        natSpace.setRouterAddress( null );
         
         /* DMZ is disabled on this space */
         natSpace.setIsDmzHostEnabled( false );
@@ -106,9 +106,9 @@ class SettingsManager
         natSpace.setDmzHost( null );
         
         /* DMZ settings are registered against the primary space */
-        primary.setIsDmzHostEnabled( natSettings.getDmzEnabled());
-        primary.setIsDmzHostLoggingEnabled( natSettings.getDmzLoggingEnabled());
-        primary.setDmzHost( natSettings.getDmzAddress());
+        primary.setIsDmzHostEnabled( routerSettings.getDmzEnabled());
+        primary.setIsDmzHostLoggingEnabled( routerSettings.getDmzLoggingEnabled());
+        primary.setDmzHost( routerSettings.getDmzAddress());
         
         /* set the list of network spaces */
         networkSpaceList.clear();
@@ -130,7 +130,7 @@ class SettingsManager
 
             if ( intf.getArgonIntf() == IntfConstants.INTERNAL_INTF ) {
                 foundInternal = true;
-                if ( isNatEnabled ) intf.setNetworkSpace( natSpace );
+                if ( isRouterEnabled ) intf.setNetworkSpace( natSpace );
             };
         }
         
@@ -152,7 +152,7 @@ class SettingsManager
                 /* Add each interface to the list */
                 Interface intf =  new Interface( argonIntf, EthernetMedia.AUTO_NEGOTIATE, true );
                 intf.setName( IntfConstants.toName( argonIntf ));
-                if ( isNatEnabled && ( argonIntf == IntfConstants.INTERNAL_INTF )) {
+                if ( isRouterEnabled && ( argonIntf == IntfConstants.INTERNAL_INTF )) {
                     intf.setNetworkSpace( natSpace );
                 } else {
                     intf.setNetworkSpace( primary );
@@ -165,13 +165,13 @@ class SettingsManager
         networkSettings.setInterfaceList( interfaceList );
 
         /* Set the redirects */
-        networkSettings.setRedirectList( natSettings.getRedirectList());
+        networkSettings.setRedirectList( routerSettings.getRedirectList());
         
         return networkSettings;
     }
 
     NetworkSpacesSettings toNetworkSettings( NetworkSpacesSettings networkSettings, 
-                                             NatAdvancedSettings advanced )
+                                             RouterAdvancedSettings advanced )
         throws ValidateException
     {
 
@@ -254,7 +254,7 @@ class SettingsManager
 
 
         for ( NetworkSpace space : networkSpaceList ) {
-            NetworkSpace natSpace = space.getNatSpace();
+            NetworkSpace natSpace = space.getRouterSpace();
             if ( natSpace != null ) {
                 natSpace = networkSpaceMap.get( natSpace.getBusinessPapers());
                 /* if this happens there is nothing the user can do. */
@@ -262,8 +262,8 @@ class SettingsManager
                     throw new ValidateException( "Network space '" + space.getName() + 
                                                  "' has an invalid nat sace." );
                 }
-                space.setNatSpace( natSpace );
-            } else if ( !space.getIsPrimary() && space.isLive() && space.getIsNatEnabled()) {
+                space.setRouterSpace( natSpace );
+            } else if ( !space.getIsPrimary() && space.isLive() && space.getIsRouterEnabled()) {
                 logger.warn( "Network space: " + space.getName() + " has a null nat space" );
             }
         }
@@ -285,7 +285,7 @@ class SettingsManager
 
 
     /* This removes the external interface, since it cannot be modified */
-    NatAdvancedSettings toAdvancedSettings( NetworkSpacesSettings network,
+    RouterAdvancedSettings toAdvancedSettings( NetworkSpacesSettings network,
                                             NetworkSpacesInternalSettings networkInternal,
                                             ServicesInternalSettings services )
     {
@@ -301,10 +301,10 @@ class SettingsManager
 
         List<IPDBMatcher> localMatcherList = getLocalMatcherList( primarySpace );
 
-        return new NatAdvancedSettingsImpl( network, services.toSettings(), localMatcherList );
+        return new RouterAdvancedSettingsImpl( network, services.toSettings(), localMatcherList );
     }
 
-    NatBasicSettings toBasicSettings( Tid tid,
+    RouterBasicSettings toBasicSettings( Tid tid,
                                       NetworkSpacesInternalSettings networkSettings,
                                       ServicesInternalSettings servicesSettings )
     {                
@@ -315,69 +315,69 @@ class SettingsManager
 
         List<IPDBMatcher> localMatcherList = getLocalMatcherList( primarySpace );
         
-        NatBasicSettings natSettings = new NatSettingsImpl( tid, SetupState.BASIC, localMatcherList );
+        RouterBasicSettings routerSettings = new RouterSettingsImpl( tid, SetupState.BASIC, localMatcherList );
         
         /* Get the network space list in order to determine how many spaces there are */
         if ( networkSpaceList.size() == 1 ) {
             /* Use this for the dmz */
             NetworkSpaceInternal networkSpace = networkSpaceList.get( 0 );
             
-            /* Nat is disabled */
-            natSettings.setNatEnabled( false );
-            natSettings.setNatInternalAddress( NatUtil.DEFAULT_NAT_ADDRESS );
-            natSettings.setNatInternalSubnet( NatUtil.DEFAULT_NAT_NETMASK );
+            /* Router is disabled */
+            routerSettings.setRouterEnabled( false );
+            routerSettings.setRouterInternalAddress( RouterUtil.DEFAULT_NAT_ADDRESS );
+            routerSettings.setRouterInternalSubnet( RouterUtil.DEFAULT_NAT_NETMASK );
         } else if ( networkSpaceList.size() > 1 ) {
             NetworkSpaceInternal networkSpace = networkSpaceList.get( 1 );
             
-            natSettings.setNatEnabled( networkSpace.getIsEnabled());
+            routerSettings.setRouterEnabled( networkSpace.getIsEnabled());
             IPNetwork primary = networkSpace.getPrimaryAddress();
-            natSettings.setNatInternalAddress( primary.getNetwork());
-            natSettings.setNatInternalSubnet( primary.getNetmask());
+            routerSettings.setRouterInternalAddress( primary.getNetwork());
+            routerSettings.setRouterInternalSubnet( primary.getNetmask());
         } else {
             logger.error( "No network spaces, returning default settings" );
-            natSettings = getDefaultSettings( tid );
+            routerSettings = getDefaultSettings( tid );
         }
         
         /* DMZ settings (DMZ settings are registered against the primary space) */
-        setupDmz( natSettings, networkSpaceList.get( 0 ));
+        setupDmz( routerSettings, networkSpaceList.get( 0 ));
 
         /* Setup the services settings */
         
         /* dhcp settings */
         if ( servicesSettings == null ) {
             /* Default services settings */
-            natSettings.setDhcpEnabled( true );
-            natSettings.setDhcpStartAddress( NatUtil.DEFAULT_DHCP_START );
-            natSettings.setDhcpEndAddress( NatUtil.DEFAULT_DHCP_END );
-            natSettings.setDhcpLeaseTime( NatUtil.DEFAULT_LEASE_TIME_SEC );
-            natSettings.setDhcpLeaseList( new LinkedList<DhcpLeaseRule>());
+            routerSettings.setDhcpEnabled( true );
+            routerSettings.setDhcpStartAddress( RouterUtil.DEFAULT_DHCP_START );
+            routerSettings.setDhcpEndAddress( RouterUtil.DEFAULT_DHCP_END );
+            routerSettings.setDhcpLeaseTime( RouterUtil.DEFAULT_LEASE_TIME_SEC );
+            routerSettings.setDhcpLeaseList( new LinkedList<DhcpLeaseRule>());
             
-            natSettings.setDnsEnabled( true );
-            natSettings.setDnsLocalDomain( null );
-            natSettings.setDnsStaticHostList( new LinkedList<DnsStaticHostRule>());
+            routerSettings.setDnsEnabled( true );
+            routerSettings.setDnsLocalDomain( null );
+            routerSettings.setDnsStaticHostList( new LinkedList<DnsStaticHostRule>());
         } else {
-            natSettings.setDhcpEnabled( servicesSettings.getIsDhcpEnabled());
-            natSettings.setDhcpStartAddress( servicesSettings.getDhcpStartAddress());
-            natSettings.setDhcpEndAddress( servicesSettings.getDhcpEndAddress());
-            natSettings.setDhcpLeaseTime( servicesSettings.getDhcpLeaseTime());
-            natSettings.setDhcpLeaseList( servicesSettings.getDhcpLeaseRuleList());
+            routerSettings.setDhcpEnabled( servicesSettings.getIsDhcpEnabled());
+            routerSettings.setDhcpStartAddress( servicesSettings.getDhcpStartAddress());
+            routerSettings.setDhcpEndAddress( servicesSettings.getDhcpEndAddress());
+            routerSettings.setDhcpLeaseTime( servicesSettings.getDhcpLeaseTime());
+            routerSettings.setDhcpLeaseList( servicesSettings.getDhcpLeaseRuleList());
             
             /* dns settings */
-            natSettings.setDnsEnabled( servicesSettings.getIsDnsEnabled());
-            natSettings.setDnsLocalDomain( servicesSettings.getDnsLocalDomain());
-            natSettings.setDnsStaticHostList( servicesSettings.getDnsStaticHostRuleList());
+            routerSettings.setDnsEnabled( servicesSettings.getIsDnsEnabled());
+            routerSettings.setDnsLocalDomain( servicesSettings.getDnsLocalDomain());
+            routerSettings.setDnsStaticHostList( servicesSettings.getDnsStaticHostRuleList());
         }
         
         /* Setup the redirect settings */
-        natSettings.setRedirectList( networkSettings.getRedirectRuleList());
+        routerSettings.setRedirectList( networkSettings.getRedirectRuleList());
 
         /* Set the basic network settings for validation */
         /* XXX The network settings are already known, there isn't really a need to craete
          * a new object, but this is more convenient */
-        natSettings.
+        routerSettings.
             setNetworkSettings( UvmContextFactory.context().networkManager().getBasicSettings());
                 
-        return natSettings;
+        return routerSettings;
     }
 
     /** Convert a set of network settings from basic mode to advanced mode */
@@ -437,7 +437,7 @@ class SettingsManager
 
     }
 
-    private void setupDmz( NatBasicSettings settings, NetworkSpaceInternal space )
+    private void setupDmz( RouterBasicSettings settings, NetworkSpaceInternal space )
     {
         settings.setDmzEnabled( space.getIsDmzHostEnabled());
         settings.setDmzLoggingEnabled( space.getIsDmzHostLoggingEnabled());
@@ -446,7 +446,7 @@ class SettingsManager
             /* Disable dmz, just so that it will save even if
              * it isn't in the corect network. */
             settings.setDmzEnabled( false );
-            settings.setDmzAddress( NatUtil.DEFAULT_DMZ_ADDRESS );
+            settings.setDmzAddress( RouterUtil.DEFAULT_DMZ_ADDRESS );
         } else {
             settings.setDmzAddress( dmz );
         }
@@ -458,7 +458,7 @@ class SettingsManager
 
         IPMatcherFactory ipmf = IPMatcherFactory.getInstance();
         
-        list.addAll( NatUtil.getInstance().getEmptyLocalMatcherList());
+        list.addAll( RouterUtil.getInstance().getEmptyLocalMatcherList());
         
         /* If the primary space is not null, add a matcher for each alias */
         if ( primary != null ) {
@@ -478,12 +478,12 @@ class SettingsManager
         return list;
     }
 
-    NatBasicSettings getDefaultSettings( Tid tid )
+    RouterBasicSettings getDefaultSettings( Tid tid )
     {
         logger.info( "Using default settings" );
 
-        NatSettingsImpl settings = new NatSettingsImpl( tid, SetupState.BASIC, 
-                                                        NatUtil.getInstance().getEmptyLocalMatcherList());
+        RouterSettingsImpl settings = new RouterSettingsImpl( tid, SetupState.BASIC, 
+                                                        RouterUtil.getInstance().getEmptyLocalMatcherList());
 
         List<RedirectRule> redirectList = new LinkedList<RedirectRule>();
 
@@ -493,16 +493,16 @@ class SettingsManager
         ProtocolMatcherFactory  prmf = ProtocolMatcherFactory.getInstance();
 
         try {
-            settings.setNatEnabled( true );
-            settings.setNatInternalAddress( NatUtil.DEFAULT_NAT_ADDRESS );
-            settings.setNatInternalSubnet( NatUtil.DEFAULT_NAT_NETMASK );
+            settings.setRouterEnabled( true );
+            settings.setRouterInternalAddress( RouterUtil.DEFAULT_NAT_ADDRESS );
+            settings.setRouterInternalSubnet( RouterUtil.DEFAULT_NAT_NETMASK );
 
             settings.setDmzLoggingEnabled( false );
 
             /* DMZ Settings */
             settings.setDmzEnabled( false );
             /* A sample DMZ */
-            settings.setDmzAddress( NatUtil.DEFAULT_DMZ_ADDRESS );
+            settings.setDmzAddress( RouterUtil.DEFAULT_DMZ_ADDRESS );
             
             // A few port forwards
             // 21 to 21
@@ -580,7 +580,7 @@ class SettingsManager
             settings.setDnsEnabled( true );
             settings.setDhcpEnabled( true );
 
-            settings.setDhcpStartAndEndAddress( NatUtil.DEFAULT_DHCP_START, NatUtil.DEFAULT_DHCP_END );
+            settings.setDhcpStartAndEndAddress( RouterUtil.DEFAULT_DHCP_START, RouterUtil.DEFAULT_DHCP_END );
         } catch ( Exception e ) {
             logger.error( "This should never happen", e );
         }

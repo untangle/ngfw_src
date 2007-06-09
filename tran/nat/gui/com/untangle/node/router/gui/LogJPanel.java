@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.node.nat.gui;
+package com.untangle.node.router.gui;
 
 import java.util.*;
 import javax.swing.event.ChangeEvent;
@@ -27,7 +27,7 @@ import com.untangle.uvm.logging.RepositoryDesc;
 import com.untangle.uvm.logging.LogEvent;
 import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.uvm.node.Node;
-import com.untangle.node.nat.*;
+import com.untangle.node.router.*;
 
 public class LogJPanel extends MLogTableJPanel
 {
@@ -35,7 +35,7 @@ public class LogJPanel extends MLogTableJPanel
     {
         super(node, mNodeControlsJPanel);
 
-        final Nat nat = (Nat)logNode;
+        final Router nat = (Router)logNode;
 
         setTableModel(new LogTableModel());
 
@@ -46,7 +46,7 @@ public class LogJPanel extends MLogTableJPanel
     }
 
     protected void refreshSettings(){
-        Nat nat = (Nat)logNode;
+        Router nat = (Router)logNode;
         EventManager<LogEvent> em = nat.getEventManager();
         EventRepository<LogEvent> ef = em.getRepository((String)queryJComboBox.getSelectedItem());
         settings = ef.getEvents();

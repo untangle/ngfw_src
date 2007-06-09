@@ -9,25 +9,25 @@
  * $Id$
  */
 
-package com.untangle.node.nat;
+package com.untangle.node.router;
 
 import com.untangle.uvm.tapi.TCPNewSessionRequest;
 import com.untangle.uvm.tapi.TCPSession;
 import com.untangle.node.token.TokenHandler;
 import com.untangle.node.token.TokenHandlerFactory;
 
-public class NatFtpFactory implements TokenHandlerFactory
+public class RouterFtpFactory implements TokenHandlerFactory
 {
-    private final NatImpl node;
+    private final RouterImpl node;
 
-    NatFtpFactory( NatImpl node )
+    RouterFtpFactory( RouterImpl node )
     {
         this.node = node;
     }
 
     public TokenHandler tokenHandler( TCPSession session )
     {
-        return new NatFtpHandler( session, node);
+        return new RouterFtpHandler( session, node);
     }
 
     public void handleNewSessionRequest(TCPNewSessionRequest tsr)
