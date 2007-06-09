@@ -26,7 +26,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
-import java.awt.geom.AffineNode;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
@@ -167,7 +167,7 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
         setVisible(false);
         getTopLevelAncestor().repaint();
         for (int i = 0; i < ticker.length; i++)  // put back to corner for the next use
-            ticker[i].node(AffineNode.getTranslateInstance(-newCenterX, -newCenterY));
+            ticker[i].transform(AffineTransform.getTranslateInstance(-newCenterX, -newCenterY));
     }
     public void stopLater(){ stopLater(-1); }
     public void stopLater(final long minRunTime){
@@ -244,39 +244,39 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
 
     private long start;
     private double fixedIncrement;
-    private AffineNode rotateNode;
-    private AffineNode translateNode;
-    private AffineNode fullNode;
+    private AffineTransform rotateTransform;
+    private AffineTransform translateTransform;
+    private AffineTransform fullTransform;
     private double lastCenterX, lastCenterY;
     private double newCenterX, newCenterY;
-    private boolean doUpdateNode;
+    private boolean doUpdateTransform;
     public void actionPerformed(ActionEvent evt){
         newCenterX = getWidth() / 2;
         newCenterY = getHeight() / 2;
         if( doInit ){
             lastCenterX = lastCenterY = 0d;
             fixedIncrement = 2.0 * Math.PI / ((double) barsCount);
-            translateNode = AffineNode.getTranslateInstance(newCenterX, newCenterY);
-            rotateNode = AffineNode.getRotateInstance(fixedIncrement, newCenterX, newCenterY);
-            fullNode = rotateNode;
-            fullNode.concatenate(translateNode);
+            translateTransform = AffineTransform.getTranslateInstance(newCenterX, newCenterY);
+            rotateTransform = AffineTransform.getRotateInstance(fixedIncrement, newCenterX, newCenterY);
+            fullTransform = rotateTransform;
+            fullTransform.concatenate(translateTransform);
             start = System.currentTimeMillis();
-            doUpdateNode = true;
+            doUpdateTransform = true;
             doInit = false;
         }
         else if( (lastCenterX!=newCenterX) || (lastCenterY!=newCenterY) ) {
-            translateNode = AffineNode.getTranslateInstance(newCenterX-lastCenterX, newCenterY-lastCenterY);
-            rotateNode = AffineNode.getRotateInstance(fixedIncrement, newCenterX, newCenterY);
-            fullNode = rotateNode;
-            fullNode.concatenate(translateNode);
-            doUpdateNode = true;
+            translateTransform = AffineTransform.getTranslateInstance(newCenterX-lastCenterX, newCenterY-lastCenterY);
+            rotateTransform = AffineTransform.getRotateInstance(fixedIncrement, newCenterX, newCenterY);
+            fullTransform = rotateTransform;
+            fullTransform.concatenate(translateTransform);
+            doUpdateTransform = true;
         }
-        else if(doUpdateNode){
-            translateNode = AffineNode.getTranslateInstance(0d, 0d);
-            rotateNode = AffineNode.getRotateInstance(fixedIncrement, newCenterX, newCenterY);
-            fullNode = rotateNode;
-            fullNode.concatenate(translateNode);
-            doUpdateNode = false;
+        else if(doUpdateTransform){
+            translateTransform = AffineTransform.getTranslateInstance(0d, 0d);
+            rotateTransform = AffineTransform.getRotateInstance(fixedIncrement, newCenterX, newCenterY);
+            fullTransform = rotateTransform;
+            fullTransform.concatenate(translateTransform);
+            doUpdateTransform = false;
         }
         lastCenterX = newCenterX;
         lastCenterY = newCenterY;
@@ -285,7 +285,7 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
             alphaLevel = rampUp ? 255 : 0;
 
         for (int i = 0; i < ticker.length; i++)
-            ticker[i].node(fullNode);
+            ticker[i].transform(fullTransform);
         paintContent = true;
         repaint();
 
@@ -305,9 +305,9 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
         double fixedAngle = 2.0 * Math.PI / ((double) barsCount);
         for (double i = 0.0; i < (double) barsCount; i++){
             Area primitive = buildPrimitive();
-            AffineNode fullNode = AffineNode.getRotateInstance(-i * fixedAngle);
-            fullNode.concatenate( AffineNode.getTranslateInstance(45.0, -6.0) );
-            primitive.node(fullNode);
+            AffineTransform fullTransform = AffineTransform.getRotateInstance(-i * fixedAngle);
+            fullTransform.concatenate( AffineTransform.getTranslateInstance(45.0, -6.0) );
+            primitive.transform(fullTransform);
             ticker[(int) i] = primitive;
         }
         return ticker;
@@ -321,8 +321,8 @@ public class InfiniteProgressJComponent extends JComponent implements MouseListe
         Area tick = new Area(body);
         tick.add(new Area(head));
         tick.add(new Area(tail));
-        AffineNode rotateNode = AffineNode.getRotateInstance(Math.toRadians(15));
-        tick.node(rotateNode);
+        AffineTransform rotateTransform = AffineTransform.getRotateInstance(Math.toRadians(15));
+        tick.transform(rotateTransform);
         return tick;
     }
 
