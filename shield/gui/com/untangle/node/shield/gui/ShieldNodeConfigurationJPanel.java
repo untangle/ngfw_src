@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.airgap.gui;
+package com.untangle.node.shield.gui;
 
 import java.awt.Insets;
 import java.util.*;
@@ -17,11 +17,11 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.*;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.tran.airgap.AirgapSettings;
-import com.untangle.tran.airgap.ShieldNodeRule;
+import com.untangle.node.shield.ShieldSettings;
+import com.untangle.node.shield.ShieldNodeRule;
 
 public class ShieldNodeConfigurationJPanel extends MEditTableJPanel{
 
@@ -96,15 +96,15 @@ class ShieldNodeConfigurationModel extends MSortedTableModel<Object>{
 
         // SAVE SETTINGS //////////
         if( !validateOnly ){
-            AirgapSettings airgapSettings = (AirgapSettings) settings;
-            airgapSettings.setShieldNodeRuleList( elemList );
+            ShieldSettings shieldSettings = (ShieldSettings) settings;
+            shieldSettings.setShieldNodeRuleList( elemList );
         }
     }
 
     public Vector<Vector> generateRows(Object settings) {
-        AirgapSettings airgapSettings = (AirgapSettings) settings;
+        ShieldSettings shieldSettings = (ShieldSettings) settings;
         List<ShieldNodeRule> shieldNodeList =
-            (List<ShieldNodeRule>) airgapSettings.getShieldNodeRuleList();
+            (List<ShieldNodeRule>) shieldSettings.getShieldNodeRuleList();
         Vector<Vector> allRows = new Vector<Vector>( shieldNodeList.size());
         Vector tempRow = null;
         int rowIndex = 0;

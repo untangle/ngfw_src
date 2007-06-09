@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.airgap;
+package com.untangle.node.shield;
 
 import java.io.Serializable;
 import java.sql.Timestamp;

@@ -9,22 +9,22 @@
  * $Id$
  */
 
-package com.untangle.tran.airgap;
+package com.untangle.node.shield;
 
 import junit.framework.*;
 import java.util.*;
-import com.untangle.mvvm.tran.TransformStats;
+import com.untangle.uvm.node.NodeStats;
 
-public class TestFakeTransformStats extends TestCase {
+public class TestFakeNodeStats extends TestCase {
 
-    private TransformStats stats;
+    private NodeStats stats;
 
     /**
      * Constructs a TestBlacklist with the specified name.
      *
      * @param name Test case name.
      */
-    public TestFakeTransformStats(String name) {
+    public TestFakeNodeStats(String name) {
         super(name);
     }
 
@@ -34,7 +34,7 @@ public class TestFakeTransformStats extends TestCase {
      * Called before every test case method.
      */
     protected void setUp() {
-        stats = new TransformStats();
+        stats = new NodeStats();
     }
 
     /**
@@ -56,7 +56,7 @@ public class TestFakeTransformStats extends TestCase {
         assertEquals(stats.t2cChunks(), 0);
         assertEquals(stats.t2sChunks(), 0);
 
-        FakeTransformStats.update(stats);
+        FakeNodeStats.update(stats);
 
         // After update, at least eth0 > 0
         assertTrue(stats.s2tBytes() > 0);
@@ -82,7 +82,7 @@ public class TestFakeTransformStats extends TestCase {
         // Reflection is used here to add all
         // the testXXX() methods to the suite.
         //
-        TestSuite suite = new TestSuite(TestFakeTransformStats.class);
+        TestSuite suite = new TestSuite(TestFakeNodeStats.class);
 
         return suite;
     }

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.airgap;
+package com.untangle.node.shield;
 
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -26,19 +26,19 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.tran.airgap.ShieldNodeRule;
+import com.untangle.uvm.security.Tid;
+import com.untangle.node.shield.ShieldNodeRule;
 import org.hibernate.annotations.IndexColumn;
 
 /**
- * Settings for the Airgap Transform.
+ * Settings for the Shield Node.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @Entity
-@Table(name="tr_airgap_settings", schema="settings")
-public class AirgapSettings implements Serializable
+@Table(name="tr_shield_settings", schema="settings")
+public class ShieldSettings implements Serializable
 {
     private static final long serialVersionUID = -4330737456182204381L;
 
@@ -47,9 +47,9 @@ public class AirgapSettings implements Serializable
 
     private List<ShieldNodeRule> shieldNodeRuleList = new LinkedList<ShieldNodeRule>();
 
-    public AirgapSettings() { }
+    public ShieldSettings() { }
 
-    public AirgapSettings(Tid tid)
+    public ShieldSettings(Tid tid)
     {
         this.tid = tid;
     }
@@ -68,7 +68,7 @@ public class AirgapSettings implements Serializable
     }
 
     /**
-     * Transform id for these settings.
+     * Node id for these settings.
      *
      * @return tid for these settings
      */

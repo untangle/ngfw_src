@@ -1,3 +1,3 @@
 # -*-ruby-*-
 
-TransformBuilder.makeTransform(BuildEnv::ALPINE, 'airgap')
+NodeBuilder.makeNode(BuildEnv::SRC, 'shield')

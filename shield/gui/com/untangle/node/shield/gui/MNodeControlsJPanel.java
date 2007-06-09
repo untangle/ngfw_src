@@ -10,22 +10,22 @@
  */
 
 
-package com.untangle.tran.airgap.gui;
+package com.untangle.node.shield.gui;
 
 import java.awt.*;
 import javax.swing.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 
-public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransformControlsJPanel{
+public class MNodeControlsJPanel extends com.untangle.gui.node.MNodeControlsJPanel{
 
     private static final String NAME_GENERAL_SETTINGS = "General Settings";
     private static final String NAME_LOG = "Event Log";
     private static final String NAME_SHIELD_PANEL = "Exception List";
 
 
-    public MTransformControlsJPanel(MTransformJPanel mTransformJPanel) {
-        super(mTransformJPanel);
+    public MNodeControlsJPanel(MNodeJPanel mNodeJPanel) {
+        super(mNodeJPanel);
     }
 
     public void generateGui() {
@@ -37,7 +37,7 @@ public class MTransformControlsJPanel extends com.untangle.gui.transform.MTransf
         shieldJPanel.setSettingsChangedListener(this);
 
         // EVENT LOG //////////
-        LogJPanel logJPanel = new LogJPanel(mTransformJPanel.getTransform(), this);
+        LogJPanel logJPanel = new LogJPanel(mNodeJPanel.getNode(), this);
         addTab(NAME_LOG, null, logJPanel);
         addShutdownable(NAME_LOG, logJPanel);
     }

@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.airgap;
+package com.untangle.node.shield;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,23 +19,23 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.untangle.mvvm.IntfEnum;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.localapi.LocalShieldManager;
-import com.untangle.mvvm.shield.ShieldNodeSettings;
-import com.untangle.mvvm.tapi.AbstractTransform;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.tran.TransformStartException;
-import com.untangle.mvvm.tran.TransformState;
-import com.untangle.mvvm.tran.TransformStats;
-import com.untangle.mvvm.tran.TransformStopException;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.IntfEnum;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.localapi.LocalShieldManager;
+import com.untangle.uvm.shield.ShieldNodeSettings;
+import com.untangle.uvm.tapi.AbstractNode;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.node.NodeStats;
+import com.untangle.uvm.node.NodeStopException;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-public class AirgapTransformImpl extends AbstractTransform
-    implements AirgapTransform
+public class ShieldNodeImpl extends AbstractNode
+    implements ShieldNode
 {
     private static final String SHIELD_REJECTION_EVENT_QUERY
         = "SELECT time_stamp, client_addr, client_intf, reputation, limited, dropped, rejected"
@@ -50,36 +50,36 @@ public class AirgapTransformImpl extends AbstractTransform
     private static final int DROPPED_IDX     =  6;
     private static final int REJECTED_IDX    =  7;
 
-    private final Logger logger = Logger.getLogger(AirgapTransformImpl.class);
+    private final Logger logger = Logger.getLogger(ShieldNodeImpl.class);
 
     private final List<ShieldNodeSettings> emptyList = Collections.emptyList();
 
     private final PipeSpec pipeSpec[] = new PipeSpec[0];
 
-    private AirgapSettings settings;
+    private ShieldSettings settings;
 
     // We keep a stats around so we don't have to create one each time.
-    private TransformStats fakeStats;
+    private NodeStats fakeStats;
 
-    public AirgapTransformImpl() {}
+    public ShieldNodeImpl() {}
 
-    public void setAirgapSettings(final AirgapSettings settings)
+    public void setShieldSettings(final ShieldSettings settings)
     {
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
                 {
                     s.merge(settings);
-                    AirgapTransformImpl.this.settings = settings;
+                    ShieldNodeImpl.this.settings = settings;
                     return true;
                 }
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
-        if ( getRunState() == TransformState.RUNNING ) {
-            LocalShieldManager lsm = MvvmContextFactory.context().localShieldManager();
+        if ( getRunState() == NodeState.RUNNING ) {
+            LocalShieldManager lsm = UvmContextFactory.context().localShieldManager();
 
             try {
                 lsm.setShieldNodeSettings( this.settings.getShieldNodeRuleList());
@@ -89,11 +89,11 @@ public class AirgapTransformImpl extends AbstractTransform
         }
     }
 
-    public AirgapSettings getAirgapSettings()
+    public ShieldSettings getShieldSettings()
     {
         validateSettings();
         if( settings == null )
-            logger.error("Settings not yet initialized. State: " + getTransformContext().getRunState() );
+            logger.error("Settings not yet initialized. State: " + getNodeContext().getRunState() );
         return settings;
     }
 
@@ -105,9 +105,9 @@ public class AirgapTransformImpl extends AbstractTransform
 
     public void initializeSettings()
     {
-        AirgapSettings settings = new AirgapSettings(this.getTid());
+        ShieldSettings settings = new ShieldSettings(this.getTid());
         logger.info("Initializing Settings...");
-        setAirgapSettings( settings);
+        setShieldSettings( settings);
     }
 
     protected void postInit(String[] args)
@@ -117,20 +117,20 @@ public class AirgapTransformImpl extends AbstractTransform
                 public boolean doWork(Session s)
                 {
                     Query q = s.createQuery
-                        ("from AirgapSettings ts where ts.tid = :tid");
+                        ("from ShieldSettings ts where ts.tid = :tid");
                     q.setParameter("tid", getTid());
-                    AirgapTransformImpl.this.settings = (AirgapSettings)q.uniqueResult();
+                    ShieldNodeImpl.this.settings = (ShieldSettings)q.uniqueResult();
                     return true;
                 }
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
     }
 
-    public TransformStats getStats() throws IllegalStateException
+    public NodeStats getStats() throws IllegalStateException
     {
-        FakeTransformStats.update(fakeStats);
+        FakeNodeStats.update(fakeStats);
         return fakeStats;
     }
 
@@ -142,7 +142,7 @@ public class AirgapTransformImpl extends AbstractTransform
             {
                 public boolean doWork(Session s) throws SQLException
                 {
-                    IntfEnum intfEnum = MvvmContextFactory.context().localIntfManager().getIntfEnum();
+                    IntfEnum intfEnum = UvmContextFactory.context().localIntfManager().getIntfEnum();
 
                     Connection c = s.connection();
                     PreparedStatement ps = c.prepareStatement( SHIELD_REJECTION_EVENT_QUERY );
@@ -173,7 +173,7 @@ public class AirgapTransformImpl extends AbstractTransform
 
                 public Object getResult() { return null; }
             };
-        getTransformContext().runTransaction(tw);
+        getNodeContext().runTransaction(tw);
 
         return l;
     }
@@ -182,30 +182,30 @@ public class AirgapTransformImpl extends AbstractTransform
     {
         validateSettings();
 
-        fakeStats = new TransformStats();
+        fakeStats = new NodeStats();
     }
 
-    protected void postStart() throws TransformStartException
+    protected void postStart() throws NodeStartException
     {
         validateSettings();
-        LocalShieldManager lsm = MvvmContextFactory.context().localShieldManager();
+        LocalShieldManager lsm = UvmContextFactory.context().localShieldManager();
 
         try {
             lsm.setShieldNodeSettings( this.settings.getShieldNodeRuleList());
         } catch ( Exception e ) {
-            throw new TransformStartException( e );
+            throw new NodeStartException( e );
         }
     }
 
-    protected void postStop() throws TransformStopException
+    protected void postStop() throws NodeStopException
     {
-        LocalShieldManager lsm = MvvmContextFactory.context().localShieldManager();
+        LocalShieldManager lsm = UvmContextFactory.context().localShieldManager();
 
         try {
             /* Deconfigure all of the nodes */
             lsm.setShieldNodeSettings( this.emptyList );
         } catch ( Exception e ) {
-            throw new TransformStopException( e );
+            throw new NodeStopException( e );
         }
     }
 
@@ -225,11 +225,11 @@ public class AirgapTransformImpl extends AbstractTransform
 
     public Object getSettings()
     {
-        return getAirgapSettings();
+        return getShieldSettings();
     }
 
     public void setSettings(Object settings)
     {
-        setAirgapSettings((AirgapSettings)settings);
+        setShieldSettings((ShieldSettings)settings);
     }
 }

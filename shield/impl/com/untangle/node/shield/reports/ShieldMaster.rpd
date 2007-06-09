@@ -1,6 +1,6 @@
 TEMPLATE=MasterOfOneChild
-REPORT_NAME=AirgapMaster
+REPORT_NAME=ShieldMaster
 REPORT_TITLE=Attack Blocker - Summary
 EXTRA_PARAM_1.name=reportTitlePrefix
 EXTRA_PARAM_1.type=java.lang.String
-SUBREPORT_1=reports/AirgapViolators.jasper
+SUBREPORT_1=reports/ShieldViolators.jasper

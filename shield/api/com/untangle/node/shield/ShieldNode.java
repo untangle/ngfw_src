@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.tran.airgap;
+package com.untangle.node.shield;
 
 import java.util.List;
 
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.node.Node;
 
-public interface AirgapTransform extends Transform
+public interface ShieldNode extends Node
 {
-    public void setAirgapSettings(AirgapSettings settings);
-    public AirgapSettings getAirgapSettings();
+    public void setShieldSettings(ShieldSettings settings);
+    public ShieldSettings getShieldSettings();
 
     List<ShieldRejectionLogEntry> getLogs( int limit );
 }

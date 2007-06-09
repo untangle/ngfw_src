@@ -1,2 +1,2 @@
-com.untangle.tran.airgap.AirgapSettings
-com.untangle.tran.airgap.ShieldNodeRule
+com.untangle.node.shield.ShieldSettings
+com.untangle.node.shield.ShieldNodeRule

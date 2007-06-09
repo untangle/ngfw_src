@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mvvm-transform>
-  <transform-desc name="airgap-transform"
+<uvm-node>
+  <node-desc name="shield-node"
                   display-name="Attack Blocker"
-                  classname="com.untangle.tran.airgap.AirgapTransformImpl"
-                  gui-classname="com.untangle.tran.airgap.gui.MTransformJPanel"/>
-</mvvm-transform>
+                  classname="com.untangle.node.shield.ShieldNodeImpl"
+                  gui-classname="com.untangle.node.shield.gui.MNodeJPanel"/>
+</uvm-node>

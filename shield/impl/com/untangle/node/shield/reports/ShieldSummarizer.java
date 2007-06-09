@@ -9,19 +9,19 @@
  * $Id$
  */
 
-package com.untangle.tran.airgap.reports;
+package com.untangle.node.shield.reports;
 
 import java.sql.*;
 
-import com.untangle.mvvm.reporting.BaseSummarizer;
-import com.untangle.mvvm.reporting.Util;
+import com.untangle.uvm.reporting.BaseSummarizer;
+import com.untangle.uvm.reporting.Util;
 import org.apache.log4j.Logger;
 
-public class AirgapSummarizer extends BaseSummarizer {
+public class ShieldSummarizer extends BaseSummarizer {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public AirgapSummarizer() { }
+    public ShieldSummarizer() { }
 
     public String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate)
     {
@@ -78,8 +78,8 @@ public class AirgapSummarizer extends BaseSummarizer {
         addEntry("&nbsp;&nbsp;&nbsp;Defensive", "", Util.percentNumber(loadClosed, loadTotal));
 
         // XXXX
-        String tranName = "Attack Blocker";
+        String nodeName = "Attack Blocker";
 
-        return summarizeEntries(tranName);
+        return summarizeEntries(nodeName);
     }
 }

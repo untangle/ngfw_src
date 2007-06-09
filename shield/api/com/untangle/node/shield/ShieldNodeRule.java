@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.airgap;
+package com.untangle.node.shield;
 
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -19,10 +19,10 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.shield.ShieldNodeSettings;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.Rule;
+import com.untangle.uvm.shield.ShieldNodeSettings;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.Rule;
 import org.hibernate.annotations.Type;
 
 
@@ -33,7 +33,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="tr_airgap_shield_node_rule", schema="settings")
+@Table(name="tr_shield_shield_node_rule", schema="settings")
 public class ShieldNodeRule extends Rule implements ShieldNodeSettings
 {
     private static final long serialVersionUID = -6928365798856031269L;
@@ -73,7 +73,7 @@ public class ShieldNodeRule extends Rule implements ShieldNodeSettings
      *
      * @return the node to modify
      */
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getAddress()
     {
         return this.address;
@@ -104,7 +104,7 @@ public class ShieldNodeRule extends Rule implements ShieldNodeSettings
      *
      * @return the netmask
      */
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getNetmask()
     {
         return this.netmask;

@@ -10,16 +10,16 @@
  */
 
 
-package com.untangle.tran.airgap.gui;
+package com.untangle.node.shield.gui;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.pipeline.MPipelineJPanel;
-import com.untangle.mvvm.tran.TransformContext;
+import com.untangle.uvm.node.NodeContext;
 
-public class MTransformDisplayJPanel extends com.untangle.gui.transform.MTransformDisplayJPanel{
+public class MNodeDisplayJPanel extends com.untangle.gui.node.MNodeDisplayJPanel{
 
-    public MTransformDisplayJPanel(MTransformJPanel mTransformJPanel){
-        super(mTransformJPanel);
+    public MNodeDisplayJPanel(MNodeJPanel mNodeJPanel){
+        super(mNodeJPanel);
         
         super.activity0JLabel.setText("TCP OK");
         super.activity1JLabel.setText("UDP OK");

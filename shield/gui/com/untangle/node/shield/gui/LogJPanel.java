@@ -9,27 +9,27 @@
  * $Id$
  */
 
-package com.untangle.tran.airgap.gui;
+package com.untangle.node.shield.gui;
 
 import java.util.*;
 import javax.swing.table.*;
 
-import com.untangle.gui.transform.*;
+import com.untangle.gui.node.*;
 import com.untangle.gui.util.Util;
 import com.untangle.gui.widgets.editTable.*;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.tran.airgap.*;
+import com.untangle.uvm.node.Node;
+import com.untangle.node.shield.*;
 
 public class LogJPanel extends MLogTableJPanel {
 
-    public LogJPanel(Transform transform, MTransformControlsJPanel mTransformControlsJPanel){
-        super(transform, mTransformControlsJPanel);
+    public LogJPanel(Node node, MNodeControlsJPanel mNodeControlsJPanel){
+        super(node, mNodeControlsJPanel);
         setTableModel(new LogTableModel());
         queryJComboBox.setVisible(false);
     }
 
     protected void refreshSettings(){
-        settings = ((AirgapTransform)super.logTransform).getLogs(getEventDepth());
+        settings = ((ShieldNode)super.logNode).getLogs(getEventDepth());
     }
 
     class LogTableModel extends MSortedTableModel<Object>{

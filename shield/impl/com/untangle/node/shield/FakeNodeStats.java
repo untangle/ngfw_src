@@ -8,16 +8,16 @@
  *
  * $Id$
  */
-package com.untangle.tran.airgap;
+package com.untangle.node.shield;
 
 import java.io.*;
 import java.util.*;
 
-import com.untangle.mvvm.tran.TransformStats;
+import com.untangle.uvm.node.NodeStats;
 import org.apache.log4j.Logger;
 
 /**
- // Airgap isn't real, so we get stats from /proc/net/dev, which looks like:
+ // Shield isn't real, so we get stats from /proc/net/dev, which looks like:
  // Inter-|   Receive                                                |  Transmit
  //  face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed
  //   eth0:10006263   19526    0    0    8     0          0         0  2902562   15012    0    0    0     0       0          0
@@ -34,21 +34,21 @@ import org.apache.log4j.Logger;
  //     C->T and T->S is count of all received bytes/chunks
  //     S->T and T->C is count of all transmitted bytes/chunks
  //
- * Describe class <code>FakeTransformStats</code> here.
+ * Describe class <code>FakeNodeStats</code> here.
  *
  * @author <a href="mailto:jdi@slab.ninthwave.com">John Irwin</a>
  * @version 1.0
  */
-class FakeTransformStats {
+class FakeNodeStats {
 
     private static final String PATH_PROCNET_DEV = "/proc/net/dev";
     private static final String ETH_DEV_PREFIX = "eth";
     private static final String TUN_DEV_PREFIX = "tun";
     private static final String TAP_DEV_PREFIX = "tap";
 
-    private static final Logger logger = Logger.getLogger(FakeTransformStats.class);
+    private static final Logger logger = Logger.getLogger(FakeNodeStats.class);
 
-    public static void update(TransformStats stats) {
+    public static void update(NodeStats stats) {
         String line = null;
 
         long totRxBytes = 0;
