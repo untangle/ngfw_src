@@ -38,7 +38,7 @@ class UvmRealm extends RealmBase
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final String userQuery
-        = "SELECT password, read_only FROM uvm_user WHERE login = ?";
+        = "SELECT password, read_only FROM mvvm_user WHERE login = ?";
 
     // XXX Very small memory leak here if the nonce is never used (quite rare)
     private HashMap<String, Principal> nonces = new HashMap<String, Principal>();

@@ -350,7 +350,7 @@ public class NodeReporter
     private String[] getUserNames(Connection conn, Timestamp startTime, Timestamp endTime) throws Exception
     {
         ArrayList<String> uNameList = new ArrayList();
-        String sql = "SELECT DISTINCT username FROM events.uvm_lookup_evt WHERE time_stamp >= ? AND time_stamp < ?";
+        String sql = "SELECT DISTINCT username FROM events.mvvm_lookup_evt WHERE time_stamp >= ? AND time_stamp < ?";
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);

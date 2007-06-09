@@ -27,7 +27,7 @@ import org.hibernate.annotations.Type;
 
 
 @Entity
-@Table(name="uvm_wmi_settings", schema="settings")
+@Table(name="mvvm_wmi_settings", schema="settings")
 public class WMISettings implements Serializable, Validatable
 {
     // private static final long serialVersionUID = 172494253701617361L;

@@ -88,7 +88,7 @@ public class DhcpMap
 
     private static final String STATIC_HOST_QUERY =
         "SELECT hostname_list, static_address " +
-        " FROM uvm_dns_static_host_rule AS rule,tr_nat_dns_hosts AS list,tr_nat_settings AS settings " +
+        " FROM mvvm_dns_static_host_rule AS rule,tr_nat_dns_hosts AS list,tr_nat_settings AS settings " +
         " WHERE ( rule.rule_id=list.rule_id ) AND ( settings.settings_id=list.setting_id )";
 
     private static final String MANUAL_MAP_QUERY =
@@ -98,7 +98,7 @@ public class DhcpMap
         "              UNION SELECT c_server_addr AS addr FROM pl_endp WHERE pl_endp.server_intf = 1 " +
         // "              UNION SELECT s_client_addr AS addr FROM pl_endp " +
         // "              UNION SELECT s_server_addr AS addr FROM pl_endp " +
-        "              UNION SELECT client_addr   AS addr FROM uvm_login_evt " +
+        "              UNION SELECT client_addr   AS addr FROM mvvm_login_evt " +
         // "              UNION SELECT ip            AS addr FROM shield_rejection_evt " +
         "             ) AS addrs " +
         "        JOIN ipmaddr_dir_entries entry JOIN ipmaddr_rule rule USING (rule_id) " +

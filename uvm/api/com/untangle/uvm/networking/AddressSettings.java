@@ -34,7 +34,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="uvm_address_settings", schema="settings")
+@Table(name="mvvm_address_settings", schema="settings")
 public class AddressSettings implements Serializable, Validatable
 {
     private static final String PUBLIC_ADDRESS_EXCEPTION =

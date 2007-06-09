@@ -33,7 +33,7 @@ import com.untangle.uvm.node.ValidateException;
  * @version 1.0
  */
 @Entity
-@Table(name="uvm_pppoe_connection", schema="settings")
+@Table(name="mvvm_pppoe_connection", schema="settings")
 public class PPPoEConnectionRule extends Rule implements Serializable, Validatable
 {
     /* the username */

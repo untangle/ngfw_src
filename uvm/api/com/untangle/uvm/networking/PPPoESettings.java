@@ -39,7 +39,7 @@ import org.hibernate.annotations.IndexColumn;
  * @version 1.0
  */
 @Entity
-@Table(name="uvm_pppoe", schema="settings")
+@Table(name="mvvm_pppoe", schema="settings")
 public class PPPoESettings implements Serializable, Validatable
 {
     private Long id;

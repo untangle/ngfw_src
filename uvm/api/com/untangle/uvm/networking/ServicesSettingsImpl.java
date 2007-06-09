@@ -38,7 +38,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="uvm_network_services", schema="settings")
+@Table(name="mvvm_network_services", schema="settings")
 public class ServicesSettingsImpl implements ServicesSettings, Serializable
 {
     private static final long serialVersionUID = 7074952180633919139L;
@@ -230,7 +230,7 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="uvm_dhcp_lease_list",
+    @JoinTable(name="mvvm_dhcp_lease_list",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
@@ -311,7 +311,7 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="uvm_dns_host_list",
+    @JoinTable(name="mvvm_dns_host_list",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")

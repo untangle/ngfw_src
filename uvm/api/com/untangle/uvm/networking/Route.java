@@ -31,7 +31,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="uvm_network_route", schema="settings")
+@Table(name="mvvm_network_route", schema="settings")
 public class Route extends Rule
 {
     /**

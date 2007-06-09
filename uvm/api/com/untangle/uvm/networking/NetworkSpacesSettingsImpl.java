@@ -40,7 +40,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="uvm_network_settings", schema="settings")
+@Table(name="mvvm_network_settings", schema="settings")
 public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Serializable, Validatable
 {
     private Long id;
@@ -260,7 +260,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="uvm_redirects",
+    @JoinTable(name="mvvm_redirects",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")

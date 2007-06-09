@@ -31,7 +31,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="uvm_login_evt", schema="events")
+    @Table(name="mvvm_login_evt", schema="events")
     public class LoginEvent extends LogEvent
     {
         private InetAddress clientAddr;
