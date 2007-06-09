@@ -41,7 +41,35 @@ require "#{SRC_HOME}/jvector/package.rb"
 require "#{SRC_HOME}/nfutil/package.rb"
 require "#{SRC_HOME}/uvm/package.rb"
 require "#{SRC_HOME}/gui/package.rb"
-require "#{SRC_HOME}/tran/package.rb"
+
+require "#{SRC_HOME}/test/package.rb"
+require "#{SRC_HOME}/reporting/package.rb"
+require "#{SRC_HOME}/ftp-casing/package.rb"
+require "#{SRC_HOME}/http-casing/package.rb"
+require "#{SRC_HOME}/mail-casing/package.rb"
+require "#{SRC_HOME}/spyware/package.rb"
+require "#{SRC_HOME}/router/package.rb"
+
+require "#{SRC_HOME}/shield/package.rb"
+require "#{SRC_HOME}/firewall/package.rb"
+require "#{SRC_HOME}/openvpn/package.rb"
+require "#{SRC_HOME}/protofilter/package.rb"
+require "#{SRC_HOME}/sigma/package.rb"
+require "#{SRC_HOME}/webfilter/package.rb"
+require "#{SRC_HOME}/ips/package.rb"
+
+## Base Nodes
+require "#{SRC_HOME}/spam-base/package.rb"
+require "#{SRC_HOME}/virus-base/package.rb"
+
+## SPAM based nodes
+require "#{SRC_HOME}/phish/package.rb"
+require "#{SRC_HOME}/spamassassin/package.rb"
+
+## Virus based nodes
+require "#{SRC_HOME}/clam/package.rb"
+require "#{SRC_HOME}/hauri/package.rb"
+require "#{SRC_HOME}/kav/package.rb"
 
 libalpine_so = "#{BuildEnv::SRC.staging}/libalpine.so"
 
