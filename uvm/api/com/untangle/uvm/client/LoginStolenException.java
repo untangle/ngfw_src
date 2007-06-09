@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.client;
+package com.untangle.uvm.client;
 
-import com.untangle.mvvm.security.LoginSession;
+import com.untangle.uvm.security.LoginSession;
 
 /**
  * Signals that this login session has been terminated because another
