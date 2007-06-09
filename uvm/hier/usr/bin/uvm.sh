@@ -8,7 +8,7 @@ UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-"@PREFIX@/var/log/uvm/console.log"}
 UVM_UVM_LOG=${UVM_UVM_LOG:-"@PREFIX@/var/log/uvm/uvm.log"}
 UVM_GC_LOG=${UVM_GC_LOG:-"@PREFIX@/var/log/uvm/gc.log"}
 UVM_WRAPPER_LOG=${UVM_WRAPPER_LOG:-"@PREFIX@/var/log/uvm/wrapper.log"}
-UVM_LAUNCH=${UVM_LAUNCH:-"@PREFIX@/usr/bin/bunnicula"}
+UVM_LAUNCH=${UVM_LAUNCH:-"@PREFIX@/usr/share/untangle/bin/bunnicula"}
 
 # somewhat less fucking hideous :)
 PG_VERSION=`dpkg --get-selections postgresql-mv* | awk '/install$/ { gsub(/postgresql-mv-?/, "", $1) ; print $1 }'`

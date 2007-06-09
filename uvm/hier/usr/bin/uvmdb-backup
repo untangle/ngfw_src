@@ -60,21 +60,21 @@ datestamp=$(date '+%Y%m%d%H%M')
 
 [ $? -eq 0 ] || exit 1
 
-slapcat -l @PREFIX@/usr/share/metavize/conf/dirbackup.ldif
+slapcat -l @PREFIX@/usr/share/untangle/conf/dirbackup.ldif
 
 tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
         etc/hostname \
         etc/network/interfaces \
         etc/openvpn \
         etc/resolv.conf \
-        usr/share/metavize/conf/argon.properties \
-        usr/share/metavize/conf/keystore \
-        usr/share/metavize/conf/uvm.networking.properties \
-        usr/share/metavize/conf/networking.sh \
-        usr/share/metavize/conf/openvpn/misc \
-        usr/share/metavize/conf/openvpn/pki \
-        usr/share/metavize/conf/timezone \
-        usr/share/metavize/conf/dirbackup.ldif
+        usr/share/untangle/conf/argon.properties \
+        usr/share/untangle/conf/keystore \
+        usr/share/untangle/conf/uvm.networking.properties \
+        usr/share/untangle/conf/networking.sh \
+        usr/share/untangle/conf/openvpn/misc \
+        usr/share/untangle/conf/openvpn/pki \
+        usr/share/untangle/conf/timezone \
+        usr/share/untangle/conf/dirbackup.ldif
 
 [ $? -eq 0 ] || exit 1
 
