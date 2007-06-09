@@ -13,6 +13,14 @@ package com.untangle.mvvm.client;
 
 import com.untangle.mvvm.security.LoginSession;
 
+/**
+ * Signals that this login session has been terminated because another
+ * user has logged in. To allow multiple simultaneous logins, set the
+ * system property <code>mvvm.login.multiuser</code> to <code>true</code>.
+ *
+ * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
+ * @version 1.0
+ */
 public class LoginStolenException extends InvocationException
 {
     private final LoginSession thief;
