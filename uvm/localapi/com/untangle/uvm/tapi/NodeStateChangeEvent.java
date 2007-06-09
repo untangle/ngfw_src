@@ -9,39 +9,39 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
 
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.mvvm.tran.TransformState;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeState;
 
-public class TransformStateChangeEvent extends EventObject
+public class NodeStateChangeEvent extends EventObject
 {
-    private final TransformState transformState;
+    private final NodeState nodeState;
     private final List<String> args;
 
-    TransformStateChangeEvent(Transform t, TransformState transformState,
+    NodeStateChangeEvent(Node t, NodeState nodeState,
                               String[] args)
     {
-        this(t, transformState, (List<String>)(null == args ? Collections.emptyList() :  Arrays.asList(args)));
+        this(t, nodeState, (List<String>)(null == args ? Collections.emptyList() :  Arrays.asList(args)));
     }
 
-    TransformStateChangeEvent(Transform t, TransformState transformState,
+    NodeStateChangeEvent(Node t, NodeState nodeState,
                               List<String> args)
     {
         super(t);
 
-        this.transformState = transformState;
+        this.nodeState = nodeState;
         this.args = Collections.unmodifiableList(args);
     }
 
-    public TransformState getTransformState()
+    public NodeState getNodeState()
     {
-        return transformState;
+        return nodeState;
     }
 
     public List<String> getArgs()

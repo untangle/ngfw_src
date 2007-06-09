@@ -9,19 +9,19 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.net.InetAddress;
 
-import com.untangle.mvvm.NetworkManager;
-import com.untangle.mvvm.tran.IPSessionDesc;
+import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.node.IPSessionDesc;
 
-import com.untangle.mvvm.networking.internal.AccessSettingsInternal;
-import com.untangle.mvvm.networking.internal.AddressSettingsInternal;
-import com.untangle.mvvm.networking.internal.MiscSettingsInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.networking.internal.ServicesInternalSettings;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.networking.internal.AccessSettingsInternal;
+import com.untangle.uvm.networking.internal.AddressSettingsInternal;
+import com.untangle.uvm.networking.internal.MiscSettingsInternal;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.networking.internal.ServicesInternalSettings;
+import com.untangle.uvm.node.ValidateException;
 
 public interface LocalNetworkManager extends NetworkManager
 {

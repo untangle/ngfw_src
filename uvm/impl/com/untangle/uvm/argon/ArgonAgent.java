@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import java.net.InetSocketAddress;
 
 /**
- * The <code>ArgonAgent</code> interface represents an active Transform as seen by
- * the transform API and the pipeline implementation (Argon).  Most transforms
+ * The <code>ArgonAgent</code> interface represents an active Node as seen by
+ * the node API and the pipeline implementation (Argon).  Most nodes
  * only have one active <code>ArgonAgent</code> at a time, the rest have exactly 2
  * (casings).
  *
@@ -23,7 +23,7 @@ import java.net.InetSocketAddress;
  * and accessors to get the live sessions for the pipe.
  *
  * This used to be half of the class called 'Xenon', the other half is the view as seen
- * by the transform and transform API, which is now MPipe.
+ * by the node and node API, which is now MPipe.
  *
  * @author <a href="mailto:jdi@untangle.com"></a>
  * @version 1.0

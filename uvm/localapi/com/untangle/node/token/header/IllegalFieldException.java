@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.token.header;
+package com.untangle.node.token.header;
 
 public class IllegalFieldException extends Exception
 {

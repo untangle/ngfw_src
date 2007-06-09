@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.portal;
+package com.untangle.uvm.portal;
 
 import java.io.Serializable;
 import java.util.ArrayList;

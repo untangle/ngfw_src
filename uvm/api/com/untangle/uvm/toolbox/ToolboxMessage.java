@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.toolbox;
+package com.untangle.uvm.toolbox;
 
-import com.untangle.mvvm.Message;
+import com.untangle.uvm.Message;
 
 public abstract class ToolboxMessage extends Message
 {

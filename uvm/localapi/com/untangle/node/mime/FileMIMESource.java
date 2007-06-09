@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.untangle.tran.util.*;
+import com.untangle.node.util.*;
 
 /**
  * MIMESource implementation which wrapps a file.

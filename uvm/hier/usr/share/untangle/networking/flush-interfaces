@@ -1,10 +1,10 @@
 #!/bin/sh
 
-exec >> @MVVM_LOG@/iptables.log 2>&1
+exec >> @UVM_LOG@/iptables.log 2>&1
 
-FUNCTIONS_FILE=@MVVM_HOME@/networking/functions
+FUNCTIONS_FILE=@UVM_HOME@/networking/functions
 ## These are for network configuration settings.
-MVVM_NETWORK_PARAMS_FILE=@MVVM_CONF@/networking.sh
+UVM_NETWORK_PARAMS_FILE=@UVM_CONF@/networking.sh
 
 if [ -r ${FUNCTIONS_FILE} ]; then
     . ${FUNCTIONS_FILE}

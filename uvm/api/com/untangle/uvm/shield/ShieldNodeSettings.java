@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.shield;
+package com.untangle.uvm.shield;
 
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.IPaddr;
 
 public interface ShieldNodeSettings
 {

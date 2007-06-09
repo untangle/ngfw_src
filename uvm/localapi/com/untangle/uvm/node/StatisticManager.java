@@ -8,12 +8,12 @@
  *
  * $Id$
  */
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.StatisticEvent;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.StatisticEvent;
 import org.apache.log4j.Logger;
 
 public abstract class StatisticManager implements Runnable
@@ -32,15 +32,15 @@ public abstract class StatisticManager implements Runnable
 
     protected final EventLogger eventLogger;
     private final Logger logger = Logger.getLogger( this.getClass());
-    private final MvvmLocalContext localContext;
+    private final UvmLocalContext localContext;
 
     protected StatisticManager(EventLogger eventLogger)
     {
-        this.localContext = MvvmContextFactory.context();
+        this.localContext = UvmContextFactory.context();
         this.eventLogger = eventLogger;
     }
 
-    protected StatisticManager(MvvmLocalContext localContext,
+    protected StatisticManager(UvmLocalContext localContext,
                                EventLogger eventLogger)
     {
         this.localContext = localContext;
@@ -75,7 +75,7 @@ public abstract class StatisticManager implements Runnable
                 logger.debug( "No statistics available" );
             }
 
-            /* Check if the transform is still running */
+            /* Check if the node is still running */
             if ( !isAlive ) break;
         }
 

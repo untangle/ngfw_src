@@ -10,11 +10,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall;
+package com.untangle.uvm.node.firewall;
 
 import java.io.Serializable;
 
-import com.untangle.mvvm.tran.ParseException;
+import com.untangle.uvm.node.ParseException;
 
 /**
  * A class to hold a MAC address.

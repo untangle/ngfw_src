@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -21,9 +21,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
 
-import com.untangle.mvvm.client.InvocationConnectionException;
-import com.untangle.mvvm.client.InvocationException;
-import com.untangle.mvvm.security.LoginSession;
+import com.untangle.uvm.client.InvocationConnectionException;
+import com.untangle.uvm.client.InvocationException;
+import com.untangle.uvm.security.LoginSession;
 
 public class HttpInvokerStub implements InvocationHandler, Serializable
 {

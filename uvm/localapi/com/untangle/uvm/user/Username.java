@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.user;
+package com.untangle.uvm.user;
 
-import com.untangle.mvvm.tran.ParseException;
+import com.untangle.uvm.node.ParseException;
 
 public final class Username
 {

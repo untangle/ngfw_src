@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.nio.channels.Selector;
 import java.util.ArrayList;
@@ -19,29 +19,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.mvvm.argon.ArgonAgent;
-import com.untangle.mvvm.tapi.IPSession;
-import com.untangle.mvvm.tapi.IPSessionDesc;
-import com.untangle.mvvm.tapi.MPipeException;
-import com.untangle.mvvm.tapi.SessionStats;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.tapi.UDPSession;
-import com.untangle.mvvm.tapi.event.IPDataResult;
-import com.untangle.mvvm.tapi.event.IPSessionEvent;
-import com.untangle.mvvm.tapi.event.SessionEventListener;
-import com.untangle.mvvm.tapi.event.TCPChunkEvent;
-import com.untangle.mvvm.tapi.event.TCPNewSessionRequestEvent;
-import com.untangle.mvvm.tapi.event.TCPSessionEvent;
-import com.untangle.mvvm.tapi.event.UDPErrorEvent;
-import com.untangle.mvvm.tapi.event.UDPNewSessionRequestEvent;
-import com.untangle.mvvm.tapi.event.UDPPacketEvent;
-import com.untangle.mvvm.tapi.event.UDPSessionEvent;
-import com.untangle.mvvm.tran.MutateTStats;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformDesc;
-import com.untangle.mvvm.util.MetaEnv;
-import com.untangle.mvvm.util.SessionUtil;
+import com.untangle.uvm.argon.ArgonAgent;
+import com.untangle.uvm.tapi.IPSession;
+import com.untangle.uvm.tapi.IPSessionDesc;
+import com.untangle.uvm.tapi.MPipeException;
+import com.untangle.uvm.tapi.SessionStats;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.tapi.UDPSession;
+import com.untangle.uvm.tapi.event.IPDataResult;
+import com.untangle.uvm.tapi.event.IPSessionEvent;
+import com.untangle.uvm.tapi.event.SessionEventListener;
+import com.untangle.uvm.tapi.event.TCPChunkEvent;
+import com.untangle.uvm.tapi.event.TCPNewSessionRequestEvent;
+import com.untangle.uvm.tapi.event.TCPSessionEvent;
+import com.untangle.uvm.tapi.event.UDPErrorEvent;
+import com.untangle.uvm.tapi.event.UDPNewSessionRequestEvent;
+import com.untangle.uvm.tapi.event.UDPPacketEvent;
+import com.untangle.uvm.tapi.event.UDPSessionEvent;
+import com.untangle.uvm.node.MutateTStats;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.util.MetaEnv;
+import com.untangle.uvm.util.SessionUtil;
 import gnu.trove.TIntArrayList;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -55,7 +55,7 @@ import org.apache.log4j.MDC;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
+class Dispatcher implements com.untangle.uvm.argon.NewSessionEventListener  {
 
     // This should be a config param XXX
     // Note we only send a heartbeat once we haven't communicated with
@@ -80,9 +80,9 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
     private Logger logger;
 
     private final MPipeImpl mPipe;
-    private final Transform transform;
-    private final TransformContext transformContext;
-    private final TransformManagerImpl transformManager;
+    private final Node node;
+    private final NodeContext nodeContext;
+    private final NodeManagerImpl nodeManager;
 
     /**
      * <code>mainThread</code> is the master thread started by
@@ -160,13 +160,13 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
     private ConcurrentHashMap liveSessions;
 
     /**
-     * This is the command selector for the transform. We handle the
+     * This is the command selector for the node. We handle the
      * command socket.
      */
     private Selector comSelector = null;
 
     /**
-     * This is the session selector for the transform. We handle all
+     * This is the session selector for the node. We handle all
      * sockets for sessions in the normal mode. (Sessions in
      * double-endpoint-mode are handled by themselves).
      */
@@ -199,23 +199,23 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
     Dispatcher(MPipeImpl mPipe) {
         logger = Logger.getLogger(Dispatcher.class.getName());
         this.mPipe = mPipe;
-        this.transform = mPipe.transform();
-        this.transformContext = mPipe.transform().getTransformContext();
-        this.transformManager = MvvmContextImpl.getInstance().transformManager();
+        this.node = mPipe.node();
+        this.nodeContext = mPipe.node().getNodeContext();
+        this.nodeManager = UvmContextImpl.getInstance().nodeManager();
         lastSessionReadTime = lastCommandReadTime = MetaEnv.currentTimeMillis();
         sessionEventListener = null;
         timers = new HashMap();
-        TransformDesc td = transform.getTransformDesc();
+        NodeDesc td = node.getNodeDesc();
         String tidn = td.getTid().getName();
         // dirtySessions = new LinkedQueue(); // FIFO
         // readySessions = new LinkedQueue(); // FIFO
 
         threadNameBase = td.getName() + "(";
-        // Find out if we're the inside or outside if a Casing transform.  This
+        // Find out if we're the inside or outside if a Casing node.  This
         // is super ugly. XXX
         /*
-          if (tt instanceof CasingTransform) {
-          CasingTransform ct = (CasingTransform)tt;
+          if (tt instanceof CasingNode) {
+          CasingNode ct = (CasingNode)tt;
           if (ct.getMPipe(true) == mPipe)
           threadNameBase += "i";
           else
@@ -226,7 +226,7 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
 
         //singleThreadedSessions = td.isSingleThreadedSessions();
         sessionEventLogger = mPipe.sessionEventLogger();
-        releasedHandler = new ReleasedEventHandler(transform);
+        releasedHandler = new ReleasedEventHandler(node);
 
         // mainThread = ThreadPool.pool().allocate(this, threadNameBase + "disp");
         // mainThread = new Thread(this, threadNameBase + "mainDisp");
@@ -272,35 +272,35 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
             agent.removeSession(sess.pSession);
     }
 
-    public com.untangle.mvvm.argon.TCPSession newSession(com.untangle.mvvm.argon.TCPNewSessionRequest request,
+    public com.untangle.uvm.argon.TCPSession newSession(com.untangle.uvm.argon.TCPNewSessionRequest request,
                                                          boolean isInbound)
     {
         try {
-            transformManager.registerThreadContext(transformContext);
+            nodeManager.registerThreadContext(nodeContext);
             MDC.put(SESSION_ID_MDC_KEY, "NT" + request.id());
             return newSessionInternal(request, isInbound);
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
         }
     }
 
-    public com.untangle.mvvm.argon.UDPSession newSession(com.untangle.mvvm.argon.UDPNewSessionRequest request,
+    public com.untangle.uvm.argon.UDPSession newSession(com.untangle.uvm.argon.UDPNewSessionRequest request,
                                                          boolean isInbound)
     {
         try {
-            transformManager.registerThreadContext(transformContext);
+            nodeManager.registerThreadContext(nodeContext);
             MDC.put(SESSION_ID_MDC_KEY, "NU" + request.id());
             return newSessionInternal(request, isInbound);
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
         }
     }
 
 
     // Here's the callback that Argon calls to notify of a new TCP session:
-    public com.untangle.mvvm.argon.TCPSession newSessionInternal(com.untangle.mvvm.argon.TCPNewSessionRequest request, boolean isInbound)
+    public com.untangle.uvm.argon.TCPSession newSessionInternal(com.untangle.uvm.argon.TCPNewSessionRequest request, boolean isInbound)
     {
         int sessionId = -1;
 
@@ -311,7 +311,7 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
             if (RWSessionStats.DoDetailedTimes)
                 firstRequestHandleTime = MetaEnv.currentTimeMillis();
 
-            TransformDesc td = transform.getTransformDesc();
+            NodeDesc td = node.getNodeDesc();
             sessionId = request.id();
 
             TCPNewSessionRequestImpl treq = new TCPNewSessionRequestImpl(this, request, isInbound);
@@ -330,8 +330,8 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
 
             // Check the session only if it was not rejected.
             switch (treq.state()) {
-            case com.untangle.mvvm.argon.IPNewSessionRequest.REJECTED:
-            case com.untangle.mvvm.argon.IPNewSessionRequest.REJECTED_SILENT:
+            case com.untangle.uvm.argon.IPNewSessionRequest.REJECTED:
+            case com.untangle.uvm.argon.IPNewSessionRequest.REJECTED_SILENT:
                 if (treq.needsFinalization()) {
                     logger.debug("rejecting (with finalization)");
                 } else {
@@ -343,7 +343,7 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
                  * exists just to modify the session or to get the raze() call
                  * from Argon when the session is razed. */
                 break;
-            case com.untangle.mvvm.argon.IPNewSessionRequest.RELEASED:
+            case com.untangle.uvm.argon.IPNewSessionRequest.RELEASED:
                 boolean needsFinalization = treq.needsFinalization();
                 boolean modified = treq.modified();
                 if (needsFinalization)
@@ -360,15 +360,15 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
                  * exists just to modify the session or to get the raze() call
                  * from Argon when the session is razed. */
                 break;
-            case com.untangle.mvvm.argon.IPNewSessionRequest.REQUESTED:
-            case com.untangle.mvvm.argon.IPNewSessionRequest.ENDPOINTED:
+            case com.untangle.uvm.argon.IPNewSessionRequest.REQUESTED:
+            case com.untangle.uvm.argon.IPNewSessionRequest.ENDPOINTED:
             default:
                 break;
             }
 
             // Create the session, client and server channels
-            com.untangle.mvvm.argon.TCPSession pSession =
-                new com.untangle.mvvm.argon.TCPSessionImpl(request);
+            com.untangle.uvm.argon.TCPSession pSession =
+                new com.untangle.uvm.argon.TCPSessionImpl(request);
             TCPSessionImpl session = new TCPSessionImpl(this, pSession, isInbound, request.pipelineEndpoints(),
                                                         td.getTcpClientReadBufferSize(),
                                                         td.getTcpServerReadBufferSize());
@@ -385,7 +385,7 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
                             session.serverAddr().getHostAddress() + ":" + session.serverPort());
             if (RWSessionStats.DoDetailedTimes)
                 dispatchNewTime = MetaEnv.currentTimeMillis();
-            if (treq.state() == com.untangle.mvvm.argon.IPNewSessionRequest.RELEASED) {
+            if (treq.state() == com.untangle.uvm.argon.IPNewSessionRequest.RELEASED) {
                 session.release(treq.needsFinalization());
             } else {
                 TCPSessionEvent tevent = new TCPSessionEvent(mPipe, session);
@@ -423,7 +423,7 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
         }
     }
 
-    public com.untangle.mvvm.argon.UDPSession newSessionInternal(com.untangle.mvvm.argon.UDPNewSessionRequest request, boolean isInbound)
+    public com.untangle.uvm.argon.UDPSession newSessionInternal(com.untangle.uvm.argon.UDPNewSessionRequest request, boolean isInbound)
     {
         int sessionId = -1;
 
@@ -434,7 +434,7 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
             if (RWSessionStats.DoDetailedTimes)
                 firstRequestHandleTime = MetaEnv.currentTimeMillis();
 
-            TransformDesc td = transform.getTransformDesc();
+            NodeDesc td = node.getNodeDesc();
             sessionId = request.id();
 
             UDPNewSessionRequestImpl ureq = new UDPNewSessionRequestImpl(this, request, isInbound);
@@ -452,11 +452,11 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
 
             // Check the session only if it was not rejected.
             switch (ureq.state()) {
-            case com.untangle.mvvm.argon.IPNewSessionRequest.REJECTED:
-            case com.untangle.mvvm.argon.IPNewSessionRequest.REJECTED_SILENT:
+            case com.untangle.uvm.argon.IPNewSessionRequest.REJECTED:
+            case com.untangle.uvm.argon.IPNewSessionRequest.REJECTED_SILENT:
                 logger.debug("rejecting");
                 return null;
-            case com.untangle.mvvm.argon.IPNewSessionRequest.RELEASED:
+            case com.untangle.uvm.argon.IPNewSessionRequest.RELEASED:
                 boolean needsFinalization = ureq.needsFinalization();
                 boolean modified = ureq.modified();
                 if (needsFinalization)
@@ -473,15 +473,15 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
                  * exists just to modify the session or to get the raze() call
                  * from Argon when the session is razed. */
                 break;
-            case com.untangle.mvvm.argon.IPNewSessionRequest.REQUESTED:
-            case com.untangle.mvvm.argon.IPNewSessionRequest.ENDPOINTED:
+            case com.untangle.uvm.argon.IPNewSessionRequest.REQUESTED:
+            case com.untangle.uvm.argon.IPNewSessionRequest.ENDPOINTED:
             default:
                 break;
             }
 
             // Create the session, client and server channels
-            com.untangle.mvvm.argon.UDPSession pSession =
-                new com.untangle.mvvm.argon.UDPSessionImpl(request);
+            com.untangle.uvm.argon.UDPSession pSession =
+                new com.untangle.uvm.argon.UDPSessionImpl(request);
             UDPSessionImpl session = new UDPSessionImpl(this, pSession, isInbound, request.pipelineEndpoints(),
                                                         td.getUdpMaxPacketSize(),
                                                         td.getUdpMaxPacketSize());
@@ -498,7 +498,7 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
                             session.serverAddr().getHostAddress() + ":" + session.serverPort());
             if (RWSessionStats.DoDetailedTimes)
                 dispatchNewTime = MetaEnv.currentTimeMillis();
-            if (ureq.state() == com.untangle.mvvm.argon.IPNewSessionRequest.RELEASED) {
+            if (ureq.state() == com.untangle.uvm.argon.IPNewSessionRequest.RELEASED) {
                 session.release(ureq.needsFinalization());
             } else {
                 UDPSessionEvent tevent = new UDPSessionEvent(mPipe, session);
@@ -536,7 +536,7 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
         }
     }
 
-    void registerPipelineListener(com.untangle.mvvm.argon.IPSession pSession, IPSessionImpl session)
+    void registerPipelineListener(com.untangle.uvm.argon.IPSession pSession, IPSessionImpl session)
     {
         pSession.registerListener(session);
     }
@@ -737,7 +737,7 @@ class Dispatcher implements com.untangle.mvvm.argon.NewSessionEventListener  {
     // session state.
     void dumpSessions()
     {
-        System.out.println("Live session dump for " + transform.getTransformDesc().getName());
+        System.out.println("Live session dump for " + node.getNodeDesc().getName());
         System.out.println("ID\t\tDir\tC State\tC Addr\tC Port\tS State\tS Addr\tS Port\t" +
                            "Created\tLast Activity\tC->T Bs\tT->S Bs\tS->T Bs\tT->C Bs\t" +
                            "c2sDir\ts2cDir\tcio\tsio\tcro\tsro\tcreq\tsreq");

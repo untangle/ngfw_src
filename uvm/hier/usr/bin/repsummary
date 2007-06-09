@@ -13,11 +13,11 @@ set -e
 
 JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
 
-CLASSPATH="@MVVM_LIB@/mvvm/"
+CLASSPATH="@UVM_LIB@/uvm/"
 for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
-# for m in @MVVM_TOOLBOX@/*.mar; do CLASSPATH="$CLASSPATH:$m"; done
+# for m in @UVM_TOOLBOX@/*.mar; do CLASSPATH="$CLASSPATH:$m"; done
 export CLASSPATH
 
-exec ${JAVA_HOME}/bin/java com.untangle.tran.reporting.summary.SummaryApp $@
+exec ${JAVA_HOME}/bin/java com.untangle.node.reporting.summary.SummaryApp $@

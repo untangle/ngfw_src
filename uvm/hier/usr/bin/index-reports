@@ -1,6 +1,6 @@
 #!/bin/sh
 
-main_index=@MVVM_REPORTS@/current/$1
+main_index=@UVM_REPORTS@/current/$1
 index=$1
 period=$2
 generate_email_index=$3
@@ -9,13 +9,13 @@ mail_reports_arguments_daily=@PREFIX@/tmp/mail_reports_arguments_daily.txt
 mail_reports_arguments_weekly=@PREFIX@/tmp/mail_reports_arguments_weekly.txt
 mail_reports_arguments_monthly=@PREFIX@/tmp/mail_reports_arguments_monthly.txt
 
-BRANDING_PROPS=@MVVM_CONF@/branding.properties
-COMPANY_NAME=$(grep '^mvvm.branding.companyName=' $BRANDING_PROPS |sed 's/^[^=]\+=\(.*\)$/\1/')
+BRANDING_PROPS=@UVM_CONF@/branding.properties
+COMPANY_NAME=$(grep '^uvm.branding.companyName=' $BRANDING_PROPS |sed 's/^[^=]\+=\(.*\)$/\1/')
 
 ## Parameters:
 ## <estat> : exit status
 ## <src> : source of error
-function exitOnMvvmError()
+function exitOnUvmError()
 {
     local t_estat=$1
     local t_src=$2
@@ -31,11 +31,11 @@ else
 web_base=.
 fi
 
-cd @MVVM_REPORTS@/current
+cd @UVM_REPORTS@/current
 
 
-ordered_tran_list=`@USR_BIN@/mcli instances | grep -i running | awk '{print $2}' | uniq | sed 's|^\(.*\)$|@MVVM_REPORTS@/current/\1|'`
-exitOnMvvmError $? mvvm
+ordered_tran_list=`@USR_BIN@/mcli instances | grep -i running | awk '{print $2}' | uniq | sed 's|^\(.*\)$|@UVM_REPORTS@/current/\1|'`
+exitOnUvmError $? uvm
 
 
 # generate email argument list
@@ -443,7 +443,7 @@ cat >> $main_index <<EOF
                   </td></tr>
 EOF
 
-## This assumes that mcli never returns transform names that contain spaces
+## This assumes that mcli never returns node names that contain spaces
 for f in $ordered_tran_list; do
     if [ -d $f ]; then
         generate_report_menu_entry $f
@@ -497,7 +497,7 @@ cat >> $main_index <<EOF
               <!-- SUMMARY AREA -->
 EOF
 
-## This assumes that mcli never returns transform names that contain spaces
+## This assumes that mcli never returns node names that contain spaces
 for f in $ordered_tran_list; do
     if [ -d $f ]; then
         generate_summary_entry $f false
@@ -505,7 +505,7 @@ for f in $ordered_tran_list; do
 done
 
 
-## This assumes that mcli never returns transform names that contain spaces
+## This assumes that mcli never returns node names that contain spaces
 for f in $ordered_tran_list; do
     if [ -d $f ]; then
         generate_summary_entry $f true

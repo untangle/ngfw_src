@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.util;
+package com.untangle.node.util;
 
 public class AsciiString implements CharSequence
 {

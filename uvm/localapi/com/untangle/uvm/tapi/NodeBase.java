@@ -9,63 +9,63 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.localapi.SessionMatcher;
-import com.untangle.mvvm.localapi.SessionMatcherFactory;
-import com.untangle.mvvm.policy.Policy;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.LocalTransformManager;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformDesc;
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.tran.TransformStartException;
-import com.untangle.mvvm.tran.TransformState;
-import com.untangle.mvvm.tran.TransformStats;
-import com.untangle.mvvm.tran.TransformStopException;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.localapi.SessionMatcher;
+import com.untangle.uvm.localapi.SessionMatcherFactory;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.NodeStartException;
+import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.node.NodeStats;
+import com.untangle.uvm.node.NodeStopException;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
 /**
- * A base class for transform instances, both normal and casing.
+ * A base class for node instances, both normal and casing.
  *
  * @author Aaron Read <amread@untangle.com>
  * @version 1.0
  */
-public abstract class TransformBase implements Transform
+public abstract class NodeBase implements Node
 {
-    private final Logger logger = Logger.getLogger(TransformBase.class);
+    private final Logger logger = Logger.getLogger(NodeBase.class);
 
-    private final TransformContext transformContext;
+    private final NodeContext nodeContext;
     private final Tid tid;
-    private final Set<TransformBase> parents = new HashSet<TransformBase>();
-    private final Set<Transform> children = new HashSet<Transform>();
-    private final LocalTransformManager transformManager;
-    private final List<TransformListener> transformListeners
-        = new LinkedList<TransformListener>();
+    private final Set<NodeBase> parents = new HashSet<NodeBase>();
+    private final Set<Node> children = new HashSet<Node>();
+    private final LocalNodeManager nodeManager;
+    private final List<NodeListener> nodeListeners
+        = new LinkedList<NodeListener>();
 
     private final Object stateChangeLock = new Object();
 
-    private TransformState runState;
+    private NodeState runState;
     private boolean wasStarted = false;
-    private TransformStats stats = new TransformStats();
+    private NodeStats stats = new NodeStats();
 
-    protected TransformBase()
+    protected NodeBase()
     {
-        transformManager = MvvmContextFactory.context().transformManager();
-        transformContext = transformManager.threadContext();
-        tid = transformContext.getTid();
+        nodeManager = UvmContextFactory.context().nodeManager();
+        nodeContext = nodeManager.threadContext();
+        tid = nodeContext.getTid();
 
-        runState = TransformState.LOADED;
+        runState = NodeState.LOADED;
     }
 
     // abstract methods --------------------------------------------------------
@@ -73,26 +73,26 @@ public abstract class TransformBase implements Transform
     protected abstract void connectMPipe();
     protected abstract void disconnectMPipe();
 
-    // Transform methods -------------------------------------------------------
+    // Node methods -------------------------------------------------------
 
-    public final TransformState getRunState()
+    public final NodeState getRunState()
     {
         return runState;
     }
 
     public final boolean neverStarted()
     {
-        if (wasStarted || TransformState.RUNNING == runState) {
+        if (wasStarted || NodeState.RUNNING == runState) {
             return false;
         } else {
             TransactionWork<Long> tw = new TransactionWork<Long>()
                 {
                     Long result;
 
-                    // XXX move this shit to TransformContext
+                    // XXX move this shit to NodeContext
                     public boolean doWork(Session s)
                     {
-                        Query q = s.createQuery("SELECT count(sc) FROM TransformStateChange sc WHERE sc.tid = :tid AND sc.state = 'running'");
+                        Query q = s.createQuery("SELECT count(sc) FROM NodeStateChange sc WHERE sc.tid = :tid AND sc.state = 'running'");
                         q.setParameter("tid", tid);
                         result = (Long)q.uniqueResult();
 
@@ -104,14 +104,14 @@ public abstract class TransformBase implements Transform
                         return result;
                     }
                 };
-            MvvmContextFactory.context().runTransaction(tw);
+            UvmContextFactory.context().runTransaction(tw);
 
             return 0 == tw.getResult();
         }
     }
 
     public final void start()
-        throws TransformStartException, IllegalStateException
+        throws NodeStartException, IllegalStateException
     {
         synchronized (stateChangeLock) {
             start(true);
@@ -119,16 +119,16 @@ public abstract class TransformBase implements Transform
     }
 
     public final void stop()
-        throws TransformStopException, IllegalStateException
+        throws NodeStopException, IllegalStateException
     {
         synchronized (stateChangeLock) {
             stop(true);
         }
     }
 
-    public TransformContext getTransformContext()
+    public NodeContext getNodeContext()
     {
-        return transformContext;
+        return nodeContext;
     }
 
     public Tid getTid()
@@ -141,42 +141,42 @@ public abstract class TransformBase implements Transform
         return tid.getPolicy();
     }
 
-    public TransformDesc getTransformDesc()
+    public NodeDesc getNodeDesc()
     {
-        return transformContext.getTransformDesc();
+        return nodeContext.getNodeDesc();
     }
 
-    public TransformStats getStats() throws IllegalStateException
+    public NodeStats getStats() throws IllegalStateException
     {
-        if (TransformState.RUNNING != getRunState()) {
+        if (NodeState.RUNNING != getRunState()) {
             throw new IllegalStateException("Stats called in state: "
                                             + getRunState());
         }
         return stats;
     }
 
-    // TransformBase methods ---------------------------------------------------
+    // NodeBase methods ---------------------------------------------------
 
-    public void addTransformListener(TransformListener tl) {
-        synchronized (transformListeners) {
-            transformListeners.add(tl);
+    public void addNodeListener(NodeListener tl) {
+        synchronized (nodeListeners) {
+            nodeListeners.add(tl);
         }
     }
 
-    public void removeTransformListener(TransformListener tl) {
-        synchronized (transformListeners) {
-            transformListeners.remove(tl);
+    public void removeNodeListener(NodeListener tl) {
+        synchronized (nodeListeners) {
+            nodeListeners.remove(tl);
         }
     }
 
-    public void addParent(TransformBase parent)
+    public void addParent(NodeBase parent)
     {
         parents.add(parent);
         parent.addChild(this);
     }
 
     /**
-     * Called when the transform is new, initial settings should be
+     * Called when the node is new, initial settings should be
      * created and saved in this method.
      *
      * XXX rename these methods to something more general
@@ -184,7 +184,7 @@ public abstract class TransformBase implements Transform
     public void initializeSettings() { }
 
     /**
-     * Called when the transform is new, initial settings should be
+     * Called when the node is new, initial settings should be
      * created and saved in this method.
      *
      * XXX rename these methods to something more general
@@ -192,7 +192,7 @@ public abstract class TransformBase implements Transform
     public void destroySettings() { }
 
     public void init(String[] args)
-        throws TransformException, IllegalStateException
+        throws NodeException, IllegalStateException
     {
         synchronized (stateChangeLock) {
             init(true, args);
@@ -200,43 +200,43 @@ public abstract class TransformBase implements Transform
     }
 
     public void disable()
-        throws TransformException, IllegalStateException
+        throws NodeException, IllegalStateException
     {
-        if (TransformState.LOADED == runState
-            || TransformState.DESTROYED == runState) {
+        if (NodeState.LOADED == runState
+            || NodeState.DESTROYED == runState) {
             throw new IllegalStateException("disabling in: " + runState);
-        } else if (TransformState.RUNNING == runState) {
+        } else if (NodeState.RUNNING == runState) {
             stop(false);
         }
-        changeState(TransformState.DISABLED, true);
+        changeState(NodeState.DISABLED, true);
     }
 
-    public void resumeState(TransformState ts, String[] args)
-        throws TransformException
+    public void resumeState(NodeState ts, String[] args)
+        throws NodeException
     {
-        if (TransformState.LOADED == ts) {
-            logger.debug("leaving transform in LOADED state");
-        } else if (TransformState.INITIALIZED == ts) {
+        if (NodeState.LOADED == ts) {
+            logger.debug("leaving node in LOADED state");
+        } else if (NodeState.INITIALIZED == ts) {
             logger.debug("bringing into INITIALIZED state");
             init(false, args);
-        } else if (TransformState.RUNNING == ts) {
+        } else if (NodeState.RUNNING == ts) {
             logger.debug("bringing into RUNNING state: " + tid);
             init(false, args);
             start(false);
-        } else if (TransformState.DESTROYED == ts) {
+        } else if (NodeState.DESTROYED == ts) {
             logger.debug("bringing into DESTROYED state: " + tid);
-            runState = TransformState.DESTROYED;
-        } else if (TransformState.DISABLED == ts) {
+            runState = NodeState.DESTROYED;
+        } else if (NodeState.DISABLED == ts) {
             logger.debug("bringing into DISABLED state: " + tid);
             init(false, args);
-            runState = TransformState.DISABLED;
+            runState = NodeState.DISABLED;
         } else {
             logger.warn("unknown state: " + ts);
         }
     }
 
     public void destroy()
-        throws TransformException, IllegalStateException
+        throws NodeException, IllegalStateException
     {
         uninstall();
 
@@ -246,8 +246,8 @@ public abstract class TransformBase implements Transform
     }
 
     /**
-     * Unloads the transform for MVVM shutdown, does not change
-     * transform's target state.
+     * Unloads the node for UVM shutdown, does not change
+     * node's target state.
      *
      * XXX it is incorrect to unload a casing if the child is loaded,
      * enforce that here.
@@ -255,129 +255,129 @@ public abstract class TransformBase implements Transform
     public void unload()
     {
         try {
-            if (runState == TransformState.LOADED) {
+            if (runState == NodeState.LOADED) {
                 destroy(false); // XXX
-            } else if (runState == TransformState.INITIALIZED) {
+            } else if (runState == NodeState.INITIALIZED) {
                 destroy(false);
-            } else if (runState == TransformState.RUNNING) {
+            } else if (runState == NodeState.RUNNING) {
                 stop(false);
                 destroy(false);
-            } else if (runState == TransformState.DISABLED) {
+            } else if (runState == NodeState.DISABLED) {
                 destroy(false);
             }
-        } catch (TransformException exn) {
+        } catch (NodeException exn) {
             logger.warn("could not unload", exn);
         }
     }
 
     public void enable()
-        throws TransformException, IllegalStateException
+        throws NodeException, IllegalStateException
     {
-        if (TransformState.LOADED == runState
-            || TransformState.DESTROYED == runState) {
+        if (NodeState.LOADED == runState
+            || NodeState.DESTROYED == runState) {
             throw new IllegalStateException("enabling in: " + runState);
-        } else if (TransformState.RUNNING == runState
-                   || TransformState.INITIALIZED == runState) {
+        } else if (NodeState.RUNNING == runState
+                   || NodeState.INITIALIZED == runState) {
             // We're already fine.
         } else {
             // DISABLED
-            changeState(TransformState.INITIALIZED, true);
+            changeState(NodeState.INITIALIZED, true);
         }
     }
 
     // protected no-op methods -------------------------------------------------
 
     /**
-     * Called when the transform is being uninstalled, rather than
-     * just being taken down with the MVVM.
+     * Called when the node is being uninstalled, rather than
+     * just being taken down with the UVM.
      */
     protected void uninstall() { }
 
     /**
      * Called as the instance is created, but is not configured.
      *
-     * @param args[] the transform-specific arguments.
+     * @param args[] the node-specific arguments.
      */
-    protected void preInit(String args[]) throws TransformException { }
+    protected void preInit(String args[]) throws NodeException { }
 
     /**
      * Same as <code>preInit</code>, except now officially in the
-     * {@link TransformState#INITIALIZED} state.
+     * {@link NodeState#INITIALIZED} state.
      *
-     * @param args[] the transform-specific arguments.
+     * @param args[] the node-specific arguments.
      */
-    protected void postInit(String args[]) throws TransformException { }
+    protected void postInit(String args[]) throws NodeException { }
 
     /**
      * Called just after connecting to MPipe, but before starting.
      *
      */
-    protected void preStart() throws TransformStartException
+    protected void preStart() throws NodeStartException
     { }
 
     /**
      * Called just after starting MPipe and making subscriptions.
      *
      */
-    protected void postStart() throws TransformStartException
+    protected void postStart() throws NodeStartException
     { }
 
     /**
      * Called just before stopping MPipe and disconnecting.
      *
      */
-    protected void preStop() throws TransformStopException { }
+    protected void preStop() throws NodeStopException { }
 
     /**
      * Called after stopping MPipe and disconnecting.
      *
      */
-    protected void postStop() throws TransformStopException { }
+    protected void postStop() throws NodeStopException { }
 
     /**
      * Called just before this instance becomes invalid.
      *
      */
-    protected void preDestroy() throws TransformException { }
+    protected void preDestroy() throws NodeException { }
 
     /**
      * Same as <code>postDestroy</code>, except now officially in the
-     * {@link TransformState#DESTROYED} state.
+     * {@link NodeState#DESTROYED} state.
      *
      * @param args[] a <code>String</code> value
      */
-    protected void postDestroy() throws TransformException { }
+    protected void postDestroy() throws NodeException { }
 
     // private methods ---------------------------------------------------------
 
-    private void addChild(Transform child)
+    private void addChild(Node child)
     {
         children.add(child);
     }
 
-    private boolean removeChild(Transform child)
+    private boolean removeChild(Node child)
     {
         return children.remove(child);
     }
 
-    private void changeState(TransformState ts, boolean syncState)
+    private void changeState(NodeState ts, boolean syncState)
     {
         changeState(ts, syncState, null);
     }
 
-    private void changeState(TransformState ts, boolean syncState,
+    private void changeState(NodeState ts, boolean syncState,
                              String[] args)
     {
         runState = ts;
 
         if (syncState) {
-            if (TransformState.RUNNING == ts) {
+            if (NodeState.RUNNING == ts) {
                 wasStarted = true;
             }
 
-            TransformStateChangeEvent te = new TransformStateChangeEvent(this, ts, args);
-            synchronized (transformListeners) {
-                for (TransformListener tl : transformListeners) {
+            NodeStateChangeEvent te = new NodeStateChangeEvent(this, ts, args);
+            synchronized (nodeListeners) {
+                for (NodeListener tl : nodeListeners) {
                     tl.stateChange(te);
                 }
             }
@@ -387,132 +387,132 @@ public abstract class TransformBase implements Transform
     // XXX i am worried about races in the lifecycle methods
 
     private void init(boolean syncState, String[] args)
-        throws TransformException, IllegalStateException
+        throws NodeException, IllegalStateException
     {
-        if (TransformState.LOADED != runState) {
+        if (NodeState.LOADED != runState) {
             throw new IllegalStateException("Init called in state: " + runState);
         }
 
         try {
-            transformManager.registerThreadContext(transformContext);
+            nodeManager.registerThreadContext(nodeContext);
             preInit(args);
-            changeState(TransformState.INITIALIZED, syncState, args);
+            changeState(NodeState.INITIALIZED, syncState, args);
 
             postInit(args); // XXX if exception, state == ?
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
         }
     }
 
-    private void start(boolean syncState) throws TransformStartException
+    private void start(boolean syncState) throws NodeStartException
     {
-        if (TransformState.INITIALIZED != getRunState()) {
+        if (NodeState.INITIALIZED != getRunState()) {
             throw new IllegalStateException("Start called in state: "
                                             + getRunState());
         }
 
-        for (TransformBase parent : parents) {
-            if (TransformState.INITIALIZED == parent.getRunState()) {
+        for (NodeBase parent : parents) {
+            if (NodeState.INITIALIZED == parent.getRunState()) {
                 try {
-                    TransformContext pCtx = parent.getTransformContext();
-                    transformManager.registerThreadContext(pCtx);
+                    NodeContext pCtx = parent.getNodeContext();
+                    nodeManager.registerThreadContext(pCtx);
                     parent.parentStart();
                 } finally {
-                    transformManager.registerThreadContext(transformContext);
+                    nodeManager.registerThreadContext(nodeContext);
                 }
             }
         }
 
         try {
-            transformManager.registerThreadContext(transformContext);
+            nodeManager.registerThreadContext(nodeContext);
             preStart();
 
             connectMPipe();
 
-            changeState(TransformState.RUNNING, syncState);
+            changeState(NodeState.RUNNING, syncState);
             postStart(); // XXX if exception, state == ?
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
         }
-        logger.info("started transform");
+        logger.info("started node");
     }
 
     private void stop(boolean syncState)
-        throws TransformStopException, IllegalStateException
+        throws NodeStopException, IllegalStateException
     {
-        if (TransformState.RUNNING != getRunState()) {
+        if (NodeState.RUNNING != getRunState()) {
             throw new IllegalStateException("Stop called in state: "
                                             + getRunState());
         }
 
         try {
-            transformManager.registerThreadContext(transformContext);
+            nodeManager.registerThreadContext(nodeContext);
             preStop();
             disconnectMPipe();
-            changeState(TransformState.INITIALIZED, syncState);
+            changeState(NodeState.INITIALIZED, syncState);
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
         }
 
-        for (TransformBase parent : parents) {
-            if (TransformState.RUNNING == parent.getRunState()) {
+        for (NodeBase parent : parents) {
+            if (NodeState.RUNNING == parent.getRunState()) {
                 try {
-                    TransformContext pCtx = parent.getTransformContext();
-                    transformManager.registerThreadContext(pCtx);
+                    NodeContext pCtx = parent.getNodeContext();
+                    nodeManager.registerThreadContext(pCtx);
                     parent.parentStop();
                 } finally {
-                    transformManager.registerThreadContext(transformContext);
+                    nodeManager.registerThreadContext(nodeContext);
                 }
             }
         }
 
         try {
-            transformManager.registerThreadContext(transformContext);
+            nodeManager.registerThreadContext(nodeContext);
             postStop(); // XXX if exception, state == ?
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
         }
-        logger.info("stopped transform");
+        logger.info("stopped node");
     }
 
     private void destroy(boolean syncState)
-        throws TransformException, IllegalStateException
+        throws NodeException, IllegalStateException
     {
-        if (TransformState.INITIALIZED != runState
-            && TransformState.LOADED != runState
-            && TransformState.DISABLED != runState) {
+        if (NodeState.INITIALIZED != runState
+            && NodeState.LOADED != runState
+            && NodeState.DISABLED != runState) {
             throw new IllegalStateException("Destroy in state: " + runState);
         }
 
         try {
-            transformManager.registerThreadContext(transformContext);
+            nodeManager.registerThreadContext(nodeContext);
             preDestroy();
-            for (TransformBase p : parents) {
+            for (NodeBase p : parents) {
                 p.removeChild(this);
             }
             parents.clear();
-            changeState(TransformState.DESTROYED, syncState);
+            changeState(NodeState.DESTROYED, syncState);
 
             postDestroy(); // XXX if exception, state == ?
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
         }
     }
 
-    private void parentStart() throws TransformStartException
+    private void parentStart() throws NodeStartException
     {
-        if (TransformState.INITIALIZED == getRunState()) {
+        if (NodeState.INITIALIZED == getRunState()) {
             start();
         }
     }
     private void parentStop()
-        throws TransformStopException, IllegalStateException
+        throws NodeStopException, IllegalStateException
     {
         boolean childrenStopped = true;
 
-        if (TransformState.RUNNING == getRunState()) {
-            for (Transform tran : children) {
-                if (TransformState.RUNNING == tran.getRunState()) {
+        if (NodeState.RUNNING == getRunState()) {
+            for (Node node : children) {
+                if (NodeState.RUNNING == node.getRunState()) {
                     childrenStopped = false;
                     break;
                 }
@@ -528,12 +528,12 @@ public abstract class TransformBase implements Transform
 
     /**
      * This shutdowns all of the related/matching sessions for this
-     * transform.  By default, this won't kill any sessions, override
+     * node.  By default, this won't kill any sessions, override
      * sessionMatcher to actually kill sessions
      */
     protected void shutdownMatchingSessions()
     {
-        MvvmContextFactory.context().argonManager()
+        UvmContextFactory.context().argonManager()
             .shutdownMatches(sessionMatcher());
     }
 

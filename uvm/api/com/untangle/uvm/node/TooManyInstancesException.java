@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
 
 // relates to the creation of instances

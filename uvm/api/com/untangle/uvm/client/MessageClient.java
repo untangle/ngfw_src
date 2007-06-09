@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.mvvm.client;
+package com.untangle.uvm.client;
 
-import com.untangle.mvvm.MessageQueue;
-import com.untangle.mvvm.toolbox.ToolboxMessage;
-import com.untangle.mvvm.toolbox.ToolboxMessageVisitor;
+import com.untangle.uvm.MessageQueue;
+import com.untangle.uvm.toolbox.ToolboxMessage;
+import com.untangle.uvm.toolbox.ToolboxMessageVisitor;
 import org.apache.log4j.Logger;
 
 public class MessageClient
 {
-    private final MvvmRemoteContext mvvmContext;
+    private final UvmRemoteContext uvmContext;
     private final PollWorker pollWorker = new PollWorker();
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -26,9 +26,9 @@ public class MessageClient
 
     // constructors -----------------------------------------------------------
 
-    public MessageClient(MvvmRemoteContext mvvmContext)
+    public MessageClient(UvmRemoteContext uvmContext)
     {
-        this.mvvmContext = mvvmContext;
+        this.uvmContext = uvmContext;
     }
 
     // accessors --------------------------------------------------------------
@@ -59,7 +59,7 @@ public class MessageClient
         public void run()
         {
             Thread t = Thread.currentThread();
-            MessageQueue<ToolboxMessage> toolQ = mvvmContext.toolboxManager().subscribe();
+            MessageQueue<ToolboxMessage> toolQ = uvmContext.toolboxManager().subscribe();
 
             while (thread == t) {
                 ToolboxMessageVisitor tmv = toolboxMessageVisitor;
@@ -72,7 +72,7 @@ public class MessageClient
                     } catch (InvocationException exn1) {
                         System.err.println("invocation exn: " + exn1);
                         exn1.printStackTrace();
-                        toolQ = mvvmContext.toolboxManager().subscribe();
+                        toolQ = uvmContext.toolboxManager().subscribe();
                         continue;
                     }
                 }

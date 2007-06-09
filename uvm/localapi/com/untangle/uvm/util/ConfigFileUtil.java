@@ -8,12 +8,12 @@
  *
  * $Id$
  */
-package com.untangle.mvvm.util;
+package com.untangle.uvm.util;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
 
 public class ConfigFileUtil {
@@ -55,7 +55,7 @@ public class ConfigFileUtil {
             logger.debug( "Protecting " + fileName );
 
             String command = CHMOD_PROTECT_CMD + fileName;
-            Process p = MvvmContextFactory.context().exec(command);
+            Process p = UvmContextFactory.context().exec(command);
             code = p.waitFor();
         } catch ( Exception e ) {
             logger.error( "Unable to protect " + fileName, e );

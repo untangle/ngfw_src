@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.reporting;
+package com.untangle.uvm.reporting;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -32,7 +32,7 @@ import net.sf.jasperreports.engine.JRAbstractSvgRenderer;
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRScriptletException;
 
-import com.untangle.mvvm.util.PortServiceNames;
+import com.untangle.uvm.util.PortServiceNames;
 
 
 public abstract class TopTenPieGraph extends ReportGraph

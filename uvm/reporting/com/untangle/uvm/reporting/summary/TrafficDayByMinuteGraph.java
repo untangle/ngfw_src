@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.mvvm.reporting.summary;
+package com.untangle.uvm.reporting.summary;
 
 import java.sql.*;
 import java.util.*;
 
-import com.untangle.mvvm.reporting.*;
+import com.untangle.uvm.reporting.*;
 import net.sf.jasperreports.engine.JRScriptletException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;

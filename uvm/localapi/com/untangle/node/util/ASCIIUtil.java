@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.util;
+package com.untangle.node.util;
 
 import java.nio.ByteBuffer;
-import static com.untangle.tran.util.Ascii.*;
+import static com.untangle.node.util.Ascii.*;
 
 
 /**

@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.*;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.*;
 // import org.apache.commons.jxpath.JXPathContext;
 
 abstract class SessionImpl implements Session {
@@ -24,14 +24,14 @@ abstract class SessionImpl implements Session {
     protected MPipeImpl mPipe;
 
     /**
-     * The pipeline session that corresponds to this (transform) Session.
+     * The pipeline session that corresponds to this (node) Session.
      *
      */
-    protected com.untangle.mvvm.argon.Session pSession;
+    protected com.untangle.uvm.argon.Session pSession;
 
     protected volatile Object attachment = null;
 
-    protected SessionImpl(MPipeImpl mPipe, com.untangle.mvvm.argon.Session pSession)
+    protected SessionImpl(MPipeImpl mPipe, com.untangle.uvm.argon.Session pSession)
     {
         this.mPipe = mPipe;
         this.pSession = pSession;
@@ -55,7 +55,7 @@ abstract class SessionImpl implements Session {
     /*
       public ExtendedPreferences sessionNode()
       {
-      return MvvmContextFactory.mvvmContext().preferencesManager()
+      return UvmContextFactory.uvmContext().preferencesManager()
       .sessionPreferences(id());
       }
     */
@@ -63,7 +63,7 @@ abstract class SessionImpl implements Session {
     /*
       public String sessionPath()
       {
-      return MvvmContextFactory.mvvmContext().preferencesManager()
+      return UvmContextFactory.uvmContext().preferencesManager()
       .sessionPreferencesPath(id());
       }
     */
@@ -71,7 +71,7 @@ abstract class SessionImpl implements Session {
     /*
       public JXPathContext sessionContext()
       {
-      return JXPathContext.newContext(MvvmContextFactory.mvvmContext()
+      return JXPathContext.newContext(UvmContextFactory.uvmContext()
       .preferencesManager()
       .sessionPreferences(id()));
       }

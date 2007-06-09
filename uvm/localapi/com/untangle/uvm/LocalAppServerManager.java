@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
-import com.untangle.mvvm.security.CertInfo;
-import com.untangle.mvvm.security.RFC2253Name;
+import com.untangle.uvm.security.CertInfo;
+import com.untangle.uvm.security.RFC2253Name;
 import org.apache.catalina.Valve;
 
 /**
@@ -20,13 +20,13 @@ import org.apache.catalina.Valve;
  * applications.
  *
  * Instances of this interface are obtained via {@link
- * com.untangle.mvvm.MvvmLocalContext#appServerManager
- * MvvmLocalContext}.
+ * com.untangle.uvm.UvmLocalContext#appServerManager
+ * UvmLocalContext}.
  */
 public interface LocalAppServerManager
 {
-    // XXX duplicated from MvvmErrorReportValve
-    final String MVVM_WEB_MESSAGE_ATTR = "com.untangle.mvvm.web.message";
+    // XXX duplicated from UvmErrorReportValve
+    final String UVM_WEB_MESSAGE_ATTR = "com.untangle.uvm.web.message";
 
     /**
      * Change the port to-which the external interface is bound
@@ -47,7 +47,7 @@ public interface LocalAppServerManager
     boolean loadPortalApp(String urlBase, String rootDir);
 
     /**
-     * Load a portal web app. This app will use the MvvmRealm for
+     * Load a portal web app. This app will use the UvmRealm for
      * authentication. The web app's files are already assumed to be
      * unpackaged into the root web apps directory of the edgeguard
      * deployment
@@ -76,7 +76,7 @@ public interface LocalAppServerManager
 
     /**
      * Load the quarantine app.  This is hack, designed this way to not force
-     * the valve object into the mvvm-client.jar */
+     * the valve object into the uvm-client.jar */
     boolean loadQuarantineApp(String urlBase, String rootDir);
 
     boolean unloadWebApp(String urlBase);
@@ -157,7 +157,7 @@ public interface LocalAppServerManager
 
 
     /**
-     * Get the current certificate used by this instance of the MVVM.
+     * Get the current certificate used by this instance of the UVM.
      * Further information for this cert can be obtained via {@link
      * #getCertInfo getCertInfo}.
      *

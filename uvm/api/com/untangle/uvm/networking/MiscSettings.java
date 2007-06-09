@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.io.Serializable;
 
@@ -22,8 +22,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
-import com.untangle.mvvm.tran.Validatable;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.Validatable;
+import com.untangle.uvm.node.ValidateException;
 
 /**
  * These are settings related to networking.
@@ -32,7 +32,7 @@ import com.untangle.mvvm.tran.ValidateException;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_misc_settings", schema="settings")
+@Table(name="uvm_misc_settings", schema="settings")
 public class MiscSettings implements Serializable, Validatable
 {
     private Long id;

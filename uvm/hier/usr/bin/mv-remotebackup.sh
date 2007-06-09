@@ -36,7 +36,7 @@
 # **************************************************
 #
 # As this file is maintained, note that its behavior is bound
-# to com.untangle.tran.boxbackup.BoxBackupImpl.  Any changes
+# to com.untangle.node.boxbackup.BoxBackupImpl.  Any changes
 # this this script should be reflected in that Java code
 #================================================================
 
@@ -90,7 +90,7 @@ function callCurl() {
 #
 function createBackup() {
   debug "Creating Backup in " $1
-  mvvmdb-backup local $1
+  uvmdb-backup local $1
 #  pushd $1 > /dev/null 2>&1
 #  echo "FOO" > foo.txt;
 #  echo "MOO" > moo.txt;

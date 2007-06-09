@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.tran.token;
+package com.untangle.node.token;
 
-import com.untangle.mvvm.tapi.TCPSession;
+import com.untangle.uvm.tapi.TCPSession;
 
 public interface CasingFactory
 {

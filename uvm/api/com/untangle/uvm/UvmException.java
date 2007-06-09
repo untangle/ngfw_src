@@ -9,32 +9,32 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
 /**
- * Base exception class for MVVM.
+ * Base exception class for UVM.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class MvvmException extends Exception
+public class UvmException extends Exception
 {
-    public MvvmException()
+    public UvmException()
     {
         super();
     }
 
-    public MvvmException(String message)
+    public UvmException(String message)
     {
         super(message);
     }
 
-    public MvvmException(String message, Throwable cause)
+    public UvmException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
-    public MvvmException(Throwable cause)
+    public UvmException(Throwable cause)
     {
         super(cause);
     }

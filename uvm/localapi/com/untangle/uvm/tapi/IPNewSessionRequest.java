@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 import java.net.InetAddress;
-import com.untangle.mvvm.tran.PipelineEndpoints;
-import com.untangle.mvvm.tran.SessionEndpoints;
+import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.SessionEndpoints;
 
 public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints {
 
@@ -97,7 +97,7 @@ public interface IPNewSessionRequest extends NewSessionRequest, SessionEndpoints
      * at all.  IF needsFinalization is true, then the only event that will be delivered is a Finalization
      * event when the resulting session ends.
      *
-     * @param needsFinalization a <code>boolean</code> true if the transform needs a finalization event when the released session ends.
+     * @param needsFinalization a <code>boolean</code> true if the node needs a finalization event when the released session ends.
      */
     void release(boolean needsFinalization);
 

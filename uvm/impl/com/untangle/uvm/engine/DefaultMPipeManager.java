@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.net.*;
 
-import com.untangle.mvvm.tapi.MPipeManager;
+import com.untangle.uvm.tapi.MPipeManager;
 
 
 /**

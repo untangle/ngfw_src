@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.logging;
+package com.untangle.uvm.logging;
 
 public abstract class StatisticEvent extends LogEvent
 {

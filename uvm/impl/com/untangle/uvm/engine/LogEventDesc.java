@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
-import com.untangle.mvvm.logging.LogEvent;
+import com.untangle.uvm.logging.LogEvent;
 
 class LogEventDesc
 {

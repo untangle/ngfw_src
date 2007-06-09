@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.type;
+package com.untangle.uvm.type;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
@@ -17,16 +17,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import com.untangle.mvvm.tran.TransformState;
+import com.untangle.uvm.node.NodeState;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 
-public class TransformStateUserType implements UserType
+public class NodeStateUserType implements UserType
 {
     private static final int[] SQL_TYPES = { Types.VARCHAR };
 
     public int[] sqlTypes() { return SQL_TYPES; }
-    public Class returnedClass() { return TransformState.class; }
+    public Class returnedClass() { return NodeState.class; }
     public boolean equals(Object x, Object y) { return x == y; }
     public Object deepCopy(Object value) { return value; }
     public boolean isMutable() { return false; }
@@ -35,7 +35,7 @@ public class TransformStateUserType implements UserType
         throws HibernateException, SQLException
     {
         String name = rs.getString(names[0]);
-        return rs.wasNull() ? null : TransformState.valueOf(name.toUpperCase());
+        return rs.wasNull() ? null : NodeState.valueOf(name.toUpperCase());
     }
 
     public void nullSafeSet(PreparedStatement ps, Object v, int i)

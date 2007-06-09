@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.util.List;
 import java.util.Properties;
@@ -20,22 +20,22 @@ import com.untangle.jnetcap.Netcap;
 import com.untangle.jnetcap.JNetcapException;
 import com.untangle.jnetcap.PortRange;
 
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.IntfConstants;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.localapi.ArgonInterface;
-import com.untangle.mvvm.localapi.LocalIntfManager;
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.localapi.ArgonInterface;
+import com.untangle.uvm.localapi.LocalIntfManager;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.tran.script.ScriptRunner;
-import com.untangle.mvvm.tran.script.ScriptWriter;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.node.script.ScriptWriter;
 
-import com.untangle.mvvm.networking.internal.InterfaceInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
+import com.untangle.uvm.networking.internal.InterfaceInternal;
+import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
 
-import static com.untangle.mvvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
-import static com.untangle.mvvm.networking.NetworkManagerImpl.BUNNICULA_CONF;
+import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
+import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_CONF;
 
 public class RuleManager
 {
@@ -56,11 +56,11 @@ public class RuleManager
 
     /* Set to a list of interfaces that are in the services space that need to be able to
      * access the services */
-    private static final String SERVICES_INTERFACE_LIST      = "MVVM_SERVICES_INTF_LIST";
+    private static final String SERVICES_INTERFACE_LIST      = "UVM_SERVICES_INTF_LIST";
 
     /* Set to the index of the interfaces where ping should be enabled. */
-    private static final String PING_ANTISUBSCRIBE_FLAG      = "MVVM_PING_EN";
-    private static final String PING_ANTISUBSCRIBE_LIST      = "MVVM_PING_LIST";
+    private static final String PING_ANTISUBSCRIBE_FLAG      = "UVM_PING_EN";
+    private static final String PING_ANTISUBSCRIBE_LIST      = "UVM_PING_LIST";
 
     /* This is the default port range, rarely do these ever vary */
     private static final PortRange DEFAULT_TCP_PORT_RANGE = new PortRange( 9500, 9627 );
@@ -68,7 +68,7 @@ public class RuleManager
 
     private static RuleManager INSTANCE = null;
 
-    private final String MVVM_TMP_FILE  = BUNNICULA_CONF + "/tmp_params";
+    private final String UVM_TMP_FILE  = BUNNICULA_CONF + "/tmp_params";
 
     private final String RULE_GENERATOR_SCRIPT = BUNNICULA_BASE + "/networking/rule-generator";
     private final String RULE_DESTROYER_SCRIPT = BUNNICULA_BASE + "/networking/rule-destroyer";
@@ -99,7 +99,7 @@ public class RuleManager
     synchronized void generateIptablesRules() throws NetworkException
     {
         if ( isShutdown ) {
-            logger.warn( "MVVM is already shutting down, no longer able to generate rules" );
+            logger.warn( "UVM is already shutting down, no longer able to generate rules" );
             return;
         }
 
@@ -144,7 +144,7 @@ public class RuleManager
         
         String servicesInterfaceList = "";
         
-        LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
+        LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
 
         for ( InterfaceInternal intf : interfaceList ) {
             ArgonInterface argonIntf = intf.getArgonIntf();
@@ -216,7 +216,7 @@ public class RuleManager
             scriptWriter.appendVariable( SERVICES_INTERFACE_LIST, this.servicesInterfaceList );
         }
         
-        LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
+        LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
         
         /* Setup a rule for stealing ARPs */
         if ( !this.hasCompletedSetup ) {
@@ -239,7 +239,7 @@ public class RuleManager
         for ( ArgonInterface intf : lim.getIntfList()) {
             if ( intf.hasSecondaryName()) {
                 String argonName = IntfConstants.toName( intf.getArgon()).toUpperCase();
-                scriptWriter.appendVariable( "MVVM_" + argonName + "_INTF", intf.getSecondaryName());
+                scriptWriter.appendVariable( "UVM_" + argonName + "_INTF", intf.getSecondaryName());
             }
         }
         

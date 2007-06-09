@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.logging;
+package com.untangle.uvm.logging;
 
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
@@ -17,7 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
-import com.untangle.mvvm.tran.PipelineEndpoints;
+import com.untangle.uvm.node.PipelineEndpoints;
 
 @MappedSuperclass
 public abstract class PipelineEvent extends LogEvent

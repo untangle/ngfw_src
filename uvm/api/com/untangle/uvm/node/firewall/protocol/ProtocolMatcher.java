@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.protocol;
+package com.untangle.uvm.node.firewall.protocol;
 
-import com.untangle.mvvm.tapi.Protocol;
+import com.untangle.uvm.tapi.Protocol;
 
 /**
  * An interface to test for an address.

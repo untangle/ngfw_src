@@ -9,21 +9,21 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
-import com.untangle.mvvm.tapi.AbstractEventHandler;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.tapi.AbstractEventHandler;
+import com.untangle.uvm.node.Node;
 
 /**
  * <code>ReleasedEventHandler</code> is a plain vanilla event handler used for released
- * sessions and whenever the transform has no smithEventListener.  We just use everything
+ * sessions and whenever the node has no smithEventListener.  We just use everything
  * from AbstractEventHandler.
  *
  * @author <a href="mailto:jdi@slab.ninthwave.com">John Irwin</a>
  * @version 1.0
  */
 class ReleasedEventHandler extends AbstractEventHandler {
-    ReleasedEventHandler(Transform transform) {
-        super(transform);
+    ReleasedEventHandler(Node node) {
+        super(node);
     }
 }

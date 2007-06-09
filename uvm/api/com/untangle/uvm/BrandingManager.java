@@ -9,7 +9,7 @@
  * $Id: ConnectivityTester.java 8515 2007-01-03 00:13:24Z amread $
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
 /**
  * Allows the user to customize the branding of the product.

@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.node.Node;
 
 
 /**
  * The <code>MPipe</code> interface represents an active MetaPipe.
- * Most transforms only have one active <code>MPipe</code> at a time,
+ * Most nodes only have one active <code>MPipe</code> at a time,
  * the rest have exactly 2 (casings).
  *
  * This class's instances represent and contain the subscription
@@ -48,7 +48,7 @@ public interface MPipe {
 
     void dumpSessions();
 
-    Transform transform();
+    Node node();
 
     // disconnect?
     // void closeClientChannel(TCPSession session);

@@ -1,8 +1,8 @@
 #!/bin/sh
 
 resetBunnicula() {
-## Stop the MVVM
-    @PREFIX@/etc/init.d/mvvm stop
+## Stop the UVM
+    @PREFIX@/etc/init.d/uvm stop
 
     sleep 1
 
@@ -24,8 +24,8 @@ resetBunnicula() {
     
     sleep 1
     
-## Restart the MVVM
-    @PREFIX@/etc/init.d/mvvm start
+## Restart the UVM
+    @PREFIX@/etc/init.d/uvm start
 }
 
 ## Execute these functions in a separate detached process, this way
@@ -33,7 +33,7 @@ resetBunnicula() {
 if [ $# -eq 0 ]; then
     sleep 1
     ## Just append any arguments, they don't matter
-    nohup sh @PREFIX@/usr/share/metavize/mvvm_restart.sh 1 2 > @PREFIX@/var/log/mvvm/restart.log 2>&1 &
+    nohup sh @PREFIX@/usr/share/metavize/uvm_restart.sh 1 2 > @PREFIX@/var/log/uvm/restart.log 2>&1 &
 else
     resetBunnicula
 fi

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.logging;
+package com.untangle.uvm.logging;
 
 /**
  * Layout for each logging context's section in the log emails.
@@ -19,7 +19,7 @@ package com.untangle.mvvm.logging;
  */
 public class MvMailLayout extends MvPatternLayout
 {
-    // If null, we're the mvvm.
+    // If null, we're the uvm.
     private final String componentName;
 
     // constructors -----------------------------------------------------------

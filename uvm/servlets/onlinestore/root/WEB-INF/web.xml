@@ -22,7 +22,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>Proxy</servlet-name>
     <servlet-class>
-      com.untangle.mvvm.servlet.store.ProxyServlet
+      com.untangle.uvm.servlet.store.ProxyServlet
     </servlet-class>
   </servlet>
 
@@ -34,7 +34,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>InstallRequest</servlet-name>
     <servlet-class>
-      com.untangle.mvvm.servlet.store.InstallRequestServlet
+      com.untangle.uvm.servlet.store.InstallRequestServlet
     </servlet-class>
   </servlet>
 
@@ -46,7 +46,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>InstalledAppliances</servlet-name>
     <servlet-class>
-      com.untangle.mvvm.servlet.store.InstalledAppliances
+      com.untangle.uvm.servlet.store.InstalledAppliances
     </servlet-class>
   </servlet>
 

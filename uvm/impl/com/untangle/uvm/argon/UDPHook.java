@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import java.util.Iterator;
 
@@ -25,10 +25,10 @@ import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.UDPSink;
 import com.untangle.jvector.UDPSource;
-import com.untangle.mvvm.policy.PolicyRule;
-import com.untangle.mvvm.tran.PipelineEndpoints;
+import com.untangle.uvm.policy.PolicyRule;
+import com.untangle.uvm.node.PipelineEndpoints;
 
-import com.untangle.mvvm.localapi.LocalIntfManager;
+import com.untangle.uvm.localapi.LocalIntfManager;
 
 
 public class UDPHook implements NetcapHook
@@ -252,7 +252,7 @@ public class UDPHook implements NetcapHook
             processSession( request, session );
 
             if ( iter.hasNext()) {
-                /* Only advance the previous session if the transform requested the session */
+                /* Only advance the previous session if the node requested the session */
                 if (( request.state() == IPNewSessionRequest.REQUESTED ) ||
                     ( request.state() == IPNewSessionRequest.RELEASED && session != null )) {
                     logger.debug( "Passing new session data client: " + session.clientAddr());

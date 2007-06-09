@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,7 +20,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.Rule;
+import com.untangle.uvm.node.Rule;
 import org.hibernate.annotations.Type;
 
 /**
@@ -30,7 +30,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_network_intf", schema="settings")
+@Table(name="uvm_network_intf", schema="settings")
 public class Interface extends Rule
 {
     private static final long serialVersionUID = 7720361692356024775L;
@@ -111,7 +111,7 @@ public class Interface extends Rule
      * @return The media for this interface.
      */
     @Column(name="media")
-    @Type(type="com.untangle.mvvm.networking.EthernetMediaUserType")
+    @Type(type="com.untangle.uvm.networking.EthernetMediaUserType")
     public EthernetMedia getEthernetMedia()
     {
         if ( this.ethernetMedia == null ) this.ethernetMedia = EthernetMedia.AUTO_NEGOTIATE;

@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking.internal;
+package com.untangle.uvm.networking.internal;
 
 import java.util.Date;
 
-import com.untangle.mvvm.tran.Rule;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.HostNameList;
+import com.untangle.uvm.node.Rule;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.HostNameList;
 
-import com.untangle.mvvm.tran.firewall.MACAddress;
+import com.untangle.uvm.node.firewall.MACAddress;
 
-import com.untangle.mvvm.networking.DnsStaticHostRule;
+import com.untangle.uvm.networking.DnsStaticHostRule;
 
 
 /**

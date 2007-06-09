@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.logging;
+package com.untangle.uvm.logging;
 
 public interface SimpleEventFilter<E extends LogEvent>
 {

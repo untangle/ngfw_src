@@ -9,7 +9,7 @@
  *  $Id$
  */
 
-package com.untangle.tran.util;
+package com.untangle.node.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,7 +21,7 @@ import java.security.InvalidKeyException;
 import java.security.KeyStore;
 import java.util.ArrayList;
 
-import com.untangle.mvvm.security.RFC2253Name;
+import com.untangle.uvm.security.RFC2253Name;
 
 //TODO backup keystore on all operations
 

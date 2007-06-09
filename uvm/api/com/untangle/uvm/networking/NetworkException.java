@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
-import com.untangle.mvvm.MvvmException;
+import com.untangle.uvm.UvmException;
 
 /**
  * Exception for networking errors.
@@ -19,7 +19,7 @@ import com.untangle.mvvm.MvvmException;
  * @author <a href="mailto:rbscott@untangle.com">Robert Scott</a>
  * @version 1.0
  */
-public class NetworkException extends MvvmException
+public class NetworkException extends UvmException
 {
     public NetworkException() 
     { 

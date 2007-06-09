@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.util.Date;
 import javax.persistence.Column;
@@ -17,10 +17,10 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.IPNullAddr;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.Rule;
-import com.untangle.mvvm.tran.firewall.MACAddress;
+import com.untangle.uvm.node.IPNullAddr;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Rule;
+import com.untangle.uvm.node.firewall.MACAddress;
 import org.hibernate.annotations.Type;
 
 
@@ -31,7 +31,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_dhcp_lease_rule", schema="settings")
+@Table(name="uvm_dhcp_lease_rule", schema="settings")
 public class DhcpLeaseRule extends Rule
 {
     /* The MAC address associated with this lease */
@@ -75,7 +75,7 @@ public class DhcpLeaseRule extends Rule
      * @return the mac address.
      */
     @Column(name="mac_address")
-    @Type(type="com.untangle.mvvm.type.firewall.MACAddressUserType")
+    @Type(type="com.untangle.uvm.type.firewall.MACAddressUserType")
     public MACAddress getMacAddress()
     {
         return macAddress;
@@ -143,7 +143,7 @@ public class DhcpLeaseRule extends Rule
      * @return desired static address.
      */
     @Column(name="static_address")
-    @Type(type="com.untangle.mvvm.type.IPNullAddrUserType")
+    @Type(type="com.untangle.uvm.type.IPNullAddrUserType")
     public IPNullAddr getStaticAddress()
     {
         if ( this.staticAddress == null ) return ( this.staticAddress = IPNullAddr.getNullAddr());

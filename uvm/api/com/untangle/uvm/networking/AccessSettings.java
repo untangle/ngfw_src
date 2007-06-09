@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -19,9 +19,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.Validatable;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Validatable;
+import com.untangle.uvm.node.ValidateException;
 import org.hibernate.annotations.Type;
 
 /**
@@ -32,7 +32,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_access_settings", schema="settings")
+@Table(name="uvm_access_settings", schema="settings")
 public class AccessSettings implements Serializable, Validatable
 {
     /* boolean which can be used by the untangle to determine if the
@@ -190,7 +190,7 @@ public class AccessSettings implements Serializable, Validatable
      * the internet.
      */
     @Column(name="outside_network")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getOutsideNetwork()
     {
         if ( this.outsideNetwork == null ) this.outsideNetwork = NetworkUtil.DEF_OUTSIDE_NETWORK;
@@ -221,7 +221,7 @@ public class AccessSettings implements Serializable, Validatable
      * the internet.
      */
     @Column(name="outside_netmask")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getOutsideNetmask()
     {
         if ( this.outsideNetmask == null ) this.outsideNetmask = NetworkUtil.DEF_OUTSIDE_NETMASK;

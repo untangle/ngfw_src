@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.lang.ref.WeakReference;
 import java.net.URL;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.mvvm.security.LoginSession;
+import com.untangle.uvm.security.LoginSession;
 
 class LoginDesc
 {

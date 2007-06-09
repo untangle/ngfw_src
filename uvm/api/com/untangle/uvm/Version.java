@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * Provides access to the MVVM version.
+ * Provides access to the UVM version.
  *
  * @author <a href="mailto:dmorris@untangle.com">Dirk Morris</a>
  * @version 1.0

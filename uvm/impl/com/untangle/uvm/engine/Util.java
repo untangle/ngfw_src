@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 
 /**
- * These are internal utility methods for internal use by the MVVM or
+ * These are internal utility methods for internal use by the UVM or
  * other top-level tools (reporting).
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>

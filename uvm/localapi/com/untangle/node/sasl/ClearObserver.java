@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.tran.sasl;
+package com.untangle.node.sasl;
 import java.nio.ByteBuffer;
 
 

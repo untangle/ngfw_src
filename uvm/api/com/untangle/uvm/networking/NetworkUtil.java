@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.net.InetAddress;
 import java.util.Collections;
@@ -18,14 +18,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.mvvm.tran.AddressRange;
-import com.untangle.mvvm.tran.AddressValidator;
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.ValidateException;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.node.AddressRange;
+import com.untangle.uvm.node.AddressValidator;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.ValidateException;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 
 /**
  * A number of utilities for working with IP addresses and network

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.time;
+package com.untangle.uvm.node.firewall.time;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,9 +18,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.firewall.Parser;
-import com.untangle.mvvm.tran.firewall.ParsingConstants;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.firewall.Parser;
+import com.untangle.uvm.node.firewall.ParsingConstants;
 
 public final class DayOfWeekSetMatcher extends DayOfWeekDBMatcher
 {

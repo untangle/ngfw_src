@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
 /**
  * A TemplateValues instance is used in conjunction with a
- * {@link com.untangle.tran.util.Template Template}.  The TemplateValues
+ * {@link com.untangle.node.util.Template Template}.  The TemplateValues
  * provides Strings which are mapped to the keys found in a template.
  * <br>
  */

@@ -9,26 +9,26 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
-public class TransformStopException extends TransformException
+public class NodeStopException extends NodeException
 {
-    public TransformStopException()
+    public NodeStopException()
     {
         super();
     }
 
-    public TransformStopException(String message)
+    public NodeStopException(String message)
     {
         super(message);
     }
 
-    public TransformStopException(String message, Throwable cause)
+    public NodeStopException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
-    public TransformStopException(Throwable cause)
+    public NodeStopException(Throwable cause)
     {
         super(cause);
     }

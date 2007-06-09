@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall;
+package com.untangle.uvm.node.firewall;
 
-import com.untangle.mvvm.tran.ParseException;
+import com.untangle.uvm.node.ParseException;
 
 import java.util.List;
 import java.util.LinkedList;

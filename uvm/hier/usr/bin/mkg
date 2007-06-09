@@ -14,7 +14,7 @@ exec 2>&1
 
 prefix=@PREFIX@
 pkglist=@FAKE_PKG_LIST@
-APT_LOG=@PREFIX@/var/log/mvvm/apt.log
+APT_LOG=@PREFIX@/var/log/uvm/apt.log
 
 INST_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
 UPGD_OPTS=" -o DPkg::Options::=--force-confnew --yes --force-yes --fix-broken --purge "
@@ -90,16 +90,16 @@ if [ -z $prefix ] ; then
     # invoked in real environment
     if [ "$1" = "installed" ] ; then
         (my_dpkg_query '*-storeitem'
-            my_dpkg_query '*-transform'
+            my_dpkg_query '*-node'
             my_dpkg_query '*-casing' ;
             my_dpkg_query 'untangle-client';
             my_dpkg_query 'virus-base';
             my_dpkg_query 'spam-base';
-            my_dpkg_query 'mvvm') 2>/dev/null \
+            my_dpkg_query 'uvm') 2>/dev/null \
                 | awk '{ if ($2) printf("%s %s\n",$1,$2) }'
         #RET=$? return code ignored
     elif [ "$1" = "available" ] ; then
-        pkgs=$(apt-cache search '.-storeitem$|.-transform$|.-casing$|^virus-base$|^spam-base$|^mvvm$|^untangle-client$' 2>/dev/null \
+        pkgs=$(apt-cache search '.-storeitem$|.-node$|.-casing$|^virus-base$|^spam-base$|^uvm$|^untangle-client$' 2>/dev/null \
             | cut -d ' ' -f 1)
         for pkg in $pkgs; do
             apt-cache show --no-all-versions $pkg 2>/dev/null

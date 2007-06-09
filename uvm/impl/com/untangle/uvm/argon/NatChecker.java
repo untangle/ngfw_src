@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import java.net.InetAddress;
 import java.util.Collections;
@@ -17,17 +17,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.untangle.jnetcap.NetcapSession;
-import com.untangle.mvvm.localapi.LocalIntfManager;
-import com.untangle.mvvm.networking.IPNetwork;
-import com.untangle.mvvm.networking.NetworkSettingsListener;
-import com.untangle.mvvm.networking.internal.InterfaceInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.firewall.intf.IntfMatcher;
-import com.untangle.mvvm.tran.firewall.intf.IntfMatcherFactory;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.localapi.LocalIntfManager;
+import com.untangle.uvm.networking.IPNetwork;
+import com.untangle.uvm.networking.NetworkSettingsListener;
+import com.untangle.uvm.networking.internal.InterfaceInternal;
+import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.firewall.intf.IntfMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
 import org.apache.log4j.Logger;
 
 /* Class used to determine if a session is going to be Nattd */

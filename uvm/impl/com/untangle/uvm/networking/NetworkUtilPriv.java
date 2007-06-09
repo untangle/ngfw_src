@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -24,20 +24,20 @@ import java.util.Map;
 
 import com.untangle.jnetcap.InterfaceData;
 import com.untangle.jnetcap.Netcap;
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.IntfConstants;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.localapi.LocalIntfManager;
-import com.untangle.mvvm.networking.internal.InterfaceInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.networking.internal.RedirectInternal;
-import com.untangle.mvvm.networking.internal.RouteInternal;
-import com.untangle.mvvm.networking.internal.ServicesInternalSettings;
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.ValidateException;
-import com.untangle.mvvm.util.ConfigFileUtil;
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.localapi.LocalIntfManager;
+import com.untangle.uvm.networking.internal.InterfaceInternal;
+import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.networking.internal.RedirectInternal;
+import com.untangle.uvm.networking.internal.RouteInternal;
+import com.untangle.uvm.networking.internal.ServicesInternalSettings;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ValidateException;
+import com.untangle.uvm.util.ConfigFileUtil;
 import org.apache.log4j.Logger;
 
 /* Utilities that are only required inside of this package */
@@ -140,7 +140,7 @@ class NetworkUtilPriv extends NetworkUtil
         /* Boolean to indicate whether or not the user has completed setup */
         boolean hasCompletedSetup = networkSettings.getHasCompletedSetup();
 
-        LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
+        LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
 
         int index = SPACE_INDEX_BASE;
 
@@ -332,7 +332,7 @@ class NetworkUtilPriv extends NetworkUtil
     NetworkSpacesInternalSettings toInternal( BasicNetworkSettings basic )
         throws NetworkException, ValidateException
     {
-        LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
+        LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
 
         NetworkSpacesSettings newSettings = new NetworkSpacesSettingsImpl();
 
@@ -471,7 +471,7 @@ class NetworkUtilPriv extends NetworkUtil
             new DhcpStatus( NetworkUtil.BOGUS_DHCP_ADDRESS, NetworkUtil.BOGUS_DHCP_NETMASK );
 
         try {
-            LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
+            LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
 
             /* XXX Right now the only space that supports DHCP is the external space,
              * need to update for when there are others */
@@ -722,7 +722,7 @@ class NetworkUtilPriv extends NetworkUtil
 
     byte[] getArgonIntfArray()
     {
-        return MvvmContextFactory.context().localIntfManager().getArgonIntfArray();
+        return UvmContextFactory.context().localIntfManager().getArgonIntfArray();
     }
 
     /* Get the hostname of the box from the /etc/hostname file */
@@ -885,7 +885,7 @@ class NetworkUtilPriv extends NetworkUtil
         try {
             logger.debug( "Restarting ddclient server" );
 
-            Process p = MvvmContextFactory.context().exec( DDCLIENT_CMD_RESTART );
+            Process p = UvmContextFactory.context().exec( DDCLIENT_CMD_RESTART );
             code = p.waitFor();
         } catch ( Exception e ) {
             logger.error( "Unable to restart ddclient server", e );
@@ -903,7 +903,7 @@ class NetworkUtilPriv extends NetworkUtil
         try {
             logger.debug( "Stopping ddclient server" );
 
-            Process p = MvvmContextFactory.context().exec( DDCLIENT_CMD_STOP );
+            Process p = UvmContextFactory.context().exec( DDCLIENT_CMD_STOP );
             code = p.waitFor();
         } catch ( Exception e ) {
             logger.error( "Unable to stop ddclient server", e );

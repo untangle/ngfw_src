@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -17,10 +17,10 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
 
-import com.untangle.mvvm.ConnectivityTester;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.networking.BasicNetworkSettings;
-import com.untangle.mvvm.tran.script.ScriptRunner;
+import com.untangle.uvm.ConnectivityTester;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.node.script.ScriptRunner;
 import org.apache.log4j.Logger;
 
 class ConnectivityTesterImpl implements ConnectivityTester
@@ -66,7 +66,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
      */
     public Status getStatus()
     {
-        BasicNetworkSettings basic = MvvmContextFactory.context().networkManager().getBasicSettings();
+        BasicNetworkSettings basic = UvmContextFactory.context().networkManager().getBasicSettings();
 
         InetAddress dnsPrimary   = basic.dns1().getAddr();
         InetAddress dnsSecondary = ( basic.dns2().isEmpty()) ? null : basic.dns2().getAddr();
@@ -117,7 +117,7 @@ class ConnectivityTesterImpl implements ConnectivityTester
             String script = "sh " + DNS_TEST_SCRIPT + " " + dnsPrimaryServer.getHostAddress();
             if ( null != dnsSecondaryServer ) script = script + " " + dnsSecondaryServer.getHostAddress();
 
-            Process p = MvvmContextFactory.context().exec( script );
+            Process p = UvmContextFactory.context().exec( script );
 
             if ( p.waitFor() == DNS_TEST_PASS ) isWorking=true;
         } catch( Exception e ) {

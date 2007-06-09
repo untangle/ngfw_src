@@ -9,24 +9,24 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
-import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 
-public class TransformContextSwitcher<T>
+public class NodeContextSwitcher<T>
 {
-    private final TransformContext transformContext;
+    private final NodeContext nodeContext;
 
-    public TransformContextSwitcher(TransformContext transformContext)
+    public NodeContextSwitcher(NodeContext nodeContext)
     {
-        this.transformContext = transformContext;
+        this.nodeContext = nodeContext;
     }
 
     public void run(Event<T> event, T argument)
     {
-        LocalTransformManager tm = MvvmContextFactory.context().transformManager();
+        LocalNodeManager tm = UvmContextFactory.context().nodeManager();
         try {
-            tm.registerThreadContext(this.transformContext);
+            tm.registerThreadContext(this.nodeContext);
             event.handle(argument);
         } finally {
             tm.deregisterThreadContext();

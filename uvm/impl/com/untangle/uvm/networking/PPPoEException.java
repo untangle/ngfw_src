@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
-import com.untangle.mvvm.MvvmException;
+import com.untangle.uvm.UvmException;
 
 public class PPPoEException extends NetworkException
 {

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.net.InetAddress;
 import javax.persistence.Column;
@@ -17,10 +17,10 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.logging.SyslogPriority;
-import com.untangle.mvvm.security.LoginFailureReason;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
+import com.untangle.uvm.security.LoginFailureReason;
 import org.hibernate.annotations.Type;
 
 /**
@@ -31,7 +31,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="mvvm_login_evt", schema="events")
+    @Table(name="uvm_login_evt", schema="events")
     public class LoginEvent extends LogEvent
     {
         private InetAddress clientAddr;
@@ -69,7 +69,7 @@ import org.hibernate.annotations.Type;
          * @return the address of the client
          */
         @Column(name="client_addr")
-        @Type(type="com.untangle.mvvm.type.InetAddressUserType")
+        @Type(type="com.untangle.uvm.type.InetAddressUserType")
         public InetAddress getClientAddr()
         {
             return clientAddr;
@@ -81,7 +81,7 @@ import org.hibernate.annotations.Type;
         }
 
         /**
-         * Login used to login.  May be  used to join to MVVM_USER.
+         * Login used to login.  May be  used to join to UVM_USER.
          *
          * @return a <code>String</code> giving the login for the user
          */
@@ -134,7 +134,7 @@ import org.hibernate.annotations.Type;
          *
          * @return the reason.
          */
-        @Type(type="com.untangle.mvvm.security.LoginFailureReasonUserType")
+        @Type(type="com.untangle.uvm.security.LoginFailureReasonUserType")
         public LoginFailureReason getReason()
         {
             return reason;

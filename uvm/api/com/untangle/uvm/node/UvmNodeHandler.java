@@ -9,25 +9,25 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.toolbox.MackageDesc;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.toolbox.MackageDesc;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * SAX handler for mvvm-transform.xml files.
+ * SAX handler for uvm-node.xml files.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class MvvmTransformHandler extends DefaultHandler
+public class UvmNodeHandler extends DefaultHandler
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -39,24 +39,24 @@ public class MvvmTransformHandler extends DefaultHandler
     private String name = null;
     private String className = null;
     private String guiClassName = null;
-    private String transformBase = null;
+    private String nodeBase = null;
     private boolean singleInstance = false;
     private String displayName = null;
 
     private StringBuilder parentBuilder;
     private StringBuilder exportBuilder;
 
-    public MvvmTransformHandler(MackageDesc mackageDesc)
+    public UvmNodeHandler(MackageDesc mackageDesc)
     {
         this.mackageDesc = mackageDesc;
     }
 
     // public methods ---------------------------------------------------------
 
-    public TransformDesc getTransformDesc(Tid tid)
+    public NodeDesc getNodeDesc(Tid tid)
     {
-        return new TransformDesc(tid, name, className, guiClassName,
-                                 transformBase, exports, parents,
+        return new NodeDesc(tid, name, className, guiClassName,
+                                 nodeBase, exports, parents,
                                  singleInstance, displayName);
     }
 
@@ -67,13 +67,13 @@ public class MvvmTransformHandler extends DefaultHandler
                              Attributes attrs)
         throws SAXException
     {
-        if (qName.equals("transform-desc")) {
-            processTranDesc(attrs);
+        if (qName.equals("node-desc")) {
+            processNodeDesc(attrs);
         } else if (qName.equals("parent")) {
             parentBuilder = new StringBuilder();
         } else if (qName.equals("export")) {
             exportBuilder = new StringBuilder();
-        } else if (qName.equals("mvvm-transform")) {
+        } else if (qName.equals("uvm-node")) {
         } else {
             logger.warn("ignoring unknown element: " + qName);
         }
@@ -103,7 +103,7 @@ public class MvvmTransformHandler extends DefaultHandler
 
     // private methods --------------------------------------------------------
 
-    private void processTranDesc(Attributes attrs)
+    private void processNodeDesc(Attributes attrs)
         throws SAXException
     {
         for (int i = 0; i < attrs.getLength(); i++) {
@@ -120,8 +120,8 @@ public class MvvmTransformHandler extends DefaultHandler
                 displayName = v;
             } else if (n.equals("gui-classname")) {
                 guiClassName = v;
-            } else if (n.equals("transform-base")) {
-                transformBase = v;
+            } else if (n.equals("node-base")) {
+                nodeBase = v;
             } else {
                 logger.warn("skipping unknown attribute: " + n);
             }

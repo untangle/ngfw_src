@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.logging;
+package com.untangle.uvm.logging;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -25,7 +25,7 @@ import javax.persistence.Transient;
 /**
  * A log event and message.
  *
- * Hibernate mappings for this class are in the MVVM resource
+ * Hibernate mappings for this class are in the UVM resource
  * directory.
  */
 @MappedSuperclass

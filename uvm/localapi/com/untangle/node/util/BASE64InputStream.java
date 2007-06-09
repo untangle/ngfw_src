@@ -8,10 +8,10 @@
  *
  * $Id$
  */
-package com.untangle.tran.util;
+package com.untangle.node.util;
 
 import java.io.*;
-import static com.untangle.tran.util.Ascii.*;
+import static com.untangle.node.util.Ascii.*;
 
 /**
  * TODO bscott This class needs to be examined

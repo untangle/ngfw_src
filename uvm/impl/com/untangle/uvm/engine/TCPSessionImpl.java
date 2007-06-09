@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.nio.ByteBuffer;
 
@@ -19,12 +19,12 @@ import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.ResetCrumb;
 import com.untangle.jvector.ShutdownCrumb;
-import com.untangle.mvvm.tapi.*;
-import com.untangle.mvvm.tapi.client.TCPSessionDescImpl;
-import com.untangle.mvvm.tapi.event.*;
-import com.untangle.mvvm.tran.MutateTStats;
-import com.untangle.mvvm.tran.PipelineEndpoints;
-import com.untangle.mvvm.util.MetaEnv;
+import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.tapi.client.TCPSessionDescImpl;
+import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.node.MutateTStats;
+import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.util.MetaEnv;
 
 class TCPSessionImpl extends IPSessionImpl implements TCPSession
 {
@@ -40,7 +40,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     protected ByteBuffer[] readBuf = new ByteBuffer[] { null, null };
 
     protected TCPSessionImpl(Dispatcher disp,
-                             com.untangle.mvvm.argon.TCPSession pSession,
+                             com.untangle.uvm.argon.TCPSession pSession,
                              boolean isInbound, PipelineEndpoints pe,
                              int clientReadBufferSize,
                              int serverReadBufferSize)
@@ -133,13 +133,13 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
     public byte clientState()
     {
-        if (((com.untangle.mvvm.argon.Session)pSession).clientIncomingSocketQueue() == null)
-            if (((com.untangle.mvvm.argon.Session)pSession).clientOutgoingSocketQueue() == null)
+        if (((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue() == null)
+            if (((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue() == null)
                 return IPSessionDesc.CLOSED;
             else
                 return TCPSessionDesc.HALF_OPEN_OUTPUT;
         else
-            if (((com.untangle.mvvm.argon.Session)pSession).clientOutgoingSocketQueue() == null)
+            if (((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue() == null)
                 return TCPSessionDesc.HALF_OPEN_INPUT;
             else
                 return IPSessionDesc.OPEN;
@@ -147,13 +147,13 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
     public byte serverState()
     {
-        if (((com.untangle.mvvm.argon.Session)pSession).serverIncomingSocketQueue() == null)
-            if (((com.untangle.mvvm.argon.Session)pSession).serverOutgoingSocketQueue() == null)
+        if (((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue() == null)
+            if (((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue() == null)
                 return IPSessionDesc.CLOSED;
             else
                 return TCPSessionDesc.HALF_OPEN_OUTPUT;
         else
-            if (((com.untangle.mvvm.argon.Session)pSession).serverOutgoingSocketQueue() == null)
+            if (((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue() == null)
                 return TCPSessionDesc.HALF_OPEN_INPUT;
             else
                 return IPSessionDesc.OPEN;
@@ -161,22 +161,22 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
 
     public void shutdownServer()
     {
-        shutdownSide(SERVER, ((com.untangle.mvvm.argon.Session)pSession).serverOutgoingSocketQueue(), false);
+        shutdownSide(SERVER, ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue(), false);
     }
 
     public void shutdownServer(boolean force)
     {
-        shutdownSide(SERVER, ((com.untangle.mvvm.argon.Session)pSession).serverOutgoingSocketQueue(), force);
+        shutdownSide(SERVER, ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue(), force);
     }
 
     public void shutdownClient()
     {
-        shutdownSide(CLIENT, ((com.untangle.mvvm.argon.Session)pSession).clientOutgoingSocketQueue(), false);
+        shutdownSide(CLIENT, ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue(), false);
     }
 
     public void shutdownClient(boolean force)
     {
-        shutdownSide(CLIENT, ((com.untangle.mvvm.argon.Session)pSession).clientOutgoingSocketQueue(), force);
+        shutdownSide(CLIENT, ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue(), force);
     }
 
     private void shutdownSide(int side, OutgoingSocketQueue out, boolean force)
@@ -197,8 +197,8 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     public void resetServer()
     {
         // Go ahead and write out the reset.
-        OutgoingSocketQueue oursout = ((com.untangle.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
-        IncomingSocketQueue oursin  = ((com.untangle.mvvm.argon.Session)pSession).serverIncomingSocketQueue();
+        OutgoingSocketQueue oursout = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
+        IncomingSocketQueue oursin  = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
         if (oursout != null) {
             Crumb crumb = ResetCrumb.getInstance();
             boolean success = oursout.write(crumb);
@@ -215,8 +215,8 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     public void resetClient()
     {
         // Go ahead and write out the reset.
-        OutgoingSocketQueue ourcout = ((com.untangle.mvvm.argon.Session)pSession).clientOutgoingSocketQueue();
-        IncomingSocketQueue ourcin  = ((com.untangle.mvvm.argon.Session)pSession).clientIncomingSocketQueue();
+        OutgoingSocketQueue ourcout = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
+        IncomingSocketQueue ourcin  = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
 
         if (ourcout != null) {
             Crumb crumb = ResetCrumb.getInstance();
@@ -394,7 +394,7 @@ class TCPSessionImpl extends IPSessionImpl implements TCPSession
     protected void sendFINEvent(int side, ByteBuffer existingReadBuf)
         throws MPipeException
     {
-        // First give the transform a chance to do something...
+        // First give the node a chance to do something...
         IPDataResult result;
         ByteBuffer dataBuf = existingReadBuf != null ? existingReadBuf : EMPTY_BUF;
         TCPChunkEvent cevent = new TCPChunkEvent(mPipe, this, dataBuf);

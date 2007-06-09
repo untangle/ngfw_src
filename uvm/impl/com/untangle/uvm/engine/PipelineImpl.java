@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,10 +19,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.MPipe;
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tran.PipelineEndpoints;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.MPipe;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.node.PipelineEndpoints;
 
 class PipelineImpl implements Pipeline
 {

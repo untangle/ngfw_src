@@ -8,13 +8,13 @@
  *
  * $Id$
  */
-package com.untangle.mvvm.util;
+package com.untangle.uvm.util;
 
 import java.util.*;
 
-import com.untangle.mvvm.tapi.IPSessionDesc;
-import com.untangle.mvvm.tapi.SessionStats;
-import com.untangle.mvvm.tapi.TCPSessionDesc;
+import com.untangle.uvm.tapi.IPSessionDesc;
+import com.untangle.uvm.tapi.SessionStats;
+import com.untangle.uvm.tapi.TCPSessionDesc;
 
 
 public class SessionUtil {

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
@@ -17,7 +17,7 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
 
 class TargetReaper implements Runnable
@@ -60,7 +60,7 @@ class TargetReaper implements Runnable
 
     void init()
     {
-        thread = MvvmContextFactory.context().newThread(this);
+        thread = UvmContextFactory.context().newThread(this);
         thread.start();
     }
 

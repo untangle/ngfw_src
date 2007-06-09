@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.user;
+package com.untangle.uvm.user;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -19,15 +19,15 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.networking.NetworkUtil;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.Validatable;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.networking.NetworkUtil;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Validatable;
+import com.untangle.uvm.node.ValidateException;
 import org.hibernate.annotations.Type;
 
 
 @Entity
-@Table(name="mvvm_wmi_settings", schema="settings")
+@Table(name="uvm_wmi_settings", schema="settings")
 public class WMISettings implements Serializable, Validatable
 {
     // private static final long serialVersionUID = 172494253701617361L;
@@ -89,7 +89,7 @@ public class WMISettings implements Serializable, Validatable
      * @return Address of the WMI server.
      */
     @Column(name="address")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getAddress()
     {
         if ( this.address == null ) this.address = NetworkUtil.EMPTY_IPADDR;

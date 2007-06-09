@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.token;
+package com.untangle.node.token;
 
-import com.untangle.mvvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.tapi.event.TCPStreamer;
 
 /**
- * An Unparser transforms tokens into bytes.
+ * An Unparser nodes tokens into bytes.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
@@ -22,7 +22,7 @@ import com.untangle.mvvm.tapi.event.TCPStreamer;
 public interface Unparser
 {
     /**
-     * Transform tokens back into bytes.
+     * Node tokens back into bytes.
      *
      * @param token next token.
      * @return UnparseResult containing byte content of token.
@@ -49,7 +49,7 @@ public interface Unparser
 
     /**
      * Called when both client and server sides 
-     * {@link com.untangle.mvvm.tapi.event.SessionEventListener#handleTCPFinalized are shutdown}
+     * {@link com.untangle.uvm.tapi.event.SessionEventListener#handleTCPFinalized are shutdown}
      */
     void handleFinalized();    
 }

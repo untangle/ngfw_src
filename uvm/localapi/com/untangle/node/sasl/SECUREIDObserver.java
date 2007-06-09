@@ -8,9 +8,9 @@
  *
  * $Id$
  */
-package com.untangle.tran.sasl;
+package com.untangle.node.sasl;
 import java.nio.ByteBuffer;
-import static com.untangle.tran.util.ASCIIUtil.*;
+import static com.untangle.node.util.ASCIIUtil.*;
 
 
 /**

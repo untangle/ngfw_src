@@ -9,21 +9,21 @@
  * $Id$
  */
 
-package com.untangle.mvvm.shield;
+package com.untangle.uvm.shield;
 
 import java.net.InetAddress;
 
 import com.untangle.jnetcap.Shield;
 import com.untangle.jnetcap.ShieldEventListener;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.logging.EventLogger;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.logging.EventLogger;
 import org.apache.log4j.Logger;
 
 public class ShieldMonitor implements ShieldEventListener
 {
     private static ShieldMonitor INSTANCE = null;
 
-    private final EventLogger eventLogger = MvvmContextFactory.context().eventLogger();
+    private final EventLogger eventLogger = UvmContextFactory.context().eventLogger();
     private final Logger logger = Logger.getLogger( this.getClass());
 
     private ShieldMonitor()
@@ -42,7 +42,7 @@ public class ShieldMonitor implements ShieldEventListener
                      " limited: " + limited + " dropped: " + dropped + " rejected: " + rejected  );
 
         try {
-            clientIntf = MvvmContextFactory.context().localIntfManager().toArgon( clientIntf );
+            clientIntf = UvmContextFactory.context().localIntfManager().toArgon( clientIntf );
 
             eventLogger.log( new ShieldRejectionEvent( ip, clientIntf, reputation, mode, limited, dropped,
                                                        rejected ));

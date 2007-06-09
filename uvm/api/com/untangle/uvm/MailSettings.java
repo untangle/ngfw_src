@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -19,7 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * MVVM mail settings.
+ * UVM mail settings.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>

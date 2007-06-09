@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.io.Serializable;
 
@@ -19,11 +19,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.IntfConstants;
-import com.untangle.mvvm.tran.Rule;
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.node.Rule;
 
-import com.untangle.mvvm.tran.Validatable;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.Validatable;
+import com.untangle.uvm.node.ValidateException;
 
 
 /**
@@ -33,7 +33,7 @@ import com.untangle.mvvm.tran.ValidateException;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_pppoe_connection", schema="settings")
+@Table(name="uvm_pppoe_connection", schema="settings")
 public class PPPoEConnectionRule extends Rule implements Serializable, Validatable
 {
     /* the username */

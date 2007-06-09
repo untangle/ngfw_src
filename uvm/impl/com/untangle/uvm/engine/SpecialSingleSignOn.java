@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.IOException;
 
@@ -27,28 +27,28 @@ import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.portal.PortalLogin;
-import com.untangle.mvvm.security.MvvmPrincipal;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.portal.PortalLogin;
+import com.untangle.uvm.security.UvmPrincipal;
 
 
 class SpecialSingleSignOn extends SingleSignOn
 {
-    /* This is a set of all of the context paths that use MvvmPrincipal */
+    /* This is a set of all of the context paths that use UvmPrincipal */
     /* Dirty hack designed to ignore sessions that are in this context path */
-    private final Set<String> mvvmContextSet;
+    private final Set<String> uvmContextSet;
 
     private PortalManagerImpl pmgr;
 
-    SpecialSingleSignOn(MvvmLocalContext mvvmContext, String ... contextPathArray )
+    SpecialSingleSignOn(UvmLocalContext uvmContext, String ... contextPathArray )
     {
         Set<String> contextSet = new HashSet<String>();
         
         for ( String contextPath : contextPathArray ) contextSet.add( contextPath );
         
-        this.mvvmContextSet =  Collections.unmodifiableSet( contextSet );
+        this.uvmContextSet =  Collections.unmodifiableSet( contextSet );
 
-        pmgr = (PortalManagerImpl) mvvmContext.portalManager();
+        pmgr = (PortalManagerImpl) uvmContext.portalManager();
     }
 
     /**
@@ -64,7 +64,7 @@ class SpecialSingleSignOn extends SingleSignOn
     public void invoke(Request request, Response response)
         throws IOException, ServletException {
         String contextPath = request.getContextPath();
-        if ( mvvmContextSet.contains(contextPath)) {
+        if ( uvmContextSet.contains(contextPath)) {
             /* Ignore single sign on for this context path */
             if ( containerLog.isDebugEnabled()) {
                 containerLog.debug( "The path: [" + contextPath + "] is ignored by single sign on" );
@@ -102,9 +102,9 @@ class SpecialSingleSignOn extends SingleSignOn
                             String username, String password)
     {
         /* Never register these sessions, they are bunk */
-        if (principal instanceof MvvmPrincipal ) {
+        if (principal instanceof UvmPrincipal ) {
             if ( containerLog.isDebugEnabled()) {
-                containerLog.debug( "Ignoring mvvm principal" );
+                containerLog.debug( "Ignoring uvm principal" );
             }
 
             return;

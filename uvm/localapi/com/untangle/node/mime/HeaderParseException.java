@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 //XXXXXXX bscott - this is redundant with InvalidHeaderDataException
 

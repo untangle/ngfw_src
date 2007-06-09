@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall;
+package com.untangle.uvm.node.firewall;
 
 import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.IntfConstants;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.IntfConstants;
 
-import com.untangle.mvvm.tran.firewall.intf.IntfMatcher;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcher;
-import com.untangle.mvvm.tran.firewall.port.PortMatcher;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcher;
+import com.untangle.uvm.node.firewall.ip.IPMatcher;
+import com.untangle.uvm.node.firewall.port.PortMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcher;
 
 public class InterfaceAddressRedirect extends InterfaceRedirect
 {
@@ -80,7 +80,7 @@ public class InterfaceAddressRedirect extends InterfaceRedirect
         if (( null == this.redirectAddress ) || ( check != this.lastUpdate )) return;
 
         try {
-            byte newIntf = MvvmContextFactory.context().argonManager().
+            byte newIntf = UvmContextFactory.context().argonManager().
                 getOutgoingInterface( this.redirectAddress );
             if ( newIntf == IntfConstants.NETCAP_LOOPBACK ) {
                 logger.info( "Redirect is destined to local host, matching sessions will be dropped." );

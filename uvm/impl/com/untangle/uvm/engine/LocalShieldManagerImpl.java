@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
-import com.untangle.mvvm.shield.ShieldNodeSettings;
+import com.untangle.uvm.shield.ShieldNodeSettings;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -23,8 +23,8 @@ import org.apache.log4j.Logger;
 
 import com.untangle.jnetcap.Shield;
 
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.localapi.LocalShieldManager;
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.localapi.LocalShieldManager;
 
 class LocalShieldManagerImpl implements LocalShieldManager
 {

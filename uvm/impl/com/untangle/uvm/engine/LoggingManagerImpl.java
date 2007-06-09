@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.logging.LoggingManager;
-import com.untangle.mvvm.logging.LoggingSettings;
-import com.untangle.mvvm.logging.MvvmRepositorySelector;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.logging.LoggingManager;
+import com.untangle.uvm.logging.LoggingSettings;
+import com.untangle.uvm.logging.UvmRepositorySelector;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -29,13 +29,13 @@ class LoggingManagerImpl implements LoggingManager
 {
     private static final Object LOCK = new Object();
     private static final boolean LOGGING_DISABLED
-        = Boolean.parseBoolean(System.getProperty("mvvm.logging.disabled"));
+        = Boolean.parseBoolean(System.getProperty("uvm.logging.disabled"));
 
     private static LoggingManagerImpl LOGGING_MANAGER;
 
     private final List<String> initQueue = new LinkedList<String>();
     private final LogWorker logWorker = new LogWorker(this);
-    private final MvvmRepositorySelector repositorySelector;
+    private final UvmRepositorySelector repositorySelector;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -43,7 +43,7 @@ class LoggingManagerImpl implements LoggingManager
 
     private volatile boolean conversionComplete = true;
 
-    LoggingManagerImpl(MvvmRepositorySelector repositorySelector)
+    LoggingManagerImpl(UvmRepositorySelector repositorySelector)
     {
         this.repositorySelector = repositorySelector;
 
@@ -62,7 +62,7 @@ class LoggingManagerImpl implements LoggingManager
                     return true;
                 }
             };
-        MvvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         SyslogManagerImpl.manager().reconfigure(loggingSettings);
     }
@@ -90,7 +90,7 @@ class LoggingManagerImpl implements LoggingManager
                 }
             };
 
-        MvvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         SyslogManagerImpl.manager().reconfigure(loggingSettings);
     }
@@ -136,12 +136,12 @@ class LoggingManagerImpl implements LoggingManager
             initQueue.add(name);
         }
 
-        // XXX not using newThread, called from MvvmContextImpl constructor
+        // XXX not using newThread, called from UvmContextImpl constructor
         new Thread(new Runnable()
             {
                 public void run()
                 {
-                    MvvmContextImpl mctx = MvvmContextImpl.getInstance();
+                    UvmContextImpl mctx = UvmContextImpl.getInstance();
                     mctx.waitForStartup();
 
                     synchronized (initQueue) {

@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.port;
+package com.untangle.uvm.node.firewall.port;
 
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.firewall.Parser;
-import com.untangle.mvvm.tran.firewall.ParsingConstants;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.firewall.Parser;
+import com.untangle.uvm.node.firewall.ParsingConstants;
 
-import static com.untangle.mvvm.tran.firewall.port.PortMatcherUtil.MARKER_RANGE;
+import static com.untangle.uvm.node.firewall.port.PortMatcherUtil.MARKER_RANGE;
 
 /**
  * A PortMatcher that matches a range of ports.

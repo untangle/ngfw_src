@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
-import com.untangle.mvvm.tapi.MPipe;
-import com.untangle.mvvm.tapi.Session;
-import com.untangle.mvvm.util.MetaEnv;
+import com.untangle.uvm.tapi.MPipe;
+import com.untangle.uvm.tapi.Session;
+import com.untangle.uvm.util.MetaEnv;
 
 /**
- * <code>MutateTStats</code> is a helper class that allows the Smith to modify TransformStats
+ * <code>MutateTStats</code> is a helper class that allows the Smith to modify NodeStats
  * (which are normally read-only).
  *
  * @author <a href="mailto:jdi@slab.ninthwave.com">John Irwin</a>
@@ -28,26 +28,26 @@ public final class MutateTStats {
     public static final int CLIENT_TO_SERVER = 1;
     public static final int SERVER_TO_CLIENT = 2;
 
-    private static TransformStats safeStats(Session sess) {
+    private static NodeStats safeStats(Session sess) {
         try {
-            // Transform may not be running any more
-            return sess.mPipe().transform().getStats();
+            // Node may not be running any more
+            return sess.mPipe().node().getStats();
         } catch (IllegalStateException x) {
             return null;
         }
     }
 
-    private static TransformStats safeStats(MPipe pipe) {
+    private static NodeStats safeStats(MPipe pipe) {
         try {
-            // Transform may not be running any more
-            return pipe.transform().getStats();
+            // Node may not be running any more
+            return pipe.node().getStats();
         } catch (IllegalStateException x) {
             return null;
         }
     }
 
     public static void readData(int direction, Session sess, long bytes) {
-        TransformStats stats = safeStats(sess);
+        NodeStats stats = safeStats(sess);
         if (stats == null)
             return;
         synchronized(stats) {
@@ -63,7 +63,7 @@ public final class MutateTStats {
     }
 
     public static void rereadData(int direction, Session sess, long bytes) {
-        TransformStats stats = safeStats(sess);
+        NodeStats stats = safeStats(sess);
         if (stats == null)
             return;
         synchronized(stats) {
@@ -77,7 +77,7 @@ public final class MutateTStats {
     }
 
     public static void wroteData(int direction, Session sess, long bytes) {
-        TransformStats stats = safeStats(sess);
+        NodeStats stats = safeStats(sess);
         if (stats == null)
             return;
         synchronized(stats) {
@@ -94,7 +94,7 @@ public final class MutateTStats {
 
     public static void rewroteData(int direction, Session sess, long bytes)
     {
-        TransformStats stats = safeStats(sess);
+        NodeStats stats = safeStats(sess);
         if (stats == null)
             return;
         synchronized(stats) {
@@ -108,7 +108,7 @@ public final class MutateTStats {
     }
 
     public static void addTCPSession(MPipe mPipe) {
-        TransformStats stats = safeStats(mPipe);
+        NodeStats stats = safeStats(mPipe);
         if (stats == null)
             return;
         synchronized(stats) {
@@ -119,7 +119,7 @@ public final class MutateTStats {
     }
 
     public static void removeTCPSession(MPipe mPipe) {
-        TransformStats stats = safeStats(mPipe);
+        NodeStats stats = safeStats(mPipe);
         if (stats == null)
             return;
         synchronized(stats) {
@@ -129,7 +129,7 @@ public final class MutateTStats {
     }
 
     public static void addUDPSession(MPipe mPipe) {
-        TransformStats stats = safeStats(mPipe);
+        NodeStats stats = safeStats(mPipe);
         if (stats == null)
             return;
         synchronized(stats) {
@@ -140,7 +140,7 @@ public final class MutateTStats {
     }
 
     public static void removeUDPSession(MPipe mPipe) {
-        TransformStats stats = safeStats(mPipe);
+        NodeStats stats = safeStats(mPipe);
         if (stats == null)
             return;
         synchronized(stats) {
@@ -150,7 +150,7 @@ public final class MutateTStats {
     }
 
     public static void requestTCPSession(MPipe mPipe) {
-        TransformStats stats = safeStats(mPipe);
+        NodeStats stats = safeStats(mPipe);
         if (stats == null)
             return;
         synchronized(stats) {
@@ -160,7 +160,7 @@ public final class MutateTStats {
     }
 
     public static void requestUDPSession(MPipe mPipe) {
-        TransformStats stats = safeStats(mPipe);
+        NodeStats stats = safeStats(mPipe);
         if (stats == null)
             return;
         synchronized(stats) {
@@ -170,7 +170,7 @@ public final class MutateTStats {
     }
 
     public static void sessionStateChanged(MPipe mPipe) {
-        TransformStats stats = safeStats(mPipe);
+        NodeStats stats = safeStats(mPipe);
         if (stats == null)
             return;
         synchronized(stats) {
@@ -179,9 +179,9 @@ public final class MutateTStats {
     }
 
     // Horrifically used by portal XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    public static TransformStats unholyMatrimony(TransformStats tstats, TransformStats mstats)
+    public static NodeStats unholyMatrimony(NodeStats tstats, NodeStats mstats)
     {
-        TransformStats result = new TransformStats();
+        NodeStats result = new NodeStats();
 
         // Byte and Chunk counts always zero so just ignore
 

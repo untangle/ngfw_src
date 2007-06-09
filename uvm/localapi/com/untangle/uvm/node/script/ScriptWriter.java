@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.script;
+package com.untangle.uvm.node.script;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -21,7 +21,7 @@ import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 
 /* XXX This should probably be abstracted, up to a script writer and then have a
  * class that is a shell script writer
@@ -217,7 +217,7 @@ public class ScriptWriter
         if ( permissions == null ) return;
 
         try {
-            Process p = MvvmContextFactory.context().
+            Process p = UvmContextFactory.context().
                 exec( new String[] { "/bin/chmod", permissions, fileName } );
 
             /* Read out standard error and input */

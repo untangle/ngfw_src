@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.policy;
+package com.untangle.uvm.policy;
 
 import  java.util.List;
 
@@ -53,7 +53,7 @@ public interface PolicyManager
 
     /**
      * Removes a policy from the system.  If the policy is in use (has
-     * transforms or is used in the policy selector), it cannot be
+     * nodes or is used in the policy selector), it cannot be
      * removed.  Also, the default policy cannot be removed.
      *
      * @param policy the <code>Policy</code> to be removed

@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.util.List;
 
-import com.untangle.mvvm.portal.PortalLogin;
-import com.untangle.mvvm.portal.PortalSettings;
-import com.untangle.mvvm.portal.RemoteApplicationManager;
-import com.untangle.mvvm.portal.RemotePortalManager;
+import com.untangle.uvm.portal.PortalLogin;
+import com.untangle.uvm.portal.PortalSettings;
+import com.untangle.uvm.portal.RemoteApplicationManager;
+import com.untangle.uvm.portal.RemotePortalManager;
 
 class RemotePortalManagerImpl implements RemotePortalManager
 {

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking.ping;
+package com.untangle.uvm.networking.ping;
 
 import org.apache.log4j.BasicConfigurator;
 
@@ -17,7 +17,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.ValidateException;
 
 public class PingTest
 {

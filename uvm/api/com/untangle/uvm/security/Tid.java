@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.security;
+package com.untangle.uvm.security;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -22,10 +22,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.policy.Policy;
+import com.untangle.uvm.policy.Policy;
 
 /**
- * Transform ID.
+ * Node ID.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
@@ -40,27 +40,27 @@ public class Tid implements Principal, Serializable, Comparable
     private Policy policy;
 
     // non persistent property XXX maybe we should collapse this and
-    // TransformPersistentState and also make a immutable token for
+    // NodePersistentState and also make a immutable token for
     // tid?
-    private String transformName;
+    private String nodeName;
 
     public Tid()
     {
-        transformName = null;
+        nodeName = null;
     }
 
-    public Tid(Long id, Policy policy, String transformName)
+    public Tid(Long id, Policy policy, String nodeName)
     {
         this.id = id;
         this.policy = policy;
-        this.transformName = transformName;
+        this.nodeName = nodeName;
     }
 
     public Tid(Long id)
     {
         this.id = id;
         this.policy = null;
-        this.transformName = null;
+        this.nodeName = null;
     }
 
     /**
@@ -98,14 +98,14 @@ public class Tid implements Principal, Serializable, Comparable
     }
 
     @Transient
-    public String getTransformName()
+    public String getNodeName()
     {
-        return transformName;
+        return nodeName;
     }
 
-    public void setTransformName(String transformName)
+    public void setNodeName(String nodeName)
     {
-        this.transformName = transformName;
+        this.nodeName = nodeName;
     }
 
     // XXX something more appropriate

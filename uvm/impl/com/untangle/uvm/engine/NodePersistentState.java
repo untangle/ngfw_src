@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,40 +27,40 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.TransformState;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.NodeState;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 
 /**
- * Internal transform state.
+ * Internal node state.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @Entity
-@Table(name="transform_persistent_state")
-class TransformPersistentState
+@Table(name="node_persistent_state")
+class NodePersistentState
 {
     private Long id;
     private Tid tid;
     private String name;
     private List args;
-    private TransformState targetState;
+    private NodeState targetState;
     private byte[] publicKey;
 
     // constructors -----------------------------------------------------------
 
-    TransformPersistentState() { }
+    NodePersistentState() { }
 
-    TransformPersistentState(Tid tid, String name, byte[] publicKey)
+    NodePersistentState(Tid tid, String name, byte[] publicKey)
     {
         this.tid = tid;
         this.name = name;
         this.publicKey = publicKey;
 
-        this.targetState = TransformState.INITIALIZED;
+        this.targetState = NodeState.INITIALIZED;
         this.args = new LinkedList();
     }
 
@@ -80,7 +80,7 @@ class TransformPersistentState
     }
 
     /**
-     * Transform id.
+     * Node id.
      *
      * @return tid for this instance.
      */
@@ -97,9 +97,9 @@ class TransformPersistentState
     }
 
     /**
-     * Internal name of the transform.
+     * Internal name of the node.
      *
-     * @return the transform's name.
+     * @return the node's name.
      */
     @Column(nullable=false, length=64)
     String getName()
@@ -113,13 +113,13 @@ class TransformPersistentState
     }
 
     /**
-     * Transform string arguments, used by some transforms rather than
+     * Node string arguments, used by some nodes rather than
      * database settings.
      *
-     * @return transform arguments.
+     * @return node arguments.
      */
     @CollectionOfElements(fetch=FetchType.EAGER)
-    @JoinTable(name="transform_args",
+    @JoinTable(name="node_args",
                joinColumns=@JoinColumn(name="tps_id"))
     @Column(name="arg", nullable=false)
     @IndexColumn(name="position")
@@ -158,22 +158,22 @@ class TransformPersistentState
     }
 
     /**
-     * The desired state upon initial load. When the MVVM starts, it
-     * attempts to place the transform in this state. Subsequent
+     * The desired state upon initial load. When the UVM starts, it
+     * attempts to place the node in this state. Subsequent
      * changes in state at runtime become the new target state, such
-     * that if the MVVM is restarted, the transform resumes its last
+     * that if the UVM is restarted, the node resumes its last
      * state.
      *
      * @return the target state.
      */
     @Column(name="target_state", nullable=false)
-    @Type(type="com.untangle.mvvm.type.TransformStateUserType")
-    TransformState getTargetState()
+    @Type(type="com.untangle.uvm.type.NodeStateUserType")
+    NodeState getTargetState()
     {
         return targetState;
     }
 
-    void setTargetState(TransformState targetState)
+    void setTargetState(NodeState targetState)
     {
         this.targetState = targetState;
     }

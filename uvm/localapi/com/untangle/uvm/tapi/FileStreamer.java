@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import com.untangle.mvvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.tapi.event.TCPStreamer;
 import org.apache.log4j.Logger;
 
 public class FileStreamer implements TCPStreamer

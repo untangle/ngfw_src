@@ -9,9 +9,9 @@
  *  $Id$
  */
 
-package com.untangle.tran.util;
+package com.untangle.node.util;
 import java.io.*;
-import static com.untangle.tran.util.Ascii.LF;
+import static com.untangle.node.util.Ascii.LF;
 
 //Uses Exit code 1 if there is a problem.
 
@@ -33,11 +33,11 @@ public class OpenSSLCAWrapper {
     private static final String CONF_FILE_NAME = "openssl.cnf";
 
     private final File m_rootDir;
-    private final boolean m_useMVVMThreads;
+    private final boolean m_useUVMThreads;
 
-    private OpenSSLCAWrapper(File rootDir, boolean useMVVMThreads) {
+    private OpenSSLCAWrapper(File rootDir, boolean useUVMThreads) {
         m_rootDir = rootDir;
-        m_useMVVMThreads = useMVVMThreads;
+        m_useUVMThreads = useUVMThreads;
     }
 
     /**
@@ -118,15 +118,15 @@ public class OpenSSLCAWrapper {
      * @param rootDir the root dir of this CA.  <b>Warning</b> - there is currently
      *        no check to see if you're clobbering existing files
      *
-     * @param useMVVMThreads when exec-ing openssl, should we assume we are
-     *        in the MVVM process.
+     * @param useUVMThreads when exec-ing openssl, should we assume we are
+     *        in the UVM process.
      *
      * @return an initialized instance
      */
-    public static OpenSSLCAWrapper create(File rootDir, boolean useMVVMThreads)
+    public static OpenSSLCAWrapper create(File rootDir, boolean useUVMThreads)
         throws IOException {
         return create(rootDir,
-                      useMVVMThreads,
+                      useUVMThreads,
                       "mv-edgeguard" + System.currentTimeMillis(),
                       "US",
                       "CA",
@@ -140,8 +140,8 @@ public class OpenSSLCAWrapper {
      *
      * @param rootDir the root dir of this CA.  <b>Warning</b> - there is currently
      *        no check to see if you're clobbering existing files
-     * @param useMVVMThreads when exec-ing openssl, should we assume we are
-     *        in the MVVM process.
+     * @param useUVMThreads when exec-ing openssl, should we assume we are
+     *        in the UVM process.
      * @param commonName the CN of the CA
      * @param country
      * @param state
@@ -152,7 +152,7 @@ public class OpenSSLCAWrapper {
      * @return an initialized instance
      */
     public static OpenSSLCAWrapper create(File rootDir,
-                                          boolean useMVVMThreads,
+                                          boolean useUVMThreads,
                                           String commonName,
                                           String country,
                                           String state,
@@ -240,7 +240,7 @@ public class OpenSSLCAWrapper {
                                                              1000*60);
 
 
-        return new OpenSSLCAWrapper(rootDir, useMVVMThreads);
+        return new OpenSSLCAWrapper(rootDir, useUVMThreads);
 
     }
 

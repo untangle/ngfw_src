@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi.client;
+package com.untangle.uvm.tapi.client;
 
-import com.untangle.mvvm.tapi.IPSessionDesc;
-import com.untangle.mvvm.tapi.SessionStats;
+import com.untangle.uvm.tapi.IPSessionDesc;
+import com.untangle.uvm.tapi.SessionStats;
 import java.net.InetAddress;
 
 class IPSessionDescImpl extends SessionDescImpl implements IPSessionDesc {

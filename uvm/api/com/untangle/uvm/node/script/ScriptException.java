@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.script;
+package com.untangle.uvm.node.script;
 
-import com.untangle.mvvm.tran.TransformException;
+import com.untangle.uvm.node.NodeException;
 
-public class ScriptException extends TransformException {
+public class ScriptException extends NodeException {
     private final int code;
     private final String scriptName;
 

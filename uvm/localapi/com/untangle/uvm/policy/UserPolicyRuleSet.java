@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.policy;
+package com.untangle.uvm.policy;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ import org.hibernate.annotations.IndexColumn;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_user_policy_rules", schema="settings")
+@Table(name="uvm_user_policy_rules", schema="settings")
 public class UserPolicyRuleSet implements Serializable
 {
     private static final long serialVersionUID = 1806394002255614868L;

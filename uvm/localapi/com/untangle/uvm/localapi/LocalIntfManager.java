@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.localapi;
+package com.untangle.uvm.localapi;
 
 import java.util.List;
 
-import com.untangle.mvvm.ArgonException;
+import com.untangle.uvm.ArgonException;
 
-import com.untangle.mvvm.tran.RemoteIntfManager;
-import com.untangle.mvvm.localapi.ArgonInterface;
+import com.untangle.uvm.node.RemoteIntfManager;
+import com.untangle.uvm.localapi.ArgonInterface;
 
 public interface LocalIntfManager extends RemoteIntfManager
 {

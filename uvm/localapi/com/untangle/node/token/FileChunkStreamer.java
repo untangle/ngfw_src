@@ -10,7 +10,7 @@
  * $Id$
  */
 
-package com.untangle.tran.token;
+package com.untangle.node.token;
 
 import java.io.File;
 import java.io.FileInputStream;

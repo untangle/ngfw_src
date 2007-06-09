@@ -9,35 +9,35 @@
  * $Id$
  */
 
-package com.untangle.mvvm.client;
+package com.untangle.uvm.client;
 
 import java.io.IOException;
 
-import com.untangle.mvvm.BrandingManager;
-import com.untangle.mvvm.ConnectivityTester;
-import com.untangle.mvvm.NetworkManager;
-import com.untangle.mvvm.RemoteAppServerManager;
-import com.untangle.mvvm.ReportingManager;
-import com.untangle.mvvm.addrbook.AddressBook;
-import com.untangle.mvvm.logging.LoggingManager;
-import com.untangle.mvvm.networking.ping.PingManager;
-import com.untangle.mvvm.policy.PolicyManager;
-import com.untangle.mvvm.portal.RemotePortalManager;
-import com.untangle.mvvm.security.AdminManager;
-import com.untangle.mvvm.toolbox.ToolboxManager;
-import com.untangle.mvvm.tran.RemoteIntfManager;
-import com.untangle.mvvm.tran.RemoteShieldManager;
-import com.untangle.mvvm.tran.TransformManager;
-import com.untangle.mvvm.user.RemotePhoneBook;
+import com.untangle.uvm.BrandingManager;
+import com.untangle.uvm.ConnectivityTester;
+import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.RemoteAppServerManager;
+import com.untangle.uvm.ReportingManager;
+import com.untangle.uvm.addrbook.AddressBook;
+import com.untangle.uvm.logging.LoggingManager;
+import com.untangle.uvm.networking.ping.PingManager;
+import com.untangle.uvm.policy.PolicyManager;
+import com.untangle.uvm.portal.RemotePortalManager;
+import com.untangle.uvm.security.AdminManager;
+import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.node.RemoteIntfManager;
+import com.untangle.uvm.node.RemoteShieldManager;
+import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.user.RemotePhoneBook;
 
 /**
- * Provides an interface to get major MVVM components that are
+ * Provides an interface to get major UVM components that are
  * accessible a remote client.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface MvvmRemoteContext
+public interface UvmRemoteContext
 {
     /**
      * Get the <code>ToolboxManager</code> singleton.
@@ -47,11 +47,11 @@ public interface MvvmRemoteContext
     ToolboxManager toolboxManager();
 
     /**
-     * Get the <code>TransformManager</code> singleton.
+     * Get the <code>NodeManager</code> singleton.
      *
-     * @return the TransformManager.
+     * @return the NodeManager.
      */
-    TransformManager transformManager();
+    NodeManager nodeManager();
 
     /**
      * Get the <code>LoggingManager</code> singleton.
@@ -179,7 +179,7 @@ public interface MvvmRemoteContext
     // debugging / performance management
     void doFullGC();
 
-    // making sure the client and mvvm versions are the same
+    // making sure the client and uvm versions are the same
     String version();
 
     /**

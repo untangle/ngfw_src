@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.tran.HostNameList;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.Rule;
+import com.untangle.uvm.node.HostNameList;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Rule;
 import org.hibernate.annotations.Type;
 
 /**
@@ -27,7 +27,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_dns_static_host_rule", schema="settings")
+@Table(name="uvm_dns_static_host_rule", schema="settings")
 public class DnsStaticHostRule extends Rule
 {
     private static final long serialVersionUID = -9166468521319948021L;
@@ -55,7 +55,7 @@ public class DnsStaticHostRule extends Rule
      * <code>staticAddress</code>.
      */
     @Column(name="hostname_list")
-    @Type(type="com.untangle.mvvm.type.HostNameListUserType")
+    @Type(type="com.untangle.uvm.type.HostNameListUserType")
     public HostNameList getHostNameList()
     {
         if ( hostNameList == null )
@@ -82,7 +82,7 @@ public class DnsStaticHostRule extends Rule
      * @return The IP address for this entry.
      */
     @Column(name="static_address")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getStaticAddress()
     {
         return this.staticAddress;

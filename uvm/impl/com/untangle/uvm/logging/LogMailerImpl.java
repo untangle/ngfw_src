@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.logging;
+package com.untangle.uvm.logging;
 
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -20,10 +20,10 @@ import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.internet.MimeBodyPart;
 
-import com.untangle.mvvm.MailSender;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmState;
-import com.untangle.mvvm.Version;
+import com.untangle.uvm.MailSender;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmState;
+import com.untangle.uvm.Version;
 import org.apache.log4j.Logger;
 
 public class LogMailerImpl implements LogMailer, Runnable
@@ -51,7 +51,7 @@ public class LogMailerImpl implements LogMailer, Runnable
     private volatile Thread thread;
 
     private Object sendMonitor = new Object();
-    private MvvmLoggingContext sendTriggerer = null;
+    private UvmLoggingContext sendTriggerer = null;
 
     // constructors -----------------------------------------------------------
 
@@ -75,7 +75,7 @@ public class LogMailerImpl implements LogMailer, Runnable
     // LogMailer methods ------------------------------------------------------
 
     // Called from one of the SmtpAppenders to indicate the need to send.
-    public void sendBuffer(MvvmLoggingContext ctx)
+    public void sendBuffer(UvmLoggingContext ctx)
     {
         synchronized(sendMonitor) {
             // Might just update the value, but that's ok -- we'll
@@ -91,7 +91,7 @@ public class LogMailerImpl implements LogMailer, Runnable
     {
         while (null != thread) {
             try {
-                MvvmLoggingContext triggerer;
+                UvmLoggingContext triggerer;
                 synchronized (sendMonitor) {
                     sendMonitor.wait();
                     triggerer = sendTriggerer;
@@ -100,8 +100,8 @@ public class LogMailerImpl implements LogMailer, Runnable
                 long now = System.currentTimeMillis();
                 if (now - MIN_MESSAGE_PERIOD < lastSendTime)
                     Thread.sleep(MIN_MESSAGE_PERIOD  - (now - lastSendTime));
-                if (MvvmContextFactory.state() == MvvmState.RUNNING &&
-                    MvvmContextFactory.context().networkManager().
+                if (UvmContextFactory.state() == UvmState.RUNNING &&
+                    UvmContextFactory.context().networkManager().
                     getMiscSettingsInternal().getIsExceptionReportingEnabled()) {
                     sendMessage(triggerer);
                 }
@@ -121,14 +121,14 @@ public class LogMailerImpl implements LogMailer, Runnable
      * Send the contents of all the cyclic buffers as an e-mail
      * message.
      */
-    private void sendMessage(MvvmLoggingContext triggeringCtx) {
+    private void sendMessage(UvmLoggingContext triggeringCtx) {
         try {
-            Set<SmtpAppender> appenders = MvvmRepositorySelector.selector()
+            Set<SmtpAppender> appenders = UvmRepositorySelector.selector()
                 .getSmtpAppenders();
 
             ArrayList<MimeBodyPart> parts = new ArrayList<MimeBodyPart>();
             for (SmtpAppender appender : appenders) {
-                MvvmLoggingContext ctx = appender.getLoggingContext();
+                UvmLoggingContext ctx = appender.getLoggingContext();
                 String partName = ctx.getName() + ".log";
                 MimeBodyPart part = appender.getPart();
                 if (part != null) {
@@ -166,7 +166,7 @@ public class LogMailerImpl implements LogMailer, Runnable
 
     private void doSend(String subjectBase, String bodyBase,
                         List<MimeBodyPart> parts) {
-        String host = MvvmContextFactory.context().networkManager().
+        String host = UvmContextFactory.context().networkManager().
             getAddressSettingsInternal().getHostName().toString();
 
         String bodyText = sysstat.systemStatus();
@@ -180,7 +180,7 @@ public class LogMailerImpl implements LogMailer, Runnable
         sb.append(version);
         String subjectText = sb.toString();
 
-        MailSender ms = MvvmContextFactory.context().mailSender();
+        MailSender ms = UvmContextFactory.context().mailSender();
         ms.sendErrorLogs(subjectText, bodyText, parts);
     }
 

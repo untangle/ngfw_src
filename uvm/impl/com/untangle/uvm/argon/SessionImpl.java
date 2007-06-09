@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import com.untangle.jnetcap.NetcapSession;
 import com.untangle.jvector.IncomingSocketQueue;
@@ -466,7 +466,7 @@ public abstract class SessionImpl implements Session
                 if ( isDebugEnabled ) {
                     logger.debug( "ShutdownEvent: server - " + out + " closed: " + out.isClosed());
                 }
-                /* If the transform hasn't closed the socket queue yet, send the even */
+                /* If the node hasn't closed the socket queue yet, send the even */
                 if ( !out.isClosed()) {
                     /* This is equivalent to an EPIPE */
                     listener.serverOutputResetEvent( out );

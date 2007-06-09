@@ -1,6 +1,6 @@
 #!/bin/sh
 
-REPORT_DIR=@MVVM_WEB@/reports
+REPORT_DIR=@UVM_WEB@/reports
 
 add_mv_htmlheader()
 {
@@ -52,7 +52,7 @@ while read df
 do
   if [ -f $df/name ]; then
     cd $df
-    # note that index-reports uses content of transform name file to create anchor point on index html page
+    # note that index-reports uses content of node name file to create anchor point on index html page
     TNAME=`cat name`
 
     find *.html -type f | grep -i "UserSummary--\(daily\|weekly\|monthly\)\.html" > uf.tmp

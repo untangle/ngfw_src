@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,11 +23,11 @@ import com.untangle.jnetcap.Endpoint;
 import com.untangle.jnetcap.Endpoints;
 import com.untangle.jnetcap.NetcapSession;
 
-import com.untangle.mvvm.localapi.LocalIntfManager;
+import com.untangle.uvm.localapi.LocalIntfManager;
 
-import com.untangle.mvvm.tapi.Protocol;
+import com.untangle.uvm.tapi.Protocol;
 
-import com.untangle.mvvm.tran.firewall.InterfaceRedirect;
+import com.untangle.uvm.node.firewall.InterfaceRedirect;
 
 /**
  * An InterfaceOverride modifies the destination interface of a session based on

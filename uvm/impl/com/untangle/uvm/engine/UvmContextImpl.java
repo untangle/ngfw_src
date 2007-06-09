@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,47 +17,47 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
-import com.untangle.mvvm.BrandingManager;
-import com.untangle.mvvm.CronJob;
-import com.untangle.mvvm.LocalBrandingManager;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.MvvmState;
-import com.untangle.mvvm.Period;
-import com.untangle.mvvm.addrbook.AddressBook;
-import com.untangle.mvvm.tran.RemoteIntfManager;
-import com.untangle.mvvm.tran.RemoteShieldManager;
-import com.untangle.mvvm.argon.Argon;
-import com.untangle.mvvm.argon.ArgonManagerImpl;
-import com.untangle.mvvm.client.MvvmRemoteContext;
-import com.untangle.mvvm.engine.addrbook.AddressBookFactory;
-import com.untangle.mvvm.localapi.LocalIntfManager;
-import com.untangle.mvvm.localapi.LocalShieldManager;
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.logging.LogMailerImpl;
-import com.untangle.mvvm.logging.MvvmRepositorySelector;
-import com.untangle.mvvm.networking.NetworkManagerImpl;
-import com.untangle.mvvm.networking.RemoteNetworkManagerImpl;
-import com.untangle.mvvm.networking.ping.PingManagerImpl;
-import com.untangle.mvvm.policy.LocalPolicyManager;
-import com.untangle.mvvm.policy.PolicyManager;
-import com.untangle.mvvm.tapi.MPipeManager;
-import com.untangle.mvvm.toolbox.ToolboxManager;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformManager;
-import com.untangle.mvvm.user.LocalPhoneBook;
-import com.untangle.mvvm.user.PhoneBookFactory;
-import com.untangle.mvvm.user.RemotePhoneBook;
-import com.untangle.mvvm.util.TransactionRunner;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.BrandingManager;
+import com.untangle.uvm.CronJob;
+import com.untangle.uvm.LocalBrandingManager;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.UvmState;
+import com.untangle.uvm.Period;
+import com.untangle.uvm.addrbook.AddressBook;
+import com.untangle.uvm.node.RemoteIntfManager;
+import com.untangle.uvm.node.RemoteShieldManager;
+import com.untangle.uvm.argon.Argon;
+import com.untangle.uvm.argon.ArgonManagerImpl;
+import com.untangle.uvm.client.UvmRemoteContext;
+import com.untangle.uvm.engine.addrbook.AddressBookFactory;
+import com.untangle.uvm.localapi.LocalIntfManager;
+import com.untangle.uvm.localapi.LocalShieldManager;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.LogMailerImpl;
+import com.untangle.uvm.logging.UvmRepositorySelector;
+import com.untangle.uvm.networking.NetworkManagerImpl;
+import com.untangle.uvm.networking.RemoteNetworkManagerImpl;
+import com.untangle.uvm.networking.ping.PingManagerImpl;
+import com.untangle.uvm.policy.LocalPolicyManager;
+import com.untangle.uvm.policy.PolicyManager;
+import com.untangle.uvm.tapi.MPipeManager;
+import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.user.LocalPhoneBook;
+import com.untangle.uvm.user.PhoneBookFactory;
+import com.untangle.uvm.user.RemotePhoneBook;
+import com.untangle.uvm.util.TransactionRunner;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 
-public class MvvmContextImpl extends MvvmContextBase
-    implements MvvmLocalContext
+public class UvmContextImpl extends UvmContextBase
+    implements UvmLocalContext
 {
-    private static final MvvmContextImpl CONTEXT = new MvvmContextImpl();
+    private static final UvmContextImpl CONTEXT = new UvmContextImpl();
 
     private static final String REBOOT_SCRIPT = "/sbin/reboot";
 
@@ -69,10 +69,10 @@ public class MvvmContextImpl extends MvvmContextBase
     private static final String PROPERTY_IS_DEVEL = "com.untangle.isDevel";
 
     private final Object startupWaitLock = new Object();
-    private final Logger logger = Logger.getLogger(MvvmContextImpl.class);
+    private final Logger logger = Logger.getLogger(UvmContextImpl.class);
     private final BackupManager backupManager;
 
-    private MvvmState state;
+    private UvmState state;
     private AdminManagerImpl adminManager;
     private ArgonManagerImpl argonManager;
     private RemoteIntfManagerImpl remoteIntfManager;
@@ -94,9 +94,9 @@ public class MvvmContextImpl extends MvvmContextBase
     private ConnectivityTesterImpl connectivityTester;
     private PipelineFoundryImpl pipelineFoundry;
     private ToolboxManagerImpl toolboxManager;
-    private TransformManagerImpl transformManager;
-    private RemoteTransformManagerImpl remoteTransformManager;
-    private MvvmRemoteContext remoteContext;
+    private NodeManagerImpl nodeManager;
+    private RemoteNodeManagerImpl remoteNodeManager;
+    private UvmRemoteContext remoteContext;
     private CronManager cronManager;
     private AppServerManagerImpl appServerManager;
     private RemoteAppServerManagerImpl remoteAppServerManager;
@@ -114,23 +114,23 @@ public class MvvmContextImpl extends MvvmContextBase
 
     // constructor ------------------------------------------------------------
 
-    private MvvmContextImpl()
+    private UvmContextImpl()
     {
         refreshSessionFactory();
 
-        // XXX can we load all transform cl's first?
-        state = MvvmState.LOADED;
+        // XXX can we load all node cl's first?
+        state = UvmState.LOADED;
         backupManager = new BackupManager();
     }
 
     // static factory ---------------------------------------------------------
 
-    static MvvmContextImpl getInstance()
+    static UvmContextImpl getInstance()
     {
         return CONTEXT;
     }
 
-    public static MvvmLocalContext context()
+    public static UvmLocalContext context()
     {
         return CONTEXT;
     }
@@ -192,14 +192,14 @@ public class MvvmContextImpl extends MvvmContextBase
         return toolboxManager;
     }
 
-    public TransformManagerImpl transformManager()
+    public NodeManagerImpl nodeManager()
     {
-        return transformManager;
+        return nodeManager;
     }
 
-    public TransformManager remoteTransformManager()
+    public NodeManager remoteNodeManager()
     {
-        return remoteTransformManager;
+        return remoteNodeManager;
     }
 
     public LoggingManagerImpl loggingManager()
@@ -304,15 +304,15 @@ public class MvvmContextImpl extends MvvmContextBase
         return pipelineFoundry;
     }
 
-    public MvvmLoginImpl mvvmLogin()
+    public UvmLoginImpl uvmLogin()
     {
-        return adminManager.mvvmLogin();
+        return adminManager.uvmLogin();
     }
 
     public void waitForStartup()
     {
         synchronized (startupWaitLock) {
-            while (state == MvvmState.LOADED || state == MvvmState.INITIALIZED) {
+            while (state == UvmState.LOADED || state == UvmState.INITIALIZED) {
                 try {
                     startupWaitLock.wait();
                 } catch (InterruptedException exn) {
@@ -349,21 +349,21 @@ public class MvvmContextImpl extends MvvmContextBase
             {
                 public void run()
                 {
-                    TransformContext tctx = null == transformManager
-                        ? null : transformManager.threadContext();
+                    NodeContext tctx = null == nodeManager
+                        ? null : nodeManager.threadContext();
 
                     if (null != tctx) {
-                        transformManager.registerThreadContext(tctx);
+                        nodeManager.registerThreadContext(tctx);
                     }
                     try {
                         runnable.run();
                     } catch (OutOfMemoryError exn) {
-                        MvvmContextImpl.getInstance().fatalError("MvvmContextImpl", exn);
+                        UvmContextImpl.getInstance().fatalError("UvmContextImpl", exn);
                     } catch (Exception exn) {
                         logger.error("Exception running: " + runnable, exn);
                     } finally {
                         if (null != tctx) {
-                            transformManager.deregisterThreadContext();
+                            nodeManager.deregisterThreadContext();
                         }
                     }
                 }
@@ -405,7 +405,7 @@ public class MvvmContextImpl extends MvvmContextBase
             String msg = x.getMessage();
             if (msg.contains("Cannot allocate memory")) {
                 logger.error("Virtual memory exhausted in Process.exec()");
-                MvvmContextImpl.getInstance().fatalError("MvvmContextImpl.exec", x);
+                UvmContextImpl.getInstance().fatalError("UvmContextImpl.exec", x);
                 // There's no return from fatalError, but we have to
                 // keep the compiler happy.
                 return null;
@@ -450,14 +450,14 @@ public class MvvmContextImpl extends MvvmContextBase
         }
     }
 
-    public MvvmState state()
+    public UvmState state()
     {
         return state;
     }
 
     public String version()
     {
-        return com.untangle.mvvm.Version.getVersion();
+        return com.untangle.uvm.Version.getVersion();
     }
 
     public void localBackup() throws IOException
@@ -547,20 +547,20 @@ public class MvvmContextImpl extends MvvmContextBase
         System.loadLibrary(libname);
     }
 
-    // MvvmContextBase methods ------------------------------------------------
+    // UvmContextBase methods ------------------------------------------------
 
     @Override
     protected void init()
     {
         cronManager = new CronManager();
         syslogManager = SyslogManagerImpl.manager();
-        MvvmRepositorySelector repositorySelector = MvvmRepositorySelector.selector();
+        UvmRepositorySelector repositorySelector = UvmRepositorySelector.selector();
         loggingManager = new LoggingManagerImpl(repositorySelector);
-        loggingManager.initSchema("mvvm");
+        loggingManager.initSchema("uvm");
         loggingManager.start();
         eventLogger = EventLoggerFactory.factory().getEventLogger();
 
-        // Create the tomcat manager *before* the MVVM, so we can
+        // Create the tomcat manager *before* the UVM, so we can
         // "register" webapps to be started before Tomcat exists.
         tomcatManager = new TomcatManager(this,
                                           System.getProperty("bunnicula.home"),
@@ -575,9 +575,9 @@ public class MvvmContextImpl extends MvvmContextBase
         repositorySelector.setLogMailer(logMailer);
 
         // Fire up the policy manager.
-        String pmClass = System.getProperty("mvvm.policy.manager");
+        String pmClass = System.getProperty("uvm.policy.manager");
         if (null == pmClass) {
-            pmClass = "com.untangle.mvvm.policy.CharonPolicyManager";
+            pmClass = "com.untangle.uvm.policy.CharonPolicyManager";
         }
 
         LocalPolicyManager pm = null;
@@ -614,9 +614,9 @@ public class MvvmContextImpl extends MvvmContextBase
         portalManager = new PortalManagerImpl(this);
         remotePortalManager = new RemotePortalManagerImpl(portalManager);
 
-        // start transforms:
-        transformManager = new TransformManagerImpl(repositorySelector);
-        remoteTransformManager = new RemoteTransformManagerImpl(transformManager);
+        // start nodes:
+        nodeManager = new NodeManagerImpl(repositorySelector);
+        remoteNodeManager = new RemoteNodeManagerImpl(nodeManager);
 
         // Retrieve the reporting configuration manager
         reportingManager = ReportingManagerImpl.reportingManager();
@@ -660,8 +660,8 @@ public class MvvmContextImpl extends MvvmContextBase
 
         httpInvoker = HttpInvokerImpl.invoker();
 
-        remoteContext = new MvvmRemoteContextImpl(this);
-        state = MvvmState.INITIALIZED;
+        remoteContext = new UvmRemoteContextImpl(this);
+        state = UvmState.INITIALIZED;
     }
 
     @Override
@@ -672,14 +672,14 @@ public class MvvmContextImpl extends MvvmContextBase
         // Mailsender can now query the hostname
         mailSender.postInit();
 
-        logger.debug("restarting transforms");
-        transformManager.init();
+        logger.debug("restarting nodes");
+        nodeManager.init();
 
         logger.debug("starting HttpInvoker");
         httpInvoker.init();
         logger.debug("postInit complete");
         synchronized (startupWaitLock) {
-            state = MvvmState.RUNNING;
+            state = UvmState.RUNNING;
             startupWaitLock.notifyAll();
         }
 
@@ -691,7 +691,7 @@ public class MvvmContextImpl extends MvvmContextBase
     @Override
     protected void destroy()
     {
-        state = MvvmState.DESTROYED;
+        state = UvmState.DESTROYED;
 
         // stop remote services:
         try {
@@ -712,13 +712,13 @@ public class MvvmContextImpl extends MvvmContextBase
             }
         }
 
-        // stop transforms:
+        // stop nodes:
         try {
-            transformManager.destroy();
+            nodeManager.destroy();
         } catch (Exception exn) {
-            logger.warn("could not destroy TransformManager", exn);
+            logger.warn("could not destroy NodeManager", exn);
         }
-        transformManager = null;
+        nodeManager = null;
 
         // Stop portal
         try {
@@ -831,7 +831,7 @@ public class MvvmContextImpl extends MvvmContextBase
         return tomcatManager;
     }
 
-    MvvmRemoteContext remoteContext()
+    UvmRemoteContext remoteContext()
     {
         return remoteContext;
     }

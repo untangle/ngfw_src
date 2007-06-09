@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
 import java.awt.Color;
 import java.io.Serializable;
@@ -22,19 +22,19 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.security.Tid;
+import com.untangle.uvm.security.Tid;
 import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Type;
 
 /**
- * Runtime Transform settings.
+ * Runtime Node settings.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @Entity
-@Table(name="transform_preferences")
-public class TransformPreferences implements Serializable
+@Table(name="node_preferences")
+public class NodePreferences implements Serializable
 {
     private static final long serialVersionUID = 8220361738391151248L;
 
@@ -45,9 +45,9 @@ public class TransformPreferences implements Serializable
 
     // constructors -----------------------------------------------------------
 
-    public TransformPreferences() { }
+    public NodePreferences() { }
 
-    public TransformPreferences(Tid tid)
+    public NodePreferences(Tid tid)
     {
         this.tid = tid;
     }
@@ -68,7 +68,7 @@ public class TransformPreferences implements Serializable
     }
 
     /**
-     * Transform id.
+     * Node id.
      *
      * @return tid for this instance.
      */
@@ -95,7 +95,7 @@ public class TransformPreferences implements Serializable
         @Column(name="blue"),
         @Column(name="alpha")
     })
-    @Type(type="com.untangle.mvvm.type.ColorUserType")
+    @Type(type="com.untangle.uvm.type.ColorUserType")
     public Color getGuiBackgroundColor()
     {
         return guiBackgroundColor;

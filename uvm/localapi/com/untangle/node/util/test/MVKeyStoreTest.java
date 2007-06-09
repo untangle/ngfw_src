@@ -9,12 +9,12 @@
  *  $Id$
  */
 
-package com.untangle.tran.util.test;
+package com.untangle.node.util.test;
 import java.io.File;
 
-import com.untangle.mvvm.security.CertInfo;
-import com.untangle.mvvm.security.RFC2253Name;
-import com.untangle.tran.util.*;
+import com.untangle.uvm.security.CertInfo;
+import com.untangle.uvm.security.RFC2253Name;
+import com.untangle.node.util.*;
 
 
 

@@ -9,14 +9,14 @@
  *  $Id$
  */
 
-package com.untangle.tran.util;
+package com.untangle.node.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
 
 /**
@@ -155,7 +155,7 @@ public final class SimpleExec {
                                   File rootDir,
                                   boolean bufferStdOut,
                                   boolean bufferStdErr,
-                                  boolean useMVVMThread) throws IOException {
+                                  boolean useUVMThread) throws IOException {
 
         //Assemble full command
         args = args==null?EMPTY_ARRAY:args;
@@ -163,7 +163,7 @@ public final class SimpleExec {
         fullCmd[0] = cmd;
         System.arraycopy(args, 0, fullCmd, 1, args.length);
 
-        m_process = useMVVMThread ? MvvmContextFactory.context().exec(fullCmd, env, rootDir) : Runtime.getRuntime().exec(fullCmd, env, rootDir);
+        m_process = useUVMThread ? UvmContextFactory.context().exec(fullCmd, env, rootDir) : Runtime.getRuntime().exec(fullCmd, env, rootDir);
 
         //If we're here, we created a process
         try {
@@ -172,13 +172,13 @@ public final class SimpleExec {
 
             if(bufferStdOut) {
                 m_stdOutBuf = new ByteArrayOutputStream();
-                createThread(new StreamDrainer(m_stdOut, m_stdOutBuf), useMVVMThread).start();
+                createThread(new StreamDrainer(m_stdOut, m_stdOutBuf), useUVMThread).start();
             }
             if(bufferStdErr) {
                 m_stdErrBuf = new ByteArrayOutputStream();
-                createThread(new StreamDrainer(m_stdErr, m_stdErrBuf), useMVVMThread).start();
+                createThread(new StreamDrainer(m_stdErr, m_stdErrBuf), useUVMThread).start();
             }
-            createThread(new Runnable() {public void run() {timeoutWatcher();}}, useMVVMThread).start();
+            createThread(new Runnable() {public void run() {timeoutWatcher();}}, useUVMThread).start();
 
             m_process.waitFor();
             done();
@@ -228,8 +228,8 @@ public final class SimpleExec {
         try {m_process.destroy();}catch(Exception ignore){}
     }
 
-    private Thread createThread(Runnable r, boolean useMVVMThread) {
-        return useMVVMThread?MvvmContextFactory.context().newThread(r):new Thread(r);
+    private Thread createThread(Runnable r, boolean useUVMThread) {
+        return useUVMThread?UvmContextFactory.context().newThread(r):new Thread(r);
     }
 
     /**
@@ -277,7 +277,7 @@ public final class SimpleExec {
      * @param maxTime the max time the process should run before it is killed
      * @param logAs a log instance, so log messages may be made from a more
      *        suitable context.
-     * @param useMVVMThread if running in MVVM, this is true.  False otherwise.
+     * @param useUVMThread if running in UVM, this is true.  False otherwise.
      */
     public static SimpleExecResult exec(String cmd,
                                         String[] args,
@@ -287,11 +287,11 @@ public final class SimpleExec {
                                         boolean bufferStdErr,
                                         long maxTime,
                                         Logger logAs,
-                                        boolean useMVVMThread) throws IOException {
+                                        boolean useUVMThread) throws IOException {
 
         SimpleExec se = new SimpleExec(maxTime, logAs);
 
-        return se.doIt(cmd, args, env, rootDir, bufferStdOut, bufferStdErr, useMVVMThread);
+        return se.doIt(cmd, args, env, rootDir, bufferStdOut, bufferStdErr, useUVMThread);
     }
 }
 

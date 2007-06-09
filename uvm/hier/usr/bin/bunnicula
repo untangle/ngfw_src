@@ -58,19 +58,19 @@ find @PREFIX@ -name SESSIONS.ser -exec rm -f '{}' ';'
 # make self-signed certificate
 # XXX this certificate could perhaps be more filled out with info
 # gathered during the install
-if [ ! -e @MVVM_CONF@/keystore ]; then
-    $JAVA_HOME/bin/keytool -genkey -keyalg RSA -keystore @MVVM_CONF@/keystore \
+if [ ! -e @UVM_CONF@/keystore ]; then
+    $JAVA_HOME/bin/keytool -genkey -keyalg RSA -keystore @UVM_CONF@/keystore \
         -alias tomcat -keypass changeit -storepass changeit \
         -dname "cn=$(hostname), ou=devices"
 fi
 
-# add user and mvvm database just in case
+# add user and uvm database just in case
 createuser -U postgres -d -A metavize 2>/dev/null
 createuser -U postgres -d -A untangle 2>/dev/null
-createdb -O postgres -U postgres mvvm 2>/dev/null
-createlang -U postgres plpgsql mvvm 2>/dev/null
+createdb -O postgres -U postgres uvm 2>/dev/null
+createlang -U postgres plpgsql uvm 2>/dev/null
 
-CLASSPATH="@MVVM_HOME@/conf:@MVVM_HOME@/lib/mvvm-bootstrap/"
+CLASSPATH="@UVM_HOME@/conf:@UVM_HOME@/lib/uvm-bootstrap/"
 
 #
 # build environment tweeks
@@ -79,7 +79,7 @@ if [ "x" != "x@PREFIX@" ] ; then
     PATH=@PREFIX@/usr/bin:$PATH
 fi
 
-for f in @THIRDPARTY_MVVM_LIB@/*jar ; do
+for f in @THIRDPARTY_UVM_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
 for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
@@ -92,7 +92,7 @@ export PATH LD_LIBRARY_PATH CLASSPATH JAVA_HOME
 #
 # profiling tweeks
 #
-if [ "x$PROFILE_MVVM_YJP" = "xyes" ] ; then
+if [ "x$PROFILE_UVM_YJP" = "xyes" ] ; then
     echo "YJP profiling support enabled (concurrent garbage collection disabled)"
     YJP_HOME=/opt/yjp
     LD_LIBRARY_PATH=$YJP_HOME/bin/linux-x86-32:$LD_LIBRARY_PATH
@@ -106,12 +106,12 @@ for i in `seq 21` ; do
 done
 
 exec $JAVA_HOME/bin/java \
-    -Djavax.net.ssl.trustStore=@MVVM_CONF@/cacerts \
+    -Djavax.net.ssl.trustStore=@UVM_CONF@/cacerts \
     -Djava.endorsed.dirs=@ENDORSED_LIB@ \
     -Djava.library.path=@ALPINE_LIB@ \
-    -Dbunnicula.home=@MVVM_HOME@ \
-    -Dargon.shield.cfg_file=@MVVM_HOME@/conf/shield.cfg \
+    -Dbunnicula.home=@UVM_HOME@ \
+    -Dargon.shield.cfg_file=@UVM_HOME@/conf/shield.cfg \
     -Djdbc.drivers=org.postgresql.Driver \
     -Dcom.untangle.isDevel=@IS_DEVEL@ \
     ${JAVA_OPTS} $* \
-    com.untangle.mvvm.engine.Main
+    com.untangle.uvm.engine.Main

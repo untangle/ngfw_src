@@ -9,24 +9,24 @@
  * $Id$
  */
 
-package com.untangle.mvvm.security;
+package com.untangle.uvm.security;
 
 import javax.security.auth.login.FailedLoginException;
 
-import com.untangle.mvvm.client.MultipleLoginsException;
-import com.untangle.mvvm.client.MvvmRemoteContext;
+import com.untangle.uvm.client.MultipleLoginsException;
+import com.untangle.uvm.client.UvmRemoteContext;
 
-public interface MvvmLogin
+public interface UvmLogin
 {
     boolean isActivated();
 
-    MvvmRemoteContext activationLogin(String key)
+    UvmRemoteContext activationLogin(String key)
         throws FailedLoginException, MultipleLoginsException;
 
-    MvvmRemoteContext interactiveLogin(String username, String password,
+    UvmRemoteContext interactiveLogin(String username, String password,
                                        boolean force)
         throws FailedLoginException, MultipleLoginsException;
 
-    MvvmRemoteContext systemLogin(String username, String password)
+    UvmRemoteContext systemLogin(String username, String password)
         throws FailedLoginException;
 }

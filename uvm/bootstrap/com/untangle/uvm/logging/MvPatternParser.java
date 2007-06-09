@@ -9,7 +9,7 @@
  * $Id: MvPatternLayout.java 8515 2007-01-03 00:13:24Z amread $
  */
 
-package com.untangle.mvvm.logging;
+package com.untangle.uvm.logging;
 
 import java.text.DateFormat;
 import java.text.FieldPosition;

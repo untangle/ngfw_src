@@ -9,7 +9,7 @@
     <property name="com.jasperassistant.designer.GridHeight" value="12"/>
     <property name="com.jasperassistant.designer.Rulers" value="true"/>
     <property name="com.jasperassistant.designer.GridWidth" value="12"/>
-    <property name="com.jasperassistant.designer.DataSource" value="mvvm"/>
+    <property name="com.jasperassistant.designer.DataSource" value="uvm"/>
     <property name="com.jasperassistant.designer.SnapToGrid" value="false"/>
     <property name="com.jasperassistant.designer.VGuides.Title" value="74,130"/>
     <property name="com.jasperassistant.designer.Margins" value="true"/>

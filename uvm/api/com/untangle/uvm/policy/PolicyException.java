@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.mvvm.policy;
+package com.untangle.uvm.policy;
 
-import com.untangle.mvvm.MvvmException;
+import com.untangle.uvm.UvmException;
 
 
-public class PolicyException extends MvvmException
+public class PolicyException extends UvmException
 {
     public PolicyException()
     {

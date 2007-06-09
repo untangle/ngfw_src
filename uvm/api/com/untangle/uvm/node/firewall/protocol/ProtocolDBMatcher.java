@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.protocol;
+package com.untangle.uvm.node.firewall.protocol;
 
 import java.io.Serializable;
 
-import com.untangle.mvvm.tapi.Protocol;
+import com.untangle.uvm.tapi.Protocol;
 
 /**
  * An ProtocolDBMatcher that is capable of being saved to and loaded

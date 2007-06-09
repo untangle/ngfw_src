@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine.addrbook;
+package com.untangle.uvm.engine.addrbook;
 
-import com.untangle.mvvm.addrbook.AddressBook;
+import com.untangle.uvm.addrbook.AddressBook;
 
-import com.untangle.tran.util.MVLogger;
+import com.untangle.node.util.MVLogger;
 
 public class AddressBookFactory
 {
-    private static final String PROPERTY_ADDRESSBOOK_IMPL = "com.untangle.mvvm.addrbook";
-    private static final String PREMIUM_ADDRESSBOOK_IMPL = "com.untangle.mvvm.engine.addrbook.PremiumAddressBookImpl";
+    private static final String PROPERTY_ADDRESSBOOK_IMPL = "com.untangle.uvm.addrbook";
+    private static final String PREMIUM_ADDRESSBOOK_IMPL = "com.untangle.uvm.engine.addrbook.PremiumAddressBookImpl";
 
     private final MVLogger logger = new MVLogger( getClass());
 

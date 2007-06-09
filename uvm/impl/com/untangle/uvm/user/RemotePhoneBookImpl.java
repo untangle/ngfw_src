@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.user;
+package com.untangle.uvm.user;
 
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.ValidateException;
 
 public class RemotePhoneBookImpl implements RemotePhoneBook
 {

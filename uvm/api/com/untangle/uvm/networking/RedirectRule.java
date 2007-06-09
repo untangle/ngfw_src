@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.net.UnknownHostException;
 import javax.persistence.Column;
@@ -19,14 +19,14 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolDBMatcher;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
-import com.untangle.mvvm.tran.firewall.TrafficIntfRule;
-import com.untangle.mvvm.tran.firewall.intf.IntfDBMatcher;
-import com.untangle.mvvm.tran.firewall.ip.IPDBMatcher;
-import com.untangle.mvvm.tran.firewall.port.PortDBMatcher;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.uvm.node.firewall.TrafficIntfRule;
+import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
+import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
+import com.untangle.uvm.node.firewall.port.PortDBMatcher;
 
 /**
  * Rule for matching based on IP addresses and subnets.
@@ -35,7 +35,7 @@ import com.untangle.mvvm.tran.firewall.port.PortDBMatcher;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_redirect_rule", schema="settings")
+@Table(name="uvm_redirect_rule", schema="settings")
 public class RedirectRule extends TrafficIntfRule
 {
     private static final long serialVersionUID = 8272790575650650832L;
@@ -225,7 +225,7 @@ public class RedirectRule extends TrafficIntfRule
      * @return the host to redirect to.
      */
     @Column(name="redirect_addr")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getRedirectAddress()
     {
         return redirectAddress;

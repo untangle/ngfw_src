@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.time;
+package com.untangle.uvm.node.firewall.time;
 
 import java.util.Date;
 

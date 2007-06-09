@@ -15,7 +15,7 @@
 !define HOME "files"
 
 ## The directory where the generated certs are for the server
-!define CERT_FILES "@MVVM_CONF@/certs"
+!define CERT_FILES "@UVM_CONF@/certs"
 
 ## Product information
 !define PRODUCT_NAME "Active Directory Lookup Server"

@@ -6,28 +6,28 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
- * $Id: MvvmRepositorySelector.java 8515 2007-01-03 00:13:24Z amread $
+ * $Id: UvmRepositorySelector.java 8515 2007-01-03 00:13:24Z amread $
  */
 
-package com.untangle.mvvm.logging;
+package com.untangle.uvm.logging;
 
 /**
  * Factory for retrieving the current logging context. Allows for
- * access to the {@link MvvmLoggingContext} on demand. Returns the
- * {@link MvvmLoggingContext} in effect at the time the {@link #get()}
+ * access to the {@link UvmLoggingContext} on demand. Returns the
+ * {@link UvmLoggingContext} in effect at the time the {@link #get()}
  * method is called. Thus, it is only guaranteed to work if called
  * syncronously from the thread that accesses {@link #get()}.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface MvvmLoggingContextFactory
+public interface UvmLoggingContextFactory
 {
     /**
-     * Returns the {@link MvvmLoggingContext} in effect for this
+     * Returns the {@link UvmLoggingContext} in effect for this
      * thread at the moment the get() method is called.
      *
-     * @return the effective {@link MvvmLoggingContext}.
+     * @return the effective {@link UvmLoggingContext}.
      */
-    MvvmLoggingContext get();
+    UvmLoggingContext get();
 }

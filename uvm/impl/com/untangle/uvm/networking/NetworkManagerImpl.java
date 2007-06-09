@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.net.InetAddress;
 import java.util.Arrays;
@@ -24,32 +24,32 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.untangle.jnetcap.Netcap;
-import com.untangle.mvvm.IntfConstants;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.NetworkManager;
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.tran.IPSessionDesc;
-import com.untangle.mvvm.networking.internal.AccessSettingsInternal;
-import com.untangle.mvvm.networking.internal.AddressSettingsInternal;
-import com.untangle.mvvm.networking.internal.InterfaceInternal;
-import com.untangle.mvvm.networking.internal.MiscSettingsInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.networking.internal.ServicesInternalSettings;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.toolbox.ToolboxManager;
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.LocalTransformManager;
-import com.untangle.mvvm.tran.ValidateException;
-import com.untangle.mvvm.tran.firewall.ip.IPMatcherFactory;
-import com.untangle.mvvm.tran.script.ScriptRunner;
-import com.untangle.mvvm.tran.script.ScriptWriter;
-import com.untangle.mvvm.util.DataLoader;
-import com.untangle.mvvm.util.DataSaver;
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.networking.internal.AccessSettingsInternal;
+import com.untangle.uvm.networking.internal.AddressSettingsInternal;
+import com.untangle.uvm.networking.internal.InterfaceInternal;
+import com.untangle.uvm.networking.internal.MiscSettingsInternal;
+import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.networking.internal.ServicesInternalSettings;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.ValidateException;
+import com.untangle.uvm.node.firewall.ip.IPMatcherFactory;
+import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.node.script.ScriptWriter;
+import com.untangle.uvm.util.DataLoader;
+import com.untangle.uvm.util.DataSaver;
 
-import static com.untangle.mvvm.networking.ShellFlags.FILE_RULE_CFG;
+import static com.untangle.uvm.networking.ShellFlags.FILE_RULE_CFG;
 
 /* XXX This shouldn't be public */
 public class NetworkManagerImpl implements LocalNetworkManager
@@ -61,7 +61,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    static final String NAT_TRANSFORM_NAME = "nat-transform";
+    static final String NAT_NODE_NAME = "router";
 
     static final String BUNNICULA_BASE = System.getProperty( "bunnicula.home" );
     static final String BUNNICULA_CONF = System.getProperty( "bunnicula.conf.dir" );
@@ -131,7 +131,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* the address of the internal interface, used for the web address */
     private InetAddress internalAddress;
 
-    /* Flag to indicate when the MVVM has been shutdown */
+    /* Flag to indicate when the UVM has been shutdown */
     private boolean isShutdown = false;
 
     private NetworkManagerImpl()
@@ -674,7 +674,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
             newSettings.setNetworkSpaceList( networkSpaceList );
 
             if ( !hasChanged ) {
-                MvvmContextFactory.context().adminManager().logout();
+                UvmContextFactory.context().adminManager().logout();
             }
 
             /* Indicate that the user has completed setup */
@@ -696,18 +696,18 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
     public void setWizardNatDisabled()
     {
-        MvvmContextFactory.context().adminManager().logout();
+        UvmContextFactory.context().adminManager().logout();
 
         try{
             logger.debug( "disabling nat as requested by setup wizard: " );
-            LocalTransformManager transformManager = MvvmContextFactory.context().transformManager();
-            List<Tid> tidList = transformManager.transformInstances(NAT_TRANSFORM_NAME);
+            LocalNodeManager nodeManager = UvmContextFactory.context().nodeManager();
+            List<Tid> tidList = nodeManager.nodeInstances(NAT_NODE_NAME);
             if( tidList != null ){
                 for( Tid tid : tidList )
-                    transformManager.destroy(tid);
+                    nodeManager.destroy(tid);
             }
-            ToolboxManager tool = MvvmContextFactory.context().toolboxManager();
-            tool.uninstall(NAT_TRANSFORM_NAME);
+            ToolboxManager tool = UvmContextFactory.context().toolboxManager();
+            tool.uninstall(NAT_NODE_NAME);
         }
         catch(Exception e){
             logger.warn( "Error removing NAT in wizard", e );
@@ -1092,7 +1092,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     {
         DataLoader<NetworkSpacesSettingsImpl> loader =
             new DataLoader<NetworkSpacesSettingsImpl>( "NetworkSpacesSettingsImpl",
-                                                       MvvmContextFactory.context());
+                                                       UvmContextFactory.context());
         NetworkSpacesSettings dbSettings = loader.loadData();
 
         /* No database settings */
@@ -1107,7 +1107,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     private DynamicDNSSettings loadDynamicDnsSettings()
     {
         DataLoader<DynamicDNSSettings> loader =
-            new DataLoader<DynamicDNSSettings>( "DynamicDNSSettings", MvvmContextFactory.context());
+            new DataLoader<DynamicDNSSettings>( "DynamicDNSSettings", UvmContextFactory.context());
 
         return loader.loadData();
     }
@@ -1115,7 +1115,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     private ServicesInternalSettings loadServicesSettings()
     {
         DataLoader<ServicesSettingsImpl> loader =
-            new DataLoader<ServicesSettingsImpl>( "ServicesSettingsImpl", MvvmContextFactory.context());
+            new DataLoader<ServicesSettingsImpl>( "ServicesSettingsImpl", UvmContextFactory.context());
 
         ServicesSettingsImpl dbSettings = loader.loadData();
 
@@ -1144,7 +1144,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         throws NetworkException, ValidateException
     {
         DataSaver<NetworkSpacesSettingsImpl> saver =
-            new NetworkSettingsDataSaver(MvvmContextFactory.context());
+            new NetworkSettingsDataSaver(UvmContextFactory.context());
 
         NetworkUtilPriv nup = NetworkUtilPriv.getPrivInstance();
 
@@ -1169,7 +1169,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     private void saveDynamicDnsSettings( DynamicDNSSettings newSettings )
     {
         DataSaver<DynamicDNSSettings> saver =
-            new DynamicDnsSettingsDataSaver( MvvmContextFactory.context(), newSettings );
+            new DynamicDnsSettingsDataSaver( UvmContextFactory.context(), newSettings );
 
         newSettings = saver.saveData( newSettings );
         if ( newSettings == null ) {
@@ -1189,7 +1189,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
         this.dhcpManager.fleeceLeases( newSettings );
 
         DataSaver<ServicesSettingsImpl> saver =
-            new ServicesSettingsDataSaver( MvvmContextFactory.context());
+            new ServicesSettingsDataSaver( UvmContextFactory.context());
 
         if ( this.networkSettings == null ) {
             logger.error( "Unable to update the services settings, because the network settings are null." );
@@ -1216,7 +1216,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
     /* Create a networking manager, this is a first come first serve
      * basis.  The first class to create the network manager gets a
      * networking manager, all other classes get AccessException.  Done
-     * this way so only the MvvmContextImpl can create a networking manager
+     * this way so only the UvmContextImpl can create a networking manager
      * and then give out access to those classes (argon) that need it.
      * RBS (2/19/06) this is kind of silly, and annoying, switching to getInstance.
      */
@@ -1327,7 +1327,7 @@ public class NetworkManagerImpl implements LocalNetworkManager
 
 class NetworkSettingsDataSaver extends DataSaver<NetworkSpacesSettingsImpl>
 {
-    public NetworkSettingsDataSaver( MvvmLocalContext local )
+    public NetworkSettingsDataSaver( UvmLocalContext local )
     {
         super( local );
     }
@@ -1344,7 +1344,7 @@ class NetworkSettingsDataSaver extends DataSaver<NetworkSpacesSettingsImpl>
 
 class ServicesSettingsDataSaver extends DataSaver<ServicesSettingsImpl>
 {
-    public ServicesSettingsDataSaver( MvvmLocalContext local )
+    public ServicesSettingsDataSaver( UvmLocalContext local )
     {
         super( local );
     }
@@ -1362,7 +1362,7 @@ class ServicesSettingsDataSaver extends DataSaver<ServicesSettingsImpl>
 class DynamicDnsSettingsDataSaver extends DataSaver<DynamicDNSSettings>
 {
     private final DynamicDNSSettings newData;
-    public DynamicDnsSettingsDataSaver( MvvmLocalContext local, DynamicDNSSettings newData )
+    public DynamicDnsSettingsDataSaver( UvmLocalContext local, DynamicDNSSettings newData )
     {
         super( local );
         this.newData = newData;

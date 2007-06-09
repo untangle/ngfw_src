@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.tran.token.CasingAdaptor;
-import com.untangle.tran.token.CasingFactory;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.node.Node;
+import com.untangle.node.token.CasingAdaptor;
+import com.untangle.node.token.CasingFactory;
 import org.apache.log4j.Logger;
 
 public class CasingPipeSpec extends PipeSpec
@@ -43,30 +43,30 @@ public class CasingPipeSpec extends PipeSpec
 
     // constructors -----------------------------------------------------------
 
-    public CasingPipeSpec(String name, Transform transform, Set subscriptions,
+    public CasingPipeSpec(String name, Node node, Set subscriptions,
                           CasingFactory casingFactory,
                           Fitting input, Fitting output)
     {
-        super(name, transform, subscriptions);
+        super(name, node, subscriptions);
 
-        insideAdaptor = new CasingAdaptor(transform, casingFactory, true,
+        insideAdaptor = new CasingAdaptor(node, casingFactory, true,
                                           true);
-        outsideAdaptor = new CasingAdaptor(transform, casingFactory, false,
+        outsideAdaptor = new CasingAdaptor(node, casingFactory, false,
                                            true);
 
         this.input = input;
         this.output = output;
     }
 
-    public CasingPipeSpec(String name, Transform transform,
+    public CasingPipeSpec(String name, Node node,
                           CasingFactory casingFactory,
                           Fitting input, Fitting output)
     {
-        super(name, transform);
+        super(name, node);
 
-        insideAdaptor = new CasingAdaptor(transform, casingFactory, true,
+        insideAdaptor = new CasingAdaptor(node, casingFactory, true,
                                           true);
-        outsideAdaptor = new CasingAdaptor(transform, casingFactory, false,
+        outsideAdaptor = new CasingAdaptor(node, casingFactory, false,
                                            true);
 
         this.input = input;
@@ -168,7 +168,7 @@ public class CasingPipeSpec extends PipeSpec
     // static initialization --------------------------------------------------
 
     static {
-        MvvmLocalContext mlc = MvvmContextFactory.context();
+        UvmLocalContext mlc = UvmContextFactory.context();
         MPIPE_MANAGER = mlc.mPipeManager();
         FOUNDRY = mlc.pipelineFoundry();
     }

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.portal;
+package com.untangle.uvm.portal;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -17,10 +17,10 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.logging.SyslogPriority;
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
+import com.untangle.uvm.node.IPaddr;
 import org.hibernate.annotations.Type;
 
 /**
@@ -77,7 +77,7 @@ import org.hibernate.annotations.Type;
          * @return the address of the client
          */
         @Column(name="client_addr")
-        @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+        @Type(type="com.untangle.uvm.type.IPaddrUserType")
         public IPaddr getClientAddr()
         {
             return clientAddr;
@@ -125,7 +125,7 @@ import org.hibernate.annotations.Type;
          *
          * @return the reason.
          */
-        @Type(type="com.untangle.mvvm.portal.AppLaunchFailureReasonUserType")
+        @Type(type="com.untangle.uvm.portal.AppLaunchFailureReasonUserType")
         public AppLaunchFailureReason getReason()
         {
             return reason;

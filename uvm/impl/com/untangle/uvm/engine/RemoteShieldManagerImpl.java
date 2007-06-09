@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
-import com.untangle.mvvm.shield.ShieldNodeSettings;
+import com.untangle.uvm.shield.ShieldNodeSettings;
 
 import java.net.InetAddress;
 
 import java.util.List;
 
-import com.untangle.mvvm.tran.RemoteShieldManager;
-import com.untangle.mvvm.localapi.LocalShieldManager;
+import com.untangle.uvm.node.RemoteShieldManager;
+import com.untangle.uvm.localapi.LocalShieldManager;
 
 /* Wrapper class for a local shield manager */
 class RemoteShieldManagerImpl implements RemoteShieldManager

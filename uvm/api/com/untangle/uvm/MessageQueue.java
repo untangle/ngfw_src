@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import java.util.List;
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
- * @see com.untangle.mvvm.client.MessageClient
+ * @see com.untangle.uvm.client.MessageClient
  */
 public interface MessageQueue<M extends Message>
 {

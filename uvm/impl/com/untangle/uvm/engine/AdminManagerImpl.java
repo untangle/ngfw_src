@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,17 +21,17 @@ import java.util.Hashtable;
 import java.util.TimeZone;
 import javax.transaction.TransactionRolledbackException;
 
-import com.untangle.mvvm.MailSender;
-import com.untangle.mvvm.MailSettings;
-import com.untangle.mvvm.security.AdminManager;
-import com.untangle.mvvm.security.AdminSettings;
-import com.untangle.mvvm.security.LoginSession;
-import com.untangle.mvvm.security.RegistrationInfo;
-import com.untangle.mvvm.security.User;
-import com.untangle.mvvm.snmp.SnmpManager;
-import com.untangle.mvvm.snmp.SnmpManagerImpl;
-import com.untangle.mvvm.util.FormUtil;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.MailSender;
+import com.untangle.uvm.MailSettings;
+import com.untangle.uvm.security.AdminManager;
+import com.untangle.uvm.security.AdminSettings;
+import com.untangle.uvm.security.LoginSession;
+import com.untangle.uvm.security.RegistrationInfo;
+import com.untangle.uvm.security.User;
+import com.untangle.uvm.snmp.SnmpManager;
+import com.untangle.uvm.snmp.SnmpManagerImpl;
+import com.untangle.uvm.util.FormUtil;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -49,17 +49,17 @@ class AdminManagerImpl implements AdminManager
     private static final String REGISTRATION_INFO_FILE = System.getProperty("bunnicula.home")
         + "/registration.info";
 
-    private final MvvmContextImpl mvvmContext;
-    private final MvvmLoginImpl mvvmLogin;
+    private final UvmContextImpl uvmContext;
+    private final UvmLoginImpl uvmLogin;
 
     private final Logger logger = Logger.getLogger(AdminManagerImpl.class);
 
     private AdminSettings adminSettings;
     private SnmpManager snmpManager;
 
-    AdminManagerImpl(MvvmContextImpl mvvmContext)
+    AdminManagerImpl(UvmContextImpl uvmContext)
     {
-        this.mvvmContext = mvvmContext;
+        this.uvmContext = uvmContext;
 
         TransactionWork tw = new TransactionWork()
             {
@@ -80,9 +80,9 @@ class AdminManagerImpl implements AdminManager
                     return true;
                 }
             };
-        mvvmContext.runTransaction(tw);
+        uvmContext.runTransaction(tw);
 
-        mvvmLogin = MvvmLoginImpl.mvvmLogin();
+        uvmLogin = UvmLoginImpl.uvmLogin();
 
         snmpManager = SnmpManagerImpl.snmpManager();
 
@@ -98,25 +98,25 @@ class AdminManagerImpl implements AdminManager
         logger.info("Initialized AdminManager");
     }
 
-    MvvmLoginImpl mvvmLogin() {
-        return mvvmLogin;
+    UvmLoginImpl uvmLogin() {
+        return uvmLogin;
     }
 
     public MailSettings getMailSettings()
     {
-        MailSender ms = mvvmContext.mailSender();
+        MailSender ms = uvmContext.mailSender();
         return ms.getMailSettings();
     }
 
     public void setMailSettings(MailSettings settings)
     {
-        MailSender ms = mvvmContext.mailSender();
+        MailSender ms = uvmContext.mailSender();
         ms.setMailSettings(settings);
     }
 
     public boolean sendTestMessage(String recipient)
     {
-        MailSender ms = mvvmContext.mailSender();
+        MailSender ms = uvmContext.mailSender();
         return ms.sendTestMessage(recipient);
     }
 
@@ -136,7 +136,7 @@ class AdminManagerImpl implements AdminManager
                     return true;
                 }
             };
-        mvvmContext.runTransaction(tw);
+        uvmContext.runTransaction(tw);
 
         this.adminSettings = as;
     }
@@ -177,7 +177,7 @@ class AdminManagerImpl implements AdminManager
         String id = timezone.getID();
 
         try {
-            Process p = mvvmContext.exec(new String[] { SET_TIMEZONE_SCRIPT, id });
+            Process p = uvmContext.exec(new String[] { SET_TIMEZONE_SCRIPT, id });
             for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
             int exitValue = p.waitFor();
             if (0 != exitValue) {
@@ -219,9 +219,9 @@ class AdminManagerImpl implements AdminManager
         try {
             FileWriter writer = new FileWriter(regFile);
             writer.write("regKey=");
-            writer.write(mvvmContext.getActivationKey());
+            writer.write(uvmContext.getActivationKey());
             writer.write("&version=");
-            writer.write(mvvmContext.version());
+            writer.write(uvmContext.version());
             writer.write("&");
             writer.write(info.toForm());
             writer.close();
@@ -255,8 +255,8 @@ class AdminManagerImpl implements AdminManager
         LoginSession ls = invoker.getActiveLogin();
         if (ls == null)
             throw new IllegalStateException("generateAuthNonce called from backend");
-        TomcatManager tm = mvvmContext.tomcatManager();
-        logger.info("Generating auth nonce for " + ls.getClientAddr() + " " + ls.getMvvmPrincipal());
-        return tm.generateAuthNonce(ls.getClientAddr(), ls.getMvvmPrincipal());
+        TomcatManager tm = uvmContext.tomcatManager();
+        logger.info("Generating auth nonce for " + ls.getClientAddr() + " " + ls.getUvmPrincipal());
+        return tm.generateAuthNonce(ls.getClientAddr(), ls.getUvmPrincipal());
     }
 }

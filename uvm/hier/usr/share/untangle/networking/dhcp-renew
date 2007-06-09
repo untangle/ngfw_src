@@ -1,8 +1,8 @@
 #!/bin/sh
 
-exec >> @MVVM_LOG@/iptables.log 2>&1
+exec >> @UVM_LOG@/iptables.log 2>&1
 
-FUNCTIONS_FILE=@MVVM_HOME@/networking/functions
+FUNCTIONS_FILE=@UVM_HOME@/networking/functions
 
 ## Interface to renew is the first argument.
 intf=$1

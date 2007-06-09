@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -18,10 +18,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.SyslogManager;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogManager;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
@@ -37,7 +37,7 @@ class LogWorker implements Runnable
     private final BlockingQueue<LogEventDesc> inputQueue
         = new LinkedBlockingQueue<LogEventDesc>();
 
-    private final SyslogManager syslogManager = MvvmContextFactory
+    private final SyslogManager syslogManager = UvmContextFactory
         .context().syslogManager();
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -147,7 +147,7 @@ class LogWorker implements Runnable
                 }
             };
 
-        boolean s = MvvmContextFactory.context().runTransaction(tw);
+        boolean s = UvmContextFactory.context().runTransaction(tw);
         if (!s) {
             logger.error("could not log events");
         }
@@ -158,7 +158,7 @@ class LogWorker implements Runnable
     void start()
     {
         if (!loggingManager.isLoggingDisabled()) {
-            MvvmContextFactory.context().newThread(this).start();
+            UvmContextFactory.context().newThread(this).start();
         }
     }
 
@@ -179,7 +179,7 @@ class LogWorker implements Runnable
     }
 
     static {
-        String p = System.getProperty("mvvm.logging.synctime");
+        String p = System.getProperty("uvm.logging.synctime");
         if (null == p) {
             SYNC_TIME = DEFAULT_SYNC_TIME;
         } else {

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,25 +31,25 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import com.untangle.mvvm.CronJob;
-import com.untangle.mvvm.MessageQueue;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.Period;
-import com.untangle.mvvm.security.LoginSession;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tapi.TransformBase;
-import com.untangle.mvvm.toolbox.InstallProgress;
-import com.untangle.mvvm.toolbox.MackageDesc;
-import com.untangle.mvvm.toolbox.MackageException;
-import com.untangle.mvvm.toolbox.MackageInstallException;
-import com.untangle.mvvm.toolbox.MackageInstallRequest;
-import com.untangle.mvvm.toolbox.MackageUninstallException;
-import com.untangle.mvvm.toolbox.ToolboxManager;
-import com.untangle.mvvm.toolbox.ToolboxMessage;
-import com.untangle.mvvm.toolbox.UpgradeSettings;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.CronJob;
+import com.untangle.uvm.MessageQueue;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.Period;
+import com.untangle.uvm.security.LoginSession;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.tapi.NodeBase;
+import com.untangle.uvm.toolbox.InstallProgress;
+import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.toolbox.MackageException;
+import com.untangle.uvm.toolbox.MackageInstallException;
+import com.untangle.uvm.toolbox.MackageInstallRequest;
+import com.untangle.uvm.toolbox.MackageUninstallException;
+import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.toolbox.ToolboxMessage;
+import com.untangle.uvm.toolbox.UpgradeSettings;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -97,7 +97,7 @@ class ToolboxManagerImpl implements ToolboxManager
         UpgradeSettings us = getUpgradeSettings();
         Period p = us.getPeriod();
 
-        cronJob = MvvmContextFactory.context().makeCronJob(p, updateTask);
+        cronJob = UvmContextFactory.context().makeCronJob(p, updateTask);
 
         refreshLists();
     }
@@ -215,9 +215,9 @@ class ToolboxManagerImpl implements ToolboxManager
             tails.put(i, alt);
         }
 
-        MvvmContextFactory.context().newThread(alt).start();
+        UvmContextFactory.context().newThread(alt).start();
 
-        MvvmContextFactory.context().newThread(new Runnable() {
+        UvmContextFactory.context().newThread(new Runnable() {
                 public void run()
                 {
                     try {
@@ -258,7 +258,7 @@ class ToolboxManagerImpl implements ToolboxManager
                 }
             });
 
-        MvvmContextFactory.context().newThread(f).start();
+        UvmContextFactory.context().newThread(f).start();
 
         boolean tryAgain;
         do {
@@ -291,9 +291,9 @@ class ToolboxManagerImpl implements ToolboxManager
             tails.put(i, alt);
         }
 
-        MvvmContextFactory.context().newThread(alt).start();
+        UvmContextFactory.context().newThread(alt).start();
 
-        MvvmContextFactory.context().newThread(new Runnable() {
+        UvmContextFactory.context().newThread(new Runnable() {
                 public void run()
                 {
                     try {
@@ -317,13 +317,13 @@ class ToolboxManagerImpl implements ToolboxManager
             ms.setEnabled(true);
         }
 
-        TransformManagerImpl tm = (TransformManagerImpl)MvvmContextFactory
-            .context().transformManager();
-        for (Tid tid : tm.transformInstances(mackageName)) {
-            TransformContext tctx = tm.transformContext(tid);
+        NodeManagerImpl tm = (NodeManagerImpl)UvmContextFactory
+            .context().nodeManager();
+        for (Tid tid : tm.nodeInstances(mackageName)) {
+            NodeContext tctx = tm.nodeContext(tid);
             try {
-                ((TransformBase)tctx.transform()).enable();
-            } catch (TransformException exn) {
+                ((NodeBase)tctx.node()).enable();
+            } catch (NodeException exn) {
                 logger.warn("could not enable: " + tid, exn);
             }
         }
@@ -341,13 +341,13 @@ class ToolboxManagerImpl implements ToolboxManager
             ms.setEnabled(false);
         }
 
-        TransformManagerImpl tm = (TransformManagerImpl)MvvmContextFactory
-            .context().transformManager();
-        for (Tid tid : tm.transformInstances(mackageName)) {
-            TransformContext tctx = tm.transformContext(tid);
+        NodeManagerImpl tm = (NodeManagerImpl)UvmContextFactory
+            .context().nodeManager();
+        for (Tid tid : tm.nodeInstances(mackageName)) {
+            NodeContext tctx = tm.nodeContext(tid);
             try {
-                ((TransformBase)tctx.transform()).disable();
-            } catch (TransformException exn) {
+                ((NodeBase)tctx.node()).disable();
+            } catch (NodeException exn) {
                 logger.warn("could not disable: " + tid, exn);
             }
         }
@@ -405,13 +405,13 @@ class ToolboxManagerImpl implements ToolboxManager
         // XXX protect this method
         logger.debug("registering mackage: " + pkgName);
 
-        MvvmContextImpl mctx = MvvmContextImpl.getInstance();
+        UvmContextImpl mctx = UvmContextImpl.getInstance();
         if (mctx.refreshToolbox()) {
             mctx.refreshSessionFactory();
         }
 
-        TransformManagerImpl tm = (TransformManagerImpl)MvvmContextFactory
-            .context().transformManager();
+        NodeManagerImpl tm = (NodeManagerImpl)UvmContextFactory
+            .context().nodeManager();
         tm.restart(pkgName);
     }
 
@@ -420,10 +420,10 @@ class ToolboxManagerImpl implements ToolboxManager
     {
         // XXX protect this method
         // stop mackage intances
-        TransformManagerImpl tm = (TransformManagerImpl)MvvmContextFactory
-            .context().transformManager();
-        List<Tid> tids = tm.transformInstances(pkgName);
-        logger.debug("unloading " + tids.size() + " transforms");
+        NodeManagerImpl tm = (NodeManagerImpl)UvmContextFactory
+            .context().nodeManager();
+        List<Tid> tids = tm.nodeInstances(pkgName);
+        logger.debug("unloading " + tids.size() + " nodes");
         for (Tid t : tids) {
             tm.unload(t); // XXX not destroy, release
         }
@@ -441,7 +441,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
                 public Object getResult() { return null; }
             };
-        MvvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         cronJob.reschedule(us.getPeriod());
     }
@@ -470,17 +470,17 @@ class ToolboxManagerImpl implements ToolboxManager
 
                 public UpgradeSettings getResult() { return us; }
             };
-        MvvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         return tw.getResult();
     }
 
     // package private methods ------------------------------------------------
 
-    URL getResourceDir(String tranName)
+    URL getResourceDir(String nodeName)
     {
         try {
-            return new URL(TOOLBOX_URL, tranName + "-impl/");
+            return new URL(TOOLBOX_URL, nodeName + "-impl/");
         } catch (MalformedURLException exn) {
             logger.warn(exn); /* should never happen */
             return null;
@@ -534,7 +534,7 @@ class ToolboxManagerImpl implements ToolboxManager
                     return true;
                 }
             };
-        MvvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         return m;
     }
@@ -549,7 +549,7 @@ class ToolboxManagerImpl implements ToolboxManager
                     return true;
                 }
             };
-        MvvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
     }
 
     // package list functions -------------------------------------------------
@@ -609,7 +609,7 @@ class ToolboxManagerImpl implements ToolboxManager
         Map<String, MackageDesc> pkgs;
 
         try {
-            Process p = MvvmContextFactory.context().exec("mkg available");
+            Process p = UvmContextFactory.context().exec("mkg available");
             pkgs = readPkgList(p.getInputStream(), instList);
         } catch (Exception exn) {
             logger.fatal("Unable to parse mkg available list, proceeding with empty list", exn);
@@ -651,7 +651,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
 
                 String name = m.get("package");
-                boolean isTransform = name.endsWith("-transform");
+                boolean isNode = name.endsWith("-node");
 
                 MackageState mState = mackageState.get(name);
                 String en = null == mState ? null : mState.getExtraName();
@@ -692,7 +692,7 @@ class ToolboxManagerImpl implements ToolboxManager
         Map<String, String> instList;
 
         try {
-            Process p = MvvmContextFactory.context().exec("mkg installed");
+            Process p = UvmContextFactory.context().exec("mkg installed");
             instList = readInstalledList(p.getInputStream());
         } catch (IOException exn) {
             throw new RuntimeException(exn); // XXX
@@ -727,7 +727,7 @@ class ToolboxManagerImpl implements ToolboxManager
 
         logger.debug("running: " + cmdStr);
         try {
-            Process proc = MvvmContextFactory.context().exec(cmdStr);
+            Process proc = UvmContextFactory.context().exec(cmdStr);
             InputStream is = proc.getInputStream();
             byte[] outBuf = new byte[4092];
             int i;

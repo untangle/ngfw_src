@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.addrbook;
+package com.untangle.uvm.addrbook;
 
 import java.io.Serializable;
 import javax.persistence.CascadeType;
@@ -61,7 +61,7 @@ public class AddressBookSettings implements Serializable {
     }
 
     @Column(name="ab_configuration")
-    @Type(type="com.untangle.mvvm.addrbook.AddressBookConfigurationUserType")
+    @Type(type="com.untangle.uvm.addrbook.AddressBookConfigurationUserType")
     public AddressBookConfiguration getAddressBookConfiguration() {
         return m_configuration;
     }

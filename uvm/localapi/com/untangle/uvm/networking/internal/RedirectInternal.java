@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking.internal;
+package com.untangle.uvm.networking.internal;
 
-import com.untangle.mvvm.networking.RedirectRule;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.firewall.ip.IPDBMatcher;
-import com.untangle.mvvm.tran.firewall.port.PortDBMatcher;
-import com.untangle.mvvm.tran.firewall.intf.IntfDBMatcher;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolDBMatcher;
+import com.untangle.uvm.networking.RedirectRule;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
+import com.untangle.uvm.node.firewall.port.PortDBMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
 
 public class RedirectInternal
 {

@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.protocol;
+package com.untangle.uvm.node.firewall.protocol;
 
-import com.untangle.mvvm.tran.ParseException;
+import com.untangle.uvm.node.ParseException;
 
-import com.untangle.mvvm.tran.firewall.ParsingFactory;
+import com.untangle.uvm.node.firewall.ParsingFactory;
 
-import static com.untangle.mvvm.tran.firewall.protocol.ProtocolParsingConstants.MARKER_TCP;
-import static com.untangle.mvvm.tran.firewall.protocol.ProtocolParsingConstants.MARKER_UDP;
-import static com.untangle.mvvm.tran.firewall.protocol.ProtocolParsingConstants.MARKER_PING;
-import static com.untangle.mvvm.tran.firewall.protocol.ProtocolParsingConstants.MARKER_TCP_AND_UDP;
-import static com.untangle.mvvm.tran.firewall.protocol.ProtocolParsingConstants.MARKER_ANY;
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_TCP;
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_UDP;
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_PING;
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_TCP_AND_UDP;
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_ANY;
 
 /**
  * A factory for protocol matchers.

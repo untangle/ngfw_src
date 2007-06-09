@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.ip;
+package com.untangle.uvm.node.firewall.ip;
 
 import java.net.InetAddress;
 

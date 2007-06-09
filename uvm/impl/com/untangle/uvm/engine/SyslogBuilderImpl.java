@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.Formatter;
 
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.tran.util.AsciiCharBuffer;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.node.util.AsciiCharBuffer;
 import org.apache.log4j.Logger;
 
 class SyslogBuilderImpl implements SyslogBuilder

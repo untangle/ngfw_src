@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -51,7 +51,7 @@ public class IPMaddrRule extends Rule
      *
      * @return the IPMaddr.
      */
-    @Type(type="com.untangle.mvvm.type.IPMaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPMaddrUserType")
     public IPMaddr getIpMaddr()
     {
         return ipMaddr;

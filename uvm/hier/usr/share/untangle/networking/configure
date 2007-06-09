@@ -1,6 +1,6 @@
 #!/bin/sh
 
-exec >> @MVVM_LOG@/iptables.log 2>&1
+exec >> @UVM_LOG@/iptables.log 2>&1
 
 ## Clear out all of the interface state.
 echo "lo=lo" > /etc/network/ifstate

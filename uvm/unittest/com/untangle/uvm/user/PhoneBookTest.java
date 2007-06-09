@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.mvvm.user;
+package com.untangle.uvm.user;
 
 import java.net.InetAddress;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.user.Username;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.user.Username;
 
 public class PhoneBookTest
 {

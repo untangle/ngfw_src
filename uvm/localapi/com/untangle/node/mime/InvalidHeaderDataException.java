@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 /**
  * Exception thrown when parsing headers, if there

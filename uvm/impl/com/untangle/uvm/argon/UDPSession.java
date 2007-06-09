@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 public interface UDPSession extends IPSession, UDPSessionDesc 
 {

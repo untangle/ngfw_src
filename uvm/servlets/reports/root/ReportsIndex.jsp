@@ -1,16 +1,16 @@
-<%@ page language="java" import="com.untangle.mvvm.*, com.untangle.mvvm.client.*, com.untangle.mvvm.security.Tid, com.untangle.mvvm.tran.*, com.untangle.mvvm.tapi.*, com.untangle.mvvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.*, java.util.Vector, java.util.Collections, java.util.Comparator, java.util.Calendar, java.util.GregorianCalendar, java.util.StringTokenizer, javax.naming.*" %>
+<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.client.*, com.untangle.uvm.security.Tid, com.untangle.uvm.node.*, com.untangle.uvm.tapi.*, com.untangle.uvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.*, java.util.Vector, java.util.Collections, java.util.Comparator, java.util.Calendar, java.util.GregorianCalendar, java.util.StringTokenizer, javax.naming.*" %>
 
 <%
-    BrandingSettings bs = MvvmContextFactory.context().brandingManager().getBrandingSettings();
+    BrandingSettings bs = UvmContextFactory.context().brandingManager().getBrandingSettings();
     String company = bs.getCompanyName();
 	String companyUrl = bs.getCompanyUrl();
 
     // ENUMERATE THE ARCHIVE REPORT DIRECTORIES
     // note that these directory names are in form of 'YYYY-MM-DD'
     String path = System.getProperty("bunnicula.home") + "/web/reports";
-    File mvvmReportsFile = new File(path);
+    File uvmReportsFile = new File(path);
     Vector<File> directories = new Vector<File>();
-    File[] allFiles = mvvmReportsFile.listFiles();
+    File[] allFiles = uvmReportsFile.listFiles();
     String filenameTemplate = "YYYY-MM-DD";
     String filename;
     for( File file : allFiles ) {

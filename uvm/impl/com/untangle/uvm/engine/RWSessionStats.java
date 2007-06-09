@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.util.Date;
 
-import com.untangle.mvvm.tapi.*;
-import com.untangle.mvvm.util.MetaEnv;
+import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.util.MetaEnv;
 
 /**
  * <code>RWSessionStats</code> is the writable subclass of SessionStats used
- * internally by the mvvm.
+ * internally by the uvm.
  * It is contained within a Session (never in a SessionDesc).
  *
  * @author <a href="mailto:jdi@untangle.com"></a>

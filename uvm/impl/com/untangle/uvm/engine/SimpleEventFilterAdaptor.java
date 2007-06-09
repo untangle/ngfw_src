@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.mvvm.logging.ListEventFilter;
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.mvvm.logging.SimpleEventFilter;
+import com.untangle.uvm.logging.ListEventFilter;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.logging.SimpleEventFilter;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;

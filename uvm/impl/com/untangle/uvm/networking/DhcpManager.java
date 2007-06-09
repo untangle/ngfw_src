@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -28,22 +28,22 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.NetworkManager;
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.HostNameList;
-import com.untangle.mvvm.tran.IPNullAddr;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.firewall.MACAddress;
-import com.untangle.mvvm.tran.script.ScriptRunner;
-import com.untangle.mvvm.tran.TransformException;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.HostNameList;
+import com.untangle.uvm.node.IPNullAddr;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.firewall.MACAddress;
+import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.node.NodeException;
 
-import com.untangle.mvvm.networking.internal.DhcpLeaseInternal;
-import com.untangle.mvvm.networking.internal.DnsStaticHostInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
-import com.untangle.mvvm.networking.internal.ServicesInternalSettings;
+import com.untangle.uvm.networking.internal.DhcpLeaseInternal;
+import com.untangle.uvm.networking.internal.DnsStaticHostInternal;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
+import com.untangle.uvm.networking.internal.ServicesInternalSettings;
 
 class DhcpManager
 {
@@ -102,7 +102,7 @@ class DhcpManager
 
     void configure( ServicesInternalSettings settings ) throws NetworkException
     {
-        NetworkManagerImpl nm = (NetworkManagerImpl)MvvmContextFactory.context().networkManager();
+        NetworkManagerImpl nm = (NetworkManagerImpl)UvmContextFactory.context().networkManager();
         
         NetworkSpacesInternalSettings networkSettings = nm.getNetworkInternalSettings();
         
@@ -139,7 +139,7 @@ class DhcpManager
 
             /* restart dnsmasq */
             ScriptRunner.getInstance().exec( DNS_MASQ_CMD, "restart", "false" );
-        } catch ( TransformException e ) {
+        } catch ( NodeException e ) {
             throw new NetworkException( "Unable to reload Start DNS masq server", e );
         }
     }
@@ -150,14 +150,14 @@ class DhcpManager
             writeDisabledConfiguration();
 
             ScriptRunner.getInstance().exec( DNS_MASQ_CMD, "restart", "false" );                        
-        } catch ( TransformException e ) {
+        } catch ( NodeException e ) {
             logger.error( "Error while disabling the DNS masq server", e );
         }
 
         /* Re-enable DHCP forwarding */
         try {
             logger.info( "Reenabling DHCP forwarding" );
-            MvvmContextFactory.context().networkManager().enableDhcpForwarding();
+            UvmContextFactory.context().networkManager().enableDhcpForwarding();
         } catch ( Exception e ) {
             logger.error( "Error enabling DHCP forwarding", e );
         }

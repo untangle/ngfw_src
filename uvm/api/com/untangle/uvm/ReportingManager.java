@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
 import java.util.Date;
 
@@ -23,7 +23,7 @@ public interface ReportingManager  {
     /**
      * Tests if reporting is enabled, that is if reports will be
      * generated nightly.  Currently this is the same thing as "is the
-     * reporting transform installed and turned on."
+     * reporting node installed and turned on."
      *
      * @return true if reporting is enabled, false otherwise.
      */
@@ -33,7 +33,7 @@ public interface ReportingManager  {
      * Tests if reporting is enabled and reports have been generated
      * and are ready to view.  Currently this is the same thing as
      * "does the current symlink exist and contain a valid
-     * reporting-transform/sum-daily.html file."
+     * reporting-node/sum-daily.html file."
      *
      * @return true if reports are available
      */
@@ -56,7 +56,7 @@ public interface ReportingManager  {
      * @param daysToKeep number of days of data to keep
      */
     void prepareReports(String outputBaseDir, Date midnight, int daysToKeep)
-        throws MvvmException;
+        throws UvmException;
 
     /**
      * Starts the report generation.  We return since the alternative
@@ -64,9 +64,9 @@ public interface ReportingManager  {
      *
      * Call this after calling prepareReports to set the parameters.
      */
-    void startReports() throws MvvmException;
+    void startReports() throws UvmException;
 
-    void stopReports() throws MvvmException;
+    void stopReports() throws UvmException;
 
     /**
      * Tests if the reports are running -- have been started

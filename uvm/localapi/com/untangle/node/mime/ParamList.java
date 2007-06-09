@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import static com.untangle.tran.util.Ascii.*;
+import static com.untangle.node.util.Ascii.*;
 
 /**
  * Class to hold the parameters for "standard"

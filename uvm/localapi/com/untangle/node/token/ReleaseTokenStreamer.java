@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.tran.token;
+package com.untangle.node.token;
 
-import com.untangle.mvvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.Pipeline;
 
 class ReleaseTokenStreamer implements TokenStreamer
 {

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.reporting;
+package com.untangle.uvm.reporting;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -60,7 +60,7 @@ public abstract class ReportGraph
         Connection con = null;
         try {
             Class.forName("org.postgresql.Driver");
-            con = DriverManager.getConnection("jdbc:postgresql://localhost/mvvm",
+            con = DriverManager.getConnection("jdbc:postgresql://localhost/uvm",
                                               "postgres", "foo");
             JFreeChart chart = doInternal(con, ourScriptlet);
             ourScriptlet.setVariableValue("Traffic", new JCommonDrawableRenderer(chart));

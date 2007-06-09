@@ -9,11 +9,11 @@
  *  $Id$
  */
 
-package com.untangle.tran.util.test;
+package com.untangle.node.util.test;
 
 import java.io.*;
 
-import com.untangle.tran.util.*;
+import com.untangle.node.util.*;
 
 
 /**

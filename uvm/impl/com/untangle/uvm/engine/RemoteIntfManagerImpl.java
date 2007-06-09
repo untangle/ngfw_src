@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
-import com.untangle.mvvm.IntfEnum;
+import com.untangle.uvm.IntfEnum;
 
-import com.untangle.mvvm.tran.RemoteIntfManager;
-import com.untangle.mvvm.localapi.LocalIntfManager;
+import com.untangle.uvm.node.RemoteIntfManager;
+import com.untangle.uvm.localapi.LocalIntfManager;
 
 /** Passthru class for access to the api function inside of the interface manager */
 public class RemoteIntfManagerImpl implements  RemoteIntfManager

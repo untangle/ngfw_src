@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 
-import com.untangle.mvvm.tran.IPSessionDesc;
-import com.untangle.mvvm.tran.SessionEndpoints;
+import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.node.SessionEndpoints;
 
-import com.untangle.mvvm.tran.IPMaddr;
-import com.untangle.mvvm.tran.PortRange;
+import com.untangle.uvm.node.IPMaddr;
+import com.untangle.uvm.node.PortRange;
 import org.apache.log4j.Logger;
 
 /**
  * A traffic subscription. Right now these are internal, the user does
  * not mess with subscriptions until we have a use case where this
- * makes sense, probably the best option would be for a transform to
+ * makes sense, probably the best option would be for a node to
  * provide methods that would do the subscription making work for the
  * client.
  *

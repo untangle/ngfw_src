@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import com.untangle.mvvm.policy.Policy;
-import com.untangle.mvvm.policy.PolicyRule;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.policy.PolicyRule;
+import com.untangle.uvm.node.Node;
 import org.apache.log4j.Logger;
 
 /**
@@ -31,7 +31,7 @@ public abstract class PipeSpec
     private final Logger logger = Logger.getLogger(getClass());
 
     private final String name;
-    private final Transform transform;
+    private final Node node;
 
     private volatile Set<Subscription> subscriptions;
     private volatile boolean enabled = true;
@@ -43,10 +43,10 @@ public abstract class PipeSpec
      *
      * @param name display name for this MPipe.
      */
-    protected PipeSpec(String name, Transform transform)
+    protected PipeSpec(String name, Node node)
     {
         this.name = name;
-        this.transform = transform;
+        this.node = node;
 
         this.subscriptions = new CopyOnWriteArraySet<Subscription>();
         this.subscriptions.add(new Subscription(Protocol.TCP));
@@ -59,10 +59,10 @@ public abstract class PipeSpec
      * @param name display name of the PipeSpec.
      * @param subscriptions set of Subscriptions.
      */
-    protected PipeSpec(String name, Transform transform, Set subscriptions)
+    protected PipeSpec(String name, Node node, Set subscriptions)
     {
         this.name = name;
-        this.transform = transform;
+        this.node = node;
 
         this.subscriptions = null == subscriptions
             ? new CopyOnWriteArraySet<Subscription>()
@@ -75,11 +75,11 @@ public abstract class PipeSpec
      * @param name display name of the PipeSpec.
      * @param subscription the Subscription.
      */
-    protected PipeSpec(String name, Transform transform,
+    protected PipeSpec(String name, Node node,
                        Subscription subscription)
     {
         this.name = name;
-        this.transform = transform;
+        this.node = node;
 
         this.subscriptions = new CopyOnWriteArraySet<Subscription>();
         if (null != subscription) {
@@ -101,9 +101,9 @@ public abstract class PipeSpec
         return name;
     }
 
-    public Transform getTransform()
+    public Node getNode()
     {
-        return transform;
+        return node;
     }
 
     public boolean isEnabled()
@@ -118,13 +118,13 @@ public abstract class PipeSpec
 
     // public methods ---------------------------------------------------------
 
-    public boolean matches(PolicyRule pr, com.untangle.mvvm.tran.IPSessionDesc sd)
+    public boolean matches(PolicyRule pr, com.untangle.uvm.node.IPSessionDesc sd)
     {
-        Policy tp = transform.getTid().getPolicy();
+        Policy tp = node.getTid().getPolicy();
         Policy p = null == pr ? null : pr.getPolicy();
         boolean sessionInbound = null == pr ? true : pr.isInbound();
 
-        // We want the transform if its policy matches, or the transform has no
+        // We want the node if its policy matches, or the node has no
         // policy (is a service).
         if (enabled && (null == tp || tp.equals(p))) {
             Set s = subscriptions;
@@ -142,7 +142,7 @@ public abstract class PipeSpec
 
     public boolean matchesPolicy(Policy p)
     {
-        Policy tp = transform.getTid().getPolicy();
+        Policy tp = node.getTid().getPolicy();
 
         return null == tp || tp.equals(p);
     }

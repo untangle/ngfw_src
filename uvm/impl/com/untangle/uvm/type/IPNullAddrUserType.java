@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.type;
+package com.untangle.uvm.type;
 
-import com.untangle.mvvm.tran.IPNullAddr;
+import com.untangle.uvm.node.IPNullAddr;
 
 import java.net.UnknownHostException;
 

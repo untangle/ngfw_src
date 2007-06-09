@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.tran.util;
+package com.untangle.node.util;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.token.ParseException;
+import com.untangle.node.token.ParseException;
 
-import static com.untangle.tran.util.Ascii.*;
+import static com.untangle.node.util.Ascii.*;
 
 public class Rfc822Util
 {

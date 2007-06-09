@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking.internal;
+package com.untangle.uvm.networking.internal;
 
 import java.util.Date;
 
-import com.untangle.mvvm.tran.IPNullAddr;
-import com.untangle.mvvm.tran.firewall.MACAddress;
+import com.untangle.uvm.node.IPNullAddr;
+import com.untangle.uvm.node.firewall.MACAddress;
 
-import com.untangle.mvvm.networking.DhcpLeaseRule;
+import com.untangle.uvm.networking.DhcpLeaseRule;
 
 
 /**

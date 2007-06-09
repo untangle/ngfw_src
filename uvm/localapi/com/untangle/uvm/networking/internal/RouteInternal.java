@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking.internal;
+package com.untangle.uvm.networking.internal;
 
 import java.util.List;
 
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.IPaddr;
 
-import com.untangle.mvvm.networking.IPNetwork;
+import com.untangle.uvm.networking.IPNetwork;
 
-import com.untangle.mvvm.networking.Route;
+import com.untangle.uvm.networking.Route;
 
 /** An immutable routing entry */
 public class RouteInternal

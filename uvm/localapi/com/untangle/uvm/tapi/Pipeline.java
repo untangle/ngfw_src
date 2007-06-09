@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 import java.io.File;
 import java.io.IOException;
 
-import com.untangle.mvvm.tran.PipelineEndpoints;
+import com.untangle.uvm.node.PipelineEndpoints;
 
 public interface Pipeline
 {

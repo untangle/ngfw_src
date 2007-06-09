@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.port;
+package com.untangle.uvm.node.firewall.port;
 
 import java.io.Serializable;
 

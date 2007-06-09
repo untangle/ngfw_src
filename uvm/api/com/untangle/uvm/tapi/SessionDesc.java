@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 public interface SessionDesc {
 

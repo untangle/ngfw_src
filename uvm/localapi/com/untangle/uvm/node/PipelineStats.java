@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.tran.IPSessionDesc;
-import com.untangle.mvvm.logging.PipelineEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
+import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.logging.PipelineEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
 
 /**
  * Used to record the Session stats at session end time.

@@ -10,15 +10,15 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.Inet4Address;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.Equivalence;
-import static com.untangle.mvvm.networking.NetworkUtil.EMPTY_IPADDR;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Equivalence;
+import static com.untangle.uvm.networking.NetworkUtil.EMPTY_IPADDR;
 
 public class InterfaceAlias implements Serializable, Equivalence
 {

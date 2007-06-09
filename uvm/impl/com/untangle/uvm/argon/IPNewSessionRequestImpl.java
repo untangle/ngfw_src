@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import java.net.InetAddress;
 
@@ -18,8 +18,8 @@ import org.apache.log4j.Logger;
 import com.untangle.jnetcap.Endpoint;
 import com.untangle.jnetcap.Endpoints;
 
-import com.untangle.mvvm.localapi.LocalIntfManager;
-import com.untangle.mvvm.tran.PipelineEndpoints;
+import com.untangle.uvm.localapi.LocalIntfManager;
+import com.untangle.uvm.node.PipelineEndpoints;
 
 public abstract class IPNewSessionRequestImpl extends NewSessionRequestImpl implements IPNewSessionRequest
 {

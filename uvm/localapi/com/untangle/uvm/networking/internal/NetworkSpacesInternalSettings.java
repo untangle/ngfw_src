@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking.internal;
+package com.untangle.uvm.networking.internal;
 
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Collections;
 
-import com.untangle.mvvm.networking.RedirectRule;
-import com.untangle.mvvm.networking.SetupState;
+import com.untangle.uvm.networking.RedirectRule;
+import com.untangle.uvm.networking.SetupState;
 
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.IPaddr;
 
 /* This is an immutable settings object used locally.  This has
  * already been processed and cannot be modified.  It represents the
- * current configuration of the MVVM.  All of the lists inside of this
+ * current configuration of the UVM.  All of the lists inside of this
  * are immutable, and the objects they point to are immutable. */
 public class NetworkSpacesInternalSettings
 {

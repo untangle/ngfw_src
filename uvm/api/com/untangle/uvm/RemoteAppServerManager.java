@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
-import com.untangle.mvvm.security.CertInfo;
-import com.untangle.mvvm.security.RFC2253Name;
+import com.untangle.uvm.security.CertInfo;
+import com.untangle.uvm.security.RFC2253Name;
 
 /**
  * Abstraction to the application server used for external web
  * applications.
  *
  * Instances of this interface are obtained via {@link
- * com.untangle.mvvm.MvvmLocalContext#appServerManager
- * MvvmLocalContext}.
+ * com.untangle.uvm.UvmLocalContext#appServerManager
+ * UvmLocalContext}.
  */
 public interface RemoteAppServerManager
 {
@@ -94,7 +94,7 @@ public interface RemoteAppServerManager
 
 
     /**
-     * Get the current certificate used by this instance of the MVVM.
+     * Get the current certificate used by this instance of the UVM.
      * Further information for this cert can be obtained via {@link
      * #getCertInfo getCertInfo}.
      *

@@ -9,22 +9,22 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
 
-import com.untangle.mvvm.networking.AccessSettings;
-import com.untangle.mvvm.networking.AddressSettings;
-import com.untangle.mvvm.networking.BasicNetworkSettings;
-import com.untangle.mvvm.networking.DhcpStatus;
-import com.untangle.mvvm.networking.DynamicDNSSettings;
-import com.untangle.mvvm.networking.MiscSettings;
-import com.untangle.mvvm.networking.NetworkException;
-import com.untangle.mvvm.networking.NetworkSpacesSettings;
-import com.untangle.mvvm.networking.NetworkSpacesSettingsImpl;
+import com.untangle.uvm.networking.AccessSettings;
+import com.untangle.uvm.networking.AddressSettings;
+import com.untangle.uvm.networking.BasicNetworkSettings;
+import com.untangle.uvm.networking.DhcpStatus;
+import com.untangle.uvm.networking.DynamicDNSSettings;
+import com.untangle.uvm.networking.MiscSettings;
+import com.untangle.uvm.networking.NetworkException;
+import com.untangle.uvm.networking.NetworkSpacesSettings;
+import com.untangle.uvm.networking.NetworkSpacesSettingsImpl;
 
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.ValidateException;
 
 
 /* XXXXXXXXX This should be renamed to RemoteNetworkManager */

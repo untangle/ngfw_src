@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall;
+package com.untangle.uvm.node.firewall;
 
 /**
  * A matcher for matching traffic direction.

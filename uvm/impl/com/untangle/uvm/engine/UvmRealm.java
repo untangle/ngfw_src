@@ -10,7 +10,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -24,7 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-import com.untangle.mvvm.security.MvvmPrincipal;
+import com.untangle.uvm.security.UvmPrincipal;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
@@ -33,12 +33,12 @@ import org.apache.catalina.realm.RealmBase;
 import org.apache.log4j.Logger;
 import sun.misc.BASE64Encoder;
 
-class MvvmRealm extends RealmBase
+class UvmRealm extends RealmBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final String userQuery
-        = "SELECT password, read_only FROM mvvm_user WHERE login = ?";
+        = "SELECT password, read_only FROM uvm_user WHERE login = ?";
 
     // XXX Very small memory leak here if the nonce is never used (quite rare)
     private HashMap<String, Principal> nonces = new HashMap<String, Principal>();
@@ -56,12 +56,12 @@ class MvvmRealm extends RealmBase
         }
         long currentTime = System.currentTimeMillis();
         String nonceValue = clientAddr + ":" +
-            currentTime + ":MetavizeMvvm94114";
+            currentTime + ":MetavizeUvm94114";
         byte[] buffer = d.digest(nonceValue.getBytes());
         String nonce = new BASE64Encoder().encode(buffer);
         nonces.put(nonce, user);
 
-        return MvvmAuthenticator.AUTH_NONCE_FIELD_NAME + "="
+        return UvmAuthenticator.AUTH_NONCE_FIELD_NAME + "="
             + URLEncoder.encode(nonce);
     }
 
@@ -118,14 +118,14 @@ class MvvmRealm extends RealmBase
             }
         }
 
-        return new MvvmPrincipal(username, readOnly);
+        return new UvmPrincipal(username, readOnly);
     }
 
     @Override
     public boolean hasRole(Principal p, String role)
     {
         return null != role && role.equalsIgnoreCase("user")
-            && p instanceof MvvmPrincipal;
+            && p instanceof UvmPrincipal;
     }
 
 
@@ -133,7 +133,7 @@ class MvvmRealm extends RealmBase
 
     protected String getPassword(String username) { return null; }
     protected Principal getPrincipal(String username) { return null; }
-    protected String getName() { return "MvvmRealm"; }
+    protected String getName() { return "UvmRealm"; }
 
     // private methods --------------------------------------------------------
 
@@ -196,7 +196,7 @@ class MvvmRealm extends RealmBase
 
         if ( !isValidPrincipal( principal )) {
             if ( logger.isDebugEnabled()) {
-                logger.debug("No MvvmPrincipal, trying to find a principal from the session" );
+                logger.debug("No UvmPrincipal, trying to find a principal from the session" );
             }
 
             org.apache.catalina.Session session = request.getSessionInternal(false);
@@ -216,9 +216,9 @@ class MvvmRealm extends RealmBase
     }
 
 
-    /* Should be moved to a util, used also by MvvmAuthenticator */
+    /* Should be moved to a util, used also by UvmAuthenticator */
     private boolean isValidPrincipal( Principal principal )
     {
-        return ( null != principal && ( principal instanceof MvvmPrincipal ));
+        return ( null != principal && ( principal instanceof UvmPrincipal ));
     }
 }

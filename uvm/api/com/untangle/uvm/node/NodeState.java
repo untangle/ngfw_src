@@ -9,29 +9,29 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents the runtime state of a transform instance.
+ * Represents the runtime state of a node instance.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public enum TransformState
+public enum NodeState
 {
     /**
      * Instantiated, but not initialized. This is a transient state,
-     * just after the main transform class has been instantiated, but
+     * just after the main node class has been instantiated, but
      * before init has been called.
      */
     LOADED,
 
     /**
-     * Initialized, but not running. The transform instance enters
+     * Initialized, but not running. The node instance enters
      * this state after it has been initialized, or when it is
      * stopped.
      */

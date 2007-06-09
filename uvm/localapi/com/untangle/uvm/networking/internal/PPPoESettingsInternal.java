@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking.internal;
+package com.untangle.uvm.networking.internal;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.networking.PPPoESettings;
-import com.untangle.mvvm.networking.PPPoEConnectionRule;
+import com.untangle.uvm.networking.PPPoESettings;
+import com.untangle.uvm.networking.PPPoEConnectionRule;
 
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.ValidateException;
 
 /**
  * Immutable PPPoE Settings values.

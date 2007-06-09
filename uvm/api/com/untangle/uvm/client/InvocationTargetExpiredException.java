@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.client;
+package com.untangle.uvm.client;
 
 /**
  * Signals that remote target no longer exists.

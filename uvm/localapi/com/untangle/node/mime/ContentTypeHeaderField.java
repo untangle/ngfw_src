@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 import org.apache.log4j.Logger;
-import static com.untangle.tran.util.Ascii.*;
+import static com.untangle.node.util.Ascii.*;
 
 
 /**
@@ -159,7 +159,7 @@ public class ContentTypeHeaderField
      * removed.
      * <br><br>
      * Note that
-     * {@link com.untangle.tran.mime.MIMEUtil#makeBoundary MIMEUtil has a helper method}
+     * {@link com.untangle.node.mime.MIMEUtil#makeBoundary MIMEUtil has a helper method}
      * for creating boundaries
      *
      * @param boundary the boundary.  If null, this "unsets"

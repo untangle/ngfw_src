@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.mvvm.type;
+package com.untangle.uvm.type;
 
 import java.net.InetAddress;
 
-import com.untangle.mvvm.tran.HostAddress;
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.HostAddress;
+import com.untangle.uvm.node.IPaddr;
 
 public class HostAddressUserType extends StringBasedUserType
 {

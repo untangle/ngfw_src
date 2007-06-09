@@ -9,22 +9,22 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.security.Tid;
+import com.untangle.uvm.security.Tid;
 
 /**
- * Transform settings and properties.
+ * Node settings and properties.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class TransformDesc implements Serializable
+public class NodeDesc implements Serializable
 {
     private static final long serialVersionUID = -578021414141899172L;
 
@@ -34,7 +34,7 @@ public class TransformDesc implements Serializable
 
     private final String className;
     private final String guiClassName;
-    private final String transformBase;
+    private final String nodeBase;
 
     private final List<String> exports;
     private final List<String> parents;
@@ -47,8 +47,8 @@ public class TransformDesc implements Serializable
     private final int tcpServerReadBufferSize = 8192;
     private final int udpMaxPacketSize = 16384;
 
-    public TransformDesc(Tid tid, String name, String className,
-                         String guiClassName, String transformBase,
+    public NodeDesc(Tid tid, String name, String className,
+                         String guiClassName, String nodeBase,
                          List<String> exports, List<String> parents,
                          boolean singleInstance, String displayName)
     {
@@ -56,7 +56,7 @@ public class TransformDesc implements Serializable
         this.name = name;
         this.className = className;
         this.guiClassName = guiClassName;
-        this.transformBase = transformBase;
+        this.nodeBase = nodeBase;
         List<String> l = null == exports ? new LinkedList<String>() : exports;
         this.exports = Collections.unmodifiableList(l);
         l = null == parents ? new LinkedList<String>() : parents;
@@ -69,7 +69,7 @@ public class TransformDesc implements Serializable
     // accessors --------------------------------------------------------------
 
     /**
-     * Transform id.
+     * Node id.
      *
      * @return tid for this instance.
      */
@@ -79,9 +79,9 @@ public class TransformDesc implements Serializable
     }
 
     /**
-     * Internal name of the transform.
+     * Internal name of the node.
      *
-     * @return the transform's name.
+     * @return the node's name.
      */
     public String getName()
     {
@@ -89,9 +89,9 @@ public class TransformDesc implements Serializable
     }
 
     /**
-     * Name of the main transform Class.
+     * Name of the main node Class.
      *
-     * @return transform class name.
+     * @return node class name.
      */
     public String getClassName()
     {
@@ -109,9 +109,9 @@ public class TransformDesc implements Serializable
     }
 
     /**
-     * The parent transform, usually a casing.
+     * The parent node, usually a casing.
      *
-     * @return the parent transform, null if transform has no parent.
+     * @return the parent node, null if node has no parent.
      */
     public List<String> getParents()
     {
@@ -159,7 +159,7 @@ public class TransformDesc implements Serializable
     }
 
     /**
-     * The name of the transform, for display purposes.
+     * The name of the node, for display purposes.
      *
      * @return display name.
      */
@@ -169,7 +169,7 @@ public class TransformDesc implements Serializable
     }
 
     /**
-     * The name of the transform, for syslog purposes.
+     * The name of the node, for syslog purposes.
      *
      * @return syslog name.
      */
@@ -189,14 +189,14 @@ public class TransformDesc implements Serializable
     }
 
     /**
-     * The transformBase is the name of the base transform. For example
-     * clam-transform's transformBase is virus-base.
+     * The nodeBase is the name of the base node. For example
+     * clam-node's nodeBase is virus-base.
      *
-     * @return the transformBase, null if transform does not have a base.
+     * @return the nodeBase, null if node does not have a base.
      */
-    public String getTransformBase()
+    public String getNodeBase()
     {
-        return transformBase;
+        return nodeBase;
     }
 
     // Object methods ---------------------------------------------------------
@@ -209,11 +209,11 @@ public class TransformDesc implements Serializable
      */
     public boolean equals(Object o)
     {
-        if (!(o instanceof TransformDesc)) {
+        if (!(o instanceof NodeDesc)) {
             return false;
         }
 
-        TransformDesc td = (TransformDesc)o;
+        NodeDesc td = (NodeDesc)o;
 
         return tid.equals(td.getTid());
     }

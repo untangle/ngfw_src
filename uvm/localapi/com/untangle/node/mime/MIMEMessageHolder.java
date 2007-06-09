@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 
-import com.untangle.tran.util.FileFactory;
+import com.untangle.node.util.FileFactory;
 
 
 /**

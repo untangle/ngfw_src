@@ -1,4 +1,4 @@
-<%@ page language="java" import="com.untangle.mvvm.*, com.untangle.mvvm.security.Tid, com.untangle.mvvm.tran.*, com.untangle.mvvm.tapi.*, com.untangle.mvvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.List, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
+<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.security.Tid, com.untangle.uvm.node.*, com.untangle.uvm.tapi.*, com.untangle.uvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.List, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
 
 <HTML>
 <HEAD>
@@ -8,19 +8,19 @@
 <BODY>
 <%
   AbsoluteTimeDateFormat atdf = new AbsoluteTimeDateFormat();
-  MvvmLocalContext mc = MvvmContextFactory.context();
-  LocalTransformManager tm = mc.transformManager();
+  UvmLocalContext mc = UvmContextFactory.context();
+  LocalNodeManager tm = mc.nodeManager();
   StringBuffer buf;
-  for (Tid tid : tm.transformInstances()) {
-      TransformContext tctx = tm.transformContext(tid);
-      if (tctx.getRunState() != TransformState.RUNNING)
+  for (Tid tid : tm.nodeInstances()) {
+      NodeContext tctx = tm.nodeContext(tid);
+      if (tctx.getRunState() != NodeState.RUNNING)
           continue;
-      TransformDesc tdesc = tctx.getTransformDesc();
+      NodeDesc tdesc = tctx.getNodeDesc();
 %>
       <H1 ALIGN=CENTER> <%= tdesc.getName() %></H1>
 <%
-      // First show the transform stats
-      TransformStats tstats = null;
+      // First show the node stats
+      NodeStats tstats = null;
       try {
         tstats = tctx.getStats();
 %>
@@ -70,7 +70,7 @@
       }
 %>
 <%
-      com.untangle.mvvm.tapi.IPSessionDesc[] sdescs = tctx.liveSessionDescs();
+      com.untangle.uvm.tapi.IPSessionDesc[] sdescs = tctx.liveSessionDescs();
       sdescs = SessionUtil.sortDescs(sdescs);
       if (sdescs == null)
          continue;
@@ -91,12 +91,12 @@
          <TH>T->C B
 <%
       for (int j = 0; j < sdescs.length; j++) {
-          com.untangle.mvvm.tapi.IPSessionDesc sd = (com.untangle.mvvm.tapi.IPSessionDesc) sdescs[j];
+          com.untangle.uvm.tapi.IPSessionDesc sd = (com.untangle.uvm.tapi.IPSessionDesc) sdescs[j];
           SessionStats stats = sd.stats();
           char proto = 'N';
-          if (sd instanceof com.untangle.mvvm.tapi.UDPSessionDesc)
+          if (sd instanceof com.untangle.uvm.tapi.UDPSessionDesc)
              proto = 'U';
-          else if (sd instanceof com.untangle.mvvm.tapi.TCPSessionDesc)
+          else if (sd instanceof com.untangle.uvm.tapi.TCPSessionDesc)
              proto = 'T';
 %>
           <TR>

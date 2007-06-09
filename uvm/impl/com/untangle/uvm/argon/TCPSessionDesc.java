@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 public interface TCPSessionDesc
-    extends com.untangle.mvvm.tran.TCPSessionDesc, IPSessionDesc
+    extends com.untangle.uvm.node.TCPSessionDesc, IPSessionDesc
 {
 }

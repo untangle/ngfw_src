@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine.addrbook;
+package com.untangle.uvm.engine.addrbook;
 
 import java.util.List;
 import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 import javax.naming.ServiceUnavailableException;
 
-import com.untangle.mvvm.addrbook.AddressBook;
-import com.untangle.mvvm.addrbook.AddressBookSettings;
-import com.untangle.mvvm.addrbook.NoSuchEmailException;
-import com.untangle.mvvm.addrbook.RepositoryType;
-import com.untangle.mvvm.addrbook.UserEntry;
+import com.untangle.uvm.addrbook.AddressBook;
+import com.untangle.uvm.addrbook.AddressBookSettings;
+import com.untangle.uvm.addrbook.NoSuchEmailException;
+import com.untangle.uvm.addrbook.RepositoryType;
+import com.untangle.uvm.addrbook.UserEntry;
 
 /**
  * Concrete implementation of the AddressBook.  Note that this class
@@ -36,14 +36,14 @@ public class RemoteAddressBookImpl implements AddressBook {
     }
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public AddressBookSettings getAddressBookSettings() {
         return this.addressBook.getAddressBookSettings();
     }
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public void setAddressBookSettings(final AddressBookSettings newSettings) {
         this.addressBook.setAddressBookSettings(newSettings);
@@ -51,7 +51,7 @@ public class RemoteAddressBookImpl implements AddressBook {
 
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public boolean authenticate(String uid, String pwd)
         throws ServiceUnavailableException {
@@ -64,7 +64,7 @@ public class RemoteAddressBookImpl implements AddressBook {
 
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public boolean authenticateByEmail(String email, String pwd)
         throws ServiceUnavailableException, NoSuchEmailException {
@@ -74,7 +74,7 @@ public class RemoteAddressBookImpl implements AddressBook {
 
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public RepositoryType containsEmail(String address, RepositoryType searchIn)
         throws ServiceUnavailableException {
@@ -84,7 +84,7 @@ public class RemoteAddressBookImpl implements AddressBook {
 
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public RepositoryType containsEmail(String address)
         throws ServiceUnavailableException {
@@ -92,7 +92,7 @@ public class RemoteAddressBookImpl implements AddressBook {
     }
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public RepositoryType containsUid(String uid)
         throws ServiceUnavailableException {
@@ -102,7 +102,7 @@ public class RemoteAddressBookImpl implements AddressBook {
 
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public RepositoryType containsUid(String uid, RepositoryType searchIn)
         throws ServiceUnavailableException {
@@ -111,7 +111,7 @@ public class RemoteAddressBookImpl implements AddressBook {
 
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public List<UserEntry> getLocalUserEntries()
         throws ServiceUnavailableException {
@@ -120,7 +120,7 @@ public class RemoteAddressBookImpl implements AddressBook {
 
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public void setLocalUserEntries(List<UserEntry> userEntries)
         throws ServiceUnavailableException, NameNotFoundException, NameAlreadyBoundException {
@@ -129,7 +129,7 @@ public class RemoteAddressBookImpl implements AddressBook {
 
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public List<UserEntry> getUserEntries()
         throws ServiceUnavailableException {
@@ -139,7 +139,7 @@ public class RemoteAddressBookImpl implements AddressBook {
 
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public List<UserEntry> getUserEntries(RepositoryType searchIn)
         throws ServiceUnavailableException {
@@ -148,7 +148,7 @@ public class RemoteAddressBookImpl implements AddressBook {
 
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public UserEntry getEntry(String uid)
         throws ServiceUnavailableException {
@@ -158,7 +158,7 @@ public class RemoteAddressBookImpl implements AddressBook {
 
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public UserEntry getEntry(String uid, RepositoryType searchIn)
         throws ServiceUnavailableException {
@@ -166,7 +166,7 @@ public class RemoteAddressBookImpl implements AddressBook {
     }
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public UserEntry getEntryByEmail(String email)
         throws ServiceUnavailableException {
@@ -176,7 +176,7 @@ public class RemoteAddressBookImpl implements AddressBook {
 
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public UserEntry getEntryByEmail(String email, RepositoryType searchIn)
         throws ServiceUnavailableException {
@@ -186,7 +186,7 @@ public class RemoteAddressBookImpl implements AddressBook {
 
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public void createLocalEntry(UserEntry newEntry, String password)
         throws NameAlreadyBoundException, ServiceUnavailableException {
@@ -196,7 +196,7 @@ public class RemoteAddressBookImpl implements AddressBook {
 
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public boolean deleteLocalEntry(String entryUid)
         throws ServiceUnavailableException {
@@ -206,7 +206,7 @@ public class RemoteAddressBookImpl implements AddressBook {
 
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public void updateLocalEntry(UserEntry changedEntry)
         throws ServiceUnavailableException, NameNotFoundException {
@@ -216,7 +216,7 @@ public class RemoteAddressBookImpl implements AddressBook {
 
 
     //====================================================
-    // See doc on com.untangle.mvvm.addrbook.AddressBook
+    // See doc on com.untangle.uvm.addrbook.AddressBook
     //====================================================
     public void updateLocalPassword(String uid, String newPassword)
         throws ServiceUnavailableException, NameNotFoundException {

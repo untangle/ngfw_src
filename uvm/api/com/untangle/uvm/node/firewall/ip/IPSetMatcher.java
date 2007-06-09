@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.ip;
+package com.untangle.uvm.node.firewall.ip;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -18,11 +18,11 @@ import java.util.Collections;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.IPaddr;
 
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.firewall.Parser;
-import com.untangle.mvvm.tran.firewall.ParsingConstants;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.firewall.Parser;
+import com.untangle.uvm.node.firewall.ParsingConstants;
 
 /**
  * An IPMatcher that matches a list of discontinous addresses.

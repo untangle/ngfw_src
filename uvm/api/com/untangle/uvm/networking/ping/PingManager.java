@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking.ping;
+package com.untangle.uvm.networking.ping;
 
-import com.untangle.mvvm.networking.NetworkException;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.networking.NetworkException;
+import com.untangle.uvm.node.ValidateException;
 
 public interface PingManager
 {

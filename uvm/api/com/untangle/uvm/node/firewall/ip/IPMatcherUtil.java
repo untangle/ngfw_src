@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.ip;
+package com.untangle.uvm.node.firewall.ip;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import com.untangle.mvvm.tran.ParseException;
+import com.untangle.uvm.node.ParseException;
 
 
 /**

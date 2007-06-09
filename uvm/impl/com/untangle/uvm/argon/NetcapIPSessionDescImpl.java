@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import java.net.InetAddress;
 
@@ -19,7 +19,7 @@ import com.untangle.jnetcap.Endpoint;
 import com.untangle.jnetcap.Endpoints;
 import com.untangle.jnetcap.NetcapSession;
 
-import com.untangle.mvvm.localapi.LocalIntfManager;
+import com.untangle.uvm.localapi.LocalIntfManager;
 
 class NetcapIPSessionDescImpl implements IPSessionDesc
 {

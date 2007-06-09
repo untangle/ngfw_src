@@ -1,37 +1,37 @@
 #!/bin/sh
 
 ## These are for network configuration settings.
-MVVM_NETWORK_PARAMS_FILE=@MVVM_CONF@/networking.sh
+UVM_NETWORK_PARAMS_FILE=@UVM_CONF@/networking.sh
 
 ## These are parameters that rarely change, these are mostly items that are shared between
-## the outside world and the mvvm (eg inside/outside)
-MVVM_DEFAULTS_FILE=@PREFIX@/etc/default/mvvm
+## the outside world and the uvm (eg inside/outside)
+UVM_DEFAULTS_FILE=@PREFIX@/etc/default/uvm
 
-## These are the properties that are shared by the mvvm and the networking scripts, these
-## are done as properties so they are always loaded each time the MVVM starts(on crashes
+## These are the properties that are shared by the uvm and the networking scripts, these
+## are done as properties so they are always loaded each time the UVM starts(on crashes
 ## the scripts are not reloaded.)
-MVVM_NET_PROPERTY_FILE=@MVVM_CONF@/mvvm.networking.properties
-MVVM_HTTPS_PORT=`grep mvvm.https.port ${MVVM_NET_PROPERTY_FILE} | sed 's|^mvvm.https.port=\(.*\)|\1|g'`
+UVM_NET_PROPERTY_FILE=@UVM_CONF@/uvm.networking.properties
+UVM_HTTPS_PORT=`grep uvm.https.port ${UVM_NET_PROPERTY_FILE} | sed 's|^uvm.https.port=\(.*\)|\1|g'`
 
-if [ -f ${MVVM_NETWORK_PARAMS_FILE} ]; then
-    . ${MVVM_NETWORK_PARAMS_FILE}
+if [ -f ${UVM_NETWORK_PARAMS_FILE} ]; then
+    . ${UVM_NETWORK_PARAMS_FILE}
 else
-    echo "File ${MVVM_NETWORK_PARAMS_FILE} not found."
+    echo "File ${UVM_NETWORK_PARAMS_FILE} not found."
 fi
 
-if [ -f ${MVVM_DEFAULTS_FILE} ] ; then
-    . ${MVVM_DEFAULTS_FILE}
+if [ -f ${UVM_DEFAULTS_FILE} ] ; then
+    . ${UVM_DEFAULTS_FILE}
 else
-    echo "File ${MVVM_DEFAULTS_FILE} not found."
+    echo "File ${UVM_DEFAULTS_FILE} not found."
 fi
 
 HTTPS_PORT=443
 
 outsideHttpsPort=${HTTPS_PORT}
 
-if [ -n "${MVVM_HTTPS_PORT}" ]; then
+if [ -n "${UVM_HTTPS_PORT}" ]; then
     ## Just to validate the number
-    outsideHttpsPort=`printf "%d" ${MVVM_HTTPS_PORT}`
+    outsideHttpsPort=`printf "%d" ${UVM_HTTPS_PORT}`
     if [ ${outsideHttpsPort} -lt 1 ] || [ ${outsideHttpsPort} -gt 65535 ]; then
         echo "Invalid https port: ${outsideHttpsPort}, returning to default ${HTTPS_PORT}"
         outsideHttpsPort=${HTTPS_PORT}
@@ -40,7 +40,7 @@ fi
 
 ## Default list of interfaces in the service space, (the inside interface) in case tmp
 ## params doesn't specify a value
-MVVM_SERVICES_INTF_LIST=${MVVM_SERVICES_INTF_LIST:-"${MVVM_INTERNAL_INTF}"}
+UVM_SERVICES_INTF_LIST=${UVM_SERVICES_INTF_LIST:-"${UVM_INTERNAL_INTF}"}
 
 ## Local ports to antisubscribe to
 ANTISUBSCRIBES_LOCAL_TCP_PORTS="22 80_inside"
@@ -56,13 +56,13 @@ GUARD_OUTSIDE_TCP_PORTS=""
 GUARD_INSIDE_TCP_PORTS=""
 
 # disabled by default
-if [ "${MVVM_ALLOW_OUT_HTTPS}x" = "truex" ]; then
+if [ "${UVM_ALLOW_OUT_HTTPS}x" = "truex" ]; then
     # not restricted by default
-    if [ "${MVVM_ALLOW_OUT_RES}x" = "truex" -a "${MVVM_ALLOW_OUT_NET}x" != "x" ]; then
-        if [ "${MVVM_ALLOW_OUT_MASK}x" = "x" ]; then
-            GUARD_OUTSIDE_TCP_PORTS="${GUARD_OUTSIDE_TCP_PORTS} ${outsideHttpsPort}_$MVVM_ALLOW_OUT_NET"
+    if [ "${UVM_ALLOW_OUT_RES}x" = "truex" -a "${UVM_ALLOW_OUT_NET}x" != "x" ]; then
+        if [ "${UVM_ALLOW_OUT_MASK}x" = "x" ]; then
+            GUARD_OUTSIDE_TCP_PORTS="${GUARD_OUTSIDE_TCP_PORTS} ${outsideHttpsPort}_$UVM_ALLOW_OUT_NET"
         else
-            GUARD_OUTSIDE_TCP_PORTS="${GUARD_OUTSIDE_TCP_PORTS} ${outsideHttpsPort}_$MVVM_ALLOW_OUT_NET/$MVVM_ALLOW_OUT_MASK"
+            GUARD_OUTSIDE_TCP_PORTS="${GUARD_OUTSIDE_TCP_PORTS} ${outsideHttpsPort}_$UVM_ALLOW_OUT_NET/$UVM_ALLOW_OUT_MASK"
         fi
     fi
 
@@ -86,7 +86,7 @@ else
 fi
 
 # HTTP is always enabled, using valves to control access.
-if [ "x$MVVM_ALLOW_IN_HTTP" = "xnevertrue" ]; then
+if [ "x$UVM_ALLOW_IN_HTTP" = "xnevertrue" ]; then
     GUARD_INSIDE_TCP_PORTS="${GUARD_INSIDE_TCP_PORTS} 80"
 fi
 

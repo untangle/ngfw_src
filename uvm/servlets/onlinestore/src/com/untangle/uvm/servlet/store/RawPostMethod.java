@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.servlet.store;
+package com.untangle.uvm.servlet.store;
 
 import java.io.IOException;
 import java.io.InputStream;

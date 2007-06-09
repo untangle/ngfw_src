@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
-import static com.untangle.tran.util.ASCIIUtil.*;
+import static com.untangle.node.util.ASCIIUtil.*;
 
 import java.io.*;
 import java.nio.*;
 import java.util.*;
 
-import com.untangle.mvvm.tran.TemplateValues;
+import com.untangle.uvm.node.TemplateValues;
 import org.apache.log4j.Logger;
 
 /**
@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
  * ambigious, the docs for the method will specify.
  * <br>
  * <br>
- * This class also implements {@link com.untangle.tran.util.TemplateValues TemplateValues}.
+ * This class also implements {@link com.untangle.node.util.TemplateValues TemplateValues}.
  * Valid token names for headers are <code>MIMEHeader:&lt;headerName></code> where <code>headerName</code>
  * is the case insensitive name of the header.  This variable will be replaced by the variable
  * of that name, or null if not found.  If there are multiple HeaderFields for the given header

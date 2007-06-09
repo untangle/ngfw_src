@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.client;
+package com.untangle.uvm.client;
 
 import javax.security.auth.login.FailedLoginException;
 
-import com.untangle.mvvm.security.LoginSession;
+import com.untangle.uvm.security.LoginSession;
 
 public class MultipleLoginsException extends FailedLoginException
 {

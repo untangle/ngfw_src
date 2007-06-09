@@ -16,7 +16,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
   <!-- Downloader -->
   <servlet>
     <servlet-name>Downloader</servlet-name>
-    <servlet-class>com.untangle.mvvm.user.Downloader</servlet-class>
+    <servlet-class>com.untangle.uvm.user.Downloader</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
@@ -26,7 +26,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>com.untangle.mvvm.user.servlet.Index_jsp</servlet-name>
+    <servlet-name>com.untangle.uvm.user.servlet.Index_jsp</servlet-name>
     <url-pattern>*.html</url-pattern>
   </servlet-mapping>
 

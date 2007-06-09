@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.MessageQueue;
+import com.untangle.uvm.MessageQueue;
 
 class MessageQueueImpl<M> implements MessageQueue
 {

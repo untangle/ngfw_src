@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.type;
+package com.untangle.uvm.type;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
@@ -17,7 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import com.untangle.mvvm.tran.IPMaddr;
+import com.untangle.uvm.node.IPMaddr;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 

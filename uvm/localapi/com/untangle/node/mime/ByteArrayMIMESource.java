@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 import java.io.*;
 
-import com.untangle.tran.util.*;
+import com.untangle.node.util.*;
 
 /**
  * Implementation of MIMESource which has a backing
@@ -88,8 +88,8 @@ public class ByteArrayMIMESource
         throws Exception {
 
 
-        com.untangle.tran.util.ASCIIStringBuilder sb =
-            new com.untangle.tran.util.ASCIIStringBuilder();
+        com.untangle.node.util.ASCIIStringBuilder sb =
+            new com.untangle.node.util.ASCIIStringBuilder();
         String newLine = "\r\n";
         sb.append("Received: foobaloo");
         sb.append(newLine);

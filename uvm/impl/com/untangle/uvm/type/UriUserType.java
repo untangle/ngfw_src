@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.type;
+package com.untangle.uvm.type;
 
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;

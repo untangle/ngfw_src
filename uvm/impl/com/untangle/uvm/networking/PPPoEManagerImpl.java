@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -20,26 +20,26 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.IntfConstants;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
 
-import com.untangle.mvvm.localapi.ArgonInterface;
-import com.untangle.mvvm.localapi.LocalIntfManager;
+import com.untangle.uvm.localapi.ArgonInterface;
+import com.untangle.uvm.localapi.LocalIntfManager;
 
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.networking.internal.InterfaceInternal;
-import com.untangle.mvvm.networking.internal.PPPoEConnectionInternal;
-import com.untangle.mvvm.networking.internal.PPPoESettingsInternal;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.networking.internal.InterfaceInternal;
+import com.untangle.uvm.networking.internal.PPPoEConnectionInternal;
+import com.untangle.uvm.networking.internal.PPPoESettingsInternal;
 
-import com.untangle.mvvm.tran.ValidateException;
-import com.untangle.mvvm.tran.script.ScriptWriter;
-import static com.untangle.mvvm.tran.script.ScriptWriter.COMMENT;
-import static com.untangle.mvvm.tran.script.ScriptWriter.METAVIZE_HEADER;
+import com.untangle.uvm.node.ValidateException;
+import com.untangle.uvm.node.script.ScriptWriter;
+import static com.untangle.uvm.node.script.ScriptWriter.COMMENT;
+import static com.untangle.uvm.node.script.ScriptWriter.METAVIZE_HEADER;
 
-import com.untangle.mvvm.util.DataLoader;
-import com.untangle.mvvm.util.DataSaver;
+import com.untangle.uvm.util.DataLoader;
+import com.untangle.uvm.util.DataSaver;
 
 class PPPoEManagerImpl
 {
@@ -277,7 +277,7 @@ class PPPoEManagerImpl
         /* Don't need to do anything if the connection is not enabled */
         if (( null == this.settings ) || !this.settings.getIsEnabled()) return;
 
-        LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
+        LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
         
         List<ArgonInterface> registeredIntfList = new LinkedList<ArgonInterface>();
         
@@ -316,7 +316,7 @@ class PPPoEManagerImpl
             return;
         }
 
-        LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
+        LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
         
         /* Iterate each of the cached entries and replace with their original values */
         for ( ArgonInterface intf : this.registeredIntfList ) {
@@ -335,7 +335,7 @@ class PPPoEManagerImpl
     /* This is for the ohh no situtation, just a way to get back to the interfaces at startup */
     synchronized void resetIntfs()
     {
-        MvvmContextFactory.context().localIntfManager().resetSecondaryIntfs();
+        UvmContextFactory.context().localIntfManager().resetSecondaryIntfs();
         
         this.registeredIntfList = null;
     }
@@ -361,7 +361,7 @@ class PPPoEManagerImpl
     private PPPoESettingsInternal loadSettings() throws ValidateException
     {
         DataLoader<PPPoESettings> loader = new DataLoader<PPPoESettings>( "PPPoESettings",
-                                                                          MvvmContextFactory.context());
+                                                                          UvmContextFactory.context());
         PPPoESettings dbSettings = loader.loadData();
 
         /* No database settings */
@@ -377,7 +377,7 @@ class PPPoEManagerImpl
     private void saveSettings( PPPoESettingsInternal newSettings )
     {
         DataSaver<PPPoESettings> saver =
-            new PPPoESettingsDataSaver( MvvmContextFactory.context());
+            new PPPoESettingsDataSaver( UvmContextFactory.context());
 
         if ( saver.saveData( newSettings.toSettings()) == null ) {
             logger.error( "Unable to save the pppoe settings." );
@@ -398,7 +398,7 @@ class PPPoEManagerImpl
     /* Data saver used to delete other instances of the object */
     private static class PPPoESettingsDataSaver extends DataSaver<PPPoESettings>
     {
-        PPPoESettingsDataSaver( MvvmLocalContext local )
+        PPPoESettingsDataSaver( UvmLocalContext local )
         {
             super( local );
         }
@@ -441,7 +441,7 @@ class PPPoEManagerImpl
         {
             /* If this is the external interface, replace the default route */
             byte argonIndex = connection.getArgonIntf();
-            ArgonInterface ai = MvvmContextFactory.context().localIntfManager().getIntfByArgon( argonIndex );
+            ArgonInterface ai = UvmContextFactory.context().localIntfManager().getIntfByArgon( argonIndex );
             
             /* Only update the default route if this is the final interface */
             if ( argonIndex == IntfConstants.EXTERNAL_INTF ) {

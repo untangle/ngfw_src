@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.mvvm.util;
+package com.untangle.uvm.util;
 
 public class QuarantineOutsideAccessValve extends OutsideValve
 {

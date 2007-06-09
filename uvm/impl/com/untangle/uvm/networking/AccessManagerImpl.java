@@ -9,32 +9,32 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.script.ScriptRunner;
-import com.untangle.mvvm.tran.script.ScriptWriter;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.node.script.ScriptWriter;
 
-import com.untangle.mvvm.util.DataLoader;
-import com.untangle.mvvm.util.DataSaver;
-import com.untangle.mvvm.util.DeletingDataSaver;
+import com.untangle.uvm.util.DataLoader;
+import com.untangle.uvm.util.DataSaver;
+import com.untangle.uvm.util.DeletingDataSaver;
 
-import com.untangle.mvvm.networking.internal.AccessSettingsInternal;
+import com.untangle.uvm.networking.internal.AccessSettingsInternal;
 
-import static com.untangle.mvvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
+import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
 
-import static com.untangle.mvvm.networking.ShellFlags.FLAG_HTTP_IN;
-import static com.untangle.mvvm.networking.ShellFlags.FLAG_HTTPS_OUT;
-import static com.untangle.mvvm.networking.ShellFlags.FLAG_HTTPS_RES;
-import static com.untangle.mvvm.networking.ShellFlags.FLAG_OUT_NET;
-import static com.untangle.mvvm.networking.ShellFlags.FLAG_OUT_MASK;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTP_IN;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_OUT;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_HTTPS_RES;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_OUT_NET;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_OUT_MASK;
 
 class AccessManagerImpl implements LocalAccessManager
 {
@@ -83,7 +83,7 @@ class AccessManagerImpl implements LocalAccessManager
         /* Need to save the settings to the database, then update the
          * local value, everything is executed later */
         DataSaver<AccessSettings> saver = 
-            new DeletingDataSaver<AccessSettings>( MvvmContextFactory.context(), "AccessSettings" );
+            new DeletingDataSaver<AccessSettings>( UvmContextFactory.context(), "AccessSettings" );
 
         AccessSettingsInternal newSettings = AccessSettingsInternal.makeInstance( settings );
         saver.saveData( newSettings.toSettings());
@@ -97,7 +97,7 @@ class AccessManagerImpl implements LocalAccessManager
     synchronized void init()
     {
         DataLoader<AccessSettings> loader =
-            new DataLoader<AccessSettings>( "AccessSettings", MvvmContextFactory.context());
+            new DataLoader<AccessSettings>( "AccessSettings", UvmContextFactory.context());
 
         AccessSettings settings = loader.loadData();
         

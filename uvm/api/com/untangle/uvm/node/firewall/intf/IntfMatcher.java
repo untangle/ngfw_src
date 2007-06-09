@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.intf;
+package com.untangle.uvm.node.firewall.intf;
 
 /**
  * An interface to test for particular interfaces.

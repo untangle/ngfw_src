@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.mvvm.toolbox;
+package com.untangle.uvm.toolbox;
 
 import java.net.URL;
 import java.util.List;
 
-import com.untangle.mvvm.MessageQueue;
-import com.untangle.mvvm.tran.DeployException;
+import com.untangle.uvm.MessageQueue;
+import com.untangle.uvm.node.DeployException;
 
 /**
  * Manager for the Toolbox, which holds Mackages. A Mackage is all
- * data concerning a Transform that is not related to any particular
- * transform instance.
+ * data concerning a Node that is not related to any particular
+ * node instance.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
@@ -70,9 +70,9 @@ public interface ToolboxManager
     MackageDesc[] upToDate();
 
     /**
-     * Get the MackageDesc for a transform.
+     * Get the MackageDesc for a node.
      *
-     * @param name the name of the transform.
+     * @param name the name of the node.
      * @return the MackageDesc.
      */
     MackageDesc mackageDesc(String name);

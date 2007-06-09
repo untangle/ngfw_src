@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.user;
+package com.untangle.uvm.node.firewall.user;
 
 public class UserMatcherConstants
 {

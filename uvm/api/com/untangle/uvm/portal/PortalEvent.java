@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.mvvm.portal;
+package com.untangle.uvm.portal;
 
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.node.IPaddr;
 
 public abstract class PortalEvent extends LogEvent
 {

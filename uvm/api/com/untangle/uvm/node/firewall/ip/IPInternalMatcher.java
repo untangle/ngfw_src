@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.ip;
+package com.untangle.uvm.node.firewall.ip;
 
 import java.net.InetAddress;
 
 import java.util.List;
 import java.util.LinkedList;
 
-import com.untangle.mvvm.networking.IPNetwork;
+import com.untangle.uvm.networking.IPNetwork;
 
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.IPaddr;
 
 /**
  * An IPMatcher that matches all of the addresses assigned to the

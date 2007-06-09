@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
 import java.io.File;
 

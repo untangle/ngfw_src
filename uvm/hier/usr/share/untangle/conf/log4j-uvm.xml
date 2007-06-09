@@ -4,9 +4,9 @@
 
 <!-- ===================================================================== -->
 <!--                                                                       -->
-<!--  Log4j Configuration for MVVM                                         -->
+<!--  Log4j Configuration for UVM                                         -->
 <!--                                                                       -->
-<!--     Configuration of all mvvm loggers lives here.                     -->
+<!--     Configuration of all uvm loggers lives here.                     -->
 <!--                                                                       -->
 <!-- ===================================================================== -->
 
@@ -19,13 +19,13 @@
   <!-- Appenders                                      -->
   <!-- ============================================== -->
 
-  <appender name="MVVMLog" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${bunnicula.home}/log/mvvm.log"/>
+  <appender name="UVMLog" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${bunnicula.home}/log/uvm.log"/>
     <param name="Append" value="true"/>
     <param name="MaxFileSize" value="500KB"/>
     <param name="MaxBackupIndex" value="9"/>
     <param name="Threshold" value="ALL"/>
-    <layout class="com.untangle.mvvm.logging.MvPatternLayout">
+    <layout class="com.untangle.uvm.logging.MvPatternLayout">
       <!-- This is actually the default conversion, so we could leave it out... -->
       <param name="ConversionPattern" value="%D %-5p [%c{1}] %m%n"/>
     </layout>
@@ -34,7 +34,7 @@
   <!-- Log Emailer -->
 
   <appender name="EmailAppender"
-            class="com.untangle.mvvm.logging.SmtpAppender">
+            class="com.untangle.uvm.logging.SmtpAppender">
     <!-- We use the default conversion pattern, so it's omitted. -->
   </appender>
 
@@ -54,7 +54,7 @@
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.mvvm.argon">
+  <category name="com.untangle.uvm.argon">
     <priority value="WARN"/>
   </category>
 
@@ -67,27 +67,27 @@
   </category>
 
   <!-- normal level for engine is INFO -->
-  <category name="com.untangle.mvvm.engine">
+  <category name="com.untangle.uvm.engine">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.mvvm.logging">
+  <category name="com.untangle.uvm.logging">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.mvvm.policy">
+  <category name="com.untangle.uvm.policy">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.tran.util">
+  <category name="com.untangle.node.util">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.mvvm.reporting">
+  <category name="com.untangle.uvm.reporting">
     <priority value="DEBUG"/>
   </category>
 
-  <category name="com.untangle.tran.portal.proxy">
+  <category name="com.untangle.node.portal.proxy">
     <priority value="INFO"/>
   </category>
 
@@ -95,10 +95,10 @@
   <!-- The Root Category                              -->
   <!-- ============================================== -->
 
-  <!-- All MVVM logs go to the MVVMLog file -->
+  <!-- All UVM logs go to the UVMLog file -->
   <root>
     <priority value="WARN"/>
-    <appender-ref ref="MVVMLog"/>
+    <appender-ref ref="UVMLog"/>
     <appender-ref ref="EmailAppender"/>
   </root>
 </log4j:configuration>

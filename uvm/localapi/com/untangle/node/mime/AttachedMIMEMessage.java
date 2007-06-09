@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 import java.io.*;
 import java.util.*;
 
-import com.untangle.tran.util.*;
+import com.untangle.node.util.*;
 import org.apache.log4j.Logger;
-import static com.untangle.tran.mime.HeaderNames.*;
+import static com.untangle.node.mime.HeaderNames.*;
 
 
 /**

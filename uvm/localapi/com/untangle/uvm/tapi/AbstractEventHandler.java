@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
-import com.untangle.mvvm.tapi.event.*;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.node.Node;
 
 
 public abstract class AbstractEventHandler implements SessionEventListener {
 
-    protected AbstractTransform xform;
+    protected AbstractNode xform;
 
-    protected AbstractEventHandler(Transform xform)
+    protected AbstractEventHandler(Node xform)
     {
         // XXX
-        this.xform = (AbstractTransform)xform;
+        this.xform = (AbstractNode)xform;
     }
 
     public void handleTimer(IPSessionEvent event)
@@ -87,7 +87,7 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     public void handleTCPClientFIN(TCPSessionEvent event)
         throws MPipeException
     {
-        // Just go ahead and shut down the other side.  The transform will override
+        // Just go ahead and shut down the other side.  The node will override
         // this method if it wants to keep the other side open.
         TCPSession sess = event.session();
         sess.shutdownServer();
@@ -102,7 +102,7 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     public void handleTCPServerFIN(TCPSessionEvent event)
         throws MPipeException
     {
-        // Just go ahead and shut down the other side.  The transform will override
+        // Just go ahead and shut down the other side.  The node will override
         // this method if it wants to keep the other side open.
         TCPSession sess = event.session();
         sess.shutdownClient();
@@ -111,7 +111,7 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     public void handleTCPClientRST(TCPSessionEvent event)
         throws MPipeException
     {
-        // Just go ahead and reset the other side.  The transform will override
+        // Just go ahead and reset the other side.  The node will override
         // this method if it wants to keep the other side open.
         TCPSession sess = event.session();
         sess.resetServer();
@@ -120,7 +120,7 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     public void handleTCPServerRST(TCPSessionEvent event)
         throws MPipeException
     {
-        // Just go ahead and reset the other side.  The transform will override
+        // Just go ahead and reset the other side.  The node will override
         // this method if it wants to keep the other side open.
         TCPSession sess = event.session();
         sess.resetClient();
@@ -196,7 +196,7 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     {
         // Current assumption: A single expire will be generated on one side of the pipeline,
         // which will travel across it.  Another possibility would be to hit them all at once.
-        // Just go ahead and expire the other side.  The transform will override
+        // Just go ahead and expire the other side.  The node will override
         // this method if it wants to keep the other side open.
         UDPSession sess = event.session();
         sess.expireServer();
@@ -207,7 +207,7 @@ public abstract class AbstractEventHandler implements SessionEventListener {
     {
         // Current assumption: A single expire will be generated on one side of the pipeline,
         // which will travel across it.  Another possibility would be to hit them all at once.
-        // Just go ahead and expire the other side.  The transform will override
+        // Just go ahead and expire the other side.  The node will override
         // this method if it wants to keep the other side open.
         UDPSession sess = event.session();
         sess.expireClient();

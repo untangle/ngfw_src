@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.util;
+package com.untangle.uvm.util;
 
-import com.untangle.mvvm.MvvmLocalContext;
+import com.untangle.uvm.UvmLocalContext;
 import org.apache.log4j.Logger;
 
 public class WorkerRunner
@@ -23,19 +23,19 @@ public class WorkerRunner
     private static final int MAX_STOP_INTERRUPT_COUNT = 5;
 
     private final Worker worker;
-    private final MvvmLocalContext localContext;
+    private final UvmLocalContext localContext;
     private final long stopDelayMillis;
 
     private Thread thread;
 
     private final Logger logger = Logger.getLogger( this.getClass());
 
-    public WorkerRunner( Worker worker, MvvmLocalContext localContext )
+    public WorkerRunner( Worker worker, UvmLocalContext localContext )
     {
         this( worker, localContext, DEFAULT_STOP_DELAY_MILLIS );
     }
 
-    public WorkerRunner( Worker worker, MvvmLocalContext localContext, long stopDelayMillis )
+    public WorkerRunner( Worker worker, UvmLocalContext localContext, long stopDelayMillis )
     {
         this.worker = worker;
         this.localContext = localContext;

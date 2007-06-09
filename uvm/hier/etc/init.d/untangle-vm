@@ -1,25 +1,25 @@
 #! /bin/sh
-# $Id: mvvm,v 1.10 2005/03/22 01:51:56 cng Exp $
+# $Id: uvm,v 1.10 2005/03/22 01:51:56 cng Exp $
 
-if [ -f @PREFIX@/etc/default/mvvm ] ; then
-    . @PREFIX@/etc/default/mvvm
+if [ -f @PREFIX@/etc/default/uvm ] ; then
+    . @PREFIX@/etc/default/uvm
 fi
 
-MVVM_LOGDIR=${MVVM_LOGDIR:-@PREFIX@/var/log/mvvm}
-MVVM_RUNDIR=${MVVM_RUNDIR:-@PREFIX@/var/run}
-MVVM_NICENESS=${MVVM_NICENESS:-0}
-MVVM_CONSOLE_LOG=${MVVM_CONSOLE_LOG:-$MVVM_LOGDIR/console.log}
-MVVM_WRAPPER_LOG=${MVVM_WRAPPER_LOG:-$MVVM_LOGDIR/wrapper.log}
-MVVM_CMD=${MVVM_CMD:-@PREFIX@/usr/bin/mvvm.sh}
-MVVM_USER=${MVVM_USER:-$USER}
-MVVM_PID="mvvm.pid"
-MVVM_CHUSER=" --chuid $MVVM_USER:$MVVM_USER "
-MVVM_TIMEOUT=600
+UVM_LOGDIR=${UVM_LOGDIR:-@PREFIX@/var/log/uvm}
+UVM_RUNDIR=${UVM_RUNDIR:-@PREFIX@/var/run}
+UVM_NICENESS=${UVM_NICENESS:-0}
+UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-$UVM_LOGDIR/console.log}
+UVM_WRAPPER_LOG=${UVM_WRAPPER_LOG:-$UVM_LOGDIR/wrapper.log}
+UVM_CMD=${UVM_CMD:-@PREFIX@/usr/bin/uvm.sh}
+UVM_USER=${UVM_USER:-$USER}
+UVM_PID="uvm.pid"
+UVM_CHUSER=" --chuid $UVM_USER:$UVM_USER "
+UVM_TIMEOUT=600
 
 # if in the build
 if [ "x" != "x@PREFIX@" ] ; then
-    MVVM_CHUSER=""
-    MVVM_NICENESS="0"
+    UVM_CHUSER=""
+    UVM_NICENESS="0"
     if [ "$USER" != "root" ] ; then
         echo "sudo $0 $*"
         exec sudo $0 $*
@@ -29,7 +29,7 @@ fi
 
 case "$1" in
     start)
-        echo -n "Starting MVVM: "
+        echo -n "Starting UVM: "
 
         # This is a hack to not start during install phase
         if [ ! -z "`cat /proc/cmdline | grep mv_install`" ] ; then
@@ -37,11 +37,11 @@ case "$1" in
             exit
         fi
 
-        if [ -f ${MVVM_RUNDIR}/${MVVM_PID} ] ; then
-            pid=`cat ${MVVM_RUNDIR}/${MVVM_PID}`
+        if [ -f ${UVM_RUNDIR}/${UVM_PID} ] ; then
+            pid=`cat ${UVM_RUNDIR}/${UVM_PID}`
             if [ -z "`ps ax | awk '{print $1}' | grep \"^$pid$\"`" ] ; then
-                echo -n "Removing Stale PIDfile  (file:`cat ${MVVM_RUNDIR}/${MVVM_PID}` pid:$pid) "
-                rm -f ${MVVM_RUNDIR}/${MVVM_PID}
+                echo -n "Removing Stale PIDfile  (file:`cat ${UVM_RUNDIR}/${UVM_PID}` pid:$pid) "
+                rm -f ${UVM_RUNDIR}/${UVM_PID}
             else
                 echo "Already started."
                 exit
@@ -52,28 +52,28 @@ case "$1" in
 
         start-stop-daemon --start \
             --background --make-pidfile -q \
-            --pidfile ${MVVM_RUNDIR}/${MVVM_PID} \
-            --chdir ${MVVM_RUNDIR} \
-            --nicelevel ${MVVM_NICENESS} \
-            $MVVM_CHUSER \
-            --exec ${MVVM_CMD} -- ${MVVM_ARGS}
+            --pidfile ${UVM_RUNDIR}/${UVM_PID} \
+            --chdir ${UVM_RUNDIR} \
+            --nicelevel ${UVM_NICENESS} \
+            $UVM_CHUSER \
+            --exec ${UVM_CMD} -- ${UVM_ARGS}
 
         if [ $? != "0" ] ; then
             exit
         fi
         echo -n "." ; sleep 1 ; echo -n "." ; sleep 1 # time for console.log to be rm'd
 
-        pid=$(cat ${MVVM_RUNDIR}/${MVVM_PID})
+        pid=$(cat ${UVM_RUNDIR}/${UVM_PID})
 
         # Wait for completion
-        for i in `seq 1 $MVVM_TIMEOUT` ; do
+        for i in `seq 1 $UVM_TIMEOUT` ; do
             ps -p $pid >/dev/null
             if [ $? -ne 0 ]; then
                 exit
             fi
 
-            EXPC="`cat $MVVM_CONSOLE_LOG 2>/dev/null | grep -i exception `"
-            FINI="`cat $MVVM_CONSOLE_LOG 2>/dev/null | grep -i 'vegetables' `"
+            EXPC="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i exception `"
+            FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'vegetables' `"
             sleep 1
             echo -n "."
 
@@ -81,7 +81,7 @@ case "$1" in
                 if [ ! -z "`echo $EXPC | grep -i \"address already in use\"`" ] ; then
                     echo -e "x]\nAddress already in use. Will attempt to rebind for five minutes."
                 else
-                    echo -e "x]\nException in $MVVM_CONSOLE_LOG"
+                    echo -e "x]\nException in $UVM_CONSOLE_LOG"
                     if [ "x" != "x@PREFIX@" ] ; then
                         $0 stop
                         exit
@@ -95,9 +95,9 @@ case "$1" in
             fi
         done
 
-        # Wait for completion, ignore exceptions because they are transform exceptions
-        for i in `seq 1 $MVVM_TIMEOUT` ; do
-            FINI="`cat $MVVM_CONSOLE_LOG 2>/dev/null | grep -i 'postInit complete' `"
+        # Wait for completion, ignore exceptions because they are node exceptions
+        for i in `seq 1 $UVM_TIMEOUT` ; do
+            FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'postInit complete' `"
             sleep 1
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
@@ -110,9 +110,9 @@ case "$1" in
         ;;
 
     stop)
-        echo -n "Stopping MVVM: "
+        echo -n "Stopping UVM: "
 
-        if [ ! -f ${MVVM_RUNDIR}/${MVVM_PID} ] ; then
+        if [ ! -f ${UVM_RUNDIR}/${UVM_PID} ] ; then
             echo "Not Running."
             exit
         fi
@@ -122,17 +122,17 @@ case "$1" in
         # Attempt polite kill first
         start-stop-daemon -s INT --stop \
             -q \
-            --pidfile ${MVVM_RUNDIR}/${MVVM_PID}
+            --pidfile ${UVM_RUNDIR}/${UVM_PID}
         code=$?
         if [ $code != "0" ] ; then
             exit
         fi
 
-        rm -f ${MVVM_RUNDIR}/${MVVM_PID}  &> /dev/null
+        rm -f ${UVM_RUNDIR}/${UVM_PID}  &> /dev/null
 
         # Wait for completion
         for i in `seq 1 15` ; do
-            FINI="`cat $MVVM_CONSOLE_LOG 2>/dev/null | grep -i 'shutdown complete' `"
+            FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'shutdown complete' `"
             sleep 1
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
@@ -140,21 +140,21 @@ case "$1" in
                 echo ".]"
                 exit
             fi
-            if [ -z "`ps awwx | grep java | grep mvvm | awk '{print $1}'`" ] ; then
+            if [ -z "`ps awwx | grep java | grep uvm | awk '{print $1}'`" ] ; then
                 break
             fi
         done
 
         # Attempt more aggressive kill now
         echo -n "ungraceful exit"
-        kill -INT `ps awwx | grep java | grep mvvm | awk '{print $1}' | grep -v $$ ` &>/dev/null
-        killall -s INT mvvm.sh &>/dev/null
-        kill `ps awwx | grep java | grep mvvm | awk '{print $1}' | grep -v $$ ` &>/dev/null
-        killall mvvm.sh &>/dev/null
+        kill -INT `ps awwx | grep java | grep uvm | awk '{print $1}' | grep -v $$ ` &>/dev/null
+        killall -s INT uvm.sh &>/dev/null
+        kill `ps awwx | grep java | grep uvm | awk '{print $1}' | grep -v $$ ` &>/dev/null
+        killall uvm.sh &>/dev/null
 
         # Wait for completion
         for i in `seq 1 5` ; do
-            FINI="`cat $MVVM_CONSOLE_LOG 2>/dev/null | grep -i 'shutdown complete' `"
+            FINI="`cat $UVM_CONSOLE_LOG 2>/dev/null | grep -i 'shutdown complete' `"
             sleep 1
             echo -n "."
             if [ "x" != "x$FINI" ] ; then
@@ -162,7 +162,7 @@ case "$1" in
                 echo "]"
                 exit
             fi
-            if [ -z "`ps awwx | grep java | grep mvvm | awk '{print $1}'`" ] ; then
+            if [ -z "`ps awwx | grep java | grep uvm | awk '{print $1}'`" ] ; then
                 break
             fi
         done
@@ -170,12 +170,12 @@ case "$1" in
         # Wait for completion
         for i in `seq 1 5` ; do
             # send a kill signal
-            kill -9 `ps awwx | grep java | grep mvvm | awk '{print $1}' | grep -v $$ ` &>/dev/null
-            killall -9 mvvm.sh &>/dev/null
+            kill -9 `ps awwx | grep java | grep uvm | awk '{print $1}' | grep -v $$ ` &>/dev/null
+            killall -9 uvm.sh &>/dev/null
 
             sleep 1
             echo -n "."
-            if [ -z "`ps awwx | grep java | grep mvvm | awk '{print $1}'`" ] ; then
+            if [ -z "`ps awwx | grep java | grep uvm | awk '{print $1}'`" ] ; then
                 echo "]"
                 exit
             fi
@@ -191,7 +191,7 @@ case "$1" in
         ;;
 
     *)
-        echo "Usage: /etc/init.d/mvvm {start|stop|restart|force-reload}"
+        echo "Usage: /etc/init.d/uvm {start|stop|restart|force-reload}"
         exit
 esac
 

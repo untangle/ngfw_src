@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.user;
+package com.untangle.uvm.user;
 
 public interface Assistant
 {

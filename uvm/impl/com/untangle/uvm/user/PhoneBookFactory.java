@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.user;
+package com.untangle.uvm.user;
 
-import com.untangle.tran.util.MVLogger;
+import com.untangle.node.util.MVLogger;
 
 public class PhoneBookFactory
 {
-    private static final String PROPERTY_PHONEBOOK_IMPL = "com.untangle.mvvm.phonebook";
-    private static final String PREMIUM_PHONEBOOK_IMPL = "com.untangle.mvvm.user.PremiumPhoneBookImpl";
+    private static final String PROPERTY_PHONEBOOK_IMPL = "com.untangle.uvm.phonebook";
+    private static final String PREMIUM_PHONEBOOK_IMPL = "com.untangle.uvm.user.PremiumPhoneBookImpl";
 
     private final MVLogger logger = new MVLogger( getClass());
 

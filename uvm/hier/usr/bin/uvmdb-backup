@@ -24,7 +24,7 @@ function lookupUsbDevice()
 
 method=$1
 
-outdir=@MVVM_DUMP@
+outdir=@UVM_DUMP@
 if [ $# -eq 2 ]; then
   outdir=$2
 fi
@@ -47,16 +47,16 @@ case $method in
         outdir=${USB_MOUNT_POINT}
         ;;
 #    local)
-#        outdir=@MVVM_DUMP@
+#        outdir=@UVM_DUMP@
 #        ;;
 esac
 
 datestamp=$(date '+%Y%m%d%H%M')
 
-(pg_dump -U postgres -n settings mvvm;
+(pg_dump -U postgres -n settings uvm;
     echo "SET SESSION AUTHORIZATION 'postgres';";
-    pg_dump -U postgres -n events -s mvvm) \
-        | gzip > $outdir/mvvmdb-$datestamp.gz
+    pg_dump -U postgres -n events -s uvm) \
+        | gzip > $outdir/uvmdb-$datestamp.gz
 
 [ $? -eq 0 ] || exit 1
 
@@ -69,7 +69,7 @@ tar zcf $outdir/files-$datestamp.tar.gz --ignore-failed-read -C @PREFIX@/ \
         etc/resolv.conf \
         usr/share/metavize/conf/argon.properties \
         usr/share/metavize/conf/keystore \
-        usr/share/metavize/conf/mvvm.networking.properties \
+        usr/share/metavize/conf/uvm.networking.properties \
         usr/share/metavize/conf/networking.sh \
         usr/share/metavize/conf/openvpn/misc \
         usr/share/metavize/conf/openvpn/pki \

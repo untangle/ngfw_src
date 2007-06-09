@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 import java.util.*;
-import static com.untangle.tran.mime.HeaderNames.*;
+import static com.untangle.node.mime.HeaderNames.*;
 
 //TODO: bscott This class should be renamed "MIMEMessageHeadersFieldFactory".
 
@@ -20,8 +20,8 @@ import static com.untangle.tran.mime.HeaderNames.*;
  * Subclass of MIMEPartHeaderFieldFactory which adds strong typing
  * for the following headers:
  * <ul>
- * <li><b>TO</b> via the {@link com.untangle.tran.mime.EmailAddressHeaderField class}</li>
- * <li><b>CC</b> via the {@link com.untangle.tran.mime.EmailAddressHeaderField class}</li>
+ * <li><b>TO</b> via the {@link com.untangle.node.mime.EmailAddressHeaderField class}</li>
+ * <li><b>CC</b> via the {@link com.untangle.node.mime.EmailAddressHeaderField class}</li>
  * </ul>
  *
  */

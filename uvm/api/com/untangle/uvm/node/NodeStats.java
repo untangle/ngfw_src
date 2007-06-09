@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * <code>TransformStats</code> records vital statistics for a running
- * transform.  It is contained within each Transform.  All statistics
+ * <code>NodeStats</code> records vital statistics for a running
+ * node.  It is contained within each Node.  All statistics
  * are since the last start.
  *
  * @author <a href="mailto:jdi@untangle.com"></a>
  * @version 1.0
  */
-public class TransformStats implements Serializable
+public class NodeStats implements Serializable
 {
     private static final long serialVersionUID = 5196595597614966041L;
 
@@ -51,7 +51,7 @@ public class TransformStats implements Serializable
     // XXX temporary hack, remove someday !!!
     private long[] counters = new long[16];
 
-    public TransformStats() {
+    public NodeStats() {
         long now = System.currentTimeMillis();
         startDate = new Date(now);
         lastConfigureDate = new Date(now);
@@ -59,7 +59,7 @@ public class TransformStats implements Serializable
     }
 
     /**
-     * <code>tcpSessionCount</code> gives the count of live TCP sessions for this transform
+     * <code>tcpSessionCount</code> gives the count of live TCP sessions for this node
      *
      * @return an <code>int</code> giving the number of live TCP sessions
      */
@@ -68,7 +68,7 @@ public class TransformStats implements Serializable
     }
 
     /**
-     * <code>udpSessionCount</code> gives the count of live UDP sessions for this transform
+     * <code>udpSessionCount</code> gives the count of live UDP sessions for this node
      *
      * @return an <code>int</code> giving the number of live UDP sessions
      */
@@ -77,7 +77,7 @@ public class TransformStats implements Serializable
     }
 
     /**
-     * <code>tcpSessionTotal</code> gives the count of all TCP sessions since the transform
+     * <code>tcpSessionTotal</code> gives the count of all TCP sessions since the node
      * was started
      *
      * @return an <code>int</code> giving the total number of TCP sessions created since start
@@ -87,7 +87,7 @@ public class TransformStats implements Serializable
     }
 
     /**
-     * <code>udpSessionTotal</code> gives the count of all UDP sessions since the transform
+     * <code>udpSessionTotal</code> gives the count of all UDP sessions since the node
      * was started
      *
      * @return an <code>int</code> giving the total number of UDP sessions created since start
@@ -98,7 +98,7 @@ public class TransformStats implements Serializable
 
     /**
      * <code>tcpSessionRequestTotal</code> gives the count of all TCP session
-     * requests since the transform was started
+     * requests since the node was started
      *
      * @return an <code>int</code> giving the total number of new TCP sessions requested since start
      */
@@ -108,7 +108,7 @@ public class TransformStats implements Serializable
 
     /**
      * <code>udpSessionRequestTotal</code> gives the count of all UDP session
-     * requests since the transform was started
+     * requests since the node was started
      *
      * @return an <code>int</code> giving the total number of new UDP sessions requested since start
      */
@@ -118,10 +118,10 @@ public class TransformStats implements Serializable
 
 
     /**
-     * <code>c2tBytes</code> gives the count of bytes transferred from the client to the transform.
-     * This may not be the same as <code>t2sBytes</code> if the transform is changing the data.
+     * <code>c2tBytes</code> gives the count of bytes transferred from the client to the node.
+     * This may not be the same as <code>t2sBytes</code> if the node is changing the data.
      *
-     * @return a <code>long</code> giving the number of bytes transferred from the client to the transform.
+     * @return a <code>long</code> giving the number of bytes transferred from the client to the node.
      */
     public long c2tBytes() {
         return c2tBytes;
@@ -132,10 +132,10 @@ public class TransformStats implements Serializable
     }
 
     /**
-     * <code>t2sBytes</code> gives the count of bytes transferred from the transform to the server.
-     * This may not be the same as <code>c2tBytes</code> if the transform is changing the data.
+     * <code>t2sBytes</code> gives the count of bytes transferred from the node to the server.
+     * This may not be the same as <code>c2tBytes</code> if the node is changing the data.
      *
-     * @return a <code>long</code> giving the number of bytes transferred from the transform to the server.
+     * @return a <code>long</code> giving the number of bytes transferred from the node to the server.
      */
     public long t2sBytes() {
         return t2sBytes;
@@ -146,10 +146,10 @@ public class TransformStats implements Serializable
     }
 
     /**
-     * <code>s2tBytes</code> gives the count of bytes transferred from the server to the transform.
-     * This may not be the same as <code>t2cBytes</code> if the transform is changing the data.
+     * <code>s2tBytes</code> gives the count of bytes transferred from the server to the node.
+     * This may not be the same as <code>t2cBytes</code> if the node is changing the data.
      *
-     * @return a <code>long</code> giving the number of bytes transferred from the server to the transform.
+     * @return a <code>long</code> giving the number of bytes transferred from the server to the node.
      */
     public long s2tBytes() {
         return s2tBytes;
@@ -160,10 +160,10 @@ public class TransformStats implements Serializable
     }
 
     /**
-     * <code>t2cBytes</code> gives the count of bytes transferred from the transform to the client.
-     * This may not be the same as <code>s2tBytes</code> if the transform is changing the data.
+     * <code>t2cBytes</code> gives the count of bytes transferred from the node to the client.
+     * This may not be the same as <code>s2tBytes</code> if the node is changing the data.
      *
-     * @return a <code>long</code> giving the number of bytes transferred from the transform to the client.
+     * @return a <code>long</code> giving the number of bytes transferred from the node to the client.
      */
     public long t2cBytes() {
         return t2cBytes;
@@ -208,20 +208,20 @@ public class TransformStats implements Serializable
 
 
     /**
-     * <code>startDate</code> gives the time of the transform's start (the last time
-     * the transform entered the start state).
+     * <code>startDate</code> gives the time of the node's start (the last time
+     * the node entered the start state).
      *
-     * @return a <code>Date</code> giving the time of the tranform's start
+     * @return a <code>Date</code> giving the time of the node's start
      */
     public Date startDate() {
         return startDate;
     }
 
     /**
-     * <code>lastConfigureDate</code> gives the time of the transform's last configuration change
+     * <code>lastConfigureDate</code> gives the time of the node's last configuration change
      * (either the last start time or the last time reconfigure() was called).
      *
-     * @return a <code>Date</code> giving the time of the tranform's last configuration change
+     * @return a <code>Date</code> giving the time of the node's last configuration change
      */
     public Date lastConfigureDate() {
         return lastConfigureDate;
@@ -229,7 +229,7 @@ public class TransformStats implements Serializable
 
     /**
      * <code>lastActivityDate</code> gives the time of the last activity on any session
-     * of the transform.
+     * of the node.
      * Activity is any bytes, creation, or close/shutdown.
      *
      * @return a <code>Date</code> giving the time of the last activity on this session

@@ -9,22 +9,22 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
-import com.untangle.mvvm.LocalAppServerManager;
-import com.untangle.mvvm.networking.AddressSettingsListener;
-import com.untangle.mvvm.networking.NetworkUtil;
-import com.untangle.mvvm.networking.internal.AddressSettingsInternal;
-import com.untangle.mvvm.security.CertInfo;
-import com.untangle.mvvm.security.RFC2253Name;
-import com.untangle.mvvm.security.RegistrationInfo;
-import com.untangle.mvvm.util.QuarantineOutsideAccessValve;
-import com.untangle.tran.util.MVKeyStore;
-import com.untangle.tran.util.OpenSSLWrapper;
+import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.networking.AddressSettingsListener;
+import com.untangle.uvm.networking.NetworkUtil;
+import com.untangle.uvm.networking.internal.AddressSettingsInternal;
+import com.untangle.uvm.security.CertInfo;
+import com.untangle.uvm.security.RFC2253Name;
+import com.untangle.uvm.security.RegistrationInfo;
+import com.untangle.uvm.util.QuarantineOutsideAccessValve;
+import com.untangle.node.util.MVKeyStore;
+import com.untangle.node.util.OpenSSLWrapper;
 import org.apache.catalina.Valve;
 import org.apache.log4j.Logger;
 
@@ -43,12 +43,12 @@ class AppServerManagerImpl implements LocalAppServerManager
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final MvvmContextImpl mctx;
+    private final UvmContextImpl mctx;
     private final TomcatManager tomcatManager;
 
     private MVKeyStore keyStore;
 
-    AppServerManagerImpl(MvvmContextImpl mctx)
+    AppServerManagerImpl(UvmContextImpl mctx)
     {
         this.mctx = mctx;
         //TODO Clean up stuff ported from "main"
@@ -57,11 +57,11 @@ class AppServerManagerImpl implements LocalAppServerManager
         Properties networkingProperties = new Properties();
 
         File f = new File(System.getProperty("bunnicula.conf.dir")
-                          + "/mvvm.networking.properties");
+                          + "/uvm.networking.properties");
         if (f.exists()) {
             FileInputStream fis = null;
             try {
-                logger.info("Loading mvvm.networking.properties from " + f);
+                logger.info("Loading uvm.networking.properties from " + f);
                 fis = new FileInputStream(f);
                 networkingProperties.load(fis);
             } catch (Exception exn) {
@@ -79,7 +79,7 @@ class AppServerManagerImpl implements LocalAppServerManager
 
         int p = DEFAULT_HTTPS_PORT;
 
-        String t = networkingProperties.getProperty("mvvm.https.port");
+        String t = networkingProperties.getProperty("uvm.https.port");
         if (null != t) {
             try {
                 p = Integer.parseInt(t);

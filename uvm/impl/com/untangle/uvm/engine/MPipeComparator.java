@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.util.Comparator;
 
-import com.untangle.mvvm.tapi.Affinity;
-import com.untangle.mvvm.tapi.MPipe;
-import com.untangle.mvvm.tapi.SoloPipeSpec;
+import com.untangle.uvm.tapi.Affinity;
+import com.untangle.uvm.tapi.MPipe;
+import com.untangle.uvm.tapi.SoloPipeSpec;
 
 /**
  * Compares MPipes with SoloPipeSpecs.

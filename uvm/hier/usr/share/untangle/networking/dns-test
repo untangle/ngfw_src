@@ -1,6 +1,6 @@
 #!/bin/sh
 
-exec >> @MVVM_LOG@/iptables.log 2>&1
+exec >> @UVM_LOG@/iptables.log 2>&1
 
 DNS_TRIES=7
 DNS_TIMEOUT=2

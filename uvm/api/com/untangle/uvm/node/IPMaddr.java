@@ -10,7 +10,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -311,7 +311,7 @@ public class IPMaddr implements Serializable, Comparable
      * No IPV6 handling here.  XX
      *
      * Currently the name lookup
-     * behavior is that the transform VM does the host lookup as usual for its
+     * behavior is that the node VM does the host lookup as usual for its
      * configured machine.  This generally means a DNS query will be issued.  To
      * remove any question of ambiguous names "without a dot", only absolute host
      * names are recommended.

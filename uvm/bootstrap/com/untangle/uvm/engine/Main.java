@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,19 +18,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.untangle.mvvm.logging.MvvmRepositorySelector;
+import com.untangle.uvm.logging.UvmRepositorySelector;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 /**
- * Bootstraps the MVVM. Access to the Main object should be protected.
+ * Bootstraps the UVM. Access to the Main object should be protected.
  *
  * Properties defined by this class:
  * <ul>
- * <li>bunnicula.home - home of mvvm, usually
- * <code>/usr/share/mvvm</code>.</li>
- * <li>bunnicula.lib.dir - mvvm libraries.</li>
- * <li>bunnicula.toolbox.dir - transform jars.</li>
+ * <li>bunnicula.home - home of uvm, usually
+ * <code>/usr/share/uvm</code>.</li>
+ * <li>bunnicula.lib.dir - uvm libraries.</li>
+ * <li>bunnicula.toolbox.dir - node jars.</li>
  * <li>bunnicula.log.dir - log files.</li>
  * <li>bunnicula.data.dir - data files.</li>
  * <li>bunnicula.db.dir - database files.</li>
@@ -43,23 +43,23 @@ import org.apache.log4j.Logger;
  */
 public class Main
 {
-    private static String MVVM_LOCAL_CONTEXT_CLASSNAME
-        = "com.untangle.mvvm.engine.MvvmContextImpl";
+    private static String UVM_LOCAL_CONTEXT_CLASSNAME
+        = "com.untangle.uvm.engine.UvmContextImpl";
 
     private final SchemaUtil schemaUtil = new SchemaUtil();
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private MvvmClassLoader mcl;
-    private Class mvvmPrivClass;
-    private MvvmContextBase mvvmContext;
+    private UvmClassLoader mcl;
+    private Class uvmPrivClass;
+    private UvmContextBase uvmContext;
 
     // constructor ------------------------------------------------------------
 
     private Main()
     {
-        schemaUtil.initSchema("settings", "mvvm");
-        LogManager.setRepositorySelector(MvvmRepositorySelector.selector(),
+        schemaUtil.initSchema("settings", "uvm");
+        LogManager.setRepositorySelector(UvmRepositorySelector.selector(),
                                          new Object());
     }
 
@@ -76,7 +76,7 @@ public class Main
     // public methods ---------------------------------------------------------
 
     /**
-     * @see MvvmClassLoader.refreshToolbox()
+     * @see UvmClassLoader.refreshToolbox()
      */
     public boolean refreshToolbox()
     {
@@ -85,7 +85,7 @@ public class Main
 
     /**
      * <code>fatalError</code> can be called to indicate that a fatal
-     * error has occured and that the MVVM *must* restart (or
+     * error has occured and that the UVM *must* restart (or
      * otherwise recover) itself.  One example is an OutOfMemory
      * error.
      *
@@ -95,7 +95,7 @@ public class Main
     public void fatalError(String throwingLocation, Throwable x)
     {
         try {
-            System.err.println("Fatal Error in MVVM in " + throwingLocation);
+            System.err.println("Fatal Error in UVM in " + throwingLocation);
             if (x != null) {
                 System.err.println("Throwable: " + x.getMessage());
                 x.printStackTrace(System.err);
@@ -109,7 +109,7 @@ public class Main
     }
 
     /**
-     * Provides MvvmContext access to {@link SchemaUtil}.
+     * Provides UvmContext access to {@link SchemaUtil}.
      */
     public SchemaUtil schemaUtil()
     {
@@ -130,27 +130,27 @@ public class Main
         logger.info("setting up properties");
         setProperties();
 
-        logger.info("starting mvvm");
+        logger.info("starting uvm");
         try {
-            startMvvm();
+            startUvm();
         } catch (Throwable exn) {
-            fatalError("could not start mvvm", exn);
+            fatalError("could not start uvm", exn);
         }
-        System.out.println("MVVM startup complete: \"Today vegetables...tomorrow the world!\"");
-        logger.info("restarting transforms and socket invoker");
-        restartTransfoms();
-        System.out.println("MVVM postInit complete");
+        System.out.println("UVM startup complete: \"Today vegetables...tomorrow the world!\"");
+        logger.info("restarting nodes and socket invoker");
+        restartNodes();
+        System.out.println("UVM postInit complete");
     }
 
     private void destroy()
     {
-        mvvmContext.doDestroy();
+        uvmContext.doDestroy();
         try {
             DataSourceFactory.factory().destroy();
         } catch (SQLException exn) {
             logger.warn("could not destory DataSourceFactory", exn);
         }
-        System.out.println("MVVM shutdown complete.");
+        System.out.println("UVM shutdown complete.");
     }
 
     private void setProperties() throws Exception
@@ -184,7 +184,7 @@ public class Main
         logger.info("bunnicula.conf.dir    " + bunniculaConf);
         logger.info("bunnicula.tmp.dir     " + bunniculaTmp);
 
-        File f = new File(bunniculaConf + "/mvvm.properties");
+        File f = new File(bunniculaConf + "/uvm.properties");
         if (f.exists()) {
             logger.info("Loading " + f);
             System.getProperties().load(new FileInputStream(f));
@@ -194,14 +194,14 @@ public class Main
     }
 
     // XXX get rid of all these throws
-    private void startMvvm() throws Exception
+    private void startUvm() throws Exception
     {
         List<URL> urls = new ArrayList();
         String bunniculaLib = System.getProperty("bunnicula.lib.dir");
-        urls.add(new URL("file://" + bunniculaLib + "/mvvm-impl/"));
-        urls.add(new URL("file://" + bunniculaLib + "/mvvm-api/"));
-        urls.add(new URL("file://" + bunniculaLib + "/mvvm-localapi/"));
-        urls.add(new URL("file://" + bunniculaLib + "/mvvm-reporting/"));
+        urls.add(new URL("file://" + bunniculaLib + "/uvm-impl/"));
+        urls.add(new URL("file://" + bunniculaLib + "/uvm-api/"));
+        urls.add(new URL("file://" + bunniculaLib + "/uvm-localapi/"));
+        urls.add(new URL("file://" + bunniculaLib + "/uvm-reporting/"));
         urls.add(new URL("file://" + bunniculaLib + "/jvector-impl/"));
         urls.add(new URL("file://" + bunniculaLib + "/jnetcap-impl/"));
 
@@ -211,34 +211,34 @@ public class Main
         }
 
         String bunniculaToolbox = System.getProperty("bunnicula.toolbox.dir");
-        mcl = new MvvmClassLoader(urls.toArray(new URL[urls.size()]),
+        mcl = new UvmClassLoader(urls.toArray(new URL[urls.size()]),
                                   getClass().getClassLoader(),
                                   new File(bunniculaToolbox));
 
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
-            // Entering MVVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            // Entering UVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(mcl);
 
-            mvvmContext = (MvvmContextBase)mcl
-                .loadClass(MVVM_LOCAL_CONTEXT_CLASSNAME)
+            uvmContext = (UvmContextBase)mcl
+                .loadClass(UVM_LOCAL_CONTEXT_CLASSNAME)
                 .getMethod("context").invoke(null);
 
-            mvvmContext.doInit(this);
+            uvmContext.doInit(this);
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
     }
 
-    private void restartTransfoms() throws Exception
+    private void restartNodes() throws Exception
     {
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
-            // Entering MVVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            // Entering UVM ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(mcl);
 
-            mvvmContext.doPostInit();
+            uvmContext.doPostInit();
 
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);

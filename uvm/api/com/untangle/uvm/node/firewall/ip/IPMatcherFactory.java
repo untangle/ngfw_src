@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.ip;
+package com.untangle.uvm.node.firewall.ip;
 
 import java.net.InetAddress;
 
 import java.util.List;
 
-import com.untangle.mvvm.networking.IPNetwork;
+import com.untangle.uvm.networking.IPNetwork;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.ParseException;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ParseException;
 
-import com.untangle.mvvm.tran.firewall.ParsingFactory;
+import com.untangle.uvm.node.firewall.ParsingFactory;
 
 /**
  * A factory for IP matchers.

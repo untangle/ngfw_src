@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.type;
+package com.untangle.uvm.type;
 
 import java.awt.Color;
 import java.io.Serializable;

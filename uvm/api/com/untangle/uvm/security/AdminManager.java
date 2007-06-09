@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.security;
+package com.untangle.uvm.security;
 
 import java.util.Date;
 import java.util.TimeZone;
 import javax.transaction.TransactionRolledbackException;
 
-import com.untangle.mvvm.MailSettings;
-import com.untangle.mvvm.snmp.SnmpManager;
+import com.untangle.uvm.MailSettings;
+import com.untangle.uvm.snmp.SnmpManager;
 
 /**
  * Describe interface <code>AdminManager</code> here.
@@ -46,14 +46,14 @@ public interface AdminManager
     LoginSession whoAmI();
 
     /**
-     * Returns the time zone that the MVVM is currently set to
+     * Returns the time zone that the UVM is currently set to
      *
-     * @return the <code>TimeZone</code> that the MVVM is now in
+     * @return the <code>TimeZone</code> that the UVM is now in
      */
     TimeZone getTimeZone();
 
     /**
-     * Sets the time zone that the MVVM is in.
+     * Sets the time zone that the UVM is in.
      *
      * @param timezone a <code>TimeZone</code> value
      * @exception TransactionRolledbackException if an error occurs
@@ -61,7 +61,7 @@ public interface AdminManager
     void setTimeZone(TimeZone timezone) throws TransactionRolledbackException;
 
     /**
-     * Returns the current time that the MVVM is set to
+     * Returns the current time that the UVM is set to
      *
      * @return a <code>Date</code> giving the current time as seen by
      * Untangle Server.

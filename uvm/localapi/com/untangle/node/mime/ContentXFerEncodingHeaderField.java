@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 import java.io.IOException;
-import static com.untangle.tran.util.Ascii.SEMI;
-import static com.untangle.tran.util.Ascii.COLON;
+import static com.untangle.node.util.Ascii.SEMI;
+import static com.untangle.node.util.Ascii.COLON;
 
 /**
  * Object representing a "Content-transfer-Encoding" Header as found in an

@@ -9,21 +9,21 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
-import com.untangle.mvvm.argon.ArgonAgent;
-import com.untangle.mvvm.argon.ArgonAgentImpl;
-import com.untangle.mvvm.tapi.IPSessionDesc;
-import com.untangle.mvvm.tapi.MPipe;
-import com.untangle.mvvm.tapi.MPipeException;
-import com.untangle.mvvm.tapi.PipeSpec;
-import com.untangle.mvvm.tapi.Session;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.tapi.UDPSession;
-import com.untangle.mvvm.tapi.event.SessionEventListener;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.mvvm.tran.TransformDesc;
-import com.untangle.mvvm.util.MetaEnv;
+import com.untangle.uvm.argon.ArgonAgent;
+import com.untangle.uvm.argon.ArgonAgentImpl;
+import com.untangle.uvm.tapi.IPSessionDesc;
+import com.untangle.uvm.tapi.MPipe;
+import com.untangle.uvm.tapi.MPipeException;
+import com.untangle.uvm.tapi.PipeSpec;
+import com.untangle.uvm.tapi.Session;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.tapi.UDPSession;
+import com.untangle.uvm.tapi.event.SessionEventListener;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.util.MetaEnv;
 import org.apache.log4j.Logger;
 
 /**
@@ -52,7 +52,7 @@ class MPipeImpl implements MPipe {
 
     private Dispatcher disp;
 
-    private final Transform transform;
+    private final Node node;
     private final SessionEventListener listener;
 
     // This is the original connection point.  We use it for reconnection.
@@ -71,14 +71,14 @@ class MPipeImpl implements MPipe {
     {
 
         this.xm = xm;
-        this.transform = pipeSpec.getTransform();
+        this.node = pipeSpec.getNode();
         this.listener = listener;
         this.pipeSpec = pipeSpec;
 
         logger = Logger.getLogger(MPipe.class);
         sessionLogger = Logger.getLogger(Session.class);
         // XXX
-        sessionEventLogger = Logger.getLogger("com.untangle.mvvm.tapi.SessionEvent");
+        sessionEventLogger = Logger.getLogger("com.untangle.uvm.tapi.SessionEvent");
         sessionLoggerTCP = Logger.getLogger(TCPSession.class);
         sessionLoggerUDP = Logger.getLogger(UDPSession.class);
 
@@ -108,10 +108,10 @@ class MPipeImpl implements MPipe {
         return pipeSpec;
     }
 
-    public Transform transform()
+    public Node node()
     {
-        // return argon.transform();
-        return transform;
+        // return argon.node();
+        return node;
     }
 
     public ArgonAgent getArgonAgent()
@@ -144,9 +144,9 @@ class MPipeImpl implements MPipe {
         return sessionLoggerUDP;
     }
 
-    public TransformDesc transformDesc()
+    public NodeDesc nodeDesc()
     {
-        return transform().getTransformDesc();
+        return node().getNodeDesc();
     }
 
     public int state()
@@ -219,7 +219,7 @@ class MPipeImpl implements MPipe {
 
         /* send load cmd */
         /*
-          TransformDesc tDesc = transformDesc();
+          NodeDesc tDesc = nodeDesc();
           String name = tDesc.name();
           String signature = Base64.encodeBytes(tDesc.publicKey());
           int position = tDesc.position();
@@ -234,7 +234,7 @@ class MPipeImpl implements MPipe {
     }
 
     /**
-     * This is called by the Transform (or TransformManager?) to disconnect
+     * This is called by the Node (or NodeManager?) to disconnect
      * from a live MPipe. Since it is live we must be sure to shut down the
      * Dispatcher nicely (in comparison to shutdown, below).
      *

@@ -1,7 +1,7 @@
 #!/bin/sh
 
-## Log all output to the MVVM logging
-exec >> @MVVM_LOG@/iptables.log 2>&1
+## Log all output to the UVM logging
+exec >> @UVM_LOG@/iptables.log 2>&1
 
 # These variables are for the use of the scripts run by run-parts
 # PPP_IFACE="$1"

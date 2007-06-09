@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.net.UnknownHostException;
 
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.script.ScriptWriter;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.script.ScriptWriter;
 import org.apache.log4j.Logger;
 
-import static com.untangle.mvvm.tran.script.ScriptWriter.COMMENT;
-import static com.untangle.mvvm.tran.script.ScriptWriter.METAVIZE_HEADER;
+import static com.untangle.uvm.node.script.ScriptWriter.COMMENT;
+import static com.untangle.uvm.node.script.ScriptWriter.METAVIZE_HEADER;
 
 class ResolvScriptWriter extends ScriptWriter
 {

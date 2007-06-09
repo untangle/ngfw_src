@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 // XXX make this an enum when i dump xdoclet
 public class Affinity

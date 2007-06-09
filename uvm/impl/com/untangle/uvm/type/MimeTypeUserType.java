@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.type;
+package com.untangle.uvm.type;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import com.untangle.mvvm.tran.MimeType;
+import com.untangle.uvm.node.MimeType;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 import java.io.Serializable;

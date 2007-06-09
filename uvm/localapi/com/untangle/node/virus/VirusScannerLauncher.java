@@ -8,11 +8,11 @@
  *
  * $Id$
  */
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 import java.io.File;
 
-import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 import org.apache.log4j.Logger;
 
 abstract public class VirusScannerLauncher implements Runnable
@@ -37,7 +37,7 @@ abstract public class VirusScannerLauncher implements Runnable
      */
     public VirusScannerResult doScan(long timeout)
     {
-        Thread thread = MvvmContextFactory.context().newThread(this);
+        Thread thread = UvmContextFactory.context().newThread(this);
         long startTime = System.currentTimeMillis();
         try {
             synchronized (this) {

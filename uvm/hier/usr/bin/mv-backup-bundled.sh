@@ -29,7 +29,7 @@
 # **************************************************
 #
 # As this file is maintained, note that its behavior is bound
-# to com.untangle.tran.boxbackup.BoxBackupImpl.  Any changes
+# to com.untangle.node.boxbackup.BoxBackupImpl.  Any changes
 # this this script should be reflected in that Java code
 #================================================================
 
@@ -61,7 +61,7 @@ function createBackup() {
   backup-mv $1
 #  pushd $1 > /dev/null 2>&1
 #  datestamp=$(date '+%Y%m%d%H%M')
-#  echo "FOO" > mvvmdb-$datestamp.gz
+#  echo "FOO" > uvmdb-$datestamp.gz
 #  echo "MOO" > files-$datestamp.tar.gz
 #  echo "DOO" > installed-$datestamp
 #  popd > /dev/null 2>&1

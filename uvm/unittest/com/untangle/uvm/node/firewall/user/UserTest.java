@@ -9,9 +9,9 @@
  * $Id: PingTest.java 8515 2007-01-03 00:13:24Z amread $
  */
 
-package com.untangle.mvvm.tran.firewall.user;
+package com.untangle.uvm.node.firewall.user;
 
-import com.untangle.mvvm.tran.firewall.ParsingConstants;
+import com.untangle.uvm.node.firewall.ParsingConstants;
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Assert;
 import org.junit.Before;

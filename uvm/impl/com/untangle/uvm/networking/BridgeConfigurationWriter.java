@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.UvmContextFactory;
 
-import com.untangle.mvvm.localapi.ArgonInterface;
-import com.untangle.mvvm.networking.internal.InterfaceInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.tran.script.ScriptWriter;
+import com.untangle.uvm.localapi.ArgonInterface;
+import com.untangle.uvm.networking.internal.InterfaceInternal;
+import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.node.script.ScriptWriter;
 
 class BridgeConfigurationWriter extends ScriptWriter
 {

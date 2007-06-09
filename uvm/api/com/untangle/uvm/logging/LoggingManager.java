@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.logging;
+package com.untangle.uvm.logging;
 
 
 /**
@@ -25,7 +25,7 @@ public interface LoggingManager
 
     /**
      * <code>resetAllLogs</code> re-reads all log configuration files (jboss,
-     * mvvm, and all transform instances). This allows changing logging levels,
+     * uvm, and all node instances). This allows changing logging levels,
      * etc. The old output files will be erased and new files begun.
      */
     void resetAllLogs();

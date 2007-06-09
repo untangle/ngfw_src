@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,23 +29,23 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.logging.MvvmLoggingContext;
-import com.untangle.mvvm.logging.MvvmLoggingContextFactory;
-import com.untangle.mvvm.logging.MvvmRepositorySelector;
-import com.untangle.mvvm.policy.Policy;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.toolbox.MackageDesc;
-import com.untangle.mvvm.tran.DeployException;
-import com.untangle.mvvm.tran.LocalTransformManager;
-import com.untangle.mvvm.tran.MvvmTransformHandler;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformDesc;
-import com.untangle.mvvm.tran.TransformManager;
-import com.untangle.mvvm.tran.TransformState;
-import com.untangle.mvvm.tran.TransformStats;
-import com.untangle.mvvm.tran.UndeployException;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.logging.UvmLoggingContext;
+import com.untangle.uvm.logging.UvmLoggingContextFactory;
+import com.untangle.uvm.logging.UvmRepositorySelector;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.node.DeployException;
+import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.UvmNodeHandler;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.node.NodeStats;
+import com.untangle.uvm.node.UndeployException;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
 import org.hibernate.Query;
@@ -55,51 +55,51 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextFactory
+class NodeManagerImpl implements LocalNodeManager, UvmLoggingContextFactory
 {
-    private static final String DESC_PATH = "META-INF/mvvm-transform.xml";
+    private static final String DESC_PATH = "META-INF/uvm-node.xml";
 
     private static final Object LOCK = new Object();
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private final TransformManagerState transformManagerState;
-    private final Map<Tid, TransformContextImpl> tids
-        = new ConcurrentHashMap<Tid, TransformContextImpl>();
-    private final ThreadLocal<TransformContext> threadContexts
-        = new InheritableThreadLocal<TransformContext>();
-    private final MvvmRepositorySelector repositorySelector;
+    private final NodeManagerState nodeManagerState;
+    private final Map<Tid, NodeContextImpl> tids
+        = new ConcurrentHashMap<Tid, NodeContextImpl>();
+    private final ThreadLocal<NodeContext> threadContexts
+        = new InheritableThreadLocal<NodeContext>();
+    private final UvmRepositorySelector repositorySelector;
 
     private boolean live = true;
 
-    TransformManagerImpl(MvvmRepositorySelector repositorySelector)
+    NodeManagerImpl(UvmRepositorySelector repositorySelector)
     {
         this.repositorySelector = repositorySelector;
 
-        TransactionWork<TransformManagerState> tw = new TransactionWork<TransformManagerState>()
+        TransactionWork<NodeManagerState> tw = new TransactionWork<NodeManagerState>()
             {
-                private TransformManagerState tms;
+                private NodeManagerState tms;
 
                 public boolean doWork(Session s) throws SQLException
                 {
-                    Query q = s.createQuery("from TransformManagerState tms");
-                    tms = (TransformManagerState)q.uniqueResult();
+                    Query q = s.createQuery("from NodeManagerState tms");
+                    tms = (NodeManagerState)q.uniqueResult();
                     if (null == tms) {
-                        tms = new TransformManagerState();
+                        tms = new NodeManagerState();
                         s.save(tms);
                     }
                     return true;
                 }
 
-                public TransformManagerState getResult() { return tms; }
+                public NodeManagerState getResult() { return tms; }
             };
-        MvvmContextFactory.context().runTransaction(tw);
-        this.transformManagerState = tw.getResult();
+        UvmContextFactory.context().runTransaction(tw);
+        this.nodeManagerState = tw.getResult();
     }
 
-    // TransformManager -------------------------------------------------------
+    // NodeManager -------------------------------------------------------
 
-    public List<Tid> transformInstances()
+    public List<Tid> nodeInstances()
     {
         List<Tid> l = new ArrayList<Tid>(tids.keySet());
 
@@ -107,8 +107,8 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
         // XXX the client should do its own sorting
         Collections.sort(l, new Comparator<Tid>() {
             public int compare(Tid t1, Tid t2) {
-                TransformContextImpl tci1 = tids.get(t1);
-                TransformContextImpl tci2 = tids.get(t2);
+                NodeContextImpl tci1 = tids.get(t1);
+                NodeContextImpl tci2 = tids.get(t2);
                 int rpi1 = tci1.getMackageDesc().getViewPosition();
                 int rpi2 = tci2.getMackageDesc().getViewPosition();
                 if (rpi1 == rpi2) {
@@ -124,14 +124,14 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
         return l;
     }
 
-    public List<Tid> transformInstances(String mackageName)
+    public List<Tid> nodeInstances(String mackageName)
     {
         List<Tid> l = new LinkedList<Tid>();
 
         for (Tid tid : tids.keySet()) {
-            TransformContext tc = tids.get(tid);
+            NodeContext tc = tids.get(tid);
             if (null != tc) {
-                if (tc.getTransformDesc().getName().equals(mackageName)) {
+                if (tc.getNodeDesc().getName().equals(mackageName)) {
                     l.add(tid);
                 }
             }
@@ -140,14 +140,14 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
         return l;
     }
 
-    public List<Tid> transformInstances(String name, Policy policy)
+    public List<Tid> nodeInstances(String name, Policy policy)
     {
         List<Tid> l = new ArrayList<Tid>(tids.size());
 
         for (Tid tid : tids.keySet()) {
-            TransformContext tc = tids.get(tid);
+            NodeContext tc = tids.get(tid);
             if (null != tc) {
-                String n = tc.getTransformDesc().getName();
+                String n = tc.getNodeDesc().getName();
 
                 Policy p = tid.getPolicy();
 
@@ -161,12 +161,12 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
         return l;
     }
 
-    public List<Tid> transformInstances(Policy policy)
+    public List<Tid> nodeInstances(Policy policy)
     {
         List<Tid> l = new ArrayList<Tid>(tids.size());
 
         for (Tid tid : tids.keySet()) {
-            TransformContext tc = tids.get(tid);
+            NodeContext tc = tids.get(tid);
 
             if (null != tc) {
                 Policy p = tid.getPolicy();
@@ -180,58 +180,58 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
         return l;
     }
 
-    public List<Tid> transformInstancesVisible(Policy policy)
+    public List<Tid> nodeInstancesVisible(Policy policy)
     {
-        List<Tid> transformInstances = transformInstances(policy);
+        List<Tid> nodeInstances = nodeInstances(policy);
         Vector<Tid> visibleVector = new Vector<Tid>();
-        for( Tid tid : transformInstances ){
-            if( transformContext(tid).getMackageDesc().getViewPosition() >= 0 )
+        for( Tid tid : nodeInstances ){
+            if( nodeContext(tid).getMackageDesc().getViewPosition() >= 0 )
                 visibleVector.add(tid);
         }
         return (List<Tid>) visibleVector;
     }
 
-    public TransformContextImpl transformContext(Tid tid)
+    public NodeContextImpl nodeContext(Tid tid)
     {
         return tids.get(tid);
     }
 
-    public Tid instantiate(String transformName)
+    public Tid instantiate(String nodeName)
         throws DeployException
     {
-        Policy policy = getDefaultPolicyForTransform(transformName);
-        return instantiate(transformName, newTid(null, transformName), new String[0]);
+        Policy policy = getDefaultPolicyForNode(nodeName);
+        return instantiate(nodeName, newTid(null, nodeName), new String[0]);
     }
 
-    public Tid instantiate(String transformName, String[] args)
+    public Tid instantiate(String nodeName, String[] args)
         throws DeployException
     {
-        Policy policy = getDefaultPolicyForTransform(transformName);
-        return instantiate(transformName, newTid(policy, transformName), args);
+        Policy policy = getDefaultPolicyForNode(nodeName);
+        return instantiate(nodeName, newTid(policy, nodeName), args);
     }
 
-    public Tid instantiate(String transformName, Policy policy)
+    public Tid instantiate(String nodeName, Policy policy)
         throws DeployException
     {
-        return instantiate(transformName, newTid(policy, transformName),
+        return instantiate(nodeName, newTid(policy, nodeName),
                            new String[0]);
     }
 
-    public Tid instantiate(String transformName, Policy policy, String[] args)
+    public Tid instantiate(String nodeName, Policy policy, String[] args)
         throws DeployException
     {
-        return instantiate(transformName, newTid(policy, transformName), args);
+        return instantiate(nodeName, newTid(policy, nodeName), args);
     }
 
     public void destroy(final Tid tid) throws UndeployException
     {
-        final TransformContextImpl tc;
+        final NodeContextImpl tc;
 
         synchronized (this) {
             tc = tids.get(tid);
             if (null == tc) {
                 logger.error("Destroy Failed: " + tid + " not found");
-                throw new UndeployException("Transform " + tid + " not found");
+                throw new UndeployException("Node " + tid + " not found");
             }
             tc.destroy();
 
@@ -241,13 +241,13 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
         tc.destroyPersistentState();
     }
 
-    public Map<Tid, TransformStats> allTransformStats()
+    public Map<Tid, NodeStats> allNodeStats()
     {
-        HashMap<Tid, TransformStats> result = new HashMap<Tid, TransformStats>();
+        HashMap<Tid, NodeStats> result = new HashMap<Tid, NodeStats>();
         for (Iterator<Tid> iter = tids.keySet().iterator(); iter.hasNext();) {
             Tid tid = iter.next();
-            TransformContextImpl tci = tids.get(tid);
-            if (tci.getRunState() == TransformState.RUNNING)
+            NodeContextImpl tci = tids.get(tid);
+            if (tci.getRunState() == NodeState.RUNNING)
                 result.put(tid, tci.getStats());
         }
         return result;
@@ -260,7 +260,7 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
         restartUnloaded();
     }
 
-    // destroy the transform manager
+    // destroy the node manager
     void destroy()
     {
         synchronized (this) {
@@ -276,21 +276,21 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
             }
 
             if (tids.size() > 0) {
-                logger.warn("transform instances not destroyed: " + tids.size());
+                logger.warn("node instances not destroyed: " + tids.size());
             }
         }
 
-        logger.info("TransformManager destroyed");
+        logger.info("NodeManager destroyed");
     }
 
-    // LocalTransformManager methods ------------------------------------------
+    // LocalNodeManager methods ------------------------------------------
 
-    public TransformContext threadContext()
+    public NodeContext threadContext()
     {
         return threadContexts.get();
     }
 
-    public void registerThreadContext(TransformContext ctx)
+    public void registerThreadContext(NodeContext ctx)
     {
         threadContexts.set(ctx);
         repositorySelector.setContextFactory(this);
@@ -299,19 +299,19 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
     public void deregisterThreadContext()
     {
         threadContexts.remove();
-        repositorySelector.mvvmContext();
+        repositorySelector.uvmContext();
     }
 
-    // MvvmLoggingContextFactory methods --------------------------------------
+    // UvmLoggingContextFactory methods --------------------------------------
 
-    public MvvmLoggingContext get()
+    public UvmLoggingContext get()
     {
-        final TransformContext tctx = threadContexts.get();
+        final NodeContext tctx = threadContexts.get();
         if (null == tctx) {
-            LogLog.warn("null transform context in threadContexts");
+            LogLog.warn("null node context in threadContexts");
         }
 
-        return new TransformManagerLoggingContext(tctx);
+        return new NodeManagerLoggingContext(tctx);
     }
 
     // package protected methods ----------------------------------------------
@@ -319,9 +319,9 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
     void unload(Tid tid)
     {
         synchronized (this) {
-            TransformContextImpl tc = tids.get(tid);
+            NodeContextImpl tc = tids.get(tid);
             logger.info("Unloading: " + tid
-                        + " (" + tc.getTransformDesc().getName() + ")");
+                        + " (" + tc.getNodeDesc().getName() + ")");
 
             tc.unload();
             tids.remove(tid);
@@ -330,21 +330,21 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
 
     void restart(String name)
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)MvvmContextFactory
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)UvmContextFactory
             .context().toolboxManager();
 
         String availVer = tbm.mackageDesc(name).getInstalledVersion();
 
         synchronized (this) {
-            List<Tid> mkgTids = transformInstances(name);
+            List<Tid> mkgTids = nodeInstances(name);
             if (0 < mkgTids.size()) {
                 Tid t = mkgTids.get(0);
-                TransformContext tc = tids.get(t);
+                NodeContext tc = tids.get(t);
 
-                if (0 < tc.getTransformDesc().getExports().size()) {
+                if (0 < tc.getNodeDesc().getExports().size()) {
                     // exported resources, must restart everything
                     for (Tid tid : tids.keySet()) {
-                        TransformDesc td = tids.get(tid).getTransformDesc();
+                        NodeDesc td = tids.get(tid).getNodeDesc();
                         MackageDesc md = tids.get(tid).getMackageDesc();
                         if (!md.getInstalledVersion().equals(availVer)) {
                             logger.info("new version available: " + name);
@@ -355,7 +355,7 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
                     }
                 } else {
                     for (Tid tid : mkgTids) {
-                        TransformDesc td = tids.get(tid).getTransformDesc();
+                        NodeDesc td = tids.get(tid).getNodeDesc();
                         MackageDesc md = tids.get(tid).getMackageDesc();
                         if (!md.getInstalledVersion().equals(availVer)) {
                             logger.info("new version available: " + name);
@@ -377,22 +377,22 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
         long t0 = System.currentTimeMillis();
 
         if (!live) {
-            throw new RuntimeException("TransformManager is shut down");
+            throw new RuntimeException("NodeManager is shut down");
         }
 
-        logger.info("Restarting unloaded transforms...");
+        logger.info("Restarting unloaded nodes...");
 
 
-        List<TransformPersistentState> unloaded = getUnloaded();
-        Map<Tid, TransformDesc> tDescs = loadTransformDescs(unloaded);
+        List<NodePersistentState> unloaded = getUnloaded();
+        Map<Tid, NodeDesc> tDescs = loadNodeDescs(unloaded);
         Set<String> loadedParents = new HashSet<String>(unloaded.size());
 
-        MvvmContextImpl mctx = MvvmContextImpl.getInstance();
+        UvmContextImpl mctx = UvmContextImpl.getInstance();
 
         ToolboxManagerImpl tbm = (ToolboxManagerImpl)mctx.toolboxManager();
 
         while (0 < unloaded.size()) {
-            List<TransformPersistentState> startQueue = getLoadable(unloaded,
+            List<NodePersistentState> startQueue = getLoadable(unloaded,
                                                                     tDescs,
                                                                     loadedParents);
             if (0 == startQueue.size()) {
@@ -405,35 +405,35 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
         }
 
         long t1 = System.currentTimeMillis();
-        logger.info("time to restart transforms: " + (t1 - t0));
+        logger.info("time to restart nodes: " + (t1 - t0));
     }
 
-    private void startUnloaded(List<TransformPersistentState> startQueue,
-                               Map<Tid, TransformDesc> tDescs,
+    private void startUnloaded(List<NodePersistentState> startQueue,
+                               Map<Tid, NodeDesc> tDescs,
                                Set<String> loadedParents)
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)MvvmContextFactory
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)UvmContextFactory
             .context().toolboxManager();
 
 
         List<Thread> threads = new ArrayList<Thread>(startQueue.size());
 
-        for (TransformPersistentState tps : startQueue) {
-            final TransformDesc tDesc = tDescs.get(tps.getTid());
+        for (NodePersistentState tps : startQueue) {
+            final NodeDesc tDesc = tDescs.get(tps.getTid());
             final Tid tid = tps.getTid();
             final String name = tps.getName();
             loadedParents.add(name);
             final String[] args = tps.getArgArray();
             final MackageDesc mackageDesc = tbm.mackageDesc(name);
 
-            Thread t = MvvmContextFactory.context().newThread(new Runnable()
+            Thread t = UvmContextFactory.context().newThread(new Runnable()
                 {
                     public void run()
                     {
                         logger.info("Restarting: " + tid + " (" + name + ")");
-                        TransformContextImpl tc = null;
+                        NodeContextImpl tc = null;
                         try {
-                            tc = new TransformContextImpl((URLClassLoader)getClass().getClassLoader(), tDesc,
+                            tc = new NodeContextImpl((URLClassLoader)getClass().getClassLoader(), tDesc,
                                                           mackageDesc.getName(),
                                                           false);
                             tids.put(tid, tc);
@@ -444,7 +444,7 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
                         } catch (LinkageError err) {
                             logger.error("Could not restart: " + tid, err);
                         }
-                        if (null != tc && null == tc.transform()) {
+                        if (null != tc && null == tc.node()) {
                             tids.remove(tid);
                         }
                     }
@@ -462,19 +462,19 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
         }
     }
 
-    private List<TransformPersistentState> getLoadable(List<TransformPersistentState> unloaded,
-                                                       Map<Tid, TransformDesc> tDescs,
+    private List<NodePersistentState> getLoadable(List<NodePersistentState> unloaded,
+                                                       Map<Tid, NodeDesc> tDescs,
                                                        Set<String> loadedParents)
     {
-        List<TransformPersistentState> l = new ArrayList<TransformPersistentState>(unloaded.size());
+        List<NodePersistentState> l = new ArrayList<NodePersistentState>(unloaded.size());
         Set<String> thisPass = new HashSet<String>(unloaded.size());
 
-        for (Iterator<TransformPersistentState> i = unloaded.iterator(); i.hasNext(); ) {
-            TransformPersistentState tps = i.next();
+        for (Iterator<NodePersistentState> i = unloaded.iterator(); i.hasNext(); ) {
+            NodePersistentState tps = i.next();
             Tid tid = tps.getTid();
-            TransformDesc tDesc = tDescs.get(tid);
+            NodeDesc tDesc = tDescs.get(tid);
             if (null == tDesc) {
-                logger.warn("no TransformDesc for: " + tid);
+                logger.warn("no NodeDesc for: " + tid);
                 continue;
             }
 
@@ -491,7 +491,7 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
             String name = tDesc.getName();
 
             // all parents loaded and another instance of this
-            // transform not loading this pass or already loaded in
+            // node not loading this pass or already loaded in
             // previous pass (prevents classloader race).
             if (parentsLoaded
                 && (!thisPass.contains(name) || loadedParents.contains(name))) {
@@ -504,45 +504,45 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
         return l;
     }
 
-    private Map<Tid, TransformDesc> loadTransformDescs(List<TransformPersistentState> unloaded)
+    private Map<Tid, NodeDesc> loadNodeDescs(List<NodePersistentState> unloaded)
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)MvvmContextFactory
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)UvmContextFactory
             .context().toolboxManager();
 
-        Map<Tid, TransformDesc> tDescs = new HashMap<Tid, TransformDesc>(unloaded.size());
+        Map<Tid, NodeDesc> tDescs = new HashMap<Tid, NodeDesc>(unloaded.size());
 
-        for (TransformPersistentState tps : unloaded) {
+        for (NodePersistentState tps : unloaded) {
             String name = tps.getName();
             URL[] urls = new URL[] { tbm.getResourceDir(name) };
             Tid tid = tps.getTid();
-            tid.setTransformName(name);
+            tid.setNodeName(name);
             MackageDesc md = tbm.mackageDesc(name);
 
             try {
-                logger.info("initializing transform desc for: " + name);
-                TransformDesc tDesc = initTransformDesc(md, urls, tid);
+                logger.info("initializing node desc for: " + name);
+                NodeDesc tDesc = initNodeDesc(md, urls, tid);
                 tDescs.put(tid, tDesc);
             } catch (DeployException exn) {
-                logger.warn("TransformDesc could not be parsed", exn);
+                logger.warn("NodeDesc could not be parsed", exn);
             }
         }
 
         return tDescs;
     }
 
-    private List<TransformPersistentState> getUnloaded()
+    private List<NodePersistentState> getUnloaded()
     {
-        final List<TransformPersistentState> unloaded
-            = new LinkedList<TransformPersistentState>();
+        final List<NodePersistentState> unloaded
+            = new LinkedList<NodePersistentState>();
 
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
                 {
-                    Query q = s.createQuery("from TransformPersistentState tps");
-                    List<TransformPersistentState> result = q.list();
+                    Query q = s.createQuery("from NodePersistentState tps");
+                    List<NodePersistentState> result = q.list();
 
-                    for (TransformPersistentState persistentState : result) {
+                    for (NodePersistentState persistentState : result) {
                         if (!tids.containsKey(persistentState.getTid())) {
                             unloaded.add(persistentState);
                         }
@@ -552,47 +552,47 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
 
                 public Object getResult() { return null; }
             };
-        MvvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         return unloaded;
     }
 
-    private Tid instantiate(String transformName, Tid tid, String[] args)
+    private Tid instantiate(String nodeName, Tid tid, String[] args)
         throws DeployException
     {
-        MvvmContextImpl mctx = MvvmContextImpl.getInstance();
+        UvmContextImpl mctx = UvmContextImpl.getInstance();
 
         ToolboxManagerImpl tbm = (ToolboxManagerImpl)mctx.toolboxManager();
 
-        URL[] resUrls = new URL[] { tbm.getResourceDir(transformName) };
+        URL[] resUrls = new URL[] { tbm.getResourceDir(nodeName) };
 
-        MackageDesc mackageDesc = tbm.mackageDesc(transformName);
+        MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
         if ((mackageDesc.isService() || mackageDesc.isUtil() || mackageDesc.isCore())
             && tid.getPolicy() != null) {
             throw new DeployException("Cannot specify a policy for a service/util/core: "
-                                      + transformName);
+                                      + nodeName);
         }
 
         if (mackageDesc.isSecurity() && tid.getPolicy() == null) {
             throw new DeployException("Cannot have null policy for a security: "
-                                      + transformName);
+                                      + nodeName);
         }
 
-        logger.info("initializing transform desc for: " + transformName);
-        TransformDesc tDesc = initTransformDesc(mackageDesc, resUrls, tid);
+        logger.info("initializing node desc for: " + nodeName);
+        NodeDesc tDesc = initNodeDesc(mackageDesc, resUrls, tid);
 
         synchronized (this) {
             if (!live) {
-                throw new DeployException("TransformManager is shut down");
+                throw new DeployException("NodeManager is shut down");
             }
 
-            TransformContextImpl tc = new TransformContextImpl
+            NodeContextImpl tc = new NodeContextImpl
                 ((URLClassLoader)getClass().getClassLoader(), tDesc, mackageDesc.getName(), true);
             tids.put(tid, tc);
             try {
                 tc.init(args);
             } finally {
-                if (null == tc.transform()) {
+                if (null == tc.node()) {
                     tids.remove(tid);
                 }
             }
@@ -602,14 +602,14 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
     }
 
     /**
-     * Initialize transform from 'META-INF/mvvm-transform.xml' in one
+     * Initialize node from 'META-INF/uvm-node.xml' in one
      * of the urls.
      *
-     * @param urls urls to find transform descriptor.
+     * @param urls urls to find node descriptor.
      * @exception DeployException the descriptor does not parse or
      * parent cannot be loaded.
      */
-    private TransformDesc initTransformDesc(MackageDesc mackageDesc,
+    private NodeDesc initNodeDesc(MackageDesc mackageDesc,
                                             URL[] urls, Tid tid)
         throws DeployException
     {
@@ -620,7 +620,7 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
             throw new DeployException(DESC_PATH + " not found");
         }
 
-        MvvmTransformHandler mth = new MvvmTransformHandler(mackageDesc);
+        UvmNodeHandler mth = new UvmNodeHandler(mackageDesc);
 
         try {
             XMLReader xr = XMLReaderFactory.createXMLReader();
@@ -632,67 +632,67 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
             throw new DeployException(exn);
         }
 
-        TransformDesc transformDesc = mth.getTransformDesc(tid);;
+        NodeDesc nodeDesc = mth.getNodeDesc(tid);;
 
-        return transformDesc;
+        return nodeDesc;
     }
 
-    private Policy getDefaultPolicyForTransform(String transformName)
+    private Policy getDefaultPolicyForNode(String nodeName)
         throws DeployException
     {
-        ToolboxManagerImpl tbm = (ToolboxManagerImpl)MvvmContextFactory
+        ToolboxManagerImpl tbm = (ToolboxManagerImpl)UvmContextFactory
             .context().toolboxManager();
-        MackageDesc mackageDesc = tbm.mackageDesc(transformName);
+        MackageDesc mackageDesc = tbm.mackageDesc(nodeName);
         if (mackageDesc == null)
-            throw new DeployException("Transform named " + transformName + " not found");
+            throw new DeployException("Node named " + nodeName + " not found");
         if (!mackageDesc.isSecurity())
             return null;
         else
-            return MvvmContextFactory.context().policyManager().getDefaultPolicy();
+            return UvmContextFactory.context().policyManager().getDefaultPolicy();
     }
 
-    private Tid newTid(Policy policy, String transformName)
+    private Tid newTid(Policy policy, String nodeName)
     {
         final Tid tid;
-        synchronized (transformManagerState) {
-            tid = transformManagerState.nextTid(policy, transformName);
+        synchronized (nodeManagerState) {
+            tid = nodeManagerState.nextTid(policy, nodeName);
         }
 
         TransactionWork tw = new TransactionWork()
             {
                 public boolean doWork(Session s)
                 {
-                    s.merge(transformManagerState);
+                    s.merge(nodeManagerState);
                     s.save(tid);
                     return true;
                 }
 
                 public Object getResult() { return null; }
             };
-        MvvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         return tid;
     }
 
     // private static classes -------------------------------------------------
 
-    private static class TransformManagerLoggingContext
-        implements MvvmLoggingContext
+    private static class NodeManagerLoggingContext
+        implements UvmLoggingContext
     {
-        private final TransformContext tctx;
+        private final NodeContext tctx;
 
         // constructors -------------------------------------------------------
 
-        TransformManagerLoggingContext(TransformContext tctx)
+        NodeManagerLoggingContext(NodeContext tctx)
         {
             this.tctx = tctx;
         }
 
-        // MvvmLoggingContext methods -----------------------------------------
+        // UvmLoggingContext methods -----------------------------------------
 
         public String getConfigName()
         {
-            return "log4j-tran.xml";
+            return "log4j-node.xml";
         }
 
         public String getFileName()
@@ -717,9 +717,9 @@ class TransformManagerImpl implements LocalTransformManager, MvvmLoggingContextF
 
         public boolean equals(Object o)
         {
-            if (o instanceof TransformManagerLoggingContext) {
-                TransformManagerLoggingContext tmc
-                    = (TransformManagerLoggingContext)o;
+            if (o instanceof NodeManagerLoggingContext) {
+                NodeManagerLoggingContext tmc
+                    = (NodeManagerLoggingContext)o;
                 return tctx.equals(tmc.tctx);
             } else {
                 return false;

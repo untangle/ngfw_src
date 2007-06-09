@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.net.InetAddress;
 import java.util.LinkedList;
@@ -19,10 +19,10 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.Rule;
-import com.untangle.mvvm.tran.firewall.ParsingConstants;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.Rule;
+import com.untangle.uvm.node.firewall.ParsingConstants;
 import org.hibernate.annotations.Type;
 
 
@@ -36,7 +36,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_ip_network", schema="settings")
+@Table(name="uvm_ip_network", schema="settings")
 public class IPNetworkRule extends Rule
 {
     private static final long serialVersionUID = -7352786448519039201L;
@@ -56,7 +56,7 @@ public class IPNetworkRule extends Rule
      * @return The IPNetwork associated with this rule.
      */
     @Column(name="network")
-    @Type(type="com.untangle.mvvm.networking.IPNetworkUserType")
+    @Type(type="com.untangle.uvm.networking.IPNetworkUserType")
     public IPNetwork getIPNetwork()
     {
         return this.ipNetwork;

@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.mvvm.util;
+package com.untangle.uvm.util;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -16,11 +16,11 @@ import java.net.UnknownHostException;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 
-import com.untangle.mvvm.LocalAppServerManager;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.networking.NetworkUtil;
-import com.untangle.mvvm.networking.internal.AccessSettingsInternal;
-import com.untangle.mvvm.networking.internal.AddressSettingsInternal;
+import com.untangle.uvm.LocalAppServerManager;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.networking.NetworkUtil;
+import com.untangle.uvm.networking.internal.AccessSettingsInternal;
+import com.untangle.uvm.networking.internal.AddressSettingsInternal;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
@@ -47,7 +47,7 @@ public abstract class OutsideValve extends ValveBase
 
             String msg = request.getLocalPort() == DEFAULT_HTTP_PORT
                 ? httpErrorMessage() : outsideErrorMessage();
-            request.setAttribute(LocalAppServerManager.MVVM_WEB_MESSAGE_ATTR, msg);
+            request.setAttribute(LocalAppServerManager.UVM_WEB_MESSAGE_ATTR, msg);
             response.sendError(response.SC_FORBIDDEN);
             return;
         }
@@ -63,12 +63,12 @@ public abstract class OutsideValve extends ValveBase
 
     protected AccessSettingsInternal getAccessSettings()
     {
-        return MvvmContextFactory.context().networkManager().getAccessSettingsInternal();
+        return UvmContextFactory.context().networkManager().getAccessSettingsInternal();
     }
 
     protected AddressSettingsInternal getAddressSettings()
     {
-        return MvvmContextFactory.context().networkManager().getAddressSettingsInternal();
+        return UvmContextFactory.context().networkManager().getAddressSettingsInternal();
     }
 
 

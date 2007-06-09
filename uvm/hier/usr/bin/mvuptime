@@ -1,11 +1,11 @@
 #!/bin/sh
 
-if [ ! -f /var/run/mvvm.pid ] ; then
-	echo "MVVM not running";
+if [ ! -f /var/run/uvm.pid ] ; then
+	echo "UVM not running";
 	exit 0;
 fi
 
-AGE_SEC="$((`date +%s`-`stat -c %Z /var/run/mvvm.pid`))"
+AGE_SEC="$((`date +%s`-`stat -c %Z /var/run/uvm.pid`))"
 
 AGE_DAY="$(($AGE_SEC/60/60/24))"
 AGE_HOUR="$(($AGE_SEC/60/60 % 24))"

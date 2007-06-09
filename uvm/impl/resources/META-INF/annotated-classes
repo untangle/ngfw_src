@@ -1,7 +1,7 @@
-com.untangle.mvvm.engine.LoginEvent
-com.untangle.mvvm.engine.MackageState
-com.untangle.mvvm.engine.TransformManagerState
-com.untangle.mvvm.engine.TransformPersistentState
-com.untangle.mvvm.engine.TransformStateChange
-com.untangle.mvvm.shield.ShieldRejectionEvent
-com.untangle.mvvm.shield.ShieldStatisticEvent
+com.untangle.uvm.engine.LoginEvent
+com.untangle.uvm.engine.MackageState
+com.untangle.uvm.engine.NodeManagerState
+com.untangle.uvm.engine.NodePersistentState
+com.untangle.uvm.engine.NodeStateChange
+com.untangle.uvm.shield.ShieldRejectionEvent
+com.untangle.uvm.shield.ShieldStatisticEvent

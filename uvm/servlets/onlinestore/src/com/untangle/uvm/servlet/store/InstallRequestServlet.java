@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.servlet.store;
+package com.untangle.uvm.servlet.store;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -17,9 +17,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.security.MvvmPrincipal;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.security.UvmPrincipal;
 import org.apache.log4j.Logger;
 
 public class InstallRequestServlet extends HttpServlet
@@ -35,7 +35,7 @@ public class InstallRequestServlet extends HttpServlet
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException
     {
-        MvvmPrincipal p = (MvvmPrincipal)req.getUserPrincipal();
+        UvmPrincipal p = (UvmPrincipal)req.getUserPrincipal();
 
         if (p.isReadOnly()) {
             logger.debug("ignoring install request in read-only mode");
@@ -43,7 +43,7 @@ public class InstallRequestServlet extends HttpServlet
             String mackageName = req.getParameter("mackage");
 
             if (null != mackageName) {
-                MvvmLocalContext ctx = MvvmContextFactory.context();
+                UvmLocalContext ctx = UvmContextFactory.context();
                 ctx.toolboxManager().requestInstall(mackageName);
             } else {
                 try {

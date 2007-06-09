@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.reporting;
+package com.untangle.uvm.reporting;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -88,7 +88,7 @@ public class DhcpMap
 
     private static final String STATIC_HOST_QUERY =
         "SELECT hostname_list, static_address " +
-        " FROM mvvm_dns_static_host_rule AS rule,tr_nat_dns_hosts AS list,tr_nat_settings AS settings " +
+        " FROM uvm_dns_static_host_rule AS rule,tr_nat_dns_hosts AS list,tr_nat_settings AS settings " +
         " WHERE ( rule.rule_id=list.rule_id ) AND ( settings.settings_id=list.setting_id )";
 
     private static final String MANUAL_MAP_QUERY =
@@ -98,7 +98,7 @@ public class DhcpMap
         "              UNION SELECT c_server_addr AS addr FROM pl_endp WHERE pl_endp.server_intf = 1 " +
         // "              UNION SELECT s_client_addr AS addr FROM pl_endp " +
         // "              UNION SELECT s_server_addr AS addr FROM pl_endp " +
-        "              UNION SELECT client_addr   AS addr FROM mvvm_login_evt " +
+        "              UNION SELECT client_addr   AS addr FROM uvm_login_evt " +
         // "              UNION SELECT ip            AS addr FROM shield_rejection_evt " +
         "             ) AS addrs " +
         "        JOIN ipmaddr_dir_entries entry JOIN ipmaddr_rule rule USING (rule_id) " +
@@ -144,7 +144,7 @@ public class DhcpMap
             BasicConfigurator.configure();
 
             Class.forName( "org.postgresql.Driver" );
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost/mvvm", "postgres", "foo");
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost/uvm", "postgres", "foo");
 
             /* Regenerate address map */
             INSTANCE.generateAddressMap(conn, Timestamp.valueOf(args[0]), Timestamp.valueOf(args[1]));
@@ -165,7 +165,7 @@ public class DhcpMap
 
     public void generateAddressMap(Connection conn, Timestamp start, Timestamp end)
     {
-        boolean natTransformInstalled = true;
+        boolean natNodeInstalled = true;
         // Really all we have to know is, do the tables exist at all?  If they do, everything
         // works fine, otherwise the queries give Errors.  So we just try a simple query here
         // to know for sure.
@@ -174,8 +174,8 @@ public class DhcpMap
             ResultSet rs = stmt.executeQuery( TEST_INSTALLED );
             try { rs.close(); stmt.close(); } catch (SQLException e) { }
         } catch ( SQLException e ) {
-            System.out.println("no NAT transform install");
-            natTransformInstalled = false;
+            System.out.println("no NAT node install");
+            natNodeInstalled = false;
         }
 
         /* */
@@ -195,7 +195,7 @@ public class DhcpMap
 
             Statement stmt = conn.createStatement();
             stmt.executeUpdate( CREATE_TEMPORARY_TABLE );
-            if (natTransformInstalled) {
+            if (natNodeInstalled) {
                 generateAbsoluteLeases( conn, start, end, map );
                 generateRelativeLeases( conn, start, end, map );
                 generateStaticLeases( conn, start, end, map );

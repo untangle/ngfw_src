@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.protocol;
+package com.untangle.uvm.node.firewall.protocol;
 
-import com.untangle.mvvm.tapi.Protocol;
+import com.untangle.uvm.tapi.Protocol;
 
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.firewall.Parser;
-import com.untangle.mvvm.tran.firewall.ParsingConstants;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.firewall.Parser;
+import com.untangle.uvm.node.firewall.ParsingConstants;
 
 /**
  * ProtocolMatcher designed for simple cases (all or nothing).

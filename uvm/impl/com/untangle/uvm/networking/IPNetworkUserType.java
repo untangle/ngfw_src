@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
-import com.untangle.mvvm.type.StringBasedUserType;
+import com.untangle.uvm.type.StringBasedUserType;
 
 public class IPNetworkUserType extends StringBasedUserType
 {

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.reporting;
+package com.untangle.uvm.reporting;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
@@ -59,9 +59,9 @@ public abstract class BaseSummarizer implements ReportSummarizer {
         entries.add(new Entry(name, value, percent));
     }
 
-    protected String summarizeEntries(String tranName) {
+    protected String summarizeEntries(String nodeName) {
         StringBuilder s = new StringBuilder();
-        // s.append("<tr><td><b>").append(tranName).append("</b></td>\n");
+        // s.append("<tr><td><b>").append(nodeName).append("</b></td>\n");
         Iterator<Entry> iter = entries.iterator();
         int colorCounter = 0;
         String colorLight = "eeeeee";

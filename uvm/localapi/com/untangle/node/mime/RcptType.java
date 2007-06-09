@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 /**
  * Enum of recipient types (TO, CC).  Note that "Bcc" is part of this

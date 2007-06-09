@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.user;
+package com.untangle.uvm.user;
 
 import java.net.InetAddress;
 import java.sql.Timestamp;
@@ -21,15 +21,15 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.logging.SyslogPriority;
-import com.untangle.mvvm.tran.HostName;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
+import com.untangle.uvm.node.HostName;
 import org.hibernate.annotations.Type;
 
 @Entity
 @org.hibernate.annotations.Entity(mutable=false)
-    @Table(name="mvvm_lookup_evt", schema="events")
+    @Table(name="uvm_lookup_evt", schema="events")
     public class LookupLogEvent extends LogEvent
     {
         private long lookupKey;
@@ -65,7 +65,7 @@ import org.hibernate.annotations.Type;
         }
 
         @Column(name="address")
-        @Type(type="com.untangle.mvvm.type.InetAddressUserType")
+        @Type(type="com.untangle.uvm.type.InetAddressUserType")
         public InetAddress getAddress()
         {
             return this.address;

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.logging;
+package com.untangle.uvm.logging;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,40 +29,40 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.apache.tools.ant.filters.ReplaceTokens;
 
 /**
- * Selects logging repository based on the MvvmLoggingContext.
+ * Selects logging repository based on the UvmLoggingContext.
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class MvvmRepositorySelector implements RepositorySelector
+public class UvmRepositorySelector implements RepositorySelector
 {
-    public static final String TRAN_LOG_FILE_NAME_TOKEN;
+    public static final String NODE_LOG_FILE_NAME_TOKEN;
 
-    private static final MvvmLoggingContext MVVM_CONTEXT;
-    private static final MvvmLoggingContextFactory MVVM_CONTEXT_FACTORY;
+    private static final UvmLoggingContext UVM_CONTEXT;
+    private static final UvmLoggingContextFactory UVM_CONTEXT_FACTORY;
     private static final LogMailer NULL_LOG_MAILER;
-    private static final MvvmRepositorySelector SELECTOR;
+    private static final UvmRepositorySelector SELECTOR;
 
-    private final Map<MvvmLoggingContext, MvvmHierarchy> repositories;
+    private final Map<UvmLoggingContext, UvmHierarchy> repositories;
     private final Set<SmtpAppender> smtpAppenders;
-    private final ThreadLocal<MvvmLoggingContextFactory> currentContextFactory;
+    private final ThreadLocal<UvmLoggingContextFactory> currentContextFactory;
 
     private LogMailer logMailer = NULL_LOG_MAILER;
 
     // constructors -----------------------------------------------------------
 
-    private MvvmRepositorySelector()
+    private UvmRepositorySelector()
     {
-        repositories = new HashMap<MvvmLoggingContext, MvvmHierarchy>();
+        repositories = new HashMap<UvmLoggingContext, UvmHierarchy>();
         smtpAppenders = new HashSet<SmtpAppender>();
-        currentContextFactory = new InheritableThreadLocal<MvvmLoggingContextFactory>();
-        currentContextFactory.set(MVVM_CONTEXT_FACTORY);
+        currentContextFactory = new InheritableThreadLocal<UvmLoggingContextFactory>();
+        currentContextFactory.set(UVM_CONTEXT_FACTORY);
     }
 
     // factories --------------------------------------------------------------
 
-    public static MvvmRepositorySelector selector()
+    public static UvmRepositorySelector selector()
     {
         return SELECTOR;
     }
@@ -71,15 +71,15 @@ public class MvvmRepositorySelector implements RepositorySelector
 
     public LoggerRepository getLoggerRepository()
     {
-        MvvmLoggingContext ctx = getContextFactory().get();
+        UvmLoggingContext ctx = getContextFactory().get();
 
-        MvvmHierarchy hier;
+        UvmHierarchy hier;
 
         synchronized (repositories) {
             hier = repositories.get(ctx);
             if (null == hier) {
-                MvvmLoggingContextFactory o = currentContextFactory.get();
-                hier = new MvvmHierarchy(ctx);
+                UvmLoggingContextFactory o = currentContextFactory.get();
+                hier = new UvmHierarchy(ctx);
                 hier.configure();
                 repositories.put(ctx, hier);
             }
@@ -111,11 +111,11 @@ public class MvvmRepositorySelector implements RepositorySelector
     }
 
     /**
-     * Deregister {@link MvvmLoggingContext} from the system.
+     * Deregister {@link UvmLoggingContext} from the system.
      *
-     * @param ctx {@link MvvmLoggingContext} to remove.
+     * @param ctx {@link UvmLoggingContext} to remove.
      */
-    public void remove(MvvmLoggingContext ctx)
+    public void remove(UvmLoggingContext ctx)
     {
         synchronized (repositories) {
             repositories.remove(ctx);
@@ -125,31 +125,31 @@ public class MvvmRepositorySelector implements RepositorySelector
     /**
      * Causes all logging repositories to reconfigure themselves from
      * the configuration file specified in the {@link
-     * MvvmLoggingContext}.
+     * UvmLoggingContext}.
      */
     public void reconfigureAll()
     {
         synchronized (repositories) {
-            for (MvvmHierarchy h : repositories.values()) {
+            for (UvmHierarchy h : repositories.values()) {
                 h.configure();
             }
         }
     }
 
     /**
-     * Sets the current context to the MVVM context.
+     * Sets the current context to the UVM context.
      */
-    public void mvvmContext()
+    public void uvmContext()
     {
-        currentContextFactory.set(MVVM_CONTEXT_FACTORY);
+        currentContextFactory.set(UVM_CONTEXT_FACTORY);
     }
 
     /**
      * Sets the current logging context factory.
      *
-     * @param ctx the {@link MvvmLoggingContextFactory} to use.
+     * @param ctx the {@link UvmLoggingContextFactory} to use.
      */
-    public void setContextFactory(MvvmLoggingContextFactory ctx)
+    public void setContextFactory(UvmLoggingContextFactory ctx)
     {
         currentContextFactory.set(ctx);
     }
@@ -157,14 +157,14 @@ public class MvvmRepositorySelector implements RepositorySelector
     /**
      * Gets the current logging context factory.
      *
-     * @return the current {@link MvvmLoggingContextFactory}.
+     * @return the current {@link UvmLoggingContextFactory}.
      */
-    public MvvmLoggingContextFactory getContextFactory()
+    public UvmLoggingContextFactory getContextFactory()
     {
-        MvvmLoggingContextFactory ctx = currentContextFactory.get();
+        UvmLoggingContextFactory ctx = currentContextFactory.get();
         if (null == ctx) {
-            ctx = MVVM_CONTEXT_FACTORY;
-            currentContextFactory.set(MVVM_CONTEXT_FACTORY);
+            ctx = UVM_CONTEXT_FACTORY;
+            currentContextFactory.set(UVM_CONTEXT_FACTORY);
         }
         return ctx;
     }
@@ -175,9 +175,9 @@ public class MvvmRepositorySelector implements RepositorySelector
      * Adds a {@link SmtpAppender} to the logging system.
      *
      * @param appender {@link SmtpAppender} to add.
-     * @return the MvvmLoggingContext for this appender.
+     * @return the UvmLoggingContext for this appender.
      */
-    MvvmLoggingContext registerSmtpAppender(SmtpAppender appender)
+    UvmLoggingContext registerSmtpAppender(SmtpAppender appender)
     {
         smtpAppenders.add(appender);
         return getContextFactory().get();
@@ -207,14 +207,14 @@ public class MvvmRepositorySelector implements RepositorySelector
 
     /**
      * A {@link org.apache.log4j.Hierarchy} that associates the
-     * current {@link MvvmLoggingContext} and allows configuration
+     * current {@link UvmLoggingContext} and allows configuration
      * based on the contexts configuration file.
      */
-    private class MvvmHierarchy extends Hierarchy
+    private class UvmHierarchy extends Hierarchy
     {
-        private final MvvmLoggingContext ctx;
+        private final UvmLoggingContext ctx;
 
-        MvvmHierarchy(MvvmLoggingContext ctx)
+        UvmHierarchy(UvmLoggingContext ctx)
         {
             super(new RootLogger(Level.DEBUG));
 
@@ -235,7 +235,7 @@ public class MvvmRepositorySelector implements RepositorySelector
                 Reader r = new InputStreamReader(is);
                 ReplaceTokens rts = new ReplaceTokens(r);
                 ReplaceTokens.Token tok = new ReplaceTokens.Token();
-                tok.setKey(TRAN_LOG_FILE_NAME_TOKEN);
+                tok.setKey(NODE_LOG_FILE_NAME_TOKEN);
                 tok.setValue(ctx.getFileName());
                 rts.addConfiguredToken(tok);
 
@@ -249,29 +249,29 @@ public class MvvmRepositorySelector implements RepositorySelector
     // static initialization --------------------------------------------------
 
     static {
-        TRAN_LOG_FILE_NAME_TOKEN = "TranLogFileName";
+        NODE_LOG_FILE_NAME_TOKEN = "NodeLogFileName";
 
-        MVVM_CONTEXT = new MvvmLoggingContext()
+        UVM_CONTEXT = new UvmLoggingContext()
             {
-                public String getConfigName() { return "log4j-mvvm.xml"; }
-                public String getFileName() { return "mvvm"; }
-                public String getName() { return "mvvm"; }
+                public String getConfigName() { return "log4j-uvm.xml"; }
+                public String getFileName() { return "uvm"; }
+                public String getName() { return "uvm"; }
 
-                public MvvmLoggingContext get() { return this; }
+                public UvmLoggingContext get() { return this; }
             };
 
-        MVVM_CONTEXT_FACTORY = new MvvmLoggingContextFactory()
+        UVM_CONTEXT_FACTORY = new UvmLoggingContextFactory()
             {
-                public MvvmLoggingContext get() { return MVVM_CONTEXT; }
+                public UvmLoggingContext get() { return UVM_CONTEXT; }
             };
 
         NULL_LOG_MAILER = new LogMailer()
             {
-                public void sendBuffer(MvvmLoggingContext ctx) { }
+                public void sendBuffer(UvmLoggingContext ctx) { }
 
-                public void sendMessage(MvvmLoggingContext ctx) { }
+                public void sendMessage(UvmLoggingContext ctx) { }
             };
 
-        SELECTOR = new MvvmRepositorySelector();
+        SELECTOR = new UvmRepositorySelector();
     }
 }

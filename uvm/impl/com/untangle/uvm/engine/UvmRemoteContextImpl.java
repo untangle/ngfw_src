@@ -9,50 +9,50 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.IOException;
 
-import com.untangle.mvvm.ArgonManager;
-import com.untangle.mvvm.BrandingManager;
-import com.untangle.mvvm.ConnectivityTester;
-import com.untangle.mvvm.NetworkManager;
-import com.untangle.mvvm.RemoteAppServerManager;
-import com.untangle.mvvm.ReportingManager;
-import com.untangle.mvvm.addrbook.AddressBook;
-import com.untangle.mvvm.tran.RemoteIntfManager;
-import com.untangle.mvvm.tran.RemoteShieldManager;
-import com.untangle.mvvm.client.MvvmRemoteContext;
-import com.untangle.mvvm.logging.LoggingManager;
-import com.untangle.mvvm.networking.ping.PingManager;
-import com.untangle.mvvm.policy.PolicyManager;
-import com.untangle.mvvm.portal.RemotePortalManager;
-import com.untangle.mvvm.security.AdminManager;
-import com.untangle.mvvm.toolbox.ToolboxManager;
-import com.untangle.mvvm.tran.TransformManager;
-import com.untangle.mvvm.user.RemotePhoneBook;
+import com.untangle.uvm.ArgonManager;
+import com.untangle.uvm.BrandingManager;
+import com.untangle.uvm.ConnectivityTester;
+import com.untangle.uvm.NetworkManager;
+import com.untangle.uvm.RemoteAppServerManager;
+import com.untangle.uvm.ReportingManager;
+import com.untangle.uvm.addrbook.AddressBook;
+import com.untangle.uvm.node.RemoteIntfManager;
+import com.untangle.uvm.node.RemoteShieldManager;
+import com.untangle.uvm.client.UvmRemoteContext;
+import com.untangle.uvm.logging.LoggingManager;
+import com.untangle.uvm.networking.ping.PingManager;
+import com.untangle.uvm.policy.PolicyManager;
+import com.untangle.uvm.portal.RemotePortalManager;
+import com.untangle.uvm.security.AdminManager;
+import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.user.RemotePhoneBook;
 
-class MvvmRemoteContextImpl implements MvvmRemoteContext
+class UvmRemoteContextImpl implements UvmRemoteContext
 {
-    private final MvvmContextImpl context;
+    private final UvmContextImpl context;
 
     // constructors -----------------------------------------------------------
 
-    MvvmRemoteContextImpl(MvvmContextImpl context)
+    UvmRemoteContextImpl(UvmContextImpl context)
     {
         this.context = context;
     }
 
-    // MvvmRemoteContext methods ----------------------------------------------
+    // UvmRemoteContext methods ----------------------------------------------
 
     public ToolboxManager toolboxManager()
     {
         return context.toolboxManager();
     }
 
-    public TransformManager transformManager()
+    public NodeManager nodeManager()
     {
-        return context.remoteTransformManager();
+        return context.remoteNodeManager();
     }
 
     public LoggingManager loggingManager()

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.addrbook;
+package com.untangle.uvm.addrbook;
 
 /**
  * ...name says it all

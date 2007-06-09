@@ -1,13 +1,13 @@
-<%@ page language="java" import="com.untangle.mvvm.*, com.untangle.mvvm.security.Tid, com.untangle.mvvm.tran.*, com.untangle.mvvm.tapi.*, com.untangle.mvvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
+<%@ page language="java" import="com.untangle.uvm.*, com.untangle.uvm.security.Tid, com.untangle.uvm.node.*, com.untangle.uvm.tapi.*, com.untangle.uvm.util.SessionUtil, org.apache.log4j.helpers.AbsoluteTimeDateFormat, java.util.Properties, java.net.URL, java.io.PrintWriter, javax.naming.*" %>
 
 <%
-MvvmLocalContext mvvm = MvvmContextFactory.context();
+UvmLocalContext uvm = UvmContextFactory.context();
 
-BrandingSettings bs = mvvm.brandingManager().getBrandingSettings();
+BrandingSettings bs = uvm.brandingManager().getBrandingSettings();
 String company = bs.getCompanyName();
 String companyUrl = bs.getCompanyUrl();
 
-ReportingManager reportingManager = mvvm.reportingManager();
+ReportingManager reportingManager = uvm.reportingManager();
 
 boolean reportingEnabled = reportingManager.isReportingEnabled();
 boolean reportsAvailable = reportingManager.isReportsAvailable();

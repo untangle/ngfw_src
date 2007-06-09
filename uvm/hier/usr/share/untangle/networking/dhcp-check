@@ -1,6 +1,6 @@
 #!/bin/sh
 
-exec >> @MVVM_LOG@/iptables.log 2>&1
+exec >> @UVM_LOG@/iptables.log 2>&1
 
 ## Return 1 if DHCP is enabled.
 

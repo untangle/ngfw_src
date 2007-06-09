@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
 
 /* Interface for monitoring changes to the Network Settings */
 public interface NetworkSettingsListener

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 import java.io.UnsupportedEncodingException;
 import javax.mail.*;

@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
-import com.untangle.mvvm.networking.internal.AccessSettingsInternal;
+import com.untangle.uvm.networking.internal.AccessSettingsInternal;
 
 public interface LocalAccessManager
 {

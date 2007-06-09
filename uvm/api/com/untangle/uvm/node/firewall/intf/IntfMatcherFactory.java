@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.intf;
+package com.untangle.uvm.node.firewall.intf;
 
-import com.untangle.mvvm.IntfEnum;
+import com.untangle.uvm.IntfEnum;
 
-import com.untangle.mvvm.tran.ParseException;
+import com.untangle.uvm.node.ParseException;
 
-import com.untangle.mvvm.tran.firewall.ParsingFactory;
+import com.untangle.uvm.node.firewall.ParsingFactory;
 
 
 /**

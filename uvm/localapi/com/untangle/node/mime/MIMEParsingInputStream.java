@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
-import static com.untangle.tran.util.Ascii.*;
-import static com.untangle.tran.util.ASCIIUtil.*;
+import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.ASCIIUtil.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +20,7 @@ import java.io.PushbackInputStream;
 import java.nio.*;
 import java.util.*;
 
-import com.untangle.tran.util.*;
+import com.untangle.node.util.*;
 import org.apache.log4j.Logger;
 
 /**
@@ -320,7 +320,7 @@ public class MIMEParsingInputStream extends InputStream {
      * is one exception.  This method does not know if the stream
      * is already positioned past an EOL.  As such, scanning starts
      * assuming the preceeding sequence was an EOL.  This can effect
-     * the {@link com.untangle.tran.mime.MIMEParsingInputStream.BoundaryResult#boundaryStartPos start position}
+     * the {@link com.untangle.node.mime.MIMEParsingInputStream.BoundaryResult#boundaryStartPos start position}
      * of the boundary.
      * <br>
      * EOF is considered a valid terminator for a boundary.

@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.mvvm.networking.internal.InterfaceInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.tran.script.ScriptRunner;
+import com.untangle.uvm.networking.internal.InterfaceInternal;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.script.ScriptRunner;
 import org.apache.log4j.Logger;
 
 
@@ -73,7 +73,7 @@ class InterfaceTester
 
         try {
             statusMap = getStatus( args, settings );
-        } catch ( TransformException e ) {
+        } catch ( NodeException e ) {
             logger.warn( "Unable to update status, using unknown", e );
             statusMap = new HashMap<String,String>();
         }
@@ -131,7 +131,7 @@ class InterfaceTester
     }
 
     private Map<String,String> getStatus( String[] args, NetworkSpacesInternalSettings settings )
-        throws TransformException
+        throws NodeException
     {
         Map<String,String> map = new HashMap<String,String>();
 

@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.port;
+package com.untangle.uvm.node.firewall.port;
 
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.firewall.Parser;
-import com.untangle.mvvm.tran.firewall.ParsingConstants;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.firewall.Parser;
+import com.untangle.uvm.node.firewall.ParsingConstants;
 
 /**
  * PortMatchers designed for matching a single port.

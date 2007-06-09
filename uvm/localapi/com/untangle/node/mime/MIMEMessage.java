@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
-import static com.untangle.tran.util.Ascii.*;
+import static com.untangle.node.util.Ascii.*;
 
 import java.io.*;
 import java.nio.*;
 import java.util.*;
 
-import com.untangle.mvvm.tran.TemplateValues;
-import com.untangle.tran.util.*;
+import com.untangle.uvm.node.TemplateValues;
+import com.untangle.node.util.*;
 import org.apache.log4j.Logger;
 
 
@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
  * members for a top-level message (such as recipient
  * and subject manipulation).
  * <br><br>
- * This class also implements {@link com.untangle.tran.util.TemplateValues TemplateValues}.
+ * This class also implements {@link com.untangle.node.util.TemplateValues TemplateValues}.
  * The variable syntax for accessing elements of the MIMEMessage is based on
  * <code>MIMEMessage:&lt;name></code> where <code>name</code> can be any
  * one of the following:
@@ -62,7 +62,7 @@ import org.apache.log4j.Logger;
  * -->
  * </ul>
  * Note also that any variables from the embedded Headers will also be
- * evaluated (see the docs on {@link com.untangle.tran.mime.Headers Headers}
+ * evaluated (see the docs on {@link com.untangle.node.mime.Headers Headers}
  * for a list of possible variables).
  */
 public class MIMEMessage

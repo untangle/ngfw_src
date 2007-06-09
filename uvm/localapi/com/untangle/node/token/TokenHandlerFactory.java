@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.token;
+package com.untangle.node.token;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
 
 public interface TokenHandlerFactory
 {

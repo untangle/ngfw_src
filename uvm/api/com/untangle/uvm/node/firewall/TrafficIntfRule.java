@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall;
+package com.untangle.uvm.node.firewall;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
-import com.untangle.mvvm.tran.firewall.intf.IntfDBMatcher;
-import com.untangle.mvvm.tran.firewall.intf.IntfMatcherFactory;
-import com.untangle.mvvm.tran.firewall.ip.IPDBMatcher;
-import com.untangle.mvvm.tran.firewall.port.PortDBMatcher;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolDBMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfDBMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
+import com.untangle.uvm.node.firewall.port.PortDBMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
 import org.hibernate.annotations.Type;
 
 /**
@@ -58,7 +58,7 @@ public abstract class TrafficIntfRule extends TrafficRule
      * @return the source IP matcher.
      */
     @Column(name="src_intf_matcher")
-    @Type(type="com.untangle.mvvm.type.firewall.IntfMatcherUserType")
+    @Type(type="com.untangle.uvm.type.firewall.IntfMatcherUserType")
     public IntfDBMatcher getSrcIntf()
     {
         return srcIntf;
@@ -75,7 +75,7 @@ public abstract class TrafficIntfRule extends TrafficRule
      * @return the destination IP matcher.
      */
     @Column(name="dst_intf_matcher")
-    @Type(type="com.untangle.mvvm.type.firewall.IntfMatcherUserType")
+    @Type(type="com.untangle.uvm.type.firewall.IntfMatcherUserType")
     public IntfDBMatcher getDstIntf()
     {
         return dstIntf;

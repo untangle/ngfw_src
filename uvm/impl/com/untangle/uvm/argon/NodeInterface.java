@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
-/* A transform interface is an interface that can be added by a transform.
+/* A node interface is an interface that can be added by a node.
  * presently this only exists for VPN.
  */
-class TransformInterface
+class NodeInterface
 {
     private final byte   argonIntf;
     private final String deviceName;
     
-    TransformInterface( byte argonIntf, String deviceName )
+    NodeInterface( byte argonIntf, String deviceName )
     {
         this.argonIntf = argonIntf;
         this.deviceName = deviceName;

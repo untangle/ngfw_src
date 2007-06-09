@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.addrbook;
+package com.untangle.uvm.addrbook;
 
 /**
  * Enum of different repository types
@@ -21,7 +21,7 @@ public enum RepositoryType {
     MS_ACTIVE_DIRECTORY,
 
     /**
-     * MVVM-local repository
+     * UVM-local repository
      */
     LOCAL_DIRECTORY,
 

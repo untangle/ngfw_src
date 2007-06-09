@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.io.Serializable;
 
@@ -17,9 +17,9 @@ import java.net.InetAddress;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.IPaddr;
 
-import com.untangle.mvvm.tran.ParseException;
+import com.untangle.uvm.node.ParseException;
 
 /**
  * A single ip network.

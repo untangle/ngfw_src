@@ -9,23 +9,23 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 /**
- * This class is for Main to manipulate MvvmContext without resorting
+ * This class is for Main to manipulate UvmContext without resorting
  * to reflection and allowing package protection of sensitive methods.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public abstract class MvvmContextBase
+public abstract class UvmContextBase
 {
     protected Main main;
 
     // abstract methods -------------------------------------------------------
 
     /**
-     * Initialize the MVVM, starting up base services.
+     * Initialize the UVM, starting up base services.
      */
     protected abstract void init();
 
@@ -35,14 +35,14 @@ public abstract class MvvmContextBase
     protected abstract void postInit();
 
     /**
-     * Destroy the MVVM, stopping all services.
+     * Destroy the UVM, stopping all services.
      */
     protected abstract void destroy();
 
     // protected methods ------------------------------------------------------
 
     /**
-     * Gives MvvmContextImpl access to the Main object.
+     * Gives UvmContextImpl access to the Main object.
      *
      * @return the Main object given to {@link #doInit(Main)}.
      */
@@ -54,7 +54,7 @@ public abstract class MvvmContextBase
     // package protected methods ----------------------------------------------
 
     /**
-     * Method for bootstrap access to MvvmContext.
+     * Method for bootstrap access to UvmContext.
      *
      * @param main the Main object that started the boot process.
      */
@@ -65,7 +65,7 @@ public abstract class MvvmContextBase
     }
 
     /**
-     * Method for bootstrap access to MvvmContext.
+     * Method for bootstrap access to UvmContext.
      */
     void doPostInit()
     {
@@ -73,7 +73,7 @@ public abstract class MvvmContextBase
     }
 
     /**
-     * Method for bootstrap access to MvvmContext.
+     * Method for bootstrap access to UvmContext.
      */
     void doDestroy()
     {

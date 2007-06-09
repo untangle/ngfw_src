@@ -9,7 +9,7 @@
  *  $Id$
  */
 
-package com.untangle.tran.util;
+package com.untangle.node.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,14 +20,14 @@ import java.util.HashMap;
 import java.util.List;
 import javax.naming.InvalidNameException;
 
-import com.untangle.mvvm.security.CertInfo;
-import com.untangle.mvvm.security.RFC2253Name;
+import com.untangle.uvm.security.CertInfo;
+import com.untangle.uvm.security.RFC2253Name;
 
 
 /**
  * Wrapper around the OpenSSL application.  Note that the features
  * around using OpenSSL as a CA are somewhat stateful, so these have been
- * broken into {@link com.untangle.mvvm.util.OpenSSLCAWrapper their own class}.
+ * broken into {@link com.untangle.uvm.util.OpenSSLCAWrapper their own class}.
  * <br>
  * Note also that some of this could be obtained from Java's APIs, but those
  * are (a) way too complicated and (b) I don't trust Java as much as OpenSSL.

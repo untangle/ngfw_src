@@ -9,86 +9,86 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.mvvm.policy.Policy;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.DeployException;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformManager;
-import com.untangle.mvvm.tran.TransformStats;
-import com.untangle.mvvm.tran.UndeployException;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.DeployException;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.node.NodeStats;
+import com.untangle.uvm.node.UndeployException;
 
-class RemoteTransformManagerImpl implements TransformManager
+class RemoteNodeManagerImpl implements NodeManager
 {
-    private final TransformManagerImpl transformManager;
+    private final NodeManagerImpl nodeManager;
 
-    RemoteTransformManagerImpl(TransformManagerImpl transformManager)
+    RemoteNodeManagerImpl(NodeManagerImpl nodeManager)
     {
-        this.transformManager = transformManager;
+        this.nodeManager = nodeManager;
     }
 
-    public List<Tid> transformInstances()
+    public List<Tid> nodeInstances()
     {
-        return transformManager.transformInstances();
+        return nodeManager.nodeInstances();
     }
 
-    public List<Tid> transformInstances(String name)
+    public List<Tid> nodeInstances(String name)
     {
-        return transformManager.transformInstances(name);
+        return nodeManager.nodeInstances(name);
     }
 
-    public List<Tid> transformInstances(Policy policy)
+    public List<Tid> nodeInstances(Policy policy)
     {
-        return transformManager.transformInstances(policy);
+        return nodeManager.nodeInstances(policy);
     }
 
-    public List<Tid> transformInstancesVisible(Policy policy)
+    public List<Tid> nodeInstancesVisible(Policy policy)
     {
-        return transformManager.transformInstancesVisible(policy);
+        return nodeManager.nodeInstancesVisible(policy);
     }
 
-    public List<Tid> transformInstances(String name, Policy policy)
+    public List<Tid> nodeInstances(String name, Policy policy)
     {
-        return transformManager.transformInstances(name, policy);
+        return nodeManager.nodeInstances(name, policy);
     }
 
     public Tid instantiate(String name, Policy policy) throws DeployException
     {
-        return transformManager.instantiate(name, policy);
+        return nodeManager.instantiate(name, policy);
     }
 
     public Tid instantiate(String name, Policy policy, String[] args)
         throws DeployException
     {
-        return transformManager.instantiate(name, policy, args);
+        return nodeManager.instantiate(name, policy, args);
     }
 
     public Tid instantiate(String name, String[] args) throws DeployException
     {
-        return transformManager.instantiate(name, args);
+        return nodeManager.instantiate(name, args);
     }
 
     public Tid instantiate(String name) throws DeployException
     {
-        return transformManager.instantiate(name);
+        return nodeManager.instantiate(name);
     }
 
     public void destroy(Tid tid) throws UndeployException
     {
-        transformManager.destroy(tid);
+        nodeManager.destroy(tid);
     }
 
-    public TransformContext transformContext(Tid tid)
+    public NodeContext nodeContext(Tid tid)
     {
-        return transformManager.transformContext(tid);
+        return nodeManager.nodeContext(tid);
     }
 
-    public Map<Tid, TransformStats> allTransformStats()
+    public Map<Tid, NodeStats> allNodeStats()
     {
-        return transformManager.allTransformStats();
+        return nodeManager.allNodeStats();
     }
 }

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
 import java.net.InetAddress;
 import java.util.Collections;

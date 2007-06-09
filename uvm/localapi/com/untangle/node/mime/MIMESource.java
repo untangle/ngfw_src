@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 import java.io.File;
 import java.io.IOException;
 
-import com.untangle.tran.util.*;
+import com.untangle.node.util.*;
 
 /**
  * This interface is a strange beast.  It is intended as an

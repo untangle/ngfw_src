@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
-import com.untangle.mvvm.type.IntBasedUserType;
+import com.untangle.uvm.type.IntBasedUserType;
 
 public class EthernetMediaUserType extends IntBasedUserType
 {

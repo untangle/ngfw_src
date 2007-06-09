@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -69,7 +69,7 @@ public class MimeTypeRule extends Rule
      * @return the mime-type.
      */
     @Column(name="mime_type")
-    @Type(type="com.untangle.mvvm.type.MimeTypeUserType")
+    @Type(type="com.untangle.uvm.type.MimeTypeUserType")
     public MimeType getMimeType()
     {
         return mimeType;

@@ -9,7 +9,7 @@
   <property name="com.jasperassistant.designer.HGuides" value="109,112,204,207,492,494"/>
   <property name="com.jasperassistant.designer.GridHeight" value="12"/>
   <property name="com.jasperassistant.designer.GridWidth" value="12"/>
-  <property name="com.jasperassistant.designer.DataSource" value="mvvm"/>
+  <property name="com.jasperassistant.designer.DataSource" value="uvm"/>
   <property name="com.jasperassistant.designer.SnapToGrid" value="false"/>
   <property name="com.jasperassistant.designer.Grid" value="false"/>
   <parameter name="startTime" class="java.sql.Timestamp">

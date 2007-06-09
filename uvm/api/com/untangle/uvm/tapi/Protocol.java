@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 import java.util.HashMap;
 import java.util.Map;

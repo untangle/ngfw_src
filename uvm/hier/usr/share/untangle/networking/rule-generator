@@ -1,9 +1,9 @@
 #!/bin/sh
 
-exec >> @MVVM_LOG@/iptables.log 2>&1
+exec >> @UVM_LOG@/iptables.log 2>&1
 
-RULE_CONFIG_FILE=@MVVM_HOME@/networking/rule-config
-FUNCTIONS_FILE=@MVVM_HOME@/networking/functions
+RULE_CONFIG_FILE=@UVM_HOME@/networking/rule-config
+FUNCTIONS_FILE=@UVM_HOME@/networking/functions
 
 if [ -r ${RULE_CONFIG_FILE}  ]; then
     . ${RULE_CONFIG_FILE}
@@ -48,7 +48,7 @@ VPN_TAP_MARK="0x5"
 MARK_LOCAL_ADDRESS_BASE="0x00000010"
 
 ## This list must get longer when there are more interfaces
-INTERFACE_ORDER="${MVVM_EXTERNAL_INTF} ${MVVM_INTERNAL_INTF} ${MVVM_DMZ_INTF}"
+INTERFACE_ORDER="${UVM_EXTERNAL_INTF} ${UVM_INTERNAL_INTF} ${UVM_DMZ_INTF}"
 
 ## List of ICMP types to antisubscribe to.
 ANTISUBSCRIBES_ICMP="parameter-problem source-quench fragmentation-needed"
@@ -119,7 +119,7 @@ function blockForwarding() {
     if [ "${DHCP_BLOCK_FORWARDING}x" = "truex" ]; then
         ## Block DHCP traffic from being forwarded to interfaces in the services
         ## spaces.
-        for l_interface in ${MVVM_SERVICES_INTF_LIST} ; do
+        for l_interface in ${UVM_SERVICES_INTF_LIST} ; do
             if [ -z `getBridge ${l_interface}` ]; then
                 l_modules=" "
                 l_inFlag=" -i "
@@ -280,7 +280,7 @@ function markIntfRules () {
         mask=${c}
 
         ## The services list determine which interfaces get the inside_intf flag.
-        if [ "${MVVM_SERVICES_INTF_LIST/${interface}/}x" != "${MVVM_SERVICES_INTF_LIST}x" ]; then
+        if [ "${UVM_SERVICES_INTF_LIST/${interface}/}x" != "${UVM_SERVICES_INTF_LIST}x" ]; then
             mask=$(( ${mask} | ${MARK_INSIDE_INTF} ))
         fi
 
@@ -312,7 +312,7 @@ function markIntfVpn() {
     if [  -d "${SYSFS_INTERFACE_PATH}/${VPN_TUN_INTF}" ]; then
         l_interface=${VPN_TUN_INTF}
         l_matchType="-i"
-        l_addresses="`getActualAddresses ${l_interface}` `getActualAddresses ${MVVM_INTERNAL_INTF}`"
+        l_addresses="`getActualAddresses ${l_interface}` `getActualAddresses ${UVM_INTERNAL_INTF}`"
     fi
     
     if [ -d "${SYSFS_INTERFACE_PATH}/${VPN_TAP_INTF}" ]; then
@@ -353,7 +353,7 @@ function rawRules() {
 function antisubscribeRules() {
     local t_mark
     local t_mask
-    local pingList=${MVVM_PING_LIST}
+    local pingList=${UVM_PING_LIST}
     local t_httpsPorts
 
     ## flush the antisubscribe chain
@@ -377,7 +377,7 @@ function antisubscribeRules() {
     ## Antisubscribe on all interfaces. (default is a little janky.)
 
     ## If unset, then use default
-    if [ "x${MVVM_PING_EN}" != "xtrue" ]; then
+    if [ "x${UVM_PING_EN}" != "xtrue" ]; then
         pingList="1 2 3"
     fi
 
@@ -416,7 +416,7 @@ function antisubscribeRules() {
             -j MARK --or-mark $(( ${MARK_ANTISUB} | ${MARK_INTERNAL_REDIRECT} ))
 
         ## If outside is enabled, catch everything else
-        if [ "${MVVM_ALLOW_OUT_HTTPS}x" = "truex" ]; then
+        if [ "${UVM_ALLOW_OUT_HTTPS}x" = "truex" ]; then
             ${IPTABLES} -t mangle -A ${CHAIN_ANTISUB} -p tcp -m mark --mark "0/${MARK_ANTISUB}" \
                 --destination ${HTTPS_PUBLIC_ADDR} \
                 --destination-port ${HTTPS_PUBLIC_PORT} \
@@ -583,7 +583,7 @@ function interceptRules() {
         ${IPTABLES} -t mangle -A ${CHAIN_INTERCEPT} -p udp -j DIVERT --to-port ${UDP_DIVERT_PORT}
     fi
 
-## Redirect all traffic to the public address to the mvvm
+## Redirect all traffic to the public address to the uvm
     if [ -n "${HTTPS_PUBLIC_ADDR}" ] && [ -n "${HTTPS_PUBLIC_PORT}" ] &&
         [ "${HTTPS_PUBLIC_REDIRECT_EN}x" = "truex" ]; then
         t_mark="$(( ${MARK_ANTISUB} | ${MARK_INTERNAL_REDIRECT} ))"
@@ -705,8 +705,8 @@ function setupMode()
 function runCustomRulesScript()
 {
     ## If necessary run the custom rules script
-    if [ -n "${MVVM_CUSTOM_RULES}" ]; then 
-        ${MVVM_CUSTOM_RULES} ; 
+    if [ -n "${UVM_CUSTOM_RULES}" ]; then 
+        ${UVM_CUSTOM_RULES} ; 
     else
         ${LOG_DEBUG} "Custom rules script is disabled"
     fi
@@ -748,7 +748,7 @@ getLicenseKey() {
 ###############################################################
 echo "[DEBUG:`date`] Generating iptables rules"
 
-# This parameter comes from the MVVM_PARAMS_FILE
+# This parameter comes from the UVM_PARAMS_FILE
 if [ -f /proc/sys/net/ipv4/tcp_window_scaling ] ; then
     ## If undefined or non-true, disable window scaling
     val=0

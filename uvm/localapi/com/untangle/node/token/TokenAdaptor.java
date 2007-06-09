@@ -9,33 +9,33 @@
  * $Id$
  */
 
-package com.untangle.tran.token;
+package com.untangle.node.token;
 
-import static com.untangle.tran.token.CasingAdaptor.TOKEN_SIZE;
+import static com.untangle.node.token.CasingAdaptor.TOKEN_SIZE;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.AbstractEventHandler;
-import com.untangle.mvvm.tapi.MPipeException;
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tapi.PipelineFoundry;
-import com.untangle.mvvm.tapi.Session;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.tapi.event.IPDataResult;
-import com.untangle.mvvm.tapi.event.IPSessionEvent;
-import com.untangle.mvvm.tapi.event.TCPChunkEvent;
-import com.untangle.mvvm.tapi.event.TCPChunkResult;
-import com.untangle.mvvm.tapi.event.TCPNewSessionRequestEvent;
-import com.untangle.mvvm.tapi.event.TCPSessionEvent;
-import com.untangle.mvvm.tapi.event.TCPStreamer;
-import com.untangle.mvvm.tapi.event.UDPNewSessionRequestEvent;
-import com.untangle.mvvm.tapi.event.UDPPacketEvent;
-import com.untangle.mvvm.tapi.event.UDPSessionEvent;
-import com.untangle.mvvm.tran.MutateTStats;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.AbstractEventHandler;
+import com.untangle.uvm.tapi.MPipeException;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.PipelineFoundry;
+import com.untangle.uvm.tapi.Session;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.tapi.event.IPDataResult;
+import com.untangle.uvm.tapi.event.IPSessionEvent;
+import com.untangle.uvm.tapi.event.TCPChunkEvent;
+import com.untangle.uvm.tapi.event.TCPChunkResult;
+import com.untangle.uvm.tapi.event.TCPNewSessionRequestEvent;
+import com.untangle.uvm.tapi.event.TCPSessionEvent;
+import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.tapi.event.UDPNewSessionRequestEvent;
+import com.untangle.uvm.tapi.event.UDPPacketEvent;
+import com.untangle.uvm.tapi.event.UDPSessionEvent;
+import com.untangle.uvm.node.MutateTStats;
+import com.untangle.uvm.node.Node;
 import org.apache.log4j.Logger;
 
 public class TokenAdaptor extends AbstractEventHandler
@@ -45,13 +45,13 @@ public class TokenAdaptor extends AbstractEventHandler
     private final TokenHandlerFactory handlerFactory;
     private final Map handlers = new ConcurrentHashMap();
 
-    private final PipelineFoundry pipeFoundry = MvvmContextFactory.context()
+    private final PipelineFoundry pipeFoundry = UvmContextFactory.context()
         .pipelineFoundry();
     private final Logger logger = Logger.getLogger(TokenAdaptor.class);
 
-    public TokenAdaptor(Transform transform, TokenHandlerFactory thf)
+    public TokenAdaptor(Node node, TokenHandlerFactory thf)
     {
-        super(transform);
+        super(node);
         this.handlerFactory = thf;
     }
 

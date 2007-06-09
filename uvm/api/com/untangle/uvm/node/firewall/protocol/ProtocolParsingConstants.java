@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.protocol;
+package com.untangle.uvm.node.firewall.protocol;
 
 /**
  * A set of string constants for the various matchers.

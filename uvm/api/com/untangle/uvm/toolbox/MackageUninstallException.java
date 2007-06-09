@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.toolbox;
+package com.untangle.uvm.toolbox;
 
 public class MackageUninstallException extends MackageException
 {

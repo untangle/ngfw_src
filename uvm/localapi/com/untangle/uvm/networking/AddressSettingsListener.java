@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
-import com.untangle.mvvm.networking.internal.AddressSettingsInternal;
+import com.untangle.uvm.networking.internal.AddressSettingsInternal;
 
 /* Interface for monitoring changes to the hostname settings. */
 public interface AddressSettingsListener

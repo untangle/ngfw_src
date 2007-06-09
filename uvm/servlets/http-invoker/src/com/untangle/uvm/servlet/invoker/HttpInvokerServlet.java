@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.servlet.invoker;
+package com.untangle.uvm.servlet.invoker;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.mvvm.engine.HttpInvoker;
+import com.untangle.uvm.engine.HttpInvoker;
 
 public class HttpInvokerServlet extends HttpServlet
 {

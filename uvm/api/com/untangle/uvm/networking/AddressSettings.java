@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -19,11 +19,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.Validatable;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.Validatable;
+import com.untangle.uvm.node.ValidateException;
 import org.hibernate.annotations.Type;
 
 /**
@@ -34,7 +34,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_address_settings", schema="settings")
+@Table(name="uvm_address_settings", schema="settings")
 public class AddressSettings implements Serializable, Validatable
 {
     private static final String PUBLIC_ADDRESS_EXCEPTION =
@@ -107,7 +107,7 @@ public class AddressSettings implements Serializable, Validatable
      * Retrieve the hostname for the box (this is the hostname that
      * goes into certificates). */
     @Column(name="hostname")
-    @Type(type="com.untangle.mvvm.type.HostNameUserType")
+    @Type(type="com.untangle.uvm.type.HostNameUserType")
     public HostName getHostName()
     {
         return this.hostname;
@@ -210,7 +210,7 @@ public class AddressSettings implements Serializable, Validatable
      * Retrieve the address portion of the public address.
      */
     @Column(name="public_ip_addr")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getPublicIPaddr()
     {
         return this.publicIPaddr;

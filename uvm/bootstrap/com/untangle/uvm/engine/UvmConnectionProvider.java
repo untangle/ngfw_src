@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -23,7 +23,7 @@ import org.hibernate.connection.ConnectionProvider;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class MvvmConnectionProvider implements ConnectionProvider
+public class UvmConnectionProvider implements ConnectionProvider
 {
     private final DataSourceFactory dsf = DataSourceFactory.factory();
 

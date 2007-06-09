@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 import java.net.*;
 
-import com.untangle.mvvm.tapi.event.SessionEventListener;
+import com.untangle.uvm.tapi.event.SessionEventListener;
 
 
 /**
@@ -31,7 +31,7 @@ import com.untangle.mvvm.tapi.event.SessionEventListener;
 public interface MPipeManager {
     /**
      * The <code>plumbLocal</code> activates a new section of MetaPipe
-     * for the given transform.  No attempt is made to limit tranforms
+     * for the given node.  No attempt is made to limit nodes
      * to only one active MPipe at this level (e.g. casings have two).
      *
      * Remote doesn't exist yet. XX

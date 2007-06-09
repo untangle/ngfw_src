@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. @PREFIX@/etc/default/mvvm
+. @PREFIX@/etc/default/uvm
 
 REG_KEY="$1"
 
@@ -11,10 +11,10 @@ fi
 
 if [ -n "$REG_KEY" ] ; then # the install wizard is calling us
   # we need some temporary, although invalid, key, so that the rest 
-  # of the mvvm works ok...
+  # of the uvm works ok...
   echo $FAKE_KEY > $ACTIVATION_KEY_FILE
 
-  # this file is what mvvm.sh uses to figure out if it needs to fetch
+  # this file is what uvm.sh uses to figure out if it needs to fetch
   # a key or not, so we create it last, and only if it's not already
   # there: if it is, it means we're reinstalling after resetting to
   # factory defaults, and in this case we'd like to keep the same
@@ -41,12 +41,12 @@ if [ -n "$REG_KEY" ] ; then # the install wizard is calling us
     echo "Key is valid"
   fi
 else
-  # we're being called through mvvm.sh, and the right key is in the 
+  # we're being called through uvm.sh, and the right key is in the 
   # activation file already
 
   # This next will fail if testing on development machines, which is "a good thing"
   echo "Installing sources list"
   KEY=`cat $ACTIVATION_KEY_FILE`
-  cat @MVVM_HOME@/conf/etc/apt_sources.list | sed "s/XXX_REG_KEY_XXX/$KEY/" > @PREFIX@/etc/apt/sources.list
+  cat @UVM_HOME@/conf/etc/apt_sources.list | sed "s/XXX_REG_KEY_XXX/$KEY/" > @PREFIX@/etc/apt/sources.list
   apt-get update
 fi

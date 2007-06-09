@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.util;
+package com.untangle.uvm.util;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.tran.TransformContext;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.node.NodeContext;
 
 
 /* Isn't as flexible as it needs to be, should have a where clause, but this is just a start */
@@ -26,21 +26,21 @@ public class DataLoader<T>
     private final String type;
 
     /* One of these must be null, use the non-null one */
-    private final TransformContext transformContext;
-    private final MvvmLocalContext localContext;
+    private final NodeContext nodeContext;
+    private final UvmLocalContext localContext;
     
-    public DataLoader( String type, TransformContext transform ) 
+    public DataLoader( String type, NodeContext node ) 
     {
         this.type = type;
-        this.transformContext = transform;
+        this.nodeContext = node;
         this.localContext = null;
         this.data = null;
     }
 
-    public DataLoader( String type, MvvmLocalContext local ) 
+    public DataLoader( String type, UvmLocalContext local ) 
     {
         this.type = type;
-        this.transformContext = null;
+        this.nodeContext = null;
         this.localContext = local;
         this.data = null;
     }
@@ -68,7 +68,7 @@ public class DataLoader<T>
                 }
             };
         
-        if ( this.transformContext != null ) transformContext.runTransaction( tw );
+        if ( this.nodeContext != null ) nodeContext.runTransaction( tw );
         else this.localContext.runTransaction( tw );
         
         return this.data;

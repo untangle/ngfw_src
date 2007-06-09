@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import java.net.InetAddress;
 import java.net.Inet4Address;
 
-import com.untangle.mvvm.tran.PipelineEndpoints;
+import com.untangle.uvm.node.PipelineEndpoints;
 import com.untangle.jnetcap.*;
 
 public interface IPNewSessionRequest extends NewSessionRequest, IPSessionDesc
@@ -53,19 +53,19 @@ public interface IPNewSessionRequest extends NewSessionRequest, IPSessionDesc
 
     /**
      * Session requests have a state of <code>REQUESTED</code> when the session request has not
-     * been rejected or released by the transform.
+     * been rejected or released by the node.
      */
     static final byte REQUESTED = 2;
 
     /**
      * Session requests have a state of <code>REJECTED</code> when the session request has
-     * been rejected by the transform.  It cannot aftwards be released.
+     * been rejected by the node.  It cannot aftwards be released.
      */
     static final byte REJECTED = 99;
 
     /**
      * Session requests have a state of <code>RELEASED</code> when the session request has been
-     * been released by the transform.  It cannot aftarwards be rejected.
+     * been released by the node.  It cannot aftarwards be rejected.
      */
     static final byte RELEASED = 98;
 
@@ -77,7 +77,7 @@ public interface IPNewSessionRequest extends NewSessionRequest, IPSessionDesc
 
     /**
      * Session requests have a state of <code>REJECTED_SILENT</code> when the session request
-     * has been rejected silently by the transform.  The curren state must be REQUESTED.
+     * has been rejected silently by the node.  The curren state must be REQUESTED.
      */
     static final byte REJECTED_SILENT = 101;
 

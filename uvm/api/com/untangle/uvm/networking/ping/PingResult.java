@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking.ping;
+package com.untangle.uvm.networking.ping;
 
 import java.io.Serializable;
 

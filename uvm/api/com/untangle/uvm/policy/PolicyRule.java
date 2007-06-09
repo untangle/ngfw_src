@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.policy;
+package com.untangle.uvm.policy;
 
 import java.util.*;
 import javax.persistence.Column;
@@ -18,8 +18,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
-import com.untangle.mvvm.tran.IPSessionDesc;
-import com.untangle.mvvm.tran.Rule;
+import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.node.Rule;
 
 /**
  * Hibernate mappings for this class are in the subclasses UserPolicyRule

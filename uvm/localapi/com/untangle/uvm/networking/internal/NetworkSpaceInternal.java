@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking.internal;
+package com.untangle.uvm.networking.internal;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.networking.IPNetwork;
-import com.untangle.mvvm.networking.IPNetworkRule;
-import com.untangle.mvvm.networking.Interface;
-import com.untangle.mvvm.networking.NetworkSpace;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.networking.IPNetwork;
+import com.untangle.uvm.networking.IPNetworkRule;
+import com.untangle.uvm.networking.Interface;
+import com.untangle.uvm.networking.NetworkSpace;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ValidateException;
 
 public class NetworkSpaceInternal
 {

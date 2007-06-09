@@ -9,26 +9,26 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.Set;
 import javax.security.auth.login.FailedLoginException;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.client.MultipleLoginsException;
-import com.untangle.mvvm.client.MvvmRemoteContext;
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.security.LoginFailureReason;
-import com.untangle.mvvm.security.LoginSession;
-import com.untangle.mvvm.security.MvvmLogin;
-import com.untangle.mvvm.security.MvvmPrincipal;
-import com.untangle.mvvm.security.PasswordUtil;
-import com.untangle.mvvm.security.User;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.client.MultipleLoginsException;
+import com.untangle.uvm.client.UvmRemoteContext;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.security.LoginFailureReason;
+import com.untangle.uvm.security.LoginSession;
+import com.untangle.uvm.security.UvmLogin;
+import com.untangle.uvm.security.UvmPrincipal;
+import com.untangle.uvm.security.PasswordUtil;
+import com.untangle.uvm.security.User;
 import org.apache.log4j.Logger;
 
-class MvvmLoginImpl implements MvvmLogin
+class UvmLoginImpl implements UvmLogin
 {
     private static final String ACTIVATION_USER    = "admin";
 
@@ -38,38 +38,38 @@ class MvvmLoginImpl implements MvvmLogin
     // of scripted dictionary attacks.
     private static final long LOGIN_FAIL_SLEEP_TIME = 2000;
 
-    private static final MvvmLoginImpl MVVM_LOGIN = new MvvmLoginImpl();
+    private static final UvmLoginImpl UVM_LOGIN = new UvmLoginImpl();
 
-    private final Logger logger = Logger.getLogger(MvvmLoginImpl.class);
-    private final EventLogger eventLogger = MvvmContextFactory.context()
+    private final Logger logger = Logger.getLogger(UvmLoginImpl.class);
+    private final EventLogger eventLogger = UvmContextFactory.context()
         .eventLogger();
 
     private int loginId = 0;
 
     // Constructors -----------------------------------------------------------
 
-    private MvvmLoginImpl() { }
+    private UvmLoginImpl() { }
 
     // factories --------------------------------------------------------------
 
-    static MvvmLoginImpl mvvmLogin()
+    static UvmLoginImpl uvmLogin()
     {
-        return MVVM_LOGIN;
+        return UVM_LOGIN;
     }
 
     // Activation methods ------------------------------------------------------
     public boolean isActivated()
     {
-        return MvvmContextFactory.context().isActivated();
+        return UvmContextFactory.context().isActivated();
     }
 
-    public MvvmRemoteContext activationLogin(String key)
+    public UvmRemoteContext activationLogin(String key)
         throws FailedLoginException
     {
         if (isActivated())
             throw new FailedLoginException("Product has already been activated");
 
-        boolean success = MvvmContextFactory.context().activate(key);
+        boolean success = UvmContextFactory.context().activate(key);
         if (!success)
             throw new FailedLoginException("Activation key invalid");
 
@@ -79,9 +79,9 @@ class MvvmLoginImpl implements MvvmLogin
                      LoginSession.LoginType.INTERACTIVE, true);
     }
 
-    // MvvmLogin methods ------------------------------------------------------
+    // UvmLogin methods ------------------------------------------------------
 
-    public MvvmRemoteContext interactiveLogin(final String login,
+    public UvmRemoteContext interactiveLogin(final String login,
                                               String password,
                                               boolean force)
         throws FailedLoginException, MultipleLoginsException
@@ -94,7 +94,7 @@ class MvvmLoginImpl implements MvvmLogin
         HttpInvokerImpl invoker = HttpInvokerImpl.invoker();
         InetAddress clientAddr = invoker.getClientAddr();
 
-        Set users = MvvmContextFactory.context().adminManager()
+        Set users = UvmContextFactory.context().adminManager()
             .getAdminSettings().getUsers();
         User user = null;
         for (Iterator iter = users.iterator(); iter.hasNext(); ) {
@@ -133,7 +133,7 @@ class MvvmLoginImpl implements MvvmLogin
 
     }
 
-    public MvvmRemoteContext systemLogin(String username, String password)
+    public UvmRemoteContext systemLogin(String username, String password)
         throws FailedLoginException
     {
         HttpInvokerImpl invoker = HttpInvokerImpl.invoker();
@@ -169,20 +169,20 @@ class MvvmLoginImpl implements MvvmLogin
         }
     }
 
-    private MvvmRemoteContext login(String username, boolean readOnly,
+    private UvmRemoteContext login(String username, boolean readOnly,
                                     InetAddress clientAddr,
                                     LoginSession.LoginType loginType,
                                     boolean force)
     {
         HttpInvokerImpl invoker = HttpInvokerImpl.invoker();
 
-        MvvmPrincipal mp = new MvvmPrincipal(username, readOnly);
+        UvmPrincipal mp = new UvmPrincipal(username, readOnly);
 
         LoginSession loginSession = new LoginSession(mp, nextLoginId(),
                                                      clientAddr, loginType);
         invoker.login(loginSession, force);
 
-        return MvvmContextImpl.getInstance().remoteContext();
+        return UvmContextImpl.getInstance().remoteContext();
     }
 
     // private methods --------------------------------------------------------

@@ -5,7 +5,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
 "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
-  <display-name>MVVM HTTP Invoker</display-name>
+  <display-name>UVM HTTP Invoker</display-name>
   <description>
     RPC over HTTP.
   </description>
@@ -13,7 +13,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <servlet>
     <servlet-name>HttpInvoker</servlet-name>
     <servlet-class>
-      com.untangle.mvvm.servlet.invoker.HttpInvokerServlet
+      com.untangle.uvm.servlet.invoker.HttpInvokerServlet
     </servlet-class>
   </servlet>
 

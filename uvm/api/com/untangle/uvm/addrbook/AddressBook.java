@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.addrbook;
+package com.untangle.uvm.addrbook;
 
 import java.util.List;
 import javax.naming.NameAlreadyBoundException;
@@ -25,7 +25,7 @@ import javax.naming.ServiceUnavailableException;
  * the repository can optionaly be specified.
  *
  * Note that the initial state of the AddressBook is
- * {@link com.untangle.mvvm.addrbook.AddressBookConfiguration#NOT_CONFIGURED NOT_CONFIGURED}.
+ * {@link com.untangle.uvm.addrbook.AddressBookConfiguration#NOT_CONFIGURED NOT_CONFIGURED}.
  *
  *
  */
@@ -114,7 +114,7 @@ public interface AddressBook
      *
      * @param searchIn the repository to search for the given address
      * @return <code>searchIn</code>, or
-     * com.untangle.mvvm.addrbook.RepositoryType#NONE NONE} if not
+     * com.untangle.uvm.addrbook.RepositoryType#NONE NONE} if not
      * found.
      * @exception ServiceUnavailableException the back-end directory
      * is in a bad state.  There are no corrective actions the caller
@@ -131,7 +131,7 @@ public interface AddressBook
      *
      * @param address the email address
      * @return The repository containing the given address, or
-     *         {@link com.untangle.mvvm.addrbook.RepositoryType#NONE NONE}
+     *         {@link com.untangle.uvm.addrbook.RepositoryType#NONE NONE}
      *         if not found.
      * @exception ServiceUnavailableException the back-end directory
      *            is in a bad state.  There are no corrective actions
@@ -145,7 +145,7 @@ public interface AddressBook
      *
      * @param uid the userid
      * @return The repository containing the given uid, or {@link
-     * com.untangle.mvvm.addrbook.RepositoryType#NONE NONE} if not
+     * com.untangle.uvm.addrbook.RepositoryType#NONE NONE} if not
      * found.
      * @exception ServiceUnavailableException the back-end directory
      * is in a bad state.  There are no corrective actions the caller
@@ -159,7 +159,7 @@ public interface AddressBook
      *
      * @param searchIn the repository to search for the given uid
      * @return <code>searchIn</code>, or
-     * com.untangle.mvvm.addrbook.RepositoryType#NONE NONE} if not
+     * com.untangle.uvm.addrbook.RepositoryType#NONE NONE} if not
      * found.
      * @exception ServiceUnavailableException the back-end directory
      * is in a bad state.  There are no corrective actions the caller
@@ -284,7 +284,7 @@ public interface AddressBook
 
     /**
      * Create a new local user.  Note that the {@link
-     * #com.untangle.mvvm.addrbook.UserEntry#getStoredIn getStoredIn}
+     * #com.untangle.uvm.addrbook.UserEntry#getStoredIn getStoredIn}
      * property is ignored.
      *
      * @param newEntry the new entry
@@ -312,11 +312,11 @@ public interface AddressBook
 
     /**
      * Update an existing local entry (using the {@link
-     * com.untangle.mvvm.addrbook.UserEntry#getUID uid}) of the
+     * com.untangle.uvm.addrbook.UserEntry#getUID uid}) of the
      * passed-in entry.  Note that the {@link
-     * com.untangle.mvvm.addrbook.UserEntry#getStoredIn storedIn}
+     * com.untangle.uvm.addrbook.UserEntry#getStoredIn storedIn}
      * property is ignored, and implicitly {@link
-     * com.untangle.mvvm.addrbook.RepositoryType#LOCAL_DIRECTORY
+     * com.untangle.uvm.addrbook.RepositoryType#LOCAL_DIRECTORY
      * LOCAL_DIRECTORY} as well as uid.
      *
      * @param changedEntry the entry to change all attributes except

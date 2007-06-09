@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -22,24 +22,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.mvvm.tran.IPSessionDesc;
-import com.untangle.mvvm.argon.ArgonAgent;
-import com.untangle.mvvm.argon.PipelineDesc;
-import com.untangle.mvvm.argon.SessionEndpoints;
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.policy.LocalPolicyManager;
-import com.untangle.mvvm.policy.Policy;
-import com.untangle.mvvm.policy.PolicyRule;
-import com.untangle.mvvm.policy.SystemPolicyRule;
-import com.untangle.mvvm.policy.UserPolicyRule;
-import com.untangle.mvvm.tapi.CasingPipeSpec;
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.MPipe;
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tapi.PipelineFoundry;
-import com.untangle.mvvm.tapi.SoloPipeSpec;
-import com.untangle.mvvm.tran.PipelineEndpoints;
-import com.untangle.mvvm.tran.PipelineStats;
+import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.argon.ArgonAgent;
+import com.untangle.uvm.argon.PipelineDesc;
+import com.untangle.uvm.argon.SessionEndpoints;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.policy.LocalPolicyManager;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.policy.PolicyRule;
+import com.untangle.uvm.policy.SystemPolicyRule;
+import com.untangle.uvm.policy.UserPolicyRule;
+import com.untangle.uvm.tapi.CasingPipeSpec;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.MPipe;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.PipelineFoundry;
+import com.untangle.uvm.tapi.SoloPipeSpec;
+import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.PipelineStats;
 import org.apache.log4j.Logger;
 
 public class PipelineFoundryImpl implements PipelineFoundry
@@ -48,7 +48,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
         = new PipelineFoundryImpl();
 
     private static final EventLogger eventLogger
-        = MvvmContextImpl.context().eventLogger();
+        = UvmContextImpl.context().eventLogger();
     private final Logger logger = Logger.getLogger(getClass());
 
     private final Map<Fitting, List<MPipe>> inboundMPipes
@@ -435,7 +435,7 @@ public class PipelineFoundryImpl implements PipelineFoundry
 
     private PolicyRule selectPolicy(IPSessionDesc sd)
     {
-        LocalPolicyManager pmi = MvvmContextImpl.getInstance().policyManager();
+        LocalPolicyManager pmi = UvmContextImpl.getInstance().policyManager();
 
         UserPolicyRule[] userRules = pmi.getUserRules();
         SystemPolicyRule[] sysRules = pmi.getSystemRules();

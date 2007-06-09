@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking.internal;
+package com.untangle.uvm.networking.internal;
 
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.ValidateException;
 
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.localapi.ArgonInterface;
-import com.untangle.mvvm.localapi.LocalIntfManager;
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.localapi.ArgonInterface;
+import com.untangle.uvm.localapi.LocalIntfManager;
 
-import com.untangle.mvvm.networking.Interface;
-import com.untangle.mvvm.networking.EthernetMedia;
+import com.untangle.uvm.networking.Interface;
+import com.untangle.uvm.networking.EthernetMedia;
 
 public class InterfaceInternal
 {
@@ -131,7 +131,7 @@ public class InterfaceInternal
         ArgonInterface argonIntf = null;
 
         try {
-            LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
+            LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
             argonIntf = lim.getIntfByArgon( intf.getArgonIntf());
         } catch ( ArgonException e ) {
             throw new ValidateException( "Invalid argon interface: " + argonIntf, e );

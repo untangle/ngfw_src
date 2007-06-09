@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.portal;
+package com.untangle.uvm.portal;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.IPaddr;
 // Can't include this since we live on UI too
 // import jcifs.smb.NtlmPasswordAuthentication;
 import org.apache.log4j.Logger;

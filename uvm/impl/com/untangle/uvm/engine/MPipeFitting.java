@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
-import com.untangle.mvvm.tapi.Fitting;
-import com.untangle.mvvm.tapi.MPipe;
+import com.untangle.uvm.tapi.Fitting;
+import com.untangle.uvm.tapi.MPipe;
 
 class MPipeFitting
 {

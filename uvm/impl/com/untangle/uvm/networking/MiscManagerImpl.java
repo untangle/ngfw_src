@@ -9,24 +9,24 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.networking.internal.MiscSettingsInternal;
-import com.untangle.mvvm.tran.script.ScriptWriter;
-import com.untangle.mvvm.util.DataLoader;
-import com.untangle.mvvm.util.DataSaver;
-import com.untangle.mvvm.util.DeletingDataSaver;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.networking.internal.MiscSettingsInternal;
+import com.untangle.uvm.node.script.ScriptWriter;
+import com.untangle.uvm.util.DataLoader;
+import com.untangle.uvm.util.DataSaver;
+import com.untangle.uvm.util.DeletingDataSaver;
 import org.apache.log4j.Logger;
 
-import static com.untangle.mvvm.networking.ShellFlags.FLAG_TCP_WIN;
-import static com.untangle.mvvm.networking.ShellFlags.FLAG_POST_FUNC;
-import static com.untangle.mvvm.networking.ShellFlags.POST_FUNC_NAME;
-import static com.untangle.mvvm.networking.ShellFlags.DECL_POST_CONF;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_TCP_WIN;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_POST_FUNC;
+import static com.untangle.uvm.networking.ShellFlags.POST_FUNC_NAME;
+import static com.untangle.uvm.networking.ShellFlags.DECL_POST_CONF;
 
-import static com.untangle.mvvm.networking.ShellFlags.FLAG_CUSTOM_RULES;
-import static com.untangle.mvvm.networking.ShellFlags.CUSTOM_RULES_NAME;
-import static com.untangle.mvvm.networking.ShellFlags.DECL_CUSTOM_RULES;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_CUSTOM_RULES;
+import static com.untangle.uvm.networking.ShellFlags.CUSTOM_RULES_NAME;
+import static com.untangle.uvm.networking.ShellFlags.DECL_CUSTOM_RULES;
 
 class MiscManagerImpl implements LocalMiscManager
 {
@@ -64,7 +64,7 @@ class MiscManagerImpl implements LocalMiscManager
         /* Need to save the settings to the database, then update the
          * local value, everything is executed later */
         DataSaver<MiscSettings> saver =
-            new DeletingDataSaver<MiscSettings>( MvvmContextFactory.context(), "MiscSettings" );
+            new DeletingDataSaver<MiscSettings>( UvmContextFactory.context(), "MiscSettings" );
 
         MiscSettingsInternal newSettings = MiscSettingsInternal.makeInstance( settings );
         saver.saveData( newSettings.toSettings());
@@ -76,7 +76,7 @@ class MiscManagerImpl implements LocalMiscManager
     synchronized void init()
     {
         DataLoader<MiscSettings> loader =
-            new DataLoader<MiscSettings>( "MiscSettings", MvvmContextFactory.context());
+            new DataLoader<MiscSettings>( "MiscSettings", UvmContextFactory.context());
 
         MiscSettings settings = loader.loadData();
 

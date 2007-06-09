@@ -9,21 +9,21 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.util.List;
 
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.localapi.ArgonInterface;
-import com.untangle.mvvm.localapi.LocalIntfManager;
-import com.untangle.mvvm.networking.internal.InterfaceInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpaceInternal;
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.networking.internal.MiscSettingsInternal;
-import com.untangle.mvvm.networking.internal.RouteInternal;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.script.ScriptWriter;
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.localapi.ArgonInterface;
+import com.untangle.uvm.localapi.LocalIntfManager;
+import com.untangle.uvm.networking.internal.InterfaceInternal;
+import com.untangle.uvm.networking.internal.NetworkSpaceInternal;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.networking.internal.MiscSettingsInternal;
+import com.untangle.uvm.networking.internal.RouteInternal;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.script.ScriptWriter;
 import org.apache.log4j.Logger;
 
 class InterfacesScriptWriter extends ScriptWriter
@@ -113,7 +113,7 @@ class InterfacesScriptWriter extends ScriptWriter
 
         appendLine( "iface " + name + " inet manual" );
         
-        LocalIntfManager lim = MvvmContextFactory.context().localIntfManager();
+        LocalIntfManager lim = UvmContextFactory.context().localIntfManager();
         
         /* Insert the flush command for the first network space */
         if ( isFirst ) {

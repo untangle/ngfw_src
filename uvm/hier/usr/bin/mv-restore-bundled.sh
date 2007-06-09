@@ -33,7 +33,7 @@
 # **************************************************
 #
 # As this file is maintained, note that its behavior is bound
-# to com.untangle.tran.boxbackup.BoxBackupImpl.  Any changes
+# to com.untangle.node.boxbackup.BoxBackupImpl.  Any changes
 # this this script should be reflected in that Java code
 #================================================================
 
@@ -105,7 +105,7 @@ function doIt() {
 # Find the specfic files
     pushd $WORKING_DIR > /dev/null 2>&1
 
-    DB_FILE=`ls | grep mvvmdb*.gz`
+    DB_FILE=`ls | grep uvmdb*.gz`
     FILES_FILE=`ls | grep files*.tar.gz`
     INSTALLED_FILE=`ls | grep installed*`
 
@@ -167,7 +167,7 @@ done
 ## when bunnicula gets killed this process doesn't exit.
 if [ $NOHUPPED != "true" ]; then
     ## Just append any arguments, they don't matter
-    nohup sh @PREFIX@/usr/bin/mv-restore-bundled.sh "$@" -Q > @PREFIX@/var/log/mvvm/restore.log 2>&1 &
+    nohup sh @PREFIX@/usr/bin/mv-restore-bundled.sh "$@" -Q > @PREFIX@/var/log/uvm/restore.log 2>&1 &
 else
     doIt
 fi

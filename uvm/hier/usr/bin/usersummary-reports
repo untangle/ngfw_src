@@ -5,7 +5,7 @@ rep_base=$2
 period=$3
 generate_email_index=$4
 
-base_dir=@MVVM_REPORTS@/current
+base_dir=@UVM_REPORTS@/current
 tran_dir=${base_dir}/${tran_name}
 
 ORG_PWD=`pwd`
@@ -15,7 +15,7 @@ cd $NEW_PWD
 ## Parameters:
 ## <estat> : exit status
 ## <src> : source of error
-function exitOnMvvmError()
+function exitOnUvmError()
 {
     local t_estat=$1
     local t_src=$2
@@ -27,7 +27,7 @@ function exitOnMvvmError()
 }
 
 if [ -f name ]; then
-    # note that index-reports uses content of transform name file to create anchor point on index html page
+    # note that index-reports uses content of node name file to create anchor point on index html page
     TNAME=`cat name`
     REPNAME=`echo $TNAME User Summary`
     base_name=${rep_base}--${period}.html
@@ -40,7 +40,7 @@ if [ -f name ]; then
         AHREFVAL=../index_online_monthly.html#${TNAME}
     fi
 else
-    echo "error, transform has no name"
+    echo "error, node has no name"
     cd $OLD_PWD
     exit 1
 fi

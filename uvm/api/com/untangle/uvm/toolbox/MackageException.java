@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.toolbox;
+package com.untangle.uvm.toolbox;
 
-import com.untangle.mvvm.MvvmException;
+import com.untangle.uvm.UvmException;
 
-public class MackageException extends MvvmException
+public class MackageException extends UvmException
 {
     public MackageException()
     {

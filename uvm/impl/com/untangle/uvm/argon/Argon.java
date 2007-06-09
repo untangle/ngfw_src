@@ -9,19 +9,19 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import com.untangle.jnetcap.Netcap;
 import com.untangle.jnetcap.Shield;
 import com.untangle.jvector.Vector;
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.localapi.LocalIntfManager;
-import com.untangle.mvvm.localapi.LocalShieldManager;
-import com.untangle.mvvm.networking.NetworkException;
-import com.untangle.mvvm.networking.NetworkManagerImpl;
-import com.untangle.mvvm.policy.LocalPolicyManager;
-import com.untangle.mvvm.shield.ShieldMonitor;
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.localapi.LocalIntfManager;
+import com.untangle.uvm.localapi.LocalShieldManager;
+import com.untangle.uvm.networking.NetworkException;
+import com.untangle.uvm.networking.NetworkManagerImpl;
+import com.untangle.uvm.policy.LocalPolicyManager;
+import com.untangle.uvm.shield.ShieldMonitor;
 import org.apache.log4j.Logger;
 
 public class Argon
@@ -118,7 +118,7 @@ public class Argon
             internal = temp;
         }
 
-        if (( temp = System.getenv( "MVVM_INTERNAL_INTF" )) != null ) {
+        if (( temp = System.getenv( "UVM_INTERNAL_INTF" )) != null ) {
             if ( !temp.equals( internal )) logger.warn( "argon.internal,environ mismatch" );
             internal = temp;
         }
@@ -127,7 +127,7 @@ public class Argon
             external = temp;
         }
 
-        if (( temp = System.getenv( "MVVM_EXTERNAL_INTF" )) != null ) {
+        if (( temp = System.getenv( "UVM_EXTERNAL_INTF" )) != null ) {
             if ( !temp.equals( external )) logger.warn( "argon.external,environ mismatch" );
             external = temp;
         }
@@ -136,7 +136,7 @@ public class Argon
             dmz = temp;
         }
 
-        if (( temp = System.getenv( "MVVM_DMZ_INTF" )) != null ) {
+        if (( temp = System.getenv( "UVM_DMZ_INTF" )) != null ) {
             if ( !temp.equals( external )) logger.warn( "argon.dmz,environ mismatch" );
             dmz = temp;
         }
@@ -229,7 +229,7 @@ public class Argon
         }
 
         /* Initialize the shield configuration */
-        LocalShieldManager lsm = MvvmContextFactory.context().localShieldManager();
+        LocalShieldManager lsm = UvmContextFactory.context().localShieldManager();
         lsm.setIsShieldEnabled( isShieldEnabled );
         lsm.setShieldConfigurationFile( shieldFile );
 
@@ -249,7 +249,7 @@ public class Argon
         Netcap.getInstance().setSessionLimit( this.sessionThreadLimit );
 
         /* Initialize the InterfaceOverride table, this is just so the logger doesn't get into the NAT
-         * transform context */
+         * node context */
         InterfaceOverride.getInstance().clearOverrideList();
     }
 

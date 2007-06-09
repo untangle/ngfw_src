@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.script;
+package com.untangle.uvm.node.script;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tran.TransformException;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.node.NodeException;
 import org.apache.log4j.Logger;
 
 public class ScriptRunner
@@ -33,13 +33,13 @@ public class ScriptRunner
     {
     }
 
-    public final String exec( String scriptName ) throws TransformException
+    public final String exec( String scriptName ) throws NodeException
     {
         return exec( scriptName, EMPTY_ARGS );
     }
 
     /* Done with an array to exec to fix arguments that have spaces. */
-    public final String exec( String scriptName, String ... args ) throws TransformException
+    public final String exec( String scriptName, String ... args ) throws NodeException
     {
         String input[] = new String[2 + args.length];
         int c = 0;
@@ -56,7 +56,7 @@ public class ScriptRunner
 
         try {
             int code = 0;
-            Process p = MvvmContextFactory.context().exec( input );
+            Process p = UvmContextFactory.context().exec( input );
             StringBuilder sb = new StringBuilder();
             BufferedReader scriptOutput = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line;
@@ -69,10 +69,10 @@ public class ScriptRunner
             if ( code != 0 ) throw new ScriptException( scriptName, code );
 
             return sb.toString();
-        } catch ( TransformException e ) {
+        } catch ( NodeException e ) {
             throw e;
         } catch( Exception e ) {
-            throw new TransformException( "Error executing script [" + scriptName + "]", e );
+            throw new NodeException( "Error executing script [" + scriptName + "]", e );
         }
     }
 

@@ -9,50 +9,50 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
 import java.io.InputStream;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tapi.IPSessionDesc;
-import com.untangle.mvvm.toolbox.MackageDesc;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.tapi.IPSessionDesc;
+import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.util.TransactionWork;
 
 /**
- * Holds the context for a Transform instance.
+ * Holds the context for a Node instance.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface TransformContext
+public interface NodeContext
 {
     /**
      * Get the Tid for this instance.
      *
-     * @return the transform id.
+     * @return the node id.
      */
     Tid getTid();
 
     /**
-     * Get the transform for this context.
+     * Get the node for this context.
      *
-     * @return this context's transform.
+     * @return this context's node.
      */
-    Transform transform();
+    Node node();
 
     /**
-     * Returns desc from mvvm-transform.xml.
+     * Returns desc from uvm-node.xml.
      *
-     * @return the TransformDesc.
+     * @return the NodeDesc.
      */
-    TransformDesc getTransformDesc();
+    NodeDesc getNodeDesc();
 
     /**
-     * Returns the transform preferences.
+     * Returns the node preferences.
      *
-     * @return the TransformPreferences.
+     * @return the NodePreferences.
      */
-    TransformPreferences getTransformPreferences();
+    NodePreferences getNodePreferences();
 
     /**
      * Get the {@link MackageDesc} corresponding to this instance.
@@ -61,7 +61,7 @@ public interface TransformContext
      */
     MackageDesc getMackageDesc();
 
-    // XXX should be LocalTransformContext ------------------------------------
+    // XXX should be LocalNodeContext ------------------------------------
 
     // XXX
     boolean runTransaction(TransactionWork tw);
@@ -72,7 +72,7 @@ public interface TransformContext
 
     IPSessionDesc[] liveSessionDescs();
 
-    TransformState getRunState();
+    NodeState getRunState();
 
-    TransformStats getStats();
+    NodeStats getStats();
 }

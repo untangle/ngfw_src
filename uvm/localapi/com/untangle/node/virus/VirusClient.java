@@ -8,7 +8,7 @@
  *
  * $Id: $
  */
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 import java.lang.InterruptedException;
 import java.net.SocketException;

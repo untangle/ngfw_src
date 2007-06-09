@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
-import com.untangle.mvvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.tapi.event.TCPStreamer;
 
 /**
  * A TCPSession is
@@ -35,7 +35,7 @@ public interface TCPSession extends TCPSessionDesc, IPSession {
 
     /**
      * <code>clientReadBufferSize</code> gives the size that a newly allocated read buffer for
-     * reading from the client will be, in bytes.  This defaults from the transform desc to
+     * reading from the client will be, in bytes.  This defaults from the node desc to
      * something like 8K.  Note that read buffers are only allocated when absolutely necessary.
      *
      * @return an <code>int</code> giving the capacity in bytes
@@ -52,7 +52,7 @@ public interface TCPSession extends TCPSessionDesc, IPSession {
 
     /**
      * <code>serverReadBufferSize</code> gives the size that a newly allocated read buffer for
-     * reading from the server will be, in bytes.  This defaults from the transform desc to
+     * reading from the server will be, in bytes.  This defaults from the node desc to
      * something like 8K.  Note that read buffers are only allocated when absolutely necessary.
      *
      * @return an <code>int</code> giving the capacity in bytes

@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 import java.nio.*;
 
-import static com.untangle.tran.util.Ascii.*;
-import static com.untangle.tran.util.BufferUtil.*;
-import static com.untangle.tran.util.ASCIIUtil.*;
+import static com.untangle.node.util.Ascii.*;
+import static com.untangle.node.util.BufferUtil.*;
+import static com.untangle.node.util.ASCIIUtil.*;
 
 /**
  * Class representing a raw line.  Maintains the terminator

@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.token;
+package com.untangle.node.token;
 
 import java.nio.ByteBuffer;
 
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.event.TCPStreamer;
 import org.apache.log4j.Logger;
 
 public class TokenStreamerAdaptor implements TCPStreamer

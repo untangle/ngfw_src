@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.untangle.mvvm.security.LoginSession;
+import com.untangle.uvm.security.LoginSession;
 
 class TargetDesc
 {

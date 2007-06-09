@@ -8,9 +8,9 @@
  *
  * $Id$
  */
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
-public class UnconfiguredException extends TransformStartException
+public class UnconfiguredException extends NodeStartException
 {
     public UnconfiguredException( String message )
     {

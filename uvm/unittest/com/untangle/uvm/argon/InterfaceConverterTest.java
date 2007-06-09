@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -20,10 +20,10 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.untangle.mvvm.IntfConstants;
-import com.untangle.mvvm.ArgonException;
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.ArgonException;
 
-import com.untangle.mvvm.localapi.ArgonInterface;
+import com.untangle.uvm.localapi.ArgonInterface;
 
 public class InterfaceConverterTest
 {
@@ -32,7 +32,7 @@ public class InterfaceConverterTest
     private static final ArgonInterface INTERNAL     = new ArgonInterface( "eth1", (byte)1, (byte)2 );
     private static final ArgonInterface DMZ          = new ArgonInterface( "eth2", (byte)2, (byte)3 );
     private static final ArgonInterface VPN          = new ArgonInterface( "tun0", (byte)3, (byte)4 );
-    private static final ArgonInterface TRANSFORM    = new ArgonInterface( "dummy0", (byte)4, (byte)5 );
+    private static final ArgonInterface NODE    = new ArgonInterface( "dummy0", (byte)4, (byte)5 );
 
     private static final ArgonInterface SAME_ARGON   = new ArgonInterface( "foobar", (byte)7, (byte)1 );
     private static final ArgonInterface SAME_NETCAP  = new ArgonInterface( "foobar", (byte)1, (byte)7 );
@@ -48,10 +48,10 @@ public class InterfaceConverterTest
         Arrays.asList( new ArgonInterface[] { EXTERNAL, INTERNAL, VPN } );
 
     private static final List<ArgonInterface> FULL = 
-        Arrays.asList( new ArgonInterface[] { EXTERNAL, INTERNAL, DMZ, VPN, TRANSFORM } );
+        Arrays.asList( new ArgonInterface[] { EXTERNAL, INTERNAL, DMZ, VPN, NODE } );
     
     private static final List<ArgonInterface> FULL_CUSTOM =
-        Arrays.asList( new ArgonInterface[] { VPN, TRANSFORM } );
+        Arrays.asList( new ArgonInterface[] { VPN, NODE } );
 
     public InterfaceConverterTest()
     {
@@ -89,9 +89,9 @@ public class InterfaceConverterTest
         Assert.assertTrue( newInstance.hasMatchingInterfaces( instance ));
         instance = newInstance;        
 
-        /* Register the transform interface and verify that it changes */
-        newInstance = instance.registerIntf( TRANSFORM );
-        newList.add( TRANSFORM );
+        /* Register the node interface and verify that it changes */
+        newInstance = instance.registerIntf( NODE );
+        newList.add( NODE );
         testBasics( newList, newInstance );
         /* Verify that it doesn't have matching interfaces */
         Assert.assertFalse( newInstance.hasMatchingInterfaces( instance ));

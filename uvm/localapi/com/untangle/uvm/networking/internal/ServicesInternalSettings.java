@@ -9,21 +9,21 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking.internal;
+package com.untangle.uvm.networking.internal;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
 
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
 
-import com.untangle.mvvm.networking.DhcpServerSettings;
-import com.untangle.mvvm.networking.DnsServerSettings;
-import com.untangle.mvvm.networking.DnsStaticHostRule;
-import com.untangle.mvvm.networking.DhcpLeaseRule;
-import com.untangle.mvvm.networking.NetworkUtil;
-import com.untangle.mvvm.networking.ServicesSettingsImpl;
+import com.untangle.uvm.networking.DhcpServerSettings;
+import com.untangle.uvm.networking.DnsServerSettings;
+import com.untangle.uvm.networking.DnsStaticHostRule;
+import com.untangle.uvm.networking.DhcpLeaseRule;
+import com.untangle.uvm.networking.NetworkUtil;
+import com.untangle.uvm.networking.ServicesSettingsImpl;
 
 /** These are the settings for the DNS/DHCP server */
 public class ServicesInternalSettings

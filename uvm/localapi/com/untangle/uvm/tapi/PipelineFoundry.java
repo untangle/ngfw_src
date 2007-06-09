@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 import java.net.InetSocketAddress;
 
-import com.untangle.mvvm.tran.IPSessionDesc;
-import com.untangle.mvvm.policy.Policy;
-import com.untangle.mvvm.tran.PipelineEndpoints;
+import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.node.PipelineEndpoints;
 
 /**
  * Compiles pipes based on subscriptions and interest sets.

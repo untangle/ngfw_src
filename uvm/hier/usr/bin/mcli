@@ -13,12 +13,12 @@ set -e
 
 JAVA_HOME=${JAVA_HOME:-@DEFAULT_JAVA_HOME@}
 
-CLASSPATH="@MVVM_LIB@/mvvm-api/:@THIRDPARTY_MVVM_LIB@/hibernate3.jar:@THIRDPARTY_MVVM_LIB@/log4j-1.2.9.jar"
+CLASSPATH="@UVM_LIB@/uvm-api/:@THIRDPARTY_UVM_LIB@/hibernate3.jar:@THIRDPARTY_UVM_LIB@/log4j-1.2.9.jar"
 for f in @THIRDPARTY_REPORTS_LIB@/*jar ; do
     CLASSPATH="$CLASSPATH:$f"
 done
 
-for m in @MVVM_TOOLBOX@/*; do CLASSPATH="$CLASSPATH:$m"; done
+for m in @UVM_TOOLBOX@/*; do CLASSPATH="$CLASSPATH:$m"; done
 
 export CLASSPATH
-exec ${JAVA_HOME}/bin/java com.untangle.mvvm.client.RemoteClient "$@"
+exec ${JAVA_HOME}/bin/java com.untangle.uvm.client.RemoteClient "$@"

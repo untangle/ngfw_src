@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.snmp;
+package com.untangle.uvm.snmp;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -29,22 +29,22 @@ import javax.persistence.Table;
  *   </li>
  *   <li>
  *   {@link #getCommunityString CommunityString} is like a crappy UID/PWD combination.  This
- *   represents the UID/PWD of someone who can read the contents of the MIB on the MVVM
+ *   represents the UID/PWD of someone who can read the contents of the MIB on the UVM
  *   machine.  This user has <b>read only access</b>.  There is no read/write access
  *   possible with our implementation (for safety reasons).
  *   </li>
  *   <li>
- *   The property {@link #getPort Port} property is the port on-which the MVVM
+ *   The property {@link #getPort Port} property is the port on-which the UVM
  *   will listen for UDP SNMP messages.  The default is 161.
  *   </li>
  *   <li>
  *   {@link #getSysContact SysContact} and {@link #getSysLocation SysLocation} are
  *   related in that they are informational properties, useful only if someone is
- *   monitoring the MVVM as one of many devices.  These fields are in no way required,
+ *   monitoring the UVM as one of many devices.  These fields are in no way required,
  *   but may make management easier.
  *   </li>
  *   <li>
- *   {@link #setSendTraps SendTraps} controls if SNMP traps are sent from the MVVM.  If this
+ *   {@link #setSendTraps SendTraps} controls if SNMP traps are sent from the UVM.  If this
  *   is true, then {@link #setTrapHost TrapHost}, {@link #setTrapPort TrapPort}, and
  *   {@link #setTrapCommunity TrapCommunity} must be set.
  *   </li>

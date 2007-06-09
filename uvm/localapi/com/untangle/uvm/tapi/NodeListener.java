@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 import java.util.EventListener;
 
-public interface TransformListener extends EventListener
+public interface NodeListener extends EventListener
 {
-    void stateChange(TransformStateChangeEvent tsce);
+    void stateChange(NodeStateChangeEvent tsce);
 }

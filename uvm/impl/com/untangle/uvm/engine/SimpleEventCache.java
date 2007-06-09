@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,13 +19,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.logging.ListEventFilter;
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.mvvm.policy.Policy;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.logging.ListEventFilter;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
@@ -56,7 +56,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
 
     public List<E> getEvents()
     {
-        LoggingManagerImpl lm = MvvmContextImpl.getInstance().loggingManager();
+        LoggingManagerImpl lm = UvmContextImpl.getInstance().loggingManager();
 
         synchronized (cache) {
             if (cold && lm.isConversionComplete()) {
@@ -91,7 +91,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
     {
         synchronized (cache) {
             if (cache.size() < CACHE_SIZE) {
-                final TransformContext tctx = eventLogger.getTransformContext();
+                final NodeContext tctx = eventLogger.getNodeContext();
 
                 TransactionWork tw = new TransactionWork()
                     {
@@ -112,7 +112,7 @@ class SimpleEventCache<E extends LogEvent> extends EventCache<E>
                     };
 
                 if (null == tctx) {
-                    MvvmContextFactory.context().runTransaction(tw);
+                    UvmContextFactory.context().runTransaction(tw);
                 } else {
                     tctx.runTransaction(tw);
                 }

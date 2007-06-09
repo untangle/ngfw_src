@@ -8,19 +8,19 @@
  *
  * $Id$
  */
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 import java.util.*;
 
-import static com.untangle.tran.mime.HeaderNames.*;
+import static com.untangle.node.mime.HeaderNames.*;
 
 /**
  * Subclass of HeaderFieldFactory which adds strong typing
  * for the following headers:
  * <ul>
- * <li><b>Content-Type</b> via the {@link com.untangle.tran.mime.ContentTypeHeaderField class}</li>
- * <li><b>Content-Disposition</b> via the {@link com.untangle.tran.mime.ContentDispositionHeaderField class}</li>
- * <li><b>Content-Transfer-Encoding</b> via the {@link com.untangle.tran.mime.ContentXFerEncodingHeaderField class}</li>
+ * <li><b>Content-Type</b> via the {@link com.untangle.node.mime.ContentTypeHeaderField class}</li>
+ * <li><b>Content-Disposition</b> via the {@link com.untangle.node.mime.ContentDispositionHeaderField class}</li>
+ * <li><b>Content-Transfer-Encoding</b> via the {@link com.untangle.node.mime.ContentXFerEncodingHeaderField class}</li>
  * </ul>
  *
  */

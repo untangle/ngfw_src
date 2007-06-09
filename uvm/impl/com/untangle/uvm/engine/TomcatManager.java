@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.net.InetAddress;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.untangle.mvvm.util.AdministrationOutsideAccessValve;
-import com.untangle.mvvm.util.ReportingOutsideAccessValve;
+import com.untangle.uvm.util.AdministrationOutsideAccessValve;
+import com.untangle.uvm.util.ReportingOutsideAccessValve;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
@@ -37,7 +37,7 @@ import org.apache.coyote.http11.Http11BaseProtocol;
 import org.apache.log4j.Logger;
 
 /**
- * Wrapper around the Tomcat server embedded within the MVVM.
+ * Wrapper around the Tomcat server embedded within the UVM.
  */
 class TomcatManager
 {
@@ -60,8 +60,8 @@ class TomcatManager
     private final String catalinaHome;
     private final String logDir;
 
-    private final MvvmContextImpl mvvmContext;
-    private final MvvmRealm mvvmRealm = new MvvmRealm();
+    private final UvmContextImpl uvmContext;
+    private final UvmRealm uvmRealm = new UvmRealm();
 
     private String keystoreFile = "conf/keystore";
     private String keystorePass = "changeit";
@@ -77,10 +77,10 @@ class TomcatManager
 
     // constructors -----------------------------------------------------------
 
-    TomcatManager(MvvmContextImpl mvvmContext, String catalinaHome,
+    TomcatManager(UvmContextImpl uvmContext, String catalinaHome,
                   String webAppRoot, String logDir)
     {
-        this.mvvmContext = mvvmContext;
+        this.uvmContext = uvmContext;
         this.catalinaHome = catalinaHome;
         this.webAppRoot = webAppRoot;
         this.logDir = logDir;
@@ -149,7 +149,7 @@ class TomcatManager
 
     boolean loadPortalApp(String urlBase, String rootDir)
     {
-        PortalManagerImpl pm = mvvmContext.portalManager();
+        PortalManagerImpl pm = uvmContext.portalManager();
         Realm realm = pm.getPortalRealm();
         AuthenticatorBase auth = pm.newPortalAuthenticator();
         // Need a large timeout since we handle that ourselves.
@@ -159,8 +159,8 @@ class TomcatManager
 
     boolean loadSystemApp(String urlBase, String rootDir, WebAppOptions options)
     {
-        MvvmAuthenticator mvvmAuth = new MvvmAuthenticator();
-        return loadWebApp(urlBase, rootDir, mvvmRealm, mvvmAuth, options);
+        UvmAuthenticator uvmAuth = new UvmAuthenticator();
+        return loadWebApp(urlBase, rootDir, uvmRealm, uvmAuth, options);
     }
 
     boolean loadSystemApp(String urlBase, String rootDir) {
@@ -233,10 +233,10 @@ class TomcatManager
                                   int internalOpenHTTPSPort)
         throws Exception
     {
-        // Change for 4.0: Put the Tomcat class loader insdie the MVVM
+        // Change for 4.0: Put the Tomcat class loader insdie the UVM
         // class loader.
-        ClassLoader mvvmCl = Thread.currentThread().getContextClassLoader();
-        ClassLoader tomcatParent = new TomClassLoader(mvvmCl);
+        ClassLoader uvmCl = Thread.currentThread().getContextClassLoader();
+        ClassLoader tomcatParent = new TomClassLoader(uvmCl);
         try {
             // Entering Tomcat ClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(tomcatParent);
@@ -253,7 +253,7 @@ class TomcatManager
             // fileLog.setTimestamp(true);
             // fileLog.setVerbosityLevel("DEBUG");
 
-            emb = new Embedded(/* fileLog, */ mvvmRealm);
+            emb = new Embedded(/* fileLog, */ uvmRealm);
             emb.setCatalinaHome(catalinaHome);
 
             // create an Engine
@@ -271,10 +271,10 @@ class TomcatManager
             baseHost.setUnpackWARs(true);
             baseHost.setDeployOnStartup(true);
             baseHost.setAutoDeploy(true);
-            baseHost.setErrorReportValveClass("com.untangle.mvvm.engine.MvvmErrorReportValve");
+            baseHost.setErrorReportValveClass("com.untangle.uvm.engine.UvmErrorReportValve");
             OurSingleSignOn ourSsoWorkaroundValve = new OurSingleSignOn();
             /* XXXXX Hackstered to get single sign on to ignore certain contexts */
-            SingleSignOn ssoValve = new SpecialSingleSignOn( mvvmContext, "/session-dumper", "/webstart", "", "/reports",
+            SingleSignOn ssoValve = new SpecialSingleSignOn( uvmContext, "/session-dumper", "/webstart", "", "/reports",
                                                              "/onlinestore" );
             // ssoValve.setRequireReauthentication(true);
             baseHost.getPipeline().addValve(ourSsoWorkaroundValve);
@@ -357,13 +357,13 @@ class TomcatManager
                                     } catch (LifecycleException x) {
                                         boolean isAddressInUse = isAIUExn(x);
                                         if (!isAddressInUse) {
-                                            MvvmContextImpl.getInstance().fatalError("Starting Tomcat", x);
+                                            UvmContextImpl.getInstance().fatalError("Starting Tomcat", x);
                                             return;
                                         }
                                     }
                                 }
                                 if (i == NUM_TOMCAT_RETRIES)
-                                    MvvmContextImpl.getInstance().fatalError("Unable to start Tomcat after " +
+                                    UvmContextImpl.getInstance().fatalError("Unable to start Tomcat after " +
                                                                              NUM_TOMCAT_RETRIES
                                                                              + " tries, giving up",
                                                                              null);
@@ -376,7 +376,7 @@ class TomcatManager
                 }
             }
         } finally {
-            Thread.currentThread().setContextClassLoader(mvvmCl);
+            Thread.currentThread().setContextClassLoader(uvmCl);
             // restored classloader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         }
 
@@ -384,7 +384,7 @@ class TomcatManager
 
     String generateAuthNonce(InetAddress clientAddr, Principal user)
     {
-        return mvvmRealm.generateAuthNonce(clientAddr, user);
+        return uvmRealm.generateAuthNonce(clientAddr, user);
     }
 
     void resetRootWelcome()

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -19,7 +19,7 @@ import java.util.Date;
  * It is contained within a Session (or a SessionDesc when used by the GUI).
  *
  * XXX if this is for the client, it should probably be moved to
- * com.untangle.mvvm.tran.
+ * com.untangle.uvm.node.
  *
  * @author <a href="mailto:jdi@untangle.com"></a>
  * @version 1.0
@@ -99,40 +99,40 @@ public class SessionStats implements Serializable
     }
 
     /**
-     * <code>c2tBytes</code> gives the count of bytes transferred from the client to the transform.
-     * This may not be the same as <code>t2sBytes</code> if the transform is changing the data.
+     * <code>c2tBytes</code> gives the count of bytes transferred from the client to the node.
+     * This may not be the same as <code>t2sBytes</code> if the node is changing the data.
      *
-     * @return a <code>long</code> giving the number of bytes transferred from the client to the transform.
+     * @return a <code>long</code> giving the number of bytes transferred from the client to the node.
      */
     public long c2tBytes() {
         return c2tBytes;
     }
 
     /**
-     * <code>t2sBytes</code> gives the count of bytes transferred from the transform to the server.
-     * This may not be the same as <code>c2tBytes</code> if the transform is changing the data.
+     * <code>t2sBytes</code> gives the count of bytes transferred from the node to the server.
+     * This may not be the same as <code>c2tBytes</code> if the node is changing the data.
      *
-     * @return a <code>long</code> giving the number of bytes transferred from the transform to the server.
+     * @return a <code>long</code> giving the number of bytes transferred from the node to the server.
      */
     public long t2sBytes() {
         return t2sBytes;
     }
 
     /**
-     * <code>s2tBytes</code> gives the count of bytes transferred from the server to the transform.
-     * This may not be the same as <code>t2cBytes</code> if the transform is changing the data.
+     * <code>s2tBytes</code> gives the count of bytes transferred from the server to the node.
+     * This may not be the same as <code>t2cBytes</code> if the node is changing the data.
      *
-     * @return a <code>long</code> giving the number of bytes transferred from the server to the transform.
+     * @return a <code>long</code> giving the number of bytes transferred from the server to the node.
      */
     public long s2tBytes() {
         return s2tBytes;
     }
 
     /**
-     * <code>t2cBytes</code> gives the count of bytes transferred from the transform to the client.
-     * This may not be the same as <code>s2tBytes</code> if the transform is changing the data.
+     * <code>t2cBytes</code> gives the count of bytes transferred from the node to the client.
+     * This may not be the same as <code>s2tBytes</code> if the node is changing the data.
      *
-     * @return a <code>long</code> giving the number of bytes transferred from the transform to the client.
+     * @return a <code>long</code> giving the number of bytes transferred from the node to the client.
      */
     public long t2cBytes() {
         return t2cBytes;
@@ -157,7 +157,7 @@ public class SessionStats implements Serializable
 
     /**
      * <code>creationDate</code> gives the time of the session's creation.  This is defined
-     * as the time this transform received the new-session event (not the request).
+     * as the time this node received the new-session event (not the request).
      *
      * @return a <code>Date</code> giving the time of the session's creation
      */

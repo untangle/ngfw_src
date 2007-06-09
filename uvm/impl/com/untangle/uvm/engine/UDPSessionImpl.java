@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -22,19 +22,19 @@ import com.untangle.jvector.OutgoingSocketQueue;
 import com.untangle.jvector.PacketCrumb;
 import com.untangle.jvector.ShutdownCrumb;
 import com.untangle.jvector.UDPPacketCrumb;
-import com.untangle.mvvm.tapi.*;
-import com.untangle.mvvm.tapi.client.UDPSessionDescImpl;
-import com.untangle.mvvm.tapi.event.*;
-import com.untangle.mvvm.tran.MutateTStats;
-import com.untangle.mvvm.tran.PipelineEndpoints;
-import com.untangle.mvvm.util.MetaEnv;
+import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.tapi.client.UDPSessionDescImpl;
+import com.untangle.uvm.tapi.event.*;
+import com.untangle.uvm.node.MutateTStats;
+import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.util.MetaEnv;
 
 class UDPSessionImpl extends IPSessionImpl implements UDPSession
 {
     protected int[] maxPacketSize;
 
     protected UDPSessionImpl(Dispatcher disp,
-                             com.untangle.mvvm.argon.UDPSession pSession,
+                             com.untangle.uvm.argon.UDPSession pSession,
                              boolean isInbound, PipelineEndpoints pe,
                              int clientMaxPacketSize,
                              int serverMaxPacketSize)
@@ -72,12 +72,12 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
      */
     public boolean isPing()
     {
-        return ((com.untangle.mvvm.argon.UDPSession)pSession).isPing();
+        return ((com.untangle.uvm.argon.UDPSession)pSession).isPing();
     }
 
     public int icmpId()
     {
-        return ((com.untangle.mvvm.argon.UDPSession)pSession).icmpId();
+        return ((com.untangle.uvm.argon.UDPSession)pSession).icmpId();
     }
 
     public IPSessionDesc makeDesc()
@@ -89,36 +89,36 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
     public byte clientState()
     {
-        if (((com.untangle.mvvm.argon.Session)pSession).clientIncomingSocketQueue() == null) {
-            assert ((com.untangle.mvvm.argon.Session)pSession).clientOutgoingSocketQueue() == null;
+        if (((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue() == null) {
+            assert ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue() == null;
             return IPSessionDesc.EXPIRED;
         } else {
-            assert ((com.untangle.mvvm.argon.Session)pSession).clientOutgoingSocketQueue() != null;
+            assert ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue() != null;
             return IPSessionDesc.OPEN;
         }
     }
 
     public byte serverState()
     {
-        if (((com.untangle.mvvm.argon.Session)pSession).serverIncomingSocketQueue() == null) {
-            assert ((com.untangle.mvvm.argon.Session)pSession).serverOutgoingSocketQueue() == null;
+        if (((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue() == null) {
+            assert ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue() == null;
             return IPSessionDesc.EXPIRED;
         } else {
-            assert ((com.untangle.mvvm.argon.Session)pSession).serverOutgoingSocketQueue() != null;
+            assert ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue() != null;
             return IPSessionDesc.OPEN;
         }
     }
 
     public void expireServer()
     {
-        OutgoingSocketQueue out = ((com.untangle.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
+        OutgoingSocketQueue out = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
         if (out != null) {
             Crumb crumb = ShutdownCrumb.getInstance(true);
             out.write(crumb);
         }
         // 8/15/05 we also now reset the incoming side, to avoid the race in case a packet outraces
         // the close-other-half event.
-        IncomingSocketQueue in = ((com.untangle.mvvm.argon.Session)pSession).serverIncomingSocketQueue();
+        IncomingSocketQueue in = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
         if (in != null) {
             // Should always happen.
             in.reset();
@@ -127,14 +127,14 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
 
     public void expireClient()
     {
-        OutgoingSocketQueue out = ((com.untangle.mvvm.argon.Session)pSession).clientOutgoingSocketQueue();
+        OutgoingSocketQueue out = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
         if (out != null) {
             Crumb crumb = ShutdownCrumb.getInstance(true);
             out.write(crumb);
         }
         // 8/15/05 we also now reset the incoming side, to avoid the race in case a packet outraces
         // the close-other-half event.
-        IncomingSocketQueue in = ((com.untangle.mvvm.argon.Session)pSession).clientIncomingSocketQueue();
+        IncomingSocketQueue in = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
         if (in != null) {
             // Should always happen.
             in.reset();
@@ -354,7 +354,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         // Wrap a byte buffer around the data.
         // XXX This may or may not be a UDP crumb depending on what gets passed.
         // Right now just always do DataCrumbs, since a UDPPacketCrumb coming in just gets
-        // converted to a DataCrumb on the other side (hence, the next transform will fail)
+        // converted to a DataCrumb on the other side (hence, the next node will fail)
 
         if (logger.isDebugEnabled())
             debug("read " + numRead + " size " + crumb.type() + " packet from " + side);
@@ -366,7 +366,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
         // We have received bytes.  Give them to the user.
 
         // We no longer duplicate the buffer so that the event handler can mess up
-        // the position/mark/limit as desired.  This is since the transform now sends
+        // the position/mark/limit as desired.  This is since the node now sends
         // a buffer manually -- the position and limit must already be correct when sent, so
         // there's no need for us to duplicate here.
 
@@ -388,7 +388,7 @@ class UDPSessionImpl extends IPSessionImpl implements UDPSession
                 dispatcher.dispatchUDPServerPacket(event);
         }
         // Nothing more to do, any packets to be sent were queued by called to sendClientPacket(), etc,
-        // from transform's packet handler.
+        // from node's packet handler.
     }
 
     @Override

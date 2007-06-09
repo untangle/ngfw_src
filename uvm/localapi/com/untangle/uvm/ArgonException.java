@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
-import com.untangle.mvvm.MvvmException;
+import com.untangle.uvm.UvmException;
 
-public class ArgonException extends MvvmException {
+public class ArgonException extends UvmException {
     public ArgonException() 
     { 
         super(); 

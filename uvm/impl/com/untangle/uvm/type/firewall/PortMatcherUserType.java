@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.mvvm.type.firewall;
+package com.untangle.uvm.type.firewall;
 
-import com.untangle.mvvm.type.StringBasedUserType;
+import com.untangle.uvm.type.StringBasedUserType;
 
-import com.untangle.mvvm.tran.firewall.port.PortMatcher;
-import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.port.PortMatcher;
+import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
 
 public class PortMatcherUserType extends StringBasedUserType
 {

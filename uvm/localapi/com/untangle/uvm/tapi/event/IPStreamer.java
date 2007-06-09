@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi.event;
+package com.untangle.uvm.tapi.event;
 
 import java.nio.ByteBuffer;
 
@@ -20,7 +20,7 @@ public interface IPStreamer
     /**
      * <code>closeWhenDone</code> is called after EOF is reached.  If it returns true,
      * then a FIN is sent at the end, beginning the closing process.  If it returns false,
-     * no FIN is sent and the transform resumes normal event handling.
+     * no FIN is sent and the node resumes normal event handling.
      *
      * XXX -- we need an event to let them know they've returned from streaming mode.
      *

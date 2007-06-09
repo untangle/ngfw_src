@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.util;
+package com.untangle.node.util;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 

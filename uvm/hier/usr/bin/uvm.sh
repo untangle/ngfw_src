@@ -2,13 +2,13 @@
 # $Id$
 
 # get a bunch of default values
-source @PREFIX@/etc/default/mvvm
+source @PREFIX@/etc/default/uvm
 
-MVVM_CONSOLE_LOG=${MVVM_CONSOLE_LOG:-"@PREFIX@/var/log/mvvm/console.log"}
-MVVM_MVVM_LOG=${MVVM_MVVM_LOG:-"@PREFIX@/var/log/mvvm/mvvm.log"}
-MVVM_GC_LOG=${MVVM_GC_LOG:-"@PREFIX@/var/log/mvvm/gc.log"}
-MVVM_WRAPPER_LOG=${MVVM_WRAPPER_LOG:-"@PREFIX@/var/log/mvvm/wrapper.log"}
-MVVM_LAUNCH=${MVVM_LAUNCH:-"@PREFIX@/usr/bin/bunnicula"}
+UVM_CONSOLE_LOG=${UVM_CONSOLE_LOG:-"@PREFIX@/var/log/uvm/console.log"}
+UVM_UVM_LOG=${UVM_UVM_LOG:-"@PREFIX@/var/log/uvm/uvm.log"}
+UVM_GC_LOG=${UVM_GC_LOG:-"@PREFIX@/var/log/uvm/gc.log"}
+UVM_WRAPPER_LOG=${UVM_WRAPPER_LOG:-"@PREFIX@/var/log/uvm/wrapper.log"}
+UVM_LAUNCH=${UVM_LAUNCH:-"@PREFIX@/usr/bin/bunnicula"}
 
 # somewhat less fucking hideous :)
 PG_VERSION=`dpkg --get-selections postgresql-mv* | awk '/install$/ { gsub(/postgresql-mv-?/, "", $1) ; print $1 }'`
@@ -20,12 +20,12 @@ else
     PGSERVICE="postgresql-${PG_VERSION}"
 fi
 
-# Short enough to restart mvvm promptly
+# Short enough to restart uvm promptly
 SLEEP_TIME=5
 
 # Used to kill a child with extreme prejudice
 nukeIt() {
-    echo "mvvm.sh: Killing -9 all bunnicula \"$pid\" (`date`)" >> $MVVM_WRAPPER_LOG
+    echo "uvm.sh: Killing -9 all bunnicula \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
     kill -3 $pid
     kill -9 $pid
     kill -9 `ps awwx | grep java | grep bunnicula | awk '{print $1}'` 2>/dev/null
@@ -37,11 +37,11 @@ reapChildHardest() {
 }
 
 reapChildHarder() {
-    echo "mvvm.sh: Killing -15 all bunnicula \"$pid\" (`date`)" >> $MVVM_WRAPPER_LOG
+    echo "uvm.sh: Killing -15 all bunnicula \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
     kill $pid
     sleep 1
     if [ ! -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
-        echo "mvvm.sh: Killing -15 all bunnicula \"$pid\" (`date`)" >> $MVVM_WRAPPER_LOG
+        echo "uvm.sh: Killing -15 all bunnicula \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
         for i in `seq 1 5` ; do
             if [ -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
                 flushIptables ; exit
@@ -56,13 +56,13 @@ reapChildHarder() {
 }
 
 reapChild() {
-    echo "mvvm.sh: shutting down bunnicula " >> $MVVM_WRAPPER_LOG
+    echo "uvm.sh: shutting down bunnicula " >> $UVM_WRAPPER_LOG
     kill -3 $pid
     @PREFIX@/usr/bin/mcli -t 20000 shutdown &> /dev/null
     sleep 1
     kill -INT $pid
     if [ ! -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
-        echo "mvvm.sh: Killing -INT all bunnicula \"$pid\" (`date`)" >> $MVVM_WRAPPER_LOG
+        echo "uvm.sh: Killing -INT all bunnicula \"$pid\" (`date`)" >> $UVM_WRAPPER_LOG
         for i in `seq 1 5` ; do
             if [ -z "`ps awwx | grep java | grep bunnicula | awk '{print $1}'`" ] ; then
                 flushIptables ; exit
@@ -189,7 +189,7 @@ restartServiceIfNeeded() {
   esac
 
   if [ $needToRun == "yes" ] ; then
-    echo "*** restarting missing $serviceName on `date` ***" >> $MVVM_WRAPPER_LOG
+    echo "*** restarting missing $serviceName on `date` ***" >> $UVM_WRAPPER_LOG
     if [ -n "$pidFile" ]; then
         rm -f $pidFile
     fi
@@ -198,12 +198,12 @@ restartServiceIfNeeded() {
   fi
 }
 
-# Return true (0) when we need to reap and restart the mvvm.
+# Return true (0) when we need to reap and restart the uvm.
 needToRestart() {
     cheaphigh=`head -3 /proc/$pid/maps | tail -1 | awk '{ high=split($1, arr, "-"); print arr[2]; }'`
     if [ -z $cheaphigh ]; then
         # not fatal, process has probably just died, which we'll catch soon.
-        echo "*** no heap size ($cheaphigh) on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
+        echo "*** no heap size ($cheaphigh) on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
     else
         bignibble=${cheaphigh:0:1}
         case $bignibble in
@@ -213,25 +213,25 @@ needToRestart() {
             2)
                 # 384Meg < native heap < 640Meg
                 if [ $MEM -lt 1000000 ] || [ `date +%H` -eq 1 ] ; then
-                    echo "*** bunnicula heap soft limit on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
+                    echo "*** bunnicula heap soft limit on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
                     return 0;
                 fi
                 ;;
             3 | 4 | 5 | 6 | 7 | 8 | 9)
                 # native heap > 640Meg
-                echo "*** bunnicula heap hard limit ($bignibble) on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
+                echo "*** bunnicula heap hard limit ($bignibble) on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
                 return 0;
                 ;;
             *)
-                echo "*** unexpected heap size ($bignibble) on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
+                echo "*** unexpected heap size ($bignibble) on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
                 ;;
         esac
     fi
 
     # gc failure (persistent heap full)
-    cmfcount=`tail -50 $MVVM_GC_LOG | grep -ci "concurrent mode failure"`
+    cmfcount=`tail -50 $UVM_GC_LOG | grep -ci "concurrent mode failure"`
     if [ $cmfcount -gt 2 ]; then
-        echo "*** java heap cmf on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
+        echo "*** java heap cmf on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
         return 0;
     fi
 
@@ -240,7 +240,7 @@ needToRestart() {
         # VSZ greater than 1.1 gigs reboot
         VIRT="`cat /proc/$pid/status | grep VmSize | awk '{print $2}'`"
         if [ $VIRT -gt $MAX_VIRTUAL_SIZE ] ; then
-            echo "*** Virt Size too high ($VIRT) on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
+            echo "*** Virt Size too high ($VIRT) on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
             return 0;
         fi
     fi
@@ -254,29 +254,29 @@ trap reapChildHarder 15
 trap reapChild 2
 
 while true; do
-    echo > $MVVM_CONSOLE_LOG
-    echo "============================" >> $MVVM_CONSOLE_LOG
-    echo $MVVM_LAUNCH >> $MVVM_CONSOLE_LOG
-    echo "============================" >> $MVVM_CONSOLE_LOG
+    echo > $UVM_CONSOLE_LOG
+    echo "============================" >> $UVM_CONSOLE_LOG
+    echo $UVM_LAUNCH >> $UVM_CONSOLE_LOG
+    echo "============================" >> $UVM_CONSOLE_LOG
 
-    echo >> $MVVM_WRAPPER_LOG
-    echo "============================" >> $MVVM_WRAPPER_LOG
-    echo $MVVM_LAUNCH >> $MVVM_WRAPPER_LOG
-    echo "============================" >> $MVVM_WRAPPER_LOG
+    echo >> $UVM_WRAPPER_LOG
+    echo "============================" >> $UVM_WRAPPER_LOG
+    echo $UVM_LAUNCH >> $UVM_WRAPPER_LOG
+    echo "============================" >> $UVM_WRAPPER_LOG
 
     raiseFdLimit
     flushIptables
 
-    $MVVM_LAUNCH $* >>$MVVM_CONSOLE_LOG 2>&1 &
+    $UVM_LAUNCH $* >>$UVM_CONSOLE_LOG 2>&1 &
 
     pid=$!
-    echo "Bunnicula launched. (pid:$pid) (`date`)" >> $MVVM_WRAPPER_LOG
+    echo "Bunnicula launched. (pid:$pid) (`date`)" >> $UVM_WRAPPER_LOG
 
 # Instead of waiting, we now monitor.
     while true; do
 
         # try to fetch a key right away; bg'ed so as to not block the
-        # rest of the mvvm.sh tasks. We ensure only one key-fetching
+        # rest of the uvm.sh tasks. We ensure only one key-fetching
         # function runs at all times
         getLicenseKey &
 
@@ -284,11 +284,11 @@ while true; do
 
         if [ "x" = "x@PREFIX@" ] ; then
             if [ ! -d /proc/$pid ] ; then
-                echo "*** restarting missing bunnicula $? on `date` ***" >> $MVVM_WRAPPER_LOG
+                echo "*** restarting missing bunnicula $? on `date` ***" >> $UVM_WRAPPER_LOG
                 break
             fi
             if needToRestart; then
-                echo "*** need to restart bunnicula $? on `date` ***" >> $MVVM_WRAPPER_LOG
+                echo "*** need to restart bunnicula $? on `date` ***" >> $UVM_WRAPPER_LOG
                 nukeIt
                 break
             fi
@@ -306,20 +306,20 @@ while true; do
 
 # Crash/Kill
     flushIptables
-    echo "*** bunnicula exited on `date` in `pwd` ***" >> $MVVM_WRAPPER_LOG
-    echo "*** copied $MVVM_CONSOLE_LOG to $MVVM_CONSOLE_LOG.crash ***" >> $MVVM_WRAPPER_LOG
-    echo "*** copied $MVVM_MVVM_LOG to $MVVM_MVVM_LOG.crash ***" >> $MVVM_WRAPPER_LOG
-    echo "*** copied $MVVM_GC_LOG to $MVVM_GC_LOG.crash ***" >> $MVVM_WRAPPER_LOG
-    cp -fa $MVVM_CONSOLE_LOG.crash.1 $MVVM_CONSOLE_LOG.crash.2
-    cp -fa $MVVM_CONSOLE_LOG.crash $MVVM_CONSOLE_LOG.crash.1
-    cp -fa $MVVM_CONSOLE_LOG $MVVM_CONSOLE_LOG.crash
-    cp -fa $MVVM_MVVM_LOG.crash.1 $MVVM_MVVM_LOG.crash.2
-    cp -fa $MVVM_MVVM_LOG.crash $MVVM_MVVM_LOG.crash.1
-    cp -fa $MVVM_MVVM_LOG $MVVM_MVVM_LOG.crash
-    cp -fa $MVVM_GC_LOG.crash.1 $MVVM_GC_LOG.crash.2
-    cp -fa $MVVM_GC_LOG.crash $MVVM_GC_LOG.crash.1
-    cp -fa $MVVM_GC_LOG $MVVM_GC_LOG.crash
+    echo "*** bunnicula exited on `date` in `pwd` ***" >> $UVM_WRAPPER_LOG
+    echo "*** copied $UVM_CONSOLE_LOG to $UVM_CONSOLE_LOG.crash ***" >> $UVM_WRAPPER_LOG
+    echo "*** copied $UVM_UVM_LOG to $UVM_UVM_LOG.crash ***" >> $UVM_WRAPPER_LOG
+    echo "*** copied $UVM_GC_LOG to $UVM_GC_LOG.crash ***" >> $UVM_WRAPPER_LOG
+    cp -fa $UVM_CONSOLE_LOG.crash.1 $UVM_CONSOLE_LOG.crash.2
+    cp -fa $UVM_CONSOLE_LOG.crash $UVM_CONSOLE_LOG.crash.1
+    cp -fa $UVM_CONSOLE_LOG $UVM_CONSOLE_LOG.crash
+    cp -fa $UVM_UVM_LOG.crash.1 $UVM_UVM_LOG.crash.2
+    cp -fa $UVM_UVM_LOG.crash $UVM_UVM_LOG.crash.1
+    cp -fa $UVM_UVM_LOG $UVM_UVM_LOG.crash
+    cp -fa $UVM_GC_LOG.crash.1 $UVM_GC_LOG.crash.2
+    cp -fa $UVM_GC_LOG.crash $UVM_GC_LOG.crash.1
+    cp -fa $UVM_GC_LOG $UVM_GC_LOG.crash
 
     sleep 2
-    echo "*** restarting on `date` ***" >> $MVVM_WRAPPER_LOG
+    echo "*** restarting on `date` ***" >> $UVM_WRAPPER_LOG
 done

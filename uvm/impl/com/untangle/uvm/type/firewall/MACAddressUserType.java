@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.type.firewall;
+package com.untangle.uvm.type.firewall;
 
-import com.untangle.mvvm.type.StringBasedUserType;
+import com.untangle.uvm.type.StringBasedUserType;
 
-import com.untangle.mvvm.tran.firewall.MACAddress;
+import com.untangle.uvm.node.firewall.MACAddress;
 
 public class MACAddressUserType extends StringBasedUserType
 {

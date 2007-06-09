@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
-import com.untangle.mvvm.IntfEnum;
+import com.untangle.uvm.IntfEnum;
 
 public interface RemoteIntfManager
 {

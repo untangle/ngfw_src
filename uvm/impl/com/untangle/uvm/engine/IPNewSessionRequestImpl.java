@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.net.InetAddress;
 
-import com.untangle.mvvm.tapi.IPNewSessionRequest;
-import com.untangle.mvvm.tapi.MPipe;
-import com.untangle.mvvm.tran.PipelineEndpoints;
+import com.untangle.uvm.tapi.IPNewSessionRequest;
+import com.untangle.uvm.tapi.MPipe;
+import com.untangle.uvm.node.PipelineEndpoints;
 
 abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
 
@@ -28,13 +28,13 @@ abstract class IPNewSessionRequestImpl implements IPNewSessionRequest {
     protected boolean isInbound;
 
     /**
-     * The pipeline request that corresponds to this (transform) request.
+     * The pipeline request that corresponds to this (node) request.
      *
      */
-    protected com.untangle.mvvm.argon.IPNewSessionRequest pRequest;
+    protected com.untangle.uvm.argon.IPNewSessionRequest pRequest;
 
     protected IPNewSessionRequestImpl(Dispatcher disp,
-                                      com.untangle.mvvm.argon.IPNewSessionRequest pRequest,
+                                      com.untangle.uvm.argon.IPNewSessionRequest pRequest,
                                       boolean isInbound) {
         this.mPipe = disp.mPipe();
         this.pRequest = pRequest;

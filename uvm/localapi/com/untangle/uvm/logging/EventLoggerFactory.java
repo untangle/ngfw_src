@@ -9,17 +9,17 @@
  * $Id$
  */
 
-package com.untangle.mvvm.logging;
+package com.untangle.uvm.logging;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.untangle.mvvm.tran.TransformContext;
+import com.untangle.uvm.node.NodeContext;
 
 public abstract class EventLoggerFactory
 {
     private static final String LOGGER_CLASS
-        = "com.untangle.mvvm.engine.EventLoggerFactoryImpl";
+        = "com.untangle.uvm.engine.EventLoggerFactoryImpl";
 
     private static EventLoggerFactory FACTORY;
 
@@ -49,5 +49,5 @@ public abstract class EventLoggerFactory
     }
 
     public abstract <E extends LogEvent> EventLogger<E> getEventLogger();
-    public abstract <E extends LogEvent> EventLogger<E> getEventLogger(TransformContext tctx);
+    public abstract <E extends LogEvent> EventLogger<E> getEventLogger(NodeContext tctx);
 }

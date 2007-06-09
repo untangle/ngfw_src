@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
-import com.untangle.mvvm.RemoteAppServerManager;
-import com.untangle.mvvm.security.CertInfo;
-import com.untangle.mvvm.security.RFC2253Name;
+import com.untangle.uvm.RemoteAppServerManager;
+import com.untangle.uvm.security.CertInfo;
+import com.untangle.uvm.security.RFC2253Name;
 
 class RemoteAppServerManagerImpl implements RemoteAppServerManager
 {

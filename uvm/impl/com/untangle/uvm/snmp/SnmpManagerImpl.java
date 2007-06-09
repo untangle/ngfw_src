@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.snmp;
+package com.untangle.uvm.snmp;
 
 import java.io.File;
 import java.io.FileOutputStream;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.util.TransactionWork;
-import com.untangle.tran.util.IOUtil;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.TransactionWork;
+import com.untangle.node.util.IOUtil;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -74,7 +74,7 @@ public class SnmpManagerImpl
 
                 public Object getResult() { return null; }
             };
-        MvvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         m_logger.info("Initialized SnmpManager");
         if(!isSnmpInstalled()) {
@@ -99,7 +99,7 @@ public class SnmpManagerImpl
 
                 public Object getResult() { return null; }
             };
-        MvvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
         m_settings = settings;
 
         if(!isSnmpInstalled()) {
@@ -222,7 +222,7 @@ public class SnmpManagerImpl
     private void restartDaemon() {
         try {
             m_logger.debug("Restarting the snmpd...");
-            Process p = MvvmContextFactory.context().exec(new String[] {
+            Process p = UvmContextFactory.context().exec(new String[] {
                 "/etc/init.d/snmpd", "restart"});
             p.waitFor();
             m_logger.debug("Restart of SNMPD exited with " +

@@ -9,25 +9,25 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.policy.LocalPolicyManager;
-import com.untangle.mvvm.policy.Policy;
-import com.untangle.mvvm.policy.PolicyConfiguration;
-import com.untangle.mvvm.policy.PolicyException;
-import com.untangle.mvvm.policy.PolicyManager;
-import com.untangle.mvvm.policy.SystemPolicyRule;
-import com.untangle.mvvm.policy.UserPolicyRule;
-import com.untangle.mvvm.policy.UserPolicyRuleSet;
-import com.untangle.mvvm.tran.LocalTransformManager;
-import com.untangle.mvvm.tran.firewall.intf.IntfMatcher;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.policy.LocalPolicyManager;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.policy.PolicyConfiguration;
+import com.untangle.uvm.policy.PolicyException;
+import com.untangle.uvm.policy.PolicyManager;
+import com.untangle.uvm.policy.SystemPolicyRule;
+import com.untangle.uvm.policy.UserPolicyRule;
+import com.untangle.uvm.policy.UserPolicyRuleSet;
+import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.firewall.intf.IntfMatcher;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -98,7 +98,7 @@ class DefaultPolicyManager implements LocalPolicyManager
                 public Object getResult() { return null; }
             };
 
-        MvvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         logger.info("Initialized PolicyManager");
     }
@@ -150,7 +150,7 @@ class DefaultPolicyManager implements LocalPolicyManager
                         return null;
                     }
                 };
-            MvvmContextFactory.context().runTransaction(tw);
+            UvmContextFactory.context().runTransaction(tw);
 
             logger.debug("Added new policy, id: " + p.getId() + ", name: " + p.getName());
             allPolicies.add(p);
@@ -184,7 +184,7 @@ class DefaultPolicyManager implements LocalPolicyManager
 
                     public Object getResult() { return null; }
                 };
-            MvvmContextFactory.context().runTransaction(tw);
+            UvmContextFactory.context().runTransaction(tw);
 
             logger.debug("Removed policy, id: " + p.getId()
                          + ", name: " + p.getName());
@@ -215,7 +215,7 @@ class DefaultPolicyManager implements LocalPolicyManager
 
                     public Object getResult() { return null; }
                 };
-            MvvmContextFactory.context().runTransaction(tw);
+            UvmContextFactory.context().runTransaction(tw);
         }
         logger.debug("Changed policy, id: " + p.getId()
                      + ", new name: " + p.getName());
@@ -234,8 +234,8 @@ class DefaultPolicyManager implements LocalPolicyManager
             }
         }
 
-        LocalTransformManager tm = MvvmContextFactory.context().transformManager();
-        return 0 < tm.transformInstances(p).size();
+        LocalNodeManager tm = UvmContextFactory.context().nodeManager();
+        return 0 < tm.nodeInstances(p).size();
     }
 
     public SystemPolicyRule[] getSystemPolicyRules() {
@@ -262,7 +262,7 @@ class DefaultPolicyManager implements LocalPolicyManager
 
                             public Object getResult() { return null; }
                         };
-                    MvvmContextFactory.context().runTransaction(tw);
+                    UvmContextFactory.context().runTransaction(tw);
                 }
             }
         }
@@ -289,7 +289,7 @@ class DefaultPolicyManager implements LocalPolicyManager
 
                     public Object getResult() { return null; }
                 };
-            MvvmContextFactory.context().runTransaction(tw);
+            UvmContextFactory.context().runTransaction(tw);
         }
     }
 
@@ -408,7 +408,7 @@ class DefaultPolicyManager implements LocalPolicyManager
 
     // LocalPolicyManager methods ---------------------------------------------
 
-    // MVVM calls in here at boot time and whenever a new interface is
+    // UVM calls in here at boot time and whenever a new interface is
     // added or removed, passing all interfaces.  We automatically add
     // or removeSystemPolicyRules as appropriate.  We also build the
     // in-memory UserPolicyRule list.
@@ -525,7 +525,7 @@ class DefaultPolicyManager implements LocalPolicyManager
 
                     public Object getResult() { return null; }
                 };
-            MvvmContextFactory.context().runTransaction(tw);
+            UvmContextFactory.context().runTransaction(tw);
         }
     }
 

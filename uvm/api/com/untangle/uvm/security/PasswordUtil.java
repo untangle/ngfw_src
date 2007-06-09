@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.security;
+package com.untangle.uvm.security;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

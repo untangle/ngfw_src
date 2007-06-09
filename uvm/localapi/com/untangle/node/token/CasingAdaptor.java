@@ -9,28 +9,28 @@
  * $Id$
  */
 
-package com.untangle.tran.token;
+package com.untangle.node.token;
 
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.AbstractEventHandler;
-import com.untangle.mvvm.tapi.MPipeException;
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tapi.PipelineFoundry;
-import com.untangle.mvvm.tapi.Session;
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.mvvm.tapi.event.IPDataResult;
-import com.untangle.mvvm.tapi.event.IPSessionEvent;
-import com.untangle.mvvm.tapi.event.TCPChunkEvent;
-import com.untangle.mvvm.tapi.event.TCPChunkResult;
-import com.untangle.mvvm.tapi.event.TCPSessionEvent;
-import com.untangle.mvvm.tapi.event.TCPStreamer;
-import com.untangle.mvvm.tran.MutateTStats;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.AbstractEventHandler;
+import com.untangle.uvm.tapi.MPipeException;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.PipelineFoundry;
+import com.untangle.uvm.tapi.Session;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.uvm.tapi.event.IPDataResult;
+import com.untangle.uvm.tapi.event.IPSessionEvent;
+import com.untangle.uvm.tapi.event.TCPChunkEvent;
+import com.untangle.uvm.tapi.event.TCPChunkResult;
+import com.untangle.uvm.tapi.event.TCPSessionEvent;
+import com.untangle.uvm.tapi.event.TCPStreamer;
+import com.untangle.uvm.node.MutateTStats;
+import com.untangle.uvm.node.Node;
 import org.apache.log4j.Logger;
 
 public class CasingAdaptor extends AbstractEventHandler
@@ -42,16 +42,16 @@ public class CasingAdaptor extends AbstractEventHandler
 
     private final Map casings = new ConcurrentHashMap();
 
-    private final PipelineFoundry pipeFoundry = MvvmContextFactory.context()
+    private final PipelineFoundry pipeFoundry = UvmContextFactory.context()
         .pipelineFoundry();
     private final Logger logger = Logger.getLogger(CasingAdaptor.class);
 
     private volatile boolean releaseParseExceptions;
 
-    public CasingAdaptor(Transform transform, CasingFactory casingFactory,
+    public CasingAdaptor(Node node, CasingFactory casingFactory,
                          boolean clientSide, boolean releaseParseExceptions)
     {
-        super(transform);
+        super(node);
         this.casingFactory = casingFactory;
         this.clientSide = clientSide;
         this.releaseParseExceptions = releaseParseExceptions;

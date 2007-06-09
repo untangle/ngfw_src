@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 /**
  * Class to enacpaulate policies regarding how non-conforming

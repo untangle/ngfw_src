@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi.event;
+package com.untangle.uvm.tapi.event;
 
-import com.untangle.mvvm.tapi.MPipe;
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.MPipe;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
 
 public class TCPNewSessionRequestEvent extends MPipeEvent {
     

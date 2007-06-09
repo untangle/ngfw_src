@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,9 +19,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.IntfConstants;
-import com.untangle.mvvm.localapi.ArgonInterface;
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.localapi.ArgonInterface;
 import org.apache.log4j.Logger;
 
 

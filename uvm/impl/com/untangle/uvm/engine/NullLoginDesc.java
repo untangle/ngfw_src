@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.lang.ref.WeakReference;
 import java.net.URL;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.security.MvvmLogin;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.security.UvmLogin;
 
 final class NullLoginDesc extends LoginDesc
 {
@@ -27,7 +27,7 @@ final class NullLoginDesc extends LoginDesc
     {
         super(url, timeout, null);
 
-        MvvmLogin login = ((MvvmContextImpl)MvvmContextFactory.context()).mvvmLogin();
+        UvmLogin login = ((UvmContextImpl)UvmContextFactory.context()).uvmLogin();
 
         targetDesc = new TargetDesc(url, timeout, null, 0,
                                     new WeakReference(login));

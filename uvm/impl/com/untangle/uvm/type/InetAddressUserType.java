@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.type;
+package com.untangle.uvm.type;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

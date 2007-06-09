@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking.ping;
+package com.untangle.uvm.networking.ping;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -27,9 +27,9 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.networking.NetworkException;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.networking.NetworkException;
+import com.untangle.uvm.node.ValidateException;
 
 public class PingManagerImpl implements PingManager
 {
@@ -171,7 +171,7 @@ public class PingManagerImpl implements PingManager
         args[arg++] = PING_PATTERN;
         args[arg++] = address.getHostAddress();
 
-        Process p = MvvmContextFactory.context().exec( args );
+        Process p = UvmContextFactory.context().exec( args );
 
         return new Helper( addressString, address, count, p );
     }

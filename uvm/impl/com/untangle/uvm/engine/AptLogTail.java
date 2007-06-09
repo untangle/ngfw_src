@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,12 +21,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.untangle.mvvm.toolbox.DownloadComplete;
-import com.untangle.mvvm.toolbox.DownloadProgress;
-import com.untangle.mvvm.toolbox.DownloadSummary;
-import com.untangle.mvvm.toolbox.InstallComplete;
-import com.untangle.mvvm.toolbox.InstallProgress;
-import com.untangle.mvvm.toolbox.InstallTimeout;
+import com.untangle.uvm.toolbox.DownloadComplete;
+import com.untangle.uvm.toolbox.DownloadProgress;
+import com.untangle.uvm.toolbox.DownloadSummary;
+import com.untangle.uvm.toolbox.InstallComplete;
+import com.untangle.uvm.toolbox.InstallProgress;
+import com.untangle.uvm.toolbox.InstallTimeout;
 import org.apache.log4j.Logger;
 
 class AptLogTail implements Runnable

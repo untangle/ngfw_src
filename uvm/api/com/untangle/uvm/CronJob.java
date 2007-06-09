@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
 /**
  * CronJob represents a job registered with the system. This object
@@ -17,7 +17,7 @@ package com.untangle.mvvm;
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
- * @see MvvmLocalContext#makeCronJob(Period, Runnable)
+ * @see UvmLocalContext#makeCronJob(Period, Runnable)
  */
 public interface CronJob
 {

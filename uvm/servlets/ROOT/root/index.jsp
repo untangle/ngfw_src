@@ -1,6 +1,6 @@
-<%@ page language="java" import="com.untangle.mvvm.*"%>
+<%@ page language="java" import="com.untangle.uvm.*"%>
 
 <%
-String wu = MvvmContextFactory.context().appServerManager().getRootWelcome();
+String wu = UvmContextFactory.context().appServerManager().getRootWelcome();
 response.sendRedirect(wu);
 %>

@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.localapi;
+package com.untangle.uvm.localapi;
 
 import java.util.List;
 
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.tran.RemoteShieldManager;
-import com.untangle.mvvm.shield.ShieldNodeSettings;
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.node.RemoteShieldManager;
+import com.untangle.uvm.shield.ShieldNodeSettings;
 
 public interface LocalShieldManager extends RemoteShieldManager
 {

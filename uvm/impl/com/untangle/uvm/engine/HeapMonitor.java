@@ -9,7 +9,7 @@
  *  $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 
 import java.lang.management.ManagementFactory;
@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 
 /**
  * Class that monitors the total memory size and the prints an error message if grows
@@ -46,7 +46,7 @@ class HeapMonitor
     private static final String DEFAULT_FILENAME      = null;        /* null means to log to stderr */
 
     /* Keys to the properties that control these items */
-    private static final String KEY_PREFIX           = "com.untangle.mvvm.memmonitor.";
+    private static final String KEY_PREFIX           = "com.untangle.uvm.memmonitor.";
     static final         String KEY_ENABLE_MONITOR   = KEY_PREFIX + "enabled";
     private static final String KEY_TRIGGER_RATE     = KEY_PREFIX + "rate";
     private static final String KEY_TRIGGER_MIN      = KEY_PREFIX + "min";
@@ -159,7 +159,7 @@ class HeapMonitor
 
         logger.debug( "Starting the heap monitor" );
         
-        this.thread = MvvmContextFactory.context().newThread(new Task());
+        this.thread = UvmContextFactory.context().newThread(new Task());
     }
     
     synchronized void stop()

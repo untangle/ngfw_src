@@ -9,8 +9,8 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
-public interface UDPSessionDesc extends com.untangle.mvvm.tran.UDPSessionDesc, IPSessionDesc
+public interface UDPSessionDesc extends com.untangle.uvm.node.UDPSessionDesc, IPSessionDesc
 {
 }

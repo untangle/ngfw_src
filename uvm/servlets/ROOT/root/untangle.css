@@ -9,11 +9,11 @@ A {
 .VerticalToolBar {
     background-color: rgb(198, 197, 215);
     height: 100%;
-    filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+    filter:progid:DXImageNode.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
 }
 
 .HorizontalToolBar {
     background-color: rgb(198, 197, 215);
     width: 100%;
-    filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+    filter:progid:DXImageNode.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
 }

@@ -9,32 +9,32 @@
  * $Id$
  */
 
-package com.untangle.mvvm.client;
+package com.untangle.uvm.client;
 
 /**
- * Exception for connecting to the MVVM remotely.
+ * Exception for connecting to the UVM remotely.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class MvvmConnectException extends Exception
+public class UvmConnectException extends Exception
 {
-    public MvvmConnectException()
+    public UvmConnectException()
     {
         super();
     }
 
-    public MvvmConnectException(String message)
+    public UvmConnectException(String message)
     {
         super(message);
     }
 
-    public MvvmConnectException(String message, Throwable cause)
+    public UvmConnectException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
-    public MvvmConnectException(Throwable cause)
+    public UvmConnectException(Throwable cause)
     {
         super(cause);
     }

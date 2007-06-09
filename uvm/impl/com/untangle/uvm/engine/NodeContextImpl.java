@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,70 +26,70 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.policy.Policy;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tapi.IPSessionDesc;
-import com.untangle.mvvm.tapi.TransformBase;
-import com.untangle.mvvm.tapi.TransformListener;
-import com.untangle.mvvm.tapi.TransformStateChangeEvent;
-import com.untangle.mvvm.toolbox.MackageDesc;
-import com.untangle.mvvm.tran.DeployException;
-import com.untangle.mvvm.tran.TooManyInstancesException;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformDesc;
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.tran.TransformPreferences;
-import com.untangle.mvvm.tran.TransformState;
-import com.untangle.mvvm.tran.TransformStats;
-import com.untangle.mvvm.tran.UndeployException;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.tapi.IPSessionDesc;
+import com.untangle.uvm.tapi.NodeBase;
+import com.untangle.uvm.tapi.NodeListener;
+import com.untangle.uvm.tapi.NodeStateChangeEvent;
+import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.node.DeployException;
+import com.untangle.uvm.node.TooManyInstancesException;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.NodePreferences;
+import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.node.NodeStats;
+import com.untangle.uvm.node.UndeployException;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-// XXX decouple from TransformBase
-class TransformContextImpl implements TransformContext
+// XXX decouple from NodeBase
+class NodeContextImpl implements NodeContext
 {
     private final Logger logger = Logger.getLogger(getClass());
 
     private static final URL[] URL_PROTO = new URL[0];
 
-    private final TransformDesc transformDesc;
+    private final NodeDesc nodeDesc;
     private final Tid tid;
-    private final TransformPreferences transformPreferences;
-    private final TransformPersistentState persistentState;
+    private final NodePreferences nodePreferences;
+    private final NodePersistentState persistentState;
     private final boolean isNew;
 
-    private TransformBase transform;
+    private NodeBase node;
     private String mackageName;
 
-    private final TransformManagerImpl transformManager;
+    private final NodeManagerImpl nodeManager;
     private final ToolboxManagerImpl toolboxManager;
 
-    TransformContextImpl(URLClassLoader classLoader, TransformDesc tDesc,
+    NodeContextImpl(URLClassLoader classLoader, NodeDesc tDesc,
                          String mackageName, boolean isNew)
         throws DeployException
     {
-        MvvmContextImpl mctx = MvvmContextImpl.getInstance();
+        UvmContextImpl mctx = UvmContextImpl.getInstance();
 
-        transformManager = mctx.transformManager();
+        nodeManager = mctx.nodeManager();
         toolboxManager = mctx.toolboxManager();
 
         LoggingManagerImpl lm = mctx.loggingManager();
-        if (null != tDesc.getTransformBase()) {
-            lm.initSchema(tDesc.getTransformBase());
+        if (null != tDesc.getNodeBase()) {
+            lm.initSchema(tDesc.getNodeBase());
         }
         lm.initSchema(tDesc.getName());
 
-        this.transformDesc = tDesc;
-        this.tid = transformDesc.getTid();
+        this.nodeDesc = tDesc;
+        this.tid = nodeDesc.getTid();
         this.mackageName = mackageName;
         this.isNew = isNew;
 
-        checkInstanceCount(transformDesc);
+        checkInstanceCount(nodeDesc);
 
         if (isNew) {
             // XXX this isn't supposed to be meaningful:
@@ -98,17 +98,17 @@ class TransformContextImpl implements TransformContext
                   (byte)((tid.getId() >> 8) & 0xFF) };
 
 
-            persistentState = new TransformPersistentState
+            persistentState = new NodePersistentState
                 (tid, mackageName, pKey);
 
-            transformPreferences = new TransformPreferences(tid);
+            nodePreferences = new NodePreferences(tid);
 
             TransactionWork tw = new TransactionWork()
                 {
                     public boolean doWork(Session s)
                     {
                         s.save(persistentState);
-                        s.save(transformPreferences);
+                        s.save(nodePreferences);
                         return true;
                     }
 
@@ -119,40 +119,40 @@ class TransformContextImpl implements TransformContext
             LoadSettings ls = new LoadSettings(tid);
             mctx.runTransaction(ls);
             this.persistentState = ls.getPersistentState();
-            this.transformPreferences = ls.getTransformPreferences();
+            this.nodePreferences = ls.getNodePreferences();
         }
 
-        logger.info("Creating transform context for: " + tid
-                    + " (" + transformDesc.getName() + ")");
+        logger.info("Creating node context for: " + tid
+                    + " (" + nodeDesc.getName() + ")");
     }
 
     void init(String[] args) throws DeployException
     {
-        Set<TransformContext>parentCtxs = new HashSet<TransformContext>();
-        List<String> parents = transformDesc.getParents();
+        Set<NodeContext>parentCtxs = new HashSet<NodeContext>();
+        List<String> parents = nodeDesc.getParents();
         for (String parent : parents) {
             parentCtxs.add(startParent(parent, tid.getPolicy()));
         }
 
-        final MvvmLocalContext mctx = MvvmContextFactory.context();
+        final UvmLocalContext mctx = UvmContextFactory.context();
         try {
-            transformManager.registerThreadContext(this);
+            nodeManager.registerThreadContext(this);
 
             String tidName = tid.getName();
-            logger.debug("setting tran " + tidName + " log4j repository");
+            logger.debug("setting node " + tidName + " log4j repository");
 
-            String className = transformDesc.getClassName();
-            transform = (TransformBase)Class.forName(className).newInstance();
+            String className = nodeDesc.getClassName();
+            node = (NodeBase)Class.forName(className).newInstance();
 
-            for (TransformContext parentCtx : parentCtxs) {
-                transform.addParent((TransformBase)parentCtx.transform());
+            for (NodeContext parentCtx : parentCtxs) {
+                node.addParent((NodeBase)parentCtx.node());
             }
 
-            transform.addTransformListener(new TransformListener()
+            node.addNodeListener(new NodeListener()
                 {
-                    public void stateChange(TransformStateChangeEvent te) {
+                    public void stateChange(NodeStateChangeEvent te) {
                         {
-                            final TransformState ts = te.getTransformState();
+                            final NodeState ts = te.getNodeState();
 
                             TransactionWork tw = new TransactionWork()
                                 {
@@ -167,20 +167,20 @@ class TransformContextImpl implements TransformContext
                                 };
                             mctx.runTransaction(tw);
 
-                            mctx.eventLogger().log(new TransformStateChange(tid, ts));
+                            mctx.eventLogger().log(new NodeStateChange(tid, ts));
                         }
                     }
                 });
 
             if (isNew) {
-                transform.initializeSettings();
-                transform.init(args);
+                node.initializeSettings();
+                node.init(args);
                 boolean enabled = toolboxManager.isEnabled(mackageName);
                 if (!enabled) {
-                    transform.disable();
+                    node.disable();
                 }
             } else {
-                transform.resumeState(persistentState.getTargetState(), args);
+                node.resumeState(persistentState.getTargetState(), args);
             }
         } catch (ClassNotFoundException exn) {
             throw new DeployException(exn);
@@ -188,12 +188,12 @@ class TransformContextImpl implements TransformContext
             throw new DeployException(exn);
         } catch (IllegalAccessException exn) {
             throw new DeployException(exn);
-        } catch (TransformException exn) {
+        } catch (NodeException exn) {
             throw new DeployException(exn);
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
 
-            if (null == transform) {
+            if (null == node) {
                 TransactionWork tw = new TransactionWork()
                     {
                         public boolean doWork(Session s)
@@ -210,21 +210,21 @@ class TransformContextImpl implements TransformContext
         }
     }
 
-    // TransformContext -------------------------------------------------------
+    // NodeContext -------------------------------------------------------
 
     public Tid getTid()
     {
         return tid;
     }
 
-    public TransformDesc getTransformDesc()
+    public NodeDesc getNodeDesc()
     {
-        return transformDesc;
+        return nodeDesc;
     }
 
-    public TransformPreferences getTransformPreferences()
+    public NodePreferences getNodePreferences()
     {
-        return transformPreferences;
+        return nodePreferences;
     }
 
     public MackageDesc getMackageDesc()
@@ -232,36 +232,36 @@ class TransformContextImpl implements TransformContext
         return toolboxManager.mackageDesc(mackageName);
     }
 
-    public Transform transform()
+    public Node node()
     {
-        return transform;
+        return node;
     }
 
-    // transform call-through methods -----------------------------------------
+    // node call-through methods -----------------------------------------
 
     public IPSessionDesc[] liveSessionDescs()
     {
-        return transform.liveSessionDescs();
+        return node.liveSessionDescs();
     }
 
-    public TransformState getRunState()
+    public NodeState getRunState()
     {
-        return null == transform ? TransformState.LOADED
-            : transform.getRunState();
+        return null == node ? NodeState.LOADED
+            : node.getRunState();
     }
 
-    public TransformStats getStats()
+    public NodeStats getStats()
     {
-        return transform.getStats();
+        return node.getStats();
     }
 
-    // XXX should be LocalTransformContext ------------------------------------
+    // XXX should be LocalNodeContext ------------------------------------
 
     // XXX remove this method...
     @Deprecated
     public boolean runTransaction(TransactionWork tw)
     {
-        return MvvmContextFactory.context().runTransaction(tw);
+        return UvmContextFactory.context().runTransaction(tw);
     }
 
     public InputStream getResourceAsStream(String res)
@@ -287,27 +287,27 @@ class TransformContextImpl implements TransformContext
     void destroy() throws UndeployException
     {
         try {
-            transformManager.registerThreadContext(this);
-            if (transform.getRunState() == TransformState.RUNNING) {
-                transform.stop();
+            nodeManager.registerThreadContext(this);
+            if (node.getRunState() == NodeState.RUNNING) {
+                node.stop();
             }
-            transform.destroy();
-            transform.destroySettings();
-        } catch (TransformException exn) {
+            node.destroy();
+            node.destroySettings();
+        } catch (NodeException exn) {
             throw new UndeployException(exn);
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
         }
     }
 
     void unload()
     {
-        if (transform != null) {
+        if (node != null) {
             try {
-                transformManager.registerThreadContext(this);
-                transform.unload();
+                nodeManager.registerThreadContext(this);
+                node.unload();
             } finally {
-                transformManager.deregisterThreadContext();
+                nodeManager.deregisterThreadContext();
             }
         }
     }
@@ -321,13 +321,13 @@ class TransformContextImpl implements TransformContext
                     tid.setPolicy(null);
                     s.update(tid);
                     s.delete(persistentState);
-                    s.delete(getTransformPreferences());
+                    s.delete(getNodePreferences());
                     return true;
                 }
 
                 public Object getResult() { return null; }
             };
-        MvvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
     }
 
     // private classes --------------------------------------------------------
@@ -336,8 +336,8 @@ class TransformContextImpl implements TransformContext
     {
         private final Tid tid;
 
-        private TransformPersistentState persistentState;
-        private TransformPreferences transformPreferences;
+        private NodePersistentState persistentState;
+        private NodePreferences nodePreferences;
 
         public LoadSettings(Tid tid)
         {
@@ -347,48 +347,48 @@ class TransformContextImpl implements TransformContext
         public boolean doWork(Session s)
         {
             Query q = s.createQuery
-                ("from TransformPersistentState tps where tps.tid = :tid");
+                ("from NodePersistentState tps where tps.tid = :tid");
             q.setParameter("tid", tid);
 
-            persistentState = (TransformPersistentState)q.uniqueResult();
+            persistentState = (NodePersistentState)q.uniqueResult();
 
             if (!toolboxManager.isEnabled(mackageName)) {
-                persistentState.setTargetState(TransformState.DISABLED);
+                persistentState.setTargetState(NodeState.DISABLED);
                 s.merge(persistentState);
-            } else if (TransformState.DISABLED == persistentState.getTargetState()) {
-                persistentState.setTargetState(TransformState.INITIALIZED);
+            } else if (NodeState.DISABLED == persistentState.getTargetState()) {
+                persistentState.setTargetState(NodeState.INITIALIZED);
                 s.merge(persistentState);
             }
 
             q = s.createQuery
-                ("from TransformPreferences tp where tp.tid = :tid");
+                ("from NodePreferences tp where tp.tid = :tid");
             q.setParameter("tid", tid);
-            transformPreferences = (TransformPreferences)q.uniqueResult();
+            nodePreferences = (NodePreferences)q.uniqueResult();
             return true;
         }
 
         public Object getResult() { return null; }
 
-        public TransformPersistentState getPersistentState()
+        public NodePersistentState getPersistentState()
         {
             return persistentState;
         }
 
-        public TransformPreferences getTransformPreferences()
+        public NodePreferences getNodePreferences()
         {
-            return transformPreferences;
+            return nodePreferences;
         }
     }
 
     // private methods --------------------------------------------------------
 
-    private void checkInstanceCount(TransformDesc transformDesc)
+    private void checkInstanceCount(NodeDesc nodeDesc)
         throws TooManyInstancesException
     {
-        if (transformDesc.isSingleInstance()) {
-            String n = transformDesc.getName();
-            Policy p = transformDesc.getTid().getPolicy();
-            List<Tid> l = transformManager.transformInstances(n, p);
+        if (nodeDesc.isSingleInstance()) {
+            String n = nodeDesc.getName();
+            Policy p = nodeDesc.getTid().getPolicy();
+            List<Tid> l = nodeManager.nodeInstances(n, p);
 
             if (1 == l.size()) {
                 if (!tid.equals(l.get(0))) {
@@ -419,7 +419,7 @@ class TransformContextImpl implements TransformContext
         }
     }
 
-    private TransformContext startParent(String parent, Policy policy)
+    private NodeContext startParent(String parent, Policy policy)
         throws DeployException
     {
         if (null == parent) {
@@ -433,14 +433,14 @@ class TransformContextImpl implements TransformContext
 
         logger.debug("Starting parent: " + parent + " for: " + tid);
 
-        TransformContext pctx = getParentContext(parent);
+        NodeContext pctx = getParentContext(parent);
 
         if (null == pctx) {
             logger.debug("Parent does not exist, instantiating");
 
             try {
-                Tid parentTid = transformManager.instantiate(parent, policy);
-                pctx = transformManager.transformContext(parentTid);
+                Tid parentTid = nodeManager.instantiate(parent, policy);
+                pctx = nodeManager.nodeContext(parentTid);
             } catch (TooManyInstancesException exn) {
                 pctx = getParentContext(parent);
             }
@@ -453,12 +453,12 @@ class TransformContextImpl implements TransformContext
         }
     }
 
-    private TransformContext getParentContext(String parent)
+    private NodeContext getParentContext(String parent)
     {
-        for (Tid t : transformManager.transformInstances(parent)) {
+        for (Tid t : nodeManager.nodeInstances(parent)) {
             Policy p = t.getPolicy();
             if (null == p || p.equals(tid.getPolicy())) {
-                return transformManager.transformContext(t);
+                return nodeManager.nodeContext(t);
             }
 
         }
@@ -470,7 +470,7 @@ class TransformContextImpl implements TransformContext
 
     public String toString()
     {
-        return "TransformContext tid: " + tid
-            + " (" + transformDesc.getName() + ")";
+        return "NodeContext tid: " + tid
+            + " (" + nodeDesc.getName() + ")";
     }
 }

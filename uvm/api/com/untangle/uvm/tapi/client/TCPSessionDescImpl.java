@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi.client;
+package com.untangle.uvm.tapi.client;
 
-import com.untangle.mvvm.tran.SessionEndpoints;
+import com.untangle.uvm.node.SessionEndpoints;
 
-import com.untangle.mvvm.tapi.SessionStats;
-import com.untangle.mvvm.tapi.TCPSessionDesc;
+import com.untangle.uvm.tapi.SessionStats;
+import com.untangle.uvm.tapi.TCPSessionDesc;
 import java.net.InetAddress;
 
 public class TCPSessionDescImpl extends IPSessionDescImpl implements TCPSessionDesc {

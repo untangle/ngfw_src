@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
-import com.untangle.mvvm.MvvmException;
+import com.untangle.uvm.UvmException;
 
 // relates to the creation of instances
 // XXX rename?
-public class DeployException extends MvvmException {
+public class DeployException extends UvmException {
     public DeployException() { super(); }
     public DeployException(String message) { super(message); }
     public DeployException(String message, Throwable cause) { super(message, cause); }

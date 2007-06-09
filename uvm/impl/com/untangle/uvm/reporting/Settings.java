@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.reporting;
+package com.untangle.uvm.reporting;
 
 import java.lang.Integer;
 import java.sql.*;
@@ -37,9 +37,9 @@ public class Settings
     private static final String EMAIL_DETAIL =
         "SELECT email_detail " +
         "FROM settings.tr_reporting_settings settings " +
-        "JOIN settings.transform_persistent_state tstate " +
+        "JOIN settings.node_persistent_state tstate " +
         "ON (settings.tid = tstate.tid " +
-        "AND name = 'reporting-transform' " +
+        "AND name = 'reporting-node' " +
         "AND target_state = 'running')";
 
     private static final String SCHED_DAILY_MONTHLY =
@@ -47,9 +47,9 @@ public class Settings
         "FROM settings.tr_reporting_sched sched " +
         "JOIN settings.tr_reporting_settings settings " +
         "ON (sched.id = settings.schedule) " +
-        "JOIN settings.transform_persistent_state tstate " +
+        "JOIN settings.node_persistent_state tstate " +
         "ON (settings.tid = tstate.tid " +
-        "AND name = 'reporting-transform' " +
+        "AND name = 'reporting-node' " +
         "AND target_state = 'running')";
 
     private static final String SCHED_WEEKLY =
@@ -61,9 +61,9 @@ public class Settings
         "ON (wksched.setting_id = sched.id) " +
         "JOIN settings.tr_reporting_settings settings " +
         "ON (sched.id = settings.schedule) " +
-        "JOIN settings.transform_persistent_state tstate " +
+        "JOIN settings.node_persistent_state tstate " +
         "ON (settings.tid = tstate.tid " +
-        "AND name = 'reporting-transform' " +
+        "AND name = 'reporting-node' " +
         "AND target_state = 'running')";
 
     public Settings(Connection conn, Calendar cal) {
@@ -156,7 +156,7 @@ public class Settings
     }
 
     private boolean getWeekly(Calendar cal) {
-        // com.untangle.tran.reporting.Schedule uses Calendar constants
+        // com.untangle.node.reporting.Schedule uses Calendar constants
         int dayOfWk = cal.get(Calendar.DAY_OF_WEEK);
         return weeklyList.contains(new Integer(dayOfWk));
     }
@@ -181,7 +181,7 @@ public class Settings
         if (NONE == monthlyNDayOfWk) {
             return false;
         }
-        // com.untangle.tran.reporting.Schedule uses Calendar constants
+        // com.untangle.node.reporting.Schedule uses Calendar constants
         int dayOfWk = cal.get(Calendar.DAY_OF_WEEK);
         return (monthlyNDayOfWk == dayOfWk) ? true : false;
     }

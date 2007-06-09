@@ -8,15 +8,15 @@
  *
  * $Id$
  */
-package com.untangle.tran.virus;
+package com.untangle.node.virus;
 
 import java.io.Serializable;
 
-import com.untangle.mvvm.tran.TemplateValues;
+import com.untangle.uvm.node.TemplateValues;
 
 /**
  * Virus scan result.  <br><br> This class also implements {@link
- * com.untangle.tran.util.TemplateValues TemplateValues}.  There is
+ * com.untangle.node.util.TemplateValues TemplateValues}.  There is
  * only one key which can be derefferenced -
  * <code>VirusReport:VIRUS_NAME</code>.  This will be replaced with
  * the name of the virus which was found.

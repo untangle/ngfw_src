@@ -1,10 +1,10 @@
 #!/bin/sh
 
-exec >> @MVVM_LOG@/wrapper.log 2>&1
+exec >> @UVM_LOG@/wrapper.log 2>&1
 
 OPENSSL_CMD=openssl
 
-BASE_DIR="@MVVM_HOME@/installers/wmimapper"
+BASE_DIR="@UVM_HOME@/installers/wmimapper"
 
 NSIS_SCRIPT="${BASE_DIR}/wmimapper-installer.nsi"
 

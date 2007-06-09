@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.mvvm.type.firewall;
+package com.untangle.uvm.type.firewall;
 
-import com.untangle.mvvm.type.StringBasedUserType;
+import com.untangle.uvm.type.StringBasedUserType;
 
-import com.untangle.mvvm.tran.firewall.intf.IntfMatcher;
-import com.untangle.mvvm.tran.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.node.firewall.intf.IntfMatcher;
+import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 
 public class IntfMatcherUserType extends StringBasedUserType
 {

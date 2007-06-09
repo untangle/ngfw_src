@@ -9,14 +9,14 @@
  *  $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.File;
 import java.io.IOException;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.tran.util.IOUtil;
-import com.untangle.tran.util.SimpleExec;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.node.util.IOUtil;
+import com.untangle.node.util.SimpleExec;
 import org.apache.log4j.Logger;
 
 
@@ -40,7 +40,7 @@ class BackupManager {
 
     static {
         OLD_BACKUP_SCRIPT = System.getProperty("bunnicula.home")
-            + "/../../bin/mvvmdb-backup";
+            + "/../../bin/uvmdb-backup";
         BACKUP_SCRIPT = System.getProperty("bunnicula.home")
             + "/../../bin/mv-backup-bundled.sh";
         RESTORE_SCRIPT = System.getProperty("bunnicula.home")
@@ -79,7 +79,7 @@ class BackupManager {
             //Copy the bytes to a temp file
             IOUtil.bytesToFile(backupFileBytes, tempFile);
 
-            //nohup sh @PREFIX@/usr/share/metavize/mvvm_restart.sh 1 2 > @PREFIX@/var/log/mvvm/restart.log 2>&1 &
+            //nohup sh @PREFIX@/usr/share/metavize/uvm_restart.sh 1 2 > @PREFIX@/var/log/uvm/restart.log 2>&1 &
 
             File restartLog = new File(
                                        System.getProperty("bunnicula.log.dir") +
@@ -109,7 +109,7 @@ class BackupManager {
                                      true,//stderr
                                      1000*60,//timeout
                                      m_logger,//log-into
-                                     true);//use MVVM threads
+                                     true);//use UVM threads
 
             // We no longer delete the file since it's a race.  jdi 7/06
             // IOUtil.delete(tempFile);
@@ -122,7 +122,7 @@ class BackupManager {
             throw ex;
         }
 
-        // We don't usually ever get here since the mvvm is stopped by restore-mv script
+        // We don't usually ever get here since the uvm is stopped by restore-mv script
 
         if(result.exitCode != 0) {
             switch(result.exitCode) {
@@ -157,7 +157,7 @@ class BackupManager {
                                 true,//stderr
                                 1000*30,//timeout
                                 m_logger,//log-into
-                                true);//use MVVM threads
+                                true);//use UVM threads
 
             if(result.exitCode != 0) {
                 throw new IOException("Unable to create local backup to \"" +
@@ -185,7 +185,7 @@ class BackupManager {
 
     private void backup(boolean local) throws IOException {
 
-        Process p = MvvmContextFactory.context().exec(new String[]
+        Process p = UvmContextFactory.context().exec(new String[]
             { OLD_BACKUP_SCRIPT, local ? LOCAL_ARG : USB_ARG });
         for (byte[] buf = new byte[1024]; 0 <= p.getInputStream().read(buf); );
 

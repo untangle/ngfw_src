@@ -2,7 +2,7 @@
 
 set -e
 
-. @PREFIX@/etc/default/mvvm
+. @PREFIX@/etc/default/uvm
 
 NEWPWFILE="/tmp/newpw$$"
 

@@ -3,9 +3,9 @@
 
 <!-- ===================================================================== -->
 <!--                                                                       -->
-<!--  Log4j Configuration for MVVM                                         -->
+<!--  Log4j Configuration for UVM                                         -->
 <!--                                                                       -->
-<!--     Configuration of all mvvm loggers lives here.                     -->
+<!--     Configuration of all uvm loggers lives here.                     -->
 <!--                                                                       -->
 <!-- ===================================================================== -->
 
@@ -20,13 +20,13 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
                      debug="false">
 
-  <appender name="TranLog" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${bunnicula.home}/log/@TranLogFileName@.log"/>
+  <appender name="NodeLog" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${bunnicula.home}/log/@NodeLogFileName@.log"/>
     <param name="Append" value="true"/>
     <param name="MaxFileSize" value="5000KB"/>
     <param name="MaxBackupIndex" value="9"/>
     <param name="Threshold" value="ALL"/>
-    <layout class="com.untangle.mvvm.logging.MvPatternLayout">
+    <layout class="com.untangle.uvm.logging.MvPatternLayout">
       <param name="ConversionPattern"
              value="%D %-5p [%c{1}] &lt;%X{SessionID}&gt; %m%n"/>
     </layout>
@@ -34,9 +34,9 @@
 
   <!-- Log Emailer -->
 
-  <appender name="EmailAppender" class="com.untangle.mvvm.logging.SmtpAppender">
+  <appender name="EmailAppender" class="com.untangle.uvm.logging.SmtpAppender">
     <!-- Note: We do *not* specify a layout here because we must
-         create it programmatically so that we can get the transform
+         create it programmatically so that we can get the node
          name in there.  Instead we provide the Conversion Pattern
          here at the top level so that the SmtpAppender constructor
          can create the correct layout. -->
@@ -51,20 +51,20 @@
   <!-- #      DEBUG           new session debugging -->
   <!-- #      INFO            each new session -->
   <!-- #      WARN            exceptions -->
-  <category name="com.untangle.mvvm.tapi.MPipe">
+  <category name="com.untangle.uvm.tapi.MPipe">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.mvvm.tapi.Dispatcher">
+  <category name="com.untangle.uvm.tapi.Dispatcher">
     <priority value="WARN"/>
   </category>
 
-  <!-- # Session Event messages: all events delivered to transform,
+  <!-- # Session Event messages: all events delivered to node,
        logged just before delivery the delivery/execution thread. -->
   <!-- #      DEBUG          Data events -->
   <!-- #      INFO           shutdown, close, other session events. -->
   <!-- #      WARN           New session, new session request events -->
-  <category name="com.untangle.mvvm.tapi.SessionEvent">
+  <category name="com.untangle.uvm.tapi.SessionEvent">
     <!-- No logging by default -->
     <priority value="ERROR"/>
   </category>
@@ -74,87 +74,87 @@
   <!-- #                      statistics -->
   <!-- #      INFO            (currently same as WARN) -->
   <!-- #      WARN            exceptions or unusual conditions  -->
-  <category name="com.untangle.mvvm.tapi.Session">
+  <category name="com.untangle.uvm.tapi.Session">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.mvvm.tapi.TCPSession">
+  <category name="com.untangle.uvm.tapi.TCPSession">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.mvvm.tapi.UDPSession">
+  <category name="com.untangle.uvm.tapi.UDPSession">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.mvvm.tapi.SessionTimes">
+  <category name="com.untangle.uvm.tapi.SessionTimes">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.tran.util">
+  <category name="com.untangle.node.util">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.tran.token">
+  <category name="com.untangle.node.token">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.tran.virus">
+  <category name="com.untangle.node.virus">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.tran.clam">
+  <category name="com.untangle.node.clam">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.tran.hauri">
+  <category name="com.untangle.node.hauri">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.tran.spam">
+  <category name="com.untangle.node.spam">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.tran.spamassassin">
+  <category name="com.untangle.node.spamassassin">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.tran.clamphish">
+  <category name="com.untangle.node.clamphish">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.tran.ftp">
+  <category name="com.untangle.node.ftp">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.tran.http">
+  <category name="com.untangle.node.http">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.tran.mail">
+  <category name="com.untangle.node.mail">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.tran.httpblocker">
+  <category name="com.untangle.node.httpblocker">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.tran.ids">
+  <category name="com.untangle.node.ids">
     <priority value="INFO"/>
   </category>
 
-  <category name="com.untangle.tran.protofilter">
+  <category name="com.untangle.node.protofilter">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.tran.spyware">
+  <category name="com.untangle.node.spyware">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.mvvm.tran">
+  <category name="com.untangle.uvm.node">
     <priority value="WARN"/>
   </category>
 
-  <category name="com.untangle.tran">
+  <category name="com.untangle.node">
     <priority value="WARN"/>
   </category>
 
@@ -162,10 +162,10 @@
   <!-- Setup the Root category -->
   <!-- ======================= -->
 
-  <!-- All Transform logs go to individual transform log files -->
+  <!-- All Node logs go to individual node log files -->
   <root>
     <priority value="WARN"/>
-    <appender-ref ref="TranLog"/>
+    <appender-ref ref="NodeLog"/>
     <appender-ref ref="EmailAppender"/>
   </root>
 </log4j:configuration>

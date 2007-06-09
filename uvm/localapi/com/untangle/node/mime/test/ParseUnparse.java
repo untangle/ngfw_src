@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.mime.test;
+package com.untangle.node.mime.test;
 
 import java.io.*;
 
-import com.untangle.tran.mime.*;
-import com.untangle.tran.util.FileFactory;
+import com.untangle.node.mime.*;
+import com.untangle.node.util.FileFactory;
 
 /**
  * Little test which parses MIME then writes it out. Files

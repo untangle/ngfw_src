@@ -9,58 +9,58 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
 import java.lang.reflect.Method;
 
 /**
- * Factory to get the MvvmContext for an MVVM instance.
+ * Factory to get the UvmContext for an UVM instance.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class MvvmContextFactory
+public class UvmContextFactory
 {
-    private static MvvmLocalContext MVVM_CONTEXT = null;
+    private static UvmLocalContext UVM_CONTEXT = null;
 
     /**
-     * Gets the current state of the MVVM.  This provides a way to get
-     * the state without creating the MvvmLocalContext in case we're
+     * Gets the current state of the UVM.  This provides a way to get
+     * the state without creating the UvmLocalContext in case we're
      * calling this at a very early stage.
      *
-     * @return a <code>MvvmState</code> enumerated value
+     * @return a <code>UvmState</code> enumerated value
      */
-    public static MvvmState state()
+    public static UvmState state()
     {
-        if (MVVM_CONTEXT == null) {
-            return MvvmState.LOADED;
+        if (UVM_CONTEXT == null) {
+            return UvmState.LOADED;
         } else {
-            return MVVM_CONTEXT.state();
+            return UVM_CONTEXT.state();
         }
     }
 
     /**
-     * Get the <code>MvvmContext</code> from this classloader.
-     * used by Transforms to get the context internally.
+     * Get the <code>UvmContext</code> from this classloader.
+     * used by Nodes to get the context internally.
      *
-     * @return the <code>MvvmLocalContext</code>.
+     * @return the <code>UvmLocalContext</code>.
      */
-    public static MvvmLocalContext context()
+    public static UvmLocalContext context()
     {
-        if (null == MVVM_CONTEXT) {
-            synchronized (MvvmContextFactory.class) {
-                if (null == MVVM_CONTEXT) {
+        if (null == UVM_CONTEXT) {
+            synchronized (UvmContextFactory.class) {
+                if (null == UVM_CONTEXT) {
                     try {
-                        Class c = Class.forName("com.untangle.mvvm.engine.MvvmContextImpl");
+                        Class c = Class.forName("com.untangle.uvm.engine.UvmContextImpl");
                         Method m = c.getMethod("context");
-                        MVVM_CONTEXT = (MvvmLocalContext)m.invoke(null);
+                        UVM_CONTEXT = (UvmLocalContext)m.invoke(null);
                     } catch ( Exception e ) {
-                        System.err.println( "No class or method for the MVVM context" );
+                        System.err.println( "No class or method for the UVM context" );
                         e.printStackTrace();
                     }
                 }
             }
         }
-        return MVVM_CONTEXT;
+        return UVM_CONTEXT;
     }
 }

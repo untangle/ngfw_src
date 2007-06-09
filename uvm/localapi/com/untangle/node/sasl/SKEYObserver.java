@@ -8,8 +8,8 @@
  *
  * $Id$
  */
-package com.untangle.tran.sasl;
-import static com.untangle.tran.util.ASCIIUtil.*;
+package com.untangle.node.sasl;
+import static com.untangle.node.util.ASCIIUtil.*;
 
 
 /**

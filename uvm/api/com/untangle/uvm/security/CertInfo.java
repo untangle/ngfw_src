@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.mvvm.security;
+package com.untangle.uvm.security;
 import java.util.Date;
 import java.util.List;
 

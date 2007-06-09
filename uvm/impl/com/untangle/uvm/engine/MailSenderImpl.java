@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -23,25 +23,25 @@ import javax.mail.*;
 import javax.mail.internet.*;
 
 import com.sun.mail.smtp.SMTPTransport;
-import com.untangle.mvvm.MailSender;
-import com.untangle.mvvm.MailSettings;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.networking.AddressSettingsListener;
-import com.untangle.mvvm.networking.NetworkManagerImpl;
-import com.untangle.mvvm.networking.internal.AddressSettingsInternal;
-import com.untangle.mvvm.security.AdminSettings;
-import com.untangle.mvvm.security.User;
-import com.untangle.mvvm.tran.script.ScriptRunner;
-import com.untangle.mvvm.util.ConfigFileUtil;
-import com.untangle.mvvm.util.TransactionRunner;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.MailSender;
+import com.untangle.uvm.MailSettings;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.networking.AddressSettingsListener;
+import com.untangle.uvm.networking.NetworkManagerImpl;
+import com.untangle.uvm.networking.internal.AddressSettingsInternal;
+import com.untangle.uvm.security.AdminSettings;
+import com.untangle.uvm.security.User;
+import com.untangle.uvm.node.script.ScriptRunner;
+import com.untangle.uvm.util.ConfigFileUtil;
+import com.untangle.uvm.util.TransactionRunner;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 
 
 /**
- * Note that this class is designed to be used <b>BOTH</b> inside the MVVM and
+ * Note that this class is designed to be used <b>BOTH</b> inside the UVM and
  * as a stand-alone application. The stand-alone mode is used for mailing out
  * Untangle Reports.
  *
@@ -55,7 +55,7 @@ class MailSenderImpl implements MailSender
 
     public static final String METAVIZE_SMTP_RELAY = "mail.untangle.com";
 
-    public static final String Mailer = "MVVM MailSender";
+    public static final String Mailer = "UVM MailSender";
 
     public static final String TEST_MESSAGE_SUBJECT = "Untangle Server test message";
     public static final String TEST_MESSAGE_BODY =
@@ -178,11 +178,11 @@ class MailSenderImpl implements MailSender
         refreshSessions();
     }
 
-    // Called from MvvmContextImpl at postInit time, after the networking manager
+    // Called from UvmContextImpl at postInit time, after the networking manager
     // is up and runing
     void postInit() {
         reconfigure();
-        ((NetworkManagerImpl)MvvmContextFactory.context().networkManager()).
+        ((NetworkManagerImpl)UvmContextFactory.context().networkManager()).
             registerListener(new AddressSettingsListener() {
                     public void event( AddressSettingsInternal settings )
                     {
@@ -204,7 +204,7 @@ class MailSenderImpl implements MailSender
     private boolean runTransaction(TransactionWork tw)
     {
         if (null == transactionRunner) {
-            return MvvmContextFactory.context().runTransaction(tw);
+            return UvmContextFactory.context().runTransaction(tw);
         } else {
             return transactionRunner.runTransaction(tw);
         }
@@ -240,7 +240,7 @@ class MailSenderImpl implements MailSender
         if (masqmail_dir.isDirectory()) {
             StringBuilder sb = new StringBuilder();
 
-            String hostName = MvvmContextFactory.context().networkManager().
+            String hostName = UvmContextFactory.context().networkManager().
                 getAddressSettingsInternal().getHostName().toString();
             if (hostName == null) {
                 logger.warn("null hostname, using mv-edgeguard");
@@ -355,7 +355,7 @@ class MailSenderImpl implements MailSender
 
     private void sendAlertWithAttachment(String subject, String bodyText, List attachment) {
         // Compute the list of recipients from the user list.
-        AdminSettings adminSettings = MvvmContextFactory.context()
+        AdminSettings adminSettings = UvmContextFactory.context()
             .adminManager().getAdminSettings();
         Set users = adminSettings.getUsers();
         List alertableUsers = new ArrayList();
@@ -851,7 +851,7 @@ class MailSenderImpl implements MailSender
     public static void main(String[] args)
     {
         String subject = "Untangle Reports"; // XXX Make default unsuck.
-        JarFile mvvmJarFile = null;
+        JarFile uvmJarFile = null;
         File bodyFile = null;
         List<File> extraFiles = new ArrayList<File>();
         List<String> extraLocations = new ArrayList<String>();
@@ -860,8 +860,8 @@ class MailSenderImpl implements MailSender
             for (int i = 0; i < args.length; i++) {
                 if (args[i].equals("-s")) {
                     subject = args[++i];
-                } else if (mvvmJarFile == null) {
-                    mvvmJarFile = new JarFile(args[i]);
+                } else if (uvmJarFile == null) {
+                    uvmJarFile = new JarFile(args[i]);
                 } else if (bodyFile == null) {
                     bodyFile = new File(args[i]);
                 } else {
@@ -886,11 +886,11 @@ class MailSenderImpl implements MailSender
                     extraFiles.add(extraFile);
                 }
             }
-            if (mvvmJarFile == null || bodyFile == null)
+            if (uvmJarFile == null || bodyFile == null)
                 usage();
 
             List<JarFile> jfs = new ArrayList<JarFile>();
-            jfs.add(mvvmJarFile);
+            jfs.add(uvmJarFile);
             org.hibernate.SessionFactory sessionFactory = Util.makeStandaloneSessionFactory(jfs);
             MailSenderImpl us = new MailSenderImpl(sessionFactory);
 

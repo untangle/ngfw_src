@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.untangle.mvvm.toolbox;
+package com.untangle.uvm.toolbox;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -27,9 +27,9 @@ public class MackageDesc implements Serializable
 
     /* XXX change to enum in 1.5 */
     public static final int SYSTEM_TYPE = 0;
-    public static final int TRANSFORM_TYPE = 1;
+    public static final int NODE_TYPE = 1;
     public static final int CASING_TYPE = 2;
-    public static final int TRANSFORM_BASE_TYPE = 3;
+    public static final int NODE_BASE_TYPE = 3;
 
     public static final int RACK_TYPE_BUNDLE   = 0; // used for store positioning, not the actual rack
     public static final int RACK_TYPE_SERVICE  = 1;
@@ -68,19 +68,19 @@ public class MackageDesc implements Serializable
         // XXX hack, use Mackage field instead.
         name = m.get("package");
         // XXX hack
-        boolean isTransform = name.endsWith("-transform");
+        boolean isNode = name.endsWith("-node");
         boolean isCasing = name.endsWith("-casing");
         boolean isBase = name.endsWith("-base");
 
         displayName = m.get("display-name");
 
         // XXX type
-        if (isTransform) {
-            type = TRANSFORM_TYPE;
+        if (isNode) {
+            type = NODE_TYPE;
         } else if (isCasing) {
             type = CASING_TYPE;
         } else if (isBase) {
-            type = TRANSFORM_BASE_TYPE;
+            type = NODE_BASE_TYPE;
         } else {
             type = SYSTEM_TYPE;
         }

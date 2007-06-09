@@ -9,7 +9,7 @@
  * $Id: SpywareHttpHandler.java 8668 2007-01-29 19:17:09Z amread $
  */
 
-package com.untangle.tran.util;
+package com.untangle.node.util;
 
 import java.net.InetAddress;
 import java.net.URI;
@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.untangle.mvvm.tapi.TCPSession;
-import com.untangle.tran.token.Header;
+import com.untangle.uvm.tapi.TCPSession;
+import com.untangle.node.token.Header;
 import org.apache.log4j.Logger;
 
 public class UrlDatabase<T>

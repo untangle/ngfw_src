@@ -9,19 +9,19 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.protocol;
+package com.untangle.uvm.node.firewall.protocol;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.untangle.mvvm.tapi.Protocol;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.firewall.Parser;
+import com.untangle.uvm.tapi.Protocol;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.firewall.Parser;
 
-import static com.untangle.mvvm.tran.firewall.protocol.ProtocolParsingConstants.MARKER_TCP;
-import static com.untangle.mvvm.tran.firewall.protocol.ProtocolParsingConstants.MARKER_UDP;
-import static com.untangle.mvvm.tran.firewall.protocol.ProtocolParsingConstants.MARKER_PING;
-import static com.untangle.mvvm.tran.firewall.protocol.ProtocolParsingConstants.MARKER_TCP_AND_UDP;
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_TCP;
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_UDP;
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_PING;
+import static com.untangle.uvm.node.firewall.protocol.ProtocolParsingConstants.MARKER_TCP_AND_UDP;
 
 /**
  * The class <code>ProtocolMatcher</code> represents a class for

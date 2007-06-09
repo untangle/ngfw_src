@@ -9,45 +9,45 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
 import java.io.File;
 import java.io.IOException;
 
-import com.untangle.mvvm.addrbook.AddressBook;
-import com.untangle.mvvm.localapi.LocalIntfManager;
-import com.untangle.mvvm.localapi.LocalShieldManager;
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.LoggingManager;
-import com.untangle.mvvm.logging.SyslogManager;
-import com.untangle.mvvm.networking.LocalNetworkManager;
-import com.untangle.mvvm.networking.ping.PingManager;
-import com.untangle.mvvm.policy.LocalPolicyManager;
-import com.untangle.mvvm.portal.LocalPortalManager;
-import com.untangle.mvvm.security.AdminManager;
-import com.untangle.mvvm.tapi.MPipeManager;
-import com.untangle.mvvm.tapi.PipelineFoundry;
-import com.untangle.mvvm.toolbox.ToolboxManager;
-import com.untangle.mvvm.tran.LocalTransformManager;
-import com.untangle.mvvm.user.LocalPhoneBook;
-import com.untangle.mvvm.user.RemotePhoneBook;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.addrbook.AddressBook;
+import com.untangle.uvm.localapi.LocalIntfManager;
+import com.untangle.uvm.localapi.LocalShieldManager;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.LoggingManager;
+import com.untangle.uvm.logging.SyslogManager;
+import com.untangle.uvm.networking.LocalNetworkManager;
+import com.untangle.uvm.networking.ping.PingManager;
+import com.untangle.uvm.policy.LocalPolicyManager;
+import com.untangle.uvm.portal.LocalPortalManager;
+import com.untangle.uvm.security.AdminManager;
+import com.untangle.uvm.tapi.MPipeManager;
+import com.untangle.uvm.tapi.PipelineFoundry;
+import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.user.LocalPhoneBook;
+import com.untangle.uvm.user.RemotePhoneBook;
+import com.untangle.uvm.util.TransactionWork;
 
 /**
- * Provides an interface to get all local MVVM components from an MVVM
+ * Provides an interface to get all local UVM components from an UVM
  * instance.  This interface is accessible locally.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface MvvmLocalContext
+public interface UvmLocalContext
 {
     /**
-     * Gets the current state of the MVVM
+     * Gets the current state of the UVM
      *
-     * @return a <code>MvvmState</code> enumerated value
+     * @return a <code>UvmState</code> enumerated value
      */
-    MvvmState state();
+    UvmState state();
 
     /**
      * Get the <code>ToolboxManager</code> singleton.
@@ -57,11 +57,11 @@ public interface MvvmLocalContext
     ToolboxManager toolboxManager();
 
     /**
-     * Get the <code>TransformManager</code> singleton.
+     * Get the <code>NodeManager</code> singleton.
      *
-     * @return a <code>TransformManager</code> value
+     * @return a <code>NodeManager</code> value
      */
-    LocalTransformManager transformManager();
+    LocalNodeManager nodeManager();
 
     /**
      * Get the <code>LoggingManager</code> singleton.
@@ -183,7 +183,7 @@ public interface MvvmLocalContext
     // debugging / performance management
     void doFullGC();
 
-    // making sure the client and mvvm versions are the same
+    // making sure the client and uvm versions are the same
     String version();
 
     /**
@@ -272,8 +272,8 @@ public interface MvvmLocalContext
         throws IOException, IllegalArgumentException;
 
     /*
-     * Loads a shared library (.so) into the MVVM classloader.  This
-     * is so a transform dosen't load it into its own, which doesn't
+     * Loads a shared library (.so) into the UVM classloader.  This
+     * is so a node dosen't load it into its own, which doesn't
      * work right.
      */
     void loadLibrary(String libname);

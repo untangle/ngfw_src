@@ -9,18 +9,18 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
 import java.net.InetAddress;
 
 import java.util.List;
 
-import com.untangle.mvvm.ArgonException;
+import com.untangle.uvm.ArgonException;
 
-import com.untangle.mvvm.localapi.LocalIntfManager;
-import com.untangle.mvvm.localapi.SessionMatcher;
+import com.untangle.uvm.localapi.LocalIntfManager;
+import com.untangle.uvm.localapi.SessionMatcher;
 
-import com.untangle.mvvm.tran.firewall.InterfaceRedirect;
+import com.untangle.uvm.node.firewall.InterfaceRedirect;
 
 public interface ArgonManager
 {    

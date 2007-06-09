@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.user;
+package com.untangle.uvm.node.firewall.user;
 
 import java.util.Collections;
 import java.util.List;
 
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.firewall.Parser;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.firewall.Parser;
 
 public final class UserSingleMatcher extends UserDBMatcher
 {

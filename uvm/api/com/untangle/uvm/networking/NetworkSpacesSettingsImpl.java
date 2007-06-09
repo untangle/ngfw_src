@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -26,9 +26,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.Validatable;
-import com.untangle.mvvm.tran.ValidateException;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Validatable;
+import com.untangle.uvm.node.ValidateException;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
@@ -40,7 +40,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_network_settings", schema="settings")
+@Table(name="uvm_network_settings", schema="settings")
 public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Serializable, Validatable
 {
     private Long id;
@@ -121,7 +121,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
      * @return The current setup state.
      */
     @Column(name="setup_state")
-    @Type(type="com.untangle.mvvm.networking.SetupStateUserType")
+    @Type(type="com.untangle.uvm.networking.SetupStateUserType")
     public SetupState getSetupState()
     {
         return this.setupState;
@@ -231,7 +231,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
      * @return The current default route for the untangle.
      */
     @Column(name="default_route")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getDefaultRoute()
     {
         if ( this.defaultRoute == null ) this.defaultRoute = NetworkUtil.EMPTY_IPADDR;
@@ -260,7 +260,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="mvvm_redirects",
+    @JoinTable(name="uvm_redirects",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
@@ -288,7 +288,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
      * @return The primay DNS server.
      */
     @Column(name="dns_1")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getDns1()
     {
         if ( this.dns1 == null ) this.dns1 = NetworkUtil.EMPTY_IPADDR;
@@ -313,7 +313,7 @@ public class NetworkSpacesSettingsImpl implements NetworkSpacesSettings, Seriali
      * @return The IP address of the secondary DNS server.
      */
     @Column(name="dns_2")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getDns2()
     {
         if ( this.dns2 == null ) this.dns2 = NetworkUtil.EMPTY_IPADDR;

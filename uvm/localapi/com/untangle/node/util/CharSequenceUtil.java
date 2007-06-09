@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.tran.util;
+package com.untangle.node.util;
 
-import static com.untangle.tran.util.Ascii.CR;
-import static com.untangle.tran.util.Ascii.LF;
+import static com.untangle.node.util.Ascii.CR;
+import static com.untangle.node.util.Ascii.LF;
 import java.util.Comparator;
 
 public class CharSequenceUtil

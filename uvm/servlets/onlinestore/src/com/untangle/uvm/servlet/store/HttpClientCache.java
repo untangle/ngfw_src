@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.servlet.store;
+package com.untangle.uvm.servlet.store;
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
@@ -25,8 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -60,7 +60,7 @@ class HttpClientCache
         boolean resetClient = false;
 
         if (null != client) {
-            MvvmLocalContext ctx = MvvmContextFactory.context();
+            UvmLocalContext ctx = UvmContextFactory.context();
             String boxKey = ctx.getActivationKey();
             for (org.apache.commons.httpclient.Cookie c : client.getState().getCookies()) {
                 if (c.getName().equals("boxkey") && !c.getValue().equals(boxKey)) {
@@ -115,7 +115,7 @@ class HttpClientCache
     {
         HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
         HttpState state = client.getState();
-        MvvmLocalContext ctx = MvvmContextFactory.context();
+        UvmLocalContext ctx = UvmContextFactory.context();
         String boxKey = ctx.getActivationKey();
         state.addCookie(new org.apache.commons.httpclient.Cookie(cookieDomain, "boxkey", boxKey, "/", -1, false));
 

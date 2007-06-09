@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.io.Serializable;
 import java.net.Inet4Address;
@@ -24,7 +24,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.IPaddr;
 
 /**
  * Dynamic DNS Configuration for the box.
@@ -32,7 +32,7 @@ import com.untangle.mvvm.tran.IPaddr;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_ddns_settings", schema="settings")
+@Table(name="uvm_ddns_settings", schema="settings")
 public class DynamicDNSSettings implements Serializable
 {
     // XXXXXXXX put serializable stuff in here

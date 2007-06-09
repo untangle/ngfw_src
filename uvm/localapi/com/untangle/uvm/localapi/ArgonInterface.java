@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.localapi;
+package com.untangle.uvm.localapi;
 
-import com.untangle.mvvm.IntfConstants;
+import com.untangle.uvm.IntfConstants;
 
 /** ArgonInterface:
  * Contains information about a physical interfaces. */

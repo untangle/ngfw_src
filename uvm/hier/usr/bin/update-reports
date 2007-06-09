@@ -70,7 +70,7 @@ function mailReports()
 ## Parameters:
 ## <estat> : exit status
 ## <src> : source of error
-function exitOnMvvmError()
+function exitOnUvmError()
 {
     local t_estat=$1
     local t_src=$2
@@ -85,7 +85,7 @@ function exitOnMvvmError()
 function doesEventTableExist()
 {
     local t_tname=$1
-    local t_num=`$PSQL -qt -c "select count(*) from pg_tables where schemaname='events' and tablename='$1';" mvvm`
+    local t_num=`$PSQL -qt -c "select count(*) from pg_tables where schemaname='events' and tablename='$1';" uvm`
     if [ -n "$t_num" -a "$t_num" -gt 0 ]; then
         # exists
         return 0
@@ -96,7 +96,7 @@ function doesEventTableExist()
 }
 
 
-REPORT_DIR=@MVVM_WEB@/reports
+REPORT_DIR=@UVM_WEB@/reports
 
 # New for 4.2 -- if we're still reporting from yesterday, just keep going.
 isrunning=$(@USR_BIN@/mcli -t 3600 isReportingRunning)
@@ -113,8 +113,8 @@ fi
 NUMDAYSTOKEEP=33
 
 # Build list of event & report days for which generation is needed.
-$PSQL -v midnight="'$midnight'" -v daystosave="$NUMDAYSTOKEEP" -v intable="events.event_data_days" -v outtable="events.daystoadd" -f @MVVM_SCHEMA@/mvvm/getdaystoadd.sql mvvm
-$PSQL -v midnight="'$midnight'" -v daystosave="$NUMDAYSTOKEEP" -v intable="reports.report_data_days" -v outtable="reports.daystoadd" -f @MVVM_SCHEMA@/mvvm/getdaystoadd.sql mvvm
+$PSQL -v midnight="'$midnight'" -v daystosave="$NUMDAYSTOKEEP" -v intable="events.event_data_days" -v outtable="events.daystoadd" -f @UVM_SCHEMA@/uvm/getdaystoadd.sql uvm
+$PSQL -v midnight="'$midnight'" -v daystosave="$NUMDAYSTOKEEP" -v intable="reports.report_data_days" -v outtable="reports.daystoadd" -f @UVM_SCHEMA@/uvm/getdaystoadd.sql uvm
 
 # roll up logs, deleting any more than $NUMDAYSTOKEEP days old (and thus unreportable  on)
 @USR_BIN@/rollup-logs $midnight $NUMDAYSTOKEEP
@@ -123,7 +123,7 @@ $PSQL -v midnight="'$midnight'" -v daystosave="$NUMDAYSTOKEEP" -v intable="repor
 # For 4.2, disabled.
 #
 # daystoadd=`mktemp`
-# $PSQL -qt mvvm > $daystoadd <<EOF
+# $PSQL -qt uvm > $daystoadd <<EOF
 #   select day_name, day_begin from events.daystoadd order by day_begin ;
 # EOF
 # while read dayname ignore daybegin; do
@@ -132,30 +132,30 @@ $PSQL -v midnight="'$midnight'" -v daystosave="$NUMDAYSTOKEEP" -v intable="repor
 #         continue
 #     fi
 #     dayend="'$daybegin' + interval '1 days'"
-#     for basetablename in `cat @MVVM_SCHEMA@/*/partitioned-tables`; do
+#     for basetablename in `cat @UVM_SCHEMA@/*/partitioned-tables`; do
 #         doesEventTableExist $basetablename || continue
 #         tablename=${basetablename}_$dayname
-#         $PSQL -v tablename="$tablename" -v basetablename="$basetablename" -v daybegin="'$daybegin'" -v dayend="$dayend" -f @MVVM_SCHEMA@/mvvm/buildpartition.sql mvvm
-#         rowcount=`$PSQL -qt mvvm -c "select count(*) from $tablename;"`
+#         $PSQL -v tablename="$tablename" -v basetablename="$basetablename" -v daybegin="'$daybegin'" -v dayend="$dayend" -f @UVM_SCHEMA@/uvm/buildpartition.sql uvm
+#         rowcount=`$PSQL -qt uvm -c "select count(*) from $tablename;"`
 #         if [ -n "$rowcount" ]; then
 #             if [ -a "$rowcount" -eq 0 ]; then
-#                 $PSQL mvvm -c "DROP TABLE $tablename;"
+#                 $PSQL uvm -c "DROP TABLE $tablename;"
 #             else
 #                 indicestoadd=`mktemp`
-#                 $PSQL -qt mvvm -c "select indexdef from pg_indexes where tablename = '$basetablename';" > $indicestoadd
+#                 $PSQL -qt uvm -c "select indexdef from pg_indexes where tablename = '$basetablename';" > $indicestoadd
 #                 sed -i $indicestoadd -e "s/$basetablename/$tablename/g" -e "s/\$/;/"
-#                 $PSQL -f $indicestoadd mvvm
+#                 $PSQL -f $indicestoadd uvm
 #                 rm $indicestoadd
 #             fi
 #         fi
 #     done
-#     $PSQL -v dayname="'$dayname'" -v daybegin="'$daybegin'" mvvm <<EOF
+#     $PSQL -v dayname="'$dayname'" -v daybegin="'$daybegin'" uvm <<EOF
 #       insert into events.event_data_days values (:dayname, DATE :daybegin);
 # EOF
 # done < $daystoadd
 # rm $daystoadd
 
-echo "VACUUM ANALYZE;" | $PSQL mvvm
+echo "VACUUM ANALYZE;" | $PSQL uvm
 
 # END CLEANUP SECTION
 ################################################################################
@@ -168,14 +168,14 @@ rm -f $REPORT_DIR/index.html
 # when an exception occurs in mcli,
 # parameter becomes set with non-null value
 is_reporting_enabled=$(@USR_BIN@/mcli isReportingEnabled)
-exitOnMvvmError $? mvvm
+exitOnUvmError $? uvm
 
-# Only generate today's reports if the reporting transform is running
+# Only generate today's reports if the reporting node is running
 if [ $is_reporting_enabled == 'true' ]; then
 
     # Build the DHCP Merged Address Map (needed for running start-reports scripts)
     @USR_BIN@/mcli -t 3600 prepareReports -o $REPORT_DIR -d 60 -n $midnight
-    exitOnMvvmError $? reporter
+    exitOnUvmError $? reporter
     # note that Reporter has just created settings.env and daystoadd
 
     if [ -h $REPORT_DIR/current -a -f $REPORT_DIR/current/settings.env ]; then
@@ -183,7 +183,7 @@ if [ $is_reporting_enabled == 'true' ]; then
 
         # Build pre-joined reports tables
         daystoadd=`mktemp -t update-reports.XXXXXXXXXX`
-        $PSQL -qt mvvm > $daystoadd <<EOF
+        $PSQL -qt uvm > $daystoadd <<EOF
           select day_name, day_begin from reports.daystoadd order by day_begin;
 EOF
         while read dayname ignore daybegin; do
@@ -192,21 +192,21 @@ EOF
                 continue
             fi
             dayend="'$daybegin' + interval '1 days'"
-            for c in @MVVM_SCHEMA@/*/report-add-day.sql; do
-                $PSQL -v dayname="$dayname" -v daybegin="'$daybegin'" -v dayend="$dayend" -f $c mvvm
+            for c in @UVM_SCHEMA@/*/report-add-day.sql; do
+                $PSQL -v dayname="$dayname" -v daybegin="'$daybegin'" -v dayend="$dayend" -f $c uvm
             done
-            $PSQL -v dayname="'$dayname'" -v daybegin="'$daybegin'" mvvm <<EOF
+            $PSQL -v dayname="'$dayname'" -v daybegin="'$daybegin'" uvm <<EOF
 insert into reports.report_data_days values (:dayname, DATE :daybegin);
 EOF
         done < $daystoadd
         rm $daystoadd
 
-        echo "ANALYZE;" | $PSQL mvvm
+        echo "ANALYZE;" | $PSQL uvm
 
         # create files w/ username and hostname lists for usersummary-reports
-        $PSQL -qt mvvm -c "SELECT DISTINCT username FROM events.mvvm_lookup_evt;" -o $REPORT_DIR/current/uname.tmp2
+        $PSQL -qt uvm -c "SELECT DISTINCT username FROM events.uvm_lookup_evt;" -o $REPORT_DIR/current/uname.tmp2
         grep -v "^$" $REPORT_DIR/current/uname.tmp2 > $REPORT_DIR/current/uname.tmp
-        $PSQL -qt mvvm -c "SELECT DISTINCT hname FROM reports.sessions WHERE client_intf=1;" -o $REPORT_DIR/current/hname.tmp2
+        $PSQL -qt uvm -c "SELECT DISTINCT hname FROM reports.sessions WHERE client_intf=1;" -o $REPORT_DIR/current/hname.tmp2
         grep -v "^$" $REPORT_DIR/current/hname.tmp2 > $REPORT_DIR/current/hname.tmp
         rm -f $REPORT_DIR/current/uname.tmp2
         rm -f $REPORT_DIR/current/hname.tmp2
@@ -229,7 +229,7 @@ EOF
         rm -f $REPORT_DIR/current/hname.tmp
 
         @USR_BIN@/mcli -t 3600 startReports
-        exitOnMvvmError $? reporter
+        exitOnUvmError $? reporter
 
         is_running=$(@USR_BIN@/mcli isReportingRunning)
         while [ $is_running != 'false' ]; do
@@ -292,7 +292,7 @@ EOF
     fi
 
 # No need for this at the end anymore.
-#    echo "VACUUM ANALYZE;" | $PSQL mvvm
+#    echo "VACUUM ANALYZE;" | $PSQL uvm
 else
     echo "reporting is disabled"
 fi

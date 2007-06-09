@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking.internal;
+package com.untangle.uvm.networking.internal;
 
-import com.untangle.mvvm.networking.AddressSettings;
-import com.untangle.mvvm.networking.NetworkUtil;
+import com.untangle.uvm.networking.AddressSettings;
+import com.untangle.uvm.networking.NetworkUtil;
 
-import com.untangle.mvvm.tran.HostAddress;
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.HostAddress;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
 
 /** These are settings related to remote access to the untangle. */
 public class AddressSettingsInternal

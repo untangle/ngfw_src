@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.security;
+package com.untangle.uvm.security;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -20,23 +20,23 @@ public class LoginSession implements Serializable
 
     public enum LoginType { INTERACTIVE, SYSTEM };
 
-    private final MvvmPrincipal mvvmPrincipal;
+    private final UvmPrincipal uvmPrincipal;
     private final int sessionId;
     private final InetAddress clientAddr;
     private final LoginType loginType;
 
-    public LoginSession(MvvmPrincipal mp, int sessionId,
+    public LoginSession(UvmPrincipal mp, int sessionId,
                         InetAddress clientAddr, LoginType loginType)
     {
-        this.mvvmPrincipal =  mp;
+        this.uvmPrincipal =  mp;
         this.sessionId = sessionId;
         this.clientAddr = clientAddr;
         this.loginType = loginType;
     }
 
-    public MvvmPrincipal getMvvmPrincipal()
+    public UvmPrincipal getUvmPrincipal()
     {
-        return mvvmPrincipal;
+        return uvmPrincipal;
     }
 
     public int getSessionId()
@@ -69,7 +69,7 @@ public class LoginSession implements Serializable
     @Override
     public String toString()
     {
-        return (null == mvvmPrincipal ? "nobody" : mvvmPrincipal.getName())
+        return (null == uvmPrincipal ? "nobody" : uvmPrincipal.getName())
             + " " + sessionId + " login type: " + loginType
             + " clientAddr: " + clientAddr;
     }
@@ -79,7 +79,7 @@ public class LoginSession implements Serializable
     {
         int result = 17;
         result = 37 * result
-            + (null == mvvmPrincipal ? 0 : mvvmPrincipal.hashCode());
+            + (null == uvmPrincipal ? 0 : uvmPrincipal.hashCode());
         result = 37 * result + sessionId;
         result = 37 * result
             + (null == clientAddr ? 0 : clientAddr.hashCode());
@@ -96,8 +96,8 @@ public class LoginSession implements Serializable
 
         LoginSession ls = (LoginSession)o;
 
-        return null == mvvmPrincipal ? null == ls.mvvmPrincipal
-            : mvvmPrincipal.equals(ls.mvvmPrincipal)
+        return null == uvmPrincipal ? null == ls.uvmPrincipal
+            : uvmPrincipal.equals(ls.uvmPrincipal)
             && sessionId == ls.sessionId
             && null == clientAddr ? null == ls.clientAddr
             : clientAddr.equals(ls.clientAddr)

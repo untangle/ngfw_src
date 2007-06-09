@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.time;
+package com.untangle.uvm.node.firewall.time;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.firewall.Parser;
-import com.untangle.mvvm.tran.firewall.ParsingConstants;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.firewall.Parser;
+import com.untangle.uvm.node.firewall.ParsingConstants;
 
 public final class DayOfWeekSingleMatcher extends DayOfWeekDBMatcher
 {

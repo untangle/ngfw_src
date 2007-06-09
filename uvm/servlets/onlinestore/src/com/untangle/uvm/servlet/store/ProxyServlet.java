@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.servlet.store;
+package com.untangle.uvm.servlet.store;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -34,10 +34,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.toolbox.MackageDesc;
-import com.untangle.mvvm.toolbox.ToolboxManager;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.toolbox.ToolboxManager;
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -59,10 +59,10 @@ public class ProxyServlet extends HttpServlet
     private static final String INST_COOKIE = "instCookie";
 
     static {
-        String s = System.getProperty("mvvm.store.host");
+        String s = System.getProperty("uvm.store.host");
         STORE_HOST = null == s ? "store.untangle.com" : s;
         COOKIE_DOMAIN = STORE_HOST;
-        s = System.getProperty("mvvm.store.uri");
+        s = System.getProperty("uvm.store.uri");
         URI_BASE = null == s ? "" : s;
         BASE_URL = "https://" + STORE_HOST + URI_BASE;
 
@@ -116,7 +116,7 @@ public class ProxyServlet extends HttpServlet
                       HttpServletResponse resp)
         throws ServletException
     {
-        MvvmLocalContext ctx = MvvmContextFactory.context();
+        UvmLocalContext ctx = UvmContextFactory.context();
 
         HttpSession s = req.getSession();
 

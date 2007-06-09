@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.reporting;
+package com.untangle.uvm.reporting;
 
 import java.io.*;
 import java.net.*;
@@ -18,14 +18,14 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.jar.*;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.engine.DataSourceFactory;
-import com.untangle.mvvm.reporting.summary.*;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformState;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.engine.DataSourceFactory;
+import com.untangle.uvm.reporting.summary.*;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeState;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.*;
 import org.apache.log4j.Logger;
@@ -217,26 +217,26 @@ public class Reporter implements Runnable
     }
 
     public void run() {
-        MvvmLocalContext mvvm = MvvmContextFactory.context();
-        List<Tid> tids = mvvm.transformManager().transformInstances();
-        List<TransformContext> toreport = new ArrayList<TransformContext>();
+        UvmLocalContext uvm = UvmContextFactory.context();
+        List<Tid> tids = uvm.nodeManager().nodeInstances();
+        List<NodeContext> toreport = new ArrayList<NodeContext>();
         for (Tid t : tids) {
-            TransformContext tctx = mvvm.transformManager().transformContext(t);
+            NodeContext tctx = uvm.nodeManager().nodeContext(t);
             if (tctx == null) {
-                logger.error("Null transform context, ignoring");
+                logger.error("Null node context, ignoring");
                 continue;
             }
-            Transform tran = tctx.transform();
-            if (tran == null) {
-                logger.error("NULL Transform Context");
+            Node node = tctx.node();
+            if (node == null) {
+                logger.error("NULL Node Context");
                 continue;
             }
-            if (tran.getRunState() == TransformState.RUNNING) {
-                String name = tctx.getTransformDesc().getName();
+            if (node.getRunState() == NodeState.RUNNING) {
+                String name = tctx.getNodeDesc().getName();
                 // Make sure we only include one of each.
                 boolean foundit = false;
-                for (TransformContext already : toreport) {
-                    if (name.equals(already.getTransformDesc().getName())) {
+                for (NodeContext already : toreport) {
+                    if (name.equals(already.getNodeDesc().getName())) {
                         foundit = true;
                         break;
                     }
@@ -273,22 +273,22 @@ public class Reporter implements Runnable
         purgeOldReports();
     }
 
-    private void generateNewReports(Connection conn, List<TransformContext> toreport)
+    private void generateNewReports(Connection conn, List<NodeContext> toreport)
         throws IOException, JRScriptletException, SQLException, ClassNotFoundException
     {
-        for (TransformContext tctx : toreport) {
+        for (NodeContext tctx : toreport) {
             if (needToDie) {
                 logger.warn("exiting early by request");
                 return;
             }
-            String tranName = tctx.getTransformDesc().getName();
+            String nodeName = tctx.getNodeDesc().getName();
             try {
                 // XXX should we set logging context?
-                logger.info("Running TranReporter for " + tranName);
-                TranReporter tranReporter = new TranReporter(outputDir, tctx, settings);
-                tranReporter.process(conn);
+                logger.info("Running NodeReporter for " + nodeName);
+                NodeReporter nodeReporter = new NodeReporter(outputDir, tctx, settings);
+                nodeReporter.process(conn);
             } catch (Exception exn) {
-                logger.warn("bad transform: " + tranName, exn);
+                logger.warn("bad node: " + nodeName, exn);
             } finally {
             }
         }

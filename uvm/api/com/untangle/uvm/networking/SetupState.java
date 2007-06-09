@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.io.Serializable;
 
 import java.util.Map;
 import java.util.HashMap;
 
-import com.untangle.mvvm.tran.ParseException;
+import com.untangle.uvm.node.ParseException;
 
 public final class SetupState implements Serializable
 {

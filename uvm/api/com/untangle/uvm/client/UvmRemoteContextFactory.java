@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.client;
+package com.untangle.uvm.client;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -17,30 +17,30 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import javax.security.auth.login.FailedLoginException;
 
-import com.untangle.mvvm.engine.HttpInvokerStub;
-import com.untangle.mvvm.security.LoginSession;
-import com.untangle.mvvm.security.MvvmLogin;
+import com.untangle.uvm.engine.HttpInvokerStub;
+import com.untangle.uvm.security.LoginSession;
+import com.untangle.uvm.security.UvmLogin;
 
 /**
- * Factory to get the MvvmRemoteContext for an MVVM instance.
+ * Factory to get the UvmRemoteContext for an UVM instance.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class MvvmRemoteContextFactory
+public class UvmRemoteContextFactory
 {
     private static final String SYSTEM_USER = "localadmin";
     private static final String SYSTEM_PASSWORD = "nimda11lacol";
 
-    private static final MvvmRemoteContextFactory FACTORY
-        = new MvvmRemoteContextFactory();
+    private static final UvmRemoteContextFactory FACTORY
+        = new UvmRemoteContextFactory();
 
-    private MvvmRemoteContext remoteContext;
+    private UvmRemoteContext remoteContext;
     private HttpInvokerStub httpInvokerStub;
 
     // factory methods --------------------------------------------------------
 
-    public static MvvmRemoteContextFactory factory()
+    public static UvmRemoteContextFactory factory()
     {
         return FACTORY;
     }
@@ -48,12 +48,12 @@ public class MvvmRemoteContextFactory
     // public methods ---------------------------------------------------------
 
     /**
-     * Get the <code>MvvmRemoteContext</code> from this classloader.
+     * Get the <code>UvmRemoteContext</code> from this classloader.
      * used by the GUI to get the context remotely.
      *
-     * @return the <code>MvvmContext</code>.
+     * @return the <code>UvmContext</code>.
      */
-    public MvvmRemoteContext mvvmContext()
+    public UvmRemoteContext uvmContext()
     {
         return remoteContext;
     }
@@ -61,15 +61,15 @@ public class MvvmRemoteContextFactory
     /**
      * Describe <code>isActivated</code> method here.
      *
-     * @param host the host of the Mvvm.
+     * @param host the host of the Uvm.
      * @param timeout an <code>int</code> value.
      * @param secure use a SSL connection.
      * @return a <code>boolean</code> true if already activated
-     * @exception MvvmConnectException when an MvvmLogin object cannot
+     * @exception UvmConnectException when an UvmLogin object cannot
      *    be accessed at given <code>host</code>
      */
     public boolean isActivated(String host, int timeout, boolean secure)
-        throws MvvmConnectException
+        throws UvmConnectException
     {
         return isActivated(host, 0, timeout, secure );
     }
@@ -77,50 +77,50 @@ public class MvvmRemoteContextFactory
     /**
      * Describe <code>isActivated</code> method here.
      *
-     * @param host the host of the Mvvm.
+     * @param host the host of the Uvm.
      * @param port an <code>int</code> value, or 0 for undefined.
      * @param timeout an <code>int</code> value.
      * @param secure use a SSL connection.
      * @return a <code>boolean</code> true if already activated
-     * @exception MvvmConnectException when an MvvmLogin object cannot
+     * @exception UvmConnectException when an UvmLogin object cannot
      *    be accessed at given <code>host</code>
      */
     public boolean isActivated(String host, int port, int timeout,
                                boolean secure)
-        throws MvvmConnectException
+        throws UvmConnectException
     {
         URL url = makeURL(host, port, secure);
 
         synchronized (this) {
-            MvvmLogin ml = mvvmLogin(url, timeout, null);
+            UvmLogin ml = uvmLogin(url, timeout, null);
             return ml.isActivated();
         }
     }
 
     /**
-     * Log in and get a MvvmRemoteContext. This method is for
+     * Log in and get a UvmRemoteContext. This method is for
      * interactive clients that require an exclusive login.
      *
-     * @param host the host of the Mvvm.
+     * @param host the host of the Uvm.
      * @param username the username.
      * @param password the password.
      * @param timeout an <code>int</code> value.
      * @param classLoader the class loader to be used for deserialization.
      * @param secure use a SSL connection.
      * @param force logout other interactive logins, if
-     * @return the <code>MvvmContext</code> for this machine.
-     * @exception MvvmConnectException when an MvvmLogin object cannot
+     * @return the <code>UvmContext</code> for this machine.
+     * @exception UvmConnectException when an UvmLogin object cannot
      *    be accessed at given <code>host</code> and <code>port</code>.
      * @exception FailedLoginException when the username and password
      * are incorrect.
      * @exception MultipleLoginsException when there is already an
      * interactive login and force is false.
      */
-    public MvvmRemoteContext interactiveLogin(String host, String username,
+    public UvmRemoteContext interactiveLogin(String host, String username,
                                               String password, int timeout,
                                               ClassLoader classLoader,
                                               boolean secure, boolean force)
-        throws MvvmConnectException, FailedLoginException,
+        throws UvmConnectException, FailedLoginException,
                MultipleLoginsException
     {
         return interactiveLogin(host, 0, username, password, timeout, classLoader, secure, force);
@@ -128,10 +128,10 @@ public class MvvmRemoteContextFactory
 
 
     /**
-     * Log in and get a MvvmRemoteContext. This method is for
+     * Log in and get a UvmRemoteContext. This method is for
      * interactive clients that require an exclusive login.
      *
-     * @param host the host of the Mvvm.
+     * @param host the host of the Uvm.
      * @param port the the port the server is on.
      * @param username the username.
      * @param password the password.
@@ -139,26 +139,26 @@ public class MvvmRemoteContextFactory
      * @param classLoader the class loader to be used for deserialization.
      * @param secure use a SSL connection.
      * @param force logout other interactive logins, if
-     * @return the <code>MvvmContext</code> for this machine.
-     * @exception MvvmConnectException when an MvvmLogin object cannot
+     * @return the <code>UvmContext</code> for this machine.
+     * @exception UvmConnectException when an UvmLogin object cannot
      *    be accessed at given <code>host</code> and <code>port</code>.
      * @exception FailedLoginException when the username and password
      * are incorrect.
      * @exception MultipleLoginsException when there is already an
      * interactive login and force is false.
      */
-    public MvvmRemoteContext interactiveLogin(String host, int port,
+    public UvmRemoteContext interactiveLogin(String host, int port,
                                               String username, String password,
                                               int timeout,
                                               ClassLoader classLoader,
                                               boolean secure, boolean force)
-        throws MvvmConnectException, FailedLoginException,
+        throws UvmConnectException, FailedLoginException,
                MultipleLoginsException
     {
         URL url = makeURL(host, port, secure);
 
         synchronized (this) {
-            MvvmLogin ml = mvvmLogin(url, timeout, classLoader);
+            UvmLogin ml = uvmLogin(url, timeout, classLoader);
             remoteContext = ml.interactiveLogin(username, password, force);
             if (null != remoteContext) {
                 InvocationHandler ih = Proxy.getInvocationHandler(remoteContext);
@@ -172,22 +172,22 @@ public class MvvmRemoteContextFactory
     /**
      * Activates the Untangle Server using the given key.
      *
-     * @param host the host of the Mvvm.
+     * @param host the host of the Uvm.
      * @param key a <code>String</code> giving the key to be activated under
      * @param timeout an <code>int</code> value.
      * @param classLoader the class loader to be used for deserialization.
      * @param secure use a SSL connection.
-     * @return a <code>MvvmRemoteContext</code> value
-     * @exception MvvmConnectException when an MvvmLogin object cannot
+     * @return a <code>UvmRemoteContext</code> value
+     * @exception UvmConnectException when an UvmLogin object cannot
      * be accessed at given <code>host</code> and <code>port</code>.
      * @exception FailedLoginException if the key isn't kosher or the
      * product has already been activated
      */
-    public MvvmRemoteContext activationLogin(String host, String key,
+    public UvmRemoteContext activationLogin(String host, String key,
                                              int timeout,
                                              ClassLoader classLoader,
                                              boolean secure)
-        throws MvvmConnectException, FailedLoginException
+        throws UvmConnectException, FailedLoginException
     {
         return activationLogin( host, 0, key, timeout, classLoader, secure );
     }
@@ -195,27 +195,27 @@ public class MvvmRemoteContextFactory
     /**
      * Activates the Untangle Server using the given key.
      *
-     * @param host the host of the Mvvm.
+     * @param host the host of the Uvm.
      * @param port the the port the server is on.
      * @param key a <code>String</code> giving the key to be activated under
      * @param timeout an <code>int</code> value.
      * @param classLoader the class loader to be used for deserialization.
      * @param secure use a SSL connection.
-     * @return a <code>MvvmRemoteContext</code> value
-     * @exception MvvmConnectException when an MvvmLogin object cannot
+     * @return a <code>UvmRemoteContext</code> value
+     * @exception UvmConnectException when an UvmLogin object cannot
      *    be accessed at given <code>host</code> and <code>port</code>.
      * @exception FailedLoginException if the key isn't kosher or the
      *    product has already been activated
      */
-    public MvvmRemoteContext activationLogin(String host, int port, String key,
+    public UvmRemoteContext activationLogin(String host, int port, String key,
                                              int timeout,
                                              ClassLoader classLoader,
                                              boolean secure)
-        throws MvvmConnectException, FailedLoginException
+        throws UvmConnectException, FailedLoginException
     {
         URL url = makeURL(host, port, secure);
         synchronized (this) {
-            MvvmLogin ml = mvvmLogin(url, timeout, classLoader);
+            UvmLogin ml = uvmLogin(url, timeout, classLoader);
             remoteContext = ml.activationLogin(key);
             if (null != remoteContext) {
                 InvocationHandler ih = Proxy.getInvocationHandler(remoteContext);
@@ -227,30 +227,30 @@ public class MvvmRemoteContextFactory
     }
 
     /**
-     * Log in and get a MvvmRemoteContext. This is for system logins
-     * that do not require exclusive access to the MVVM. These logins
+     * Log in and get a UvmRemoteContext. This is for system logins
+     * that do not require exclusive access to the UVM. These logins
      * are allowed even when a client has an interactive login. Even
-     * though some of these applications (mcli) may change the MVVM
+     * though some of these applications (mcli) may change the UVM
      * state in a way that an interactive client cannot handle, this
      * functionality is not exposed to end users.
      *
      * @param timeout an <code>int</code> value
-     * @return the remote MvvmRemoteContext.
+     * @return the remote UvmRemoteContext.
      * @exception FailedLoginException if an error occurs
-     * @exception MvvmConnectException if an error occurs
+     * @exception UvmConnectException if an error occurs
      */
-    public MvvmRemoteContext systemLogin(int timeout, ClassLoader cl)
-        throws FailedLoginException, MvvmConnectException
+    public UvmRemoteContext systemLogin(int timeout, ClassLoader cl)
+        throws FailedLoginException, UvmConnectException
     {
         URL url;
         try {
             url = new URL("http", "localhost", "/http-invoker");
         } catch (MalformedURLException exn) { /* shouldn't happen */
-            throw new MvvmConnectException(exn);
+            throw new UvmConnectException(exn);
         }
 
         synchronized (this) {
-            MvvmLogin ml = mvvmLogin(url, timeout, cl);
+            UvmLogin ml = uvmLogin(url, timeout, cl);
             remoteContext = ml.systemLogin(SYSTEM_USER, SYSTEM_PASSWORD);
             if (null != remoteContext) {
                 InvocationHandler ih = Proxy.getInvocationHandler(remoteContext);
@@ -261,8 +261,8 @@ public class MvvmRemoteContextFactory
         return remoteContext;
     }
 
-    public MvvmRemoteContext systemLogin(int timeout)
-        throws FailedLoginException, MvvmConnectException
+    public UvmRemoteContext systemLogin(int timeout)
+        throws FailedLoginException, UvmConnectException
     {
         return systemLogin(timeout, null);
     }
@@ -298,7 +298,7 @@ public class MvvmRemoteContextFactory
 
     // private methods --------------------------------------------------------
 
-    private MvvmLogin mvvmLogin(URL url, int timeout, ClassLoader classLoader)
+    private UvmLogin uvmLogin(URL url, int timeout, ClassLoader classLoader)
     {
         HttpInvokerStub.setTimeout(timeout);
 
@@ -306,10 +306,10 @@ public class MvvmRemoteContextFactory
         // (which it must be since it's made on the client).
         HttpInvokerStub his = new HttpInvokerStub(url, classLoader);
 
-        MvvmLogin mvvmLogin;
+        UvmLogin uvmLogin;
         try {
             // XXX hack to get a login proxy
-            return (MvvmLogin)his.invoke(null, null, null);
+            return (UvmLogin)his.invoke(null, null, null);
         } catch (Exception exn) {
             throw new RuntimeException(exn); // XXX
         }
@@ -318,14 +318,14 @@ public class MvvmRemoteContextFactory
     /**
      * Utility to create a URL based on the host, port and whether or
      * not it is secure
-     * @param host the host of the Mvvm.
+     * @param host the host of the Uvm.
      * @param port the the port the server is on.
      * @param secure use a SSL connection.
      * @return the remote URL.
-     * @exception MvvmConnectException if an error occurs, this should never occur.
+     * @exception UvmConnectException if an error occurs, this should never occur.
      */
     private URL makeURL(String host, int port, boolean secure)
-        throws MvvmConnectException
+        throws UvmConnectException
     {
         try {
             if (port <= 0) {
@@ -334,7 +334,7 @@ public class MvvmRemoteContextFactory
                 return new URL(secure ? "https" : "http", host, port, "/http-invoker");
             }
         } catch (MalformedURLException exn) { /* shouldn't happen */
-            throw new MvvmConnectException( exn );
+            throw new UvmConnectException( exn );
         }
     }
 }

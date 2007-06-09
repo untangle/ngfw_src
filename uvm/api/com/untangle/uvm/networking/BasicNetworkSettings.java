@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.io.Serializable;
 
 import java.util.List;
 import java.util.LinkedList;
 
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.IPaddr;
 
 /**
  * These are stripped down settings used to represent the 

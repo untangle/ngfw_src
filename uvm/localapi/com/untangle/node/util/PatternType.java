@@ -8,12 +8,12 @@
  *
  * $Id$
  */
-package com.untangle.tran.util;
+package com.untangle.node.util;
 
 import java.util.*;
 import java.util.regex.*;
 
-import com.untangle.mvvm.util.*;
+import com.untangle.uvm.util.*;
 
 public class PatternType
 {

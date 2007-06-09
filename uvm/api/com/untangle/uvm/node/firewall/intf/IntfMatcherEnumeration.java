@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.intf;
+package com.untangle.uvm.node.firewall.intf;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import com.untangle.mvvm.IntfEnum;
-import com.untangle.mvvm.IntfConstants;
+import com.untangle.uvm.IntfEnum;
+import com.untangle.uvm.IntfConstants;
 
-import com.untangle.mvvm.tran.ParseException;
+import com.untangle.uvm.node.ParseException;
 
 /**
  * An enumeration of all of the IntfMatchers that should be available to the GUI.

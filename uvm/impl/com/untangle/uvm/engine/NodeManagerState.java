@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,23 +17,23 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.policy.Policy;
-import com.untangle.mvvm.security.Tid;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.security.Tid;
 
 /**
- * Internal state for TransformManagerImpl.
+ * Internal state for NodeManagerImpl.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @Entity
-@Table(name="transform_manager_state", schema="settings")
-class TransformManagerState
+@Table(name="node_manager_state", schema="settings")
+class NodeManagerState
 {
     private Long id;
     private Long lastTid = 0L;
 
-    TransformManagerState() { }
+    NodeManagerState() { }
 
     @Id
     @Column(name="id")
@@ -69,8 +69,8 @@ class TransformManagerState
      *
      * @return a <code>Long</code> value
      */
-    Tid nextTid(Policy policy, String transformName)
+    Tid nextTid(Policy policy, String nodeName)
     {
-        return new Tid(++lastTid, policy, transformName);
+        return new Tid(++lastTid, policy, nodeName);
     }
 }

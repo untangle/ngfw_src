@@ -8,11 +8,11 @@
  *
  * $Id$
  */
-package com.untangle.tran.util;
+package com.untangle.node.util;
 
 import java.util.*;
 
-import com.untangle.mvvm.tran.IPMaddr;
+import com.untangle.uvm.node.IPMaddr;
 
 public class IPSetTest {
 

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -22,42 +22,42 @@ import java.util.Map;
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class MvvmState implements Serializable
+public class UvmState implements Serializable
 {
     private static final long serialVersionUID = -101624240450519097L;
 
     /**
      * Booted, but not initialized. This is a transient state, just
      * after the world has been instantiated, but before
-     * MvvmLocalContext.init() has been called.
+     * UvmLocalContext.init() has been called.
      */
-    public static final MvvmState LOADED;
+    public static final UvmState LOADED;
 
     /**
      * Initialized, but not running. We've run init() but not yet started
-     * the transforms or Tomcat.
+     * the nodes or Tomcat.
      */
-    public static final MvvmState INITIALIZED;
+    public static final UvmState INITIALIZED;
 
     /**
      * Running.
      */
-    public static final MvvmState RUNNING;
+    public static final UvmState RUNNING;
 
     /**
      * Destroyed, this instance should not be used.
      */
-    public static final MvvmState DESTROYED;
+    public static final UvmState DESTROYED;
 
-    private static final Map<String, MvvmState> INSTANCES;
+    private static final Map<String, UvmState> INSTANCES;
 
     static {
-        LOADED = new MvvmState("loaded");
-        INITIALIZED = new MvvmState("initialized");
-        RUNNING = new MvvmState("running");
-        DESTROYED = new MvvmState("destroyed");
+        LOADED = new UvmState("loaded");
+        INITIALIZED = new UvmState("initialized");
+        RUNNING = new UvmState("running");
+        DESTROYED = new UvmState("destroyed");
 
-        Map<String, MvvmState> m = new HashMap<String, MvvmState>(4);
+        Map<String, UvmState> m = new HashMap<String, UvmState>(4);
         m.put(LOADED.toString(), LOADED);
         m.put(INITIALIZED.toString(), INITIALIZED);
         m.put(RUNNING.toString(), RUNNING);
@@ -68,12 +68,12 @@ public class MvvmState implements Serializable
 
     private final String state;
 
-    public static MvvmState getInstance(String state)
+    public static UvmState getInstance(String state)
     {
-        return (MvvmState)INSTANCES.get(state);
+        return (UvmState)INSTANCES.get(state);
     }
 
-    private MvvmState(String state) { this.state = state; }
+    private UvmState(String state) { this.state = state; }
 
     public String toString() { return state; }
 

@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
-import static com.untangle.tran.util.Ascii.*;
+import static com.untangle.node.util.Ascii.*;
 
 import java.io.*;
 import java.util.*;
 
-import com.untangle.tran.util.*;
+import com.untangle.node.util.*;
 import org.apache.log4j.Logger;
 
 
@@ -393,7 +393,7 @@ public class MIMEPart {
      * <br><br>
      * <b>Use this method only if you know what you're doing.
      * Otherwise, I recommend calling
-     * {@link com.untangle.tran.mime.MIMEUtil#removeChild MIMEUtil} to
+     * {@link com.untangle.node.mime.MIMEUtil#removeChild MIMEUtil} to
      * fixup alignment/content type issues.</b>
      * <br><br>
      * <b>Note that the child is disposed after this

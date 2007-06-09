@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,18 +30,18 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPOutputStream;
 
-import com.untangle.mvvm.client.InvocationTargetExpiredException;
-import com.untangle.mvvm.client.LoginExpiredException;
-import com.untangle.mvvm.client.LoginStolenException;
-import com.untangle.mvvm.client.MultipleLoginsException;
-import com.untangle.mvvm.client.MvvmRemoteContext;
-import com.untangle.mvvm.security.LoginSession;
+import com.untangle.uvm.client.InvocationTargetExpiredException;
+import com.untangle.uvm.client.LoginExpiredException;
+import com.untangle.uvm.client.LoginStolenException;
+import com.untangle.uvm.client.MultipleLoginsException;
+import com.untangle.uvm.client.UvmRemoteContext;
+import com.untangle.uvm.security.LoginSession;
 import org.apache.log4j.Logger;
 
 class HttpInvokerImpl implements HttpInvoker
 {
     private static final boolean ALLOW_MULTIPLE_LOGINS
-        = Boolean.parseBoolean(System.getProperty("mvvm.login.multiuser"));
+        = Boolean.parseBoolean(System.getProperty("uvm.login.multiuser"));
 
     private static final HttpInvokerImpl INVOKER = new HttpInvokerImpl();
     private static final int LOGIN_TIMEOUT_MINUTES = 30;
@@ -168,7 +168,7 @@ class HttpInvokerImpl implements HttpInvoker
             // always be correct, think about this
             ClassLoader targetCl = target.getClass().getClassLoader();
             ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
-            // Entering TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            // Entering NodeClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             Thread.currentThread().setContextClassLoader(targetCl);
 
             Object retVal = null;
@@ -189,10 +189,10 @@ class HttpInvokerImpl implements HttpInvoker
                 activeLogin.remove();
                 clientAddr.remove();
                 Thread.currentThread().setContextClassLoader(oldCl);
-                // Left TransformClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                // Left NodeClassLoader ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             }
 
-            if (retVal instanceof MvvmRemoteContext) { // XXX if is to login()
+            if (retVal instanceof UvmRemoteContext) { // XXX if is to login()
                 NewLoginDesc nld = newLogin.get();
                 newLogin.remove();
 

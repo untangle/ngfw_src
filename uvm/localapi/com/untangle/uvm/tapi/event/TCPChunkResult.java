@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi.event;
+package com.untangle.uvm.tapi.event;
 
 import java.nio.ByteBuffer;
 

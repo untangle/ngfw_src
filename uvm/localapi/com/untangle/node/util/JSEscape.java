@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.util;
+package com.untangle.node.util;
 
 /**
  * Class to escape Strings which may contain JavaScript (to avoid

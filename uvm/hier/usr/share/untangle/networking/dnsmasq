@@ -1,6 +1,6 @@
 #!/bin/sh
 
-exec >> @MVVM_LOG@/iptables.log 2>&1
+exec >> @UVM_LOG@/iptables.log 2>&1
 
 ACTION=${1:-restart}
 
@@ -11,7 +11,7 @@ if [ "${ACTION}x" == "stop" ]; then
 fi
 
 FORCE_RESTART=${2:-true}
-DNSMASQ_HASH="@MVVM_CONF@/dnsmasq-hash"
+DNSMASQ_HASH="@UVM_CONF@/dnsmasq-hash"
 
 NEW_HASH=`mktemp`
 

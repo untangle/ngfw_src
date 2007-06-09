@@ -9,15 +9,15 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import com.untangle.mvvm.portal.Application;
-import com.untangle.mvvm.portal.LocalApplicationManager;
+import com.untangle.uvm.portal.Application;
+import com.untangle.uvm.portal.LocalApplicationManager;
 import org.apache.log4j.Logger;
 
 class PortalApplicationManagerImpl implements LocalApplicationManager
@@ -44,7 +44,7 @@ class PortalApplicationManagerImpl implements LocalApplicationManager
     // LocalApplicationManager methods ----------------------------------------
 
     /**
-     * Registers a new application.  Called when a portal transform is
+     * Registers a new application.  Called when a portal node is
      * loaded to make a new application available for bookmarks,
      * launching, etc.  An application can only be registered once, if
      * reregistered an <code>IllegalArgumentException</code> is

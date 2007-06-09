@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.util.TimerTask;
 
-import com.untangle.mvvm.CronJob;
-import com.untangle.mvvm.Period;
+import com.untangle.uvm.CronJob;
+import com.untangle.uvm.Period;
 
 class CronJobImpl implements CronJob
 {

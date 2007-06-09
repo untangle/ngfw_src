@@ -9,12 +9,12 @@
  * $Id: LogMailer.java 8515 2007-01-03 00:13:24Z amread $
  */
 
-package com.untangle.mvvm.logging;
+package com.untangle.uvm.logging;
 
 /**
  * LogMailer emails circular buffers containing log messages when
  * triggered by {@link #sendBuffer()}. This interface allows us to
- * decouple the core of our log4j system from those that need MVVM
+ * decouple the core of our log4j system from those that need UVM
  * support.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
@@ -25,7 +25,7 @@ public interface LogMailer
     /**
      * Triggers the LogMailer to send log messages.
      *
-     * @param ctx the {@link MvvmLoggingContext} that triggered this action.
+     * @param ctx the {@link UvmLoggingContext} that triggered this action.
      */
-    void sendBuffer(MvvmLoggingContext ctx);
+    void sendBuffer(UvmLoggingContext ctx);
 }

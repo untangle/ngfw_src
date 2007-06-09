@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.localapi;
+package com.untangle.uvm.localapi;
 
-import com.untangle.mvvm.tran.IPSessionDesc;
+import com.untangle.uvm.node.IPSessionDesc;
 
-import com.untangle.mvvm.policy.Policy;
+import com.untangle.uvm.policy.Policy;
 
 public interface SessionMatcher
 {

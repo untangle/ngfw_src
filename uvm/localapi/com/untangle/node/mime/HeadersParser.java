@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
-import static com.untangle.tran.util.ASCIIUtil.*;
+import static com.untangle.node.util.ASCIIUtil.*;
 
 import java.io.*;
 import java.nio.*;

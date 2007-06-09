@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import java.net.InetAddress;
 import java.util.Iterator;
@@ -24,8 +24,8 @@ import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.TCPSink;
 import com.untangle.jvector.TCPSource;
-import com.untangle.mvvm.policy.PolicyRule;
-import com.untangle.mvvm.tran.PipelineEndpoints;
+import com.untangle.uvm.policy.PolicyRule;
+import com.untangle.uvm.node.PipelineEndpoints;
 import org.apache.log4j.Logger;
 
 public class TCPHook implements NetcapHook
@@ -123,7 +123,7 @@ public class TCPHook implements NetcapHook
                 serverAddr = netcapTCPSession.serverSide().server().host();
                 serverPort = netcapTCPSession.serverSide().server().port();
             } else {
-                /* Complete with the parameters from the last transform */
+                /* Complete with the parameters from the last node */
                 TCPSession session = (TCPSession)sessionList.get( sessionList.size() - 1 );
 
                 clientAddr = session.clientAddr();
@@ -265,7 +265,7 @@ public class TCPHook implements NetcapHook
             processSession( request, session );
 
             if ( iter.hasNext()) {
-                /* Advance the previous session if the transform requested or released the session */
+                /* Advance the previous session if the node requested or released the session */
                 if (( request.state() == IPNewSessionRequest.REQUESTED ) ||
                     ( request.state() == IPNewSessionRequest.RELEASED && session != null )) {
                     prevSession = session;

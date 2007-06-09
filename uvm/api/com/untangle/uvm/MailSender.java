@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
 import java.io.File;
 import java.io.InputStream;
@@ -74,7 +74,7 @@ public interface MailSender
     /**
      * Sends an error log email to Untangle to the reportEmail address
      * (from the mail settings).  Each attachment contains the last
-     * events a transform.
+     * events a node.
      *
      * @param subject the subject.
      * @param bodyText the plain text for the "main page" that will

@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
-import com.untangle.mvvm.MvvmException;
+import com.untangle.uvm.UvmException;
 
-public class UndeployException extends MvvmException {
+public class UndeployException extends UvmException {
     public UndeployException() { super(); }
     public UndeployException(String message) { super(message); }
     public UndeployException(String message, Throwable cause)

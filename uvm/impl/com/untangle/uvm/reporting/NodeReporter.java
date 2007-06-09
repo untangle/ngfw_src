@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.reporting;
+package com.untangle.uvm.reporting;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -30,8 +30,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import com.untangle.mvvm.tran.Scanner;
-import com.untangle.mvvm.tran.TransformContext;
+import com.untangle.uvm.node.Scanner;
+import com.untangle.uvm.node.NodeContext;
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRParameter;
@@ -51,7 +51,7 @@ import org.jfree.chart.JFreeChart;
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>
  * @version 1.0
  */
-public class TranReporter
+public class NodeReporter
 {
     public static final float CHART_QUALITY_JPEG = .9f;  // for JPEG
     public static final int CHART_COMPRESSION_PNG = 0;  // for PNG
@@ -65,36 +65,36 @@ public class TranReporter
     private static final String SUMMARY_FRAGMENT_WEEKLY = "sum-weekly.html";
     private static final String SUMMARY_FRAGMENT_MONTHLY = "sum-monthly.html";
 
-    private final TransformContext tctx;
-    private final String tranName;
+    private final NodeContext tctx;
+    private final String nodeName;
 
     private final Settings settings;
-    private final File tranDir;
+    private final File nodeDir;
 
     private Map<String,Object> extraParams = new HashMap<String,Object>();
 
-    TranReporter(File outputDir, TransformContext tctx, Settings settings)
+    NodeReporter(File outputDir, NodeContext tctx, Settings settings)
     {
         this.tctx = tctx;
         this.settings = settings;
-        this.tranName = tctx.getTransformDesc().getName();
-        this.tranDir = new File(outputDir, tranName);
+        this.nodeName = tctx.getNodeDesc().getName();
+        this.nodeDir = new File(outputDir, nodeName);
     }
 
     public void process(Connection conn) throws Exception
     {
-        tranDir.mkdir();
+        nodeDir.mkdir();
 
-        File imagesDir = new File(tranDir, "images");
-        File globalImagesDir = new File(tranDir, "../images");
+        File imagesDir = new File(nodeDir, "images");
+        File globalImagesDir = new File(nodeDir, "../images");
         Scanner scanner = null;
 
         InputStream is = tctx.getResourceAsStream("META-INF/report-files");
         if (null == is) {
-            logger.warn("No reports for: " + tranName);
+            logger.warn("No reports for: " + nodeName);
             return;
         } else {
-            logger.info("Beginning generation for: " + tranName);
+            logger.info("Beginning generation for: " + nodeName);
         }
 
         // Need to do the parameters & scanners first.
@@ -134,7 +134,7 @@ public class TranReporter
         is.close();
 
         // Icons.  We have to be a bit tricky to get the name right.
-        String tname = tctx.getTransformDesc().getClassName().replace('.', '/');
+        String tname = tctx.getNodeDesc().getClassName().replace('.', '/');
         String rdir = tname.substring(0, tname.lastIndexOf("/")) + "/gui/";
 
         is = tctx.getResourceAsStream(rdir + ICON_ORG);
@@ -189,21 +189,21 @@ public class TranReporter
                     if (true == settings.getDaily()) {
                         logger.debug("Found daily summarizer: " + className);
                         reportSummarizer = (ReportSummarizer) reportClass.newInstance();
-                        String dailyFile = new File(tranDir, SUMMARY_FRAGMENT_DAILY).getCanonicalPath();
+                        String dailyFile = new File(nodeDir, SUMMARY_FRAGMENT_DAILY).getCanonicalPath();
                         processReportSummarizer(reportSummarizer, conn, dailyFile, Util.lastday, Util.midnight);
                     }
 
                     if (true == settings.getWeekly()) {
                         logger.debug("Found weekly summarizer: " + className);
                         reportSummarizer = (ReportSummarizer) reportClass.newInstance();
-                        String weeklyFile = new File(tranDir, SUMMARY_FRAGMENT_WEEKLY).getCanonicalPath();
+                        String weeklyFile = new File(nodeDir, SUMMARY_FRAGMENT_WEEKLY).getCanonicalPath();
                         processReportSummarizer(reportSummarizer, conn, weeklyFile, Util.lastweek, Util.midnight);
                     }
 
                     if (true == settings.getMonthly()) {
                         logger.debug("Found monthly summarizer: " + className);
                         reportSummarizer = (ReportSummarizer) reportClass.newInstance();
-                        String monthlyFile = new File(tranDir, SUMMARY_FRAGMENT_MONTHLY).getCanonicalPath();
+                        String monthlyFile = new File(nodeDir, SUMMARY_FRAGMENT_MONTHLY).getCanonicalPath();
                         processReportSummarizer(reportSummarizer, conn, monthlyFile, Util.lastmonth, Util.midnight);
                     }
                 } catch (Exception x) {
@@ -221,19 +221,19 @@ public class TranReporter
 
                     if (true == settings.getDaily()) {
                         logger.debug("Found daily graph: " + className);
-                        String dailyFile = new File(tranDir, name + "--daily.png").getCanonicalPath();
+                        String dailyFile = new File(nodeDir, name + "--daily.png").getCanonicalPath();
                         processReportGraph(reportGraph, conn, dailyFile, Util.REPORT_TYPE_DAILY, Util.lastday, Util.midnight);
                     }
 
                     if (true == settings.getWeekly()) {
                         logger.debug("Found weekly graph: " + className);
-                        String weeklyFile = new File(tranDir, name + "--weekly.png").getCanonicalPath();
+                        String weeklyFile = new File(nodeDir, name + "--weekly.png").getCanonicalPath();
                         processReportGraph(reportGraph, conn, weeklyFile, Util.REPORT_TYPE_WEEKLY, Util.lastweek, Util.midnight);
                     }
 
                     if (true == settings.getMonthly()) {
                         logger.debug("Found monthly graph: " + className);
-                        String monthlyFile = new File(tranDir, name + "--monthly.png").getCanonicalPath();
+                        String monthlyFile = new File(nodeDir, name + "--monthly.png").getCanonicalPath();
                         processReportGraph(reportGraph, conn, monthlyFile, Util.REPORT_TYPE_MONTHLY, Util.lastmonth, Util.midnight);
                     }
                 } catch (Exception x) {
@@ -244,7 +244,7 @@ public class TranReporter
                 String resource = resourceOrClassname;
                 if (!tok.hasMoreTokens()) { continue; }
                 String reportName = tok.nextToken();
-                String reportFile = new File(tranDir, reportName).getCanonicalPath();
+                String reportFile = new File(nodeDir, reportName).getCanonicalPath();
 
                 String[] userNames;
 
@@ -266,7 +266,7 @@ public class TranReporter
                 String resource = resourceOrClassname;
                 if (!tok.hasMoreTokens()) { continue; }
                 String reportName = tok.nextToken();
-                String reportFile = new File(tranDir, reportName).getCanonicalPath();
+                String reportFile = new File(nodeDir, reportName).getCanonicalPath();
 
                 // reuse processUserReports to process hName reports
                 // - hName reports use different sql queries but
@@ -290,7 +290,7 @@ public class TranReporter
             } else {
                 String resource = resourceOrClassname;
                 String outputName = type;
-                String outputFile = new File(tranDir, outputName).getCanonicalPath();
+                String outputFile = new File(nodeDir, outputName).getCanonicalPath();
                 String outputImages = globalImagesDir.getCanonicalPath();
 
                 if (true == settings.getDaily()) {
@@ -308,12 +308,12 @@ public class TranReporter
         }
         is.close();
 
-        String mktName = tctx.getTransformDesc().getDisplayName();
+        String mktName = tctx.getNodeDesc().getDisplayName();
         // HACK O RAMA XXXXXXXXX
         if (mktName.startsWith("Untangle Reports"))
             mktName = "Untangle Platform";
-        logger.debug("Writing transform name: " + mktName);
-        FileOutputStream fos = new FileOutputStream(new File(tranDir, "name"));
+        logger.debug("Writing node name: " + mktName);
+        FileOutputStream fos = new FileOutputStream(new File(nodeDir, "name"));
         PrintWriter pw = new PrintWriter(fos);
         pw.println(mktName);
         pw.close();
@@ -321,7 +321,7 @@ public class TranReporter
         logger.debug("copying report-files");
         is = tctx.getResourceAsStream("META-INF/report-files");
         br = new BufferedReader(new InputStreamReader(is));
-        fos = new FileOutputStream(new File(tranDir, "report-files"));
+        fos = new FileOutputStream(new File(nodeDir, "report-files"));
         pw = new PrintWriter(fos);
         for (String line = br.readLine(); null != line; line = br.readLine()) {
             pw.println(line);
@@ -334,7 +334,7 @@ public class TranReporter
     // PROCESSORS //////////////////////////////////////
     ////////////////////////////////////////////////////
 
-    // Used for both general and specific transforms.
+    // Used for both general and specific nodes.
     private void processReportSummarizer(ReportSummarizer reportSummarizer,
                                          Connection conn, String fileName,
                                          Timestamp startTime,
@@ -350,7 +350,7 @@ public class TranReporter
     private String[] getUserNames(Connection conn, Timestamp startTime, Timestamp endTime) throws Exception
     {
         ArrayList<String> uNameList = new ArrayList();
-        String sql = "SELECT DISTINCT username FROM events.mvvm_lookup_evt WHERE time_stamp >= ? AND time_stamp < ?";
+        String sql = "SELECT DISTINCT username FROM events.uvm_lookup_evt WHERE time_stamp >= ? AND time_stamp < ?";
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);

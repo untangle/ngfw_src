@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -22,29 +22,29 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.naming.ServiceUnavailableException;
 
-import com.untangle.mvvm.addrbook.AddressBook;
-import com.untangle.mvvm.addrbook.AddressBookConfiguration;
-import com.untangle.mvvm.addrbook.AddressBookSettings;
-import com.untangle.mvvm.addrbook.UserEntry;
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.portal.Application;
-import com.untangle.mvvm.portal.Bookmark;
-import com.untangle.mvvm.portal.LocalPortalManager;
-import com.untangle.mvvm.portal.PortalGroup;
-import com.untangle.mvvm.portal.PortalHomeSettings;
-import com.untangle.mvvm.portal.PortalLogin;
-import com.untangle.mvvm.portal.PortalLoginEvent;
-import com.untangle.mvvm.portal.PortalLogoutEvent;
-import com.untangle.mvvm.portal.PortalSettings;
-import com.untangle.mvvm.portal.PortalUser;
-import com.untangle.mvvm.portal.RemoteApplicationManager;
-import com.untangle.mvvm.security.LoginFailureReason;
-import com.untangle.mvvm.security.LogoutReason;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformStats;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.addrbook.AddressBook;
+import com.untangle.uvm.addrbook.AddressBookConfiguration;
+import com.untangle.uvm.addrbook.AddressBookSettings;
+import com.untangle.uvm.addrbook.UserEntry;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.portal.Application;
+import com.untangle.uvm.portal.Bookmark;
+import com.untangle.uvm.portal.LocalPortalManager;
+import com.untangle.uvm.portal.PortalGroup;
+import com.untangle.uvm.portal.PortalHomeSettings;
+import com.untangle.uvm.portal.PortalLogin;
+import com.untangle.uvm.portal.PortalLoginEvent;
+import com.untangle.uvm.portal.PortalLogoutEvent;
+import com.untangle.uvm.portal.PortalSettings;
+import com.untangle.uvm.portal.PortalUser;
+import com.untangle.uvm.portal.RemoteApplicationManager;
+import com.untangle.uvm.security.LoginFailureReason;
+import com.untangle.uvm.security.LogoutReason;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeStats;
+import com.untangle.uvm.util.TransactionWork;
 import jcifs.smb.NtlmPasswordAuthentication;
 import org.apache.catalina.Realm;
 import org.apache.catalina.authenticator.AuthenticatorBase;
@@ -68,14 +68,14 @@ class PortalManagerImpl implements LocalPortalManager
 
     public static final long REAPING_FREQ = 5000;
 
-    private static final int LOGIN_COUNTER = Transform.GENERIC_0_COUNTER;
-    private static final int LOGOUT_COUNTER = Transform.GENERIC_4_COUNTER;
+    private static final int LOGIN_COUNTER = Node.GENERIC_0_COUNTER;
+    private static final int LOGOUT_COUNTER = Node.GENERIC_4_COUNTER;
 
     // Add two seconds to each failed login attempt to blunt the force
     // of scripted dictionary attacks.
     private static final long LOGIN_FAIL_SLEEP_TIME = 2000;
 
-    private final MvvmContextImpl mvvmContext;
+    private final UvmContextImpl uvmContext;
     private final PortalApplicationManagerImpl appManager;
     private final RemotePortalApplicationManagerImpl remoteAppManager;
     private final PortalRealm portalRealm;
@@ -90,11 +90,11 @@ class PortalManagerImpl implements LocalPortalManager
     private PortalSettings portalSettings;
     private EventLogger portalLogger;
 
-    private PortalTransformStats stats = new PortalTransformStats();
+    private PortalNodeStats stats = new PortalNodeStats();
 
-    PortalManagerImpl(MvvmContextImpl mvvmContext)
+    PortalManagerImpl(UvmContextImpl uvmContext)
     {
-        this.mvvmContext = mvvmContext;
+        this.uvmContext = uvmContext;
 
         activeLogins = new ConcurrentHashMap<String, PortalLoginDesc>();
 
@@ -113,7 +113,7 @@ class PortalManagerImpl implements LocalPortalManager
                     return true;
                 }
             };
-        mvvmContext.runTransaction(tw);
+        uvmContext.runTransaction(tw);
 
         appManager = PortalApplicationManagerImpl.applicationManager();
         remoteAppManager = new RemotePortalApplicationManagerImpl(appManager);
@@ -122,17 +122,17 @@ class PortalManagerImpl implements LocalPortalManager
 
         portalLogger = EventLoggerFactory.factory().getEventLogger();
 
-        addressBook = mvvmContext.appAddressBook();
+        addressBook = uvmContext.appAddressBook();
 
         reaper = new LoginReaper();
-        mvvmContext.newThread(reaper).start();
+        uvmContext.newThread(reaper).start();
 
         logger.info("Initialized PortalManager");
     }
 
     // public methods ---------------------------------------------------------
 
-    public TransformStats getStats()
+    public NodeStats getStats()
     {
         return stats;
     }
@@ -166,7 +166,7 @@ class PortalManagerImpl implements LocalPortalManager
                     return true;
                 }
             };
-        mvvmContext.runTransaction(tw);
+        uvmContext.runTransaction(tw);
 
         this.portalSettings = settings;
     }
@@ -183,7 +183,7 @@ class PortalManagerImpl implements LocalPortalManager
                     return true;
                 }
             };
-        mvvmContext.runTransaction(tw);
+        uvmContext.runTransaction(tw);
     }
 
     public PortalHomeSettings getPortalHomeSettings(PortalUser user)
@@ -246,7 +246,7 @@ class PortalManagerImpl implements LocalPortalManager
                     return true;
                 }
             };
-        mvvmContext.runTransaction(tw);
+        uvmContext.runTransaction(tw);
 
         return result;
     }
@@ -266,7 +266,7 @@ class PortalManagerImpl implements LocalPortalManager
                         return true;
                     }
                 };
-            mvvmContext.runTransaction(tw);
+            uvmContext.runTransaction(tw);
         }
 
         return result;
@@ -284,7 +284,7 @@ class PortalManagerImpl implements LocalPortalManager
                     return true;
                 }
             };
-        mvvmContext.runTransaction(tw);
+        uvmContext.runTransaction(tw);
     }
 
     public void removeUserBookmarks(final PortalUser user, Set<Long> ids)
@@ -299,7 +299,7 @@ class PortalManagerImpl implements LocalPortalManager
                     return true;
                 }
             };
-        mvvmContext.runTransaction(tw);
+        uvmContext.runTransaction(tw);
     }
 
     public void logout(PortalLogin login)
@@ -323,7 +323,7 @@ class PortalManagerImpl implements LocalPortalManager
         return l;
     }
 
-    public EventLogger getEventLogger(TransformContext tctx)
+    public EventLogger getEventLogger(NodeContext tctx)
     {
         return portalLogger;
     }
@@ -492,10 +492,10 @@ class PortalManagerImpl implements LocalPortalManager
 
     // private classes --------------------------------------------------------
 
-    private class PortalTransformStats extends TransformStats
+    private class PortalNodeStats extends NodeStats
     {
         // Everything is empty/ignored/zero EXCEPT:
-        // tcpSessionTotal -- how many user sessions ever since mvvm boot
+        // tcpSessionTotal -- how many user sessions ever since uvm boot
         void incSessions() {
             tcpSessionCount++;
             tcpSessionTotal++;
@@ -559,7 +559,7 @@ class PortalManagerImpl implements LocalPortalManager
     private class PortalAuthenticator extends FormAuthenticator
     {
         protected static final String info =
-            "com.untangle.mvvm.engine.PortalAuthenticator/4.0";
+            "com.untangle.uvm.engine.PortalAuthenticator/4.0";
 
         private final Log log = LogFactory.getLog(getClass());
 

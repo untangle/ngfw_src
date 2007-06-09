@@ -9,19 +9,19 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tapi.IPSessionDesc;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.tapi.IPSessionDesc;
 
 /**
- * Interface for a transform instance, provides public runtime control
+ * Interface for a node instance, provides public runtime control
  * methods for manipulating the instance's state.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface Transform
+public interface Node
 {
     static final int GENERIC_0_COUNTER = 6; // XXX temp hack
     static final int GENERIC_1_COUNTER = 7; // XXX temp hack
@@ -41,69 +41,69 @@ public interface Transform
     // lifecycle methods ------------------------------------------------------
 
     /**
-     * Get the runtime state of this transform instance.
+     * Get the runtime state of this node instance.
      *
-     * @return a <code>TransformState</code> reflecting the runtime
-     * state of this transform.
-     * @see TransformState
+     * @return a <code>NodeState</code> reflecting the runtime
+     * state of this node.
+     * @see NodeState
      */
-    TransformState getRunState();
+    NodeState getRunState();
 
     /**
-     * Tests if the transform has ever been started.
+     * Tests if the node has ever been started.
      *
-     * @return true when the transform has never been started.
+     * @return true when the node has never been started.
      */
     boolean neverStarted();
 
     /**
-     * Connects to MetaPipe and starts. The transform instance reads its
+     * Connects to MetaPipe and starts. The node instance reads its
      * configuration each time this method is called. A call to this method
      * is only valid when the instance is in the
-     * {@link TransformState#INITIALIZED} state. After successful return,
-     * the instance will be in the {@link TransformState#RUNNING} state.
+     * {@link NodeState#INITIALIZED} state. After successful return,
+     * the instance will be in the {@link NodeState#RUNNING} state.
      *
-     * @throws TransformStartException if an exception occurs in start.
+     * @throws NodeStartException if an exception occurs in start.
      * @exception IllegalStateException if not called in the {@link
-     * TransformState#INITIALIZED} state.
+     * NodeState#INITIALIZED} state.
      */
-    void start() throws TransformStartException, IllegalStateException;
+    void start() throws NodeStartException, IllegalStateException;
 
     /**
-     * Stops transform and disconnects from the MetaPipe. A call to
+     * Stops node and disconnects from the MetaPipe. A call to
      * this method is only valid when the instance is in the {@link
-     * TransformState#RUNNING} state. After successful return, the
-     * instance will be in the {@link TransformState#INITIALIZED}
+     * NodeState#RUNNING} state. After successful return, the
+     * instance will be in the {@link NodeState#INITIALIZED}
      * state.
      *
-     * @throws TransformStopException if an exception occurs in stop.
+     * @throws NodeStopException if an exception occurs in stop.
      * @exception IllegalStateException if not called in the {@link
-     * TransformState#RUNNING} state.
+     * NodeState#RUNNING} state.
      */
-    void stop() throws TransformStopException, IllegalStateException;
+    void stop() throws NodeStopException, IllegalStateException;
 
-    TransformContext getTransformContext();
+    NodeContext getNodeContext();
 
-    TransformDesc getTransformDesc();
+    NodeDesc getNodeDesc();
 
     IPSessionDesc[] liveSessionDescs();
 
     /**
      * <code>dumpSessions</code> dumps the session descriptions in
-     * gory detail to the transform log.  This is for debugging only.
+     * gory detail to the node log.  This is for debugging only.
      */
     void dumpSessions();
 
     /**
-     * Returns the <code>TransformStats</code> for this transform.
-     * The transform must be in the running state.
+     * Returns the <code>NodeStats</code> for this node.
+     * The node must be in the running state.
      *
-     * @return a <code>TransformStats</code> giving the
-     * <code>TransformStats</code> since the start of the transform
-     * @exception TransformException if the transform is not in the
+     * @return a <code>NodeStats</code> giving the
+     * <code>NodeStats</code> since the start of the node
+     * @exception NodeException if the node is not in the
      * <code>RUNNING</code> state
      */
-    TransformStats getStats() throws IllegalStateException;
+    NodeStats getStats() throws IllegalStateException;
 
     // XXX future deprecated methods ------------------------------------------
 

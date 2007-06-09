@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
-import com.untangle.mvvm.BrandingManager;
-import com.untangle.mvvm.BrandingSettings;
-import com.untangle.mvvm.LocalBrandingManager;
+import com.untangle.uvm.BrandingManager;
+import com.untangle.uvm.BrandingSettings;
+import com.untangle.uvm.LocalBrandingManager;
 
 class RemoteBrandingManagerImpl implements BrandingManager
 {

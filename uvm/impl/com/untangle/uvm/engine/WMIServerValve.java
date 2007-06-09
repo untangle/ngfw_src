@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
-import com.untangle.mvvm.util.OutsideValve;
+import com.untangle.uvm.util.OutsideValve;
 
 class WMIServerValve extends OutsideValve
 {

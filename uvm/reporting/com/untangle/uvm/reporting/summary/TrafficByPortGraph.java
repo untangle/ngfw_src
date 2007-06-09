@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.reporting.summary;
+package com.untangle.uvm.reporting.summary;
 
 import java.sql.*;
 import java.util.*;
 
-import com.untangle.mvvm.reporting.*;
-import com.untangle.mvvm.util.PortServiceNames;
+import com.untangle.uvm.reporting.*;
+import com.untangle.uvm.util.PortServiceNames;
 import net.sf.jasperreports.engine.JRScriptletException;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.StandardPieToolTipGenerator;

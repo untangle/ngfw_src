@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.token;
+package com.untangle.node.token;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.tapi.Pipeline;
-import com.untangle.mvvm.tapi.TCPSession;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.TCPSession;
 import org.apache.log4j.Logger;
 
 public abstract class AbstractTokenHandler implements TokenHandler
@@ -28,7 +28,7 @@ public abstract class AbstractTokenHandler implements TokenHandler
     protected AbstractTokenHandler(TCPSession session)
     {
         this.session = session;
-        this.pipeline = MvvmContextFactory.context().pipelineFoundry()
+        this.pipeline = UvmContextFactory.context().pipelineFoundry()
             .getPipeline(session.id());
     }
 

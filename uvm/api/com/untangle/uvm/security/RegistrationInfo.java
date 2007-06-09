@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.security;
+package com.untangle.uvm.security;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;

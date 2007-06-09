@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.user;
+package com.untangle.uvm.user;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -24,8 +24,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.mvvm.tran.TransformException;
-import com.untangle.mvvm.tran.script.ScriptRunner;
+import com.untangle.uvm.node.NodeException;
+import com.untangle.uvm.node.script.ScriptRunner;
 import org.apache.log4j.Logger;
 
 public class Downloader extends HttpServlet
@@ -49,7 +49,7 @@ public class Downloader extends HttpServlet
     {
         try {
             ScriptRunner.getInstance().exec( GENERATE_INSTALLER_SCRIPT );
-        } catch ( TransformException e ) {
+        } catch ( NodeException e ) {
             logger.warn( "error running script", e );
             throw new ServletException( "Unable to create WMI Installer, please try again later." );
         }

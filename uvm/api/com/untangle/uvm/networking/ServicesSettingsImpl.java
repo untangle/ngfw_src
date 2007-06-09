@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -25,8 +25,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
@@ -38,7 +38,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_network_services", schema="settings")
+@Table(name="uvm_network_services", schema="settings")
 public class ServicesSettingsImpl implements ServicesSettings, Serializable
 {
     private static final long serialVersionUID = 7074952180633919139L;
@@ -125,7 +125,7 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
      * @return The start of the DHCP dynamic range.
      */
     @Column(name="dhcp_start_address")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getDhcpStartAddress()
     {
         if ( this.dhcpStartAddress == null ) this.dhcpStartAddress = NetworkUtil.EMPTY_IPADDR;
@@ -151,7 +151,7 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
      * @return The end of the DHCP dynamic range.
      */
     @Column(name="dhcp_end_address")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getDhcpEndAddress()
     {
         if ( this.dhcpEndAddress == null ) this.dhcpEndAddress = NetworkUtil.EMPTY_IPADDR;
@@ -230,7 +230,7 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="mvvm_dhcp_lease_list",
+    @JoinTable(name="uvm_dhcp_lease_list",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")
@@ -281,7 +281,7 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
      * @return The local DNS domain.
      */
     @Column(name="dns_local_domain")
-    @Type(type="com.untangle.mvvm.type.HostNameUserType")
+    @Type(type="com.untangle.uvm.type.HostNameUserType")
     public HostName getDnsLocalDomain()
     {
         if ( this.dnsLocalDomain == null ) this.dnsLocalDomain = HostName.getEmptyHostName();
@@ -311,7 +311,7 @@ public class ServicesSettingsImpl implements ServicesSettings, Serializable
     @OneToMany(fetch=FetchType.EAGER)
     @Cascade({ org.hibernate.annotations.CascadeType.ALL,
                    org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    @JoinTable(name="mvvm_dns_host_list",
+    @JoinTable(name="uvm_dns_host_list",
                joinColumns=@JoinColumn(name="setting_id"),
                inverseJoinColumns=@JoinColumn(name="rule_id"))
     @IndexColumn(name="position")

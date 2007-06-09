@@ -9,20 +9,20 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventRepository;
-import com.untangle.mvvm.logging.ListEventFilter;
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.RepositoryDesc;
-import com.untangle.mvvm.logging.SimpleEventFilter;
-import com.untangle.mvvm.tran.TransformContext;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventRepository;
+import com.untangle.uvm.logging.ListEventFilter;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.RepositoryDesc;
+import com.untangle.uvm.logging.SimpleEventFilter;
+import com.untangle.uvm.node.NodeContext;
 import org.apache.log4j.Logger;
 
 class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
@@ -30,7 +30,7 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
     private static final boolean LOGGING_DISABLED;
 
     private final List<EventCache<E>> caches = new LinkedList<EventCache<E>>();
-    private final TransformContext transformContext;
+    private final NodeContext nodeContext;
     private final BlockingQueue<LogEventDesc> inputQueue;
     private final String tag;
 
@@ -40,19 +40,19 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
 
     EventLoggerImpl()
     {
-        this.transformContext = null;
-        inputQueue = MvvmContextImpl.getInstance().loggingManager()
+        this.nodeContext = null;
+        inputQueue = UvmContextImpl.getInstance().loggingManager()
             .getInputQueue();
-        this.tag = "mvvm[0]: ";
+        this.tag = "uvm[0]: ";
     }
 
-    EventLoggerImpl(TransformContext transformContext)
+    EventLoggerImpl(NodeContext nodeContext)
     {
-        this.transformContext = transformContext;
-        inputQueue = MvvmContextImpl.getInstance().loggingManager()
+        this.nodeContext = nodeContext;
+        inputQueue = UvmContextImpl.getInstance().loggingManager()
             .getInputQueue();
-        String name = transformContext.getTransformDesc().getSyslogName();
-        this.tag = name + "[" + transformContext.getTid().getId() + "]: ";
+        String name = nodeContext.getNodeDesc().getSyslogName();
+        this.tag = name + "[" + nodeContext.getTid().getId() + "]: ";
     }
 
     // EventManager methods ---------------------------------------------------
@@ -128,9 +128,9 @@ class EventLoggerImpl<E extends LogEvent> extends EventLogger<E>
         }
     }
 
-    TransformContext getTransformContext()
+    NodeContext getNodeContext()
     {
-        return transformContext;
+        return nodeContext;
     }
 
     // private classes --------------------------------------------------------

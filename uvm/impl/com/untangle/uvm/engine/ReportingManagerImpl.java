@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,15 +20,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmException;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.ReportingManager;
-import com.untangle.mvvm.reporting.Reporter;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.LocalTransformManager;
-import com.untangle.mvvm.tran.TransformState;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmException;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.ReportingManager;
+import com.untangle.uvm.reporting.Reporter;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.NodeState;
 import org.apache.log4j.Logger;
 
 class ReportingManagerImpl implements ReportingManager
@@ -73,14 +73,14 @@ class ReportingManagerImpl implements ReportingManager
     }
 
     public void prepareReports(String outputBaseDir, Date midnight, int daysToKeep)
-        throws MvvmException
+        throws UvmException
     {
         synchronized (this) {
             switch (state) {
             case PREPARING:
-                throw new MvvmException("Already preparing reports");
+                throw new UvmException("Already preparing reports");
             case RUNNING:
-                throw new MvvmException("Reports are currently running");
+                throw new UvmException("Reports are currently running");
             case START:
             case READY:
                 break;
@@ -114,16 +114,16 @@ class ReportingManagerImpl implements ReportingManager
     }
 
     public void startReports()
-        throws MvvmException
+        throws UvmException
     {   
         synchronized (this) {
             switch (state) {
             case START:
-                throw new MvvmException("Haven't prepared yet");
+                throw new UvmException("Haven't prepared yet");
             case PREPARING:
-                throw new MvvmException("Still preparing");
+                throw new UvmException("Still preparing");
             case RUNNING:
-                throw new MvvmException("Already started, need to stop before starting again.");
+                throw new UvmException("Already started, need to stop before starting again.");
             case READY:
                 break;
             }
@@ -147,7 +147,7 @@ class ReportingManagerImpl implements ReportingManager
                         }
                     }
                 };
-            runThread = MvvmContextFactory.context().newThread(task, "Reports");
+            runThread = UvmContextFactory.context().newThread(task, "Reports");
         }
         runThread.start();
     }
@@ -157,14 +157,14 @@ class ReportingManagerImpl implements ReportingManager
      *
      */
     public void stopReports()
-        throws MvvmException
+        throws UvmException
     {
         synchronized (this) {
             switch (state) {
             case START:
-                throw new MvvmException("Haven't begun to prepare reports");
+                throw new UvmException("Haven't begun to prepare reports");
             case PREPARING:
-                throw new MvvmException("Can't stop while preparing, wait til done");
+                throw new UvmException("Can't stop while preparing, wait til done");
             case RUNNING:
                 reporter.setNeedToDie();
                 runThread.interrupt();
@@ -178,23 +178,23 @@ class ReportingManagerImpl implements ReportingManager
                 // Can't happen.
             }
             if (state != RunState.START)
-                throw new MvvmException("Unable to stop reports, ended in state " +
+                throw new UvmException("Unable to stop reports, ended in state " +
                                         state.toString());
         }
     }
 
     public boolean isReportingEnabled() {
-        MvvmLocalContext mvvm = MvvmContextFactory.context();
-        LocalTransformManager transformManager = mvvm.transformManager();
-        List<Tid> tids = transformManager.transformInstances("reporting-transform");
+        UvmLocalContext uvm = UvmContextFactory.context();
+        LocalNodeManager nodeManager = uvm.nodeManager();
+        List<Tid> tids = nodeManager.nodeInstances("reporting-node");
         if(tids == null || tids.size() == 0)
             return false;
         // What if more than one? Shouldn't happen. XX
-        TransformContext context = transformManager.transformContext(tids.get(0));
+        NodeContext context = nodeManager.nodeContext(tids.get(0));
         if (context == null)
             return false;
-        TransformState state = context.getRunState();
-        return (state == TransformState.RUNNING);
+        NodeState state = context.getRunState();
+        return (state == NodeState.RUNNING);
     }
 
     public boolean isReportsAvailable() {

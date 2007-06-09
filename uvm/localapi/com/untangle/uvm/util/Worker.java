@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.util;
+package com.untangle.uvm.util;
 
 public interface Worker
 {

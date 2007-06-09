@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.logging;
+package com.untangle.uvm.logging;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
@@ -29,10 +29,10 @@ import org.apache.log4j.spi.LoggingEvent;
  */
 public class SmtpAppender extends AppenderSkeleton
 {
-    // We use one of these sized buffers for each transform, and one for main.
+    // We use one of these sized buffers for each node, and one for main.
     public static int CIRCULAR_BUFFER_SIZE = 100;
 
-    private final MvvmLoggingContext ctx;
+    private final UvmLoggingContext ctx;
 
     protected CyclicBuffer cb = new CyclicBuffer(CIRCULAR_BUFFER_SIZE);
 
@@ -42,7 +42,7 @@ public class SmtpAppender extends AppenderSkeleton
     {
         super();
 
-        ctx = MvvmRepositorySelector.selector().registerSmtpAppender(this);
+        ctx = UvmRepositorySelector.selector().registerSmtpAppender(this);
         name = ctx.getName();
 
         // We make the layout ourselves -- it's not in the XML.
@@ -58,7 +58,7 @@ public class SmtpAppender extends AppenderSkeleton
         layout.setConversionPattern(pattern);
     }
 
-    public MvvmLoggingContext getLoggingContext()
+    public UvmLoggingContext getLoggingContext()
     {
         return ctx;
     }
@@ -73,7 +73,7 @@ public class SmtpAppender extends AppenderSkeleton
             event.getNDC();
             cb.add(event);
             if (event.getLevel().isGreaterOrEqual(Level.ERROR)) {
-                LogMailer lm = MvvmRepositorySelector.selector().getLogMailer();
+                LogMailer lm = UvmRepositorySelector.selector().getLogMailer();
                 Thread t = Thread.currentThread();
                 ClassLoader oldCl = t.getContextClassLoader();
                 t.setContextClassLoader(lm.getClass().getClassLoader());
@@ -92,7 +92,7 @@ public class SmtpAppender extends AppenderSkeleton
     synchronized public void close()
     {
         this.closed = true;
-        MvvmRepositorySelector.selector().deregisterSmtpAppender(this);
+        UvmRepositorySelector.selector().deregisterSmtpAppender(this);
     }
 
     @Override

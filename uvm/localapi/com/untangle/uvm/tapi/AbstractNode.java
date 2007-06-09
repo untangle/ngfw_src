@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
-public abstract class AbstractTransform extends TransformBase
+public abstract class AbstractNode extends NodeBase
 {
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -26,7 +26,7 @@ public abstract class AbstractTransform extends TransformBase
 
     protected abstract PipeSpec[] getPipeSpecs();
 
-    // TransformBase methods --------------------------------------------------
+    // NodeBase methods --------------------------------------------------
 
     protected void connectMPipe()
     {
@@ -53,7 +53,7 @@ public abstract class AbstractTransform extends TransformBase
         }
     }
 
-    // Transform methods ------------------------------------------------------
+    // Node methods ------------------------------------------------------
 
     public void dumpSessions()
     {

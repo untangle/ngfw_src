@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.IOException;
 import java.security.Principal;
 
-import com.untangle.mvvm.security.MvvmPrincipal;
+import com.untangle.uvm.security.UvmPrincipal;
 import org.apache.catalina.Realm;
 import org.apache.catalina.authenticator.BasicAuthenticator;
 import org.apache.catalina.authenticator.Constants;
@@ -25,19 +25,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 
-class MvvmAuthenticator extends BasicAuthenticator
+class UvmAuthenticator extends BasicAuthenticator
 {
     public static final String AUTH_NONCE_FIELD_NAME = "nonce";
 
-    private static Log log = LogFactory.getLog(MvvmAuthenticator.class);
+    private static Log log = LogFactory.getLog(UvmAuthenticator.class);
 
     /**
      * Descriptive information about this implementation.
      */
     protected static final String info =
-        "com.untangle.mvvm.engine.MvvmAuthenticator/3.2";
+        "com.untangle.uvm.engine.UvmAuthenticator/3.2";
 
-    MvvmAuthenticator()
+    UvmAuthenticator()
     {
         setCache(true);
     }
@@ -57,7 +57,7 @@ class MvvmAuthenticator extends BasicAuthenticator
      * constraint has been satisfied, or <code>false</code> if we have
      * created a response challenge already.
      *
-     * Special cased to work with mvvm magic cookies
+     * Special cased to work with uvm magic cookies
      *
      * @param request Request we are processing
      * @param response Response we are creating
@@ -76,7 +76,7 @@ class MvvmAuthenticator extends BasicAuthenticator
         debug("Authenticating against [", principal,"]");
 
         if (!isValidPrincipal(principal)) {
-            debug("No MvvmPrincipal, trying to find a principal from the session");
+            debug("No UvmPrincipal, trying to find a principal from the session");
             org.apache.catalina.Session session = request.getSessionInternal(false);
             if (null != session) {
                 principal = session.getPrincipal();
@@ -93,9 +93,9 @@ class MvvmAuthenticator extends BasicAuthenticator
             String authStr = request.getParameter(AUTH_NONCE_FIELD_NAME);
             if (authStr != null) {
                 Realm realm = context.getRealm();
-                if (realm instanceof MvvmRealm) {
+                if (realm instanceof UvmRealm) {
                     debug("Attempting magic authentication with ", authStr);
-                    principal = ((MvvmRealm)realm).authenticateWithNonce(authStr);
+                    principal = ((UvmRealm)realm).authenticateWithNonce(authStr);
                     if (principal != null) {
                         debug("Succeeded for ", principal);
                         register(request, response, principal, Constants.BASIC_METHOD,
@@ -132,7 +132,7 @@ class MvvmAuthenticator extends BasicAuthenticator
 
     private boolean isValidPrincipal(Principal principal)
     {
-        return (null != principal && (principal instanceof MvvmPrincipal));
+        return (null != principal && (principal instanceof UvmPrincipal));
     }
 
     private void debug(Object ... msgArray)

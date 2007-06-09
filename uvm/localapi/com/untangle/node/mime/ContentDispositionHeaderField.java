@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.mime;
+package com.untangle.node.mime;
 
 //TODO: bscott Make sure we also set the "name" attribute,
 //      for compatability with crappy MUAs

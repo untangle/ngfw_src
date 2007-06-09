@@ -8,14 +8,14 @@
  *
  * $Id$
  */
-package com.untangle.tran.util;
+package com.untangle.node.util;
 
 import java.io.*;
 import java.nio.*;
 import java.nio.channels.*;
 import java.util.*;
 
-import com.untangle.mvvm.MvvmContextFactory;
+import com.untangle.uvm.UvmContextFactory;
 
 public class FProt {
 
@@ -34,7 +34,7 @@ public class FProt {
     public static int scanFile (String fileName) throws IOException,InterruptedException
     {
         byte[] outbuf = new byte[CHUNK_SIZE];
-        Process proc = MvvmContextFactory.context().exec("f-prot " + fileName);
+        Process proc = UvmContextFactory.context().exec("f-prot " + fileName);
         InputStream is  = proc.getInputStream();
         OutputStream os = proc.getOutputStream();
         int i;

@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.reporting;
+package com.untangle.uvm.reporting;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.Map;
 
 /**
- * Each transform implements this in a class it provides for report time generation
+ * Each node implements this in a class it provides for report time generation
  *
  * @author
  * @version 1.0
@@ -25,7 +25,7 @@ public interface ReportSummarizer
 {
 
     /**
-     * Get the summary report for the transform, from the given database starting at the
+     * Get the summary report for the node, from the given database starting at the
      * start time and extending to the end time.  Allows parameterization of the summarization.
      *
      * @param conn a <code>Connection</code> that should be used for queries
@@ -37,7 +37,7 @@ public interface ReportSummarizer
     String getSummaryHtml(Connection conn, Timestamp startDate, Timestamp endDate, Map<String,Object> extraParams );
 
     /**
-     * Get the summary report for the transform, from the given database starting at the
+     * Get the summary report for the node, from the given database starting at the
      * start time and extending to the end time.
      *
      * @param conn a <code>Connection</code> that should be used for queries

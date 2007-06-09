@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.token;
+package com.untangle.node.token;
 
 import java.nio.ByteBuffer;
 
@@ -50,7 +50,7 @@ public interface Parser
 
     /**
      * Called when both client and server sides 
-     * {@link com.untangle.mvvm.tapi.event.SessionEventListener#handleTCPFinalized are shutdown}
+     * {@link com.untangle.uvm.tapi.event.SessionEventListener#handleTCPFinalized are shutdown}
      */
     void handleFinalized();
 }

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class OurSingleSignOn extends ValveBase {
      * Descriptive information about this Valve implementation.
      */
     protected static String info =
-        "com.untangle.mvvm.engine.OurSingleSignOn";
+        "com.untangle.uvm.engine.OurSingleSignOn";
 
 
     // ---------------------------------------------------------- Valve Methods

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -88,7 +88,7 @@ class MackageState
     }
 
     /**
-     * Status of transform.
+     * Status of node.
      *
      * @return true if and only if mackage is enabled.
      */

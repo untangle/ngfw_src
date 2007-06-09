@@ -9,28 +9,28 @@
  * $Id$
  */
 
-package com.untangle.mvvm.util;
+package com.untangle.uvm.util;
 
 import java.util.Iterator;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.tran.TransformContext;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.node.NodeContext;
 
 /* This is a DataSaver designed to delete any related objects before saving the data */
 public class DeletingDataSaver<T> extends DataSaver<T>
 {
     private final String className;
 
-    public DeletingDataSaver( TransformContext transformContext, String className )
+    public DeletingDataSaver( NodeContext nodeContext, String className )
     {
-        super( transformContext );
+        super( nodeContext );
         this.className = className;
     }
 
-    public DeletingDataSaver( MvvmLocalContext local, String className )
+    public DeletingDataSaver( UvmLocalContext local, String className )
     {
         super( local );
         this.className = className;

@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
 import java.io.Serializable;
 import java.util.*;
 
 /**
- * This singleton enumerates the interfaces present in the MVVM.  It
+ * This singleton enumerates the interfaces present in the UVM.  It
  * is created via a factory method in <code>NetworkingManager</code>.
  *
  * @author <a href="mailto:jdi@untangle.com">John Irwin</a>

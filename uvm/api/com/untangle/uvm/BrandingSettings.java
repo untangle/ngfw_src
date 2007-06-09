@@ -9,7 +9,7 @@
  * $Id: ConnectivityTester.java 8515 2007-01-03 00:13:24Z amread $
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -25,7 +25,7 @@ import javax.persistence.Table;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_branding_settings", schema="settings")
+@Table(name="uvm_branding_settings", schema="settings")
 public class BrandingSettings implements Serializable
 {
     private Long id;

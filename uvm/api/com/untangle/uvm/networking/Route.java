@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -20,8 +20,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.Rule;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Rule;
 import org.hibernate.annotations.Type;
 
 /**
@@ -31,7 +31,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_network_route", schema="settings")
+@Table(name="uvm_network_route", schema="settings")
 public class Route extends Rule
 {
     /**
@@ -88,7 +88,7 @@ public class Route extends Rule
      *
      * @return The destination network this route is related to.
      */
-    @Type(type="com.untangle.mvvm.networking.IPNetworkUserType")
+    @Type(type="com.untangle.uvm.networking.IPNetworkUserType")
     public IPNetwork getDestination()
     {
         if ( this.destination == null ) {
@@ -116,7 +116,7 @@ public class Route extends Rule
      * destined to <code>destination</code>.
      */
     @Column(name="next_hop")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getNextHop()
     {
         if ( this.nextHop == null ) this.nextHop = NetworkUtil.EMPTY_IPADDR;

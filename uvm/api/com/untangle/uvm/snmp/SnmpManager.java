@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.snmp;
+package com.untangle.uvm.snmp;
 
 /**
  * Interface for the singleton which

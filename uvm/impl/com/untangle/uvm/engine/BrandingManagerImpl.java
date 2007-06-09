@@ -9,7 +9,7 @@
  * $Id: ConnectivityTester.java 8515 2007-01-03 00:13:24Z amread $
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,10 +20,10 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 
-import com.untangle.mvvm.BrandingSettings;
-import com.untangle.mvvm.LocalBrandingManager;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.util.TransactionWork;
+import com.untangle.uvm.BrandingSettings;
+import com.untangle.uvm.LocalBrandingManager;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.util.TransactionWork;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -58,7 +58,7 @@ class BrandingManagerImpl implements LocalBrandingManager
 
                 public BrandingSettings getResult() { return bs; }
             };
-        MvvmContextFactory.context().runTransaction(tw);
+        UvmContextFactory.context().runTransaction(tw);
 
         this.settings = tw.getResult();
         setBrandingProperties(settings);
@@ -92,14 +92,14 @@ class BrandingManagerImpl implements LocalBrandingManager
         try {
             OutputStream os = new FileOutputStream(BRANDING_PROPS);
             pr = new PrintWriter(new OutputStreamWriter(os));
-            pr.print("mvvm.branding.companyName=");
+            pr.print("uvm.branding.companyName=");
             pr.println(settings.getCompanyName());
-            pr.print("mvvm.branding.companyUrl=");
+            pr.print("uvm.branding.companyUrl=");
             pr.println(settings.getCompanyUrl());
-            pr.print("mvvm.branding.contactName=");
+            pr.print("uvm.branding.contactName=");
             pr.println(settings.getContactName());
             if (null != settings.getContactEmail()) {
-                pr.print("mvvm.branding.contactEmail=");
+                pr.print("uvm.branding.contactEmail=");
                 pr.println(settings.getContactEmail());
             }
         } catch (IOException exn) {

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.security;
+package com.untangle.uvm.security;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -20,13 +20,13 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
- * An MVVM user.
+ * An UVM user.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_user", schema="settings")
+@Table(name="uvm_user", schema="settings")
 public class User implements Serializable
 {
     private static final long serialVersionUID = 11521040868224140L;
@@ -183,7 +183,7 @@ public class User implements Serializable
     }
 
     /**
-     * Set email for MVVM to send messages.
+     * Set email for UVM to send messages.
      *
      * @return user's contact email.
      */

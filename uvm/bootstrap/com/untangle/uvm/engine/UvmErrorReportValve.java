@@ -9,7 +9,7 @@
  * $Id: TomcatManager.java 8547 2007-01-08 22:57:36Z amread $
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -23,15 +23,15 @@ import org.apache.catalina.valves.ErrorReportValve;
  * Sends a friendly error page when a problem occurs.
  *
  * The error message is supplied by either setting the system property
- * {@link #MVVM_WEB_MESSAGE_ATTR} or by using the {@link
+ * {@link #UVM_WEB_MESSAGE_ATTR} or by using the {@link
  * HttpServletResponse.sendError(int, String))} method.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public class MvvmErrorReportValve extends ErrorReportValve
+public class UvmErrorReportValve extends ErrorReportValve
 {
-    public static final String MVVM_WEB_MESSAGE_ATTR = "com.untangle.mvvm.web.message";
+    public static final String UVM_WEB_MESSAGE_ATTR = "com.untangle.uvm.web.message";
 
     protected void report(Request request, Response response,
                           Throwable throwable)
@@ -45,7 +45,7 @@ public class MvvmErrorReportValve extends ErrorReportValve
 
         String errorMessage = null;
 
-        Object o = request.getAttribute(MVVM_WEB_MESSAGE_ATTR);
+        Object o = request.getAttribute(UVM_WEB_MESSAGE_ATTR);
         if (o instanceof String) {
             errorMessage = (String)o;
         }

@@ -1,7 +1,7 @@
 #!/bin/sh
-exec >>@MVVM_LOG@/schema.log 2>&1
+exec >>@UVM_LOG@/schema.log 2>&1
 
-PSQL="psql -X -U postgres --tuples-only --no-align mvvm"
+PSQL="psql -X -U postgres --tuples-only --no-align uvm"
 
 if [ $# != 1 ]; then
     echo "usage: $0 tid"
@@ -10,8 +10,8 @@ fi
 
 tid=$1
 
-component=$(echo "SELECT name FROM transform_persistent_state WHERE tid = $tid;" | $PSQL)
+component=$(echo "SELECT name FROM node_persistent_state WHERE tid = $tid;" | $PSQL)
 
-script="@MVVM_SCHEMA@/$component/purgetid.sql"
+script="@UVM_SCHEMA@/$component/purgetid.sql"
 
-psql -X -U postgres -v tid="$tid" -f "$script" mvvm
+psql -X -U postgres -v tid="$tid" -f "$script" uvm

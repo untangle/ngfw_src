@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.security;
+package com.untangle.uvm.security;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -25,11 +25,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.untangle.mvvm.Period;
+import com.untangle.uvm.Period;
 import org.hibernate.annotations.Cascade;
 
 /**
- * Mvvm administrator settings.
+ * Uvm administrator settings.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0

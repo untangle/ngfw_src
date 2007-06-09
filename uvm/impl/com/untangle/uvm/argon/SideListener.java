@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import com.untangle.jvector.Source;
 import com.untangle.jvector.Sink;

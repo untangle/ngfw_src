@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.logging;
+package com.untangle.uvm.logging;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -120,7 +120,7 @@ public class LoggingSettings implements Serializable
      * @return the Syslog facility.
      */
     @Column(name="syslog_facility")
-    @Type(type="com.untangle.mvvm.type.SyslogFacilityUserType")
+    @Type(type="com.untangle.uvm.type.SyslogFacilityUserType")
     public SyslogFacility getSyslogFacility()
     {
         return syslogFacility;
@@ -137,7 +137,7 @@ public class LoggingSettings implements Serializable
      * @return a <code>SyslogPriority</code> value
      */
     @Column(name="syslog_threshold")
-    @Type(type="com.untangle.mvvm.type.SyslogPriorityUserType")
+    @Type(type="com.untangle.uvm.type.SyslogPriorityUserType")
     public SyslogPriority getSyslogThreshold()
     {
         return syslogThreshold;

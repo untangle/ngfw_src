@@ -9,16 +9,16 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall;
+package com.untangle.uvm.node.firewall;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.firewall.ip.IPDBMatcher;
-import com.untangle.mvvm.tran.firewall.port.PortDBMatcher;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolDBMatcher;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
+import com.untangle.uvm.node.firewall.port.PortDBMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
 
 /**
  * Rule for matching sessions based on direction and IP addresses, ports

@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 /**
- * Describes the type of the stream between two transforms.
+ * Describes the type of the stream between two nodes.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0

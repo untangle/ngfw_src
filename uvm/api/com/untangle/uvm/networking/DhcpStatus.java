@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.io.Serializable;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
 
-import com.untangle.mvvm.tran.IPaddr;
+import com.untangle.uvm.node.IPaddr;
 
 /**
  * <code>DhcpStatus</code> contains the current state of an interface

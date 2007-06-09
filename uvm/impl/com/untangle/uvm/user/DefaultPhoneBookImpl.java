@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.mvvm.user;
+package com.untangle.uvm.user;
 
 import java.net.InetAddress;
 
-import com.untangle.mvvm.tran.ValidateException;
-import com.untangle.tran.util.MVLogger;
+import com.untangle.uvm.node.ValidateException;
+import com.untangle.node.util.MVLogger;
 
 class DefaultPhoneBookImpl implements LocalPhoneBook
 {

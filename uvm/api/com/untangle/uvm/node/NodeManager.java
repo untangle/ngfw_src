@@ -9,68 +9,68 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
 import java.util.List;
 import java.util.Map;
 
-import com.untangle.mvvm.policy.Policy;
-import com.untangle.mvvm.security.Tid;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.security.Tid;
 
 /**
- * Manages transform instances in the pipeline.
+ * Manages node instances in the pipeline.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-public interface TransformManager
+public interface NodeManager
 {
     /**
-     * Get <code>Tid</code>s of transforms in the pipeline.
+     * Get <code>Tid</code>s of nodes in the pipeline.
      *
-     * @return list of all transform ids.
+     * @return list of all node ids.
      */
-    List<Tid> transformInstances();
+    List<Tid> nodeInstances();
 
     /**
-     * Transform instances by name.
+     * Node instances by name.
      *
-     * @param name name of the transform.
-     * @return tids of corresponding transforms.
+     * @param name name of the node.
+     * @return tids of corresponding nodes.
      */
-    List<Tid> transformInstances(String name);
+    List<Tid> nodeInstances(String name);
 
     /**
-     * Transform instances by policy.
+     * Node instances by policy.
      *
-     * @param policy policy of transform.
-     * @return tids of corresponding transforms.
+     * @param policy policy of node.
+     * @return tids of corresponding nodes.
      */
-    List<Tid> transformInstances(Policy policy);
+    List<Tid> nodeInstances(Policy policy);
 
     /**
-     * Transform instances by policy, the visible ones only, for the GUI.
+     * Node instances by policy, the visible ones only, for the GUI.
      *
-     * @param policy policy of transform.
-     * @return tids of corresponding transforms.
+     * @param policy policy of node.
+     * @return tids of corresponding nodes.
      */
-    List<Tid> transformInstancesVisible(Policy policy);
+    List<Tid> nodeInstancesVisible(Policy policy);
 
     /**
-     * Transform instances by name policy.
+     * Node instances by name policy.
      *
-     * @param name name of transform.
-     * @param policy policy of transform.
-     * @return tids of corresponding transforms.
+     * @param name name of node.
+     * @param policy policy of node.
+     * @return tids of corresponding nodes.
      */
-    List<Tid> transformInstances(String name, Policy policy);
+    List<Tid> nodeInstances(String name, Policy policy);
 
     /**
-     * Create a new transform instance under the given policy.  Note
+     * Create a new node instance under the given policy.  Note
      * that it is an error to specify a non-null policy for a service,
      * or a null policy for a non-service.
      *
-     * @param name of the transform.
+     * @param name of the node.
      * @param policy the policy this instance is applied to.
      * @return the <code>tid</code> of the instance.
      * @exception DeployException if the instance cannot be created.
@@ -78,13 +78,13 @@ public interface TransformManager
     Tid instantiate(String name, Policy policy) throws DeployException;
 
     /**
-     * Create a new transform instance under the given policy.  Note
+     * Create a new node instance under the given policy.  Note
      * that it is an error to specify a non-null policy for a service,
      * or a null policy for a non-service.
      *
-     * @param name of the transform.
+     * @param name of the node.
      * @param policy the policy this instance is applied to.
-     * @param args transform args.
+     * @param args node args.
      * @return the <code>tid</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
@@ -92,28 +92,28 @@ public interface TransformManager
         throws DeployException;
 
     /**
-     * Create a new transform instance under the default policy, or in
-     * the null policy if the transform is a service.
+     * Create a new node instance under the default policy, or in
+     * the null policy if the node is a service.
      *
-     * @param name of the transform.
-     * @param args transform args.
+     * @param name of the node.
+     * @param args node args.
      * @return the <code>tid</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
     Tid instantiate(String name, String[] args) throws DeployException;
 
     /**
-     * Create a new transform instance under the default policy, or in
-     * the null policy if the transform is a service.
+     * Create a new node instance under the default policy, or in
+     * the null policy if the node is a service.
      *
-     * @param name of the transform.
+     * @param name of the node.
      * @return the <code>tid</code> of the instance.
      * @exception DeployException if the instance cannot be created.
      */
     Tid instantiate(String name) throws DeployException;
 
     /**
-     * Remove transform instance from the pipeline.
+     * Remove node instance from the pipeline.
      *
      * @param tid <code>Tid</code> of instance to be destroyed.
      * @exception UndeployException if detruction fails.
@@ -121,18 +121,18 @@ public interface TransformManager
     void destroy(Tid tid) throws UndeployException;
 
     /**
-     * Get the <code>TransformContext</code> for a transform instance.
+     * Get the <code>NodeContext</code> for a node instance.
      *
      * @param tid <code>Tid</code> of the instance.
-     * @return the instance's <code>TransformContext</code>.
+     * @return the instance's <code>NodeContext</code>.
      */
-    TransformContext transformContext(Tid tid);
+    NodeContext nodeContext(Tid tid);
 
     /**
-     * Get the statistics and counts for all transforms in one call.
+     * Get the statistics and counts for all nodes in one call.
      *
-     * @return a <code>Map</code> from Tid to TransformStats for all
-     * transforms in RUNNING state.
+     * @return a <code>Map</code> from Tid to NodeStats for all
+     * nodes in RUNNING state.
      */
-    Map<Tid, TransformStats> allTransformStats();
+    Map<Tid, NodeStats> allNodeStats();
 }

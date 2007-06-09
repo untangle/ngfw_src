@@ -23,10 +23,10 @@ fi
 
 ## Directory configuration
 ## XXX This should be a temp directory, that gets nuked.
-DIRECTORY_BASE="@MVVM_WEB@/reports"
+DIRECTORY_BASE="@UVM_WEB@/reports"
 DIRECTORY_PDF="${DIRECTORY_BASE}/current"
 DIRECTORY_IMAGES="${DIRECTORY_BASE}/current"
-DIRECTORY_TEMPLATES="@MVVM_HOME@/reporting/templates"
+DIRECTORY_TEMPLATES="@UVM_HOME@/reporting/templates"
 DIRECTORY_PROPERTIES=`mktemp -d -p @PREFIX@/tmp generate-pdf.XXXXXXXXXX`
 
 ## Template configuration
@@ -40,17 +40,17 @@ TEMPLATE_UNAMESUM_INDEX="UserSummaryIndex.xml"
 TEMPLATE_MASTER="MasterDocument.xml"
 
 ## This is where the images for the email are stored.
-BASE_DIRECTORY_EMAIL_IMAGES="@MVVM_HOME@/reporting/email_images"
+BASE_DIRECTORY_EMAIL_IMAGES="@UVM_HOME@/reporting/email_images"
 
 SUFFIX_PROPERTIES=".properties"
 
 ## Date format string
 DATE_FORMAT='%A %B %e, %Y'
 
-EMAIL_TEMPLATE="@MVVM_HOME@/reporting/email.html"
+EMAIL_TEMPLATE="@UVM_HOME@/reporting/email.html"
 
-BRANDING_PROPS=@MVVM_CONF@/branding.properties
-COMPANY_NAME=$(grep '^mvvm.branding.companyName=' $BRANDING_PROPS |sed 's/^[^=]\+=\(.*\)$/\1/')
+BRANDING_PROPS=@UVM_CONF@/branding.properties
+COMPANY_NAME=$(grep '^uvm.branding.companyName=' $BRANDING_PROPS |sed 's/^[^=]\+=\(.*\)$/\1/')
 
 function generateTopLevel()
 {
@@ -93,19 +93,19 @@ function generateSubReports()
     local t_iconOrg
     local t_iconDesc
 
-    ## None of the transform use custom templates just yet.
+    ## None of the node use custom templates just yet.
     local t_template=""
     local t_detailedTemplate=""
 
-    ## All of the transform have detailed reports
+    ## All of the node have detailed reports
     local t_hasDetailed="true"
 
     ## This is the report field description
     echo "reports.fields='title:string','properties:string','briefingTemplate:string','detailedTemplate:string','iconDescription:string','iconOrganization:string','link:string', 'detailed:string'" >> ${topLevel}
 
-    ## This assumes that mcli never returns transform names that contain spaces
-    for t_reportDir in ${orderedTransformList}; do
-        ## Don't iterate the transforms that don't have reports.
+    ## This assumes that mcli never returns node names that contain spaces
+    for t_reportDir in ${orderedNodeList}; do
+        ## Don't iterate the nodes that don't have reports.
         ls ${t_reportDir}/*.html >/dev/null 2>&1 || continue
 
         t_name=`cat ${t_reportDir}/name`
@@ -128,13 +128,13 @@ function generateSubReports()
 
 function generateSubProperties()
 {
-    ## Base directory for the transform
+    ## Base directory for the node
     local t_baseDir="${1}"
 
-    ## This is the engineering name of the transform (eg nat-transform)
+    ## This is the engineering name of the node (eg nat-node)
     local t_key="${2}"
 
-    ## This is the marketing name of the transform (eg Router)
+    ## This is the marketing name of the node (eg Router)
     local t_name="${3}"
 
     ## Name of the file containing the graph
@@ -234,10 +234,10 @@ EOF
 
 function generateUserSummary()
 {
-    ## Base directory for the transform
+    ## Base directory for the node
     local t_baseDir="${1}"
 
-    ## This is the engineering name of the transform (eg nat-transform)
+    ## This is the engineering name of the node (eg nat-node)
     local t_key="${2}"
 
     local t_properties="${3}"
@@ -349,10 +349,10 @@ EOF
 
 ####################### START OF SCRIPT
 
-cd @MVVM_REPORTS@/current
+cd @UVM_REPORTS@/current
 
-## Get the transform list, and reorder so the reporting transform is at the top.
-orderedTransformList=`@USR_BIN@/mcli instances | grep -i running | awk '{ print $2 }' | uniq | sed -e '/reporting-transform/d' -e '1ireporting-transform' -e "s|^\(.*\)$|${REPORT_BASE}/\1|"`
+## Get the node list, and reorder so the reporting node is at the top.
+orderedNodeList=`@USR_BIN@/mcli instances | grep -i running | awk '{ print $2 }' | uniq | sed -e '/reporting-node/d' -e '1ireporting-node' -e "s|^\(.*\)$|${REPORT_BASE}/\1|"`
 
 ## User string for the report type, Daily, Weekly, Monthly
 reportType=`echo ${REPORT_TYPE} | tr "dmw" "DMW"`

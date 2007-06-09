@@ -9,10 +9,10 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import java.net.InetAddress;
 
-public interface SessionEndpoints extends com.untangle.mvvm.tran.SessionEndpoints
+public interface SessionEndpoints extends com.untangle.uvm.node.SessionEndpoints
 {
 }

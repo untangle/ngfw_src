@@ -9,25 +9,25 @@
  * $Id$
  */
 
-package com.untangle.mvvm.logging;
+package com.untangle.uvm.logging;
 
 import java.io.*;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.networking.NetworkManagerImpl;
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.LocalTransformManager;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.mvvm.tran.TransformContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.networking.NetworkManagerImpl;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.LocalNodeManager;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeContext;
 import org.apache.log4j.Logger;
 
 public class SystemStatus
 {
-    public static final String  JITTER_THREAD_PROPERTY = "mvvm.jitter.thread";
+    public static final String  JITTER_THREAD_PROPERTY = "uvm.jitter.thread";
     public static final boolean JITTER_THREAD_DEFAULT = true;
 
-    public static final String  JITTER_THREAD_FREQ_PROPERTY = "mvvm.jitter.thread.freq";
+    public static final String  JITTER_THREAD_FREQ_PROPERTY = "uvm.jitter.thread.freq";
     public static final long    JITTER_THREAD_FREQ_DEFAULT = 500;
 
     public static boolean JITTER_THREAD;
@@ -94,12 +94,12 @@ public class SystemStatus
     public String systemStatus()
     {
         String dyn  = _buildDynamicStat();
-        String mvvm = _buildMVVMStat();
+        String uvm = _buildUVMStat();
         StringBuilder sb = new StringBuilder();
 
         sb.append(staticConf);
         sb.append(dyn);
-        sb.append(mvvm);
+        sb.append(uvm);
 
         return sb.toString();
     }
@@ -117,7 +117,7 @@ public class SystemStatus
              * Uname info
              */
             sb.append(SPACER);
-            proc = MvvmContextFactory.context().exec("/bin/uname -a");
+            proc = UvmContextFactory.context().exec("/bin/uname -a");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -128,7 +128,7 @@ public class SystemStatus
              * lspci
              */
             sb.append(SPACER);
-            proc = MvvmContextFactory.context().exec("/usr/bin/lspci");
+            proc = UvmContextFactory.context().exec("/usr/bin/lspci");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -168,7 +168,7 @@ public class SystemStatus
              * uptime
              */
             sb.append(SPACER);
-            proc = MvvmContextFactory.context().exec("/usr/bin/uptime");
+            proc = UvmContextFactory.context().exec("/usr/bin/uptime");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -186,13 +186,13 @@ public class SystemStatus
         proc = null;
         try {
             /**
-             * mvvm uptime
+             * uvm uptime
              */
             sb.append(SPACER);
-            proc = MvvmContextFactory.context().exec("/usr/bin/mvuptime");
+            proc = UvmContextFactory.context().exec("/usr/bin/mvuptime");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
-                sb.append("MVVM uptime: " + line + RETCHAR);
+                sb.append("UVM uptime: " + line + RETCHAR);
             }
         }
         catch (Exception e) {
@@ -243,7 +243,7 @@ public class SystemStatus
              * free -m
              */
             sb.append(SPACER);
-            proc = MvvmContextFactory.context().exec("/usr/bin/free -m");
+            proc = UvmContextFactory.context().exec("/usr/bin/free -m");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -279,7 +279,7 @@ public class SystemStatus
              * df
              */
             sb.append(SPACER);
-            proc = MvvmContextFactory.context().exec("/bin/df -h");
+            proc = UvmContextFactory.context().exec("/bin/df -h");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -300,7 +300,7 @@ public class SystemStatus
              * ps aux
              */
             sb.append(SPACER);
-            proc = MvvmContextFactory.context().exec("/bin/ps --sort -rss aux");
+            proc = UvmContextFactory.context().exec("/bin/ps --sort -rss aux");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -321,7 +321,7 @@ public class SystemStatus
              * mii-tool
              */
             sb.append(SPACER);
-            proc = MvvmContextFactory.context().exec("/sbin/mii-tool");
+            proc = UvmContextFactory.context().exec("/sbin/mii-tool");
             input  = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 sb.append(line + RETCHAR);
@@ -339,7 +339,7 @@ public class SystemStatus
         return sb.toString();
     }
 
-    private String _buildMVVMStat ()
+    private String _buildUVMStat ()
     {
         StringBuilder sb = new StringBuilder();
         String line;
@@ -352,29 +352,29 @@ public class SystemStatus
              * Network Config
              */
             sb.append(SPACER);
-            NetworkSpacesInternalSettings netConf = ((NetworkManagerImpl) MvvmContextFactory.context().networkManager()).getNetworkInternalSettings();
+            NetworkSpacesInternalSettings netConf = ((NetworkManagerImpl) UvmContextFactory.context().networkManager()).getNetworkInternalSettings();
             sb.append(netConf.toString());
             sb.append(RETCHAR);
 
             /**
-             * Transform Config
+             * Node Config
              */
             sb.append(SPACER);
-            LocalTransformManager tm = MvvmContextFactory.context().transformManager();
-            for (Tid t : tm.transformInstances()) {
-                TransformContext tctx = tm.transformContext(t);
+            LocalNodeManager tm = UvmContextFactory.context().nodeManager();
+            for (Tid t : tm.nodeInstances()) {
+                NodeContext tctx = tm.nodeContext(t);
                 if (tctx == null) {
-                    sb.append(t + "\tNULL Transform Context\n");
+                    sb.append(t + "\tNULL Node Context\n");
                     continue;
                 }
-                Transform tran = tctx.transform();
-                if (tran == null) {
-                    sb.append(t + "\tNULL Transform Context\n");
+                Node node = tctx.node();
+                if (node == null) {
+                    sb.append(t + "\tNULL Node Context\n");
                     continue;
                 }
-                String name = pad(tctx.getTransformDesc().getName(), 25);
+                String name = pad(tctx.getNodeDesc().getName(), 25);
                 sb.append(t.getName() + "\t" + name + "\t" + t.getPolicy()
-                          + "\t" + tran.getRunState() + RETCHAR);
+                          + "\t" + node.getRunState() + RETCHAR);
             }
 
             /**
@@ -382,7 +382,7 @@ public class SystemStatus
              */
             sb.append(SPACER);
             sb.append("Estimated Sesssion Count: ");
-            sb.append(MvvmContextFactory.context().argonManager().getSessionCount());
+            sb.append(UvmContextFactory.context().argonManager().getSessionCount());
             sb.append(RETCHAR);
             /* Insert anything else here */
         }

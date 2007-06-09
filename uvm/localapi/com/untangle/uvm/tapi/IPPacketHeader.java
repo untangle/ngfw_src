@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 /**
  * This class just contains IP header low-level data from a UDP packet such as TTL, TOS and options.

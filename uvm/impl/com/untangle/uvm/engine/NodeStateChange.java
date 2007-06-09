@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 
 import javax.persistence.Column;
@@ -22,31 +22,31 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.logging.SyslogPriority;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.tran.TransformState;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.node.NodeState;
 import org.hibernate.annotations.Type;
 
 /**
- * Record of transform state change.
+ * Record of node state change.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
 @Entity
-@Table(name="transform_state_change", schema="events")
-class TransformStateChange extends LogEvent
+@Table(name="node_state_change", schema="events")
+class NodeStateChange extends LogEvent
 {
     private Tid tid;
-    private TransformState state;
+    private NodeState state;
 
     // constructors -----------------------------------------------------------
 
-    TransformStateChange() { }
+    NodeStateChange() { }
 
-    TransformStateChange(Tid tid, TransformState state)
+    NodeStateChange(Tid tid, NodeState state)
     {
         this.tid = tid;
         this.state = state;
@@ -55,24 +55,24 @@ class TransformStateChange extends LogEvent
     // accessors --------------------------------------------------------------
 
     /**
-     * State the transform has changed into.
+     * State the node has changed into.
      *
-     * @return transform state at time of log.
+     * @return node state at time of log.
      */
     @Enumerated(EnumType.STRING)
-    @Type(type="com.untangle.mvvm.type.TransformStateUserType")
-    TransformState getState()
+    @Type(type="com.untangle.uvm.type.NodeStateUserType")
+    NodeState getState()
     {
         return state;
     }
 
-    void setState(TransformState state)
+    void setState(NodeState state)
     {
         this.state = state;
     }
 
     /**
-     * Transform id.
+     * Node id.
      *
      * @return tid for this instance.
      */

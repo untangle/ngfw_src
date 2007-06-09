@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.beans.PropertyVetoException;
 import java.sql.Connection;
@@ -38,7 +38,7 @@ public class DataSourceFactory
         } catch (PropertyVetoException exn) {
             throw new RuntimeException(exn); // won't happen
         }
-        dataSource.setJdbcUrl("jdbc:postgresql://localhost/mvvm?charset=unicode");
+        dataSource.setJdbcUrl("jdbc:postgresql://localhost/uvm?charset=unicode");
         dataSource.setUser("postgres");
         dataSource.setPassword("foo");
         dataSource.setMaxStatements(180);

@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventRepository;
-import com.untangle.mvvm.logging.LogEvent;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventRepository;
+import com.untangle.uvm.logging.LogEvent;
 
 abstract class EventCache<E extends LogEvent> implements EventRepository<E>
 {

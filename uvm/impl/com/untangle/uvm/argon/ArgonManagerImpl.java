@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -29,13 +29,13 @@ import com.untangle.jnetcap.Netcap;
 import com.untangle.jnetcap.InterfaceData;
 import com.untangle.jnetcap.JNetcapException;
 
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.ArgonManager;
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.ArgonManager;
 
-import com.untangle.mvvm.localapi.SessionMatcher;
-import com.untangle.mvvm.localapi.LocalIntfManager;
+import com.untangle.uvm.localapi.SessionMatcher;
+import com.untangle.uvm.localapi.LocalIntfManager;
 
-import com.untangle.mvvm.tran.firewall.InterfaceRedirect;
+import com.untangle.uvm.node.firewall.InterfaceRedirect;
 
 
 /**
@@ -60,7 +60,7 @@ public class ArgonManagerImpl implements ArgonManager
 
     /* Indicate that the shutdown process has started, this is used to prevent NAT from both
      * re-enabling the bridge during shutdown, Argon will do that automatically.
-     * This also prevents transforms from registering or deregistering interfaces after shutdown 
+     * This also prevents nodes from registering or deregistering interfaces after shutdown 
      */
     synchronized void isShutdown() 
     {

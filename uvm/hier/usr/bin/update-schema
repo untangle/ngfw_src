@@ -1,11 +1,11 @@
 #!/bin/sh
-exec >>@MVVM_LOG@/schema.log 2>&1
+exec >>@UVM_LOG@/schema.log 2>&1
 
-PSQL="psql -X -U postgres --tuples-only mvvm"
-PSQL_VERBOSE="psql -X -U postgres -e mvvm"
+PSQL="psql -X -U postgres --tuples-only uvm"
+PSQL_VERBOSE="psql -X -U postgres -e uvm"
 
 if [ $# -ne 2 ]; then
-    echo "usage: $0 [ settings | events ] [ mvvm | transform ]"
+    echo "usage: $0 [ settings | events ] [ uvm | node ]"
     exit 1
 fi
 
@@ -37,7 +37,7 @@ EOF
 type=$1
 component=$2
 
-schema_dir=@MVVM_SCHEMA@/$component
+schema_dir=@UVM_SCHEMA@/$component
 
 ver=$(echo "SELECT ${type}_version FROM split_schema_ver WHERE component = '$component' AND ${type}_version IS NOT NULL" | $PSQL)
 latest_ver=$(ls $schema_dir/*schema-*.sql | sed 's/^.*schema-\([0-9]\+\).sql/\1/' | sort -n -r | head -n1)
@@ -56,13 +56,13 @@ EOF
 
     if [ -e "$schema_dir/${type}-schema-$latest_ver.sql" ]; then
         echo "running $schema_dir/${type}-schema-$latest_ver.sql"
-        psql -X -e -f "$schema_dir/${type}-schema-$latest_ver.sql" -U postgres mvvm
+        psql -X -e -f "$schema_dir/${type}-schema-$latest_ver.sql" -U postgres uvm
         cat <<EOF | $PSQL_VERBOSE
 UPDATE split_schema_ver SET ${type}_version = $latest_ver WHERE component = '$component';
 EOF
     else
         echo "running $schema_dir/schema-$latest_ver.sql"
-        psql -X -e -f "$schema_dir/schema-$latest_ver.sql" -U postgres mvvm
+        psql -X -e -f "$schema_dir/schema-$latest_ver.sql" -U postgres uvm
         cat <<EOF | $PSQL_VERBOSE
 UPDATE split_schema_ver SET settings_version = $latest_ver WHERE component = '$component';
 UPDATE split_schema_ver SET events_version = $latest_ver WHERE component = '$component';
@@ -78,11 +78,11 @@ else
             echo "Updating to $v"
             if [ -e "$schema_dir/${type}-convert-$v.sql" ]; then
                 echo "running $schema_dir/${type}-convert-$v.sql"
-                psql -X -e -f "$schema_dir/${type}-convert-$v.sql" -U postgres mvvm
+                psql -X -e -f "$schema_dir/${type}-convert-$v.sql" -U postgres uvm
                 eval ${type}_version=$v
             else
                 echo "running $schema_dir/convert-$v.sql"
-                psql -X -e -f "$schema_dir/convert-$v.sql" -U postgres mvvm
+                psql -X -e -f "$schema_dir/convert-$v.sql" -U postgres uvm
                 events_version=$v
                 settings_version=$v
             fi
@@ -106,9 +106,9 @@ EOF
 
     if [ -e "$schema_dir/${type}-schema-$latest_ver.sql" ]; then
         echo "running $schema_dir/${type}-schema-$latest_ver.sql"
-        psql -X -e -f "$schema_dir/${type}-schema-$latest_ver.sql" -U postgres mvvm </dev/null
+        psql -X -e -f "$schema_dir/${type}-schema-$latest_ver.sql" -U postgres uvm </dev/null
     else
         echo "running $schema_dir/schema-$latest_ver.sql"
-        psql -X -e -f "$schema_dir/schema-$latest_ver.sql" -U postgres mvvm </dev/null
+        psql -X -e -f "$schema_dir/schema-$latest_ver.sql" -U postgres uvm </dev/null
     fi
 fi

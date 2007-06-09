@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.tran.token;
+package com.untangle.node.token;
 
-import com.untangle.mvvm.tapi.Session;
-import com.untangle.mvvm.tran.MutateTStats;
+import com.untangle.uvm.tapi.Session;
+import com.untangle.uvm.node.MutateTStats;
 import org.apache.log4j.Logger;
 
-import static com.untangle.tran.token.CasingAdaptor.TOKEN_SIZE;
+import static com.untangle.node.token.CasingAdaptor.TOKEN_SIZE;
 
 class TokenStreamerWrapper implements TokenStreamer
 {

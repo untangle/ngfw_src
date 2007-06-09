@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
-import com.untangle.mvvm.logging.EventLogger;
-import com.untangle.mvvm.logging.EventLoggerFactory;
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.tran.TransformContext;
+import com.untangle.uvm.logging.EventLogger;
+import com.untangle.uvm.logging.EventLoggerFactory;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.node.NodeContext;
 
 public class EventLoggerFactoryImpl extends EventLoggerFactory
 {
@@ -32,7 +32,7 @@ public class EventLoggerFactoryImpl extends EventLoggerFactory
         return el;
     }
 
-    public <E extends LogEvent> EventLogger<E> getEventLogger(TransformContext tctx)
+    public <E extends LogEvent> EventLogger<E> getEventLogger(NodeContext tctx)
     {
         EventLoggerImpl el = new EventLoggerImpl<E>(tctx);
         return el;

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.client;
+package com.untangle.uvm.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,36 +24,36 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.untangle.mvvm.policy.Policy;
-import com.untangle.mvvm.policy.PolicyException;
-import com.untangle.mvvm.security.AdminSettings;
-import com.untangle.mvvm.security.LoginSession;
-import com.untangle.mvvm.security.MvvmPrincipal;
-import com.untangle.mvvm.security.RegistrationInfo;
-import com.untangle.mvvm.security.Tid;
-import com.untangle.mvvm.security.User;
-import com.untangle.mvvm.tapi.IPSessionDesc;
-import com.untangle.mvvm.tapi.SessionDesc;
-import com.untangle.mvvm.tapi.SessionStats;
-import com.untangle.mvvm.tapi.TCPSessionDesc;
-import com.untangle.mvvm.tapi.UDPSessionDesc;
-import com.untangle.mvvm.toolbox.DownloadComplete;
-import com.untangle.mvvm.toolbox.DownloadProgress;
-import com.untangle.mvvm.toolbox.DownloadSummary;
-import com.untangle.mvvm.toolbox.InstallComplete;
-import com.untangle.mvvm.toolbox.InstallProgress;
-import com.untangle.mvvm.toolbox.InstallTimeout;
-import com.untangle.mvvm.toolbox.MackageDesc;
-import com.untangle.mvvm.toolbox.MackageInstallException;
-import com.untangle.mvvm.toolbox.MackageInstallRequest;
-import com.untangle.mvvm.toolbox.ProgressVisitor;
-import com.untangle.mvvm.toolbox.ToolboxManager;
-import com.untangle.mvvm.toolbox.ToolboxMessageVisitor;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformDesc;
-import com.untangle.mvvm.tran.TransformManager;
-import com.untangle.mvvm.util.SessionUtil;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.policy.PolicyException;
+import com.untangle.uvm.security.AdminSettings;
+import com.untangle.uvm.security.LoginSession;
+import com.untangle.uvm.security.UvmPrincipal;
+import com.untangle.uvm.security.RegistrationInfo;
+import com.untangle.uvm.security.Tid;
+import com.untangle.uvm.security.User;
+import com.untangle.uvm.tapi.IPSessionDesc;
+import com.untangle.uvm.tapi.SessionDesc;
+import com.untangle.uvm.tapi.SessionStats;
+import com.untangle.uvm.tapi.TCPSessionDesc;
+import com.untangle.uvm.tapi.UDPSessionDesc;
+import com.untangle.uvm.toolbox.DownloadComplete;
+import com.untangle.uvm.toolbox.DownloadProgress;
+import com.untangle.uvm.toolbox.DownloadSummary;
+import com.untangle.uvm.toolbox.InstallComplete;
+import com.untangle.uvm.toolbox.InstallProgress;
+import com.untangle.uvm.toolbox.InstallTimeout;
+import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.toolbox.MackageInstallException;
+import com.untangle.uvm.toolbox.MackageInstallRequest;
+import com.untangle.uvm.toolbox.ProgressVisitor;
+import com.untangle.uvm.toolbox.ToolboxManager;
+import com.untangle.uvm.toolbox.ToolboxMessageVisitor;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeDesc;
+import com.untangle.uvm.node.NodeManager;
+import com.untangle.uvm.util.SessionUtil;
 import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
 
 public class RemoteClient
@@ -69,10 +69,10 @@ public class RemoteClient
     private static boolean verbose = false;
     private static int timeout = 120000;
 
-    private static MvvmRemoteContext mc;
+    private static UvmRemoteContext mc;
 
     private static ToolboxManager tool;
-    private static TransformManager tm;
+    private static NodeManager tm;
 
     public static void main(String[] args) throws Exception
     {
@@ -101,7 +101,7 @@ public class RemoteClient
             System.exit(-1);
         }
 
-        MvvmRemoteContextFactory factory = MvvmRemoteContextFactory.factory();
+        UvmRemoteContextFactory factory = UvmRemoteContextFactory.factory();
         if (host.equals("localhost")) {
             mc = factory.systemLogin(timeout);
         } else {
@@ -120,7 +120,7 @@ public class RemoteClient
         }
 
         tool = mc.toolboxManager();
-        tm = mc.transformManager();
+        tm = mc.nodeManager();
 
         if (args[0].equalsIgnoreCase("install")) {
             install(args[1]);
@@ -445,7 +445,7 @@ public class RemoteClient
 
         Tid tid = instantiate(pkg, args);
 
-        tm.transformContext(tid).transform().start();
+        tm.nodeContext(tid).node().start();
     }
 
     private static void reloadt(String shortName)
@@ -462,19 +462,19 @@ public class RemoteClient
     {
         String pkg = pkgName(shortName);
 
-        List<Tid> tids = tm.transformInstances();
+        List<Tid> tids = tm.nodeInstances();
         for (Tid t : tids) {
-            TransformContext tctx = tm.transformContext(t);
+            NodeContext tctx = tm.nodeContext(t);
             if (tctx == null) {
-                System.err.println("NULL Transform Context (tid:" + t + ")");
-                throw new Exception("NULL Transform Context (tid:" + t + ")");
+                System.err.println("NULL Node Context (tid:" + t + ")");
+                throw new Exception("NULL Node Context (tid:" + t + ")");
             }
-            Transform tran = tctx.transform();
-            if (tran == null) {
-                System.err.println("NULL Transform (tid:" + t + ")");
-                throw new Exception("NULL Transform (tid:" + t + ")");
+            Node node = tctx.node();
+            if (node == null) {
+                System.err.println("NULL Node (tid:" + t + ")");
+                throw new Exception("NULL Node (tid:" + t + ")");
             }
-            String name = tctx.getTransformDesc().getName();
+            String name = tctx.getNodeDesc().getName();
             if (name.equals(pkg)) {
                 tm.destroy(t);
             }
@@ -485,14 +485,14 @@ public class RemoteClient
         throws Exception
     {
         Tid tid = new Tid(Long.parseLong(tidStr));
-        tm.transformContext(tid).transform().start();
+        tm.nodeContext(tid).node().start();
     }
 
     private static void stop(String tidStr)
         throws Exception
     {
         Tid tid = new Tid(Long.parseLong(tidStr));
-        tm.transformContext(tid).transform().stop();
+        tm.nodeContext(tid).node().stop();
     }
 
     private static void destroy(String tidStr)
@@ -505,18 +505,18 @@ public class RemoteClient
     private static void neverStarted(String tidStr)
     {
         Tid tid = new Tid(Long.parseLong(tidStr));
-        TransformContext tctx = tm.transformContext(tid);
+        NodeContext tctx = tm.nodeContext(tid);
         if (tctx == null) {
-            System.err.println("NULL Transform Context (tid:" + tid + ")");
+            System.err.println("NULL Node Context (tid:" + tid + ")");
             return;
         }
-        Transform tran = tctx.transform();
-        if (tran == null) {
-            System.err.println("NULL Transform Context (tid:" + tid + ")");
+        Node node = tctx.node();
+        if (node == null) {
+            System.err.println("NULL Node Context (tid:" + tid + ")");
             return;
         }
 
-        System.out.println(tran.neverStarted());
+        System.out.println(node.neverStarted());
         return;
     }
 
@@ -603,37 +603,37 @@ public class RemoteClient
 
     private static void instances()
     {
-        for (Tid t : tm.transformInstances()) {
-            TransformContext tctx = tm.transformContext(t);
+        for (Tid t : tm.nodeInstances()) {
+            NodeContext tctx = tm.nodeContext(t);
             if (tctx == null) {
-                System.err.println(t + "\tNULL Transform Context");
+                System.err.println(t + "\tNULL Node Context");
                 continue;
             }
-            Transform tran = tctx.transform();
-            if (tran == null) {
-                System.err.println(t + "\tNULL Transform Context");
+            Node node = tctx.node();
+            if (node == null) {
+                System.err.println(t + "\tNULL Node Context");
                 continue;
             }
-            String name = pad(tctx.getTransformDesc().getName(), 25);
+            String name = pad(tctx.getNodeDesc().getName(), 25);
             System.out.println(t.getName() + "\t" + name + "\t" + t.getPolicy()
-                               + "\t" + tran.getRunState());
+                               + "\t" + node.getRunState());
         }
     }
 
     private static void dumpSessions()
     {
-        for (Tid t : tm.transformInstances()) {
-            TransformContext tctx = tm.transformContext(t);
+        for (Tid t : tm.nodeInstances()) {
+            NodeContext tctx = tm.nodeContext(t);
             if (tctx == null) {
-                System.err.println("NULL Transform Context (tid:" + t + ")");
+                System.err.println("NULL Node Context (tid:" + t + ")");
                 continue;
             }
-            Transform tran = tctx.transform();
-            if (tran == null) {
-                System.err.println("NULL Transform (tid:" + t + ")");
+            Node node = tctx.node();
+            if (node == null) {
+                System.err.println("NULL Node (tid:" + t + ")");
                 continue;
             }
-            tran.dumpSessions();
+            node.dumpSessions();
         }
     }
 
@@ -645,7 +645,7 @@ public class RemoteClient
 
     private static void sessions()
     {
-        for (Tid t : tm.transformInstances()) {
+        for (Tid t : tm.nodeInstances()) {
             sessions(t);
         }
     }
@@ -653,22 +653,22 @@ public class RemoteClient
     private static void sessions(Tid t)
     {
         AbsoluteTimeDateFormat atdf = new AbsoluteTimeDateFormat();
-        TransformContext tctx = tm.transformContext(t);
+        NodeContext tctx = tm.nodeContext(t);
         if (tctx == null) {
-            System.out.println("NULL Transform Context (tid:" + t + ")");
+            System.out.println("NULL Node Context (tid:" + t + ")");
             return;
         }
-        Transform tran = tctx.transform();
-        if (tran == null) {
-            System.out.println("NULL Transform (tid:" + t + ")");
+        Node node = tctx.node();
+        if (node == null) {
+            System.out.println("NULL Node (tid:" + t + ")");
             return;
         }
-        TransformDesc tdesc = tctx.getTransformDesc();
+        NodeDesc tdesc = tctx.getNodeDesc();
         if (tdesc == null) {
-            System.out.println("NULL Transform Desc (tid:" + t + ")");
+            System.out.println("NULL Node Desc (tid:" + t + ")");
             return;
         }
-        SessionDesc[] sdescs = tran.liveSessionDescs();
+        SessionDesc[] sdescs = node.liveSessionDescs();
         if (sdescs == null) {
             System.out.println("NULL Session Desc (tid:" + t + ")");
             return;
@@ -722,12 +722,12 @@ public class RemoteClient
 
     private static void who()
     {
-        LoginSession l = MvvmRemoteContextFactory.factory().loginSession();
-        String ln = null == l ? "nobody" : l.getMvvmPrincipal().getName();
+        LoginSession l = UvmRemoteContextFactory.factory().loginSession();
+        String ln = null == l ? "nobody" : l.getUvmPrincipal().getName();
         System.out.println("You are: " + ln + " " + l.getSessionId());
         LoginSession[] ls = mc.adminManager().loggedInUsers();
         for (int i = 0; i < ls.length; i++) {
-            MvvmPrincipal mp = ls[i].getMvvmPrincipal();
+            UvmPrincipal mp = ls[i].getUvmPrincipal();
             ln = null == mp ? "nobody" : mp.getName();
             System.out.println(ls[i].getSessionId() + "\t" + ln);
         }
@@ -829,7 +829,7 @@ public class RemoteClient
 
     /**
      * <code>resetLogs</code> re-reads all log configuration files
-     * (jboss, mvvm, all tran instances).  This allows changing
+     * (jboss, uvm, all node instances).  This allows changing
      * logging levels, etc.  The old output files will be erased and
      * new files begun.
      */
@@ -966,7 +966,7 @@ public class RemoteClient
         if (mkg.equals("http") || mkg.equals("ftp")) {
             return (mkg + "-casing");
         } else {
-            return (mkg + "-transform");
+            return (mkg + "-node");
         }
     }
 
@@ -1015,21 +1015,21 @@ public class RemoteClient
         System.out.println("    mcli uninstalled");
         System.out.println("    mcli upgradable");
         System.out.println("    mcli uptodate");
-        System.out.println("  transform manager commands:");
+        System.out.println("  node manager commands:");
         System.out.println("    mcli instantiate mackage-name [ args ]");
         System.out.println("    mcli start TID");
         System.out.println("    mcli stop TID");
         System.out.println("    mcli destroy TID");
         System.out.println("    mcli neverStarted");
-        System.out.println("  transform manager lists:");
+        System.out.println("  node manager lists:");
         System.out.println("    mcli instances");
-        System.out.println("  transform live sessions:");
+        System.out.println("  node live sessions:");
         System.out.println("    mcli sessions [ TID ]");
         System.out.println("  admin manager:");
         System.out.println("    mcli who");
         System.out.println("    mcli getRegInfo");
         System.out.println("    mcli passwd [ -a | -d ] login [ password ]");
-        System.out.println("  mvvm commands:");
+        System.out.println("  uvm commands:");
         System.out.println("    mcli shutdown");
         System.out.println("    mcli serverStats");
         System.out.println("    mcli gc");

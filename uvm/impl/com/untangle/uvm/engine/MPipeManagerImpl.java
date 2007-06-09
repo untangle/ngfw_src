@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.net.*;
 import java.util.*;
 
-import com.untangle.mvvm.tapi.*;
-import com.untangle.mvvm.tapi.event.SessionEventListener;
+import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.tapi.event.SessionEventListener;
 
 /**
  * Service-provider & manager class for MPipes.
@@ -36,7 +36,7 @@ class MPipeManagerImpl implements MPipeManager
 {
     private static final MPipeManagerImpl MANAGER = new MPipeManagerImpl();
 
-    // List of mPipes we manage for the transform
+    // List of mPipes we manage for the node
     protected final List allMPipes = new ArrayList();
 
     protected MPipeManagerImpl() { }
@@ -78,8 +78,8 @@ class MPipeManagerImpl implements MPipeManager
         }
     }
 
-    // MVVM Context calls in here when restarting the whole mvvm,
-    // after destroying all the transforms.  We just do cleanup.
+    // UVM Context calls in here when restarting the whole uvm,
+    // after destroying all the nodes.  We just do cleanup.
     public void destroy() {
         allMPipes.clear();
     }

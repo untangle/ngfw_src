@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.Serializable;
 
-import com.untangle.mvvm.security.LoginSession;
+import com.untangle.uvm.security.LoginSession;
 import java.net.URL;
 
 class HttpInvocation implements Serializable

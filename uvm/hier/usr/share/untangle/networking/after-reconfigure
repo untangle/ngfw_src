@@ -1,9 +1,9 @@
 #!/bin/sh
 
-exec >> @MVVM_LOG@/iptables.log 2>&1
+exec >> @UVM_LOG@/iptables.log 2>&1
 
-REGDONE="@MVVM_HOME@/.regdone"
-REGINFO="@MVVM_HOME@/registration.info"
+REGDONE="@UVM_HOME@/.regdone"
+REGINFO="@UVM_HOME@/registration.info"
 
 afterReconfigure() {
 
@@ -29,7 +29,7 @@ afterReconfigure() {
 ## bunnicula doesn't wait around for us to run.
 if [ $# -eq 0 ]; then
     ## Just append any arguments, they don't matter
-    nohup sh @MVVM_HOME@/networking/after-reconfigure 1 2 >> @MVVM_LOG@/iptables.log 2>&1 &
+    nohup sh @UVM_HOME@/networking/after-reconfigure 1 2 >> @UVM_LOG@/iptables.log 2>&1 &
 else
     afterReconfigure
 fi

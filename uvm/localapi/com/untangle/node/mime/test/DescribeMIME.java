@@ -8,11 +8,11 @@
  *
  * $Id$
  */
-package com.untangle.tran.mime.test;
+package com.untangle.node.mime.test;
 
 import java.io.*;
 
-import com.untangle.tran.mime.*;
+import com.untangle.node.mime.*;
 
 /**
  * Little test which parses MIME then describes

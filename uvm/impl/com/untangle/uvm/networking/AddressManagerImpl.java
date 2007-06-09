@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.io.FileOutputStream;
 import java.io.File;
@@ -20,30 +20,30 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmState;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmState;
 
 
-import com.untangle.mvvm.tran.HostAddress;
-import com.untangle.mvvm.tran.HostName;
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.script.ScriptWriter;
-import com.untangle.mvvm.tran.script.ScriptRunner;
+import com.untangle.uvm.node.HostAddress;
+import com.untangle.uvm.node.HostName;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.script.ScriptWriter;
+import com.untangle.uvm.node.script.ScriptRunner;
 
-import com.untangle.mvvm.util.DataLoader;
-import com.untangle.mvvm.util.DataSaver;
-import com.untangle.mvvm.util.DeletingDataSaver;
+import com.untangle.uvm.util.DataLoader;
+import com.untangle.uvm.util.DataSaver;
+import com.untangle.uvm.util.DeletingDataSaver;
 
-import com.untangle.mvvm.networking.internal.AddressSettingsInternal;
+import com.untangle.uvm.networking.internal.AddressSettingsInternal;
 
-import static com.untangle.mvvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
+import static com.untangle.uvm.networking.NetworkManagerImpl.BUNNICULA_BASE;
 
-import static com.untangle.mvvm.networking.ShellFlags.FLAG_EXTERNAL_ROUTER_ADDR;
-import static com.untangle.mvvm.networking.ShellFlags.FLAG_EXTERNAL_ROUTER_EN;
-import static com.untangle.mvvm.networking.ShellFlags.FLAG_EXTERNAL_ROUTER_PORT;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_ROUTER_ADDR;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_ROUTER_EN;
+import static com.untangle.uvm.networking.ShellFlags.FLAG_EXTERNAL_ROUTER_PORT;
 
-import static com.untangle.mvvm.networking.ShellFlags.FILE_PROPERTIES;
-import static com.untangle.mvvm.networking.ShellFlags.PROPERTY_HTTPS_PORT;
+import static com.untangle.uvm.networking.ShellFlags.FILE_PROPERTIES;
+import static com.untangle.uvm.networking.ShellFlags.PROPERTY_HTTPS_PORT;
 
 class AddressManagerImpl implements LocalAddressManager
 {
@@ -87,7 +87,7 @@ class AddressManagerImpl implements LocalAddressManager
         /* Need to save the settings to the database, then update the
          * local value, everything is executed later */
         DataSaver<AddressSettings> saver = 
-            new DeletingDataSaver<AddressSettings>( MvvmContextFactory.context(), "AddressSettings" );
+            new DeletingDataSaver<AddressSettings>( UvmContextFactory.context(), "AddressSettings" );
 
         AddressSettingsInternal newSettings = calculatePublicAddress( settings );
         
@@ -112,7 +112,7 @@ class AddressManagerImpl implements LocalAddressManager
     synchronized void init()
     {
         DataLoader<AddressSettings> loader =
-            new DataLoader<AddressSettings>( "AddressSettings", MvvmContextFactory.context());
+            new DataLoader<AddressSettings>( "AddressSettings", UvmContextFactory.context());
 
         AddressSettings settings = loader.loadData();
         
@@ -308,9 +308,9 @@ class AddressManagerImpl implements LocalAddressManager
         int port = address.getHttpsPort();
 
         try {
-            MvvmContextFactory.context().appServerManager().rebindExternalHttpsPort( port );
+            UvmContextFactory.context().appServerManager().rebindExternalHttpsPort( port );
         } catch ( Exception e ) {
-            if ( !MvvmContextFactory.context().state().equals( MvvmState.RUNNING )) {
+            if ( !UvmContextFactory.context().state().equals( UvmState.RUNNING )) {
                 logger.info( "unable to rebind port at startup, expected. " + e );
             } else {
                 logger.warn( "unable to rebind https to port: " + port, e );

@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
-import static com.untangle.mvvm.engine.Dispatcher.SESSION_ID_MDC_KEY;
+import static com.untangle.uvm.engine.Dispatcher.SESSION_ID_MDC_KEY;
 
 import java.net.InetAddress;
 import java.text.DateFormat;
@@ -23,14 +23,14 @@ import com.untangle.jvector.Crumb;
 import com.untangle.jvector.DataCrumb;
 import com.untangle.jvector.IncomingSocketQueue;
 import com.untangle.jvector.OutgoingSocketQueue;
-import com.untangle.mvvm.argon.PipelineListener;
-import com.untangle.mvvm.tapi.*;
-import com.untangle.mvvm.tapi.event.IPStreamer;
-import com.untangle.mvvm.tran.PipelineEndpoints;
-import com.untangle.mvvm.tran.Transform;
-import com.untangle.mvvm.tran.TransformContext;
-import com.untangle.mvvm.tran.TransformState;
-import com.untangle.mvvm.util.MetaEnv;
+import com.untangle.uvm.argon.PipelineListener;
+import com.untangle.uvm.tapi.*;
+import com.untangle.uvm.tapi.event.IPStreamer;
+import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.node.Node;
+import com.untangle.uvm.node.NodeContext;
+import com.untangle.uvm.node.NodeState;
+import com.untangle.uvm.util.MetaEnv;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.apache.log4j.helpers.AbsoluteTimeDateFormat;
@@ -55,9 +55,9 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
     private Logger timesLogger = null;
 
-    private final TransformManagerImpl transformManager;
+    private final NodeManagerImpl nodeManager;
 
-    protected IPSessionImpl(Dispatcher disp, com.untangle.mvvm.argon.IPSession pSession, boolean isInbound,
+    protected IPSessionImpl(Dispatcher disp, com.untangle.uvm.argon.IPSession pSession, boolean isInbound,
                             PipelineEndpoints pe)
     {
         super(disp.mPipe(), pSession);
@@ -66,8 +66,8 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
         this.stats = new RWSessionStats();
         this.pipelineEndpoints = pe;
         if (RWSessionStats.DoDetailedTimes)
-            timesLogger = Logger.getLogger("com.untangle.mvvm.tapi.SessionTimes");
-        transformManager = MvvmContextImpl.getInstance().transformManager();
+            timesLogger = Logger.getLogger("com.untangle.uvm.tapi.SessionTimes");
+        nodeManager = UvmContextImpl.getInstance().nodeManager();
         logger = disp.mPipe().sessionLogger();
     }
 
@@ -83,27 +83,27 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
     public short protocol()
     {
-        return ((com.untangle.mvvm.argon.IPSession)pSession).protocol();
+        return ((com.untangle.uvm.argon.IPSession)pSession).protocol();
     }
 
     public InetAddress clientAddr()
     {
-        return ((com.untangle.mvvm.argon.IPSession)pSession).clientAddr();
+        return ((com.untangle.uvm.argon.IPSession)pSession).clientAddr();
     }
 
     public InetAddress serverAddr()
     {
-        return ((com.untangle.mvvm.argon.IPSession)pSession).serverAddr();
+        return ((com.untangle.uvm.argon.IPSession)pSession).serverAddr();
     }
 
     public int clientPort()
     {
-        return ((com.untangle.mvvm.argon.IPSession)pSession).clientPort();
+        return ((com.untangle.uvm.argon.IPSession)pSession).clientPort();
     }
 
     public int serverPort()
     {
-        return ((com.untangle.mvvm.argon.IPSession)pSession).serverPort();
+        return ((com.untangle.uvm.argon.IPSession)pSession).serverPort();
     }
 
     public SessionStats stats()
@@ -149,12 +149,12 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
     public byte clientIntf()
     {
-        return ((com.untangle.mvvm.argon.IPSession)pSession).clientIntf();
+        return ((com.untangle.uvm.argon.IPSession)pSession).clientIntf();
     }
 
     public byte serverIntf()
     {
-        return ((com.untangle.mvvm.argon.IPSession)pSession).serverIntf();
+        return ((com.untangle.uvm.argon.IPSession)pSession).serverIntf();
     }
 
     public boolean released()
@@ -202,9 +202,9 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             return;
         OutgoingSocketQueue out;
         if (side == CLIENT)
-            out = ((com.untangle.mvvm.argon.Session)pSession).clientOutgoingSocketQueue();
+            out = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
         else
-            out = ((com.untangle.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
+            out = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
         if (out == null || out.isClosed()) {
             String sideName = side == CLIENT ? "client" : "server";
             warn("Ignoring crumb for dead " + sideName + " outgoing socket queue");
@@ -235,17 +235,17 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
 
     public void complete()
     {
-        Transform xform = mPipe().transform();
-        if (xform.getRunState() != TransformState.RUNNING) {
-            String message = "killing: complete(in) for transform in state " + xform.getRunState();
+        Node xform = mPipe().node();
+        if (xform.getRunState() != NodeState.RUNNING) {
+            String message = "killing: complete(in) for node in state " + xform.getRunState();
             warn(message);
             // killSession(message);
             return;
         }
-        TransformContext tctx = xform.getTransformContext();
+        NodeContext tctx = xform.getNodeContext();
 
         try {
-            transformManager.registerThreadContext(tctx);
+            nodeManager.registerThreadContext(tctx);
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
             sendCompleteEvent();
@@ -258,37 +258,37 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             // error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
-            MvvmContextImpl.getInstance().fatalError("SessionHandler", x);
+            UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
         }
     }
 
     public void raze()
     {
-        Transform xform = mPipe().transform();
-        if (xform.getRunState() != TransformState.RUNNING) {
-            String message = "killing: raze for transform in state " + xform.getRunState();
+        Node xform = mPipe().node();
+        if (xform.getRunState() != NodeState.RUNNING) {
+            String message = "killing: raze for node in state " + xform.getRunState();
             warn(message);
             // No need to kill the session, it's already dead.
             // killSession(message);
             return;
         }
 
-        TransformContext tctx = xform.getTransformContext();
+        NodeContext tctx = xform.getNodeContext();
 
         try {
-            transformManager.registerThreadContext(tctx);
+            nodeManager.registerThreadContext(tctx);
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
             if (released) {
                 debug("raze released");
             } else {
                 if (logger.isDebugEnabled()) {
-                    IncomingSocketQueue ourcin = ((com.untangle.mvvm.argon.Session)pSession).clientIncomingSocketQueue();
-                    IncomingSocketQueue oursin = ((com.untangle.mvvm.argon.Session)pSession).serverIncomingSocketQueue();
-                    OutgoingSocketQueue ourcout = ((com.untangle.mvvm.argon.Session)pSession).clientOutgoingSocketQueue();
-                    OutgoingSocketQueue oursout = ((com.untangle.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
+                    IncomingSocketQueue ourcin = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
+                    IncomingSocketQueue oursin = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
+                    OutgoingSocketQueue ourcout = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
+                    OutgoingSocketQueue oursout = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
                     debug("raze ourcin: " + ourcin +
                           ", ourcout: " + ourcout + ", ourcsin: " + oursin + ", oursout: " + oursout +
                           "  /  crumbs[CLIENT]: " + crumbs2write[CLIENT] + ", crumbs[SERVER]: " + crumbs2write[SERVER]);
@@ -299,108 +299,108 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             String message = "" + x.getClass().getName() + " in raze";
             error(message, x);
         } catch (OutOfMemoryError x) {
-            MvvmContextImpl.getInstance().fatalError("SessionHandler", x);
+            UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
         }
     }
 
     public void clientEvent(IncomingSocketQueue in)
     {
-        Transform xform = mPipe().transform();
-        if (xform.getRunState() != TransformState.RUNNING) {
-            String message = "killing: clientEvent(in) for transform in state " + xform.getRunState();
+        Node xform = mPipe().node();
+        if (xform.getRunState() != NodeState.RUNNING) {
+            String message = "killing: clientEvent(in) for node in state " + xform.getRunState();
             warn(message);
             killSession(message);
             return;
         }
 
-        TransformContext tctx = xform.getTransformContext();
+        NodeContext tctx = xform.getNodeContext();
         try {
-            transformManager.registerThreadContext(tctx);
+            nodeManager.registerThreadContext(tctx);
             readEvent(CLIENT, in);
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
         }
     }
 
     public void serverEvent(IncomingSocketQueue in)
     {
-        Transform xform = mPipe().transform();
-        if (xform.getRunState() != TransformState.RUNNING) {
-            String message = "killing: serverEvent(in) for transform in state " + xform.getRunState();
+        Node xform = mPipe().node();
+        if (xform.getRunState() != NodeState.RUNNING) {
+            String message = "killing: serverEvent(in) for node in state " + xform.getRunState();
             warn(message);
             killSession(message);
             return;
         }
 
-        TransformContext tctx = xform.getTransformContext();
+        NodeContext tctx = xform.getNodeContext();
         try {
-            transformManager.registerThreadContext(tctx);
+            nodeManager.registerThreadContext(tctx);
             readEvent(SERVER, in);
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
         }
     }
 
     public void clientEvent(OutgoingSocketQueue out)
     {
-        Transform xform = mPipe().transform();
-        if (xform.getRunState() != TransformState.RUNNING) {
-            String message = "killing: clientEvent(out) for transform in state " + xform.getRunState();
+        Node xform = mPipe().node();
+        if (xform.getRunState() != NodeState.RUNNING) {
+            String message = "killing: clientEvent(out) for node in state " + xform.getRunState();
             warn(message);
             killSession(message);
             return;
         }
 
-        TransformContext tctx = xform.getTransformContext();
+        NodeContext tctx = xform.getNodeContext();
         try {
-            transformManager.registerThreadContext(tctx);
+            nodeManager.registerThreadContext(tctx);
             writeEvent(CLIENT, out);
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
         }
     }
 
     public void serverEvent(OutgoingSocketQueue out)
     {
-        Transform xform = mPipe().transform();
-        if (xform.getRunState() != TransformState.RUNNING) {
-            String message = "killing: serverEvent(out) for transform in state " + xform.getRunState();
+        Node xform = mPipe().node();
+        if (xform.getRunState() != NodeState.RUNNING) {
+            String message = "killing: serverEvent(out) for node in state " + xform.getRunState();
             warn(message);
             killSession(message);
             return;
         }
 
-        TransformContext tctx = xform.getTransformContext();
+        NodeContext tctx = xform.getNodeContext();
         try {
-            transformManager.registerThreadContext(tctx);
+            nodeManager.registerThreadContext(tctx);
             writeEvent(SERVER, out);
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
         }
     }
 
     /** The write side of the client has been closed from underneath
-     * the transform, this is the same as an EPIPE, but is delivered
+     * the node, this is the same as an EPIPE, but is delivered
      * as an event */
     public void clientOutputResetEvent(OutgoingSocketQueue out)
     {
-        Transform xform = mPipe().transform();
-        if (xform.getRunState() != TransformState.RUNNING) {
-            String message = "killing: output reset(client) for transform in state " + xform.getRunState();
+        Node xform = mPipe().node();
+        if (xform.getRunState() != NodeState.RUNNING) {
+            String message = "killing: output reset(client) for node in state " + xform.getRunState();
             warn(message);
             // killSession(message);
             return;
         }
 
-        TransformContext tctx = xform.getTransformContext();
+        NodeContext tctx = xform.getNodeContext();
         try {
-            transformManager.registerThreadContext(tctx);
+            nodeManager.registerThreadContext(tctx);
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
-            IncomingSocketQueue in = ((com.untangle.mvvm.argon.Session)pSession).clientIncomingSocketQueue();
+            IncomingSocketQueue in = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
             if (in != null)
                 in.reset();
             sideDieing(CLIENT);
@@ -413,32 +413,32 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             // error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
-            MvvmContextImpl.getInstance().fatalError("SessionHandler", x);
+            UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
         }
     }
 
     /** The write side of the server has been closed from underneath
-     * the transform, this is the same as an EPIPE, but is delivered
+     * the node, this is the same as an EPIPE, but is delivered
      * as an event */
     public void serverOutputResetEvent(OutgoingSocketQueue out)
     {
-        Transform xform = mPipe().transform();
-        if (xform.getRunState() != TransformState.RUNNING) {
-            String message = "killing: output reset(server) for transform in state " + xform.getRunState();
+        Node xform = mPipe().node();
+        if (xform.getRunState() != NodeState.RUNNING) {
+            String message = "killing: output reset(server) for node in state " + xform.getRunState();
             warn(message);
             // killSession(message);
             return;
         }
 
-        TransformContext tctx = xform.getTransformContext();
+        NodeContext tctx = xform.getNodeContext();
         try {
-            transformManager.registerThreadContext(tctx);
+            nodeManager.registerThreadContext(tctx);
             MDC.put(SESSION_ID_MDC_KEY, idForMDC());
 
-            IncomingSocketQueue in = ((com.untangle.mvvm.argon.Session)pSession).serverIncomingSocketQueue();
+            IncomingSocketQueue in = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
             if (in != null)
                 in.reset();
             sideDieing(SERVER);
@@ -451,9 +451,9 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             // error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
-            MvvmContextImpl.getInstance().fatalError("SessionHandler", x);
+            UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
-            transformManager.deregisterThreadContext();
+            nodeManager.deregisterThreadContext();
             MDC.remove(SESSION_ID_MDC_KEY);
         }
     }
@@ -464,10 +464,10 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
      */
     private void setupForStreaming()
     {
-        IncomingSocketQueue cin = ((com.untangle.mvvm.argon.Session)pSession).clientIncomingSocketQueue();
-        IncomingSocketQueue sin = ((com.untangle.mvvm.argon.Session)pSession).serverIncomingSocketQueue();
-        OutgoingSocketQueue cout = ((com.untangle.mvvm.argon.Session)pSession).clientOutgoingSocketQueue();
-        OutgoingSocketQueue sout = ((com.untangle.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
+        IncomingSocketQueue cin = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
+        IncomingSocketQueue sin = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
+        OutgoingSocketQueue cout = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
+        OutgoingSocketQueue sout = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
         assert (streamer != null);
 
         if (cin != null)
@@ -497,10 +497,10 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
      */
     private void setupForNormal()
     {
-        IncomingSocketQueue cin = ((com.untangle.mvvm.argon.Session)pSession).clientIncomingSocketQueue();
-        IncomingSocketQueue sin = ((com.untangle.mvvm.argon.Session)pSession).serverIncomingSocketQueue();
-        OutgoingSocketQueue cout = ((com.untangle.mvvm.argon.Session)pSession).clientOutgoingSocketQueue();
-        OutgoingSocketQueue sout = ((com.untangle.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
+        IncomingSocketQueue cin = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
+        IncomingSocketQueue sin = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
+        OutgoingSocketQueue cout = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
+        OutgoingSocketQueue sout = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
         assert (streamer == null);
 
         // We take care not to change the state unless it's really
@@ -580,13 +580,13 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             IncomingSocketQueue ourin;
             OutgoingSocketQueue ourout, otherout;
             if (side == CLIENT) {
-                ourin = ((com.untangle.mvvm.argon.Session)pSession).serverIncomingSocketQueue();
-                ourout = ((com.untangle.mvvm.argon.Session)pSession).clientOutgoingSocketQueue();
-                otherout = ((com.untangle.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
+                ourin = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
+                ourout = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
+                otherout = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
             } else {
-                ourin = ((com.untangle.mvvm.argon.Session)pSession).clientIncomingSocketQueue();
-                ourout = ((com.untangle.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
-                otherout = ((com.untangle.mvvm.argon.Session)pSession).clientOutgoingSocketQueue();
+                ourin = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
+                ourout = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
+                otherout = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
             }
             assert out == ourout;
 
@@ -614,7 +614,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
-            MvvmContextImpl.getInstance().fatalError("SessionHandler", x);
+            UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
             MDC.remove(SESSION_ID_MDC_KEY);
         }
@@ -642,16 +642,16 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             }
             IncomingSocketQueue ourin, otherin;
             OutgoingSocketQueue ourout, otherout;
-            OutgoingSocketQueue cout = ((com.untangle.mvvm.argon.Session)pSession).clientOutgoingSocketQueue();
-            OutgoingSocketQueue sout = ((com.untangle.mvvm.argon.Session)pSession).serverOutgoingSocketQueue();
+            OutgoingSocketQueue cout = ((com.untangle.uvm.argon.Session)pSession).clientOutgoingSocketQueue();
+            OutgoingSocketQueue sout = ((com.untangle.uvm.argon.Session)pSession).serverOutgoingSocketQueue();
             if (side == CLIENT) {
-                ourin = ((com.untangle.mvvm.argon.Session)pSession).clientIncomingSocketQueue();
-                otherin = ((com.untangle.mvvm.argon.Session)pSession).serverIncomingSocketQueue();
+                ourin = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
+                otherin = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
                 ourout = sout;
                 otherout = cout;
             } else {
-                ourin = ((com.untangle.mvvm.argon.Session)pSession).serverIncomingSocketQueue();
-                otherin = ((com.untangle.mvvm.argon.Session)pSession).clientIncomingSocketQueue();
+                ourin = ((com.untangle.uvm.argon.Session)pSession).serverIncomingSocketQueue();
+                otherin = ((com.untangle.uvm.argon.Session)pSession).clientIncomingSocketQueue();
                 ourout = cout;
                 otherout = sout;
             }
@@ -689,7 +689,7 @@ abstract class IPSessionImpl extends SessionImpl implements IPSession, PipelineL
             error(message, x);
             killSession(message);
         } catch (OutOfMemoryError x) {
-            MvvmContextImpl.getInstance().fatalError("SessionHandler", x);
+            UvmContextImpl.getInstance().fatalError("SessionHandler", x);
         } finally {
             MDC.remove(SESSION_ID_MDC_KEY);
         }

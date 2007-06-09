@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran;
+package com.untangle.uvm.node;
 
 import java.net.InetAddress;
 import javax.persistence.Column;
@@ -20,11 +20,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.IPSessionDesc;
-import com.untangle.mvvm.tran.SessionEndpoints;
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.policy.Policy;
+import com.untangle.uvm.node.IPSessionDesc;
+import com.untangle.uvm.node.SessionEndpoints;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.policy.Policy;
 import org.hibernate.annotations.Type;
 
 /**
@@ -223,7 +223,7 @@ import org.hibernate.annotations.Type;
          * @return the address of the client (as seen at client side of pipeline)
          */
         @Column(name="c_client_addr")
-        @Type(type="com.untangle.mvvm.type.InetAddressUserType")
+        @Type(type="com.untangle.uvm.type.InetAddressUserType")
         public InetAddress getCClientAddr()
         {
             return cClientAddr;
@@ -240,7 +240,7 @@ import org.hibernate.annotations.Type;
          * @return the address of the client (as seen at server side of pipeline)
          */
         @Column(name="s_client_addr")
-        @Type(type="com.untangle.mvvm.type.InetAddressUserType")
+        @Type(type="com.untangle.uvm.type.InetAddressUserType")
         public InetAddress getSClientAddr()
         {
             return sClientAddr;
@@ -257,7 +257,7 @@ import org.hibernate.annotations.Type;
          * @return the address of the server (as seen at client side of pipeline)
          */
         @Column(name="c_server_addr")
-        @Type(type="com.untangle.mvvm.type.InetAddressUserType")
+        @Type(type="com.untangle.uvm.type.InetAddressUserType")
         public InetAddress getCServerAddr()
         {
             return cServerAddr;
@@ -274,7 +274,7 @@ import org.hibernate.annotations.Type;
          * @return the address of the server (as seen at server side of pipeline)
          */
         @Column(name="s_server_addr")
-        @Type(type="com.untangle.mvvm.type.InetAddressUserType")
+        @Type(type="com.untangle.uvm.type.InetAddressUserType")
         public InetAddress getSServerAddr()
         {
             return sServerAddr;

@@ -9,13 +9,13 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.intf;
+package com.untangle.uvm.node.firewall.intf;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.untangle.mvvm.tran.ParseException;
+import com.untangle.uvm.node.ParseException;
 
 /**
  * A utility for interface conversion to and from user and database

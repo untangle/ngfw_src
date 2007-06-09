@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -17,14 +17,14 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.LoggingSettings;
-import com.untangle.mvvm.logging.SyslogManager;
-import com.untangle.mvvm.logging.SyslogPriority;
-import com.untangle.mvvm.networking.LocalNetworkManager;
-import com.untangle.mvvm.networking.NetworkSettingsListener;
-import com.untangle.mvvm.networking.internal.NetworkSpacesInternalSettings;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.LoggingSettings;
+import com.untangle.uvm.logging.SyslogManager;
+import com.untangle.uvm.logging.SyslogPriority;
+import com.untangle.uvm.networking.LocalNetworkManager;
+import com.untangle.uvm.networking.NetworkSettingsListener;
+import com.untangle.uvm.networking.internal.NetworkSpacesInternalSettings;
 import org.apache.log4j.Logger;
 
 class SyslogManagerImpl implements SyslogManager
@@ -78,7 +78,7 @@ class SyslogManagerImpl implements SyslogManager
 
     void postInit()
     {
-        final LocalNetworkManager nmi = MvvmContextFactory.context().networkManager();
+        final LocalNetworkManager nmi = UvmContextFactory.context().networkManager();
 
         nmi.registerListener(new NetworkSettingsListener() {
                 public void event(NetworkSpacesInternalSettings s)

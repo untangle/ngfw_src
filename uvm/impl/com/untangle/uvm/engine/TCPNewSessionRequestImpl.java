@@ -9,24 +9,24 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
-import com.untangle.mvvm.tapi.TCPNewSessionRequest;
+import com.untangle.uvm.tapi.TCPNewSessionRequest;
 
 class TCPNewSessionRequestImpl extends IPNewSessionRequestImpl implements TCPNewSessionRequest {
 
     protected TCPNewSessionRequestImpl(Dispatcher disp,
-                                       com.untangle.mvvm.argon.TCPNewSessionRequest pRequest,
+                                       com.untangle.uvm.argon.TCPNewSessionRequest pRequest,
                                        boolean isInbound) {
         super(disp, pRequest, isInbound);
     }
 
     public boolean acked() {
-        return ((com.untangle.mvvm.argon.TCPNewSessionRequest)pRequest).acked();
+        return ((com.untangle.uvm.argon.TCPNewSessionRequest)pRequest).acked();
     }
 
     public void rejectReturnRst(boolean needsFinalization) {
-        ((com.untangle.mvvm.argon.TCPNewSessionRequest)pRequest).rejectReturnRst();
+        ((com.untangle.uvm.argon.TCPNewSessionRequest)pRequest).rejectReturnRst();
         this.needsFinalization = needsFinalization;
     }
 

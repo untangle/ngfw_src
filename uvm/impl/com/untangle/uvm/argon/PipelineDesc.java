@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import java.util.List;
 
-import com.untangle.mvvm.policy.PolicyRule;
+import com.untangle.uvm.policy.PolicyRule;
 
 // XXX merge this class into pipeline and use package protected
 // methods when i move impl classes to engine

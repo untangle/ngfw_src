@@ -6,18 +6,18 @@
  * Untangle, Inc. ("Confidential Information"). You shall
  * not disclose such Confidential Information.
  *
- * $Id: RemoteTransformManagerImpl.java 8600 2007-01-16 02:16:28Z amread $
+ * $Id: RemoteNodeManagerImpl.java 8600 2007-01-16 02:16:28Z amread $
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
-import com.untangle.mvvm.policy.LocalPolicyManager;
-import com.untangle.mvvm.policy.Policy;
-import com.untangle.mvvm.policy.PolicyConfiguration;
-import com.untangle.mvvm.policy.PolicyException;
-import com.untangle.mvvm.policy.PolicyManager;
-import com.untangle.mvvm.policy.SystemPolicyRule;
-import com.untangle.mvvm.policy.UserPolicyRule;
+import com.untangle.uvm.policy.LocalPolicyManager;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.policy.PolicyConfiguration;
+import com.untangle.uvm.policy.PolicyException;
+import com.untangle.uvm.policy.PolicyManager;
+import com.untangle.uvm.policy.SystemPolicyRule;
+import com.untangle.uvm.policy.UserPolicyRule;
 import java.util.List;
 
 class RemotePolicyManagerAdaptor implements PolicyManager

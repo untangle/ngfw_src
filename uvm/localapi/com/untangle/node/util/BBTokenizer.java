@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.tran.util;
-import static com.untangle.tran.util.Ascii.HT_B;
-import static com.untangle.tran.util.Ascii.SP_B;
-import static com.untangle.tran.util.Ascii.CR_B;
-import static com.untangle.tran.util.Ascii.LF_B;
+package com.untangle.node.util;
+import static com.untangle.node.util.Ascii.HT_B;
+import static com.untangle.node.util.Ascii.SP_B;
+import static com.untangle.node.util.Ascii.CR_B;
+import static com.untangle.node.util.Ascii.LF_B;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;

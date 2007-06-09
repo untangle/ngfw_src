@@ -1,6 +1,6 @@
 #!/bin/sh
 
-exec >> @MVVM_LOG@/iptables.log 2>&1
+exec >> @UVM_LOG@/iptables.log 2>&1
 
 MAX_DELAY=$1
 ## Default amount of time, in seconds to wait for the bridge to come up

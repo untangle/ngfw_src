@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.servlet.store;
+package com.untangle.uvm.servlet.store;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,11 +21,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
 
-import com.untangle.mvvm.toolbox.MackageDesc;
-import com.untangle.mvvm.toolbox.ToolboxManager;
+import com.untangle.uvm.toolbox.MackageDesc;
+import com.untangle.uvm.toolbox.ToolboxManager;
 
 import org.apache.log4j.Logger;
 
@@ -42,7 +42,7 @@ public class InstalledAppliances extends HttpServlet
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
     {
-        MvvmLocalContext ctx = MvvmContextFactory.context();
+        UvmLocalContext ctx = UvmContextFactory.context();
         ServletOutputStream out = resp.getOutputStream();
         out.println("var installed = new Array();");
         

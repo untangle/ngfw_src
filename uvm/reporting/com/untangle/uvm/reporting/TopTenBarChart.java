@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.reporting;
+package com.untangle.uvm.reporting;
 
 import java.sql.*;
 import net.sf.jasperreports.engine.JRDefaultScriptlet;

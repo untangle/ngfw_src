@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.shield;
+package com.untangle.uvm.shield;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -18,9 +18,9 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.logging.LogEvent;
-import com.untangle.mvvm.logging.SyslogBuilder;
-import com.untangle.mvvm.logging.SyslogPriority;
+import com.untangle.uvm.logging.LogEvent;
+import com.untangle.uvm.logging.SyslogBuilder;
+import com.untangle.uvm.logging.SyslogPriority;
 import org.hibernate.annotations.Type;
 
 /**
@@ -64,7 +64,7 @@ import org.hibernate.annotations.Type;
          * @return the identity of the user that generated the event
          */
         @Column(name="client_addr")
-        @Type(type="com.untangle.mvvm.type.InetAddressUserType")
+        @Type(type="com.untangle.uvm.type.InetAddressUserType")
         public InetAddress getClientAddr()
         {
             return this.clientAddr;

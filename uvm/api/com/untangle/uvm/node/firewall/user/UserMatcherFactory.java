@@ -9,11 +9,11 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall.user;
+package com.untangle.uvm.node.firewall.user;
 
-import com.untangle.mvvm.tran.ParseException;
+import com.untangle.uvm.node.ParseException;
 
-import com.untangle.mvvm.tran.firewall.ParsingFactory;
+import com.untangle.uvm.node.firewall.ParsingFactory;
 
 public class UserMatcherFactory
 {

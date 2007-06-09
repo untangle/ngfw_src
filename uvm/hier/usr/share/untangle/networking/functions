@@ -10,7 +10,7 @@ EBTABLES="/sbin/ebtables"
 RT_TABLE_NAME_PREFIX="metavize-"
 
 ## Expecte bridge configuration.
-BRIDGE_CFG_FILE=@MVVM_CONF@/bridge_cfg
+BRIDGE_CFG_FILE=@UVM_CONF@/bridge_cfg
 
 ## All of the custom rules start in the 16,000 range.
 RULE_PRIORITY_BASE=16

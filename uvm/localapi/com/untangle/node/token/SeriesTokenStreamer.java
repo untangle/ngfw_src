@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.tran.token;
+package com.untangle.node.token;
 
 import java.util.ArrayList;
 import java.util.Iterator;

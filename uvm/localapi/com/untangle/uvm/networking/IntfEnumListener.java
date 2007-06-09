@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
-import com.untangle.mvvm.IntfEnum;
+import com.untangle.uvm.IntfEnum;
 
 /* Interface for monitoring changes to the Interface Enumeration */
 public interface IntfEnumListener

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.toolbox;
+package com.untangle.uvm.toolbox;
 
 import java.io.Serializable;
 import javax.persistence.CascadeType;
@@ -23,7 +23,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.Period;
+import com.untangle.uvm.Period;
 
 /**
  * Describes the upgrade preferences.

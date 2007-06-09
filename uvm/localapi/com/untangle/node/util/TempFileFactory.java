@@ -9,12 +9,12 @@
  * $Id$
  */
 
-package com.untangle.tran.util;
+package com.untangle.node.util;
 
 import java.io.File;
 import java.io.IOException;
 
-import com.untangle.mvvm.tapi.Pipeline;
+import com.untangle.uvm.tapi.Pipeline;
 
 /**
  * Implementation of FileFactory which creates temp files.

@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi.event;
+package com.untangle.uvm.tapi.event;
 
-import com.untangle.mvvm.tapi.MPipe;
+import com.untangle.uvm.tapi.MPipe;
 
 public abstract class MPipeEvent extends java.util.EventObject
 {

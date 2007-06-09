@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.networking;
+package com.untangle.uvm.networking;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,8 +24,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.Rule;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.Rule;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
@@ -37,7 +37,7 @@ import org.hibernate.annotations.Type;
  * @version 1.0
  */
 @Entity
-@Table(name="mvvm_network_space", schema="settings")
+@Table(name="uvm_network_space", schema="settings")
 public class NetworkSpace extends Rule
 {
     /* There should be at least one */
@@ -255,7 +255,7 @@ public class NetworkSpace extends Rule
      * @return The address to NAT connections to.
      */
     @Column(name="nat_address")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getNatAddress()
     {
         /* null tests */
@@ -330,7 +330,7 @@ public class NetworkSpace extends Rule
      * @return The address to redirect all requests to.
      */
     @Column(name="dmz_host")
-    @Type(type="com.untangle.mvvm.type.IPaddrUserType")
+    @Type(type="com.untangle.uvm.type.IPaddrUserType")
     public IPaddr getDmzHost()
     {
         /* null tests */

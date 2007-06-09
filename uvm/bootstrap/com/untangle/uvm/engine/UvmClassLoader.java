@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.engine;
+package com.untangle.uvm.engine;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -20,20 +20,20 @@ import java.util.Set;
 
 /**
  * ClassLoader that allows us to add new resources as new applications
- * are installed. The bulk of the MVVM and all transforms are loaded
+ * are installed. The bulk of the UVM and all nodes are loaded
  * from this ClassLoader. Tomcat and its ClassLoaders are a child of
  * this ClassLoader.
  *
  * @author <a href="mailto:amread@untangle.com">Aaron Read</a>
  * @version 1.0
  */
-class MvvmClassLoader extends URLClassLoader
+class UvmClassLoader extends URLClassLoader
 {
     private final Set<URL> resources = new HashSet<URL>();
     private final File toolboxDir;
 
     /**
-     * Creates new MvvmClassLoader.
+     * Creates new UvmClassLoader.
      *
      * @param urls non-toolbox urls that are resources for this ClassLoader.
      * @param parent the parent ClassLoader.
@@ -43,7 +43,7 @@ class MvvmClassLoader extends URLClassLoader
      *
      * @see #refreshToolbox()
      */
-    MvvmClassLoader(URL[] urls, ClassLoader parent, File toolboxDir)
+    UvmClassLoader(URL[] urls, ClassLoader parent, File toolboxDir)
     {
         super(urls, parent);
 

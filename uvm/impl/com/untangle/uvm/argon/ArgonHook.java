@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -27,16 +27,16 @@ import com.untangle.jvector.Sink;
 import com.untangle.jvector.Source;
 import com.untangle.jvector.Vector;
 
-import com.untangle.mvvm.IntfConstants;
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.engine.PipelineFoundryImpl;
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.engine.PipelineFoundryImpl;
 
-import com.untangle.mvvm.policy.Policy;
-import com.untangle.mvvm.policy.PolicyRule;
-import com.untangle.mvvm.tapi.PipelineFoundry;
-import com.untangle.mvvm.tran.PipelineEndpoints;
-import com.untangle.mvvm.user.UserInfo;
-import com.untangle.mvvm.user.Username;
+import com.untangle.uvm.policy.Policy;
+import com.untangle.uvm.policy.PolicyRule;
+import com.untangle.uvm.tapi.PipelineFoundry;
+import com.untangle.uvm.node.PipelineEndpoints;
+import com.untangle.uvm.user.UserInfo;
+import com.untangle.uvm.user.Username;
 import org.apache.log4j.Logger;
 
 /**
@@ -51,7 +51,7 @@ abstract class ArgonHook implements Runnable
     protected static final int REJECT_CODE_SRV = -1;
 
     /**
-     * List of all of the transforms( ArgonAgents )
+     * List of all of the nodes( ArgonAgents )
      */
     protected PipelineDesc pipelineDesc;
     protected List pipelineAgents;
@@ -75,7 +75,7 @@ abstract class ArgonHook implements Runnable
     private boolean isMirrored = false;
 
     protected static final PipelineFoundryImpl pipelineFoundry = 
-        (PipelineFoundryImpl)MvvmContextFactory.context().pipelineFoundry();
+        (PipelineFoundryImpl)UvmContextFactory.context().pipelineFoundry();
 
     /**
      * State of the session
@@ -153,7 +153,7 @@ abstract class ArgonHook implements Runnable
 
             /* lookup the user information */
 
-            UserInfo info = MvvmContextFactory.context().localPhoneBook().lookup( clientSide.clientAddr());
+            UserInfo info = UvmContextFactory.context().localPhoneBook().lookup( clientSide.clientAddr());
             
             if ( logger.isDebugEnabled()) logger.debug( "user information: " + info );
             
@@ -172,13 +172,13 @@ abstract class ArgonHook implements Runnable
             // Create the (fake) endpoints early so they can be available at request time.
             endpoints = pipelineFoundry.createInitialEndpoints(clientSide);
 
-            /* Initialize all of the transforms, sending the request events to each in turn */
-            initTransforms( originalServerArgonIntf, endpoints );
+            /* Initialize all of the nodes, sending the request events to each in turn */
+            initNodes( originalServerArgonIntf, endpoints );
 
             /* Connect to the server */
             boolean serverActionCompleted = connectServer();
 
-            /* Now generate the server side since the transforms may have
+            /* Now generate the server side since the nodes may have
              * modified the endpoints (we can't do it until we connect to the server since
              * that is what actually modifies the session global state. */
             serverSide = new NetcapIPSessionDescImpl( sessionGlobalState, false );
@@ -295,9 +295,9 @@ abstract class ArgonHook implements Runnable
     }
 
     /**
-     * Initialize each of the transforms for the new session. </p>
+     * Initialize each of the nodes for the new session. </p>
      */
-    private void initTransforms( byte originalServerIntf, PipelineEndpoints pe )
+    private void initNodes( byte originalServerIntf, PipelineEndpoints pe )
     {
         for ( Iterator<ArgonAgent> iter = pipelineAgents.iterator() ; iter.hasNext() ; ) {
             ArgonAgent agent = iter.next();
@@ -305,7 +305,7 @@ abstract class ArgonHook implements Runnable
             if ( state == IPNewSessionRequest.REQUESTED ) {
                 newSessionRequest( agent, iter, originalServerIntf, pe );
             } else {
-                /* Session has been rejected or endpointed, remaining transforms need not be informed */
+                /* Session has been rejected or endpointed, remaining nodes need not be informed */
                 // Don't need to remove anything from the pipeline, it is just used here
                 // iter.remove();
                 break;
@@ -413,7 +413,7 @@ abstract class ArgonHook implements Runnable
 
         if ( sessionList.isEmpty() ) {
             if ( state == IPNewSessionRequest.ENDPOINTED ) {
-                throw new IllegalStateException( "Endpointed session without any transforms" );
+                throw new IllegalStateException( "Endpointed session without any nodes" );
             }
 
             clientSource = makeClientSource();
@@ -531,7 +531,7 @@ abstract class ArgonHook implements Runnable
     }
 
     /**
-     * Call finalize on each transform session that participates in this session, also raze
+     * Call finalize on each node session that participates in this session, also raze
      * all of the sinks associated with the endpoints.  This is just an extra precaution
      * just in case they were not razed by the pipeline.
      */
@@ -557,7 +557,7 @@ abstract class ArgonHook implements Runnable
     /**
      * Call this to fake vector a reset before starting vectoring</p>
      * @return True if the reset made it all the way through, false if
-     *   a transform endpointed.
+     *   a node endpointed.
      */
     private boolean vectorReset()
     {

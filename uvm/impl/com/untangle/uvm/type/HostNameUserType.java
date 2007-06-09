@@ -9,9 +9,9 @@
  * $Id$
  */
 
-package com.untangle.mvvm.type;
+package com.untangle.uvm.type;
 
-import com.untangle.mvvm.tran.HostName;
+import com.untangle.uvm.node.HostName;
 
 public class HostNameUserType extends StringBasedUserType
 {

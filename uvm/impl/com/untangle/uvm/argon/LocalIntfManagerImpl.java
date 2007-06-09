@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,13 +21,13 @@ import java.util.Properties;
 
 import com.untangle.jnetcap.JNetcapException;
 import com.untangle.jnetcap.Netcap;
-import com.untangle.mvvm.ArgonException;
-import com.untangle.mvvm.IntfConstants;
-import com.untangle.mvvm.IntfEnum;
-import com.untangle.mvvm.localapi.ArgonInterface;
-import com.untangle.mvvm.localapi.LocalIntfManager;
-import com.untangle.mvvm.policy.LocalPolicyManager;
-import com.untangle.mvvm.tran.firewall.intf.IntfMatcherFactory;
+import com.untangle.uvm.ArgonException;
+import com.untangle.uvm.IntfConstants;
+import com.untangle.uvm.IntfEnum;
+import com.untangle.uvm.localapi.ArgonInterface;
+import com.untangle.uvm.localapi.LocalIntfManager;
+import com.untangle.uvm.policy.LocalPolicyManager;
+import com.untangle.uvm.node.firewall.intf.IntfMatcherFactory;
 import org.apache.log4j.Logger;
 
 /* Manager for controlling argon -> netcap interface matching */
@@ -279,7 +279,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
         IntfMatcherFactory.getInstance().updateEnumeration( this.intfEnum );
     }
 
-    /* Write the list of custom transform interfaces to a file */
+    /* Write the list of custom node interfaces to a file */
     private void saveCustomIntfs() throws ArgonException
     {
         /* List, _ seperated, of interfaces and their corresponding device */
@@ -299,11 +299,11 @@ class LocalIntfManagerImpl implements LocalIntfManager
             logger.debug( "Storing properties into: " + CUSTOM_INTF_FILE );
             properties.store( new FileOutputStream( new File( CUSTOM_INTF_FILE )), PROPERTY_COMMENT );
         } catch ( Exception e ) {
-            logger.error( "Unable to write transform interface properties:" + CUSTOM_INTF_FILE, e );
+            logger.error( "Unable to write node interface properties:" + CUSTOM_INTF_FILE, e );
         }
     }
 
-    /* Load the list of transform interfaces from a file, and append them to the interface array */
+    /* Load the list of node interfaces from a file, and append them to the interface array */
     private void loadCustomIntfs( List<ArgonInterface> list ) throws ArgonException
     {
         String customIntfs = "";
@@ -323,7 +323,7 @@ class LocalIntfManagerImpl implements LocalIntfManager
                 }
             }
         } catch ( Exception e ) {
-            logger.warn( "Error loading transform interface file, defaulting to no custom interfaces.", e );
+            logger.warn( "Error loading node interface file, defaulting to no custom interfaces.", e );
             customIntfs = "";
         }
 

@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tran.firewall;
+package com.untangle.uvm.node.firewall;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -17,14 +17,14 @@ import javax.persistence.MappedSuperclass;
 
 import org.hibernate.annotations.Type;
 
-import com.untangle.mvvm.tran.IPaddr;
-import com.untangle.mvvm.tran.ParseException;
-import com.untangle.mvvm.tran.Rule;
-import com.untangle.mvvm.tran.firewall.ip.IPDBMatcher;
-import com.untangle.mvvm.tran.firewall.port.PortDBMatcher;
-import com.untangle.mvvm.tran.firewall.port.PortMatcherFactory;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolDBMatcher;
-import com.untangle.mvvm.tran.firewall.protocol.ProtocolMatcherFactory;
+import com.untangle.uvm.node.IPaddr;
+import com.untangle.uvm.node.ParseException;
+import com.untangle.uvm.node.Rule;
+import com.untangle.uvm.node.firewall.ip.IPDBMatcher;
+import com.untangle.uvm.node.firewall.port.PortDBMatcher;
+import com.untangle.uvm.node.firewall.port.PortMatcherFactory;
+import com.untangle.uvm.node.firewall.protocol.ProtocolDBMatcher;
+import com.untangle.uvm.node.firewall.protocol.ProtocolMatcherFactory;
 
 /**
  * Rule for matching sessions based on session protocol, address and
@@ -82,7 +82,7 @@ abstract class TrafficRule extends Rule
      * @return the protocol matcher.
      */
     @Column(name="protocol_matcher")
-    @Type(type="com.untangle.mvvm.type.firewall.ProtocolMatcherUserType")
+    @Type(type="com.untangle.uvm.type.firewall.ProtocolMatcherUserType")
     public ProtocolDBMatcher getProtocol()
     {
         return protocol;
@@ -99,7 +99,7 @@ abstract class TrafficRule extends Rule
      * @return the source IP matcher.
      */
     @Column(name="src_ip_matcher")
-    @Type(type="com.untangle.mvvm.type.firewall.IPMatcherUserType")
+    @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
     public IPDBMatcher getSrcAddress()
     {
         return srcAddress;
@@ -116,7 +116,7 @@ abstract class TrafficRule extends Rule
      * @return the destination IP matcher.
      */
     @Column(name="dst_ip_matcher")
-    @Type(type="com.untangle.mvvm.type.firewall.IPMatcherUserType")
+    @Type(type="com.untangle.uvm.type.firewall.IPMatcherUserType")
     public IPDBMatcher getDstAddress()
     {
         return dstAddress;
@@ -133,7 +133,7 @@ abstract class TrafficRule extends Rule
      * @return the source IP matcher.
      */
     @Column(name="src_port_matcher")
-    @Type(type="com.untangle.mvvm.type.firewall.PortMatcherUserType")
+    @Type(type="com.untangle.uvm.type.firewall.PortMatcherUserType")
     public PortDBMatcher getSrcPort()
     {
         return srcPort;
@@ -150,7 +150,7 @@ abstract class TrafficRule extends Rule
      * @return the destination IP matcher.
      */
     @Column(name="dst_port_matcher")
-    @Type(type="com.untangle.mvvm.type.firewall.PortMatcherUserType")
+    @Type(type="com.untangle.uvm.type.firewall.PortMatcherUserType")
     public PortDBMatcher getDstPort()
     {
         return dstPort;

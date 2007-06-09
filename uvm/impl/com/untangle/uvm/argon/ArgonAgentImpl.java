@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm.argon;
+package com.untangle.uvm.argon;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,13 +17,13 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.untangle.mvvm.localapi.SessionMatcher;
+import com.untangle.uvm.localapi.SessionMatcher;
 
-import com.untangle.mvvm.policy.Policy;
+import com.untangle.uvm.policy.Policy;
 
 /**
- * The <code>ArgonAgent</code> interface represents an active Transform as seen by
- * the transform API and the pipeline implementation (Argon).  Most transforms
+ * The <code>ArgonAgent</code> interface represents an active Node as seen by
+ * the node API and the pipeline implementation (Argon).  Most nodes
  * only have one active <code>ArgonAgent</code> at a time, the rest have exactly 2
  * (casings).
  *
@@ -31,7 +31,7 @@ import com.untangle.mvvm.policy.Policy;
  * and accessors to get the live sessions for the pipe.
  *
  * This used to be half of the class called 'Xenon', the other half is the view as seen
- * by the transform and transform API, which is now MPipe.
+ * by the node and node API, which is now MPipe.
  *
  * @author <a href="mailto:jdi@untangle.com"></a>
  * @version 1.0
@@ -177,8 +177,8 @@ public class ArgonAgentImpl implements ArgonAgent {
         }
         /**
          * Tells if the session matches */
-        public boolean isMatch( Policy policy, com.untangle.mvvm.tran.IPSessionDesc clientSide, 
-                                com.untangle.mvvm.tran.IPSessionDesc serverSide )
+        public boolean isMatch( Policy policy, com.untangle.uvm.node.IPSessionDesc clientSide, 
+                                com.untangle.uvm.node.IPSessionDesc serverSide )
         {
             Integer id = clientSide.id();
 

@@ -9,19 +9,19 @@
  * $Id$
  */
 
-package com.untangle.mvvm.security;
+package com.untangle.uvm.security;
 
 import java.io.Serializable;
 import java.security.Principal;
 
-public final class MvvmPrincipal implements Principal, Serializable
+public final class UvmPrincipal implements Principal, Serializable
 {
     private static final long serialVersionUID = -3343175380349082197L;
 
     private String loginName;
     private boolean readOnly;
 
-    public MvvmPrincipal(String loginName, boolean readOnly)
+    public UvmPrincipal(String loginName, boolean readOnly)
     {
         this.loginName = loginName;
         this.readOnly = readOnly;
@@ -44,10 +44,10 @@ public final class MvvmPrincipal implements Principal, Serializable
 
     public boolean equals(Object o)
     {
-        if (!(o instanceof MvvmPrincipal)) {
+        if (!(o instanceof UvmPrincipal)) {
             return false;
         }
-        MvvmPrincipal mp = (MvvmPrincipal)o;
+        UvmPrincipal mp = (UvmPrincipal)o;
         return loginName.equals(mp.loginName);
     }
 }

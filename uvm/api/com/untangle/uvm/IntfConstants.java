@@ -9,7 +9,7 @@
  * $Id$
  */
 
-package com.untangle.mvvm;
+package com.untangle.uvm;
 
 /**
  * These are constants for the indices and names of the Network Interfaces on the box.

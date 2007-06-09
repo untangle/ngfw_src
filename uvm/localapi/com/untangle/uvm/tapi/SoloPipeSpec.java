@@ -9,14 +9,14 @@
  * $Id$
  */
 
-package com.untangle.mvvm.tapi;
+package com.untangle.uvm.tapi;
 
 import java.util.Set;
 
-import com.untangle.mvvm.MvvmContextFactory;
-import com.untangle.mvvm.MvvmLocalContext;
-import com.untangle.mvvm.tapi.event.SessionEventListener;
-import com.untangle.mvvm.tran.Transform;
+import com.untangle.uvm.UvmContextFactory;
+import com.untangle.uvm.UvmLocalContext;
+import com.untangle.uvm.tapi.event.SessionEventListener;
+import com.untangle.uvm.node.Node;
 import org.apache.log4j.Logger;
 
 public class SoloPipeSpec extends PipeSpec
@@ -38,11 +38,11 @@ public class SoloPipeSpec extends PipeSpec
 
     // constructors -----------------------------------------------------------
 
-    public SoloPipeSpec(String name, Transform transform, Set subscriptions,
+    public SoloPipeSpec(String name, Node node, Set subscriptions,
                         SessionEventListener listener,
                         Fitting fitting, Affinity affinity, int strength)
     {
-        super(name, transform, subscriptions);
+        super(name, node, subscriptions);
 
         if (strength < MIN_STRENGTH || strength > MAX_STRENGTH) {
             throw new IllegalArgumentException("bad strength: " + strength);
@@ -54,12 +54,12 @@ public class SoloPipeSpec extends PipeSpec
         this.strength = strength;
     }
 
-    public SoloPipeSpec(String name, Transform transform,
+    public SoloPipeSpec(String name, Node node,
                         Subscription subscription,
                         SessionEventListener listener, Fitting fitting,
                         Affinity affinity, int strength)
     {
-        super(name, transform, subscription);
+        super(name, node, subscription);
 
         if (strength < MIN_STRENGTH || strength > MAX_STRENGTH) {
             throw new IllegalArgumentException("bad strength: " + strength);
@@ -71,12 +71,12 @@ public class SoloPipeSpec extends PipeSpec
         this.strength = strength;
     }
 
-    public SoloPipeSpec(String name, Transform transform,
+    public SoloPipeSpec(String name, Node node,
                         SessionEventListener listener,
                         Fitting fitting, Affinity affinity,
                         int strength)
     {
-        super(name, transform);
+        super(name, node);
 
         if (strength < MIN_STRENGTH || strength > MAX_STRENGTH) {
             throw new IllegalArgumentException("bad strength: " + strength);
@@ -161,7 +161,7 @@ public class SoloPipeSpec extends PipeSpec
     // static initialization --------------------------------------------------
 
     static {
-        MvvmLocalContext mlc = MvvmContextFactory.context();
+        UvmLocalContext mlc = UvmContextFactory.context();
         MPIPE_MANAGER = mlc.mPipeManager();
         FOUNDRY = mlc.pipelineFoundry();
     }
