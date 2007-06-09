@@ -1,6 +1,11 @@
 br
 --
+prj.el
+buildtools/alpine.rb?
+grep -i 'metavize' in uvm
 libalpine
+shield/
+  purgetran schema
 
 
 fork server notes

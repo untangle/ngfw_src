@@ -1,35 +1,35 @@
 # -*-ruby-*-
 
-jnetcap = BuildEnv::ALPINE['jnetcap']
-jvector = BuildEnv::ALPINE['jvector']
-uvm = BuildEnv::ALPINE['uvm']
+jnetcap = BuildEnv::SRC['jnetcap']
+jvector = BuildEnv::SRC['jvector']
+uvm = BuildEnv::SRC['uvm']
 
 jts = []
 
 ## Bootstrap
-jts << JarTarget.buildTarget(uvm, Jars::Base, 'bootstrap', "#{ALPINE_HOME}/uvm/bootstrap")
+jts << JarTarget.buildTarget(uvm, Jars::Base, 'bootstrap', "#{SRC_HOME}/uvm/bootstrap")
 
 ## API
-jts << (jt = JarTarget.buildTarget(uvm, Jars::Base, 'api', ["#{ALPINE_HOME}/uvm/api", '../version']))
-BuildEnv::ALPINE.installTarget.installJars(jt, uvm.getWebappDir('webstart'), nil, true)
+jts << (jt = JarTarget.buildTarget(uvm, Jars::Base, 'api', ["#{SRC_HOME}/uvm/api", '../version']))
+BuildEnv::SRC.installTarget.installJars(jt, uvm.getWebappDir('webstart'), nil, true)
 
 ## Local API
-jts << JarTarget.buildTarget(uvm, Jars::Base + [ uvm['api']], 'localapi', "#{ALPINE_HOME}/uvm/localapi")
+jts << JarTarget.buildTarget(uvm, Jars::Base + [ uvm['api']], 'localapi', "#{SRC_HOME}/uvm/localapi")
 
 ## Reporting
 deps  = Jars::Base + Jars::Jasper + Jars::JFreeChart + [ uvm['api']]
-jts << JarTarget.buildTarget(uvm, deps, 'reporting', "#{ALPINE_HOME}/uvm/reporting")
+jts << JarTarget.buildTarget(uvm, deps, 'reporting', "#{SRC_HOME}/uvm/reporting")
 
 ## Implementation
 deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
   Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::Jasper + Jars::JFreeChart +
   [ uvm['bootstrap'], uvm['api'], uvm['localapi'], uvm['reporting'], jnetcap['impl'], jvector['impl']]
 
-jts << JarTarget.buildTarget(uvm, deps, 'impl', "#{ALPINE_HOME}/uvm/impl")
+jts << JarTarget.buildTarget(uvm, deps, 'impl', "#{SRC_HOME}/uvm/impl")
 
 # servlets
 ServletBuilder.new(uvm, 'com.untangle.uvm.invoker.jsp',
-                   "#{ALPINE_HOME}/uvm/servlets/http-invoker", [], [], [],
+                   "#{SRC_HOME}/uvm/servlets/http-invoker", [], [], [],
                    [BuildEnv::SERVLET_COMMON])
 
 deps = %w( commons-httpclient-3.0/commons-httpclient-3.0.jar
@@ -37,10 +37,10 @@ deps = %w( commons-httpclient-3.0/commons-httpclient-3.0.jar
            commons-fileupload-1.1/commons-fileupload-1.1.jar
          ).map { |n| ThirdpartyJar.get("#{BuildEnv::DOWNLOADS}/#{n}") }
 ServletBuilder.new(uvm, 'com.untangle.uvm.store.jsp',
-                   "#{ALPINE_HOME}/uvm/servlets/onlinestore", deps)
+                   "#{SRC_HOME}/uvm/servlets/onlinestore", deps)
 
 ServletBuilder.new(uvm, 'com.untangle.uvm.reports.jsp',
-                   "#{ALPINE_HOME}/uvm/servlets/reports")
+                   "#{SRC_HOME}/uvm/servlets/reports")
 
 # wmi installer
 ServletBuilder.new(uvm, "com.untangle.uvm.user.servlet","uvm/servlets/wmi", [])
@@ -49,7 +49,7 @@ ServletBuilder.new(uvm, "com.untangle.uvm.user.servlet","uvm/servlets/wmi", [])
 deps = FileList["#{BuildEnv::DOWNLOADS}/Ajax/jars/*jar"].exclude(/.*servlet-api.jar/).map { |n| ThirdpartyJar.get(n) }
 ms = [ MoveSpec.new("#{BuildEnv::DOWNLOADS}/Ajax/WebRoot/js", '**/*', 'AjaxTk')]
 ServletBuilder.new(uvm, 'com.untangle.uvm.root.jsp',
-                   "#{ALPINE_HOME}/uvm/servlets/ROOT", deps, [], ms)
+                   "#{SRC_HOME}/uvm/servlets/ROOT", deps, [], ms)
 
 ajaxTkList =
   [
@@ -171,28 +171,28 @@ file bundledAjx => ajaxTkList do
 
   Kernel.system('sed', '-i', '-e', '/\/\/if (AjxEnv.isGeckoBased)/,+1s/\/\///', bundledAjx);
 end
-BuildEnv::ALPINE.installTarget.registerDependency(bundledAjx)
+BuildEnv::SRC.installTarget.registerDependency(bundledAjx)
 
 ServletBuilder.new(uvm, 'com.untangle.uvm.sessiondumper.jsp',
-                   "#{ALPINE_HOME}/uvm/servlets/session-dumper")
+                   "#{SRC_HOME}/uvm/servlets/session-dumper")
 
-ms = MoveSpec.new("#{ALPINE_HOME}/uvm/hier", FileList["#{ALPINE_HOME}/uvm/hier/**/*"], uvm.distDirectory)
-cf = CopyFiles.new(uvm, ms, 'hier', BuildEnv::ALPINE.filterset)
+ms = MoveSpec.new("#{SRC_HOME}/uvm/hier", FileList["#{SRC_HOME}/uvm/hier/**/*"], uvm.distDirectory)
+cf = CopyFiles.new(uvm, ms, 'hier', BuildEnv::SRC.filterset)
 uvm.registerTarget('hier', cf)
 
-BuildEnv::ALPINE.installTarget.installJars(jts, "#{uvm.distDirectory}/usr/share/metavize/lib",
+BuildEnv::SRC.installTarget.installJars(jts, "#{uvm.distDirectory}/usr/share/metavize/lib",
                            nil, false, true)
 
-BuildEnv::ALPINE.installTarget.installJars(Jars::Base, "#{uvm.distDirectory}/usr/share/java/uvm")
+BuildEnv::SRC.installTarget.installJars(Jars::Base, "#{uvm.distDirectory}/usr/share/java/uvm")
 
-BuildEnv::ALPINE.installTarget.installJars(Jars::Reporting, "#{uvm.distDirectory}/usr/share/java/reports")
+BuildEnv::SRC.installTarget.installJars(Jars::Reporting, "#{uvm.distDirectory}/usr/share/java/reports")
 
-BuildEnv::ALPINE.installTarget.installDirs("#{uvm.distDirectory}/usr/share/metavize/toolbox")
+BuildEnv::SRC.installTarget.installDirs("#{uvm.distDirectory}/usr/share/metavize/toolbox")
 
 uvm_cacerts = "#{uvm.distDirectory}/usr/share/metavize/conf/cacerts"
 java_cacerts = "#{BuildEnv::JAVA_HOME}/jre/lib/security/cacerts"
-mv_ca = "#{ALPINE_HOME}/uvm/resources/mv-ca.pem"
-ut_ca = "#{ALPINE_HOME}/uvm/resources/ut-ca.pem"
+mv_ca = "#{SRC_HOME}/uvm/resources/mv-ca.pem"
+ut_ca = "#{SRC_HOME}/uvm/resources/ut-ca.pem"
 
 file uvm_cacerts => [ java_cacerts, mv_ca, ut_ca ] do
   ensureDirectory(File.dirname(uvm_cacerts))
@@ -206,8 +206,8 @@ file uvm_cacerts => [ java_cacerts, mv_ca, ut_ca ] do
                 ut_ca, '-alias', 'untangleprivateca')
 end
 
-if BuildEnv::ALPINE.isDevel
-  BuildEnv::ALPINE.installTarget.installFiles('debian/control', "#{uvm.distDirectory}/tmp",
+if BuildEnv::SRC.isDevel
+  BuildEnv::SRC.installTarget.installFiles('debian/control', "#{uvm.distDirectory}/tmp",
                               'pkg-list')
 
   activationKey = "#{uvm.distDirectory}/usr/share/metavize/activation.key"
@@ -218,13 +218,13 @@ if BuildEnv::ALPINE.isDevel
     File.open( activationKey, "w" ) { |f| f.puts( "0000-0000-0000-0000" ) }
   end
 
-  BuildEnv::ALPINE.installTarget.registerDependency(activationKey)
+  BuildEnv::SRC.installTarget.registerDependency(activationKey)
 end
 
-BuildEnv::ALPINE.installTarget.registerDependency(uvm_cacerts)
+BuildEnv::SRC.installTarget.registerDependency(uvm_cacerts)
 
 deps  = Jars::Base + Jars::TomcatEmb + Jars::JavaMail + Jars::Jcifs +
   Jars::Dom4j + Jars::Activation + Jars::Trove + Jars::Junit + Jars::WBEM +
   [ uvm['bootstrap'], uvm['api'], uvm['localapi'], uvm['impl'], jnetcap['impl'], jvector['impl']]
 
-JarTarget.buildTarget(BuildEnv::ALPINE["unittest"], deps, 'uvm', "#{ALPINE_HOME}/uvm/unittest")
+JarTarget.buildTarget(BuildEnv::SRC["unittest"], deps, 'uvm', "#{SRC_HOME}/uvm/unittest")

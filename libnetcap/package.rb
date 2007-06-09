@@ -1,12 +1,12 @@
 # -*-ruby-*-
 
-libnetcap = BuildEnv::ALPINE['libnetcap']
+libnetcap = BuildEnv::SRC['libnetcap']
 
 compilerEnv = CCompilerEnv.new({ 'pkg'   => "#{CCompilerEnv::Netcap}",
                                  'version' => "#{getVersion(libnetcap)}" })
 
 ## libnetcap
-ArchiveTarget.buildTarget(libnetcap, [BuildEnv::ALPINE['libmvutil']],
+ArchiveTarget.buildTarget(libnetcap, [BuildEnv::SRC['libmvutil']],
                           compilerEnv, ['/usr/include/libxml2'])
 
-stamptask BuildEnv::ALPINE.installTarget => libnetcap
+stamptask BuildEnv::SRC.installTarget => libnetcap

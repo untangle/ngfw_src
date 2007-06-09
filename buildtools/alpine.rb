@@ -25,7 +25,7 @@ require "#{SRC_HOME}/buildtools/rake-util.rb"
 require "#{SRC_HOME}/buildtools/c-compiler.rb"
 require "#{SRC_HOME}/buildtools/jars.rb"
 require "#{SRC_HOME}/buildtools/jasper.rb"
-require "#{SRC_HOME}/buildtools/node.rb"
+# require "#{SRC_HOME}/buildtools/node.rb"
 
 ## Require all of the sub packages.
 ## Done manually because order matters.
@@ -41,7 +41,7 @@ require "#{SRC_HOME}/jvector/package.rb"
 require "#{SRC_HOME}/nfutil/package.rb"
 require "#{SRC_HOME}/uvm/package.rb"
 require "#{SRC_HOME}/gui/package.rb"
-require "#{SRC_HOME}/tran/package.rb"
+# require "#{SRC_HOME}/tran/package.rb"
 
 libalpine_so = "#{BuildEnv::SRC.staging}/libalpine.so"
 

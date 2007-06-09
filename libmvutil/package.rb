@@ -1,6 +1,6 @@
 # -*-ruby-*-
 
-libmvutil = BuildEnv::ALPINE['libmvutil']
+libmvutil = BuildEnv::SRC['libmvutil']
 
 compilerEnv = CCompilerEnv.new({ 'pkg' => "#{CCompilerEnv::Mvutil}",
                                  'version' => "#{getVersion(libmvutil)}" })
@@ -8,4 +8,4 @@ compilerEnv = CCompilerEnv.new({ 'pkg' => "#{CCompilerEnv::Mvutil}",
 ## libmvutil
 ArchiveTarget.buildTarget(libmvutil, [], compilerEnv)
 
-stamptask BuildEnv::ALPINE.installTarget => libmvutil
+stamptask BuildEnv::SRC.installTarget => libmvutil

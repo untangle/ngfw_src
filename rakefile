@@ -1,32 +1,33 @@
 # -*-ruby-*-
 
-ALPINE_HOME = "."
+SRC_HOME = "."
 
-require "#{ALPINE_HOME}/buildtools/alpine.rb"
+require "#{SRC_HOME}/buildtools/alpine.rb"
 
 task :default => :devel
 task :all => :devel
 
 task :clean do
   Kernel.system( "make -C downloads distclean" )
-  FileUtils.rm_rf(BuildEnv::ALPINE.devel) if File.exist?(BuildEnv::ALPINE.devel)
-  FileUtils.rm_rf(BuildEnv::ALPINE.staging) if File.exist?(BuildEnv::ALPINE.staging)
+  FileUtils.rm_rf(BuildEnv::SRC.devel) if File.exist?(BuildEnv::SRC.devel)
+  FileUtils.rm_rf(BuildEnv::SRC.staging) if File.exist?(BuildEnv::SRC.staging)
   FileUtils.rm_rf("foo.dot") if File.exist?("foo.dot")
   FileUtils.rm_rf(FileList['debian/*'].select { |f| File.directory?(f) })
   ## Clear the stamp hashes
   Rake::StampHash.instance.clear
 end
 
-task :build => [BuildEnv::ALPINE['mvvm'], BuildEnv::ALPINE['untangle-client'], BuildEnv::ALPINE['tran']]
+# task :build => [BuildEnv::SRC['mvvm'], BuildEnv::SRC['untangle-client'], BuildEnv::SRC['tran']]
+task :build => [BuildEnv::SRC['mvvm'], BuildEnv::SRC['untangle-client']]
 
-task :devel => [BuildEnv::ALPINE['install'], BuildEnv::ALPINE.installTarget]
+task :devel => [BuildEnv::SRC['install'], BuildEnv::SRC.installTarget]
 
 # See rake-util.rb, we check the arguments for "pkgs"
-task :install => [BuildEnv::ALPINE['install'], BuildEnv::ALPINE.installTarget] do
+task :install => [BuildEnv::SRC['install'], BuildEnv::SRC.installTarget] do
   # FIXME: hrm, we're taking init scripts from the staging area under
   # debian/packagename/... and put it back under debian/ ????
-  FileList["#{ALPINE_HOME}/debian/**/etc/init.d/*"].each do |f|
-    FileUtils.cp(f, "#{ALPINE_HOME}/debian/#{File.basename(f)}.init")
+  FileList["#{SRC_HOME}/debian/**/etc/init.d/*"].each do |f|
+    FileUtils.cp(f, "#{SRC_HOME}/debian/#{File.basename(f)}.init")
   end
 end
 

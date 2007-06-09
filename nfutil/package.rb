@@ -1,8 +1,8 @@
 # -*-ruby-*-
 
-nfutil = "#{BuildEnv::ALPINE.staging}/nfutil"
+nfutil = "#{BuildEnv::SRC.staging}/nfutil"
 
-source = FileList["#{ALPINE_HOME}/nfutil/src/*.c"]
+source = FileList["#{SRC_HOME}/nfutil/src/*.c"]
 
 ## Make the binary dependent on all of the source files.
 source.each { |f| file nfutil => f }
@@ -10,9 +10,9 @@ source.each { |f| file nfutil => f }
 file nfutil do
   compilerEnv = CCompilerEnv.new()
 
-  CBuilder.new(BuildEnv::ALPINE, compilerEnv).makeBinary(source, nfutil,
+  CBuilder.new(BuildEnv::SRC, compilerEnv).makeBinary(source, nfutil,
                                                        [], ['netfilter_queue'])
 end
 
-BuildEnv::ALPINE.installTarget.registerDependency(nfutil)
-BuildEnv::ALPINE.installTarget.installFiles(nfutil, "#{BuildEnv::ALPINE['mvvm'].distDirectory}/usr/share/metavize/networking/")
+BuildEnv::SRC.installTarget.registerDependency(nfutil)
+BuildEnv::SRC.installTarget.installFiles(nfutil, "#{BuildEnv::SRC['mvvm'].distDirectory}/usr/share/metavize/networking/")

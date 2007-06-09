@@ -1,13 +1,13 @@
 # -*-ruby-*-
 
-jvector = BuildEnv::ALPINE['jvector']
-jnetcap = BuildEnv::ALPINE['jnetcap']
-mvvm    = BuildEnv::ALPINE['mvvm']
+jvector = BuildEnv::SRC['jvector']
+jnetcap = BuildEnv::SRC['jnetcap']
+mvvm    = BuildEnv::SRC['mvvm']
 
 ## jvector
 deps = Jars::Base + [jnetcap['impl']]
-j = JarTarget.buildTarget(jvector, deps, 'impl', "#{ALPINE_HOME}/jvector/impl")
-BuildEnv::ALPINE.installTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib",
+j = JarTarget.buildTarget(jvector, deps, 'impl', "#{SRC_HOME}/jvector/impl")
+BuildEnv::SRC.installTarget.installJars(j, "#{mvvm.distDirectory}/usr/share/metavize/lib",
                            nil, false, true)
 
 headerClasses = [ 'com.untangle.jvector.OutgoingSocketQueue',
@@ -27,7 +27,7 @@ javah = JavahTarget.new(jvector, j, headerClasses)
 compilerEnv = CCompilerEnv.new({ 'pkg' => "#{CCompilerEnv::JVector}" })
 
 
-ArchiveTarget.buildTarget(jvector, [BuildEnv::ALPINE['libmvutil'], BuildEnv::ALPINE['jmvutil'], javah],
+ArchiveTarget.buildTarget(jvector, [BuildEnv::SRC['libmvutil'], BuildEnv::SRC['jmvutil'], javah],
                           compilerEnv, ["#{BuildEnv::JAVA_HOME}/include", "#{BuildEnv::JAVA_HOME}/include/linux"])
 
-stamptask BuildEnv::ALPINE.installTarget => jvector
+stamptask BuildEnv::SRC.installTarget => jvector
